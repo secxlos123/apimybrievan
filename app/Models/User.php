@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name',
     ];
 
     /**
@@ -24,6 +24,16 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
     ];
+
+    /**
+     * Get fullname for the user.
+     *
+     * @return string
+     */
+    public function getFullnameAttribute()
+    {
+        return ucfirst($this->attributes['first_name']) .' '. ucfirst($this->attributes['last_name']);
+    }
 }
