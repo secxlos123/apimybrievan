@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AuthRequest;
+
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Http\Request;
+use Sentinel;
 use JWTAuth;
 
 class AuthController extends Controller
@@ -46,5 +49,34 @@ class AuthController extends Controller
         	'data' => $data,
         	'message' => 'Login Sukses'
         ]);
+    }
+
+    /**
+     * Register new user as members
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register( AuthRequest $request )
+    {
+        $user = Sentinel::register( $request->all() );
+        $role = Sentinel::findRoleBySlug( 'customer' );
+        $role->users()->attach( $user );
+        $token = JWTAuth::fromUser( $user );
+        $data = [
+            'token' => 'Bearer ' . $token,
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'first_name' => $user->first_name,
+            'last_name'  => $user->last_name,
+            'fullname'   => $user->fullname,
+            'role' => $user->roles->first()->slug,
+            'permission' => $user->roles->first()->permissions
+        ];
+
+        return response()->success( [
+            'message' => 'Register Sukses',
+            'data' => $data
+        ] );
     }
 }

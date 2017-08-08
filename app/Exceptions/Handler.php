@@ -44,7 +44,17 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
+        //     return response()->json( [
+        //         'Url' => $request->fullUrl(),
+        //         'Method' => $request->method(),
+        //         'File' => $exception->getFile(),
+        //         'Line' => $exception->getLine(),
+        //         'Message' => $exception->getMessage(),
+        //         'Full Description' => $exception
+        //     ], 400 );
+        // }
+        return parent::render( $request, $exception );
     }
 
     /**
