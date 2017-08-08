@@ -22,7 +22,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	 * Route group for type of user in : int and eks
 	 */
 	Route::group(['prefix' => '{type}', 'middleware' => 'api.access'], function () {
-
+		
 		/**
 		 * Route group auth
 		 */
@@ -34,13 +34,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post('login', 'AuthController@authenticate');
 
 			/**
+			 * Route for register
+			 */
+			Route::post('register', 'AuthController@register');
+
+			/**
 			 * Route for logout
 			 */
 			Route::delete('logout', 'AuthController@logout')->middleware(['api.auth']);
 		});
 
 		/**
-		 * Route group auth
+		 * Route group password
 		 */
 		Route::group(['prefix' => 'password'], function () {
 
