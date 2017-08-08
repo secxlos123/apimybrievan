@@ -36,4 +36,16 @@ class User extends Authenticatable
     {
         return ucfirst($this->attributes['first_name']) .' '. ucfirst($this->attributes['last_name']);
     }
+
+    /**
+     * Find a model by its email.
+     *
+     * @param  string  $email
+     * @param  array  $columns
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|static[]|static|null
+     */
+    protected function findEmail($email, $columns = ['*'])
+    {
+        return $this->whereEmail($email)->first($columns);
+    }
 }

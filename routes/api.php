@@ -38,5 +38,16 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			 */
 			Route::delete('logout', 'AuthController@logout')->middleware(['api.auth']);
 		});
+
+		/**
+		 * Route group auth
+		 */
+		Route::group(['prefix' => 'password'], function () {
+
+			/**
+			 * Route for reset and send new password
+			 */
+			Route::post('reset', 'PasswordController@reset');
+		});
 	});
 });
