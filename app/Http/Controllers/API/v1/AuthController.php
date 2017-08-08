@@ -98,6 +98,6 @@ class AuthController extends Controller
         return response()->success( [
             'message' => 'Register Sukses',
             'data' => $data
-        ] );
+        ], 201 );
     }
 }

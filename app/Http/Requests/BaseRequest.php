@@ -31,6 +31,6 @@ class BaseRequest extends FormRequest
      */
     public function response( array $errors )
     {
-        return response()->json( $errors, 200 );
+        return response()->error( $errors, 200 );
     }
 }
