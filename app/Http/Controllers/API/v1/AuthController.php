@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\v1\Auth\LoginRequest;
 use App\Http\Requests\AuthRequest;
 
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -21,7 +22,7 @@ class AuthController extends Controller
      * @param 	\Illuminate\Http\Request $request
      * @return 	\Illuminate\Http\Response
      */
-    public function authenticate(Request $request)
+    public function authenticate(LoginRequest $request)
     {
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
