@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\API\v1\Password;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest as FormRequest;
 
 class ResetRequest extends FormRequest
 {
@@ -23,8 +23,10 @@ class ResetRequest extends FormRequest
      */
     public function rules()
     {
+        $type = $this->route()->parameters()['type'];
+
         return [
-            'email' => 'required|exists:users,email|email'
+            'email' => "required|email|exists:users,email|email_by_type:{$type}"
         ];
     }
 }

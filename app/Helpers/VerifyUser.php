@@ -7,15 +7,7 @@ use JWTAuth;
 
 trait VerifyUser
 {
-	/**
-     * Define types of endpoint.
-     *
-     * @var array
-     */
-    protected $types = [
-        'int' => ['ao', 'mp', 'pinca'],
-        'eks' => ['developer', 'customer', 'others']
-    ];
+    use AvailableType;
 
     /**
      * Define params of endpoint.
