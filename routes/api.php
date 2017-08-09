@@ -34,11 +34,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post('login', 'AuthController@authenticate');
 
 			/**
-			 * Route for register
-			 */
-			Route::post('register', 'AuthController@register');
-
-			/**
 			 * Route for logout
 			 */
 			Route::delete('logout', 'AuthController@logout')->middleware(['api.auth']);
@@ -55,4 +50,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post('reset', 'PasswordController@reset');
 		});
 	});
+
+	Route::group( [ 'prefix' => 'auth' ], function () {
+		/**
+		 * Route for register
+		 */
+		Route::post( 'register', 'AuthController@register' );
+	} );
 });
