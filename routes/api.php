@@ -54,5 +54,36 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			 */
 			Route::post('reset', 'PasswordController@reset');
 		});
+
+		/**
+		 * Route group for role
+		 */
+		Route::group( [ 'prefix' => 'role' ], function () {
+
+			/**
+			 * Route for get list role
+			 */
+			Route::post( '/', 'RoleController@index' );
+
+			/**
+			 * Route for store role data
+			 */
+			Route::post( 'store', 'RoleController@store' );
+
+			/**
+			 * Route for show role data
+			 */
+			Route::get( '{id}/show', 'RoleController@show' );
+
+			/**
+			 * Route for update role data
+			 */
+			Route::put( '{id}/update', 'RoleController@update' );
+
+			/**
+			 * Route for destroy role data
+			 */
+			// Route::destroy( '{id}/destroy', 'RoleController@destroy' );
+		} );
 	});
 });
