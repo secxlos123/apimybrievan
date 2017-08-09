@@ -81,7 +81,7 @@ class AuthController extends Controller
      */
     public function register( AuthRequest $request )
     {
-        $user = Sentinel::register( $request->all() );
+        $user = Sentinel::registerAndActivate( $request->all() );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
         $token = JWTAuth::fromUser( $user );
