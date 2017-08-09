@@ -29,8 +29,8 @@ class AuthRequest extends BaseRequest
                 return [
                     'email' => 'required|email|unique:users,email',
                     'password' => 'required|min:6',
-                    'first_name' => 'required',
-                    'last_name' => 'required'
+                    // 'first_name' => 'required',
+                    // 'last_name' => 'required'
                 ];
                 break;
             
