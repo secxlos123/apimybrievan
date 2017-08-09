@@ -18,7 +18,7 @@ class VerifyApiAccess
      */
     public function handle($request, Closure $next)
     {
-        if (is_null($request->route('type'))) $this->params = $request->route('type');
+        if (!is_null($request->route('type'))) $this->params = $request->route('type');
         if (!array_key_exists($this->params, $this->types)) {
             return response()->error(['message' => 'Halaman tidak di temukan.'], 404);
         }
