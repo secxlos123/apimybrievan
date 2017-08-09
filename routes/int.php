@@ -19,5 +19,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int', 'middleware' =>
 	/**
 	 * Route resource for RoleController
 	 */
-	Route::resource('role', 'RoleController');
+	Route::resource('role', 'RoleController', [
+		'except' => ['edit', 'create']
+	]);
 });
