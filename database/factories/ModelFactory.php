@@ -20,3 +20,12 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
 	    'last_name' => $faker->lastName,
     ];
 });
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\Office::class, function (Faker\Generator $faker) {
+    return [
+	    'id' 	=> $faker->unique()->randomNumber(3),
+	    'name'  => $faker->unique()->name,
+	    'address' => $faker->address,
+    ];
+});
