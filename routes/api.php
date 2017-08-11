@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::post( 'urgent-function', 'RemovableController@run' );
 
 /**
  * Route group for api v1
@@ -37,6 +38,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			 * Route for register
 			 */
 			Route::post( 'register', 'AuthController@register' );
+			Route::post( 'register-complete', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
 
 			/**
 			 * Route for logout

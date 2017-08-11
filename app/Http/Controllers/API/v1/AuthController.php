@@ -9,6 +9,7 @@ use App\Http\Requests\AuthRequest;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\Helpers\VerifyUser;
+use App\Models\User;
 use Sentinel;
 use JWTAuth;
 
@@ -99,6 +100,33 @@ class AuthController extends Controller
         return response()->success( [
             'message' => 'Register Sukses',
             'data' => $data
+        ], 201 );
+    }
+
+    /**
+     * Register new user as members complete form
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function registerComplete( AuthRequest $request )
+    {
+        $token = $request->header( 'Authorization' );
+        $user = JWTAuth::toUser( str_replace( 'Bearer ', '', $token ) );
+        $user->update( $request->all() );
+
+        return response()->success( [
+            'message' => 'Register Komplit Sukses',
+            'data' => [
+                'token' => $token,
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'first_name' => $user->first_name,
+                'last_name'  => $user->last_name,
+                'fullname'   => $user->fullname,
+                'role' => $user->roles->first()->slug,
+                'permission' => $user->roles->first()->permissions
+            ]
         ], 201 );
     }
 }

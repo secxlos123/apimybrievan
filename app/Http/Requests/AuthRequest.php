@@ -26,12 +26,18 @@ class AuthRequest extends BaseRequest
     {
         switch ( strtolower( $this->method() ) ) {
             case 'post':
-                return [
-                    'email' => 'required|email|unique:users,email',
-                    'password' => 'required|min:6',
-                    // 'first_name' => 'required',
-                    // 'last_name' => 'required'
-                ];
+                if( $this->segment( 5 ) == 'register' ) {
+                    return [
+                        'email' => 'required|email|unique:users,email',
+                        'password' => 'required|min:6',
+                    ];
+                } else if ( $this->segment( 5 ) == 'register-complete' ) {
+                    return [
+                        'first_name' => 'required',
+                        'last_name' => 'required'
+                    ];
+                }
+                return [];
                 break;
             
             default:
