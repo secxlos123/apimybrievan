@@ -24,12 +24,22 @@ class VerifyApiAccess
         }
 
         if ($request->hasHeader('Authorization')) {
-            if (! $token = \JWTAuth::setRequest($request)->getToken()) {
-                return response()->error(['message' => 'Token tidak tersedia.', 'data' => (object) null], 401);
-            }
+            try {
+                if (! $token = \JWTAuth::setRequest($request)->getToken()) {
+                    return response()->error(['message' => 'Token tidak tersedia.', 'data' => (object) null], 401);
+                }
 
-            if (! $this->verify($request, $token)) {
-                return response()->error(['message' => 'Halaman tidak di temukan.'], 404);
+                if (! $this->verify($request, $token)) {
+                    return response()->error(['message' => 'Halaman tidak di temukan.'], 404);
+                }
+            } catch ( \Tymon\JWTAuth\Exceptions\TokenExpiredException $e ) {
+                return response()->error( [
+                    'message' => 'Token expired.'
+                ], 404 );
+            } catch ( \Tymon\JWTAuth\Exceptions\TokenBlacklistedException $e ) {
+                return response()->error( [
+                    'message' => 'Your session has expired.'
+                ], 400 );
             }
         }
 
