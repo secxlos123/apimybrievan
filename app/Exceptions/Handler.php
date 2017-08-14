@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
+use DB;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -44,6 +46,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        DB::rollback();
         // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
         //     return response()->json( [
         //         'Url' => $request->fullUrl(),

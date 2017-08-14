@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\CustomerRequest;
+use App\Jobs\SendPasswordEmail;
 use App\Models\User;
 use Sentinel;
+use DB;
 
 class CustomerController extends Controller
 {
@@ -34,21 +36,22 @@ class CustomerController extends Controller
      */
     public function store( CustomerRequest $request )
     {
-        $user = Sentinel::registerAndActivate( $request->all() );
+        DB::beginTransaction();
+        $password = str_random( 8 );
+        $user = Sentinel::registerAndActivate( $request->all() + [ 'password' => $password ] );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
+        $user = User::find( $user->id );
+        dispatch( new SendPasswordEmail( $user, $password ) );
         $data = [
-            'user_id' => $user->id,
+            'id' => $user->id,
             'email' => $user->email,
-            'first_name' => $user->first_name,
-            'last_name'  => $user->last_name,
-            'fullname'   => $user->fullname,
-            'role' => $user->roles->first()->slug,
-            'permission' => $user->roles->first()->permissions
+            'name'   => $user->fullname
         ];
 
+        DB::commit();
         return response()->success( [
-            'message' => 'Data customer berhasil ditambahkan.',
+            'message' => 'Data nasabah berhasil ditambahkan.',
             'data' => $data
         ], 201 );
     }
@@ -62,10 +65,15 @@ class CustomerController extends Controller
      */
     public function update( CustomerRequest $request, $id )
     {
+        DB::beginTransaction();
         $customer = User::find( $id );
-        $customer->update( $request->input() );
+        $customer->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] ) );
+        $customer->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] ) );
+        $customer->refresh();
+
+        DB::commit();
         return response()->success( [
-            'message' => 'Data role berhasil dirubah.',
+            'message' => 'Data nasabah berhasil dirubah.',
             'data' => $customer
         ] );
     }
