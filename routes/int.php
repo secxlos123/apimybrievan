@@ -14,7 +14,9 @@
 /**
  * Route group for api v1
  */
-Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int', 'middleware' => ['api.access', 'api.auth']], function () {
+Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
+		// 'middleware' => ['api.access', 'api.auth']
+	], function () {
 
 	/**
 	 * Route resource for RoleController
@@ -24,7 +26,14 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int', 'middleware' =>
 	]);
 
 	/**
-	 * Route resource for RoleController
+	 * Route resource for UserController
+	 */
+	Route::resource('user', 'UserController', [
+		'except' => ['edit', 'create']
+	]);
+
+	/**
+	 * Route resource for CustomerController
 	 */
 	Route::resource( 'customer', 'CustomerController', [
 		'except' => [ 'edit', 'create' ]

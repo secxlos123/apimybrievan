@@ -33,6 +33,26 @@ class User extends Authenticatable
     ];
 
     /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function customer_detail()
+    {
+        return $this->hasOne( CustomerDetail::class );
+    }
+
+    /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function detail()
+    {
+        return $this->hasOne( UserDetail::class );
+    }
+
+    /**
      * Get fullname for the user.
      *
      * @return string
@@ -90,25 +110,5 @@ class User extends Authenticatable
                 'user_id' => $this->id
             ] );
         }
-    }
-
-    /**
-     * The directories belongs to broadcasts.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function customer_detail()
-    {
-        return $this->hasOne( CustomerDetail::class );
-    }
-
-    /**
-     * The relation to user details.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function detail()
-    {
-        return $this->hasOne( UserDetail::class );
     }
 }

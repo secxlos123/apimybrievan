@@ -23,10 +23,8 @@ class ResetRequest extends FormRequest
      */
     public function rules()
     {
-        $type = $this->route('type');
-
         return [
-            'email' => "required|email|exists:users,email|email_by_type:{$type}"
+            'email' => "required|email|exists:users,email|email_by_type:{$this->type}"
         ];
     }
 }

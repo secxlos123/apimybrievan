@@ -13,8 +13,7 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $role = $this->route()->parameters()['role'];
-        $rules = array_merge(parent::rules(), ['slug' => "required|unique:roles,slug,{$role->id}"]);
+        $rules = array_merge(parent::rules(), ['slug' => "required|unique:roles,slug,{$this->role->id}"]);
         return array_merge($rules, $this->permissions());
     }
 }
