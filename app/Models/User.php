@@ -7,6 +7,8 @@ use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 
 use Illuminate\Http\Request;
 
+use App\Models\CustomerDetail;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -61,15 +63,43 @@ class User extends Authenticatable
      */
     public function scopeGetCustomers( $query, Request $request )
     {
-        return $query->where( function( $user ) use( $request ) {
+        return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )->where( function( $user ) use( $request ) {
             $user->whereRaw( "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ] );
-            $user->where( 'email', 'ilike', '%' . $request->input( 'email' ) . '%' );
-            $user->where( 'city', 'ilike', '%' . $request->input( 'city' ) . '%' );
-            if( $request->has( 'phone' ) ) {
-                $user->where( 'phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
-            }
+            $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+            // $user->where( 'customer_details.city', 'ilike', '%' . $request->input( 'city' ) . '%' );
+            // if( $request->has( 'phone' ) ) {
+            //     $user->where( 'customer_details.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
+            // }
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
-        } )->select( array_merge( [ 'id' ], $this->fillable ) );
+        } )->select( array_merge( [ 'users.id' ], $this->fillable ) );
+    }
+
+    /**
+     * Update customer detail.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function updateCustomerDetail( $input )
+    {
+        if( $customer_detail = $this->customer_detail ) {
+            $customer_detail->update( $input );
+        } else {
+            CustomerDetail::create( $input + [
+                'user_id' => $this->id
+            ] );
+        }
+    }
+
+    /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function customer_detail()
+    {
+        return $this->hasOne( CustomerDetail::class );
     }
 
     /**
