@@ -19,14 +19,11 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'birth_place' )->nullable();
             $table->date( 'birth_date' )->nullable();
             $table->text( 'address' )->nullable();
-            $table->string( 'gender' )->nullable();
             $table->string( 'city' )->nullable();
-            $table->string( 'phone' )->nullable();
             $table->string( 'citizenship' )->nullable();
             $table->integer( 'status' )->nullable();
             $table->string( 'address_status' )->nullable();
             $table->string( 'mother_name' )->nullable();
-            $table->string( 'mobile_phone' )->nullable();
             $table->string( 'emergency_contact' )->nullable();
             $table->string( 'emergency_relation' )->nullable();
             $table->string( 'identity' )->nullable();

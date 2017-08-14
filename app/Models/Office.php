@@ -29,4 +29,14 @@ class Office extends Model
     		$office->where("name", 'ilike', "%{$request->input('name')}%");
     	})->select($this->fillable);
     }
+
+    /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function users()
+    {
+        return $this->hasMany( UserDetail::class );
+    }
 }

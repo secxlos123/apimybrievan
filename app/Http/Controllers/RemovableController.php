@@ -19,6 +19,23 @@ class RemovableController extends Controller
                 $update_message[] = 'Add image field on user table!';
             }
 
+            if( ! Schema::hasColumns( 'users', ['gender', 'phone', 'mobile_phone', 'is_actived'] ) ) {
+                Schema::table( 'users', function ( Blueprint $table ) {
+                    $table->string( 'phone' )->nullable();
+                    $table->string( 'mobile_phone' )->nullable();
+                    $table->enum( 'gender', ['L', 'P'] )->default('L');
+                    $table->boolean( 'is_actived' )->default(true);
+                } );
+                $update_message[] = 'Add gender, phone, mobile_phone, is_actived fields on user table!';
+            }
+
+            if( Schema::hasColumns( 'customer_details', ['gender', 'phone', 'mobile_phone'] ) ) {
+                Schema::table( 'customer_details', function ( Blueprint $table ) {
+                    $table->dropColumn( ['gender', 'phone', 'mobile_phone'] );
+                } );
+                $update_message[] = 'Remove gender, phone, mobile_phone fields on customer_details table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

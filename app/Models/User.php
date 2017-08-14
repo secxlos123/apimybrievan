@@ -17,7 +17,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'birth_place' , 'birth_date', 'address', 'gender', 'city', 'phone', 'citizenship', 'status', 'address_status', 'mother_name', 'mobile_phone', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'image', 'work_type', 'work', 'company_name', 'work_field', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount'
+        'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image',
+        'phone', 'mobile_phone', 'gender', 'is_actived',
     ];
 
     /**
@@ -79,5 +80,15 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany( Role::class, 'role_users' );
+    }
+
+    /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function detail()
+    {
+        return $this->hasOne( UserDetail::class );
     }
 }
