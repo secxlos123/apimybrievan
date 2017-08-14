@@ -23,6 +23,33 @@ class RemovableController extends Controller
                 return response()->json( [
                     'message' => 'User table updated!'
                 ], 200 );
+            } else if( ! Schema::hasColumn( 'users', 'citizenship' ) ) {
+                Schema::table( 'users', function ( Blueprint $table ) {
+                    $table->string( 'citizenship' )->nullable();
+                    $table->integer( 'status' )->nullable();
+                    $table->string( 'address_status' )->nullable();
+                    $table->string( 'mother_name' )->nullable();
+                    $table->string( 'mobile_phone' )->nullable();
+                    $table->string( 'emergency_contact' )->nullable();
+                    $table->string( 'emergency_relation' )->nullable();
+                    $table->string( 'identity' )->nullable();
+                    $table->string( 'npwp' )->nullable();
+                    $table->string( 'image' )->nullable();
+                    $table->string( 'work_type' )->nullable();
+                    $table->string( 'work' )->nullable();
+                    $table->string( 'company_name' )->nullable();
+                    $table->string( 'work_field' )->nullable();
+                    $table->string( 'position' )->nullable();
+                    $table->string( 'work_duration' )->nullable();
+                    $table->string( 'office_address' )->nullable();
+                    $table->string( 'salary' )->nullable();
+                    $table->string( 'other_salary' )->nullable();
+                    $table->string( 'loan_installment' )->nullable();
+                    $table->string( 'dependent_amount' )->nullable();
+                } );
+                return response()->json( [
+                    'message' => 'User table updated!'
+                ], 200 );
             } else {
                 return response()->json( [
                     'message' => 'No update'
