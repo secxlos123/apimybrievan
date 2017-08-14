@@ -103,16 +103,6 @@ class User extends Authenticatable
     }
 
     /**
-     * The directories belongs to broadcasts.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function roles()
-    {
-        return $this->belongsToMany( Role::class, 'role_users' );
-    }
-
-    /**
      * The relation to user details.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\HasOne
