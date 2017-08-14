@@ -89,6 +89,7 @@ class User extends Authenticatable
             $customer_detail->update( $input );
         } else {
             CustomerDetail::create( $input + [
+                'nik' => hexdec( uniqid() ),
                 'user_id' => $this->id
             ] );
         }
