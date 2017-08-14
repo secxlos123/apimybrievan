@@ -113,7 +113,9 @@ class AuthController extends Controller
     {
         $token = $request->header( 'Authorization' );
         $user = JWTAuth::toUser( str_replace( 'Bearer ', '', $token ) );
-        $user->update( $request->all() );
+        $user->update( $request->only( [ 'first_name', 'last_name' ] ) );
+        $user->updateCustomerDetail( $request->all() );
+        $user->refresh();
 
         return response()->success( [
             'message' => 'Register Komplit Sukses',

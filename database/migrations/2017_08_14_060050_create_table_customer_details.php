@@ -31,7 +31,6 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'emergency_relation' )->nullable();
             $table->string( 'identity' )->nullable();
             $table->string( 'npwp' )->nullable();
-            $table->string( 'image' )->nullable();
             $table->string( 'work_type' )->nullable();
             $table->string( 'work' )->nullable();
             $table->string( 'company_name' )->nullable();
