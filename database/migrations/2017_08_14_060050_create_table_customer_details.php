@@ -16,6 +16,7 @@ class CreateTableCustomerDetails extends Migration
         Schema::create('customer_details', function ( Blueprint $table ) {
             $table->increments( 'id' );
             $table->integer( 'user_id' );
+            $table->string( 'nik' )->nullable();
             $table->string( 'birth_place' )->nullable();
             $table->date( 'birth_date' )->nullable();
             $table->text( 'address' )->nullable();

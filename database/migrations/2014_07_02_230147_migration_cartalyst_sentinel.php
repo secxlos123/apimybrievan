@@ -95,6 +95,7 @@ class MigrationCartalystSentinel extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('nik');
             $table->string('email');
             $table->string('password');
             $table->text('permissions')->nullable();
@@ -102,6 +103,10 @@ class MigrationCartalystSentinel extends Migration
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('image')->nullable();
+            $table->string( 'phone' )->nullable();
+            $table->string( 'mobile_phone' )->nullable();
+            $table->enum( 'gender', ['L', 'P'] )->default('L');
+            $table->boolean( 'is_actived' )->default(true);
             $table->timestamps();
 
             $table->engine = 'InnoDB';
