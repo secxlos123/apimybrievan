@@ -117,16 +117,7 @@ class AuthController extends Controller
 
         return response()->success( [
             'message' => 'Register Komplit Sukses',
-            'data' => [
-                'token' => $token,
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'first_name' => $user->first_name,
-                'last_name'  => $user->last_name,
-                'fullname'   => $user->fullname,
-                'role' => $user->roles->first()->slug,
-                'permission' => $user->roles->first()->permissions
-            ]
+            'data' => $user
         ], 201 );
     }
 }
