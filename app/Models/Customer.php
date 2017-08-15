@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Jobs\SendPasswordEmail;
+use App\Events\Customer\CustomerRegistered;
 use App\Models\CustomerDetail;
 use App\Models\User;
 
@@ -145,6 +145,7 @@ class Customer extends User
         $role->users()->attach( $user );
         $customer_data = array_diff_key( $data, $separate_array_keys ) + [ 'user_id' => $user->id ];
         CustomerDetail::create( $customer_data );
+        event( new CustomerRegistered( $this, '$password' ) );
 
         return static::find( $user->id );
     }
@@ -163,7 +164,6 @@ class Customer extends User
         parent::update( $user_data );
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         $this->detail()->update( $customer_data );
-        dispatch( new SendPasswordEmail( $this, '$password' ) );
 
         return true;
     }
