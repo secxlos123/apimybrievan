@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\CustomerRequest;
 use App\Jobs\SendPasswordEmail;
+use App\Models\Customer;
 use App\Models\User;
 use Sentinel;
 use DB;
@@ -37,22 +38,13 @@ class CustomerController extends Controller
     public function store( CustomerRequest $request )
     {
         DB::beginTransaction();
-        $password = str_random( 8 );
-        $user = Sentinel::registerAndActivate( $request->all() + [ 'password' => $password ] );
-        $role = Sentinel::findRoleBySlug( 'customer' );
-        $role->users()->attach( $user );
-        $user = User::find( $user->id );
-        dispatch( new SendPasswordEmail( $user, $password ) );
-        $data = [
-            'id' => $user->id,
-            'email' => $user->email,
-            'name'   => $user->fullname
-        ];
+        $customer = Customer::create( $request->all() );
+        dispatch( new SendPasswordEmail( $customer, '$password' ) );
 
         DB::commit();
         return response()->success( [
             'message' => 'Data nasabah berhasil ditambahkan.',
-            'data' => $data
+            'data' => $customer
         ], 201 );
     }
 
@@ -66,15 +58,28 @@ class CustomerController extends Controller
     public function update( CustomerRequest $request, $id )
     {
         DB::beginTransaction();
-        $customer = User::find( $id );
-        $customer->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] ) );
-        $customer->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] ) );
-        $customer->refresh();
+        $customer = Customer::find( $id );
+        $customer->update( $request->all() );
 
         DB::commit();
         return response()->success( [
             'message' => 'Data nasabah berhasil dirubah.',
             'data' => $customer
         ] );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $id )
+    {
+        $customer = Customer::find( $id );
+        return response()->success( [
+            'message' => 'Sukses',
+            'data' => $customer
+        ], 200 );
     }
 }

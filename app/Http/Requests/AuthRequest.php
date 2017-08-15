@@ -33,6 +33,7 @@ class AuthRequest extends BaseRequest
                     ];
                 } else if ( $this->segment( 5 ) == 'register-complete' ) {
                     return [
+                        'nik' => 'required|unique:customer_details,nik',
                         'first_name' => 'required',
                         'last_name' => 'required',
                         'birth_place' => 'required',

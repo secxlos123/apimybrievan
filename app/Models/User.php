@@ -8,6 +8,7 @@ use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 use Illuminate\Http\Request;
 
 use App\Models\CustomerDetail;
+use File;
 
 class User extends Authenticatable
 {
@@ -39,7 +40,7 @@ class User extends Authenticatable
      */
     public function customer_detail()
     {
-        return $this->hasOne( CustomerDetail::class );
+        return $this->hasOne( CustomerDetail::class, 'user_id' );
     }
 
     /**
@@ -70,6 +71,38 @@ class User extends Authenticatable
     public function getIsRegisterCompletedAttribute()
     {
         return ! empty( $this->customer_detail );
+    }
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
+    public function getImageAttribute( $value )
+    {
+        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
+            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        } else {
+            $image = url( 'img/avatar.jpg' );
+        }
+        return $image;
+    }
+
+    /**
+     * Set user avatar image.
+     *
+     * @return void
+     */
+    public function setImageAttribute( $image )
+    {
+        $path = public_path( 'uploads/users/' . $this->id . '/' );
+        if ( ! empty( $this->image ) ) {
+            File::delete( $path . $this->image );
+        }
+
+        $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'image' ] = $filename;
     }
 
     /**
