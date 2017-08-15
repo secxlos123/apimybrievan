@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\CustomerRequest;
-use App\Jobs\SendPasswordEmail;
 use App\Models\Customer;
 use App\Models\User;
 use Sentinel;
@@ -39,7 +38,6 @@ class CustomerController extends Controller
     {
         DB::beginTransaction();
         $customer = Customer::create( $request->all() );
-        dispatch( new SendPasswordEmail( $customer, '$password' ) );
 
         DB::commit();
         return response()->success( [
