@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use File;
+
 class CustomerDetail extends Model
 {
     /**
@@ -26,7 +28,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'birth_place' , 'birth_date', 'address', 'gender', 'city', 'phone', 'citizenship', 'status', 'address_status', 'mother_name', 'mobile_phone', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'work_type', 'work', 'company_name', 'work_field', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount'
+        'user_id', 'nik', 'birth_place' , 'birth_date', 'address', 'gender', 'city', 'phone', 'citizenship', 'status', 'address_status', 'mother_name', 'mobile_phone', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'work_type', 'work', 'company_name', 'work_field', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount'
     ];
 
     /**
@@ -37,4 +39,34 @@ class CustomerDetail extends Model
     protected $hidden = [
         'id', 'user_id'
     ];
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
+    public function getNpwpAttribute( $value )
+    {
+        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
+            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        } else {
+            $image = url( 'img/noimage.jpg' );
+        }
+        return $image;
+    }
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
+    public function getIdentityAttribute( $value )
+    {
+        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
+            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        } else {
+            $image = url( 'img/noimage.jpg' );
+        }
+        return $image;
+    }
 }
