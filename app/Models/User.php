@@ -76,33 +76,33 @@ class User extends Authenticatable
      * Get user avatar image url.
      *
      * @return string
-     */
-    public function getImageAttribute( $value )
-    {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
-        } else {
-            $image = url( 'img/avatar.jpg' );
+        public function getImageAttribute( $value )
+        {
+            if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
+                $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+            } else {
+                $image = url( 'img/avatar.jpg' );
+            }
+            return $image;
         }
-        return $image;
-    }
+     */
 
     /**
      * Set user avatar image.
      *
      * @return void
-     */
-    public function setImageAttribute( $image )
-    {
-        $path = public_path( 'uploads/users/' . $this->id . '/' );
-        if ( ! empty( $this->image ) ) {
-            File::delete( $path . $this->image );
-        }
+        public function setImageAttribute( $image )
+        {
+            $path = public_path( 'uploads/users/' . $this->id . '/' );
+            if ( ! empty( $this->image ) ) {
+                File::delete( $path . $this->image );
+            }
 
-        $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'image' ] = $filename;
-    }
+            $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
+            $image->move( $path, $filename );
+            $this->attributes[ 'image' ] = $filename;
+        }
+     */
 
     /**
      * Find a model by its email.

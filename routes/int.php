@@ -45,7 +45,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 		/**
 		 * Route for actived a user
 		 */
-		Route::post('actived', 'UserController@actived')->name('actived');
+		Route::match(['put', 'patch'], 'actived', 'UserController@actived')->name('actived');
 	});
 
 	/**
