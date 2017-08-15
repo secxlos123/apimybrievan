@@ -54,6 +54,7 @@ class AuthController extends Controller
 					'fullname'	 => $user->fullname,
 					'role' => $user->roles->first()->slug,
 					'permission' => $user->roles->first()->permissions,
+                    'is_register_completed' => $user->is_register_completed
 		    	],
 	        ];
         }

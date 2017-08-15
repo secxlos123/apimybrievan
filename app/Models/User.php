@@ -63,6 +63,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get fullname for the user.
+     *
+     * @return string
+     */
+    public function getIsRegisterCompletedAttribute()
+    {
+        return ! empty( $this->customer_detail );
+    }
+
+    /**
      * Find a model by its email.
      *
      * @param  string  $email
