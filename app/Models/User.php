@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
-
 use Illuminate\Http\Request;
 
 use App\Models\CustomerDetail;
@@ -123,5 +122,32 @@ class User extends Authenticatable
                 'user_id' => $this->id
             ] );
         }
+    }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetLists($query, Request $request)
+    {
+        return $query->with(['detail.office', 'roles'])
+            ->where(function ($user) use ($request) {
+                $user->whereRaw("CONCAT(first_name, last_name) ilike ?", ["%{$request->input('fullname')}%"])
+                    ->orWhere("email", 'ilike', "%{$request->input('email')}%")
+                    ->orWhereHas('detail', function ($detail) use ($request) {
+                        $detail->where('user_details.nip', 'ilike', "%{$request->input('nip')}%")
+                            ->orWhereHas('office', function ($office) use ($request) {
+                                $office->where('offices.name', 'ilike', "%{$request->input('office_name')}%");
+                            });
+                    })
+                    ->orWhereHas('roles', function ($roles) use ($request) {
+                        $roles->where('roles.slug', 'ilike', "%{$request->input('role_slug')}%");
+                    });
+            })
+            ->whereDoesntHave('roles', function ($role) { $role->whereSlug('customer'); })
+            ->select(array_merge(['id'], $this->fillable));
     }
 }

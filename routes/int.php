@@ -29,8 +29,24 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 	 * Route resource for UserController
 	 */
 	Route::resource('user', 'UserController', [
-		'except' => ['edit', 'create']
+		'only' => ['index', 'store', 'show']
 	]);
+
+	/**
+	 * Route group for user
+	 */
+	Route::group(['prefix' => 'user/{user}', 'as' => 'user.'], function () {
+
+		/**
+		 * Route for update data user
+		 */
+		Route::post('update', 'UserController@update')->name('update');
+
+		/**
+		 * Route for actived a user
+		 */
+		Route::post('actived', 'UserController@actived')->name('actived');
+	});
 
 	/**
 	 * Route resource for CustomerController
