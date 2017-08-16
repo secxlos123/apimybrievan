@@ -1,9 +1,29 @@
-<?php
+<?php 
 
 use Illuminate\Database\Seeder;
 
 class UsersTableSeeder extends Seeder
 {
+    /**
+     * Avaliable permissions.
+     *
+     * @var array
+     */
+    protected $permissions = [
+        'home' => true,
+        'nasabah' => true,
+        'properti' => true,
+        'e-form' => true,
+        'developer' => true,
+        'debitur' => true,
+        'penjadwalan' => true,
+        'kalkulator' => true,
+        'tracking' => true,
+        'pihak-ke-3' => true,
+        'manajemen-user' => true,
+        'manajemen-role' => true,
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -26,7 +46,7 @@ class UsersTableSeeder extends Seeder
      *
      * @return void
      */
-    private function clearData()
+    protected function clearData()
     {
         Schema::disableForeignKeyConstraints();
         DB::table('roles')->truncate();
@@ -39,15 +59,15 @@ class UsersTableSeeder extends Seeder
      *
      * @return array
      */
-    private function setRoles()
+    protected function setRoles()
     {
     	$roles = [
-    		['name' => 'Account Officer', 'slug' => 'ao'],
-    		['name' => 'Manager Pemasaran', 'slug' => 'mp'],
-    		['name' => 'Pimpinan Cabang', 'slug' => 'pinca'],
-    		['name' => 'Developer', 'slug' => 'developer'],
-    		['name' => 'Nasabah', 'slug' => 'customer'],
-    		['name' => 'Pihak Ke-3', 'slug' => 'others'],
+    		['name' => 'Account Officer', 'slug' => 'ao', 'is_default' => true, 'permissions' => $this->permissions],
+    		['name' => 'Manager Pemasaran', 'slug' => 'mp', 'is_default' => true, 'permissions' => $this->permissions],
+    		['name' => 'Pimpinan Cabang', 'slug' => 'pinca', 'is_default' => true, 'permissions' => $this->permissions],
+    		['name' => 'Developer', 'slug' => 'developer', 'is_default' => true, 'permissions' => $this->permissions],
+    		['name' => 'Nasabah', 'slug' => 'customer', 'is_default' => true, 'permissions' => $this->permissions],
+    		['name' => 'Pihak Ke-3', 'slug' => 'others', 'is_default' => true, 'permissions' => $this->permissions],
     	];
 
     	$models = [];

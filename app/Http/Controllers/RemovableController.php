@@ -50,6 +50,13 @@ class RemovableController extends Controller
                 $update_message[] = 'Add nik field on eforms table!';
             }
 
+            if( ! Schema::hasColumn( 'roles', 'is_default' ) ) {
+                Schema::table( 'roles', function ( Blueprint $table ) {
+                    $table->boolean('is_default')->default(false);
+                } );
+                $update_message[] = 'Add is_default field on roles table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'
