@@ -30,20 +30,25 @@ class Customer extends User
      */
     public function getPersonalAttribute()
     {
-        $detail = $this->detail;
-        return [
-            'nik' => $detail->nik,
+        $personal_data = [
             'name' => $this->fullname,
-            'birth_place' => $detail->birth_place,
-            'birth_date' => $detail->birth_date,
-            'address' => $detail->address,
             'gender' => $this->gender,
-            'citizenship' => $detail->citizenship,
-            'status' => $detail->status,
-            'address_status' => $detail->address_status,
-            'email' => $this->email,
-            'mother_name' => $detail->mother_name
+            'email' => $this->email
         ];
+        if( count( $detail = $this->detail ) ) {
+            $personal_data += [
+                'nik' => $detail->nik,
+                'birth_place' => $detail->birth_place,
+                'birth_date' => $detail->birth_date,
+                'address' => $detail->address,
+                'citizenship' => $detail->citizenship,
+                'status' => $detail->status,
+                'address_status' => $detail->address_status,
+                'mother_name' => $detail->mother_name
+            ];
+        }
+
+        return $personal_data;
     }
 
     /**
@@ -53,16 +58,17 @@ class Customer extends User
      */
     public function getWorkAttribute()
     {
-        $detail = $this->detail;
-        return [
-            'type' => $detail->work_type,
-            'work' => $detail->work,
-            'company_name' => $detail->company_name,
-            'work_field' => $detail->work_field,
-            'position' => $detail->position,
-            'work_duration' => $detail->work_duration,
-            'office_address' => $detail->office_address
-        ];
+        if( count( $detail = $this->detail ) ) {
+            return [
+                'type' => $detail->work_type,
+                'work' => $detail->work,
+                'company_name' => $detail->company_name,
+                'work_field' => $detail->work_field,
+                'position' => $detail->position,
+                'work_duration' => $detail->work_duration,
+                'office_address' => $detail->office_address
+            ];
+        }
     }
 
     /**
@@ -72,13 +78,14 @@ class Customer extends User
      */
     public function getFinancialAttribute()
     {
-        $detail = $this->detail;
-        return [
-            'salary' => $detail->salary,
-            'other_salary' => $detail->other_salary,
-            'loan_installment' => $detail->loan_installment,
-            'dependent_amount' => $detail->dependent_amount
-        ];
+        if( count( $detail = $this->detail ) ) {
+            return [
+                'salary' => $detail->salary,
+                'other_salary' => $detail->other_salary,
+                'loan_installment' => $detail->loan_installment,
+                'dependent_amount' => $detail->dependent_amount
+            ];
+        }
     }
 
     /**
@@ -88,13 +95,14 @@ class Customer extends User
      */
     public function getContactAttribute()
     {
-        $detail = $this->detail;
-        return [
-            'phone' => $this->phone,
-            'mobile_phone' => $this->mobile_phone,
-            'emergency_contact' => $detail->emergency_contact,
-            'emergency_relation' => $detail->emergency_relation
-        ];
+        if( count( $detail = $this->detail ) ) {
+            return [
+                'phone' => $this->phone,
+                'mobile_phone' => $this->mobile_phone,
+                'emergency_contact' => $detail->emergency_contact,
+                'emergency_relation' => $detail->emergency_relation
+            ];
+        }
     }
 
     /**
@@ -104,12 +112,17 @@ class Customer extends User
      */
     public function getOtherAttribute()
     {
-        $detail = $this->detail;
-        return [
-            'identity' => $detail->identity,
-            'npwp' => $detail->npwp,
+        $other_data = [
             'image' => $this->image
         ];
+        if( count( $detail = $this->detail ) ) {
+            $other_data += [
+                'identity' => $detail->identity,
+                'npwp' => $detail->npwp,
+            ];
+        }
+
+        return $other_data;
     }
 
     /**
@@ -202,11 +215,7 @@ class Customer extends User
      */
     public function detail()
     {
-        if( $result = $this->hasOne( CustomerDetail::class, 'user_id' ) ) {
-            return $result;
-        } else {
-            return new CustomerDetail();
-        }
+        return $this->hasOne( CustomerDetail::class, 'user_id' );
     }
 
     /**
