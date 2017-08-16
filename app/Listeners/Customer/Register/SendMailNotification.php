@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Listeners\Customer;
+namespace App\Listeners\Customer\Register;
 
-use App\Events\Customer\CustomerRegistered;
+use App\Events\Customer\CustomerRegister;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Illuminate\Support\Facades\Mail;
-use App\Mail\Registered;
+use App\Mail\Register;
 
 class SendMailNotification
 {
@@ -24,17 +24,15 @@ class SendMailNotification
     /**
      * Handle the event.
      *
-     * @param  CustomerRegistered  $event
+     * @param  CustomerRegister  $event
      * @return void
      */
-    public function handle( CustomerRegistered $event )
+    public function handle( CustomerRegister $event )
     {
         $mail = [
-            'name' => $event->customer->fullname,
-            'email' => $event->customer->email,
-            'password' => $event->password
+            'email' => $event->user->email
         ];
         
-        Mail::to( $mail[ 'email' ] )->send( new Registered( $mail ) );
+        Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
     }
 }

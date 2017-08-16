@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Events\Customer\CustomerRegistered;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use App\Models\User;
-
 use Sentinel;
 
 class Customer extends User
@@ -138,16 +138,19 @@ class Customer extends User
      */
     public static function create( $data ) {
         $password = str_random( 8 );
-        $separate_array_keys = array_flip( $this->fillable );
+        $separate_array_keys = array_flip( [ 'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image', 'phone', 'mobile_phone', 'gender' ] );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
         $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
         $customer_data = array_diff_key( $data, $separate_array_keys ) + [ 'user_id' => $user->id ];
         CustomerDetail::create( $customer_data );
-        event( new CustomerRegistered( $this, '$password' ) );
 
-        return static::find( $user->id );
+        // send mail notification
+        $customer = static::find( $user->id );
+        event( new CustomerRegistered( $customer, $password ) );
+
+        return $customer;
     }
 
     /**
@@ -166,6 +169,22 @@ class Customer extends User
         $this->detail()->update( $customer_data );
 
         return true;
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope( 'role', function( Builder $builder ) {
+            $builder->whereHas( 'roles', function( $role ) {
+                $role->whereSlug( 'customer' );
+            } );
+        } );
     }
 
 

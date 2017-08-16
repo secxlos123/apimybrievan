@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Auth\LoginRequest;
 use App\Http\Requests\AuthRequest;
 
+use App\Events\Customer\CustomerRegister;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\Helpers\VerifyUser;
 use App\Models\User;
 use Sentinel;
 use JWTAuth;
+use DB;
 
 class AuthController extends Controller
 {
@@ -84,6 +86,7 @@ class AuthController extends Controller
      */
     public function register( AuthRequest $request )
     {
+        DB::beginTransaction();
         $user = Sentinel::registerAndActivate( $request->all() );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
@@ -98,7 +101,9 @@ class AuthController extends Controller
             'role' => $user->roles->first()->slug,
             'permission' => $user->roles->first()->permissions
         ];
+        event( new CustomerRegister( $user ) );
 
+        DB::commit();
         return response()->success( [
             'message' => 'Register Sukses',
             'data' => $data
