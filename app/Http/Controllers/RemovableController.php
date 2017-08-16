@@ -43,6 +43,13 @@ class RemovableController extends Controller
                 $update_message[] = 'Add nik field on customer_details table!';
             }
 
+            if( ! Schema::hasColumn( 'eforms', 'nik' ) ) {
+                Schema::table( 'eforms', function ( Blueprint $table ) {
+                    $table->string( 'nik' )->nullable();
+                } );
+                $update_message[] = 'Add nik field on eforms table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'
