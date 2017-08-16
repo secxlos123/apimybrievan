@@ -33,6 +33,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_actived' => 'boolean',
+    ];
+
+    /**
      * The directories belongs to broadcasts.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany

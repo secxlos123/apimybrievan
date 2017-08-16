@@ -7,6 +7,25 @@ use Illuminate\Http\Request;
 
 class Role extends Model
 {
+    /**
+     * {@inheritDoc}
+     */
+    protected $fillable = [
+        'name',
+        'slug',
+        'permissions',
+        'is_default'
+    ];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_default' => 'boolean',
+    ];
+
 	/**
      * Get mutator for the "permissions" attribute.
      *
