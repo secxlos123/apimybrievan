@@ -40,6 +40,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post( 'register', 'AuthController@register' );
 			Route::post( 'register-complete', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
 
+			Route::group( [ 'prefix' => 'e-forms' ], function() {
+				// 
+			} );
+
 			/**
 			 * Route for logout
 			 */

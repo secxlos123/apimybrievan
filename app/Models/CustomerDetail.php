@@ -69,4 +69,58 @@ class CustomerDetail extends Model
         }
         return $image;
     }
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
+    public function setStatusAttribute( $value )
+    {
+        if( $value == 0 ) {
+            return 'Tidak menikah';
+        } else if( $value == 1 ) {
+            return 'Menikah';
+        } else if( $value == 2 ) {
+            return 'Janda';
+        } else if( $value == 3 ) {
+            return 'Duda';
+        }
+
+        return null;
+    }
+
+    /**
+     * Set customer npwp image.
+     *
+     * @return void
+     */
+    public function setNpwpAttribute( $image )
+    {
+        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ( ! empty( $this->attributes[ 'npwp' ] ) ) {
+            File::delete( $path . $this->attributes[ 'npwp' ] );
+        }
+
+        $filename = $this->id . '-npwp.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'npwp' ] = $filename;
+    }
+
+    /**
+     * Set customer identity image.
+     *
+     * @return void
+     */
+    public function setIdentityAttribute( $image )
+    {
+        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ( ! empty( $this->attributes[ 'identity' ] ) ) {
+            File::delete( $path . $this->attributes[ 'identity' ] );
+        }
+
+        $filename = $this->id . '-identity.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'identity' ] = $filename;
+    }
 }

@@ -120,8 +120,8 @@ class User extends Authenticatable
     public function setImageAttribute( $image )
     {
         $path = public_path( 'uploads/users/' . $this->id . '/' );
-        if ( ! empty( $this->image ) ) {
-            File::delete( $path . $this->image );
+        if ( ! empty( $this->attributes[ 'image' ] ) ) {
+            File::delete( $path . $this->attributes[ 'image' ] );
         }
 
         $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
