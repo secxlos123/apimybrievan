@@ -82,6 +82,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get user gender hhumanify word.
+     *
+     * @return string
+     */
+    public function getGenderAttribute( $value )
+    {
+        if( $value == 'L' ) {
+            return 'Laki-laki';
+        } else if( $value == 'P' ) {
+            return 'Perempuan';
+        } else {
+            return '-';
+        }
+    }
+
+    /**
      * Get user avatar image url.
      *
      * @return string
@@ -144,7 +160,7 @@ class User extends Authenticatable
                 $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
             }
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
-        } )->select( array_merge( [ 'users.id' ], $this->fillable ) );
+        } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $this->fillable ) );
     }
 
     /**
