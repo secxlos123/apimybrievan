@@ -138,14 +138,14 @@ class Customer extends User
      */
     public static function create( $data ) {
         $password = str_random( 8 );
-        $separate_array_keys = array_flip( $this->fillable );
+        $separate_array_keys = array_flip( [ 'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image', 'phone', 'mobile_phone', 'gender' ] );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
         $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
         $customer_data = array_diff_key( $data, $separate_array_keys ) + [ 'user_id' => $user->id ];
         CustomerDetail::create( $customer_data );
-        event( new CustomerRegistered( $this, $password ) );
+        event( new CustomerRegistered( $user, $password ) );
 
         return static::find( $user->id );
     }
