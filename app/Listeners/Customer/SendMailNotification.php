@@ -30,8 +30,8 @@ class SendMailNotification
     public function handle( CustomerRegistered $event )
     {
         $mail = [
-            'name' => $event->user->fullname,
-            'email' => $event->user->email,
+            'name' => $event->customer->fullname,
+            'email' => $event->customer->email,
             'password' => $event->password
         ];
         
