@@ -10,13 +10,13 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-use App\Models\Customer;
+use App\Models\User;
 
 class CustomerRegistered
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $customer;
+    public $user;
     public $password;
 
     /**
@@ -24,9 +24,9 @@ class CustomerRegistered
      *
      * @return void
      */
-    public function __construct( Customer $customer, $password )
+    public function __construct( User $user, $password )
     {
-        $this->customer = $customer;
+        $this->user = $user;
         $this->password = $password;
     }
 
