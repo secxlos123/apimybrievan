@@ -138,7 +138,7 @@ class Customer extends User
      */
     public static function create( $data ) {
         $password = str_random( 8 );
-        $separate_array_keys = array_flip( [ 'email', 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] );
+        $separate_array_keys = array_flip( [ 'email', 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
         $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
@@ -159,7 +159,7 @@ class Customer extends User
      */
     public function update( array $attributes = [], array $options = [] )
     {
-        $separate_array_keys = array_flip( [ 'email', 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] );
+        $separate_array_keys = array_flip( [ 'email', 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
         parent::update( $user_data );
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
