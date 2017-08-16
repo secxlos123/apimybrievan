@@ -13,6 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'App\Events\Customer\CustomerRegister' => [
+            'App\Listeners\Customer\Register\SendMailNotification',
+        ],
         'App\Events\Customer\CustomerRegistered' => [
             'App\Listeners\Customer\SendMailNotification',
         ],

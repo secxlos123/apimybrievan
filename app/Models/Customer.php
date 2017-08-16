@@ -145,7 +145,7 @@ class Customer extends User
         $role->users()->attach( $user );
         $customer_data = array_diff_key( $data, $separate_array_keys ) + [ 'user_id' => $user->id ];
         CustomerDetail::create( $customer_data );
-        event( new CustomerRegistered( $this, '$password' ) );
+        event( new CustomerRegistered( $this, $password ) );
 
         return static::find( $user->id );
     }
