@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Mail\ResetPassword;
+use App\Mail\Register;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\SerializesModels;
@@ -30,14 +31,22 @@ class SendPasswordEmail implements ShouldQueue
     public $password;
 
     /**
+     * This unique password.
+     *
+     * @var string
+     */
+    public $type;
+
+    /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user, $password)
+    public function __construct(User $user, $password, $type)
     {
         $this->user = $user;
         $this->password = $password;
+        $this->type = $type;
     }
 
     /**
@@ -47,9 +56,12 @@ class SendPasswordEmail implements ShouldQueue
      */
     public function handle()
     {
-        $mail = ['email' => $this->user->email, 'password' => $this->password];
-        
-        return Mail::to($mail['email'])
-            ->send(new ResetPassword($mail));
+        $mail = ['email' => $this->user->email, 'password' => $this->password, 'name' => $this->user->fullname];
+        $send = Mail::to($mail['email']);
+
+        switch ($this->type) {
+            case 'reset': return $send->send(new ResetPassword($mail));
+            case 'register': return $send->send(new Register($mail));
+        }
     }
 }

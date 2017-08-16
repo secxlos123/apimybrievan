@@ -18,15 +18,4 @@ class CreateRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
         ]);
     }
-
-    /**
-     * Get the validator instance for the request.
-     *
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function getValidatorInstance()
-    {
-        $this->merge(['password' => bcrypt(str_random(8))]);
-        return parent::getValidatorInstance();
-    }
 }

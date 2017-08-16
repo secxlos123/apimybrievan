@@ -20,7 +20,7 @@ class PasswordController extends Controller
         $user = User::findEmail($request->input('email'));
         $password = str_random(8);
         $user->update(['password' => bcrypt($password)]);
-        dispatch(new SendPasswordEmail($user, $password));
+        dispatch(new SendPasswordEmail($user, $password, 'reset'));
 
         return response()->success([
             'message' => 'Password berhasil direset, silahkan cek email anda untuk mendapatkan password baru',
