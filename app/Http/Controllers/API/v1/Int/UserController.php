@@ -135,7 +135,7 @@ class UserController extends Controller
             'mobile_phone' => $user->mobile_phone,
             'gender' => $user->gender,
             'is_actived' => $user->is_actived,
-            'image' => asset("storage/{$user->image}"),
+            'image' => $user->image ? asset("storage/{$user->image}") : null,
             'office_id' => $user->detail ? $user->detail->office_id : null,
             'office_name' => $user->detail ? $user->detail->office->name : null,
             'nip' => $user->detail ? $user->detail->nip : null,
