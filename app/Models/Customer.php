@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Events\Customer\CustomerRegistered;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use App\Models\User;
-
 use Sentinel;
 
 class Customer extends User
@@ -166,6 +166,22 @@ class Customer extends User
         $this->detail()->update( $customer_data );
 
         return true;
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope( 'role', function( Builder $builder ) {
+            $builder->whereHas( 'roles', function( $role ) {
+                $role->whereSlug( 'customer' );
+            } );
+        } );
     }
 
 
