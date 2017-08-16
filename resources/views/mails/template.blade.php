@@ -54,7 +54,7 @@
                                                     <table class="table3-3" width="50" border="0" align="left" cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td align="center" style="line-height:0px;">
-                                                                <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="{!! asset( 'img/logo.png' ) !!}" width="40" height="40" alt="logo" />
+                                                                <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="{!! $message->embed(public_path( 'img/logo.png' )) !!}" width="40" height="40" alt="logo" />
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -68,8 +68,7 @@
                                                     <table align="right" class="table3-3" width="160" border="0" cellspacing="0" cellpadding="0">
                                                         <tr>
                                                             <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">
-                                                                <span style="font-weight: bold; color:#00529c;">ID Nasabah</span>
-                                                                : 123456
+                                                                <span style="font-weight: bold; color:#00529c;">Tanggal</span>: {!! date('d-m-Y') !!}
                                                             </td>
                                                         </tr>
                                                     </table>

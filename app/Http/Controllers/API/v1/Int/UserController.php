@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\User\CreateRequest;
 use App\Http\Requests\API\v1\User\UpdateRequest;
 use App\Http\Requests\API\v1\User\ActivedRequest;
+use App\Jobs\SendPasswordEmail;
 use App\Models\User;
 use Activation;
 
@@ -90,17 +91,20 @@ class UserController extends Controller
      */
     private function storeUpdate($request, $user)
     {
-        if ($request->hasFile('image')) {
-            $image = $request->file('image')->store('avatar', 'public');
-            $request->merge(['image' => $image]);
-        }
+        // if ($request->hasFile('image')) {
+        //     $image = $request->file('image')->store('avatar', 'public');
+        //     $request->merge(['image' => $image]);
+        // }
 
         \DB::beginTransaction();
         try {
             if ( ! $user instanceof User ) {
+                $password = str_random(8);
+                $request->merge(['password' => bcrypt($password)]);
                 $user = User::create($request->input());
                 $activation = Activation::create($user);
                 Activation::complete($user, $activation->code);
+                dispatch(new SendPasswordEmail($user, $password, 'registered'));
             } else {
                 $user->update($request->input());
             }
