@@ -15,7 +15,7 @@
  * Route group for api v1
  */
 Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
-		// 'middleware' => ['api.access', 'api.auth']
+		'middleware' => ['api.access', 'api.auth']
 	], function () {
 
 	/**
