@@ -102,7 +102,7 @@ class CustomerDetail extends Model
             File::delete( $path . $this->attributes[ 'npwp' ] );
         }
 
-        $filename = $this->id . '-npwp.' . $image->getClientOriginalExtension();
+        $filename = $this->user_id . '-npwp.' . $image->getClientOriginalExtension();
         $image->move( $path, $filename );
         $this->attributes[ 'npwp' ] = $filename;
     }
@@ -119,7 +119,7 @@ class CustomerDetail extends Model
             File::delete( $path . $this->attributes[ 'identity' ] );
         }
 
-        $filename = $this->id . '-identity.' . $image->getClientOriginalExtension();
+        $filename = $this->user_id . '-identity.' . $image->getClientOriginalExtension();
         $image->move( $path, $filename );
         $this->attributes[ 'identity' ] = $filename;
     }

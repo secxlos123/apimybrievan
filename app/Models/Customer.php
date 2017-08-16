@@ -136,8 +136,8 @@ class Customer extends User
         foreach ( $this->eforms as $key => $eform ) {
             $schedules[] = [
                 'date' => $eform->appointment_date,
-                'ao_name' => $eform->ao->fullname,
-                'branch' => $eform->branch,
+                'ao_name' => $eform->ao_name,
+                'office' => $eform->office_id,
                 'agenda' => ''
             ];
         }
@@ -156,7 +156,7 @@ class Customer extends User
         $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
-        $customer_data = array_diff_key( $data, $separate_array_keys ) + [ 'user_id' => $user->id ];
+        $customer_data = array_diff_key( $data, [ 'user_id' => $user->id ] + $separate_array_keys );
         CustomerDetail::create( $customer_data );
 
         // send mail notification

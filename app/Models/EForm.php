@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\CustomerDetail;
+
 class EForm extends Model
 {
     /**
@@ -19,8 +21,37 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch', 'product', 'prescreening_status', 'is_approved'
+        'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'office_id', 'product', 'prescreening_status', 'is_approved'
     ];
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getAoNameAttribute()
+    {
+        if( $ao = $this->ao ) {
+            return $ao->fullname;
+        }
+
+        return null;
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating( function( $eform ) {
+            $customer_detail = CustomerDetail::whereNik( $eform->nik )->first();
+            $eform->user_id = $customer_detail->user_id;
+        } );
+    }
 
     /**
      * The relation to user details.

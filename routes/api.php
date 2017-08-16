@@ -40,10 +40,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post( 'register', 'AuthController@register' );
 			Route::post( 'register-complete', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
 
-			Route::group( [ 'prefix' => 'e-forms' ], function() {
-				// 
-			} );
-
 			/**
 			 * Route for logout
 			 */
@@ -60,5 +56,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			 */
 			Route::post('reset', 'PasswordController@reset');
 		});
+
+		/**
+		 * Route group for logged in users
+		 */
+		Route::group( [ 'middleware' => 'api.auth' ], function() {
+
+			/**
+			 * Route resource for e-form
+			 */
+			Route::resource( 'eforms', 'EFormController', [
+				'except' => [ 'edit', 'create', 'destroy' ]
+			] );
+		} );
 	});
 });
