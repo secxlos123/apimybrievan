@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
-
 use Illuminate\Http\Request;
 
 use App\Models\CustomerDetail;
@@ -77,33 +76,33 @@ class User extends Authenticatable
      * Get user avatar image url.
      *
      * @return string
-     */
-    public function getImageAttribute( $value )
-    {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
-        } else {
-            $image = url( 'img/avatar.jpg' );
+        public function getImageAttribute( $value )
+        {
+            if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
+                $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+            } else {
+                $image = url( 'img/avatar.jpg' );
+            }
+            return $image;
         }
-        return $image;
-    }
+     */
 
     /**
      * Set user avatar image.
      *
      * @return void
-     */
-    public function setImageAttribute( $image )
-    {
-        $path = public_path( 'uploads/users/' . $this->id . '/' );
-        if ( ! empty( $this->image ) ) {
-            File::delete( $path . $this->image );
-        }
+        public function setImageAttribute( $image )
+        {
+            $path = public_path( 'uploads/users/' . $this->id . '/' );
+            if ( ! empty( $this->image ) ) {
+                File::delete( $path . $this->image );
+            }
 
-        $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'image' ] = $filename;
-    }
+            $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
+            $image->move( $path, $filename );
+            $this->attributes[ 'image' ] = $filename;
+        }
+     */
 
     /**
      * Find a model by its email.
@@ -156,5 +155,32 @@ class User extends Authenticatable
                 'user_id' => $this->id
             ] );
         }
+    }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetLists($query, Request $request)
+    {
+        return $query->with(['detail.office', 'roles'])
+            ->where(function ($user) use ($request) {
+                $user->whereRaw("CONCAT(first_name, last_name) ilike ?", ["%{$request->input('fullname')}%"])
+                    ->orWhere("email", 'ilike', "%{$request->input('email')}%")
+                    ->orWhereHas('detail', function ($detail) use ($request) {
+                        $detail->where('user_details.nip', 'ilike', "%{$request->input('nip')}%")
+                            ->orWhereHas('office', function ($office) use ($request) {
+                                $office->where('offices.name', 'ilike', "%{$request->input('office_name')}%");
+                            });
+                    })
+                    ->orWhereHas('roles', function ($roles) use ($request) {
+                        $roles->where('roles.slug', 'ilike', "%{$request->input('role_slug')}%");
+                    });
+            })
+            ->whereDoesntHave('roles', function ($role) { $role->whereSlug('customer'); })
+            ->select(array_merge(['id'], $this->fillable));
     }
 }

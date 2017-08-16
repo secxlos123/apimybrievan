@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\v1\Int;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\User\CreateRequest;
+use App\Http\Requests\API\v1\User\UpdateRequest;
+use App\Http\Requests\API\v1\User\ActivedRequest;
 use App\Models\User;
 use Activation;
 
@@ -15,9 +17,12 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $limit = $request->input('limit') ?: 10;
+        $users = User::getLists($request)->paginate($limit);
+        $users->transform(function ($user) { return $this->responseUser($user); });
+        return response()->success(['users' => $users]);
     }
 
     /**
@@ -29,7 +34,7 @@ class UserController extends Controller
     public function store(CreateRequest $request)
     {
         $user = $this->storeUpdate($request, []);
-        if ($user) return response()->success(['data' => compact('user') ]);
+        if ($user) return response()->success(['message' => 'Data user berhasil ditambahkan.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
     }
 
@@ -42,7 +47,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user = $this->responseUser($user);
-        return response()->success(['data' => compact('user')]);
+        return response()->success(['data' => $user]);
     }
 
     /**
@@ -52,11 +57,28 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateRequest $request, User $user)
     {
         $user = $this->storeUpdate($request, $user);
-        if ($user) return response()->success(['data' => compact('user') ]);
+        if ($user) return response()->success(['message' => 'Data user berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function actived(ActivedRequest $request, User $user)
+    {
+        $is_actived = $request->input('is_actived') ? 'aktifkan' : 'non aktifkan';
+        $user->update($request->input());
+        return response()->success([
+            'message' => "Data user berhasil di {$is_actived}.",
+            'data' => $this->responseUser($user)
+        ]);
     }
 
     /**
@@ -66,10 +88,10 @@ class UserController extends Controller
      * @param  array|\App\Models\User  $user
      * @return array
      */
-    private function storeUpdate(Request $request, $user)
+    private function storeUpdate($request, $user)
     {
         if ($request->hasFile('image')) {
-            $image = $request->file('image')->storeAs('avatar', 'public');
+            $image = $request->file('image')->store('avatar', 'public');
             $request->merge(['image' => $image]);
         }
 
@@ -96,7 +118,7 @@ class UserController extends Controller
     /**
      * Store update user.
      *
-     * @param  array|\App\Models\User  $user
+     * @param  \App\Models\User  $user
      * @return array
      */
     private function responseUser($user)
@@ -112,12 +134,15 @@ class UserController extends Controller
             'phone' => $user->phone,
             'mobile_phone' => $user->mobile_phone,
             'gender' => $user->gender,
-            'office_id' => $user->detail->office_id,
-            'office' => $user->detail->office->name,
-            'nip' => $user->detail->nip,
-            'position' => $user->detail->position,
+            'is_actived' => $user->is_actived,
+            'image' => asset("storage/{$user->image}"),
+            'office_id' => $user->detail ? $user->detail->office_id : null,
+            'office_name' => $user->detail ? $user->detail->office->name : null,
+            'nip' => $user->detail ? $user->detail->nip : null,
+            'position' => $user->detail ? $user->detail->position : null,
             'role_id' => $user->roles->first()->id,
-            'role' => $user->roles->first()->name,
+            'role_name' => $user->roles->first()->name,
+            'role_slug' => $user->roles->first()->slug,
         ];
     }
 }
