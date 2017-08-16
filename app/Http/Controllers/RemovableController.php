@@ -36,11 +36,11 @@ class RemovableController extends Controller
                 $update_message[] = 'Remove gender, phone, mobile_phone fields on customer_details table!';
             }
 
-            if( ! Schema::hasColumn( 'customer_details', 'nik' ) ) {
+            if( ! Schema::hasColumn( 'customer_details', 'customer_id' ) ) {
                 Schema::table( 'customer_details', function ( Blueprint $table ) {
-                    $table->string( 'nik' )->nullable();
+                    $table->string( 'customer_id' )->nullable();
                 } );
-                $update_message[] = 'Add nik field on customer_details table!';
+                $update_message[] = 'Add customer_id field on customer_details table!';
             }
 
             if( ! Schema::hasColumn( 'eforms', 'nik' ) ) {

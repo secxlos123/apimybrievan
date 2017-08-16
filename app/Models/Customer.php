@@ -202,7 +202,11 @@ class Customer extends User
      */
     public function detail()
     {
-        return $this->hasOne( CustomerDetail::class, 'user_id' );
+        if( $result = $this->hasOne( CustomerDetail::class, 'user_id' ) ) {
+            return $result;
+        } else {
+            return new CustomerDetail();
+        }
     }
 
     /**
