@@ -104,7 +104,7 @@ class UserController extends Controller
                 $user = User::create($request->input());
                 $activation = Activation::create($user);
                 Activation::complete($user, $activation->code);
-                dispatch(new SendPasswordEmail($user, $password, 'register'));
+                dispatch(new SendPasswordEmail($user, $password, 'registered'));
             } else {
                 $user->update($request->input());
             }

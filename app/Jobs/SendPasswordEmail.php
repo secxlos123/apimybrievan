@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Mail\ResetPassword;
-use App\Mail\Register;
+use App\Mail\Registered;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\SerializesModels;
@@ -61,7 +61,7 @@ class SendPasswordEmail implements ShouldQueue
 
         switch ($this->type) {
             case 'reset': return $send->send(new ResetPassword($mail));
-            case 'register': return $send->send(new Register($mail));
+            case 'registered': return $send->send(new Registered($mail));
         }
     }
 }
