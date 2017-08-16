@@ -29,24 +29,13 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 	 * Route resource for UserController
 	 */
 	Route::resource('user', 'UserController', [
-		'only' => ['index', 'store', 'show']
+		'except' => ['edit', 'create', 'destroy']
 	]);
 
 	/**
-	 * Route group for user
+	 * Route for actived a user
 	 */
-	Route::group(['prefix' => 'user/{user}', 'as' => 'user.'], function () {
-
-		/**
-		 * Route for update data user
-		 */
-		Route::post('update', 'UserController@update')->name('update');
-
-		/**
-		 * Route for actived a user
-		 */
-		Route::match(['put', 'patch'], 'actived', 'UserController@actived')->name('actived');
-	});
+	Route::match(['put', 'patch'], 'user/{user}/actived', 'UserController@actived')->name('user.actived');
 
 	/**
 	 * Route resource for CustomerController
