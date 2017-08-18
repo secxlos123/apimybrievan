@@ -116,6 +116,7 @@ class User extends Authenticatable
      * Set user avatar image.
      *
      * @return void
+     */
     public function setImageAttribute( $image )
     {
         $path = public_path( 'uploads/avatars/' );
@@ -127,7 +128,6 @@ class User extends Authenticatable
         $image->move( $path, $filename );
         $this->attributes[ 'image' ] = $filename;
     }
-     */
 
     /**
      * Find a model by its email.
