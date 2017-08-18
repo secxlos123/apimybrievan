@@ -56,5 +56,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			 */
 			Route::post('reset', 'PasswordController@reset');
 		});
+
+		/**
+		 * Route group for logged in users
+		 */
+		Route::group( [ 'middleware' => 'api.auth' ], function() {
+
+			/**
+			 * Route resource for e-form
+			 */
+			Route::resource( 'eforms', 'EFormController', [
+				'except' => [ 'edit', 'create', 'destroy' ]
+			] );
+		} );
 	});
 });

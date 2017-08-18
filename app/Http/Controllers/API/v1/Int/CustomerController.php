@@ -74,10 +74,16 @@ class CustomerController extends Controller
      */
     public function show( $id )
     {
-        $customer = Customer::find( $id );
-        return response()->success( [
-            'message' => 'Sukses',
-            'data' => $customer
-        ], 200 );
+        if( $customer = Customer::find( $id ) ) {
+            return response()->success( [
+                'message' => 'Sukses',
+                'data' => $customer
+            ], 200 );
+        } else {
+            return response()->error( [
+                'message' => 'Data nasabah tidak ditemukan',
+                'data' => []
+            ], 404 );
+        }
     }
 }

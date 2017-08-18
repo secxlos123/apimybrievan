@@ -47,8 +47,8 @@ class CustomerDetail extends Model
      */
     public function getNpwpAttribute( $value )
     {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -62,11 +62,65 @@ class CustomerDetail extends Model
      */
     public function getIdentityAttribute( $value )
     {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
         return $image;
+    }
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
+    public function getStatusAttribute( $value )
+    {
+        if( $value == 0 ) {
+            return 'Tidak menikah';
+        } else if( $value == 1 ) {
+            return 'Menikah';
+        } else if( $value == 2 ) {
+            return 'Janda';
+        } else if( $value == 3 ) {
+            return 'Duda';
+        }
+
+        return null;
+    }
+
+    /**
+     * Set customer npwp image.
+     *
+     * @return void
+     */
+    public function setNpwpAttribute( $image )
+    {
+        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ( ! empty( $this->attributes[ 'npwp' ] ) ) {
+            File::delete( $path . $this->attributes[ 'npwp' ] );
+        }
+
+        $filename = $this->user_id . '-npwp.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'npwp' ] = $filename;
+    }
+
+    /**
+     * Set customer identity image.
+     *
+     * @return void
+     */
+    public function setIdentityAttribute( $image )
+    {
+        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ( ! empty( $this->attributes[ 'identity' ] ) ) {
+            File::delete( $path . $this->attributes[ 'identity' ] );
+        }
+
+        $filename = $this->user_id . '-identity.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'identity' ] = $filename;
     }
 }

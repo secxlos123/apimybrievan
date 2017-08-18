@@ -50,6 +50,21 @@ class RemovableController extends Controller
                 $update_message[] = 'Add nik field on eforms table!';
             }
 
+            if( ! Schema::hasColumn( 'eforms', 'office_id' ) ) {
+                Schema::table( 'eforms', function ( Blueprint $table ) {
+                    $table->integer( 'office_id' )->nullable();
+                    $table->foreign( 'office_id' )->references( 'id' )->on( 'offices' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
+                } );
+                $update_message[] = 'Add office_id field on eforms table!';
+            }
+
+            if( Schema::hasColumn( 'eforms', 'branch' ) ) {
+                Schema::table( 'eforms', function ( Blueprint $table ) {
+                    $table->dropColumn( 'branch' )->nullable();
+                } );
+                $update_message[] = 'Remove branch field on eforms table!';
+            }
+
             if( ! Schema::hasColumn( 'roles', 'is_default' ) ) {
                 Schema::table( 'roles', function ( Blueprint $table ) {
                     $table->boolean('is_default')->default(false);
