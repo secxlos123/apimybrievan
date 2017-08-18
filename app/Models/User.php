@@ -191,11 +191,14 @@ class User extends Authenticatable
      */
     public function scopeGetLists($query, Request $request)
     {
-        $sort = ['first_name', 'asc'];
-        if ($request->input('sort')) $sort = explode('|', $request->input('sort'));
-
-        return $query->with(['detail.office', 'roles'])
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        
+        return $query->from('users_view_table')
             ->where(function ($user) use (&$request, &$query) {
+
+                /**
+                 * Query for search user.
+                 */
                 $query->search($request);
             })
             ->where(function ($user) use ($request) {
@@ -203,15 +206,8 @@ class User extends Authenticatable
                 /**
                  * Query for filter user.
                  */
-                if ($request->input('office_id')) {
-                    $user->whereHas('detail', function ($detail) use ($request) {
-                        $detail->where('office_id', $request->input('office_id'));
-                    });
-                }
-            })
-            ->orderBy($sort[0], $sort[1])
-            ->whereDoesntHave('roles', function ($role) { $role->whereIn('slug', ['developer', 'customer', 'others']); })
-            ->select(array_merge(['id'], $this->fillable));
+                if ($request->input('office_id')) $user->where('office_id', $request->input('office_id'));
+            })->orderBy($sort[0], $sort[1]);
     }
 
     /**
@@ -223,16 +219,13 @@ class User extends Authenticatable
      */
     public function scopeSearch($query, Request $request)
     {
-        return $query->whereRaw("CONCAT(first_name, last_name) ilike ?", ["%{$request->input('fullname')}%"])
-            ->orWhere("email", 'ilike', "%{$request->input('email')}%")
-            ->orWhereHas('detail', function ($detail) use ($request) {
-                $detail->where('user_details.nip', 'ilike', "%{$request->input('nip')}%")
-                    ->orWhereHas('office', function ($office) use ($request) {
-                        $office->where('offices.name', 'ilike', "%{$request->input('office_name')}%");
-                    });
-            })
-            ->orWhereHas('roles', function ($roles) use ($request) {
-                $roles->where('roles.slug', 'ilike', "%{$request->input('role_slug')}%");
-            });
+        return $query
+            ->where('fullname', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('email', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('mobile_phone', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('office_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('nip', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('role_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('role_slug', 'ilike', "%{$request->input('search')}%");
     }
 }
