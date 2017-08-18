@@ -156,7 +156,7 @@ class Customer extends User
         $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
-        $customer_data = array_diff_key( $data, [ 'user_id' => $user->id ] + $separate_array_keys );
+        $customer_data = [ 'user_id' => $user->id ] + array_diff_key( $data, $separate_array_keys );
         CustomerDetail::create( $customer_data );
 
         // send mail notification
