@@ -91,10 +91,10 @@ class UserController extends Controller
      */
     private function storeUpdate($request, $user)
     {
-        // if ($request->hasFile('image')) {
-        //     $image = $request->file('image')->store('avatar', 'public');
-        //     $request->merge(['image' => $image]);
-        // }
+        if ($request->hasFile('image')) {
+            $image = $request->file('image')->store('avatar', 'public');
+            $request->merge(['image' => $image]);
+        }
 
         \DB::beginTransaction();
         try {

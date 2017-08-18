@@ -13,11 +13,11 @@ class Office extends Model
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'address'
+        'id', 'name', 'address', 'city_id'
     ];
 
     /**
-     * Scope a query to get lists of roles.
+     * Scope a query to get lists of offices.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Http\Request $request
@@ -27,7 +27,8 @@ class Office extends Model
     {
     	return $query->where(function ($office) use ($request) {
     		$office->where("name", 'ilike', "%{$request->input('name')}%");
-    	})->select($this->fillable);
+            if ($request->input('city_id')) $office->whereCityId($request->input('city_id'));
+    	})->orderBy('name', 'asc')->select($this->fillable);
     }
 
     /**
