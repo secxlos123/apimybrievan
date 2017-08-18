@@ -104,8 +104,8 @@ class User extends Authenticatable
      */
     public function getImageAttribute( $value )
     {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        if( File::exists( 'uploads/avatars/' . $value ) ) {
+            $image = url( 'uploads/avatars/' . $value );
         } else {
             $image = url( 'img/avatar.jpg' );
         }
@@ -119,12 +119,12 @@ class User extends Authenticatable
      */
     public function setImageAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->id . '/' );
+        $path = public_path( 'uploads/avatars/' );
         if ( ! empty( $this->attributes[ 'image' ] ) ) {
             File::delete( $path . $this->attributes[ 'image' ] );
         }
 
-        $filename = $this->id . '-avatar.' . $image->getClientOriginalExtension();
+        $filename = time() . '.' . $image->getClientOriginalExtension();
         $image->move( $path, $filename );
         $this->attributes[ 'image' ] = $filename;
     }

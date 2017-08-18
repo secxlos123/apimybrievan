@@ -47,8 +47,8 @@ class CustomerDetail extends Model
      */
     public function getNpwpAttribute( $value )
     {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -62,8 +62,8 @@ class CustomerDetail extends Model
      */
     public function getIdentityAttribute( $value )
     {
-        if( File::exists( asset( 'uploads/users/' . $this->id . '/' . $value ) ) ) {
-            $image = url( asset( 'uploads/users/' . $this->id . '/' . $value ) );
+        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -75,7 +75,7 @@ class CustomerDetail extends Model
      *
      * @return string
      */
-    public function setStatusAttribute( $value )
+    public function getStatusAttribute( $value )
     {
         if( $value == 0 ) {
             return 'Tidak menikah';
