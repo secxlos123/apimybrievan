@@ -16,7 +16,7 @@ class UpdateRequest extends FormRequest
         $this->user->load('detail');
         
         return array_merge(parent::rules(), [
-            'nip' => "required|unique:user_details,nip,{$this->user->detail->id}",
+            'nip' => "required|min:16|max:16|unique:user_details,nip,{$this->user->detail->id}",
             'email' => "required|email|unique:users,email,{$this->user->id}",
         ]);
     }
