@@ -22,7 +22,6 @@ class UserController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $users = User::getLists($request)->paginate($limit);
-        $users->transform(function ($user) { return $this->responseUser($user); });
         return response()->success(['users' => $users]);
     }
 

@@ -207,7 +207,9 @@ class User extends Authenticatable
                  * Query for filter user.
                  */
                 if ($request->input('office_id')) $user->where('office_id', $request->input('office_id'));
-            })->orderBy($sort[0], $sort[1]);
+            })
+            ->where('id', '!=', $request->user()->id)
+            ->orderBy($sort[0], $sort[1]);
     }
 
     /**
