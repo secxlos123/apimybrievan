@@ -150,6 +150,11 @@ class User extends Authenticatable
      */
     public function scopeGetCustomers( $query, Request $request )
     {
+        $userFill = [];
+        foreach ($this->fillable as $fillable) {
+            $userFill[] = "users.{$fillable}";
+        }
+
         return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )->where( function( $user ) use( $request ) {
             $user->whereRaw( "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ] );
             $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
@@ -160,7 +165,7 @@ class User extends Authenticatable
                 $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
             }
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
-        } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $this->fillable ) );
+        } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $userFill ) );
     }
 
     /**
