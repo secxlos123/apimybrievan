@@ -164,6 +164,11 @@ class User extends Authenticatable
             if( $request->has( 'phone' ) ) {
                 $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
             }
+
+            if( $request->has( 'nik' ) ) {
+                $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
+            }
+            
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
         } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $userFill ) );
     }

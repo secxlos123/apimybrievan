@@ -73,6 +73,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			 * Route for get list of cities
 			 */
 			Route::get('cities', 'CityController');
+
+			/**
+			 * Route for get list of offices
+			 */
+			Route::get('offices', 'OfficeController@index');
 		} );
 	});
 });
