@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\CustomerDetail;
+use Sentinel;
 
 class EForm extends Model
 {
@@ -50,6 +51,12 @@ class EForm extends Model
         static::creating( function( $eform ) {
             $customer_detail = CustomerDetail::whereNik( $eform->nik )->first();
             $eform->user_id = $customer_detail->user_id;
+
+            if( $user_input = Sentinel::getUser() ) {
+                if( $user->roles->first()->slug == 'ao' ) {
+                    $eform->ao_id = $user_input->id;
+                }
+            }
         } );
     }
 
