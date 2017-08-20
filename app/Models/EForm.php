@@ -53,7 +53,7 @@ class EForm extends Model
             $eform->user_id = $customer_detail->user_id;
 
             if( $user_input = Sentinel::getUser() ) {
-                if( $user->roles->first()->slug == 'ao' ) {
+                if( $user_input->roles->first()->slug == 'ao' ) {
                     $eform->ao_id = $user_input->id;
                 }
             }
