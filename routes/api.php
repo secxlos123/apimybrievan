@@ -68,6 +68,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::resource( 'eforms', 'EFormController', [
 				'except' => [ 'edit', 'create', 'destroy' ]
 			] );
+
+			/**
+			 * Route for get list of cities
+			 */
+			Route::get('cities', 'CityController');
 		} );
 	});
 });

@@ -46,9 +46,13 @@ class Role extends Model
      */
     public function scopeGetLists($query, Request $request)
     {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
     	return $query->where(function ($role) use ($request) {
     		$role->where("name", 'ilike', "%{$request->input('name')}%")
     			->orWhere("slug", 'ilike', "%{$request->input('slug')}%");
-    	})->select(array_merge(['id'], $this->fillable));
+    	})
+        ->orderBy($sort[0], $sort[1])
+        ->select(array_merge(['id'], $this->fillable));
     }
 }

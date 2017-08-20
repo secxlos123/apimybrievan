@@ -72,6 +72,17 @@ class RemovableController extends Controller
                 $update_message[] = 'Add is_default field on roles table!';
             }
 
+            if( ! Schema::hasColumn( 'offices', 'city_id' ) ) {
+                Schema::table( 'offices', function ( Blueprint $table ) {
+                    $table->integer('city_id')->unsigned()->nullable();
+
+                    $table->foreign('city_id')->references('id')->on('cities')
+                        ->onUpdate('cascade')
+                        ->onDelete('set null');
+                } );
+                $update_message[] = 'Add city id field on offices table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

@@ -150,6 +150,11 @@ class User extends Authenticatable
      */
     public function scopeGetCustomers( $query, Request $request )
     {
+        $userFill = [];
+        foreach ($this->fillable as $fillable) {
+            $userFill[] = "users.{$fillable}";
+        }
+
         return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )->where( function( $user ) use( $request ) {
             $user->whereRaw( "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ] );
             $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
@@ -163,7 +168,7 @@ class User extends Authenticatable
                 $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
             }
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
-        } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $this->fillable ) );
+        } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $userFill ) );
     }
 
     /**
@@ -194,21 +199,43 @@ class User extends Authenticatable
      */
     public function scopeGetLists($query, Request $request)
     {
-        return $query->with(['detail.office', 'roles'])
-            ->where(function ($user) use ($request) {
-                $user->whereRaw("CONCAT(first_name, last_name) ilike ?", ["%{$request->input('fullname')}%"])
-                    ->orWhere("email", 'ilike', "%{$request->input('email')}%")
-                    ->orWhereHas('detail', function ($detail) use ($request) {
-                        $detail->where('user_details.nip', 'ilike', "%{$request->input('nip')}%")
-                            ->orWhereHas('office', function ($office) use ($request) {
-                                $office->where('offices.name', 'ilike', "%{$request->input('office_name')}%");
-                            });
-                    })
-                    ->orWhereHas('roles', function ($roles) use ($request) {
-                        $roles->where('roles.slug', 'ilike', "%{$request->input('role_slug')}%");
-                    });
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        
+        return $query->from('users_view_table')
+            ->where(function ($user) use (&$request, &$query) {
+
+                /**
+                 * Query for search user.
+                 */
+                $query->search($request);
             })
-            ->whereDoesntHave('roles', function ($role) { $role->whereSlug('customer'); })
-            ->select(array_merge(['id'], $this->fillable));
+            ->where(function ($user) use ($request) {
+
+                /**
+                 * Query for filter user.
+                 */
+                if ($request->input('office_id')) $user->where('office_id', $request->input('office_id'));
+            })
+            ->where('id', '!=', $request->user()->id)
+            ->orderBy($sort[0], $sort[1]);
+    }
+
+    /**
+     * Scope a query for search user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch($query, Request $request)
+    {
+        return $query
+            ->where('fullname', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('email', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('mobile_phone', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('office_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('nip', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('role_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('role_slug', 'ilike', "%{$request->input('search')}%");
     }
 }

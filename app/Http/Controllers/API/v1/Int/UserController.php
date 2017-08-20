@@ -22,7 +22,6 @@ class UserController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $users = User::getLists($request)->paginate($limit);
-        $users->transform(function ($user) { return $this->responseUser($user); });
         return response()->success(['users' => $users]);
     }
 
@@ -139,7 +138,7 @@ class UserController extends Controller
             'mobile_phone' => $user->mobile_phone,
             'gender' => $user->gender,
             'is_actived' => $user->is_actived,
-            'image' => $user->image ? asset("storage/{$user->image}") : null,
+            'image' => $user->image,
             'office_id' => $user->detail ? $user->detail->office_id : null,
             'office_name' => $user->detail ? $user->detail->office->name : null,
             'nip' => $user->detail ? $user->detail->nip : null,
