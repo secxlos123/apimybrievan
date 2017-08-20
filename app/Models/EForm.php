@@ -21,7 +21,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'office_id', 'product', 'prescreening_status', 'is_approved'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'office_id', 'product', 'prescreening_status', 'is_approved'
     ];
 
     /**
@@ -49,7 +49,6 @@ class EForm extends Model
 
         static::creating( function( $eform ) {
             $customer_detail = CustomerDetail::whereNik( $eform->nik )->first();
-            dd( $eform );
             $eform->user_id = $customer_detail->user_id;
         } );
     }
