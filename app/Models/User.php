@@ -153,6 +153,9 @@ class User extends Authenticatable
         return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )->where( function( $user ) use( $request ) {
             $user->whereRaw( "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ] );
             $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+            if( $request->has( 'nik' ) ) {
+                $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
+            }
             if( $request->has( 'city' ) ) {
                 $user->where( 'customer_details.city', 'ilike', '%' . $request->input( 'city' ) . '%' );
             }
