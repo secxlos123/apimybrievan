@@ -49,6 +49,7 @@ class EForm extends Model
 
         static::creating( function( $eform ) {
             $customer_detail = CustomerDetail::whereNik( $eform->nik )->first();
+            dd( $customer_detail );
             $eform->user_id = $customer_detail->user_id;
         } );
     }
