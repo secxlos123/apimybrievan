@@ -151,7 +151,6 @@ class Customer extends User
      */
     public static function create( $data ) {
         $password = str_random( 8 );
-        $data = array_diff_key( $data, array_flip( [ '_method' ] ) );
         $separate_array_keys = array_flip( [ 'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image', 'phone', 'mobile_phone', 'gender' ] );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
         $user = Sentinel::registerAndActivate( $user_data );
@@ -179,7 +178,7 @@ class Customer extends User
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
         parent::update( $user_data );
-        $customer_data = array_diff_key( $attributes, $separate_array_keys );
+        $customer_data = array_diff_key( $attributes, ( $separate_array_keys + [ '_method' ] ) );
         $this->detail()->update( $customer_data );
 
         return true;
