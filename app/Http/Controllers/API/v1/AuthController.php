@@ -42,6 +42,13 @@ class AuthController extends Controller
         $code = 401; $status = 'error';
         $response = ['message' => 'Login Gagal', 'data' => (object) null];
 
+        $additional = [ 'nik' => null ];
+        if( $customer = $user->customer_detail ) {
+            $additional = [
+                'nik' => $customer->nik;
+            ];
+        }
+
         if ($this->verify($request, $token)) {
 	        $user = JWTAuth::toUser($token);
 	        $code = 200; $status = 'success';
@@ -50,7 +57,6 @@ class AuthController extends Controller
 	        	'data' 	  => [
 		    		'token' => 'Bearer ' . $token,
                     'user_id' => $user->id,
-		    		'nik' => $user->nik,
 		    		'email' => $user->email,
 					'first_name' => $user->first_name,
 					'last_name'  => $user->last_name,
@@ -59,7 +65,7 @@ class AuthController extends Controller
 					'role' => $user->roles->first()->slug,
 					'permission' => $user->roles->first()->permissions,
                     'is_register_completed' => $user->is_register_completed
-		    	],
+		    	] + $additional,
 	        ];
         }
 
