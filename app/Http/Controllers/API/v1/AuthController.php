@@ -42,15 +42,14 @@ class AuthController extends Controller
         $code = 401; $status = 'error';
         $response = ['message' => 'Login Gagal', 'data' => (object) null];
 
-        $additional = [ 'nik' => null ];
-        if( $customer = $user->customer_detail ) {
-            $additional = [
-                'nik' => $customer->nik
-            ];
-        }
-
         if ($this->verify($request, $token)) {
 	        $user = JWTAuth::toUser($token);
+            $additional = [ 'nik' => null ];
+            if( $customer = $user->customer_detail ) {
+                $additional = [
+                    'nik' => $customer->nik
+                ];
+            }
 	        $code = 200; $status = 'success';
 	        $response = [
         		'message' => 'Login Sukses',
