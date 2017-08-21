@@ -43,9 +43,4 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 	Route::resource( 'customer', 'CustomerController', [
 		'except' => [ 'edit', 'create' ]
 	] );
-
-	/**
-	 * Route for get list of offices
-	 */
-	Route::get('offices', 'OfficeController@index');
 });
