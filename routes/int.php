@@ -43,4 +43,11 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 	Route::resource( 'customer', 'CustomerController', [
 		'except' => [ 'edit', 'create' ]
 	] );
+
+	/**
+	 * Route resource for DeveloperController
+	 */
+	Route::resource( 'developer', 'DeveloperController', [
+		'except' => [ 'edit', 'create' ]
+	] );
 });
