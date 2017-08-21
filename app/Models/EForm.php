@@ -34,7 +34,8 @@ class EForm extends Model
     {
         foreach ( $images as $key => $image ) {
             $path = public_path( 'uploads/eforms/' . $this->id . '/' );
-            $image->move( $path, $key . '.' . $image->getClientOriginalExtension() );
+            $filename = $image->getClientOriginalExtension();
+            $image->move( $path, $key . '.' . $filename );
         }
     }
 
