@@ -178,7 +178,8 @@ class Customer extends User
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
         parent::update( $user_data );
-        $customer_data = array_diff_key( $attributes, ( $separate_array_keys + [ '_method' ] ) );
+        $separate_array_keys = array_flip( $this->fillable + [ '_method' ] );
+        $customer_data = array_diff_key( $attributes, $separate_array_keys );
         $this->detail()->update( $customer_data );
 
         return true;
