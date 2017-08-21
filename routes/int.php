@@ -44,3 +44,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 		'except' => [ 'edit', 'create' ]
 	] );
 });
+
+Route::group( ['prefix' => 'v1/int', 'namespace' => 'API\v1', 'middleware' => [ 'api.access', 'api.auth' ] ], function () {
+	Route::post( 'eforms/{id}/disposition', 'EFormController@disposition' );
+} );

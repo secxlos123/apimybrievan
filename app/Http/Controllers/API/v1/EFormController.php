@@ -74,6 +74,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::find( $id );
+        $eform->update( [ 'ao_id' => $request->ao_id ] );
 
         DB::commit();
         return response()->success( [
