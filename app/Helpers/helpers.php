@@ -26,3 +26,20 @@ if (! function_exists('csv_to_array')) {
 		return $data;
 	}
 }
+
+if (! function_exists('name_separator')) {
+	
+    /**
+     * Return an array of first name and last name from given full name.
+     *
+     * @param  string  $fullname
+     * @return array
+     */
+    function name_separator($fullname)
+    {
+        $fullname = explode(' ', $fullname);
+
+        return [$fullname[0], implode(' ', array_except($fullname, 0))];
+    }
+}
+

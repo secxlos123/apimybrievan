@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use Illuminate\Validation\Validator;
-use App\Models\NewCard;
 
 class CustomValidation extends Validator
 {
@@ -40,5 +39,18 @@ class CustomValidation extends Validator
         }
 
         return !$user;
+    }
+
+    /**
+     * This for check alpha and spaces
+     * 
+     * @param string $attribute
+     * @param mixed $value
+     * @param array $parameters
+     * @return boolean
+     */
+    public function validateAlphaSpaces($attribute, $value, $parameters)
+    {
+        return preg_match('/^[\pL\s]+$/u', $value);
     }
 }
