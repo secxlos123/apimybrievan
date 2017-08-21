@@ -36,10 +36,48 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::create( $request->all() );
+        $eform->saveImages( $request->images );
 
         DB::commit();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
+            'data' => $eform
+        ], 201 );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function submitScreening( EFormRequest $request )
+    {
+        DB::beginTransaction();
+        $eform = EForm::find( $request->id );
+        $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'Screening e-form berhasil disimpan.',
+            'data' => $eform
+        ], 201 );
+    }
+
+    /**
+     * Set E-Form AO disposition.
+     *
+     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function disposition( EFormRequest $request, $id )
+    {
+        DB::beginTransaction();
+        $eform = EForm::find( $id );
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'Disposisi e-form berhasil disimpan.',
             'data' => $eform
         ], 201 );
     }

@@ -30,6 +30,19 @@ class EForm extends Model
      *
      * @return string
      */
+    public function saveImages( $images )
+    {
+        foreach ( $images as $key => $image ) {
+            $path = public_path( 'uploads/eforms/' . $this->id . '/' );
+            $image->move( $path, $image->getClientOriginalName() );
+        }
+    }
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
     public function getAoNameAttribute()
     {
         if( $ao = $this->ao ) {
