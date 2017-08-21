@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
+use App\Jobs\SendPasswordEmail;
 use Illuminate\Http\Request;
-
-use App\Models\CustomerDetail;
+use Activation;
 use File;
 
 class User extends Authenticatable
@@ -59,6 +59,16 @@ class User extends Authenticatable
     public function detail()
     {
         return $this->hasOne( UserDetail::class );
+    }
+
+    /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function developer()
+    {
+        return $this->hasOne( Developer::class );
     }
 
     /**
@@ -139,6 +149,30 @@ class User extends Authenticatable
     protected function findEmail($email, $columns = ['*'])
     {
         return $this->whereEmail($email)->first($columns);
+    }
+
+    /**
+     * Created user and attach a role for user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User | array   $user
+     * @return \App\Models\User
+     */
+    protected function createOrUpdate(Request $request, $user)
+    {
+        if ( ! $user instanceof $this ) {
+            $password = str_random(8);
+            $request->merge(['password' => bcrypt($password)]);
+            $user = $this->create($request->input());
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
+            dispatch(new SendPasswordEmail($user, $password, 'registered'));
+        } else {
+            $user->update($request->input());
+        }
+
+        $user->roles()->sync($request->input('role_id'));
+        return $user;
     }
 
     /**
