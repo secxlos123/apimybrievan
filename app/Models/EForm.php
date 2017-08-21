@@ -26,6 +26,20 @@ class EForm extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [ 'ref_number', 'customer_name', 'nominal', 'office', 'ao_name', 'status' ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [ 'user_id', 'ao_id', 'created_at', 'updated_at', 'customer', 'branch', 'ao' ];
+
+    /**
      * Get AO detail information.
      *
      * @return string
@@ -34,8 +48,56 @@ class EForm extends Model
     {
         foreach ( $images as $key => $image ) {
             $path = public_path( 'uploads/eforms/' . $this->id . '/' );
-            $image->move( $path, $key . '.' . $image->getClientOriginalExtension() );
+            $filename = $key . '.' . $image->getClientOriginalExtension();
+            $image->move( $path, $filename );
         }
+    }
+
+    /**
+     * Get ref number information from e-form.
+     *
+     * @return string
+     */
+    public function getRefNumberAttribute( $value )
+    {
+        if( empty( $value ) ) {
+            return '-';
+        } else {
+            return $value;
+        }
+    }
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getCustomerNameAttribute()
+    {
+        return $this->customer->fullname;
+    }
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getNominalAttribute()
+    {
+        return $this->customer->fullname;
+    }
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getOfficeAttribute()
+    {
+        if( $office = $this->branch ) {
+            return $this->branch->name;
+        }
+        return '-';
     }
 
     /**
@@ -49,7 +111,20 @@ class EForm extends Model
             return $ao->fullname;
         }
 
-        return null;
+        return '-';
+    }
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getStatusAttribute()
+    {
+        if( $this->is_approved ) {
+            return 'Diterima';
+        }
+        return 'Pengajuan Baru';
     }
 
     /**
@@ -101,5 +176,15 @@ class EForm extends Model
     public function internal()
     {
         return $this->belongsTo( user::class, 'internal_id' );
+    }
+
+    /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function branch()
+    {
+        return $this->belongsTo( Office::class, 'office_id' );
     }
 }

@@ -25,24 +25,26 @@ class EFormRequest extends BaseRequest
     {
         switch ( strtolower( $this->method() ) ) {
             case 'post':
-                return [
-                    'nik' => 'required|exists:customer_details,nik',
-                    'office_id' => 'required|exists:offices,id',
-                    'product' => 'required|json',
-                    'appointment_date' => 'required|date',
-                    'longitude' => 'required',
-                    'latitude' => 'required'
-                ];
+                if( $this->segment(6) == 'disposition' ) {
+                    return [
+                        'ao_id' => 'required|exists:users,id',
+                    ];
+                } else {
+                    return [
+                        'nik' => 'required|exists:customer_details,nik',
+                        'office_id' => 'required|exists:offices,id',
+                        'product' => 'required|json',
+                        'appointment_date' => 'required|date',
+                        'longitude' => 'required',
+                        'latitude' => 'required'
+                    ];
+                }
                 break;
             
             case 'put':
                 return [
-                    'nik' => 'required|exists:customer_details,nik',
-                    'office_id' => 'required|exists:offices,id',
-                    'product' => 'required|json',
-                    'appointment_date' => 'required|date',
-                    'longitude' => 'required',
-                    'latitude' => 'required'
+                    'id' => 'required|exists:eforms,id',
+                    'prescreening_status' => 'required|integer'
                 ];
                 break;
             
