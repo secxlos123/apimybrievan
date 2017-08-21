@@ -45,7 +45,7 @@ class AuthController extends Controller
         $additional = [ 'nik' => null ];
         if( $customer = $user->customer_detail ) {
             $additional = [
-                'nik' => $customer->nik;
+                'nik' => $customer->nik
             ];
         }
 
