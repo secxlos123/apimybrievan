@@ -49,7 +49,8 @@ class AuthController extends Controller
         		'message' => 'Login Sukses',
 	        	'data' 	  => [
 		    		'token' => 'Bearer ' . $token,
-		    		'user_id' => $user->id,
+                    'user_id' => $user->id,
+		    		'nik' => $user->nik,
 		    		'email' => $user->email,
 					'first_name' => $user->first_name,
 					'last_name'  => $user->last_name,
