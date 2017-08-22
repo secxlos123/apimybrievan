@@ -31,6 +31,11 @@ class AuthRequest extends BaseRequest
                         'email' => 'required|email|unique:users,email',
                         'password' => 'required|min:6',
                     ];
+                }else if( $this->segment( 3 ) == 'activate' ) {
+                    return [
+                        'user_id' => 'required|exists:users,id',
+                        'code' => 'required|exists:activations,code,completed,false'
+                    ];
                 } else if ( $this->segment( 5 ) == 'register-complete' ) {
                     return [
                         'nik' => 'required|unique:customer_details,nik',

@@ -137,4 +137,23 @@ class AuthController extends Controller
             'data' => $user
         ], 201 );
     }
+
+    /**
+     * Activate new user as members
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function activate( AuthRequest $request )
+    {
+        DB::beginTransaction();
+        $user = User::find( $request->user_id );
+        Activation::complete( $user, $request->code );
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'Aktivasi Sukses',
+            'data' => []
+        ], 201 );
+    }
 }
