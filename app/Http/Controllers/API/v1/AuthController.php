@@ -11,6 +11,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\Helpers\VerifyUser;
 use App\Models\User;
+use Activation;
 use Sentinel;
 use JWTAuth;
 use DB;
@@ -93,7 +94,8 @@ class AuthController extends Controller
     public function register( AuthRequest $request )
     {
         DB::beginTransaction();
-        $user = Sentinel::registerAndActivate( $request->all() );
+        $user = Sentinel::register( $request->all() );
+        $activation = Activation::create( $user );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
         $token = JWTAuth::fromUser( $user );
@@ -107,7 +109,7 @@ class AuthController extends Controller
             'role' => $user->roles->first()->slug,
             'permission' => $user->roles->first()->permissions
         ];
-        event( new CustomerRegister( $user ) );
+        event( new CustomerRegister( $user, $activation->code ) );
 
         DB::commit();
         return response()->success( [

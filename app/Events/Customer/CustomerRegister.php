@@ -16,6 +16,7 @@ class CustomerRegister
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $activation_code;
     public $user;
 
     /**
@@ -23,9 +24,10 @@ class CustomerRegister
      *
      * @return void
      */
-    public function __construct( User $user )
+    public function __construct( User $user, $activation_code )
     {
         $this->user = $user;
+        $this->activation_code = $activation_code;
     }
 
     /**
