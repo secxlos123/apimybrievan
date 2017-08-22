@@ -74,9 +74,20 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		} );
 	});
 
+
 	/**
-	 * Route for assign to AO
-	 */	
-	Route::post('eforms/{eforms}/disposition', 'EFormController@disposition')
-		->name('eforms.disposition');
+	 * Manage e-form from internal BRI
+	 */
+	Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+
+		/**
+		 * Route for assign to AO
+		 */	
+		Route::post( 'disposition', 'EFormController@disposition' )->name( 'eforms.disposition' );
+
+		/**
+		 * Route for approve e-form
+		 */	
+		Route::post( 'approve', 'EFormController@approve' );
+	} );
 });

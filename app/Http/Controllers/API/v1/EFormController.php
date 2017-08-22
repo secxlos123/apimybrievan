@@ -82,4 +82,24 @@ class EFormController extends Controller
             'data' => $eform
         ], 201 );
     }
+
+    /**
+     * Set E-Form AO disposition.
+     *
+     * @param integer $eform_id
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function approve( Request $request, $eform_id )
+    {
+        DB::beginTransaction();
+        $eform = EForm::find( $eform_id );
+        $eform->update( [ 'is_approved' => true ] );
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'E-form berhasil diapprove.',
+            'data' => $eform
+        ], 201 );
+    }
 }
