@@ -42,7 +42,7 @@ class VisitReportRequest extends BaseRequest
             'income_allowance' => 'required_if:source,fixed',
             'income_mutation_type' => 'required_if:source,fixed',
             'income_mutation_number' => 'required_if:source,fixed',
-            'income_salary_image' => 'required_if:source,fixed',
+            'income_salary_image' => 'required_if:source,fixed|image',
             'business_income' => 'required_if:source,not_fixed',
             'business_mutation_type' => 'required_if:source,not_fixed',
             'bussiness_mutation_number' => 'required_if:source,not_fixed',

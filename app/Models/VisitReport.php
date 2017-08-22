@@ -44,6 +44,23 @@ class VisitReport extends Model
      *
      * @return void
      */
+    public function setIncomeSalaryImageAttribute( $image )
+    {
+        $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
+        if ( ! empty( $this->attributes[ 'income_salary_image' ] ) ) {
+            File::delete( $path . $this->attributes[ 'income_salary_image' ] );
+        }
+
+        $filename = time() . '-income-salary-image.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'income_salary_image' ] = $filename;
+    }
+
+    /**
+     * Set mutation file upload.
+     *
+     * @return void
+     */
     public function setMutationFileAttribute( $image )
     {
         $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
