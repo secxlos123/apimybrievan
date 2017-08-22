@@ -38,7 +38,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'user_id', 'ao_id', 'created_at', 'updated_at', 'customer', 'branch', 'ao' ];
+    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'customer', 'branch', 'ao' ];
 
     /**
      * Get AO detail information.
