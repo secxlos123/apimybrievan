@@ -65,11 +65,45 @@ class Developer extends Model
      */
     public function scopeGetLists($query, Request $request)
     {
-        return $query->with([
-            'properties' => function ($property) {
-                $property->withCount('propertyItems');
-            },
-            'user', 'city'
-        ]);
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['dev_id', 'asc'];
+
+        return $query->from('developers_view_table')
+            ->where(function ($developer) use (&$request, &$query) {
+
+                /**
+                 * Query for search developers.
+                 */
+                $query->search($request);
+            })
+            ->where(function ($developer) use ($request) {
+
+                /**
+                 * Query for filter by city_id.
+                 */
+                if ($request->has('city_id')) $developer->where('city_id', $request->input('city_id'));
+
+                /**
+                 * Query for filter by range project.
+                 */
+                if ($request->has('project')) $developer->whereBetween('project', explode('|', $request->input('project')));
+            })
+            ->orderBy($sort[0], $sort[1]);
+    }
+
+    /**
+     * Scope a query for search user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch($query, Request $request)
+    {
+        return $query
+            ->where('company_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('email', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('phone_number', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('city_name', 'ilike', "%{$request->input('search')}%");
     }
 }

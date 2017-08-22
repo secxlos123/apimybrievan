@@ -156,9 +156,10 @@ class User extends Authenticatable
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User | array   $user
+     * @param  string   $relation
      * @return \App\Models\User
      */
-    protected function createOrUpdate(Request $request, $user)
+    protected function createOrUpdate(Request $request, $user, $relation = null)
     {
         if ( ! $user instanceof $this ) {
             $password = str_random(8);
@@ -171,6 +172,7 @@ class User extends Authenticatable
             $user->update($request->input());
         }
 
+        if ($relation) $user->{$relation}()->updateOrCreate(['user_id' => $user->id], $request->input());
         $user->roles()->sync($request->input('role_id'));
         return $user;
     }
