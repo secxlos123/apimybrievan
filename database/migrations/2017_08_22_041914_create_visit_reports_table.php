@@ -38,8 +38,6 @@ class CreateVisitReportsTable extends Migration
             $table->string( 'business_mutation_type' )->nullable();
             $table->bigInteger( 'bussiness_mutation_number' )->nullable();
             $table->string( 'bussiness_other' )->nullable();
-            $table->string( 'mutation_bank' );
-            $table->bigInteger( 'mutation_number' );
             $table->string( 'mutation_file' );
             $table->string( 'photo_with_customer' );
             $table->text( 'pros' );

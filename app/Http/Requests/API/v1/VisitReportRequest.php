@@ -47,8 +47,6 @@ class VisitReportRequest extends BaseRequest
             'business_mutation_type' => 'required_if:source,not_fixed',
             'bussiness_mutation_number' => 'required_if:source,not_fixed',
             'bussiness_other' => 'required_if:source,not_fixed',
-            'mutation_bank' => 'required',
-            'mutation_number' => 'required',
             'mutation_file' => 'required|file',
             'photo_with_customer' => 'required|image',
             'pros' => 'required',
