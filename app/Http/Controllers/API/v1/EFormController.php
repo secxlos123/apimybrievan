@@ -27,6 +27,21 @@ class EFormController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  string $type
+     * @param  integer $eform_id
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $type, $eform_id )
+    {
+        $eform = EForm::with( 'visit_report' )->find( $eform_id );
+        return response()->success( [
+            'data' => $eform
+        ] );
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request
