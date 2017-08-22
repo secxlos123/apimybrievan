@@ -47,7 +47,7 @@ class AuthRequest extends BaseRequest
                     return [
                         'nik' => 'required|unique:customer_details,nik' . $additional,
                         'first_name' => 'required',
-                        'last_name' => 'required',
+                        'last_name' => '',
                         'birth_place' => 'required',
                         'birth_date' => 'required|date',
                         'address' => 'required',
