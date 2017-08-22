@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
+use App\Events\EForm\Approved;
 use App\Models\EForm;
 use DB;
 
@@ -110,6 +111,7 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::find( $eform_id );
         $eform->update( [ 'is_approved' => true ] );
+        event( new Approved( $eform ) );
 
         DB::commit();
         return response()->success( [
