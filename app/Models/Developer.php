@@ -37,6 +37,26 @@ class Developer extends Model
     }
 
     /**
+     * The relation to properties.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function properties()
+    {
+        return $this->hasMany( Property::class );
+    }
+
+    /**
+     * Get all of the property items for the property.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function propertyTypes()
+    {
+        return $this->hasManyThrough( PropertyType::class, Property::class );
+    }
+
+    /**
      * Scope a query to get lists of roles.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -45,6 +65,11 @@ class Developer extends Model
      */
     public function scopeGetLists($query, Request $request)
     {
-        return $query->with('user', 'city');
+        return $query->with([
+            'properties' => function ($property) {
+                $property->withCount('propertyItems');
+            },
+            'user', 'city'
+        ]);
     }
 }
