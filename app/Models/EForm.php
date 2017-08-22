@@ -62,7 +62,7 @@ class EForm extends Model
     public function getRefNumberAttribute( $value )
     {
         if( empty( $value ) ) {
-            return '-';
+            return '12345689012345';
         } else {
             return $value;
         }

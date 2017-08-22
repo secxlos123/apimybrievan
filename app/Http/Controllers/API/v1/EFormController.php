@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
+use App\Events\EForm\Approved;
 use App\Models\EForm;
 use DB;
 
@@ -24,6 +25,21 @@ class EFormController extends Controller
             'message' => 'Sukses',
             'eforms' => $eforms
         ], 200 );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string $type
+     * @param  integer $eform_id
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $type, $eform_id )
+    {
+        $eform = EForm::with( 'visit_report' )->find( $eform_id );
+        return response()->success( [
+            'data' => $eform
+        ] );
     }
 
     /**
@@ -95,6 +111,7 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::find( $eform_id );
         $eform->update( [ 'is_approved' => true ] );
+        event( new Approved( $eform ) );
 
         DB::commit();
         return response()->success( [

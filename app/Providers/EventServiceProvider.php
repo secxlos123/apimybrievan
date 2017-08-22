@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Customer\CustomerRegistered' => [
             'App\Listeners\Customer\SendMailNotification',
         ],
+        'App\Events\EForm\Approved' => [
+            'App\Listeners\EForm\Approved\MailNotificationToCustomer',
+        ],
     ];
 
     /**
