@@ -21,9 +21,7 @@ class VisitReportController extends Controller
     public function store( $eform_id, VisitReportRequest $request )
     {
         DB::beginTransaction();
-        $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $request->except( 'mutations' ) );
-        $visit_report->setMutations( $request->only( 'mutations' )[ 'mutations' ] );
-        $visit_report->refresh();
+        $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $request );
 
         DB::commit();
         return response()->success( [

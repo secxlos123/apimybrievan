@@ -38,25 +38,4 @@ class VisitReport extends Model
         $image->move( $path, $filename );
         $this->attributes[ 'photo_with_customer' ] = $filename;
     }
-
-    /**
-     * Set visit report mutation information.
-     *
-     * @return void
-     */
-    public function setMutations( $mutations ) {
-        foreach ( $mutations as $key => $mutation ) {
-            VisitReportMutation::create( [ 'visit_report_id' => $this->id ] + $mutation );
-        }
-    }
-
-    /**
-     * The relation to visit report mutations.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function mutations()
-    {
-        return $this->hasMany( VisitReportMutation::class, 'visit_report_id' );
-    }
 }

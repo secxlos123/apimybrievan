@@ -57,12 +57,7 @@ class VisitReportRequest extends BaseRequest
             'seller_phone' => 'required',
             'selling_price' => 'required|numeric',
             'reason_for_sale' => 'required',
-            'relation_with_seller' => 'required',
-            'mutations' => 'required|array',
-            'mutations.*.date' => 'required|date',
-            'mutations.*.amount' => 'required|numeric',
-            'mutations.*.type' => 'required',
-            'mutations.*.information' => 'required'
+            'relation_with_seller' => 'required'
         ];
     }
 
