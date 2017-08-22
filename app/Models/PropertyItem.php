@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class PropertyItem extends Model
 {
-    protected $table = 'asd';
     /**
      * The attributes that are mass assignable.
      *
