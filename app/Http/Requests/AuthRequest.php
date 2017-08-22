@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\Validator;
 
+use Sentinel;
+
 class AuthRequest extends BaseRequest
 {
     /**
@@ -37,8 +39,13 @@ class AuthRequest extends BaseRequest
                         'code' => 'required|exists:activations,code,completed,false'
                     ];
                 } else if ( $this->segment( 5 ) == 'register-complete' ) {
+                    $login_session = Sentinel::getUser();
+                    $additional = '';
+                    if( $customer_detail = $login_session->customer_detail ) {
+                        $additional = ',' . $customer_detail->id;
+                    }
                     return [
-                        'nik' => 'required|unique:customer_details,nik',
+                        'nik' => 'required|unique:customer_details,nik' . $additional,
                         'first_name' => 'required',
                         'last_name' => 'required',
                         'birth_place' => 'required',

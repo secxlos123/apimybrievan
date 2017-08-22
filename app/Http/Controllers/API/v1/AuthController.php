@@ -128,8 +128,8 @@ class AuthController extends Controller
     {
         $token = $request->header( 'Authorization' );
         $user = JWTAuth::toUser( str_replace( 'Bearer ', '', $token ) );
-        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] ) );
-        $user->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender' ] ) );
+        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] ) );
+        $user->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] ) );
         $user->refresh();
 
         return response()->success( [
