@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use Sentinel;
 
@@ -146,6 +147,21 @@ class EForm extends Model
                 }
             }
         } );
+
+        static::addGlobalScope( 'role', function( Builder $builder ) {
+            $login_usr = Sentinel::getUser();
+            $role_slug = $login_usr->roles()->first()->slug;
+            if( $role_slug == 'ao' ) {
+                $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
+            } else if( $role_slug == 'mp' || $role_slug == 'pinca' ) {
+                if( $login_usr->detail ) {
+                    $builder->where( [
+                        'office_id' => $login_usr->detail->office_id,
+                        'prescreening_status' => 0
+                    ] )->has( 'visit_report' );
+                }
+            }
+        } );
     }
 
     /**
@@ -165,7 +181,7 @@ class EForm extends Model
      */
     public function ao()
     {
-        return $this->belongsTo( User::class, 'ao_id' );
+        return $this->belongsTo( AccountOfficer::class, 'ao_id' );
     }
 
     /**
@@ -186,5 +202,15 @@ class EForm extends Model
     public function branch()
     {
         return $this->belongsTo( Office::class, 'office_id' );
+    }
+
+    /**
+     * The relation to visit report.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function visit_report()
+    {
+        return $this->hasOne( VisitReport::class, 'eform_id' );
     }
 }
