@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use App\Models\User;
 
 class AccountOfficer extends User
@@ -55,6 +56,19 @@ class AccountOfficer extends User
             return $this->detail->position;
         }
         return null;
+    }
+
+    /**
+     * Scope a query to filter account officer data.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     */
+    public function scopeFilter( $query, Request $request )
+    {
+        if( $request->has( 'name' ) ) {
+            $query->whereRaw( "CONCAT(first_name, ' ', last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ] );
+        }
     }
 
     /**

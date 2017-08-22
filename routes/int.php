@@ -60,6 +60,18 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::resource( 'developer', 'DeveloperController', [
 			'except' => [ 'edit', 'create' ]
 		] );
+
+		/**
+		 * Manage e-form from internal BRI
+		 */
+		Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+			/**
+			 * Route resource for visit report management
+			 */
+			Route::resource( 'visit-reports', 'VisitReportController', [
+				'except' => [ 'edit', 'create', 'destroy', 'index' ]
+			] );
+		} );
 	});
 
 	/**
