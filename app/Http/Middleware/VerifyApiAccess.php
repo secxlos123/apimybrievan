@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Helpers\VerifyUser;
+use App\Helpers\Traits\VerifyUser;
 
 class VerifyApiAccess
 {

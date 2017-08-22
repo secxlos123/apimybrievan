@@ -9,7 +9,7 @@ use App\Http\Requests\AuthRequest;
 use App\Events\Customer\CustomerRegister;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
-use App\Helpers\VerifyUser;
+use App\Helpers\Traits\VerifyUser;
 use App\Models\User;
 use Activation;
 use Sentinel;

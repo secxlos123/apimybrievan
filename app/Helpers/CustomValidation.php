@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Validation\Validator;
+use App\Helpers\Traits\AvailableType;
 
 class CustomValidation extends Validator
 {

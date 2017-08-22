@@ -5,11 +5,34 @@ namespace App\Http\Controllers\API\v1\Int;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Developer\CreateRequest;
+use App\Helpers\Traits\ManageUserTrait;
 use App\Models\Developer;
 use App\Models\User;
 
 class DeveloperController extends Controller
 {
+    use ManageUserTrait;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $activedFor = 'developer';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $relation = 'developer';
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('has.user.dev', ['except' => ['index', 'store'] ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,18 +59,6 @@ class DeveloperController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $developer
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $developer)
-    {
-        $developer = $this->responseUser($developer);
-        return response()->success(['data' => $developer]);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -59,27 +70,6 @@ class DeveloperController extends Controller
         $user = $this->storeUpdate($request, $developer);
         if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
-    }
-
-    /**
-     * Store update user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  array|\App\Models\User  $user
-     * @return array
-     */
-    private function storeUpdate($request, $user)
-    {
-        \DB::beginTransaction();
-        try {
-            $user      = User::createOrUpdate($request, $user);
-            $developer = $user->developer()->updateOrCreate(['user_id' => $user->id], $request->input());
-            \DB::commit();
-            return $this->responseUser($user);
-        } catch (\Exception $e) {
-            \DB::rollback();
-            return false;
-        }
     }
 
     /**
