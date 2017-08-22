@@ -33,6 +33,11 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1\Int',
 	]);
 
 	/**
+	 * Route resource for UserController
+	 */
+	Route::get( 'account-officers', 'AccountOfficerController@index' );
+
+	/**
 	 * Route for actived a user
 	 */
 	Route::match(['put', 'patch'], 'user/{user}/actived', 'UserController@actived')->name('user.actived');
