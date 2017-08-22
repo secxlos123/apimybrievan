@@ -67,7 +67,8 @@ class UsersTableSeeder extends Seeder
     		['name' => 'Pimpinan Cabang', 'slug' => 'pinca', 'is_default' => true, 'permissions' => $this->permissions],
     		['name' => 'Developer', 'slug' => 'developer', 'is_default' => true, 'permissions' => $this->permissions],
     		['name' => 'Nasabah', 'slug' => 'customer', 'is_default' => true, 'permissions' => $this->permissions],
-    		['name' => 'Pihak Ke-3', 'slug' => 'others', 'is_default' => true, 'permissions' => $this->permissions],
+            ['name' => 'Pihak Ke-3', 'slug' => 'others', 'is_default' => true, 'permissions' => $this->permissions],
+    		['name' => 'Developer Sales', 'slug' => 'developer-sales', 'is_default' => true, 'permissions' => $this->permissions],
     	];
 
     	$models = [];

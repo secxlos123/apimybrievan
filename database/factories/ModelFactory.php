@@ -18,6 +18,8 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
 	    'password' => bcrypt('12345678'),
 	    'first_name' => $faker->firstName,
 	    'last_name' => $faker->lastName,
+	    'phone' 	=> $faker->phoneNumber,
+	    'mobile_phone' => $faker->phoneNumber,
     ];
 });
 
@@ -27,5 +29,50 @@ $factory->define(App\Models\Office::class, function (Faker\Generator $faker) {
 	    'id' 	=> $faker->unique()->randomNumber(3),
 	    'name'  => $faker->unique()->name,
 	    'address' => $faker->address,
+    ];
+});
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\Developer::class, function (Faker\Generator $faker) {
+    return [
+    	'company_name' => $faker->name,
+    	'address' => $faker->address,
+    	'summary' => $faker->text,
+    ];
+});
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\Property::class, function (Faker\Generator $faker) {
+    return [
+        'name'		 => $faker->name,
+        'address'	 => $faker->address,
+        'category'	 => $faker->randomElement(['apartment', 'ruko', 'rumah', 'vila', 'kantor', 'komersial']),
+	    'latitude'	 => $faker->latitude,
+	    'longitude'	 => $faker->longitude,
+        'facilities' => $faker->text,
+    ];
+});
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\PropertyType::class, function (Faker\Generator $faker) {
+    return [
+		'name'				=> $faker->name,
+		'surface_area'		=> $faker->text,
+		'building_area'		=> $faker->text,
+		'price'				=> $faker->randomNumber(9),
+		'electrical_power'	=> $faker->text,
+		'bathroom'			=> $faker->randomNumber(1),
+		'bedroom'			=> $faker->randomNumber(1),
+		'floors'			=> $faker->randomNumber(1),
+		'carport'			=> $faker->randomNumber(1),
+	];
+});
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\PropertyItem::class, function (Faker\Generator $faker) {
+    return [
+        'address'	   => $faker->address,
+        'price'		   => $faker->randomNumber(9),
+        'status'	   => $faker->randomElement(['new', 'second']),
     ];
 });

@@ -26,7 +26,6 @@ class BaseRequest extends FormRequest
         return [ 
             'data' => 'required|json',           
             'first_name' => 'required',
-            'last_name' => 'required',
             'phone' => 'required|digits:12|numeric',
             'mobile_phone' => 'required|digits:12|numeric',
             'gender' => 'required|in:L,P',

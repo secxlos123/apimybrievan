@@ -25,6 +25,7 @@ class CreateRequest extends FormRequest
     {
         return [
             'city_id'       => 'required|exists:cities,id',
+            'developer_name'=> 'required|alpha_spaces',
             'company_name'  => 'required|alpha_spaces',
             'address'       => 'required',
             'email'         => 'required|email|unique:users,email',
@@ -42,7 +43,7 @@ class CreateRequest extends FormRequest
     protected function getValidatorInstance()
     {
         $role_id = \Sentinel::findRoleBySlug('developer')->id;
-        list($first_name, $last_name) = name_separator($this->input('company_name'));
+        list($first_name, $last_name) = name_separator($this->input('developer_name'));
         $this->merge( compact( 'role_id', 'first_name', 'last_name' ) );
         return parent::getValidatorInstance();
     }
