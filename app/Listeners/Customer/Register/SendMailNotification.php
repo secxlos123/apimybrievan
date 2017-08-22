@@ -29,8 +29,15 @@ class SendMailNotification
      */
     public function handle( CustomerRegister $event )
     {
+        $activation_code = $event->activation_code;
+        $user = $event->user;
+        $url = '';
+        if( $activation_code ) {
+            $url = env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/ActivateAccount/' . $user->id . '/' . $activation_code;
+        }
         $mail = [
-            'email' => $event->user->email
+            'url' => $url,
+            'email' => $user->email
         ];
         
         Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );

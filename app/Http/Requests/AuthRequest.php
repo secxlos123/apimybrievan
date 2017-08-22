@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Contracts\Validation\Validator;
 
+use Sentinel;
+
 class AuthRequest extends BaseRequest
 {
     /**
@@ -31,23 +33,33 @@ class AuthRequest extends BaseRequest
                         'email' => 'required|email|unique:users,email',
                         'password' => 'required|min:6',
                     ];
-                } else if ( $this->segment( 5 ) == 'register-complete' ) {
+                }else if( $this->segment( 3 ) == 'activate' ) {
                     return [
-                        'nik' => 'required|unique:customer_details,nik',
+                        'user_id' => 'required|exists:users,id',
+                        'code' => 'required|exists:activations,code,completed,false'
+                    ];
+                } else if ( $this->segment( 5 ) == 'register-complete' ) {
+                    $login_session = Sentinel::getUser();
+                    $additional = '';
+                    if( $customer_detail = $login_session->customer_detail ) {
+                        $additional = ',' . $customer_detail->id;
+                    }
+                    return [
+                        'nik' => 'required|unique:customer_details,nik' . $additional,
                         'first_name' => 'required',
-                        'last_name' => 'required',
+                        'last_name' => '',
                         'birth_place' => 'required',
                         'birth_date' => 'required|date',
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city' => 'required',
-                        'phone' => 'required|regex:(08)',
+                        'phone' => 'required|numeric|digits:12',
                         'citizenship' => 'required',
                         'status' => 'required|in:0,1,2',
                         'address_status' => 'required',
                         'mother_name' => 'required',
-                        'mobile_phone' => 'required|regex:(08)',
-                        'emergency_contact' => 'required|regex:(08)',
+                        'mobile_phone' => 'required|numeric|digits:12',
+                        'emergency_contact' => 'required|numeric|digits:12',
                         'emergency_relation' => 'required',
                         'identity' => 'required|image|mimes:jpg,jpeg,png',
                         'npwp' => 'required|image|mimes:jpg,jpeg,png',

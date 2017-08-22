@@ -60,11 +60,34 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::resource( 'developer', 'DeveloperController', [
 			'except' => [ 'edit', 'create' ]
 		] );
+
+		/**
+		 * Manage e-form from internal BRI
+		 */
+		Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+			/**
+			 * Route resource for visit report management
+			 */
+			Route::resource( 'visit-reports', 'VisitReportController', [
+				'except' => [ 'edit', 'create', 'destroy', 'index' ]
+			] );
+		} );
 	});
 
+
 	/**
-	 * Route for assign to AO
-	 */	
-	Route::post('eforms/{eforms}/disposition', 'EFormController@disposition')
-		->name('eforms.disposition');
+	 * Manage e-form from internal BRI
+	 */
+	Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+
+		/**
+		 * Route for assign to AO
+		 */	
+		Route::post( 'disposition', 'EFormController@disposition' )->name( 'eforms.disposition' );
+
+		/**
+		 * Route for approve e-form
+		 */	
+		Route::post( 'approve', 'EFormController@approve' );
+	} );
 });

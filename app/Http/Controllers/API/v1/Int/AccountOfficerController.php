@@ -17,7 +17,7 @@ class AccountOfficerController extends Controller
     public function index( Request $request )
     {
         $limit = $request->input( 'limit' ) ?: 10;
-        $account_officers = AccountOfficer::paginate( $limit );
+        $account_officers = AccountOfficer::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'account_officers' => $account_officers
