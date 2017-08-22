@@ -96,6 +96,8 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
+    'alpha_spaces'     => 'The :attribute may only contain letters and spaces.',
+    'email_by_type'    => 'The :attribute is invalid.',
 
     'custom' => [
         'attribute-name' => [

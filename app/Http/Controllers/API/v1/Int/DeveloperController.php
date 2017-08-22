@@ -4,12 +4,11 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\v1\User\CreateRequest;
-use App\Http\Requests\API\v1\User\UpdateRequest;
-use App\Http\Requests\API\v1\User\ActivedRequest;
+use App\Http\Requests\API\v1\Developer\CreateRequest;
+use App\Models\Developer;
 use App\Models\User;
 
-class UserController extends Controller
+class DeveloperController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,8 +18,8 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $limit = $request->input('limit') ?: 10;
-        $users = User::getLists($request)->paginate($limit);
-        return response()->success(['users' => $users]);
+        $developers = Developer::getLists($request)->paginate($limit);
+        return response()->success(['developers' => $developers]);
     }
 
     /**
@@ -32,51 +31,34 @@ class UserController extends Controller
     public function store(CreateRequest $request)
     {
         $user = $this->storeUpdate($request, []);
-        if ($user) return response()->success(['message' => 'Data user berhasil ditambahkan.', 'data' => $user]);
+        if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $developer
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(User $developer)
     {
-        $user = $this->responseUser($user);
-        return response()->success(['data' => $user]);
+        $developer = $this->responseUser($developer);
+        return response()->success(['data' => $developer]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $developer
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, User $user)
+    public function update(Request $request, User $developer)
     {
-        $user = $this->storeUpdate($request, $user);
-        if ($user) return response()->success(['message' => 'Data user berhasil dirubah.', 'data' => $user]);
+        $user = $this->storeUpdate($request, $developer);
+        if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function actived(ActivedRequest $request, User $user)
-    {
-        $is_actived = $request->input('is_actived') ? 'aktifkan' : 'non aktifkan';
-        $user->update($request->input());
-        return response()->success([
-            'message' => "Data user berhasil di {$is_actived}.",
-            'data' => $this->responseUser($user)
-        ]);
     }
 
     /**
@@ -90,8 +72,8 @@ class UserController extends Controller
     {
         \DB::beginTransaction();
         try {
-            $user   = User::createOrUpdate($request, $user);
-            $detail = $user->detail()->updateOrCreate(['user_id' => $user->id], $request->input());
+            $user      = User::createOrUpdate($request, $user);
+            $developer = $user->developer()->updateOrCreate(['user_id' => $user->id], $request->input());
             \DB::commit();
             return $this->responseUser($user);
         } catch (\Exception $e) {
@@ -108,23 +90,16 @@ class UserController extends Controller
      */
     private function responseUser($user)
     {
-        $user->load(['roles', 'detail']);
+        $user->load(['roles', 'developer']);
 
         return [
             'id' => $user->id,
             'fullname' => $user->fullname,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
             'email' => $user->email,
             'phone' => $user->phone,
             'mobile_phone' => $user->mobile_phone,
-            'gender' => $user->gender,
             'is_actived' => $user->is_actived,
             'image' => $user->image,
-            'office_id' => $user->detail ? $user->detail->office_id : null,
-            'office_name' => $user->detail ? $user->detail->office->name : null,
-            'nip' => $user->detail ? $user->detail->nip : null,
-            'position' => $user->detail ? $user->detail->position : null,
             'role_id' => $user->roles->first()->id,
             'role_name' => $user->roles->first()->name,
             'role_slug' => $user->roles->first()->slug,
