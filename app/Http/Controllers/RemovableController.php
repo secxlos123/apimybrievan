@@ -157,6 +157,28 @@ class RemovableController extends Controller
                 } );
             }
 
+            if( Schema::hasColumns( 'cities', ['name'] ) ) {
+
+                Schema::table( 'cities', function ( Blueprint $table ) use (&$update_message) {
+                    $doctrinTable = Schema::getConnection()->getDoctrineSchemaManager()->listTableDetails('cities');
+                    if (! $doctrinTable->hasIndex('cities_name_index') ) {
+                        $table->index('name');
+                        $update_message[] = 'Add index for column name on table cities!';
+                    }
+                } );
+            }
+
+            if( Schema::hasColumns( 'developers', ['company_name'] ) ) {
+
+                Schema::table( 'developers', function ( Blueprint $table ) use (&$update_message) {
+                    $doctrinTable = Schema::getConnection()->getDoctrineSchemaManager()->listTableDetails('developers');
+                    if (! $doctrinTable->hasIndex('developers_company_name_index') ) {
+                        $table->index('company_name');
+                        $update_message[] = 'Add index for column company_name on table developers!';
+                    }
+                } );
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'
