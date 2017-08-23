@@ -17,8 +17,8 @@ class CreateUserDetailsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('office_id')->unsigned()->nullable();
-            $table->string('nip')->unique();
-            $table->string('position');
+            $table->string('nip')->unique()->index();
+            $table->string('position')->index();
             $table->timestamps();
 
             $table->foreign( 'user_id' )->references( 'id' )->on( 'users' )

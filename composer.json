@@ -6,15 +6,16 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
+        "barryvdh/laravel-dompdf": "^0.7.0",
+        "cartalyst/sentinel": "2.0.*",
+        "doctrine/dbal": "^2.5",
+        "guzzlehttp/guzzle": "^6.2",
+        "intervention/image": "dev-master",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
-        "guzzlehttp/guzzle": "^6.2",
         "maatwebsite/excel": "~2.1.0",
-        "cartalyst/sentinel": "2.0.*",
-        "barryvdh/laravel-dompdf": "^0.7.0",
-        "yajra/laravel-datatables-oracle": "^6.22",
-        "intervention/image": "dev-master",
-        "tymon/jwt-auth": "0.5.*"
+        "tymon/jwt-auth": "0.5.*",
+        "yajra/laravel-datatables-oracle": "^6.22"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
