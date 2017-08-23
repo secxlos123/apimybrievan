@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\API\v1\User;
 
-use App\Http\Requests\API\v1\User\BaseRequest as FormRequest;
+use App\Http\Requests\API\v1\BaseRequest as FormRequest;
 
 class ActivedRequest extends FormRequest
 {

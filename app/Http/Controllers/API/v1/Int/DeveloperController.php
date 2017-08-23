@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\v1\Int;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Developer\CreateRequest;
+use App\Http\Requests\API\v1\Developer\UpdateRequest;
+use App\Http\Controllers\API\v1\PropertyTypeController;
 use App\Helpers\Traits\ManageUserTrait;
 use App\Models\Developer;
 use App\Models\User;
@@ -65,11 +67,21 @@ class DeveloperController extends Controller
      * @param  \App\Models\User  $developer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $developer)
+    public function update(UpdateRequest $request, User $developer)
     {
         $user = $this->storeUpdate($request, $developer);
         if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function properties(Request $request, User $model)
+    {
+        return app(PropertyTypeController::class)->index($request, $model->id);
     }
 
     /**
@@ -80,19 +92,20 @@ class DeveloperController extends Controller
      */
     private function responseUser($user)
     {
-        $user->load(['roles', 'developer']);
+        $user->load(['roles', 'developer.city']);
+        $developer = $user->developer;
 
         return [
-            'id' => $user->id,
-            'fullname' => $user->fullname,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'mobile_phone' => $user->mobile_phone,
-            'is_actived' => $user->is_actived,
-            'image' => $user->image,
-            'role_id' => $user->roles->first()->id,
-            'role_name' => $user->roles->first()->name,
-            'role_slug' => $user->roles->first()->slug,
+            'id'            => $user->id,
+            'fullname'      => $user->fullname,
+            'email'         => $user->email,
+            'phone'         => $user->phone,
+            'address'       => $developer->address,
+            'mobile_phone'  => $user->mobile_phone,
+            'is_actived'    => $user->is_actived,
+            'image'         => $user->image,
+            'office_id'     => $developer->city->id,
+            'office_name'   => $developer->city->name,
         ];
     }
 }

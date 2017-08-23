@@ -73,7 +73,7 @@ class Developer extends Model
                 /**
                  * Query for search developers.
                  */
-                $query->search($request);
+                if ($request->has('search')) $query->search($request);
             })
             ->where(function ($developer) use ($request) {
 
