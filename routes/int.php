@@ -39,13 +39,24 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		 * Route resource for UserController
 		 */
 		Route::resource('user', 'UserController', [
-			'except' => ['edit', 'create', 'destroy']
+			'only' => ['index', 'store', 'update']
 		]);
 
 		/**
-		 * Route for actived a user
+		 * Route group for controller when uses trait ManageUserTrait
 		 */
-		Route::match(['put', 'patch'], 'user/{user}/actived', 'UserController@actived')->name('user.actived');
+		Route::group(['prefix' => 'user/{model}'], function () {
+
+			/**
+			 * Route for get detail a user
+			 */
+			Route::get('/', 'UserController@show')->name('user.show');
+
+			/**
+			 * Route for actived a user
+			 */
+			Route::match(['put', 'patch'], 'actived', 'UserController@actived')->name('user.actived');
+		});
 
 		/**
 		 * Route resource for CustomerController
@@ -58,8 +69,24 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		 * Route resource for DeveloperController
 		 */
 		Route::resource( 'developer', 'DeveloperController', [
-			'except' => [ 'edit', 'create' ]
+			'only' => ['index', 'store', 'update']
 		] );
+
+		/**
+		 * Route group for controller when uses trait ManageUserTrait
+		 */
+		Route::group(['prefix' => 'developer/{model}'], function () {
+
+			/**
+			 * Route for get detail a developer
+			 */
+			Route::get('/', 'DeveloperController@show')->name('developer.show');
+
+			/**
+			 * Route for actived a developer
+			 */
+			Route::match(['put', 'patch'], 'actived', 'DeveloperController@actived')->name('developer.actived');
+		});
 
 		/**
 		 * Manage e-form from internal BRI

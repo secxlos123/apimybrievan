@@ -59,5 +59,7 @@ class Kernel extends HttpKernel
         'api.access' => \App\Http\Middleware\VerifyApiAccess::class,
         'api.auth'   => \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
         'api.refresh'=> \Tymon\JWTAuth\Middleware\RefreshToken::class,
+        'has.user.int' => \App\Http\Middleware\HasUserInternal::class,
+        'has.user.dev' => \App\Http\Middleware\HasDeveloper::class,
     ];
 }

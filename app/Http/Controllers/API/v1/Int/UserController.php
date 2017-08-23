@@ -6,11 +6,33 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\User\CreateRequest;
 use App\Http\Requests\API\v1\User\UpdateRequest;
-use App\Http\Requests\API\v1\User\ActivedRequest;
+use App\Helpers\Traits\ManageUserTrait;
 use App\Models\User;
 
 class UserController extends Controller
 {
+    use ManageUserTrait;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $activedFor = 'user';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $relation = 'detail';
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('has.user.int', ['except' => ['index', 'store'] ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -37,18 +59,6 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        $user = $this->responseUser($user);
-        return response()->success(['data' => $user]);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -60,44 +70,6 @@ class UserController extends Controller
         $user = $this->storeUpdate($request, $user);
         if ($user) return response()->success(['message' => 'Data user berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function actived(ActivedRequest $request, User $user)
-    {
-        $is_actived = $request->input('is_actived') ? 'aktifkan' : 'non aktifkan';
-        $user->update($request->input());
-        return response()->success([
-            'message' => "Data user berhasil di {$is_actived}.",
-            'data' => $this->responseUser($user)
-        ]);
-    }
-
-    /**
-     * Store update user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  array|\App\Models\User  $user
-     * @return array
-     */
-    private function storeUpdate($request, $user)
-    {
-        \DB::beginTransaction();
-        try {
-            $user   = User::createOrUpdate($request, $user);
-            $detail = $user->detail()->updateOrCreate(['user_id' => $user->id], $request->input());
-            \DB::commit();
-            return $this->responseUser($user);
-        } catch (\Exception $e) {
-            \DB::rollback();
-            return false;
-        }
     }
 
     /**

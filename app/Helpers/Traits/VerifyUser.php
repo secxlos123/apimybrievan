@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers\Traits;
 
 use Illuminate\Http\Request;
 use JWTAuth;
