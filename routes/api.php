@@ -20,14 +20,14 @@ Route::post( 'urgent-function', 'RemovableController@run' );
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 	/**
-	 * Route for user activation
-	 */
-	Route::post( 'activate', 'AuthController@activate' );
-
-	/**
 	 * Route group for type of user in : int and eks
 	 */
 	Route::group(['prefix' => '{type}', 'middleware' => 'api.access'], function () {
+
+		/**
+		 * Route for user activation
+		 */
+		Route::post( 'activate', 'AuthController@activate' );
 		
 		/**
 		 * Route group auth
