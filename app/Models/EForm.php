@@ -152,13 +152,17 @@ class EForm extends Model
             $login_usr = Sentinel::getUser();
             $role_slug = $login_usr->roles()->first()->slug;
             if( $role_slug == 'ao' ) {
-                $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
+                // $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
+                $builder->whereAoId( $login_usr->id );
             } else if( $role_slug == 'mp' || $role_slug == 'pinca' ) {
                 if( $login_usr->detail ) {
+                    // $builder->where( [
+                    //     'office_id' => $login_usr->detail->office_id,
+                    //     'prescreening_status' => 0
+                    // ] )->has( 'visit_report' );
                     $builder->where( [
-                        'office_id' => $login_usr->detail->office_id,
-                        'prescreening_status' => 0
-                    ] )->has( 'visit_report' );
+                        'office_id' => $login_usr->detail->office_id
+                    ] );
                 }
             }
         } );
