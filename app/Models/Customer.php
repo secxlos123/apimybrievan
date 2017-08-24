@@ -41,6 +41,7 @@ class Customer extends User
                 'birth_place' => $detail->birth_place,
                 'birth_date' => $detail->birth_date,
                 'address' => $detail->address,
+                'city' => $detail->city,
                 'citizenship' => $detail->citizenship,
                 'status' => $detail->status,
                 'address_status' => $detail->address_status,
