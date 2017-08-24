@@ -17,7 +17,7 @@ class CreateDevelopersTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('city_id')->unsigned()->nullable();
-            $table->string('company_name');
+            $table->string('company_name')->index();
             $table->text('address');
             $table->text('summary');
             $table->timestamps();

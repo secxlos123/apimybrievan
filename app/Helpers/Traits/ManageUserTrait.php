@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Traits;
 
-use App\Http\Requests\API\v1\User\ActivedRequest;
+use App\Http\Requests\API\v1\ActivedRequest;
 use App\Models\User;
 
 trait ManageUserTrait
@@ -41,7 +41,7 @@ trait ManageUserTrait
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  array|\App\Models\User  $user
-     * @return array
+     * @return array|false
      */
     public function storeUpdate($request, $model)
     {

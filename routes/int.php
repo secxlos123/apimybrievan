@@ -83,6 +83,11 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			Route::get('/', 'DeveloperController@show')->name('developer.show');
 
 			/**
+			 * Route for get detail a developer
+			 */
+			Route::get('properties', 'DeveloperController@properties')->name('developer.properties');
+
+			/**
 			 * Route for actived a developer
 			 */
 			Route::match(['put', 'patch'], 'actived', 'DeveloperController@actived')->name('developer.actived');

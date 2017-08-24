@@ -72,6 +72,7 @@ class MigrationCartalystSentinel extends Migration
 
             $table->engine = 'InnoDB';
             $table->unique('slug');
+            $table->index(['name', 'slug']);
         });
 
         Schema::create('role_users', function (Blueprint $table) {
@@ -112,6 +113,7 @@ class MigrationCartalystSentinel extends Migration
 
             $table->engine = 'InnoDB';
             $table->unique('email');
+            $table->index(['email', 'first_name', 'last_name', 'phone', 'mobile_phone']);
         });
     }
 

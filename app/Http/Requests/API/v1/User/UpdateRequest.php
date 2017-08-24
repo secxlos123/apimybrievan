@@ -14,10 +14,10 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         $this->user->load('detail');
-        $detail = $this->user->detail ? "unique:user_details,nip,{$this->user->detail->id}" : '';
+        $detail = $this->user->detail ? ",{$this->user->detail->id}" : '';
 
         return array_merge(parent::rules(), [
-            'nip' => "required|min:16|max:16|{$detail}",
+            'nip' => "required|min:16|max:16|unique:user_details,nip{$detail}",
             'email' => "required|email|unique:users,email,{$this->user->id}",
         ]);
     }

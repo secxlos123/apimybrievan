@@ -249,14 +249,14 @@ class User extends Authenticatable
                 /**
                  * Query for search user.
                  */
-                $query->search($request);
+                if ($request->has('search')) $query->search($request);
             })
             ->where(function ($user) use ($request) {
 
                 /**
                  * Query for filter user.
                  */
-                if ($request->input('office_id')) $user->where('office_id', $request->input('office_id'));
+                if ($request->has('office_id')) $user->where('office_id', $request->input('office_id'));
             })
             ->where('id', '!=', $request->user()->id)
             ->orderBy($sort[0], $sort[1]);
