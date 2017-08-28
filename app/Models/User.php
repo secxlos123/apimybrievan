@@ -166,17 +166,104 @@ class User extends Authenticatable
         if ( ! $user instanceof $this ) {
             $password = str_random(8);
             $request->merge(['password' => bcrypt($password)]);
-            $user = $this->create($request->input());
+            $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
             dispatch(new SendPasswordEmail($user, $password, 'registered'));
         } else {
-            $user->update($request->input());
+            $user->update($request->all());
         }
 
         if ($relation) $user->{$relation}()->updateOrCreate(['user_id' => $user->id], $request->input());
         $user->roles()->sync($request->input('role_id'));
         return $user;
+    }
+
+    /**
+     * Get Profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Models\User
+     */
+    protected function getProfile(Request $request)
+    {
+        $user = $request->user();
+        return $this->getResponse($user);
+    }
+
+    /**
+     * Get Profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Models\User
+     */
+    protected function getResponse($user)
+    {
+        if ($user->inRole('developer')) {
+            return $this->responseDeveloper($user);
+        } else if ($user->inRole('customer')) {
+            return [];
+        } else {
+            return $this->responseUser($user);
+        }
+    }
+
+    /**
+     * Get Profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Models\User
+     */
+    protected function responseUser($user)
+    {
+        $user->load(['roles', 'detail']);
+
+        return [
+            'id'            => $user->id,
+            'fullname'      => $user->fullname,
+            'first_name'    => $user->first_name,
+            'last_name'     => $user->last_name,
+            'email'         => $user->email,
+            'phone'         => $user->phone,
+            'mobile_phone'  => $user->mobile_phone,
+            'gender'        => $user->gender,
+            'is_actived'    => $user->is_actived,
+            'image'         => $user->image,
+            'office_id'     => $user->detail ? $user->detail->office_id : null,
+            'office_name'   => $user->detail ? $user->detail->office->name : null,
+            'nip'           => $user->detail ? $user->detail->nip : null,
+            'position'      => $user->detail ? $user->detail->position : null,
+            'role_id'       => $user->roles->first()->id,
+            'role_name'     => $user->roles->first()->name,
+            'role_slug'     => $user->roles->first()->slug,
+        ];
+    }
+
+    /**
+     * Get Profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Models\User
+     */
+    protected function responseDeveloper($user)
+    {
+        $user->load(['developer.city']);
+        $developer = $user->developer;
+
+        return [
+            'id'            => $user->id,
+            'developer_name'=> $user->fullname,
+            'company_name'  => $developer->company_name,
+            'email'         => $user->email,
+            'phone'         => $user->phone,
+            'address'       => $developer->address,
+            'mobile_phone'  => $user->mobile_phone,
+            'is_actived'    => $user->is_actived,
+            'image'         => $user->image,
+            'city_id'       => $developer->city->id,
+            'city_name'     => $developer->city->name,
+            'summary'       => $developer->summary,
+        ];
     }
 
     /**

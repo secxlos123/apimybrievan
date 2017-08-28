@@ -83,31 +83,4 @@ class DeveloperController extends Controller
     {
         return app(PropertyTypeController::class)->index($request, $model->id);
     }
-
-    /**
-     * Prepare for response user.
-     *
-     * @param  \App\Models\User  $user
-     * @return array
-     */
-    private function responseUser($user)
-    {
-        $user->load(['roles', 'developer.city']);
-        $developer = $user->developer;
-
-        return [
-            'id'            => $user->id,
-            'developer_name'=> $user->fullname,
-            'company_name'  => $developer->company_name,
-            'email'         => $user->email,
-            'phone'         => $user->phone,
-            'address'       => $developer->address,
-            'mobile_phone'  => $user->mobile_phone,
-            'is_actived'    => $user->is_actived,
-            'image'         => $user->image,
-            'city_id'       => $developer->city->id,
-            'city_name'     => $developer->city->name,
-            'summary'       => $developer->summary,
-        ];
-    }
 }
