@@ -45,7 +45,7 @@ class AuthRequest extends BaseRequest
                         $additional = ',' . $customer_detail->id;
                     }
                     return [
-                        'nik' => 'required|unique:customer_details,nik' . $additional,
+                        'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
                         'first_name' => 'required',
                         'last_name' => '',
                         'birth_place' => 'required',
@@ -75,6 +75,21 @@ class AuthRequest extends BaseRequest
                         'other_salary' => 'required|integer',
                         'loan_installment' => 'required',
                         'dependent_amount' => 'required'
+                    ];
+                } else if ( $this->segment( 5 ) == 'register-simple' ) {
+                    $login_session = Sentinel::getUser();
+                    $additional = '';
+                    if( $customer_detail = $login_session->customer_detail ) {
+                        $additional = ',' . $customer_detail->id;
+                    }
+                    return [
+                        'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
+                        'first_name' => 'required',
+                        'last_name' => '',
+                        'mobile_phone' => 'required|numeric|digits:12',
+                        'status' => 'required|in:0,1,2',
+                        'mother_name' => 'required',
+                        'identity' => 'required|image|mimes:jpg,jpeg,png'
                     ];
                 }
                 return [];

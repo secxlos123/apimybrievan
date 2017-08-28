@@ -179,6 +179,13 @@ class RemovableController extends Controller
                 } );
             }
 
+            if( ! Schema::hasColumn( 'eforms', 'ref_number' ) ) {
+                Schema::table( 'eforms', function ( Blueprint $table ) {
+                    $table->string( 'ref_number' )->nullable();
+                } );
+                $update_message[] = 'Add ref_number field on eforms table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

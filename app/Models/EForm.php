@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
+use App\Models\Customer;
 use Sentinel;
 
 class EForm extends Model
@@ -31,7 +32,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'ref_number', 'customer_name', 'nominal', 'office', 'ao_name', 'status' ];
+    protected $appends = [ 'customer_name', 'nominal', 'office', 'ao_name', 'status' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -51,20 +52,6 @@ class EForm extends Model
             $path = public_path( 'uploads/eforms/' . $this->id . '/' );
             $filename = $key . '.' . $image->getClientOriginalExtension();
             $image->move( $path, $filename );
-        }
-    }
-
-    /**
-     * Get ref number information from e-form.
-     *
-     * @return string
-     */
-    public function getRefNumberAttribute( $value )
-    {
-        if( empty( $value ) ) {
-            return '12345689012345';
-        } else {
-            return $value;
         }
     }
 
@@ -126,6 +113,27 @@ class EForm extends Model
             return 'Diterima';
         }
         return 'Pengajuan Baru';
+    }
+
+    /**
+     * Set user id information.
+     *
+     * @return string
+     */
+    public function setUserIdAttribute( $value )
+    {
+        $this->attributes[ 'user_id' ] = $value;
+        $customer = $this->customer;
+        $ref_number = strtoupper( substr( $customer->first_name, 0, 3 ) );
+        $ref_number .= date( 'y' );
+        $ref_number .= date( 'm' );
+        $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] )->max( 'ref_number' );
+        if( $ref_number_check ) {
+            $ref_number .= substr( ( '00' . ( integer ) substr( $ref_number_check, -2 ) + 1 ), -2 );
+        } else {
+            $ref_number .= '01';
+        }
+        $this->attributes[ 'ref_number' ] = $ref_number;
     }
 
     /**
