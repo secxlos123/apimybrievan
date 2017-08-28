@@ -1,11 +1,21 @@
 <?php
 
-namespace App\Http\Requests\API\v1\User;
+namespace App\Http\Requests\API\v1;
 
-use App\Http\Requests\API\v1\BaseRequest as FormRequest;
+use App\Http\Requests\BaseRequest as FormRequest;
 
 class ActivedRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+    
     /**
      * Get the validation rules that apply to the request.
      *

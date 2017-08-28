@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\Eks;
 
 use App\Models\User;
 use App\Jobs\SendPasswordEmail;
