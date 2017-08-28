@@ -56,7 +56,7 @@ class DeveloperController extends Controller
     public function store(CreateRequest $request)
     {
         $user = $this->storeUpdate($request, []);
-        if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'data' => $user]);
+        if ($user) return response()->success(['message' => 'Data developer berhasil disimpan.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
     }
 
@@ -97,15 +97,17 @@ class DeveloperController extends Controller
 
         return [
             'id'            => $user->id,
-            'fullname'      => $user->fullname,
+            'developer_name'=> $user->fullname,
+            'company_name'  => $developer->company_name,
             'email'         => $user->email,
             'phone'         => $user->phone,
             'address'       => $developer->address,
             'mobile_phone'  => $user->mobile_phone,
             'is_actived'    => $user->is_actived,
             'image'         => $user->image,
-            'office_id'     => $developer->city->id,
-            'office_name'   => $developer->city->name,
+            'city_id'       => $developer->city->id,
+            'city_name'     => $developer->city->name,
+            'summary'       => $developer->summary,
         ];
     }
 }
