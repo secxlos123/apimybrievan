@@ -52,17 +52,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		/**
-		 * Route group password
-		 */
-		Route::group(['prefix' => 'password'], function () {
-
-			/**
-			 * Route for reset and send new password
-			 */
-			Route::post('reset', 'PasswordController@reset');
-		});
-
-		/**
 		 * Route group for logged in users
 		 */
 		Route::group( [ 'middleware' => 'api.auth' ], function() {
