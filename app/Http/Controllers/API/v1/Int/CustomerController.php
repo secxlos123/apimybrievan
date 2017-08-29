@@ -56,7 +56,7 @@ class CustomerController extends Controller
     public function update( CustomerRequest $request, $id )
     {
         DB::beginTransaction();
-        $customer = Customer::find( $id );
+        $customer = Customer::findOrFail( $id );
         $customer->update( $request->all() );
 
         DB::commit();
@@ -74,16 +74,10 @@ class CustomerController extends Controller
      */
     public function show( $id )
     {
-        if( $customer = Customer::find( $id ) ) {
-            return response()->success( [
-                'message' => 'Sukses',
-                'data' => $customer
-            ], 200 );
-        } else {
-            return response()->error( [
-                'message' => 'Data nasabah tidak ditemukan',
-                'data' => []
-            ], 404 );
-        }
+        $customer = Customer::findOrFail( $id );
+        return response()->success( [
+            'message' => 'Sukses',
+            'data' => $customer
+        ], 200 );
     }
 }
