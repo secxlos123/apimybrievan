@@ -28,4 +28,20 @@ Route::group(['prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks',
 		 */
 		Route::post('reset', 'PasswordController@reset');
 	});
+
+	/**
+	 * Route group profile
+	 */
+	Route::group(['prefix' => 'profile', 'middleware' => ['api.auth'] ], function () {
+
+		/**
+		 * Route for get simple profile
+		 */
+		Route::get('/', 'ProfileController@index');
+
+		/**
+		 * Route for update profile
+		 */
+		Route::match(['put', 'patch'], 'update', 'ProfileController@update');
+	});
 });

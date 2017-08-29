@@ -15,7 +15,7 @@ trait ManageUserTrait
      */
     public function show(User $model)
     {
-        $model = $this->responseUser($model);
+        $model = User::getResponse($model);
         return response()->success(['data' => $model]);
     }
 
@@ -32,7 +32,7 @@ trait ManageUserTrait
         $model->update($request->input());
         return response()->success([
             'message' => "Data {$this->activedFor} berhasil di {$is_actived}.",
-            'data' => $this->responseUser($model)
+            'data' => User::getResponse($model)
         ]);
     }
 
@@ -49,7 +49,7 @@ trait ManageUserTrait
         try {
             $model = User::createOrUpdate($request, $model, $this->relation);
             \DB::commit();
-            return $this->responseUser($model);
+            return User::getResponse($model);
         } catch (\Exception $e) {
             \DB::rollback();
             return false;

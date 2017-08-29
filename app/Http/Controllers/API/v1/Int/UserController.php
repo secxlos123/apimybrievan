@@ -71,35 +71,4 @@ class UserController extends Controller
         if ($user) return response()->success(['message' => 'Data user berhasil dirubah.', 'data' => $user]);
         return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
     }
-
-    /**
-     * Prepare for response user.
-     *
-     * @param  \App\Models\User  $user
-     * @return array
-     */
-    private function responseUser($user)
-    {
-        $user->load(['roles', 'detail']);
-
-        return [
-            'id' => $user->id,
-            'fullname' => $user->fullname,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'mobile_phone' => $user->mobile_phone,
-            'gender' => $user->gender,
-            'is_actived' => $user->is_actived,
-            'image' => $user->image,
-            'office_id' => $user->detail ? $user->detail->office_id : null,
-            'office_name' => $user->detail ? $user->detail->office->name : null,
-            'nip' => $user->detail ? $user->detail->nip : null,
-            'position' => $user->detail ? $user->detail->position : null,
-            'role_id' => $user->roles->first()->id,
-            'role_name' => $user->roles->first()->name,
-            'role_slug' => $user->roles->first()->slug,
-        ];
-    }
 }
