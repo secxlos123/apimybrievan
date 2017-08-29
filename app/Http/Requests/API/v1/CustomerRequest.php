@@ -26,7 +26,7 @@ class CustomerRequest extends BaseRequest
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 return [
-                    'nik' => 'required|unique:customer_details,nik',
+                    'nik' => 'required|numeric|max:16|unique:customer_details,nik',
                     'email' => 'required|email|unique:users,email',
                     'first_name' => 'required',
                     'birth_place' => 'required',
@@ -61,7 +61,7 @@ class CustomerRequest extends BaseRequest
             
             case 'put':
                 return [
-                    'nik' => 'required|unique:customer_details,nik,' . $this->customer . ',user_id',
+                    'nik' => 'required|numeric|max:16|unique:customer_details,nik,' . $this->customer . ',user_id',
                     'email' => 'required|email|unique:users,email,' . $this->customer,
                     'first_name' => 'required',
                     'birth_place' => 'required',
