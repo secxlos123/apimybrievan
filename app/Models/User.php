@@ -42,6 +42,13 @@ class User extends Authenticatable
     ];
 
     /**
+     * Define user avatar image path.
+     *
+     * @var array
+     */
+    protected static $image_path = 'uploads/avatars/';
+
+    /**
      * The directories belongs to broadcasts.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -116,10 +123,11 @@ class User extends Authenticatable
      */
     public function getImageAttribute( $value )
     {
-        if( File::exists( 'uploads/avatars/' . $value ) ) {
-            $image = url( 'uploads/avatars/' . $value );
-        } else {
-            $image = url( 'img/avatar.jpg' );
+        $image = url( 'img/avatar.jpg' );
+        if(  ! empty( $value ) ) {
+            if( File::exists( static::$image_path . $value ) ) {
+                $image = url( static::$image_path . $value );
+            }
         }
         return $image;
     }
@@ -131,7 +139,7 @@ class User extends Authenticatable
      */
     public function setImageAttribute( $image )
     {
-        $path = public_path( 'uploads/avatars/' );
+        $path = public_path( static::$image_path );
         if ( ! empty( $this->attributes[ 'image' ] ) ) {
             File::delete( $path . $this->attributes[ 'image' ] );
         }
