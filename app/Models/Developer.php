@@ -17,13 +17,27 @@ class Developer extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [ 'image' ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [ 'user' ];
+
+    /**
      * Get parent user of user detail.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
-        return $this->belongsTo( User::class, 'user_id' );
+        return $this->belongsTo( User::class, 'dev_id' );
     }
 
     /**
@@ -105,5 +119,15 @@ class Developer extends Model
             ->orWhere('email', 'ilike', "%{$request->input('search')}%")
             ->orWhere('phone_number', 'ilike', "%{$request->input('search')}%")
             ->orWhere('city_name', 'ilike', "%{$request->input('search')}%");
+    }
+
+    /**
+     * Get user developer avatar url.
+     *
+     * @return string
+     */
+    public function getImageAttribute()
+    {
+        return $this->user->image;
     }
 }
