@@ -76,5 +76,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		} );
 	});
 
+	Route::group( [ 'namespace' => 'Int' ], function () {
+		Route::get( 'list-developer', 'DeveloperController@index' );
+	} );
+
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 });
