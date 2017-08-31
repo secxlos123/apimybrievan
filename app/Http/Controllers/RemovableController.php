@@ -186,6 +186,27 @@ class RemovableController extends Controller
                 $update_message[] = 'Add ref_number field on eforms table!';
             }
 
+            if(!Schema::hasColumns('developers', ['created_by', 'approved_by', 'is_approved', 'pks_number', 'plafond'])) {
+                Schema::table('developers', function (Blueprint $table) {
+                    $table->integer('created_by')->unsigned()->nullable();
+                    $table->integer('approved_by')->unsigned()->nullable();
+                    $table->boolean('is_approved')->default(false);
+                    $table->string('pks_number')->nullable();
+                    $table->string('plafond')->nullable();
+                });
+                $update_message[] = 'Add created_by, approved_by, is_approved, pks_number and plafond field on developers table!';
+            }
+
+            if(!Schema::hasColumns('properties', ['pic_name', 'pic_phone', 'is_approved', 'approved_by'])) {
+                Schema::table('properties', function (Blueprint $table) {
+                    $table->integer('approved_by')->unsigned()->nullable();
+                    $table->string('pic_name')->nullable();
+                    $table->string('pic_phone')->nullable();
+                    $table->boolean('is_approved')->default(false);
+                });
+                $update_message[] = 'Add pic_name, pic_phone, is_approved and approved_by field on properties table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

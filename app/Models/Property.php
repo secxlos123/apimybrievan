@@ -12,8 +12,8 @@ class Property extends Model
      * @var array
      */
     protected $fillable = [
-        'developer_id', 'city_id', 'name', 'address', 'category',
-        'latitude', 'longitude', 'facilities',
+        'developer_id', 'city_id', 'name', 'address', 'category', 'latitude', 'longitude',
+        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved'
     ];
 
     /**
@@ -24,6 +24,16 @@ class Property extends Model
     public function developer()
     {
         return $this->belongsTo( Developer::class, 'developer_id' );
+    }
+
+    /**
+     * Get parent property of developer.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function approved()
+    {
+        return $this->belongsTo( User::class, 'approved_by' );
     }
 
     /**

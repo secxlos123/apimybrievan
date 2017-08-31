@@ -14,6 +14,7 @@ class Developer extends Model
      */
     protected $fillable = [
         'user_id', 'city_id', 'company_name', 'address', 'summary',
+        'created_by', 'approved_by', 'is_approved', 'pks_number', 'plafond'
     ];
 
     /**
@@ -38,6 +39,26 @@ class Developer extends Model
     public function user()
     {
         return $this->belongsTo( User::class, 'dev_id' );
+    }
+
+    /**
+     * Get parent user of user detail.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function approved()
+    {
+        return $this->belongsTo( User::class, 'approved_by' );
+    }
+
+    /**
+     * Get parent user of user detail.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function created()
+    {
+        return $this->belongsTo( User::class, 'created_by' );
     }
 
     /**

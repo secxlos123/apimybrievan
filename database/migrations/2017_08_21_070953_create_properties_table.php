@@ -17,12 +17,16 @@ class CreatePropertiesTable extends Migration
             $table->increments('id');
             $table->integer('developer_id')->unsigned()->nullable();
             $table->integer('city_id')->unsigned();
+            $table->integer('approved_by')->unsigned()->nullable();
             $table->string('name');
+            $table->string('pic_name');
+            $table->string('pic_phone');
             $table->text('address');
             $table->enum('category', ['apartment', 'ruko', 'rumah', 'vila', 'kantor', 'komersial']);
             $table->string('latitude');
             $table->string('longitude');
             $table->longText('facilities');
+            $table->boolean('is_approved')->default(false);
             $table->timestamps();
 
             $table->foreign( 'developer_id' )->references( 'id' )->on( 'developers' )
@@ -32,6 +36,10 @@ class CreatePropertiesTable extends Migration
             $table->foreign( 'city_id' )->references( 'id' )->on( 'cities' )
                 ->onUpdate( 'cascade' )
                 ->onDelete( 'cascade' );
+
+            $table->foreign( 'approved_by' )->references( 'id' )->on( 'users' )
+                ->onUpdate( 'cascade' )
+                ->onDelete( 'set null' );
         });
     }
 
