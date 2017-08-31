@@ -41,7 +41,7 @@ class AuthController extends Controller
         }
 
         $code = 401; $status = 'error';
-        $response = ['message' => 'Login Gagal', 'data' => (object) null];
+        $response = ['message' => 'Login Gagal'];
 
         if ($this->verify($request, $token)) {
 	        $user = JWTAuth::toUser($token);
@@ -54,7 +54,7 @@ class AuthController extends Controller
 	        $code = 200; $status = 'success';
 	        $response = [
         		'message' => 'Login Sukses',
-	        	'data' 	  => [
+	        	'contents'=> [
 		    		'token' => 'Bearer ' . $token,
                     'user_id' => $user->id,
 		    		'email' => $user->email,
@@ -82,7 +82,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
     	$logout = JWTAuth::invalidate();
-        return response()->success(['message' => 'Logout Sukses', 'data' => (object) null]);
+        return response()->success(['message' => 'Logout Sukses']);
     }
 
     /**

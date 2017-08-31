@@ -17,7 +17,7 @@ class BaseRequest extends FormRequest
     {
         return [
             'message' => 'Please insert valid data.',
-            'data' => array_map( function( $value ) {
+            'contents'=> array_map( function( $value ) {
                 return $value[ 0 ];
             } , $validator->messages()->toArray() )
         ];

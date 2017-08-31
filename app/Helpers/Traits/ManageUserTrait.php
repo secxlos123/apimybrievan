@@ -16,7 +16,7 @@ trait ManageUserTrait
     public function show(User $model)
     {
         $model = User::getResponse($model);
-        return response()->success(['data' => $model]);
+        return response()->success(['contents' => $model]);
     }
 
 	/**
@@ -32,7 +32,7 @@ trait ManageUserTrait
         $model->update($request->input());
         return response()->success([
             'message' => "Data {$this->activedFor} berhasil di {$is_actived}.",
-            'data' => User::getResponse($model)
+            'contents' => User::getResponse($model)
         ]);
     }
 
