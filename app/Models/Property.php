@@ -31,7 +31,7 @@ class Property extends Model
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function approved()
+    public function approvedBy()
     {
         return $this->belongsTo( User::class, 'approved_by' );
     }

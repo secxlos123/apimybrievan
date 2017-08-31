@@ -46,7 +46,7 @@ class Developer extends Model
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function approved()
+    public function approvedBy()
     {
         return $this->belongsTo( User::class, 'approved_by' );
     }
@@ -56,7 +56,7 @@ class Developer extends Model
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function created()
+    public function createdBy()
     {
         return $this->belongsTo( User::class, 'created_by' );
     }
