@@ -16,24 +16,20 @@ class ResponseMacroServiceProvider extends ServiceProvider
     {
         Response::macro('success', function (array $data, $code = 200) {
             $response = [
-                'status' => [
-                    'message' => isset($data['message']) ? $data['message'] : 'OK',
-                    'succeded' => true,
-                    'code' => $code,
-                ],
-            ] + array_except($data, 'message');
+                'code'         => $code,
+                'descriptions' => isset($data['message']) ? $data['message'] : 'OK',
+                'contents'     => isset($data['contents']) ? $data['contents'] : (object) null 
+            ];
 
             return Response::json($response, $code);
         });
 
         Response::macro('error', function (array $data, $code = 400) {
             $response = [
-                'status' => [
-                    'message' => isset($data['message']) ? $data['message'] : 'Failed',
-                    'succeded' => false,
-                    'code' => $code,
-                ],
-            ] + array_except($data, 'message');
+                'code'         => $code,
+                'descriptions' => isset($data['message']) ? $data['message'] : 'Failed',
+                'contents'     => isset($data['contents']) ? $data['contents'] : (object) null
+            ];
 
             return Response::json($response, $code);
         });
