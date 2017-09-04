@@ -30,6 +30,8 @@ class BaseRequest extends FormRequest
             'phone'         => 'required|digits:12|numeric',
             'mobile_phone'  => 'required|digits:12|numeric',
             'image'         => 'image|max:1024',
+            'pks_number'    => 'required',
+            'plafond'       => 'required'
         ];
     }
 

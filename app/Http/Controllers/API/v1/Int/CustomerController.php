@@ -24,7 +24,7 @@ class CustomerController extends Controller
         $customers = User::getCustomers( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'customers' => $customers
+            'contents' => $customers
         ], 200 );
     }
 
@@ -42,7 +42,7 @@ class CustomerController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Data nasabah berhasil ditambahkan.',
-            'data' => $customer
+            'contents' => $customer
         ], 201 );
     }
 
@@ -62,7 +62,7 @@ class CustomerController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Data nasabah berhasil dirubah.',
-            'data' => $customer
+            'contents' => $customer
         ] );
     }
 
@@ -77,7 +77,7 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail( $id );
         return response()->success( [
             'message' => 'Sukses',
-            'data' => $customer
+            'contents' => $customer
         ], 200 );
     }
 }

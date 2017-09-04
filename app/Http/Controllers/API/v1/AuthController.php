@@ -33,15 +33,15 @@ class AuthController extends Controller
         try {
             // attempt to verify the credentials and create a token for the user
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->error(['error' => 'invalid_credentials'], 401);
+                return response()->error(['message' => 'invalid_credentials'], 401);
             }
         } catch (JWTException $e) {
             // something went wrong whilst attempting to encode the token
-            return response()->error(['error' => 'could_not_create_token'], 500);
+            return response()->error(['message' => 'could_not_create_token'], 500);
         }
 
         $code = 401; $status = 'error';
-        $response = ['message' => 'Login Gagal', 'data' => (object) null];
+        $response = ['message' => 'Login Gagal'];
 
         if ($this->verify($request, $token)) {
 	        $user = JWTAuth::toUser($token);
@@ -54,7 +54,7 @@ class AuthController extends Controller
 	        $code = 200; $status = 'success';
 	        $response = [
         		'message' => 'Login Sukses',
-	        	'data' 	  => [
+	        	'contents'=> [
 		    		'token' => 'Bearer ' . $token,
                     'user_id' => $user->id,
 		    		'email' => $user->email,
@@ -82,7 +82,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
     	$logout = JWTAuth::invalidate();
-        return response()->success(['message' => 'Logout Sukses', 'data' => (object) null]);
+        return response()->success(['message' => 'Logout Sukses']);
     }
 
     /**
@@ -114,7 +114,7 @@ class AuthController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Register Sukses',
-            'data' => $data
+            'contents' => $data
         ], 201 );
     }
 
@@ -134,7 +134,7 @@ class AuthController extends Controller
 
         return response()->success( [
             'message' => 'Register Komplit Sukses',
-            'data' => $user
+            'contents' => $user
         ], 201 );
     }
 
@@ -153,7 +153,6 @@ class AuthController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Aktivasi Sukses',
-            'data' => []
         ], 201 );
     }
 }

@@ -26,7 +26,7 @@ class VisitReportController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Data LKN berhasil ditambahkan.',
-            'data' => $visit_report
+            'contents' => $visit_report
         ], 201 );
     }
 }

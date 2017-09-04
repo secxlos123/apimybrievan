@@ -19,7 +19,7 @@ class RoleController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $roles = Role::getLists($request)->paginate($limit);
-        return response()->success(['roles' => $roles]);
+        return response()->success(['contents' => $roles]);
     }
 
     /**
@@ -31,7 +31,7 @@ class RoleController extends Controller
     public function store(CreateRequest $request)
     {
         $role = Role::create($request->input());
-        return response()->success(['message' => 'Data role berhasil ditambahkan.', 'data' => (object) null]);
+        return response()->success(['message' => 'Data role berhasil ditambahkan.']);
     }
 
     /**
@@ -42,7 +42,7 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        return response()->success(['data' => $role]);
+        return response()->success(['contents' => $role]);
     }
 
     /**
@@ -55,7 +55,7 @@ class RoleController extends Controller
     public function update(UpdateRequest $request, Role $role)
     {
         $role->update($request->input());
-        return response()->success(['message' => 'Data role berhasil dirubah.', 'data' => (object) null]);
+        return response()->success(['message' => 'Data role berhasil dirubah.']);
     }
 
     /**
@@ -67,6 +67,6 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         $role->delete();
-        return response()->success(['message' => 'Data role berhasil dihapus.', 'data' => (object) null]);
+        return response()->success(['message' => 'Data role berhasil dihapus.']);
     }
 }

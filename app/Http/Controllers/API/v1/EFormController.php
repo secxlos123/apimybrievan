@@ -23,7 +23,7 @@ class EFormController extends Controller
         $eforms = EForm::paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'eforms' => $eforms
+            'contents' => $eforms
         ], 200 );
     }
 
@@ -38,7 +38,7 @@ class EFormController extends Controller
     {
         $eform = EForm::with( 'visit_report' )->find( $eform_id );
         return response()->success( [
-            'data' => $eform
+            'contents' => $eform
         ] );
     }
 
@@ -57,7 +57,7 @@ class EFormController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
-            'data' => $eform
+            'contents' => $eform
         ], 201 );
     }
 
@@ -76,7 +76,7 @@ class EFormController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Screening e-form berhasil disimpan.',
-            'data' => $eform
+            'contents' => $eform
         ], 201 );
     }
 
@@ -95,7 +95,7 @@ class EFormController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'Disposisi e-form berhasil disimpan.',
-            'data' => $eform
+            'contents' => $eform
         ], 201 );
     }
 
@@ -116,7 +116,7 @@ class EFormController extends Controller
         DB::commit();
         return response()->success( [
             'message' => 'E-form berhasil diapprove.',
-            'data' => $eform
+            'contents' => $eform
         ], 201 );
     }
 }

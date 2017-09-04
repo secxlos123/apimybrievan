@@ -44,7 +44,7 @@ class DeveloperController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $developers = Developer::getLists($request)->paginate($limit);
-        return response()->success(['developers' => $developers]);
+        return response()->success(['contents' => $developers]);
     }
 
     /**
@@ -55,9 +55,10 @@ class DeveloperController extends Controller
      */
     public function store(CreateRequest $request)
     {
+        $request->merge(['created_by' => $request->user()->id]);
         $user = $this->storeUpdate($request, []);
-        if ($user) return response()->success(['message' => 'Data developer berhasil disimpan.', 'data' => $user]);
-        return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
+        if ($user) return response()->success(['message' => 'Data developer berhasil disimpan.', 'contents' => $user]);
+        return response()->error(['message' => 'Maaf server sedang gangguan.'], 500);
     }
 
     /**
@@ -70,8 +71,8 @@ class DeveloperController extends Controller
     public function update(UpdateRequest $request, User $developer)
     {
         $user = $this->storeUpdate($request, $developer);
-        if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'data' => $user]);
-        return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
+        if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'contents' => $user]);
+        return response()->error(['message' => 'Maaf server sedang gangguan.'], 500);
     }
 
     /**

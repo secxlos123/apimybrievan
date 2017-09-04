@@ -266,11 +266,14 @@ class User extends Authenticatable
             'phone'         => $user->phone,
             'address'       => $developer->address,
             'mobile_phone'  => $user->mobile_phone,
-            'is_actived'    => $user->is_actived,
             'image'         => $user->image,
             'city_id'       => $developer->city->id,
             'city_name'     => $developer->city->name,
             'summary'       => $developer->summary,
+            'pks_number'    => $developer->pks_number,
+            'plafond'       => number_format($developer->plafond),
+            'is_actived'    => $user->is_actived,
+            'is_approved'   => $developer->is_approved,
         ];
     }
 

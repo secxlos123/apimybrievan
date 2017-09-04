@@ -15,10 +15,10 @@ class PropertyTypeController extends Controller
      */
     public function index(Request $request, $developerId = null)
     {
-        if ( ! $developerId ) $request->user()->id;
+        if ( ! $developerId ) $developerId = $request->user()->id;
         $limit = $request->input('limit') ?: 10;
         $properties = PropertyType::getLists($request, $developerId)->paginate($limit);
-        return response()->success(['properties' => $properties]);
+        return response()->success(['contents' => $properties]);
     }
 
     /**

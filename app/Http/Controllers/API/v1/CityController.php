@@ -17,6 +17,6 @@ class CityController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $cities = City::getLists($request)->paginate($limit);
-        return response()->success(['cities' => $cities]);
+        return response()->success(['contents' => $cities]);
     }
 }
