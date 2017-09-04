@@ -20,7 +20,7 @@ class AccountOfficerController extends Controller
         $account_officers = AccountOfficer::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'account_officers' => $account_officers
+            'contents' => $account_officers
         ], 200 );
     }
 }
