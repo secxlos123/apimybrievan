@@ -18,7 +18,7 @@ class ProfileController extends Controller
     public function index(Request $request)
     {
         $profile = User::getProfile($request);
-        return response()->success(['data' => $profile]);
+        return response()->success(['contents' => $profile]);
     }
 
     /**
@@ -36,6 +36,6 @@ class ProfileController extends Controller
             $temp = TempUser::updateOrCreate(['user_id' => $user->id], $request->all());
         }
 
-        return response()->success(['message' => 'Data profile berhasil dirubah.', 'data' => (object) null]);
+        return response()->success(['message' => 'Data profile berhasil dirubah.']);
     }
 }

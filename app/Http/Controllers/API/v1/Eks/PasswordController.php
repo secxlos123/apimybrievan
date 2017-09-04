@@ -23,8 +23,7 @@ class PasswordController extends Controller
         dispatch(new SendPasswordEmail($user, $password, 'reset'));
 
         return response()->success([
-            'message' => 'Password berhasil direset, silahkan cek email anda untuk mendapatkan password baru',
-            'data' => (object) null
+            'message' => 'Password berhasil direset, silahkan cek email anda untuk mendapatkan password baru'
         ]);
     }
 }

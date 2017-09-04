@@ -17,6 +17,6 @@ class OfficeController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $offices = Office::getLists($request)->paginate($limit);
-        return response()->success(['offices' => $offices]);
+        return response()->success(['contents' => $offices]);
     }
 }

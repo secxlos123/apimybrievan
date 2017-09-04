@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $users = User::getLists($request)->paginate($limit);
-        return response()->success(['users' => $users]);
+        return response()->success(['contents' => $users]);
     }
 
     /**
@@ -54,8 +54,8 @@ class UserController extends Controller
     public function store(CreateRequest $request)
     {
         $user = $this->storeUpdate($request, []);
-        if ($user) return response()->success(['message' => 'Data user berhasil ditambahkan.', 'data' => $user]);
-        return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
+        if ($user) return response()->success(['message' => 'Data user berhasil ditambahkan.', 'contents' => $user]);
+        return response()->error(['message' => 'Maaf server sedang gangguan.'], 500);
     }
 
     /**
@@ -68,7 +68,7 @@ class UserController extends Controller
     public function update(UpdateRequest $request, User $user)
     {
         $user = $this->storeUpdate($request, $user);
-        if ($user) return response()->success(['message' => 'Data user berhasil dirubah.', 'data' => $user]);
-        return response()->error(['data' => (object) null, 'message' => 'Maaf server sedang gangguan.'], 500);
+        if ($user) return response()->success(['message' => 'Data user berhasil dirubah.', 'contents' => $user]);
+        return response()->error(['message' => 'Maaf server sedang gangguan.'], 500);
     }
 }
