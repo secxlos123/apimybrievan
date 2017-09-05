@@ -207,6 +207,33 @@ class RemovableController extends Controller
                 $update_message[] = 'Add pic_name, pic_phone, is_approved and approved_by field on properties table!';
             }
 
+            if (Schema::hasTable('developers_view_table') && ! Schema::hasColumn('developers_view_table', 'is_actived')) {
+                \DB::unprepared("DROP VIEW IF EXISTS developers_view_table");
+                \DB::unprepared("CREATE VIEW developers_view_table AS
+                  SELECT 
+                      users.id AS dev_id, 
+                      developers.company_name AS company_name, 
+                      concat(users.first_name, ' ', users.last_name) AS name,
+                      users.email AS email,
+                      users.phone AS phone_number,
+                      users.is_actived AS is_actived,
+                      cities.id AS city_id,
+                      cities.name AS city_name,
+                      ( 
+                          SELECT count( * ) FROM properties
+                              LEFT JOIN property_types ON properties.id = property_types.property_id
+                              LEFT JOIN property_items ON property_types.id = property_items.property_type_id
+                              where developers.id = properties.developer_id
+                      ) AS project 
+
+                  FROM developers
+                      inner JOIN users ON users.id = developers.user_id
+                      inner JOIN cities ON cities.id = developers.city_id
+                ");
+
+                $update_message[] = 'Update developers_view_table';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

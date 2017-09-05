@@ -21,6 +21,7 @@ class CreateViewDevelopersViewTable extends Migration
               concat(users.first_name, ' ', users.last_name) AS name,
               users.email AS email,
               users.phone AS phone_number,
+              users.is_actived AS is_actived,
               cities.id AS city_id,
               cities.name AS city_name,
               ( 
