@@ -180,6 +180,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\ResponseMacroServiceProvider::class,
         App\Providers\CustomValidationServiceProvider::class,
+        App\Providers\AsmxServiceProvider::class,
+        App\Providers\RestwsHcServiceProvider::class,
 
     ],
 
@@ -238,7 +240,19 @@ return [
         'Activation'   => Cartalyst\Sentinel\Laravel\Facades\Activation::class,
         'Reminder'     => Cartalyst\Sentinel\Laravel\Facades\Reminder::class,
         'Sentinel'     => Cartalyst\Sentinel\Laravel\Facades\Sentinel::class,
+        'Asmx'         => App\Classes\Client\Facades\Asmx::class,
+        'RestwsHc'     => App\Classes\Client\Facades\RestwsHc::class,
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Register Observers Models
+    |--------------------------------------------------------------------------
+    |
+    */    
+
+    'observers' => [
+        App\Models\Property::class => App\Observers\PropertyObserver::class,
+    ],
 ];
