@@ -50,7 +50,7 @@ class KPR extends Model
         $customer = $eform->customer;
         $customer_detail = $customer->detail;
         $post_to_bri = Asmx::setEndpoint( 'InsertDataMaster' )->setBody( [
-            'request' => [
+            'request' => json_encode( [
                 "nik_pemohon" => $eform->nik,
                 "nama_pemohon" => $eform->customer_name,
                 "tempat_lahir_pemohon" => $customer_detail->birth_place,
@@ -102,10 +102,13 @@ class KPR extends Model
                 "npwp_pemohon" => "36.930.247.6-409.000", // Tidak ada di design dan database
                 "nama_pengelola" => "Oblag",
                 "pn_pengelola" => request()->header( 'pn' )
-            ]
+            ] )
         ] )->post( 'form_params' );
-        dd( $post_to_bri );
-
-        return $kpr;
+        if( $post_to_bri[ 'code' ] == 200 ) {
+            return $kpr;
+        } else {
+            throw new \Exception( "Error Processing Request", 1 );
+            
+        }
     }
 }
