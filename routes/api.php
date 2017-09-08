@@ -33,11 +33,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		 * Route group auth
 		 */
 		Route::group(['prefix' => 'auth'], function () {
-
-			/**
-			 * Route for login
-			 */
-			Route::post('login', 'AuthController@authenticate');
 			
 			/**
 			 * Route for register
@@ -45,17 +40,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post( 'register', 'AuthController@register' );
 			Route::post( 'register-simple', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
 			Route::post( 'register-complete', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
-
-			/**
-			 * Route for logout
-			 */
-			Route::delete('logout', 'AuthController@logout')->middleware(['api.auth']);
 		});
 
 		/**
 		 * Route group for logged in users
 		 */
 		Route::group( [ 'middleware' => 'api.auth' ], function() {
+
+			Route::get( 'job-list', 'JobController' );
 
 			/**
 			 * Route resource for e-form

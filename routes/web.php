@@ -44,3 +44,8 @@ Route::get('/logout', function () {
 	->post('form_params');
 	dd($logout);
 });
+
+Route::get( '/getbidangpekerjaan', function() {
+	$cek = \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
+	dd( $cek );
+} );

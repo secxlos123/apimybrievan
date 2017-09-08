@@ -61,5 +61,6 @@ class Kernel extends HttpKernel
         'api.refresh'=> \Tymon\JWTAuth\Middleware\RefreshToken::class,
         'has.user.int' => \App\Http\Middleware\HasUserInternal::class,
         'has.user.dev' => \App\Http\Middleware\HasDeveloper::class,
+        'bri.int.auth' => \App\Http\Middleware\BRIInternalAuthenticate::class,
     ];
 }

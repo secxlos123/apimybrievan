@@ -52,6 +52,11 @@ class Handler extends ExceptionHandler
                 'message' => 'Data tidak ditemukan',
                 'data' => []
             ], 404 );
+        } else if( $exception instanceof \App\Exceptions\BRIServiceException ) {
+            return response()->error( [
+                'message' => 'BRI Request error',
+                'data' => []
+            ], 404 );
         }
         // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
         //     return response()->json( [

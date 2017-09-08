@@ -15,4 +15,31 @@ class ServiceAsmx extends Client
     {
         return config('restapi.asmx').$this->endpoint;
     }
+
+    /**
+     * Post request to middleware.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function post($type = 'json')
+    {
+        try {
+            $request  = $this->http->request('POST', $this->uri(), [
+                'headers'  => $this->headers,
+                'query'    => $this->query,
+                $type      => $this->body
+            ]);
+            $xml = simplexml_load_string( $request->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA );
+            $response = json_decode( $xml, true );
+        } catch (ClientException $e) {
+            $body = $e->getResponse()->getBody();
+            $response = json_decode($body->getContents(), true);
+        } catch (ServerException $e) {
+            \Log::info($e->getRequest()->getBody());
+            \Log::info($e->getMessage());
+            abort(500);
+        }
+
+        return $response;
+    }
 }

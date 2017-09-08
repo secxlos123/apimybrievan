@@ -11,9 +11,19 @@
 |
 */
 
-/**
- * Route group for api v1
- */
+Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
+	Route::post( 'auth/login', 'AuthController@store' );
+
+	// route that require login session
+	Route::group( [ 'middleware' => [ 'bri.int.auth' ] ], function () {
+		Route::get( 'check-token', 'TokenController@index' );
+
+		Route::group( [ 'prefix' => 'auth' ], function () {
+			Route::delete( 'logout', 'AuthController@destroy' );
+		} );
+	} );
+} );
+
 Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		'middleware' => ['api.access', 'api.auth']
 	], function () {

@@ -14,9 +14,15 @@
 /**
  * Route group for api v1
  */
-Route::group(['prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks',
-		'middleware' => ['api.access']
-	], function () {
+Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks', 'middleware' => ['api.access'] ], function() {
+	Route::post( 'auth/login', 'AuthController@store' );
+
+	// route that required for login
+	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
+		Route::group( [ 'prefix' => 'auth' ], function () {
+			Route::delete( 'logout', 'AuthController@destroy' );
+		} );
+	} );
 
 	/**
 	 * Route group password
