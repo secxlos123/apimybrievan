@@ -44,6 +44,16 @@ Route::group(['prefix' => 'v1/{type}', 'namespace' => 'API\v1',
 		/**
 		 * Route resource for RoleController
 		 */
+		Route::post('auth/sso/login', 'AuthController@authenticate');
+
+		/**
+		 * Route resource for RoleController
+		 */
+		Route::delete('auth/sso/logout', 'AuthController@logout');
+
+		/**
+		 * Route resource for RoleController
+		 */
 		Route::resource('role', 'RoleController', [
 			'except' => ['edit', 'create']
 		]);
