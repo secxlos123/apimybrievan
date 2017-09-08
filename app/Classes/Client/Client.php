@@ -191,8 +191,6 @@ abstract class Client
             $body = $e->getResponse()->getBody();
             $response = json_decode($body->getContents(), true);
         } catch (ServerException $e) {
-            \Log::info($e->getRequest()->getBody());
-            \Log::info($e->getMessage());
             abort(500);
         }
 

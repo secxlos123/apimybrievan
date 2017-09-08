@@ -13,6 +13,34 @@ class ServiceRestwsHc extends Client
      */
     public function uri()
     {
-        return config('restapi.restwshc').$this->endpoint;
+        return config('restapi.restwshc');
+    }
+
+    /**
+     * Post request to middleware.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function post($type = 'json')
+    {
+    	$this->body = $this->requests($this->body);
+
+        return parent::post($type);
+    }
+
+    /**
+     * Formating request to server.
+     *
+     * @param 	array $data
+     * @return 	array
+     */
+    public function requests(array $data)
+    {
+    	return [
+    		'request' => json_encode([
+				'requestMethod' => $data['endpoint'],
+				'requestData' 	=> array_except($data, ['endpoint'])
+			])
+    	];
     }
 }

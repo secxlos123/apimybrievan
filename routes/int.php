@@ -15,13 +15,26 @@
  * Route group for api v1
  */
 Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
-		'middleware' => ['api.access', 'api.auth']
+		'middleware' => [
+			'api.access',
+			// 'api.auth'
+		]
 	], function () {
 
 	/**
 	 * Route group for namespace controller Int
 	 */
 	Route::group(['namespace' => 'Int'], function () {
+
+		/**
+		 * Route resource for RoleController
+		 */
+		Route::post('auth/sso/login', 'AuthController@authenticate');
+
+		/**
+		 * Route resource for RoleController
+		 */
+		Route::delete('auth/sso/logout', 'AuthController@logout');
 
 		/**
 		 * Route resource for RoleController
