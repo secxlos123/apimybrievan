@@ -11,22 +11,30 @@
 |
 */
 
-Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
+Route::group( [ 'prefix' => 'v1/{type}', 'namespace' => 'API\v1\Int' ], function ( $type = 'int' ) {
 	Route::post( 'auth/login', 'AuthController@store' );
 
 	// route that require login session
-	Route::group( [ 'middleware' => [ 'bri.int.auth' ] ], function () {
+	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::get( 'check-token', 'TokenController@index' );
 
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::delete( 'logout', 'AuthController@destroy' );
 		} );
+
+		Route::resource( 'developer', 'DeveloperController', [
+			'only' => [ 'index', 'store', 'update' ]
+		] );
+
+		Route::resource( 'customer', 'CustomerController', [
+			'except' => [ 'edit', 'create' ]
+		] );
 	} );
 } );
 
-Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
+Route::group(['prefix' => 'v1/{type}', 'namespace' => 'API\v1',
 		'middleware' => ['api.access', 'api.auth']
-	], function () {
+	], function ( $type = 'int' ) {
 
 	/**
 	 * Route group for namespace controller Int
@@ -67,20 +75,6 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			 */
 			Route::match(['put', 'patch'], 'actived', 'UserController@actived')->name('user.actived');
 		});
-
-		/**
-		 * Route resource for CustomerController
-		 */
-		Route::resource( 'customer', 'CustomerController', [
-			'except' => [ 'edit', 'create' ]
-		] );
-
-		/**
-		 * Route resource for DeveloperController
-		 */
-		Route::resource( 'developer', 'DeveloperController', [
-			'only' => ['index', 'store', 'update']
-		] );
 
 		/**
 		 * Route group for controller when uses trait ManageUserTrait

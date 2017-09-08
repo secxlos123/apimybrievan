@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Events\EForm\Approved;
 use App\Models\EForm;
+use App\Models\KPR;
 use DB;
 
 class EFormController extends Controller
@@ -51,13 +52,12 @@ class EFormController extends Controller
     public function store( EFormRequest $request )
     {
         DB::beginTransaction();
-        $eform = EForm::create( $request->all() );
-        $eform->saveImages( $request->images );
+        $kpr = KPR::create( $request->all() );
 
-        DB::commit();
+        DB::rollback();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
-            'contents' => $eform
+            'contents' => $kpr
         ], 201 );
     }
 

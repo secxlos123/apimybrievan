@@ -19,8 +19,24 @@ Route::post( 'urgent-function', 'RemovableController@run' );
  */
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
+	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
+		Route::get( 'job-list', 'JobController@index' );
+		Route::get( 'job-field-list', 'JobFieldController@index' );
+		Route::get( 'job-type-list', 'JobTypeController@index' );
+		Route::get( 'citizenship-list', 'CitizenshipController@index' );
+
+		Route::resource( 'eforms', 'EFormController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+
+		Route::get( 'cities', 'CityController' );
+
+		Route::get( 'offices', 'OfficeController@index' );
+	} );
+
 	/**
 	 * Route group for type of user in : int and eks
+	 * NB : BUAT APA MENGGUNAKAN API.ACCESS DAN API.AUTH? APA PERBEDAAN KEDUANYA?
 	 */
 	Route::group(['prefix' => '{type}', 'middleware' => 'api.access'], function () {
 
@@ -41,31 +57,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post( 'register-simple', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
 			Route::post( 'register-complete', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
 		});
-
-		/**
-		 * Route group for logged in users
-		 */
-		Route::group( [ 'middleware' => 'api.auth' ], function() {
-
-			Route::get( 'job-list', 'JobController' );
-
-			/**
-			 * Route resource for e-form
-			 */
-			Route::resource( 'eforms', 'EFormController', [
-				'except' => [ 'edit', 'create', 'destroy' ]
-			] );
-
-			/**
-			 * Route for get list of cities
-			 */
-			Route::get('cities', 'CityController');
-
-			/**
-			 * Route for get list of offices
-			 */
-			Route::get('offices', 'OfficeController@index');
-		} );
 	});
 
 	Route::group( [ 'namespace' => 'Int' ], function () {

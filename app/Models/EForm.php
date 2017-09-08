@@ -24,7 +24,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'office_id', 'product', 'prescreening_status', 'is_approved'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'office_id', 'product_type', 'prescreening_status', 'is_approved'
     ];
 
     /**
@@ -158,19 +158,21 @@ class EForm extends Model
 
         static::addGlobalScope( 'role', function( Builder $builder ) {
             $login_usr = Sentinel::getUser();
-            $role_slug = $login_usr->roles()->first()->slug;
-            if( $role_slug == 'ao' ) {
-                // $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
-                $builder->whereAoId( $login_usr->id );
-            } else if( $role_slug == 'mp' || $role_slug == 'pinca' ) {
-                if( $login_usr->detail ) {
-                    // $builder->where( [
-                    //     'office_id' => $login_usr->detail->office_id,
-                    //     'prescreening_status' => 0
-                    // ] )->has( 'visit_report' );
-                    $builder->where( [
-                        'office_id' => $login_usr->detail->office_id
-                    ] );
+            if( $login_usr ) {
+                $role_slug = $login_usr->roles()->first()->slug;
+                if( $role_slug == 'ao' ) {
+                    // $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
+                    $builder->whereAoId( $login_usr->id );
+                } else if( $role_slug == 'mp' || $role_slug == 'pinca' ) {
+                    if( $login_usr->detail ) {
+                        // $builder->where( [
+                        //     'office_id' => $login_usr->detail->office_id,
+                        //     'prescreening_status' => 0
+                        // ] )->has( 'visit_report' );
+                        $builder->where( [
+                            'office_id' => $login_usr->detail->office_id
+                        ] );
+                    }
                 }
             }
         } );

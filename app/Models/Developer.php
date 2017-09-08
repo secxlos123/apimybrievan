@@ -109,8 +109,7 @@ class Developer extends Model
                  * Query for search developers.
                  */
                 if ($request->has('search')) $query->search($request);
-            })
-            ->where(function ($developer) use ($request) {
+            })            ->where(function ($developer) use ($request) {
 
                 /**
                  * Query for filter by city_id.

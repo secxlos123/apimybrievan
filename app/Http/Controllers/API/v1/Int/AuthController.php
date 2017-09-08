@@ -38,7 +38,6 @@ class AuthController extends Controller
                 ]
             ], 200 );
         } else {
-            dd( $login );
             return response()->success( [
                 'message' => $login[ 'responseData' ],
                 'contents'=> []

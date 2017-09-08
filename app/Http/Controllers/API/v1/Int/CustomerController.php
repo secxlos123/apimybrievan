@@ -69,10 +69,11 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  string  $type
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show( $id )
+    public function show( $type, $id )
     {
         $customer = Customer::findOrFail( $id );
         return response()->success( [

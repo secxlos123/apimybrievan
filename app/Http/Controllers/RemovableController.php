@@ -234,6 +234,14 @@ class RemovableController extends Controller
                 $update_message[] = 'Update developers_view_table';
             }
 
+            if( ! Schema::hasColumn( 'eforms', 'product_type' ) ) {
+                Schema::table( 'eforms', function ( Blueprint $table ) {
+                    $table->dropColumn( 'product' );
+                    $table->string( 'product_type' )->nullable();
+                } );
+                $update_message[] = 'Add product_type field and remove product field on eforms table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'
