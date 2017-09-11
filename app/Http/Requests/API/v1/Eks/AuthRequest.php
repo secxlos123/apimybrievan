@@ -37,6 +37,11 @@ class AuthRequest extends BaseRequest
                         'email' => 'required|email',
                         'password' => 'required',
                     ];
+                } else  if( $this->segment( 3 ) == 'activate' ) {
+                    return [
+                        'user_id' => 'required|exists:users,id',
+                        'code' => 'required|exists:activations,code,completed,false'
+                    ];
                 } else if ( $this->segment( 5 ) == 'register-complete' ) {
                     $login_session = Sentinel::getUser();
                     $additional = '';

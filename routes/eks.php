@@ -20,6 +20,8 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 		Route::post( 'register', 'AuthController@register' );
 	} );
 
+	Route::post( 'activate', 'AuthController@activate' );
+
 	// route that required for login
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::group( [ 'prefix' => 'auth' ], function () {

@@ -6,8 +6,14 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\Eks\AuthRequest;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Events\Customer\CustomerRegister;
 use App\Helpers\Traits\VerifyUser;
+use App\Models\User;
+use Activation;
+use Sentinel;
 use JWTAuth;
+use DB;
 
 class AuthController extends Controller
 {
@@ -43,6 +49,24 @@ class AuthController extends Controller
         return response()->success( [
             'message' => 'Register Sukses',
             'contents' => $data
+        ], 201 );
+    }
+
+    /**
+     * Activate new user as members
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function activate( AuthRequest $request )
+    {
+        DB::beginTransaction();
+        $user = User::find( $request->user_id );
+        Activation::complete( $user, $request->code );
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'Aktivasi Sukses',
         ], 201 );
     }
 

@@ -34,18 +34,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'offices', 'OfficeController@index' );
 	} );
 
-	/**
-	 * Route group for type of user in : int and eks
-	 * NB : BUAT APA MENGGUNAKAN API.ACCESS DAN API.AUTH? APA PERBEDAAN KEDUANYA?
-	 */
-	Route::group(['prefix' => '{type}', 'middleware' => 'api.access'], function () {
-
-		/**
-		 * Route for user activation
-		 */
-		Route::post( 'activate', 'AuthController@activate' );
-	});
-
 	Route::group( [ 'namespace' => 'Int' ], function () {
 		Route::get( 'list-developer', 'DeveloperController@index' );
 	} );
