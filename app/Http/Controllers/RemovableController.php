@@ -242,6 +242,17 @@ class RemovableController extends Controller
                 $update_message[] = 'Add product_type field and remove product field on eforms table!';
             }
 
+            if( ! Schema::hasColumns( 'customer_details', [ 'couple_nik', 'couple_name', 'couple_birth_place', 'couple_birth_date', 'couple_identity' ] ) ) {
+                Schema::table( 'customer_details', function( Blueprint $table ) {
+                        $table->string( 'couple_nik' )->nullable();
+                        $table->string( 'couple_name' )->nullable();
+                        $table->string( 'couple_birth_place' )->nullable();
+                        $table->date( 'couple_birth_date' )->nullable();
+                        $table->string( 'couple_identity' )->nullable();
+                    } );
+                $update_message[] = 'Add couple_nik, couple_name, couple_birth_place, couple_birth_date, couple_identity, field on customer_details table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

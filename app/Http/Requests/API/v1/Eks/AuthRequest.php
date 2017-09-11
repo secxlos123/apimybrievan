@@ -90,16 +90,15 @@ class AuthRequest extends BaseRequest
                         'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
                         'first_name' => 'required',
                         'last_name' => '',
-                        'birth_place' => 'required',
-                        'birth_date' => 'required|date',
-                        'address' => 'required',
-                        'city' => 'required',
-                        'gender' => 'required|in:L,P',
-                        'citizenship' => 'required',
+                        'mobile_phone' => 'required|numeric|digits:12',
                         'status' => 'required|in:0,1,2',
-                        'address_status' => 'required',
-                        'phone' => 'required|numeric|digits:12',
-                        'mother_name' => 'required'
+                        'mother_name' => 'required',
+                        'identity' => 'required|image',
+                        'couple_nik' => 'required_if:status,1|numeric|digits:16',
+                        'couple_name' => 'required_if:status,1',
+                        'birth_place' => 'required_if:status,1',
+                        'birth_date' => 'required_if:status,1|date',
+                        'couple_identity' => 'required_if:status,1|image'
                     ];
                 } else {
                     return [];

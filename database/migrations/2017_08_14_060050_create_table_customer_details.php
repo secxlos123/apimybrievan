@@ -40,6 +40,11 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'other_salary' )->nullable();
             $table->string( 'loan_installment' )->nullable();
             $table->string( 'dependent_amount' )->nullable();
+            $table->string( 'couple_nik' )->nullable();
+            $table->string( 'couple_name' )->nullable();
+            $table->string( 'couple_birth_place' )->nullable();
+            $table->date( 'couple_birth_date' )->nullable();
+            $table->string( 'couple_identity' )->nullable();
 
             $table->foreign( 'user_id' )->references( 'id' )->on( 'users' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
         } );
