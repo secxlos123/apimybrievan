@@ -44,19 +44,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		 * Route for user activation
 		 */
 		Route::post( 'activate', 'AuthController@activate' );
-		
-		/**
-		 * Route group auth
-		 */
-		Route::group(['prefix' => 'auth'], function () {
-			
-			/**
-			 * Route for register
-			 */
-			Route::post( 'register', 'AuthController@register' );
-			Route::post( 'register-simple', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
-			Route::post( 'register-complete', 'AuthController@registerComplete' )->middleware( [ 'api.auth' ] );
-		});
 	});
 
 	Route::group( [ 'namespace' => 'Int' ], function () {

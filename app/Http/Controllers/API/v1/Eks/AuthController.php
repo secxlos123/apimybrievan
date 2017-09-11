@@ -14,6 +14,39 @@ class AuthController extends Controller
     use VerifyUser;
 
     /**
+     * Register new user as members
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register( AuthRequest $request )
+    {
+        DB::beginTransaction();
+        $user = Sentinel::register( $request->all() );
+        $activation = Activation::create( $user );
+        $role = Sentinel::findRoleBySlug( 'customer' );
+        $role->users()->attach( $user );
+        $token = JWTAuth::fromUser( $user );
+        $data = [
+            'token' => 'Bearer ' . $token,
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'first_name' => $user->first_name,
+            'last_name'  => $user->last_name,
+            'fullname'   => $user->fullname,
+            'role' => $user->roles->first()->slug,
+            'permission' => $user->roles->first()->permissions
+        ];
+        event( new CustomerRegister( $user, $activation->code ) );
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'Register Sukses',
+            'contents' => $data
+        ], 201 );
+    }
+
+    /**
      * The user has been authenticated.
      *
      * @param   \App\Http\Requests\API\v1\Eks\AuthRequest $request
@@ -76,5 +109,25 @@ class AuthController extends Controller
     {
         $logout = JWTAuth::invalidate();
         return response()->success( [ 'message' => 'Logout Sukses' ] );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update( AuthRequest $request )
+    {
+        $token = $request->header( 'Authorization' );
+        $user = JWTAuth::toUser( str_replace( 'Bearer ', '', $token ) );
+        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] ) );
+        $user->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] ) );
+        $user->refresh();
+
+        return response()->success( [
+            'message' => 'Register Komplit Sukses',
+            'contents' => $user
+        ], 201 );
     }
 }
