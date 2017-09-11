@@ -123,4 +123,21 @@ class CustomerDetail extends Model
         $image->move( $path, $filename );
         $this->attributes[ 'identity' ] = $filename;
     }
+
+    /**
+     * Set customer identity image.
+     *
+     * @return void
+     */
+    public function setCoupleIdentityAttribute( $image )
+    {
+        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ( ! empty( $this->attributes[ 'couple_identity' ] ) ) {
+            File::delete( $path . $this->attributes[ 'couple_identity' ] );
+        }
+
+        $filename = $this->user_id . '-couple_identity.' . $image->getClientOriginalExtension();
+        $image->move( $path, $filename );
+        $this->attributes[ 'couple_identity' ] = $filename;
+    }
 }
