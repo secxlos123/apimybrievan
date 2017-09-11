@@ -33,6 +33,8 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        //
+        foreach (config('app.observers') as $model => $observer) {
+            $model::observe($observer);
+        }
     }
 }

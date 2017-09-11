@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\Eks;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PropertyType;
+use App\Models\Property;
+use App\Http\Requests\API\v1\Property\CreateRequest;
 
 class PropertyTypeController extends Controller
 {
@@ -22,24 +24,25 @@ class PropertyTypeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateRequest $request)
     {
-        //
+        \DB::beginTransaction();
+        try {
+            $property = Property::create($request->all());
+            $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
+            $code = 201;
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $status = 'error'; $message = "Project {$request->input('name')} gagal disimpan.";
+            $code = $e->getCode();
+        }
+        return response()->{$status}(compact('message'), $code);
     }
 
     /**
@@ -48,20 +51,10 @@ class PropertyTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Property $property)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $property = $property->getResponse($property);
+        return response()->success(['contents' => $property]);
     }
 
     /**
