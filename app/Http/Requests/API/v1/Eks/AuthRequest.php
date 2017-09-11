@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\API\v1\Eks;
 
-use Illuminate\Foundation\Http\FormRequest;
-
 use App\Http\Requests\BaseRequest;
 
 class AuthRequest extends BaseRequest

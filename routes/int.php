@@ -11,7 +11,7 @@
 |
 */
 
-Route::group( [ 'prefix' => 'v1/{type}', 'namespace' => 'API\v1\Int' ], function ( $type = 'int' ) {
+Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 	Route::post( 'auth/login', 'AuthController@store' );
 
 	// route that require login session
@@ -32,9 +32,9 @@ Route::group( [ 'prefix' => 'v1/{type}', 'namespace' => 'API\v1\Int' ], function
 	} );
 } );
 
-Route::group(['prefix' => 'v1/{type}', 'namespace' => 'API\v1',
+Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		'middleware' => ['api.access', 'api.auth']
-	], function ( $type = 'int' ) {
+	], function () {
 
 	/**
 	 * Route group for namespace controller Int
