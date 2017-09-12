@@ -96,8 +96,8 @@ class AuthRequest extends BaseRequest
                         'identity' => 'required|image',
                         'couple_nik' => 'required_if:status,1|numeric|digits:16',
                         'couple_name' => 'required_if:status,1',
-                        'birth_place' => 'required_if:status,1',
-                        'birth_date' => 'required_if:status,1|date',
+                        'couple_birth_place' => 'required_if:status,1',
+                        'couple_birth_date' => 'required_if:status,1|date',
                         'couple_identity' => 'required_if:status,1|image'
                     ];
                 } else {
