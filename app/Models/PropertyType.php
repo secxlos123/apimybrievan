@@ -18,6 +18,25 @@ class PropertyType extends Model
     ];
 
     /**
+     * The attributes that are rules for validations.
+     *
+     * @var array
+     */
+    public static $rules = [
+        'name'  => 'required',
+        'price' => 'required|numeric',
+        'bathroom'  => 'required|numeric|between:0,4',
+        'bedroom'   => 'required|numeric|between:0,4',
+        'floors'    => 'required|numeric|between:0,4',
+        'carport'   => 'required|numeric|between:0,4',
+        'images.*'  => 'required|image|max:1024',
+        'surface_area'  => 'required',
+        'certificate'   => 'required',
+        'building_area' => 'required',
+        'electrical_power'  => 'required',
+    ];
+
+    /**
      * Get parent property of developer.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -35,6 +54,14 @@ class PropertyType extends Model
     public function propertyItems()
     {
         return $this->hasMany( PropertyItem::class );
+    }
+
+    /**
+     * Get the properties photos.
+     */
+    public function photos()
+    {
+        return $this->morphMany( Photo::class, 'photoable' );
     }
 
     /**

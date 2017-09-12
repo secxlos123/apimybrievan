@@ -17,6 +17,15 @@ class Property extends Model
     ];
 
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'created_at', 'updated_at'
+    ];
+
+    /**
      * Get parent property of developer.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -64,5 +73,34 @@ class Property extends Model
     public function propertyItems()
     {
         return $this->hasManyThrough( PropertyItem::class, PropertyType::class );
+    }
+
+    /**
+     * Get the properties photo.
+     */
+    public function photo()
+    {
+        return $this->morphOne( Photo::class, 'photoable' );
+    }
+
+    /**
+     * Get the properties photo.
+     */
+    public function getResponse($property)
+    {
+        $property->load('propertyTypes.photos', 'propertyTypes.propertyItems.photos', 'photo');
+        $property->image = $property->photo->path;
+        $property->propertyTypes->transform(function ($propertyType) {
+            $propertyType->photos->transform(function ($photo) { return $photo->path; });
+
+            $propertyType->propertyItems->transform(function ($propertyItem) {
+                $propertyItem->photos->transform(function ($photo) { return $photo->path; });
+                return array_except($propertyItem->toArray(), $this->dates);
+            });
+
+            return array_except($propertyType->toArray(), $this->dates);
+        });
+        
+        return array_except($property->toArray(), array_merge($this->dates, ['photo']));
     }
 }
