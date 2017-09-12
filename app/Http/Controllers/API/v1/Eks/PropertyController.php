@@ -4,11 +4,10 @@ namespace App\Http\Controllers\API\v1\Eks;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\PropertyType;
-use App\Models\Property;
 use App\Http\Requests\API\v1\Property\CreateRequest;
+use App\Models\Property;
 
-class PropertyTypeController extends Controller
+class PropertyController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,14 +18,14 @@ class PropertyTypeController extends Controller
     {
         if ( ! $developerId ) $developerId = $request->user()->id;
         $limit = $request->input('limit') ?: 10;
-        $properties = PropertyType::getLists($request, $developerId)->paginate($limit);
+        $properties = Property::getLists($request, $developerId)->paginate($limit);
         return response()->success(['contents' => $properties]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\API\v1\Property\CreateRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(CreateRequest $request)
@@ -53,7 +52,6 @@ class PropertyTypeController extends Controller
      */
     public function show(Property $property)
     {
-        $property = $property->getResponse($property);
         return response()->success(['contents' => $property]);
     }
 
@@ -64,9 +62,20 @@ class PropertyTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateRequest $request, Property $property)
     {
-        dd($request->all());
+        \DB::beginTransaction();
+        try {
+            $property->update($request->all());
+            $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
+            $code = 200;
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $status = 'error'; $message = "Project {$request->input('name')} gagal disimpan.";
+            $code = 500;
+        }
+        return response()->{$status}(compact('message'), $code);
     }
 
     /**

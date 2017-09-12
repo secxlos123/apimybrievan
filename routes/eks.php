@@ -45,7 +45,7 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 	/**
 	 * Route property
 	 */
-	Route::resource('property', 'PropertyTypeController', [
+	Route::resource('property', 'PropertyController', [
 		'except' => [ 'create', 'edit' ],
 		'middleware' => [ 'api.auth' ]
 	]);

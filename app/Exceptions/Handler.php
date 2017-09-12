@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\ApiAuthorizationException;
 
 use DB;
 
@@ -50,13 +51,13 @@ class Handler extends ExceptionHandler
         if( $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ) {
             return response()->error( [
                 'message' => 'Data tidak ditemukan',
-                'data' => []
             ], 404 );
         } else if( $exception instanceof \App\Exceptions\BRIServiceException ) {
             return response()->error( [
                 'message' => 'BRI Request error',
-                'data' => []
             ], 404 );
+        } else if( $exception instanceof ApiAuthorizationException ) {
+            return $exception->render($request);
         }
         // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
         //     return response()->json( [

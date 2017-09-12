@@ -5,6 +5,7 @@ namespace App\Http\Requests\API\v1\Property;
 use App\Http\Requests\BaseRequest as FormRequest;
 use App\Models\PropertyType;
 use App\Models\PropertyItem;
+use Illuminate\Validation\Rule;
 
 class CreateRequest extends FormRequest
 {
@@ -15,6 +16,10 @@ class CreateRequest extends FormRequest
      */
     public function authorize()
     {
+        if ($this->method() == 'PUT') {
+            return $this->user()->developer->id == $this->property->developer_id;
+        }
+
         return true;
     }
 
@@ -24,6 +29,41 @@ class CreateRequest extends FormRequest
      * @return array
      */
     public function rules()
+    {
+        $request = $this;
+
+        $ruleName = Rule::unique('properties', 'name')->using(function ($query) use ($request) {
+            $query->where('city_id', $request->input('city_id'));
+            if ($request->method() == 'PUT') $query->where('id', '<>', $request->property->id);
+        });
+
+        $rules = [
+            'name'       => ['required', $ruleName],
+            'city_id'    => 'required|exists:cities,id',
+            'address'    => 'required',
+            'category'   => 'required|in:apartment,ruko,rumah,vila,kantor,komersial',
+            'latitude'   => 'required',
+            'longitude'  => 'required',
+            'facilities' => 'required',
+            'pic_name'   => 'required|alpha_spaces',
+            'pic_phone'  => 'required|digits:12|numeric',
+            'photo'      => 'required|image|max:1024',
+        ];
+
+        if ($request->method() == 'PUT') {
+            $rules['photo'] = 'image|max:1024';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @todo if cannot use, can delete this function
+     * @return array
+     */
+    public function childRules()
     {
         $property_types = PropertyType::$rules;
         $property_items = PropertyItem::$rules;
@@ -38,20 +78,7 @@ class CreateRequest extends FormRequest
             unset($property_items[$key]);
         }
 
-        return array_merge([
-            'name'       => 'required',
-            'city_id'    => 'required|exists:cities,id',
-            'address'    => 'required',
-            'category'   => 'required|in:apartment,ruko,rumah,vila,kantor,komersial',
-            'latitude'   => 'required',
-            'longitude'  => 'required',
-            'facilities' => 'required',
-            'pic_name'   => 'required|alpha_spaces',
-            'pic_phone'  => 'required|digits:12|numeric',
-            'image'      => 'required|image|max:1024',
-        ], $property_types, $property_items);
-
-
+        return array_merge($property_items, $property_types);
     }
 
     /**
@@ -61,8 +88,10 @@ class CreateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $developer_id = $this->user()->developer->id;
-        $this->merge(compact('developer_id'));
+        if ($this->method() == 'PUT') {
+            $developer_id = $this->user()->developer->id;
+            $this->merge(compact('developer_id'));
+        }
         return parent::getValidatorInstance();
     }
 }

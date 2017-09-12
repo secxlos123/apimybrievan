@@ -16,21 +16,19 @@ class CreateViewDeveloperPropertiesViewTable extends Migration
         \DB::unprepared("DROP VIEW IF EXISTS developer_properties_view_table");
         \DB::unprepared("CREATE VIEW developer_properties_view_table AS
             SELECT 
-                property_types.property_id AS prop_id,
+                properties.id AS prop_id,
                 properties.name AS prop_name,
-                property_types.id AS prop_type_id,
-                property_types.name AS prop_type_name,
+                properties.pic_name AS prop_pic_name,
+                properties.pic_phone AS prop_pic_phone,
+                properties.slug AS prop_slug,
                 properties.city_id AS prop_city_id,
                 cities.name AS prop_city_name,
-                developers.user_id AS prop_dev_id,
-                (
-                    SELECT count(property_items.id) FROM property_items
-                        WHERE property_types.id = property_items.property_type_id
-                ) AS prop_items
-            FROM property_types
-            INNER JOIN properties ON properties.id = property_types.property_id
-            INNER JOIN cities ON properties.city_id = cities.id
-            INNER JOIN developers ON properties.developer_id = developers.id
+                ( SELECT developers.user_id FROM developers WHERE properties.developer_id = developers.id ) AS prop_dev_id,
+                ( SELECT count(property_types.id) FROM property_types WHERE properties.id = property_types.property_id) AS prop_types,
+                ( SELECT count(property_items.id) FROM property_items WHERE property_types.id = property_items.property_type_id ) AS prop_items
+            FROM properties
+                LEFT JOIN property_types ON properties.id = property_types.property_id
+                INNER JOIN cities ON properties.city_id = cities.id
         ");
     }
 

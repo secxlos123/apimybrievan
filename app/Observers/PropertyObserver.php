@@ -17,13 +17,12 @@ class PropertyObserver
      */
     public function created(Property $property)
     {
-        if (request()->hasFile('image')) {
-            $path = request()->file('image')->store('', 'properties');
+        if (request()->hasFile('photo')) {
+            $path = request()->file('photo')->store('', 'properties');
             $property->photo()->create( compact('path') );
         }
-
-        $propertyTypes = $property->propertyTypes()->createMany(request('property_types'));
-        $this->createPropertyTypes($propertyTypes, $property);
+        // $propertyTypes = $property->propertyTypes()->createMany(request('property_types'));
+        // $this->createPropertyTypes($propertyTypes, $property);
     }
 
     /**

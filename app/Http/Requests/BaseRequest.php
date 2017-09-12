@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use App\Exceptions\ApiAuthorizationException;
 
 class BaseRequest extends FormRequest
 {
@@ -32,5 +33,17 @@ class BaseRequest extends FormRequest
     public function response( array $errors )
     {
         return response()->error( $errors, 422 );
+    }
+
+    /**
+     * Handle a failed authorization attempt.
+     *
+     * @return void
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    protected function failedAuthorization()
+    {
+        throw new ApiAuthorizationException;
     }
 }

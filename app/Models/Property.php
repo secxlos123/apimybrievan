@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Http\Request;
 
 class Property extends Model
 {
+    use Sluggable;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -24,6 +28,30 @@ class Property extends Model
     protected $dates = [
         'created_at', 'updated_at'
     ];
+
+    /**
+     * Return the sluggable configuration array for this model.
+     *
+     * @return array
+     */
+    public function sluggable()
+    {
+        return [
+            'slug' => [
+                'source' => ['developer.company_name', 'name']
+            ]
+        ];
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     /**
      * Get parent property of developer.
@@ -84,23 +112,57 @@ class Property extends Model
     }
 
     /**
-     * Get the properties photo.
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getResponse($property)
+    public function scopeGetLists($query, Request $request, $developerId)
     {
-        $property->load('propertyTypes.photos', 'propertyTypes.propertyItems.photos', 'photo');
-        $property->image = $property->photo->path;
-        $property->propertyTypes->transform(function ($propertyType) {
-            $propertyType->photos->transform(function ($photo) { return $photo->path; });
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['prop_id', 'asc'];
 
-            $propertyType->propertyItems->transform(function ($propertyItem) {
-                $propertyItem->photos->transform(function ($photo) { return $photo->path; });
-                return array_except($propertyItem->toArray(), $this->dates);
-            });
+        return $query->from('developer_properties_view_table')
+            ->where(function ($property) use (&$request) {
 
-            return array_except($propertyType->toArray(), $this->dates);
-        });
-        
-        return array_except($property->toArray(), array_merge($this->dates, ['photo']));
+                /**
+                 * Query for filter by prop_type.
+                 */
+                if ($request->has('prop_type_id')) $property->where('prop_type_id', $request->input('prop_type_id'));
+
+                /**
+                 * Query for filter by city_id.
+                 */
+                if ($request->has('prop_city_id')) $property->where('prop_city_id', $request->input('prop_city_id'));
+
+                /**
+                 * Query for filter by range items.
+                 */
+                if ($request->has('items')) $developer->whereBetween('prop_items', explode('|', $request->input('items')));
+            })
+            ->where(function ($property) use (&$request, &$query) {
+
+                /**
+                 * Query for search developers.
+                 */
+                if ($request->has('search')) $query->search($request);
+            })
+            ->where('prop_dev_id', $developerId)
+            ->orderBy($sort[0], $sort[1]);
+    }
+
+    /**
+     * Scope a query for search user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch($query, Request $request)
+    {
+        return $query
+            ->where('prop_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('prop_type_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('prop_city_name', 'ilike', "%{$request->input('search')}%");
     }
 }
