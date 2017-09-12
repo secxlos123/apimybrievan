@@ -139,14 +139,16 @@ class User extends Authenticatable
      */
     public function setImageAttribute( $image )
     {
-        $path = public_path( static::$image_path );
-        if ( ! empty( $this->attributes[ 'image' ] ) ) {
-            File::delete( $path . $this->attributes[ 'image' ] );
-        }
+        if ( !empty( $image ) ) {
+            $path = public_path( static::$image_path );
+            if ( ! empty( $this->attributes[ 'image' ] ) ) {
+                File::delete( $path . $this->attributes[ 'image' ] );
+            }
 
-        $filename = time() . '.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'image' ] = $filename;
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $image->move( $path, $filename );
+            $this->attributes[ 'image' ] = $filename;
+        }
     }
 
     /**

@@ -207,6 +207,13 @@ class RemovableController extends Controller
                 $update_message[] = 'Add pic_name, pic_phone, is_approved and approved_by field on properties table!';
             }
 
+            if( Schema::hasColumn( 'users', 'gender' ) ) {
+                Schema::table( 'users', function( Blueprint $table ) {
+                    $table->string( 'gender' )->nullable()->change();
+                } );
+                $update_message[] = 'Change gender field become nullable on users table!';
+            }
+
             if (Schema::hasTable('developers_view_table') && ! Schema::hasColumn('developers_view_table', 'is_actived')) {
                 \DB::unprepared("DROP VIEW IF EXISTS developers_view_table");
                 \DB::unprepared("CREATE VIEW developers_view_table AS
