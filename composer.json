@@ -8,6 +8,7 @@
         "php": ">=5.6.4",
         "barryvdh/laravel-dompdf": "^0.7.0",
         "cartalyst/sentinel": "2.0.*",
+        "cviebrock/eloquent-sluggable": "^4.2",
         "doctrine/dbal": "^2.5",
         "guzzlehttp/guzzle": "^6.2",
         "intervention/image": "dev-master",
