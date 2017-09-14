@@ -133,7 +133,7 @@ class Property extends Model
         return $query
             ->with('propPhoto')
             ->from('developer_properties_view_table')
-            ->where(function ($property) use (&$request) {
+            ->where(function ($property) use (&$request, $developerId) {
 
                 /**
                  * Query for filter by prop_type.
@@ -148,19 +148,20 @@ class Property extends Model
                 /**
                  * Query for filter by range items.
                  */
-                if ($request->has('items')) $developer->whereBetween('prop_items', explode('|', $request->input('items')));
+                if ($request->has('items')) $property->whereBetween('prop_items', explode('|', $request->input('items')));
+
+                /**
+                 * Query for filter by developer or user login.
+                 */
+                if ($developerId) $property->where('prop_dev_id', $developerId);
+                if ($request->has('dev_id')) $property->where('prop_dev_id', $request->input('dev_id'));
             })
-            ->where(function ($property) use (&$request, &$query, $developerId) {
+            ->where(function ($property) use (&$request, &$query) {
 
                 /**
                  * Query for search developers.
                  */
                 if ($request->has('search')) $query->search($request);
-
-                /**
-                 * Query for filter by developer or user login.
-                 */
-                if ($developerId) $query->where('prop_dev_id', $developerId);
             })
             ->orderBy($sort[0], $sort[1]);
     }
