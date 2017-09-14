@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Developer\CreateRequest;
 use App\Http\Requests\API\v1\Developer\UpdateRequest;
-use App\Http\Controllers\API\v1\Eks\PropertyTypeController;
+use App\Http\Controllers\API\v1\Eks\PropertyController;
 use App\Helpers\Traits\ManageUserTrait;
 use App\Models\Developer;
 use App\Models\User;
@@ -82,6 +82,6 @@ class DeveloperController extends Controller
      */
     public function properties(Request $request, User $model)
     {
-        return app(PropertyTypeController::class)->index($request, $model->id);
+        return app(PropertyController::class)->index($request, $model->id);
     }
 }

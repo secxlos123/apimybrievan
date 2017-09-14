@@ -22,8 +22,9 @@ class PropertyItem extends Model
      */
     public static $rules = [
         'address' => 'required',
+        'status'  => 'required|in:new,second',
         'price'   => 'required|numeric',
-        'images.*'=> 'required|image|max:1024',
+        'photos.*'=> 'image|max:1024',
     ];
 
     /**

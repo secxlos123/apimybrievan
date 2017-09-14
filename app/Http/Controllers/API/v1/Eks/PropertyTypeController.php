@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\API\v1\Eks;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\v1\PropertyType\CreateRequest;
 use App\Models\PropertyType;
-use App\Models\Property;
-use App\Http\Requests\API\v1\Property\CreateRequest;
+use Illuminate\Http\Request;
 
 class PropertyTypeController extends Controller
 {
@@ -15,12 +14,18 @@ class PropertyTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, $developerId = null)
+    public function index(Request $request)
     {
-        if ( ! $developerId ) $developerId = $request->user()->id;
         $limit = $request->input('limit') ?: 10;
-        $properties = PropertyType::getLists($request, $developerId)->paginate($limit);
-        return response()->success(['contents' => $properties]);
+        $propertyTypes = PropertyType::getLists($request)->paginate($limit);
+        $propertyTypes->transform(function ($propType) {
+            $types = $propType->toArray();
+            $types['photos'] = $propType->photos->transform(function ($photo) {
+                return $photo->image;
+            });
+            return $types;
+        });
+        return response()->success(['contents' => $propertyTypes]);
     }
 
     /**
@@ -33,16 +38,17 @@ class PropertyTypeController extends Controller
     {
         \DB::beginTransaction();
         try {
-            $property = Property::create($request->all());
-            $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
+            $propertyType = PropertyType::create($request->all());
+            $status = 'success'; $message = "Project Type {$propertyType->name} berhasil disimpan.";
             $code = 201;
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = "Project {$request->input('name')} gagal disimpan.";
+            $status = 'error'; $message = "Project Type {$request->input('name')} gagal disimpan.";
             $code = 500;
         }
         return response()->{$status}(compact('message'), $code);
+
     }
 
     /**
@@ -51,10 +57,13 @@ class PropertyTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Property $property)
+    public function show(PropertyType $property_type)
     {
-        $property = $property->getResponse($property);
-        return response()->success(['contents' => $property]);
+        $prop = $property_type->load('photos')->toArray();
+        $prop['photos'] = $property_type->photos->transform(function ($photo) {
+            return $photo->image;
+        });
+        return response()->success(['contents' => $prop]);
     }
 
     /**
@@ -64,9 +73,20 @@ class PropertyTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateRequest $request, PropertyType $property_type)
     {
-        dd($request->all());
+        \DB::beginTransaction();
+        try {
+            $property_type->update($request->all());
+            $status = 'success'; $message = "Project Type {$property_type->name} berhasil disimpan.";
+            $code = 200;
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $status = 'error'; $message = "Project Type {$request->input('name')} gagal disimpan.";
+            $code = 500;
+        }
+        return response()->{$status}(compact('message'), $code);
     }
 
     /**

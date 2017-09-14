@@ -16,7 +16,9 @@ class PropertyController extends Controller
      */
     public function index(Request $request, $developerId = null)
     {
-        if ( ! $developerId && $request->user()->inRole('developer') ) $developerId = $request->user()->id;
+        if ( ! $developerId && $request->user() ) 
+            $developerId = $request->user()->inRole('developer') ? $request->user()->id : null;
+        
         $limit = $request->input('limit') ?: 10;
         $properties = Property::getLists($request, $developerId)->paginate($limit);
 

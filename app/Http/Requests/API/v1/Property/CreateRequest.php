@@ -88,7 +88,7 @@ class CreateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        if ($this->method() == 'PUT') {
+        if ($this->method() != 'PUT') {
             $developer_id = $this->user()->developer->id;
             $this->merge(compact('developer_id'));
         }

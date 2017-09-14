@@ -26,6 +26,7 @@ class CreatePropertyTypesTable extends Migration
             $table->tinyInteger('floors');
             $table->tinyInteger('carport');
             $table->string('certificate')->nullable();
+            $table->string('slug');
             $table->timestamps();
 
             $table->foreign( 'property_id' )->references( 'id' )->on( 'properties' )

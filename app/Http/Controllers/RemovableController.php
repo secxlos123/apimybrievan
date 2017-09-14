@@ -289,6 +289,13 @@ class RemovableController extends Controller
                 $update_message[] = 'Update developer_properties_view_table';
             }
 
+            if( ! Schema::hasColumn( 'property_types', 'slug' ) ) {
+                Schema::table( 'property_types', function( Blueprint $table ) {
+                        $table->string( 'slug' )->nullable();
+                    } );
+                $update_message[] = 'Add slug field on property types table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

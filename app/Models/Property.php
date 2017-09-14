@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 class Property extends Model
 {
-    use Sluggable;
+    use Sluggable, SluggableScopeHelpers;
 
     /**
      * The attributes that are mass assignable.
