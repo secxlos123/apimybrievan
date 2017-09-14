@@ -114,6 +114,7 @@ class AuthController extends Controller
                     'image'  => $user->image,
                     'role' => $user->roles->first()->slug,
                     'permission' => $user->roles->first()->permissions,
+                    'is_register_simple' => $user->is_register_simple,
                     'is_register_completed' => $user->is_register_completed
                 ] + $additional,
             ];

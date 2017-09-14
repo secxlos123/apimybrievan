@@ -95,6 +95,16 @@ class User extends Authenticatable
      *
      * @return string
      */
+    public function getIsRegisterSimpleAttribute()
+    {
+        return ! empty( $this->customer_detail );
+    }
+
+    /**
+     * Get fullname for the user.
+     *
+     * @return string
+     */
     public function getIsRegisterCompletedAttribute()
     {
         return ! empty( $this->customer_detail );
