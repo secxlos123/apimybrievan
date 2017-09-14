@@ -16,9 +16,17 @@ class PropertyController extends Controller
      */
     public function index(Request $request, $developerId = null)
     {
-        if ( ! $developerId ) $developerId = $request->user()->id;
+        $user = $request->user();
+        if ( ! $developerId && $user->inRole('developer')) $developerId = $user->id;
         $limit = $request->input('limit') ?: 10;
         $properties = Property::getLists($request, $developerId)->paginate($limit);
+
+        $properties->transform(function ($prop) {
+            $props = $prop->toArray();
+            $props['prop_photo'] = $prop->propPhoto->image;
+            return $props;
+        });
+
         return response()->success(['contents' => $properties]);
     }
 
@@ -52,7 +60,9 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        return response()->success(['contents' => $property]);
+        $prop = $property->load('photo')->toArray();
+        $prop['photo'] = $property->photo->image;
+        return response()->success(['contents' => $prop]);
     }
 
     /**

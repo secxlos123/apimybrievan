@@ -29,6 +29,15 @@ class Photo extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'image'
+    ];
+
+    /**
      * Get all of the owning photoable models.
      */
     public function photoable()
@@ -41,7 +50,7 @@ class Photo extends Model
      *
      * @return string
      */
-    public function getPathAttribute()
+    public function getImageAttribute()
     {
         return \Storage::disk('properties')->url($this->attributes['path']);
     }

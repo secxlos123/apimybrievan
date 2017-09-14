@@ -112,6 +112,14 @@ class Property extends Model
     }
 
     /**
+     * Get the properties photo.
+     */
+    public function propPhoto()
+    {
+        return $this->morphOne( Photo::class, 'photoable', null, null, 'prop_id' );
+    }
+
+    /**
      * Scope a query to get lists of roles.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -122,7 +130,9 @@ class Property extends Model
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['prop_id', 'asc'];
 
-        return $query->from('developer_properties_view_table')
+        return $query
+            ->with('propPhoto')
+            ->from('developer_properties_view_table')
             ->where(function ($property) use (&$request) {
 
                 /**
@@ -140,14 +150,18 @@ class Property extends Model
                  */
                 if ($request->has('items')) $developer->whereBetween('prop_items', explode('|', $request->input('items')));
             })
-            ->where(function ($property) use (&$request, &$query) {
+            ->where(function ($property) use (&$request, &$query, $developerId) {
 
                 /**
                  * Query for search developers.
                  */
                 if ($request->has('search')) $query->search($request);
+
+                /**
+                 * Query for filter by developer or user login.
+                 */
+                if ($developerId) $query->where('prop_dev_id', $developerId);
             })
-            ->where('prop_dev_id', $developerId)
             ->orderBy($sort[0], $sort[1]);
     }
 
@@ -162,7 +176,8 @@ class Property extends Model
     {
         return $query
             ->where('prop_name', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('prop_type_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('prop_pic_name', 'ilike', "%{$request->input('search')}%")
+            ->orWhere('prop_pic_phone', 'ilike', "%{$request->input('search')}%")
             ->orWhere('prop_city_name', 'ilike', "%{$request->input('search')}%");
     }
 }
