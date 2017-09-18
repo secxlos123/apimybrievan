@@ -90,3 +90,29 @@ if (! function_exists('removed_photos')) {
         }
     }
 }
+
+if (! function_exists('saving_photos')) {
+    
+    /**
+     * Logic for saving photos
+     *
+     * @param  mixed    $model
+     * @return void
+     */
+    function saving_photos($model)
+    {
+        /**
+         * This logic for remove image for property type
+         */
+        removed_photos($model);
+
+        /**
+         * Call function generate_paths on helpers file
+         * request photos is array type, properties is a drive for saving to storage, last variable is folder
+         */
+        if (request()->hasFile('photos')) {
+            $paths = generate_paths(request('photos'), 'properties', $model->id);
+            $model->photos()->createMany($paths);
+        }
+    }
+}
