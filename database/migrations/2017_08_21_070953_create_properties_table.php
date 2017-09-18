@@ -26,6 +26,7 @@ class CreatePropertiesTable extends Migration
             $table->string('latitude');
             $table->string('longitude');
             $table->longText('facilities');
+            $table->string('slug');
             $table->boolean('is_approved')->default(false);
             $table->timestamps();
 
