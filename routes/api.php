@@ -24,6 +24,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'job-field-list', 'JobFieldController@index' );
 		Route::get( 'job-type-list', 'JobTypeController@index' );
 		Route::get( 'citizenship-list', 'CitizenshipController@index' );
+		Route::get( 'kpp-type-list', 'KPPController@index' );
+		Route::get( 'list-jenis-dibiayai', 'CostTypeController@index' );
+		Route::get( 'program-list', 'ProgramController@index' );
+		Route::get( 'project-list', 'ProjectController@index' );
+		Route::get( 'economy-sectors', 'EconomySectorController@index' );
+		Route::get( 'use-reasons', 'UseReasonController@index' );
 
 		Route::resource( 'eforms', 'EFormController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
@@ -39,4 +45,4 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	} );
 
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
-});
+} );

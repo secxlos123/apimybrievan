@@ -30,10 +30,7 @@ class ServiceAsmx extends Client
                 $type      => $this->body
             ]);
             $xml = simplexml_load_string( $request->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA );
-            $string_xml = str_replace( ' ', '', $xml );
-            $string_xml = str_replace( '"{', '{', $string_xml );
-            $string_xml = str_replace( '}"', '}', $string_xml );
-            $string_xml = json_decode( $string_xml, true );
+            $string_xml = json_decode( $xml, true );
             $response = $string_xml;
         } catch (ClientException $e) {
             $body = $e->getResponse()->getBody();

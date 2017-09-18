@@ -73,7 +73,7 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show( $type, $id )
+    public function show( $id )
     {
         $customer = Customer::findOrFail( $id );
         return response()->success( [
