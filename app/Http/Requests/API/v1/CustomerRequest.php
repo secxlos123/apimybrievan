@@ -55,6 +55,11 @@ class CustomerRequest extends BaseRequest
                     'phone' => 'required|regex:(08)',
                     'citizenship' => 'required',
                     'status' => 'required|in:0,1,2',
+                    'couple_nik' => 'required_if:status,1|numeric|digits:16',
+                    'couple_name' => 'required_if:status,1',
+                    'couple_birth_place' => 'required_if:status,1',
+                    'couple_birth_date' => 'required_if:status,1|date',
+                    'couple_identity' => 'required_if:status,1|image'
                     'address_status' => 'required',
                     'mother_name' => 'required',
                     'mobile_phone' => 'required|regex:(08)',
