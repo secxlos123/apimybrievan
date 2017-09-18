@@ -277,12 +277,12 @@ class RemovableController extends Controller
                         properties.pic_phone AS prop_pic_phone,
                         properties.slug AS prop_slug,
                         properties.city_id AS prop_city_id,
+                        properties.category AS prop_category,
                         cities.name AS prop_city_name,
                         ( SELECT developers.user_id FROM developers WHERE properties.developer_id = developers.id ) AS prop_dev_id,
                         ( SELECT count(property_types.id) FROM property_types WHERE properties.id = property_types.property_id) AS prop_types,
-                        ( SELECT count(property_items.id) FROM property_items WHERE property_types.id = property_items.property_type_id ) AS prop_items
+                        ( SELECT count(property_items.id) FROM property_items inner join property_types on property_types.id = property_items.property_type_id where properties.id = property_types.property_id) AS prop_items
                     FROM properties
-                        LEFT JOIN property_types ON properties.id = property_types.property_id
                         INNER JOIN cities ON properties.city_id = cities.id
                 ");
 
