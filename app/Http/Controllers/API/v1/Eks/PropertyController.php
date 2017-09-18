@@ -24,7 +24,7 @@ class PropertyController extends Controller
 
         $properties->transform(function ($prop) {
             $props = $prop->toArray();
-            $props['prop_photo'] = $prop->propPhoto->image;
+            $props['prop_photo'] = $prop->propPhoto ? $prop->propPhoto->image : null;
             return $props;
         });
 
@@ -62,7 +62,7 @@ class PropertyController extends Controller
     public function show(Property $property)
     {
         $prop = $property->load('photo')->toArray();
-        $prop['photo'] = $property->photo->image;
+        $prop['photo'] = $property->photo ? $property->photo->image : null;
         return response()->success(['contents' => $prop]);
     }
 
