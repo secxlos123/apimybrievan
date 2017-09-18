@@ -256,5 +256,6 @@ return [
     'observers' => [
         App\Models\Property::class => App\Observers\PropertyObserver::class,
         App\Models\PropertyType::class => App\Observers\PropertyTypeObserver::class,
+        App\Models\PropertyItem::class => App\Observers\PropertyItemObserver::class,
     ],
 ];
