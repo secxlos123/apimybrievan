@@ -62,5 +62,6 @@ class Kernel extends HttpKernel
         'has.user.int' => \App\Http\Middleware\HasUserInternal::class,
         'has.user.dev' => \App\Http\Middleware\HasDeveloper::class,
         'property.access' => \App\Http\Middleware\PropertyTypeAccess::class,
+        'property-type.access' => \App\Http\Middleware\PropertyItemAccess::class,
     ];
 }
