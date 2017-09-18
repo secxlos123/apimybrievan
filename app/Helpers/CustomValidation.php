@@ -2,8 +2,10 @@
 
 namespace App\Helpers;
 
-use Illuminate\Validation\Validator;
 use App\Helpers\Traits\AvailableType;
+use App\Models\PropertyType;
+use App\Models\User;
+use Illuminate\Validation\Validator;
 
 class CustomValidation extends Validator
 {
@@ -32,9 +34,7 @@ class CustomValidation extends Validator
      */
     public function validateEmailByType($attribute, $value, $parameters)
     {
-        $user = \App\Models\User::findEmail($value);
-        
-        if ($user) {
+        if ($user = User::findEmail($value)) {
             $role = $user->roles->first()->slug;
             return in_array($role, $this->types[$parameters[0]]);
         }
@@ -53,5 +53,19 @@ class CustomValidation extends Validator
     public function validateAlphaSpaces($attribute, $value, $parameters)
     {
         return preg_match('/^[\pL\s]+$/u', $value);
+    }
+
+    /**
+     * This for check alpha and spaces
+     * 
+     * @param string $attribute
+     * @param mixed $value
+     * @param array $parameters
+     * @return boolean
+     */
+    public function validateDeveloperOwned($attribute, $value, $parameters)
+    {
+        $propertyType = PropertyType::developerOwned($parameters[0], $value);
+        return (bool) $propertyType->count();
     }
 }
