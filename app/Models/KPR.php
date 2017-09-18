@@ -80,7 +80,7 @@ class KPR extends Model
                 "gaji_bulanan_pasangan" => "2100000", // Belum ada
                 "pendapatan_lain_pasangan" => "1100000", // Belum ada
                 "angsuran" => $customer_detail->loan_installment,
-                "jenis_kpp_value" => "KPR Perorangan PNS / BUMN", // Tidak ada di design dan database
+                "jenis_kpp_value" => "KPR Perorangan PNS / BUMN", // Tidak ada di design dan database, ada dropdownnya GetJenisKPP
                 "permohonan_pinjaman" => $kpr->request_amount,
                 "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
                 "jangka_waktu" => ( $kpr->year * 12 ),
@@ -100,7 +100,7 @@ class KPR extends Model
                 "id_prescreening" => "12", // Tidak ada di design dan database dan perlu sync dengan BRI
                 "nama_ibu" => $customer_detail->mother_name,
                 "npwp_pemohon" => "36.930.247.6-409.000", // Tidak ada di design dan database
-                "nama_pengelola" => "Oblag",
+                "nama_pengelola" => "Oblag", // Nama AO
                 "pn_pengelola" => request()->header( 'pn' )
             ] )
         ] )->post( 'form_params' );

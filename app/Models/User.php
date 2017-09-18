@@ -131,6 +131,21 @@ class User extends Authenticatable
      *
      * @return string
      */
+    public function getIdentityAttribute( $value )
+    {
+        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        } else {
+            $image = url( 'img/noimage.jpg' );
+        }
+        return $image;
+    }
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
     public function getImageAttribute( $value )
     {
         $image = url( 'img/avatar.jpg' );
@@ -320,7 +335,9 @@ class User extends Authenticatable
             }
             
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
-        } )->select( array_merge( [ 'users.id', 'customer_details.nik', 'customer_details.city' ], $userFill ) );
+        } )->select( array_merge( [
+            'users.id', 'customer_details.nik', 'customer_details.city', 'customer_details.status', 'customer_details.mother_name', 'customer_details.couple_nik', 'customer_details.couple_name', 'customer_details.couple_birth_date', 'customer_details.couple_birth_place', 'customer_details.identity'
+        ], $userFill ) );
     }
 
     /**
