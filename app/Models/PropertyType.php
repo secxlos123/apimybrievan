@@ -116,7 +116,7 @@ class PropertyType extends Model
                 if ($request->has('search')) $query->search($request);
             })
             ->select(['id', 'property_id', 'name', 'surface_area', 'building_area', 'certificate', 'slug'])
-            ->selectRaw('(select count(property_items.id) from property_items) as items')
+            ->selectRaw('(select count(property_items.id) from property_items where property_types.id = property_items.property_type_id) as items')
             ->orderBy($sort[0], $sort[1]);
     }
 
@@ -134,5 +134,22 @@ class PropertyType extends Model
             ->orWhere('surface_area', 'ilike', "%{$request->input('search')}%")
             ->orWhere('building_area', 'ilike', "%{$request->input('search')}%")
             ->orWhere('name', 'ilike', "%{$request->input('search')}%");
+    }
+
+    /**
+     * Get property types by developer
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  integer $developerId
+     * @param  integer|null $id
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDeveloperOwned($query, $developerId, $id = null)
+    {
+        if ( ! is_null($id) ) $query->whereId($id);
+
+        return $query->whereHas('property', function ($property) use ($developerId) {
+            return $property->where('developer_id', $developerId);
+        });
     }
 }
