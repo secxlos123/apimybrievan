@@ -93,7 +93,7 @@ class AuthRequest extends BaseRequest
                         'mobile_phone' => 'required|numeric|digits:12',
                         'status' => 'required|in:0,1,2',
                         'mother_name' => 'required',
-                        'identity' => 'required|image',
+                        'identity' => 'required|image|mimes:jpg,jpeg,png',
                         'couple_nik' => 'required_if:status,1|numeric|digits:16',
                         'couple_name' => 'required_if:status,1',
                         'couple_birth_place' => 'required_if:status,1',
