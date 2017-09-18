@@ -17,7 +17,11 @@ class CitizenshipController extends Controller
      */
     public function index( Request $request )
     {
-        $citizenship_list_service = Asmx::setEndpoint( 'GetNegara' )->post();
+        $citizenship_list_service = Asmx::setEndpoint( 'GetNegara' )->setQuery( [
+            'limit' => $request->limit,
+            'page' => $request->page,
+            'sort' => $request->sort,
+        ] )->post();
         $citizenship_list = $citizenship_list_service[ 'contents' ];
         $citizenship_list[ 'data' ] = array_map( function( $content ) {
             return [

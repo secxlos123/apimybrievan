@@ -17,7 +17,11 @@ class JobFieldController extends Controller
      */
     public function index( Request $request )
     {
-        $job_field_list_service = Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
+        $job_field_list_service = Asmx::setEndpoint( 'GetBidangPekerjaan' )->setQuery( [
+            'limit' => $request->limit,
+            'page' => $request->page,
+            'sort' => $request->sort,
+        ] )->post();
         $job_field_list = $job_field_list_service[ 'contents' ];
         $job_field_list[ 'data' ] = array_map( function( $content ) {
             return [

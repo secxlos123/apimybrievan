@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Middleware\BaseMiddleware;
 
 class GetUserFromToken extends BaseMiddleware
 {

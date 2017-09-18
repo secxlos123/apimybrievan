@@ -17,7 +17,11 @@ class JobTypeController extends Controller
      */
     public function index( Request $request )
     {
-        $job_type_list_service = Asmx::setEndpoint( 'GetJenisPekerjaan' )->post();
+        $job_type_list_service = Asmx::setEndpoint( 'GetJenisPekerjaan' )->setQuery( [
+            'limit' => $request->limit,
+            'page' => $request->page,
+            'sort' => $request->sort,
+        ] )->post();
         $job_type_list = $job_type_list_service[ 'contents' ];
         $job_type_list[ 'data' ] = array_map( function( $content ) {
             return [
