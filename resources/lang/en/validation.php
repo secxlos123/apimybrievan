@@ -98,6 +98,7 @@ return [
     */
     'alpha_spaces'     => 'The :attribute may only contain letters and spaces.',
     'email_by_type'    => 'The :attribute is invalid.',
+    'developer_owned'  => 'The selected :attribute is invalid.',
 
     'custom' => [
         'attribute-name' => [
