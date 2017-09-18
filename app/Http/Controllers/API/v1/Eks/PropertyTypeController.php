@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\v1\Eks;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\PropertyType\CreateRequest;
+use App\Models\Property;
 use App\Models\PropertyType;
 use Illuminate\Http\Request;
 
@@ -67,6 +68,22 @@ class PropertyTypeController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showProperty($property, PropertyType $property_type)
+    {
+        $prop = Property::findBySlug($property);
+
+        if ($prop->id === $property_type->property_id)
+            return $this->show($property_type);
+
+        throw new ModelNotFoundException;
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -87,6 +104,23 @@ class PropertyTypeController extends Controller
             $code = 500;
         }
         return response()->{$status}(compact('message'), $code);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateProperty(CreateRequest $request, $property, PropertyType $property_type)
+    {
+        $prop = Property::findBySlug($property);
+
+        if ($prop->id === $property_type->property_id)
+            return $this->update($request, $property_type);
+
+        throw new ModelNotFoundException;
     }
 
     /**
