@@ -75,6 +75,21 @@ class CustomerDetail extends Model
      *
      * @return string
      */
+    public function getCoupleIdentityAttribute( $value )
+    {
+        if( ! empty( $value ) ) {
+            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
+                return url( 'uploads/users/' . $this->user_id . '/' . $value );
+            }
+        }
+        return url( 'img/noimage.jpg' );
+    }
+
+    /**
+     * Get user avatar image url.
+     *
+     * @return string
+     */
     public function getStatusAttribute( $value )
     {
         if( $value == 0 ) {

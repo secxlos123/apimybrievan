@@ -32,7 +32,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'nominal', 'office', 'ao_name', 'status' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'office', 'ao_name', 'status', 'aging' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -63,6 +63,16 @@ class EForm extends Model
     public function getCustomerNameAttribute()
     {
         return $this->customer->fullname;
+    }
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getMobilePhoneAttribute()
+    {
+        return $this->customer->mobile_phone;
     }
 
     /**
@@ -116,6 +126,16 @@ class EForm extends Model
     }
 
     /**
+     * Get eform aging detail information.
+     *
+     * @return string
+     */
+    public function getAgingAttribute()
+    {
+        return $this->created_at->diffInDays();
+    }
+
+    /**
      * Set user id information.
      *
      * @return string
@@ -156,26 +176,26 @@ class EForm extends Model
             }
         } );
 
-        static::addGlobalScope( 'role', function( Builder $builder ) {
-            $login_usr = Sentinel::getUser();
-            if( $login_usr ) {
-                $role_slug = $login_usr->roles()->first()->slug;
-                if( $role_slug == 'ao' ) {
-                    // $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
-                    $builder->whereAoId( $login_usr->id );
-                } else if( $role_slug == 'mp' || $role_slug == 'pinca' ) {
-                    if( $login_usr->detail ) {
-                        // $builder->where( [
-                        //     'office_id' => $login_usr->detail->office_id,
-                        //     'prescreening_status' => 0
-                        // ] )->has( 'visit_report' );
-                        $builder->where( [
-                            'office_id' => $login_usr->detail->office_id
-                        ] );
-                    }
-                }
-            }
-        } );
+        // static::addGlobalScope( 'role', function( Builder $builder ) {
+        //     $login_usr = Sentinel::getUser();
+        //     if( $login_usr ) {
+        //         $role_slug = $login_usr->roles()->first()->slug;
+        //         if( $role_slug == 'ao' ) {
+        //             // $builder->whereAoId( $login_usr->id )->has( 'visit_report', '<', 1 );
+        //             $builder->whereAoId( $login_usr->id );
+        //         } else if( $role_slug == 'mp' || $role_slug == 'pinca' ) {
+        //             if( $login_usr->detail ) {
+        //                 // $builder->where( [
+        //                 //     'office_id' => $login_usr->detail->office_id,
+        //                 //     'prescreening_status' => 0
+        //                 // ] )->has( 'visit_report' );
+        //                 $builder->where( [
+        //                     'office_id' => $login_usr->detail->office_id
+        //                 ] );
+        //             }
+        //         }
+        //     }
+        // } );
     }
 
     /**

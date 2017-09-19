@@ -27,7 +27,7 @@ class GetUserFromToken extends BaseMiddleware
                     'request' => json_encode( [
                     'requestMethod' => 'is_session_valid',
                     'requestData' => [
-                        'user' => $pn
+                        'id_user' => $pn
                         ]
                     ] )
                 ] )->post( 'form_params' );

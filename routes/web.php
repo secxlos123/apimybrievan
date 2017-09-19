@@ -21,7 +21,7 @@ Route::get('/login', function () {
 		'request' => json_encode([
 			'requestMethod' => 'login',
 			'requestData' => [
-				'user' => '00168857',
+				'id_user' => '00168857',
 				'password' => '1234'
 			]
 		])
@@ -34,7 +34,7 @@ Route::get('/logout', function () {
 		'request' => json_encode([
 			'requestMethod' => 'logout',
 			'requestData' => [
-				'user' => '00168857',
+				'id_user' => '00168857',
 			]
 		])
 	])

@@ -58,6 +58,10 @@ class Handler extends ExceptionHandler
             ], 404 );
         } else if( $exception instanceof ApiAuthorizationException ) {
             return $exception->render($request);
+        } else if( $exception instanceof \Swift_TransportException ) {
+            return response()->error( [
+                'message' => 'Gagal mengirim email'
+            ], 404 );
         }
         // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
         //     return response()->json( [

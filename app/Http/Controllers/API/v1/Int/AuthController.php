@@ -22,7 +22,7 @@ class AuthController extends Controller
             'request' => json_encode( [
                 'requestMethod' => 'login',
                 'requestData' => [
-                    'user' => $pn,
+                    'id_user' => $pn,
                     'password' => $request->password
                 ]
             ] )
@@ -57,7 +57,7 @@ class AuthController extends Controller
             'request' => json_encode( [
                 'requestMethod' => 'logout',
                 'requestData' => [
-                    'user' => $request->header( 'pn' ),
+                    'id_user' => $request->header( 'pn' ),
                 ]
             ] )
         ] )->setHeaders( [

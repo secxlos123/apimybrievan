@@ -35,7 +35,17 @@ class KPR extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'id', 'eform_id' ];
+    protected $hidden = [ 'eform_id' ];
+
+    /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getIdAttribute( $value )
+    {
+        return $this->eform_id;
+    }
 
     /**
      * Bootstrap any application services.
@@ -108,7 +118,6 @@ class KPR extends Model
             return $kpr;
         } else {
             throw new \Exception( "Error Processing Request", 1 );
-            
         }
     }
 }

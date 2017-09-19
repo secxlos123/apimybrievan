@@ -45,7 +45,12 @@ class Customer extends User
                 'citizenship' => $detail->citizenship,
                 'status' => $detail->status,
                 'address_status' => $detail->address_status,
-                'mother_name' => $detail->mother_name
+                'mother_name' => $detail->mother_name,
+                'couple_name' => $detail->couple_name,
+                'couple_nik' => $detail->couple_nik,
+                'couple_birth_date' => $detail->couple_birth_date,
+                'couple_birth_place' => $detail->couple_birth_place,
+                'couple_identity' => $detail->couple_identity
             ];
         }
 
@@ -162,7 +167,7 @@ class Customer extends User
 
         // send mail notification
         $customer = static::find( $user->id );
-        event( new CustomerRegistered( $customer, $password ) );
+        // event( new CustomerRegistered( $customer, $password ) );
 
         return $customer;
     }

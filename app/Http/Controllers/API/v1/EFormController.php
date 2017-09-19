@@ -21,7 +21,7 @@ class EFormController extends Controller
     public function index( Request $request )
     {
         $limit = $request->input( 'limit' ) ?: 10;
-        $eforms = EForm::paginate( $limit );
+        $eforms = EForm::orderBy( 'created_at', 'desc' )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $eforms
@@ -54,7 +54,7 @@ class EFormController extends Controller
         DB::beginTransaction();
         $kpr = KPR::create( $request->all() );
 
-        DB::rollback();
+        DB::commit();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr

@@ -303,6 +303,13 @@ class RemovableController extends Controller
                 $update_message[] = 'Add category field on property table!';
             }
 
+            if( ! Schema::hasColumn( 'eforms', 'slug' ) ) {
+                Schema::table( 'eforms', function( Blueprint $table ) {
+                        $table->string( 'slug' )->nullable();
+                    } );
+                $update_message[] = 'Add slug field on eforms table!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

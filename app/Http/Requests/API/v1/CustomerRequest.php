@@ -26,13 +26,15 @@ class CustomerRequest extends BaseRequest
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 return [
-                    'nik' => 'required|numeric|max:16|unique:customer_details,nik',
+                    'nik' => 'required|numeric|digits:16|unique:customer_details,nik',
                     'first_name' => 'required',
                     'last_name' => '',
                     'email' => 'required|email|unique:users,email',
                     'mobile_phone' => 'required|regex:(08)',
                     'status' => 'required|in:0,1,2',
                     'mother_name' => 'required',
+                    'birth_place' => 'required',
+                    'birth_date' => 'required|date',
                     'identity' => 'required|image|mimes:jpg,jpeg,png',
                     'couple_nik' => 'required_if:status,1|numeric|digits:16',
                     'couple_name' => 'required_if:status,1',
@@ -44,7 +46,7 @@ class CustomerRequest extends BaseRequest
             
             case 'put':
                 return [
-                    'nik' => 'required|numeric|max:16|unique:customer_details,nik,' . $this->customer . ',user_id',
+                    'nik' => 'required|numeric|digits:16|unique:customer_details,nik,' . $this->customer . ',user_id',
                     'email' => 'required|email|unique:users,email,' . $this->customer,
                     'first_name' => 'required',
                     'birth_place' => 'required',
@@ -59,7 +61,7 @@ class CustomerRequest extends BaseRequest
                     'couple_name' => 'required_if:status,1',
                     'couple_birth_place' => 'required_if:status,1',
                     'couple_birth_date' => 'required_if:status,1|date',
-                    'couple_identity' => 'required_if:status,1|image'
+                    'couple_identity' => 'required_if:status,1|image',
                     'address_status' => 'required',
                     'mother_name' => 'required',
                     'mobile_phone' => 'required|regex:(08)',
