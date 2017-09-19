@@ -105,9 +105,15 @@ class PropertyType extends Model
     public function scopeGetLists($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $select = $request->has('dropdown')
+            ? ['id', 'name', 'building_area']
+            : ['id', 'property_id', 'name', 'surface_area', 'building_area', 'certificate', 'slug'];
+
+        if ( ! $request->has('dropdown') ) {
+            $query->with('photos')->selectRaw('(select count(property_items.id) from property_items where property_types.id = property_items.property_type_id) as items');
+        }
 
         return $query
-            ->with('photos')
             ->where(function ($propertyType) use (&$request) {
                 if ($request->has('property_id')) $propertyType->where('property_id', $request->input('property_id'));
                 if ($request->has('certificate')) $propertyType->where('certificate', $request->input('certificate'));
@@ -115,8 +121,7 @@ class PropertyType extends Model
             ->where(function ($propertyType) use (&$request, &$query) {
                 if ($request->has('search')) $query->search($request);
             })
-            ->select(['id', 'property_id', 'name', 'surface_area', 'building_area', 'certificate', 'slug'])
-            ->selectRaw('(select count(property_items.id) from property_items where property_types.id = property_items.property_type_id) as items')
+            ->select($select)
             ->orderBy($sort[0], $sort[1]);
     }
 
@@ -144,9 +149,12 @@ class PropertyType extends Model
      * @param  integer|null $id
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeDeveloperOwned($query, $developerId, $id = null)
+    public function scopeDeveloperOwned($query, $developerId, $params = [])
     {
-        if ( ! is_null($id) ) $query->whereId($id);
+        if ( ! empty($params) ) {
+            $query->whereRaw( http_build_query($params, null, ',') );
+        }
+
 
         return $query->whereHas('property', function ($property) use ($developerId) {
             return $property->where('developer_id', $developerId);

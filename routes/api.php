@@ -38,6 +38,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'cities', 'CityController' );
 
 		Route::get( 'offices', 'OfficeController@index' );
+
+		Route::group(['prefix' => 'dropdown'], function () {
+			Route::get('properties', 'DropdownController@properties');
+			Route::get('types', 'DropdownController@types');
+			Route::get('units', 'DropdownController@items');
+		});
 	} );
 
 	Route::group( [ 'namespace' => 'Int' ], function () {
@@ -45,4 +51,5 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	} );
 
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
+
 } );

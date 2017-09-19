@@ -130,9 +130,12 @@ class Property extends Model
     public function scopeGetLists($query, Request $request, $developerId)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['prop_id', 'asc'];
+        $select = $request->has('dropdown') ? ['prop_id', 'prop_name', 'prop_category', 'prop_dev_id'] : ['*'];
+
+        if ( ! $request->has('dropdown') )
+            $query->with('propPhoto');
 
         return $query
-            ->with('propPhoto')
             ->from('developer_properties_view_table')
             ->where(function ($property) use (&$request, $developerId) {
 
@@ -164,6 +167,7 @@ class Property extends Model
                  */
                 if ($request->has('search')) $query->search($request);
             })
+            ->select($select)
             ->orderBy($sort[0], $sort[1]);
     }
 

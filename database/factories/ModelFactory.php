@@ -48,7 +48,7 @@ $factory->define(App\Models\Property::class, function (Faker\Generator $faker) {
     return [
         'name'		 => $faker->name,
         'address'	 => $faker->address,
-        'category'	 => $faker->randomElement(['apartment', 'ruko', 'rumah', 'vila', 'kantor', 'komersial']),
+        'category'	 => $faker->randomElement([0, 1, 2]),
 	    'pic_name'	 => $faker->name,
 	    'pic_phone'	 => $faker->randomNumber(9),
 	    'latitude'	 => $faker->latitude,
@@ -61,10 +61,10 @@ $factory->define(App\Models\Property::class, function (Faker\Generator $faker) {
 $factory->define(App\Models\PropertyType::class, function (Faker\Generator $faker) {
     return [
 		'name'				=> $faker->name,
-		'surface_area'		=> $faker->text,
-		'building_area'		=> $faker->text,
+		'surface_area'		=> $faker->randomNumber(3),
+		'building_area'		=> $faker->randomNumber(3),
 		'price'				=> $faker->randomNumber(9),
-		'electrical_power'	=> $faker->text,
+		'electrical_power'	=> $faker->randomNumber(3),
 		'bathroom'			=> $faker->randomNumber(1),
 		'bedroom'			=> $faker->randomNumber(1),
 		'floors'			=> $faker->randomNumber(1),

@@ -291,9 +291,16 @@ class RemovableController extends Controller
 
             if( ! Schema::hasColumn( 'property_types', 'slug' ) ) {
                 Schema::table( 'property_types', function( Blueprint $table ) {
-                        $table->string( 'slug' )->nullable();
-                    } );
+                    $table->string( 'slug' )->nullable();
+                } );
                 $update_message[] = 'Add slug field on property types table!';
+            }
+
+            if( Schema::hasColumn( 'properties', 'category' ) ) {
+                Schema::table( 'properties', function( Blueprint $table ) {
+                    $table->string( 'category' )->change();
+                } );
+                $update_message[] = 'Add category field on property table!';
             }
 
             if( empty( $update_message ) ) {

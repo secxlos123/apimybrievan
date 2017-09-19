@@ -22,7 +22,7 @@ class CreatePropertiesTable extends Migration
             $table->string('pic_name');
             $table->string('pic_phone');
             $table->text('address');
-            $table->enum('category', ['apartment', 'ruko', 'rumah', 'vila', 'kantor', 'komersial']);
+            $table->enum('category', [0, 1, 2]);
             $table->string('latitude');
             $table->string('longitude');
             $table->longText('facilities');

@@ -56,9 +56,11 @@ class PropertyItem extends Model
     public function scopeGetLists($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $select = $request->has('dropdown') ? ['id', 'address', 'price'] : array_merge(['id'], $this->fillable);
+        
+        if ( ! $request->has('dropdown') ) $query->with('photos');
 
         return $query
-            ->with('photos')
             ->where(function ($propertyType) use (&$request) {
                 if ($request->has('property_type_id')) 
                     $propertyType->where('property_type_id', $request->input('property_type_id'));
@@ -83,7 +85,7 @@ class PropertyItem extends Model
                     }
                 }
             })
-            ->select(array_merge(['id'], $this->fillable))
+            ->select($select)
             ->orderBy($sort[0], $sort[1]);
     }
 

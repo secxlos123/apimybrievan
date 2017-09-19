@@ -65,7 +65,7 @@ class CustomValidation extends Validator
      */
     public function validateDeveloperOwned($attribute, $value, $parameters)
     {
-        $propertyType = PropertyType::developerOwned($parameters[0], $value);
+        $propertyType = PropertyType::developerOwned($parameters[0], [$attribute => $value]);
         return (bool) $propertyType->count();
     }
 }
