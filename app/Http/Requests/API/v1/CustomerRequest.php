@@ -97,4 +97,17 @@ class CustomerRequest extends BaseRequest
                 break;
         }
     }
+
+    /**
+     * Get data to be validated from the request.
+     *
+     * @return array
+     */
+    protected function validationData()
+    {
+        if( $this->has( 'status' ) & $this->status != '1' ) {
+            return $this->except( [ 'couple_nik', 'couple_name', 'couple_birth_place', 'couple_birth_date', 'couple_identity' ] );
+        }
+        return $this->all();
+    }
 }
