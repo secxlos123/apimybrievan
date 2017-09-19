@@ -303,11 +303,16 @@ class RemovableController extends Controller
                 $update_message[] = 'Add category field on property table!';
             }
 
-            if( ! Schema::hasColumn( 'eforms', 'slug' ) ) {
-                Schema::table( 'eforms', function( Blueprint $table ) {
-                        $table->string( 'slug' )->nullable();
-                    } );
-                $update_message[] = 'Add slug field on eforms table!';
+            if( ! Schema::hasColumns( 'customer_details', [ 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate' ] ) ) {
+                Schema::table( 'customer_details', function( Blueprint $table ) {
+                    $table->string( 'legal_document' )->nullable();
+                    $table->string( 'salary_slip' )->nullable();
+                    $table->string( 'bank_statement' )->nullable();
+                    $table->string( 'family_card' )->nullable();
+                    $table->string( 'marrital_certificate' )->nullable();
+                    $table->string( 'diforce_certificate' )->nullable();
+                } );
+                $update_message[] = 'Add legal_document, salary_slip, bank_statement, family_card, marrital_certificate, diforce_certificate field on customer_details table!';
             }
 
             if( empty( $update_message ) ) {

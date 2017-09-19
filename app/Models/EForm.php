@@ -132,7 +132,24 @@ class EForm extends Model
      */
     public function getAgingAttribute()
     {
-        return $this->created_at->diffInDays();
+        $days = $this->created_at->diffInDays();
+        $weeks = (integer) ( $days / 7 );
+        $days = $days % 7;
+        $months = (integer) ( $weeks / 4 );
+        $weeks = $weeks % 4;
+        $result = '';
+        if( $months != 0 ) {
+            $result .= $months . ' bulan ';
+        }
+        if( $weeks != 0 ) {
+            $result .= $weeks . ' minggu ';
+        }
+        if( $days != 0 ) {
+            $result .= $days . ' hari ';
+        } else {
+            $result = 'Baru';
+        }
+        return $result;
     }
 
     /**

@@ -29,6 +29,12 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'emergency_relation' )->nullable();
             $table->string( 'identity' )->nullable();
             $table->string( 'npwp' )->nullable();
+            $table->string( 'legal_document' )->nullable();
+            $table->string( 'salary_slip' )->nullable();
+            $table->string( 'bank_statement' )->nullable();
+            $table->string( 'family_card' )->nullable();
+            $table->string( 'marrital_certificate' )->nullable();
+            $table->string( 'diforce_certificate' )->nullable();
             $table->string( 'work_type' )->nullable();
             $table->string( 'work' )->nullable();
             $table->string( 'company_name' )->nullable();

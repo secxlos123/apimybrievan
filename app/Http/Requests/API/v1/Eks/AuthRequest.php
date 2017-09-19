@@ -65,9 +65,6 @@ class AuthRequest extends BaseRequest
                         'mobile_phone' => 'required|numeric|digits:12',
                         'emergency_contact' => 'required|numeric|digits:12',
                         'emergency_relation' => 'required',
-                        'identity' => 'required|image|mimes:jpg,jpeg,png',
-                        'npwp' => 'required|image|mimes:jpg,jpeg,png',
-                        'image' => 'required|image|mimes:jpg,jpeg,png',
                         'work_type' => 'required',
                         'work' => 'required',
                         'company_name' => 'required',
@@ -78,7 +75,10 @@ class AuthRequest extends BaseRequest
                         'salary' => 'required|integer',
                         'other_salary' => 'required|integer',
                         'loan_installment' => 'required',
-                        'dependent_amount' => 'required'
+                        'dependent_amount' => 'required',
+                        'identity' => 'image|mimes:jpg,jpeg,png',
+                        'npwp' => 'image|mimes:jpg,jpeg,png',
+                        'image' => 'image|mimes:jpg,jpeg,png'
                     ];
                 } else if ( $this->segment( 5 ) == 'register-simple' ) {
                     $login_session = Sentinel::getUser();

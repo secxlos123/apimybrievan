@@ -67,9 +67,6 @@ class CustomerRequest extends BaseRequest
                     'mobile_phone' => 'required|regex:(08)',
                     'emergency_contact' => 'required|regex:(08)',
                     'emergency_relation' => 'required',
-                    'identity' => 'image|mimes:jpg,jpeg,png',
-                    'npwp' => 'image|mimes:jpg,jpeg,png',
-                    'image' => 'image|mimes:jpg,jpeg,png',
                     'work_type' => 'required',
                     'work' => 'required',
                     'company_name' => 'required',
@@ -80,7 +77,16 @@ class CustomerRequest extends BaseRequest
                     'salary' => 'required|integer',
                     'other_salary' => 'required|integer',
                     'loan_installment' => 'required',
-                    'dependent_amount' => 'required'
+                    'dependent_amount' => 'required',
+                    'legal_document' => 'required|image|mimes:jpg,jpeg,png',
+                    'salary_slip' => 'required|image|mimes:jpg,jpeg,png',
+                    'identity' => 'image|mimes:jpg,jpeg,png',
+                    'image' => 'image|mimes:jpg,jpeg,png',
+                    'npwp' => 'required|image|mimes:jpg,jpeg,png',
+                    'bank_statement' => 'required|image|mimes:jpg,jpeg,png',
+                    'family_card' => 'required|image|mimes:jpg,jpeg,png',
+                    'marrital_certificate' => 'required_if:status,0,1|image|mimes:jpg,jpeg,png',
+                    'diforce_certificate' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
                 ];
                 break;
             

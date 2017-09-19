@@ -21,7 +21,7 @@ class EFormController extends Controller
     public function index( Request $request )
     {
         $limit = $request->input( 'limit' ) ?: 10;
-        $eforms = EForm::orderBy( 'created_at', 'desc' )->paginate( $limit );
+        $eforms = EForm::orderBy( 'id', 'desc' )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $eforms
