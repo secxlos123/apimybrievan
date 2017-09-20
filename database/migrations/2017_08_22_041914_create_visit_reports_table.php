@@ -14,20 +14,20 @@ class CreateVisitReportsTable extends Migration
     public function up()
     {
         Schema::create( 'visit_reports', function ( Blueprint $table ) {
-            $table->increments( 'id' );
-            $table->integer( 'eform_id' );
-            $table->string( 'visitor_name' );
-            $table->text( 'place' );
-            $table->date( 'date' );
-            $table->string( 'name' );
-            $table->string( 'job' );
-            $table->string( 'phone' );
-            $table->string( 'account' );
-            $table->bigInteger( 'amount' );
-            $table->string( 'type' );
-            $table->string( 'purpose_of_visit' );
-            $table->string( 'result' );
-            $table->string( 'source' );
+            $table->increments( 'id' )->nullable();
+            $table->integer( 'eform_id' )->nullable();
+            $table->string( 'visitor_name' )->nullable();
+            $table->text( 'place' )->nullable();
+            $table->date( 'date' )->nullable();
+            $table->string( 'name' )->nullable();
+            $table->string( 'job' )->nullable();
+            $table->string( 'phone' )->nullable();
+            $table->string( 'account' )->nullable();
+            $table->bigInteger( 'amount' )->nullable();
+            $table->string( 'type' )->nullable();
+            $table->string( 'purpose_of_visit' )->nullable();
+            $table->string( 'result' )->nullable();
+            $table->string( 'source' )->nullable();
             $table->bigInteger( 'income' )->nullable();
             $table->bigInteger( 'income_salary' )->nullable();
             $table->bigInteger( 'income_allowance' )->nullable();
@@ -38,16 +38,16 @@ class CreateVisitReportsTable extends Migration
             $table->string( 'business_mutation_type' )->nullable();
             $table->bigInteger( 'bussiness_mutation_number' )->nullable();
             $table->string( 'bussiness_other' )->nullable();
-            $table->string( 'mutation_file' );
-            $table->string( 'photo_with_customer' );
-            $table->text( 'pros' );
-            $table->text( 'cons' );
-            $table->string( 'seller_name' );
-            $table->string( 'seller_address' );
-            $table->string( 'seller_phone' );
-            $table->bigInteger( 'selling_price' );
-            $table->text( 'reason_for_sale' );
-            $table->string( 'relation_with_seller' );
+            $table->string( 'mutation_file' )->nullable();
+            $table->string( 'photo_with_customer' )->nullable();
+            $table->text( 'pros' )->nullable();
+            $table->text( 'cons' )->nullable();
+            $table->string( 'seller_name' )->nullable();
+            $table->string( 'seller_address' )->nullable();
+            $table->string( 'seller_phone' )->nullable();
+            $table->bigInteger( 'selling_price' )->nullable();
+            $table->text( 'reason_for_sale' )->nullable();
+            $table->string( 'relation_with_seller' )->nullable();
             $table->timestamps();
 
             $table->foreign( 'eform_id' )->references( 'id' )->on( 'eforms' )->onUpdate( 'cascade' )->onDelete( 'cascade' );

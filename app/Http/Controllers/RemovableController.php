@@ -315,6 +315,35 @@ class RemovableController extends Controller
                 $update_message[] = 'Add legal_document, salary_slip, bank_statement, family_card, marrital_certificate, diforce_certificate field on customer_details table!';
             }
 
+            if( Schema::hasColumns( 'visit_reports', [ 'eform_id', 'visitor_name', 'place', 'date', 'name', 'job', 'phone', 'account', 'amount', 'type', 'purpose_of_visit', 'result', 'source', 'mutation_file', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller' ] ) ) {
+                Schema::table( 'visit_reports', function ( Blueprint $table ) {
+                    $table->integer( 'eform_id' )->nullable()->change();
+                    $table->string( 'visitor_name' )->nullable()->change();
+                    $table->text( 'place' )->nullable()->change();
+                    $table->date( 'date' )->nullable()->change();
+                    $table->string( 'name' )->nullable()->change();
+                    $table->string( 'job' )->nullable()->change();
+                    $table->string( 'phone' )->nullable()->change();
+                    $table->string( 'account' )->nullable()->change();
+                    $table->bigInteger( 'amount' )->nullable()->change();
+                    $table->string( 'type' )->nullable()->change();
+                    $table->string( 'purpose_of_visit' )->nullable()->change();
+                    $table->string( 'result' )->nullable()->change();
+                    $table->string( 'source' )->nullable()->change();
+                    $table->string( 'mutation_file' )->nullable()->change();
+                    $table->string( 'photo_with_customer' )->nullable()->change();
+                    $table->text( 'pros' )->nullable()->change();
+                    $table->text( 'cons' )->nullable()->change();
+                    $table->string( 'seller_name' )->nullable()->change();
+                    $table->string( 'seller_address' )->nullable()->change();
+                    $table->string( 'seller_phone' )->nullable()->change();
+                    $table->bigInteger( 'selling_price' )->nullable()->change();
+                    $table->text( 'reason_for_sale' )->nullable()->change();
+                    $table->string( 'relation_with_seller' )->nullable()->change();
+                } );
+                $update_message[] = 'Change eform_id, visitor_name, place, date, name, job, phone, account, amount, type, purpose_of_visit, result, source, mutation_file, photo_with_customer, pros, cons, seller_name, seller_address, seller_phone, selling_price, reason_for_sale, relation_with_seller on visit_reports table become nullable!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'

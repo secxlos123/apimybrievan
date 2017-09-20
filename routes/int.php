@@ -29,6 +29,12 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::resource( 'customer', 'CustomerController', [
 			'except' => [ 'edit', 'create' ]
 		] );
+
+		Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+			Route::resource( 'visit-reports', 'VisitReportController', [
+				'only' => [ 'store' ]
+			] );
+		} );
 	} );
 } );
 
@@ -106,18 +112,6 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			 */
 			Route::match(['put', 'patch'], 'actived', 'DeveloperController@actived')->name('developer.actived');
 		});
-
-		/**
-		 * Manage e-form from internal BRI
-		 */
-		Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
-			/**
-			 * Route resource for visit report management
-			 */
-			Route::resource( 'visit-reports', 'VisitReportController', [
-				'except' => [ 'edit', 'create', 'destroy', 'index' ]
-			] );
-		} );
 	});
 
 

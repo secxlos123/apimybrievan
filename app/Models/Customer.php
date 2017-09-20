@@ -15,13 +15,37 @@ class Customer extends User
      *
      * @var array
      */
-    protected $visible = [ 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+    protected $visible = [ 'is_completed', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = [ 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+    protected $appends = [ 'is_completed', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+
+    /**
+     * Get customer data status.
+     *
+     * @return bool
+     */
+    public function getIsCompletedAttribute()
+    {
+
+        $detail = $this->detail->toArray();
+        if( $detail[ 'status' ] != 1 ) {
+            $detail = array_diff_key( $detail, array_flip( [
+                'couple_nik', 'couple_name', 'couple_birth_date', 'couple_birth_place', 'couple_identity'
+            ] ) );
+        }
+        $total_data = count( $detail );
+        $filled = array_filter( $detail );
+        $total_filled_data = count( $filled );
+        if( $total_data - $total_filled_data == 0 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Get personal information of customer.
