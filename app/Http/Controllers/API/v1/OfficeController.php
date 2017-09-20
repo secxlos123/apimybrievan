@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Office;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use RestwsHc;
+use Cache;
 
 class OfficeController extends Controller
 {
@@ -15,8 +19,61 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?: 10;
-        $offices = Office::getLists($request)->paginate($limit);
-        return response()->success(['contents' => $offices]);
+        $expiresAt = Carbon::now()->addMinutes(10);
+
+        if (! Cache::has('offices') || cache('lat') != $request->input('lat') || cache('long') != $request->input('long') ) {
+            Cache::put('offices', $this->fetch($request), $expiresAt);
+        }
+
+        $branchs = Cache::get('offices', function () use ($request) {            
+            return $this->fetch($request);
+        });
+
+        cache([ 'lat' => $request->input('lat') ], $expiresAt);
+        cache([ 'long' => $request->input('long') ], $expiresAt);
+
+        $page = $request->get('page', 1); // Get the ?page=1 from the url
+        $perPage = $request->get('limit', 10); // Number of items per page
+        $offset = ($page * $perPage) - $perPage;
+
+        /**
+         * Generate pagination
+         */
+        $histories = new LengthAwarePaginator(
+            collect($branchs['responseData'])->slice($offset, $perPage)->values(), // Only grab the items we need
+            count($branchs['responseData']), // Total items
+            $perPage, // Items per page
+            $page, // Current page
+            ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
+        );
+
+        return response()->success([
+            'contents' => $histories,
+            'message' => $branchs['responseDesc']
+        ]);
+    }
+
+    /**
+     * Fetch data from internal BRI
+     * 
+     * @param  Request $request [description]
+     * @return array
+     */
+    private function fetch(Request $request)
+    {
+        return RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'kode_branch' => $request->get('kode_branch', 0),
+                    'distance'    => $request->get('distance', 10),
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => $request->get('lat', -6.884082),
+                    'longitude' => $request->get('long', 107.541304),
+                ]
+            ])
+        ])
+        ->post('form_params');
     }
 }

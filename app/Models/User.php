@@ -336,7 +336,7 @@ class User extends Authenticatable
             
             $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
         } )->select( array_merge( [
-            'users.id', 'customer_details.nik', 'customer_details.birth_date', 'customer_details.birth_place', 'customer_details.city', 'customer_details.status', 'customer_details.mother_name', 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name', 'customer_details.couple_birth_date', 'customer_details.couple_birth_place', 'customer_details.identity'
+            'users.id', 'customer_details.nik', 'customer_details.birth_date', 'customer_details.birth_place', 'customer_details.city', 'customer_details.status', 'customer_details.mother_name', 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name', 'customer_details.couple_birth_date', 'customer_details.couple_birth_place', 'customer_details.identity', 'customer_details.address'
         ], $userFill ) );
     }
 
