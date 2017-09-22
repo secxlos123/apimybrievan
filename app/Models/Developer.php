@@ -46,26 +46,6 @@ class Developer extends Model
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function approvedBy()
-    {
-        return $this->belongsTo( User::class, 'approved_by' );
-    }
-
-    /**
-     * Get parent user of user detail.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function createdBy()
-    {
-        return $this->belongsTo( User::class, 'created_by' );
-    }
-
-    /**
-     * Get parent user of user detail.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function city()
     {
         return $this->belongsTo( City::class, 'city_id' );
@@ -109,7 +89,8 @@ class Developer extends Model
                  * Query for search developers.
                  */
                 if ($request->has('search')) $query->search($request);
-            })            ->where(function ($developer) use ($request) {
+            })
+            ->where(function ($developer) use ($request) {
 
                 /**
                  * Query for filter by city_id.

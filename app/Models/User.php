@@ -318,26 +318,37 @@ class User extends Authenticatable
             $userFill[] = "users.{$fillable}";
         }
 
-        return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )->where( function( $user ) use( $request ) {
-            $user->whereRaw( "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ] );
-            $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
-            if( $request->has( 'nik' ) ) {
-                $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
-            }
-            if( $request->has( 'city' ) ) {
-                $user->where( 'customer_details.city', 'ilike', '%' . $request->input( 'city' ) . '%' );
-            }
-            if( $request->has( 'phone' ) ) {
-                $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
-            }
-            if( $request->has( 'gender' ) ) {
-                $user->where( 'users.gender', 'ilike', '%' . $request->input( 'gender' ) . '%' );
-            }
+        return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )
+            ->where( function( $user ) use( $request ) {
+                
+                $user->whereRaw( 
+                    "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ]
+                );
+
+                $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+
+                if( $request->has( 'nik' ) ) {
+                    $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
+                }
+                if( $request->has( 'city' ) ) {
+                    $user->where( 'customer_details.city', 'ilike', '%' . $request->input( 'city' ) . '%' );
+                }
+                if( $request->has( 'phone' ) ) {
+                    $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
+                }
+                if( $request->has( 'gender' ) ) {
+                    $user->where( 'users.gender', 'ilike', '%' . $request->input( 'gender' ) . '%' );
+                }
             
-            $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
-        } )->select( array_merge( [
-            'users.id', 'customer_details.nik', 'customer_details.birth_date', 'customer_details.birth_place', 'customer_details.city', 'customer_details.status', 'customer_details.mother_name', 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name', 'customer_details.couple_birth_date', 'customer_details.couple_birth_place', 'customer_details.identity', 'customer_details.address'
-        ], $userFill ) );
+                $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
+            } )
+            ->select( array_merge( [
+                'users.id', 'customer_details.nik', 'customer_details.birth_date', 'customer_details.birth_place',
+                'customer_details.city_id', 'customer_details.status', 'customer_details.mother_name',
+                'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name',
+                'customer_details.couple_birth_date', 'customer_details.couple_birth_place',
+                'customer_details.identity', 'customer_details.address'
+            ], $userFill ) );
     }
 
     /**

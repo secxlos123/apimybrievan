@@ -36,9 +36,9 @@ class PropertyType extends Model
         'photos'    => 'required|array',
         'photos.*'  => 'required|image|max:1024',
         'property_id'   => 'required|exists:properties,id',
-        'surface_area'  => 'required',
+        'surface_area'  => 'required|numeric',
         'certificate'   => 'required',
-        'building_area' => 'required',
+        'building_area' => 'required|numeric',
         'electrical_power'  => 'required',
     ];
 
@@ -151,10 +151,9 @@ class PropertyType extends Model
      */
     public function scopeDeveloperOwned($query, $developerId, $params = [])
     {
-        if ( ! empty($params) ) {
-            $query->whereRaw( http_build_query($params, null, ',') );
+        if ( ! empty($params) && in_array('property_type_id', array_keys($params)) ) {
+            $query->where('id', $params['property_type_id']);
         }
-
 
         return $query->whereHas('property', function ($property) use ($developerId) {
             return $property->where('developer_id', $developerId);

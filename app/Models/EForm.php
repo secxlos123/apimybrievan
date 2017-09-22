@@ -230,26 +230,6 @@ class EForm extends Model
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function ao()
-    {
-        return $this->belongsTo( AccountOfficer::class, 'ao_id' );
-    }
-
-    /**
-     * The relation to user details.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function internal()
-    {
-        return $this->belongsTo( user::class, 'internal_id' );
-    }
-
-    /**
-     * The relation to user details.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function branch()
     {
         return $this->belongsTo( Office::class, 'office_id' );

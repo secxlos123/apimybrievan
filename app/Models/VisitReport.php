@@ -21,7 +21,11 @@ class VisitReport extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'eform_id', 'visitor_name', 'place', 'date', 'name', 'job', 'phone', 'account', 'amount', 'type', 'purpose_of_visit', 'result', 'source', 'income', 'income_salary', 'income_allowance', 'income_mutation_type', 'income_mutation_number', 'income_salary_image', 'business_income', 'business_mutation_type', 'bussiness_mutation_number', 'bussiness_other', 'mutation_file', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller' ];
+    protected $fillable = [
+        'eform_id', 'purpose_of_visit', 'result', 'photo_with_customer', 'pros', 'cons',
+        'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller'
+    ];
+
 
     /**
      * Bootstrap any application services.
