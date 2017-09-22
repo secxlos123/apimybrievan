@@ -21,6 +21,9 @@ class CreateUserDetailsTable extends Migration
             $table->string('position')->index();
             $table->timestamps();
 
+            /**
+             * @todo Removed because uses internal user
+             */
             $table->foreign( 'user_id' )->references( 'id' )->on( 'users' )
                 ->onUpdate( 'cascade' )
                 ->onDelete( 'cascade' );

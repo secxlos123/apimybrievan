@@ -15,12 +15,12 @@ class CreateTableCustomerDetails extends Migration
     {
         Schema::create('customer_details', function ( Blueprint $table ) {
             $table->increments( 'id' );
-            $table->integer( 'user_id' );
+            $table->integer( 'user_id' )->unsigned();
+            $table->integer( 'city_id' )->unsigned()->nullable();
             $table->string( 'nik' )->nullable();
             $table->string( 'birth_place' )->nullable();
             $table->date( 'birth_date' )->nullable();
             $table->text( 'address' )->nullable();
-            $table->string( 'city' )->nullable();
             $table->string( 'citizenship' )->nullable();
             $table->integer( 'status' )->nullable();
             $table->string( 'address_status' )->nullable();
@@ -52,7 +52,13 @@ class CreateTableCustomerDetails extends Migration
             $table->date( 'couple_birth_date' )->nullable();
             $table->string( 'couple_identity' )->nullable();
 
-            $table->foreign( 'user_id' )->references( 'id' )->on( 'users' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
+            $table->foreign( 'user_id' )
+                ->references( 'id' )->on( 'users' )
+                ->onUpdate( 'cascade' )->onDelete( 'cascade' );
+
+            $table->foreign( 'city_id' )
+                ->references( 'id' )->on( 'cities' )
+                ->onUpdate( 'cascade' )->onDelete( 'set null' );
         } );
     }
 

@@ -17,8 +17,14 @@ class CreateDevelopersTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('city_id')->unsigned()->nullable();
-            $table->integer('created_by')->unsigned();
-            $table->integer('approved_by')->unsigned()->nullable();
+
+            /**
+             * Uses user internal BRI
+             */
+            $table->string('dev_id_bri')->nullable();
+            $table->string('created_by');
+            $table->string('approved_by')->nullable();
+
             $table->string('company_name')->index();
             $table->string('pks_number');
             $table->string('plafond');
@@ -29,12 +35,6 @@ class CreateDevelopersTable extends Migration
 
             $table->foreign('user_id')->references('id')->on('users')
                 ->onUpdate('cascade')->onDelete('cascade');
-
-            $table->foreign('created_by')->references('id')->on('users')
-                ->onUpdate('cascade')->onDelete('cascade');
-
-            $table->foreign('approved_by')->references('id')->on('users')
-                ->onUpdate('cascade')->onDelete('set null');
 
             $table->foreign('city_id')->references('id')->on('cities')
                 ->onUpdate('cascade')->onDelete('set null');

@@ -13,6 +13,9 @@ class CreateTempUsersTable extends Migration
      */
     public function up()
     {
+        /**
+         * Temporary table developer before update
+         */
         Schema::create('temp_users', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();

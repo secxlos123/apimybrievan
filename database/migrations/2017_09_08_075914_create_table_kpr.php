@@ -27,8 +27,13 @@ class CreateTableKpr extends Migration
             $table->integer( 'dp' );
             $table->double( 'request_amount' );
 
-            $table->foreign( 'eform_id' )->references( 'id' )->on( 'eforms' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
-            $table->foreign( 'developer_id' )->references( 'id' )->on( 'users' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
+            $table->foreign( 'eform_id' )
+                ->references( 'id' )->on( 'eforms' )
+                ->onUpdate( 'cascade' )->onDelete( 'cascade' );
+
+            $table->foreign( 'developer_id' )
+                ->references( 'id' )->on( 'users' )
+                ->onUpdate( 'cascade' )->onDelete( 'cascade' );
         } );
     }
 
