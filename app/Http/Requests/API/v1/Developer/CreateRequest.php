@@ -14,7 +14,18 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'company_name'  => 'required|alpha_spaces', 'email' => 'required|email|unique:users,email',
+            'company_name'  => 'required', 'email' => 'required|email|unique:users,email',
         ]);
+    }
+
+    /**
+     * Get the validator instance for the request.
+     *
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function getValidatorInstance()
+    {
+        $this->merge([ 'created_by' => $this->header('pn') ]);
+        return parent::getValidatorInstance();
     }
 }
