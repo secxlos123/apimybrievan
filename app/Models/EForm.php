@@ -25,7 +25,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'office_id', 'product_type', 'prescreening_status', 'is_approved', 
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters'
     ];
 
     /**

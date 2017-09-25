@@ -19,15 +19,16 @@ class CreateTableEforms extends Migration
             $table->string( 'internal_id' )->nullable();
             $table->string( 'ao_id' )->nullable();
             $table->date( 'appointment_date' )->nullable();
-            $table->string( 'office_id' )->nullable();
+            $table->string( 'branch_id' )->nullable();
             $table->string( 'longitude' )->nullable();
             $table->string( 'latitude' )->nullable();
-            $table->string( 'branch' )->nullable();
             $table->string( 'nik' )->nullable();
             $table->string( 'ref_number' )->nullable();
             $table->string( 'product_type' )->nullable();
             $table->integer( 'prescreening_status' )->nullable();
             $table->boolean( 'is_approved' )->default( false );
+            $table->text( 'pros' )->nullable();
+            $table->text( 'cons' )->nullable();
             $table->text( 'additional_parameters' )->default( "{}" );
             $table->timestamps();
 

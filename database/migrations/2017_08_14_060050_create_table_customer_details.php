@@ -18,10 +18,10 @@ class CreateTableCustomerDetails extends Migration
             $table->integer( 'user_id' )->unsigned();
             $table->integer( 'city_id' )->unsigned()->nullable();
             $table->string( 'nik' )->nullable();
-            $table->string( 'birth_place' )->nullable();
+            $table->string( 'birth_place_id' )->nullable();
             $table->date( 'birth_date' )->nullable();
             $table->text( 'address' )->nullable();
-            $table->string( 'citizenship' )->nullable();
+            $table->string( 'citizenship_id' )->nullable();
             $table->integer( 'status' )->nullable();
             $table->string( 'address_status' )->nullable();
             $table->string( 'mother_name' )->nullable();
@@ -35,10 +35,10 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'family_card' )->nullable();
             $table->string( 'marrital_certificate' )->nullable();
             $table->string( 'diforce_certificate' )->nullable();
-            $table->string( 'work_type' )->nullable();
-            $table->string( 'work' )->nullable();
+            $table->string( 'job_type_id' )->nullable();
+            $table->string( 'job_id' )->nullable();
             $table->string( 'company_name' )->nullable();
-            $table->string( 'work_field' )->nullable();
+            $table->string( 'job_field_id' )->nullable();
             $table->string( 'position' )->nullable();
             $table->string( 'work_duration' )->nullable();
             $table->string( 'office_address' )->nullable();
@@ -48,9 +48,10 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'dependent_amount' )->nullable();
             $table->string( 'couple_nik' )->nullable();
             $table->string( 'couple_name' )->nullable();
-            $table->string( 'couple_birth_place' )->nullable();
+            $table->string( 'couple_birth_place_id' )->nullable();
             $table->date( 'couple_birth_date' )->nullable();
             $table->string( 'couple_identity' )->nullable();
+            $table->boolean( 'is_verified' )->default( false );
 
             $table->foreign( 'user_id' )
                 ->references( 'id' )->on( 'users' )

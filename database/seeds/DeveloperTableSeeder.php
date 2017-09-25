@@ -18,6 +18,7 @@ class DeveloperTableSeeder extends Seeder
 	    		$user->roles()->attach(4);
 	    		$city = App\Models\City::all()->random();
 	    		$developer = factory(App\Models\Developer::class)->create([
+                    'created_by' => '00168857',
 	    			'user_id' => $user->id,
 	    			'city_id' => $city->id
 	    		]);
