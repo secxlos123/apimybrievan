@@ -15,22 +15,31 @@ class Customer extends User
      *
      * @var array
      */
-    protected $visible = [ 'is_completed', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = [ 'is_completed', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
 
     /**
-     * Get customer data status.
+     * Get information about register simple status.
+     *
+     * @return string
+     */
+    public function getIsRegisterSimpleAttribute()
+    {
+        return ! empty( $this->detail );
+    }
+
+    /**
+     * Get information about register complete status.
      *
      * @return bool
      */
     public function getIsCompletedAttribute()
     {
-
         $detail = $this->detail->toArray();
         if( $detail[ 'status' ] != 1 ) {
             $detail = array_diff_key( $detail, array_flip( [
@@ -38,13 +47,25 @@ class Customer extends User
             ] ) );
         }
         $total_data = count( $detail );
-        $filled = array_filter( $detail );
+        $filled = array_filter( $detail, function( $var ) {
+            return $var !== NULL && $var !== '';
+        } );
         $total_filled_data = count( $filled );
         if( $total_data - $total_filled_data == 0 ) {
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Get customer data status.
+     *
+     * @return bool
+     */
+    public function getIsVerifiedAttribute()
+    {
+        return $this->detail->is_verified;
     }
 
     /**
@@ -214,6 +235,23 @@ class Customer extends User
         $this->detail()->update( $customer_data );
 
         return true;
+    }
+
+    /**
+     * verify customer data.
+     *
+     * @return void
+     */
+    public function verify( $status )
+    {
+        if( $status == 'verify' ) {
+            // 
+        }
+        if( $status == 'verified' ) {
+            $this->detail()->update( [
+                'is_verified' => true
+            ] );
+        }
     }
 
     /**

@@ -39,7 +39,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'customer', 'branch', 'ao' ];
+    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'branch', 'ao', 'kpr' ];
 
     /**
      * Get AO detail information.
@@ -82,7 +82,10 @@ class EForm extends Model
      */
     public function getNominalAttribute()
     {
-        return $this->customer->fullname;
+        if( $this->kpr ) {
+            return $this->kpr->request_amount;
+        }
+        return 0;
     }
 
     /**
@@ -263,5 +266,15 @@ class EForm extends Model
     public function visit_report()
     {
         return $this->hasOne( VisitReport::class, 'eform_id' );
+    }
+
+    /**
+     * The relation to visit report.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function kpr()
+    {
+        return $this->hasOne( KPR::class, 'eform_id' );
     }
 }

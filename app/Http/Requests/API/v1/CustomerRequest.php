@@ -45,49 +45,55 @@ class CustomerRequest extends BaseRequest
                 break;
             
             case 'put':
-                return [
-                    'nik' => 'required|numeric|digits:16|unique:customer_details,nik,' . $this->customer . ',user_id',
-                    'email' => 'required|email|unique:users,email,' . $this->customer,
-                    'first_name' => 'required',
-                    'birth_place' => 'required',
-                    'birth_date' => 'required|date',
-                    'address' => 'required',
-                    'gender' => 'required|in:L,P',
-                    'city' => 'required',
-                    'phone' => 'required|regex:(08)',
-                    'citizenship' => 'required',
-                    'status' => 'required|in:0,1,2',
-                    'couple_nik' => 'required_if:status,1|numeric|digits:16',
-                    'couple_name' => 'required_if:status,1',
-                    'couple_birth_place' => 'required_if:status,1',
-                    'couple_birth_date' => 'required_if:status,1|date',
-                    'couple_identity' => 'required_if:status,1|image',
-                    'address_status' => 'required',
-                    'mother_name' => 'required',
-                    'mobile_phone' => 'required|regex:(08)',
-                    'emergency_contact' => 'required|regex:(08)',
-                    'emergency_relation' => 'required',
-                    'work_type' => 'required',
-                    'work' => 'required',
-                    'company_name' => 'required',
-                    'work_field' => 'required',
-                    'position' => 'required',
-                    'work_duration' => 'required',
-                    'office_address' => 'required',
-                    'salary' => 'required|integer',
-                    'other_salary' => 'required|integer',
-                    'loan_installment' => 'required',
-                    'dependent_amount' => 'required',
-                    'legal_document' => 'required|image|mimes:jpg,jpeg,png',
-                    'salary_slip' => 'required|image|mimes:jpg,jpeg,png',
-                    'identity' => 'image|mimes:jpg,jpeg,png',
-                    'image' => 'image|mimes:jpg,jpeg,png',
-                    'npwp' => 'required|image|mimes:jpg,jpeg,png',
-                    'bank_statement' => 'required|image|mimes:jpg,jpeg,png',
-                    'family_card' => 'required|image|mimes:jpg,jpeg,png',
-                    'marrital_certificate' => 'required_if:status,0,1|image|mimes:jpg,jpeg,png',
-                    'diforce_certificate' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
-                ];
+                if( $this->segment( 6 ) == 'verify' ) {
+                    return [
+                        'verify_status' => 'required|in:verify,verified'
+                    ];
+                } else {
+                    return [
+                        'nik' => 'required|numeric|digits:16|unique:customer_details,nik,' . $this->customer . ',user_id',
+                        'email' => 'required|email|unique:users,email,' . $this->customer,
+                        'first_name' => 'required',
+                        'birth_place' => 'required',
+                        'birth_date' => 'required|date',
+                        'address' => 'required',
+                        'gender' => 'required|in:L,P',
+                        'city' => 'required',
+                        'phone' => 'required|regex:(08)',
+                        'citizenship' => 'required',
+                        'status' => 'required|in:0,1,2',
+                        'couple_nik' => 'required_if:status,1|numeric|digits:16',
+                        'couple_name' => 'required_if:status,1',
+                        'couple_birth_place' => 'required_if:status,1',
+                        'couple_birth_date' => 'required_if:status,1|date',
+                        'couple_identity' => 'required_if:status,1|image',
+                        'address_status' => 'required',
+                        'mother_name' => 'required',
+                        'mobile_phone' => 'required|regex:(08)',
+                        'emergency_contact' => 'required|regex:(08)',
+                        'emergency_relation' => 'required',
+                        'work_type' => 'required',
+                        'work' => 'required',
+                        'company_name' => 'required',
+                        'work_field' => 'required',
+                        'position' => 'required',
+                        'work_duration' => 'required',
+                        'office_address' => 'required',
+                        'salary' => 'required|numeric',
+                        'other_salary' => 'required|numeric',
+                        'loan_installment' => 'required',
+                        'dependent_amount' => 'required',
+                        'legal_document' => 'required|image|mimes:jpg,jpeg,png',
+                        'salary_slip' => 'required|image|mimes:jpg,jpeg,png',
+                        'identity' => 'image|mimes:jpg,jpeg,png',
+                        'image' => 'image|mimes:jpg,jpeg,png',
+                        'npwp' => 'required|image|mimes:jpg,jpeg,png',
+                        'bank_statement' => 'required|image|mimes:jpg,jpeg,png',
+                        'family_card' => 'required|image|mimes:jpg,jpeg,png',
+                        'marrital_certificate' => 'required_if:status,0,1|image|mimes:jpg,jpeg,png',
+                        'diforce_certificate' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
+                    ];
+                }
                 break;
             
             default:

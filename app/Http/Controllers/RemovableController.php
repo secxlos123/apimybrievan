@@ -344,6 +344,13 @@ class RemovableController extends Controller
                 $update_message[] = 'Change eform_id, visitor_name, place, date, name, job, phone, account, amount, type, purpose_of_visit, result, source, mutation_file, photo_with_customer, pros, cons, seller_name, seller_address, seller_phone, selling_price, reason_for_sale, relation_with_seller on visit_reports table become nullable!';
             }
 
+            if( ! Schema::hasColumn( 'customer_details', 'is_verified' ) ) {
+                Schema::table( 'customer_details', function ( Blueprint $table ) {
+                    $table->boolean( 'is_verified' )->default( false );
+                } );
+                $update_message[] = 'Add is_verified on customer_details table become nullable!';
+            }
+
             if( empty( $update_message ) ) {
                 return response()->json( [
                     'message' => 'No update'
