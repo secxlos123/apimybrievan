@@ -121,9 +121,9 @@ class KPR extends Model
         // $post_cif_bri = Asmx::setEndpoint( 'InsertDataCif' )->setBody( [
         //     'request' => json_encode( $request )
         // ] )->post( 'form_params' );
-        // $request + [ 'fid_cif_las' => $post_cif_bri[ 'contents' ] ];
         // // kondisi OK baru bisa lanjut
 
+        // $request + [ 'fid_cif_las' => $post_cif_bri[ 'contents' ] ];
         // $post_cifsdn_bri = Asmx::setEndpoint( 'InsertDataCifSdn' )->setBody( [
         //     'request' => json_encode( $request )
         // ] )->post( 'form_params' );
@@ -132,9 +132,9 @@ class KPR extends Model
         // $post_application_bri = Asmx::setEndpoint( 'InsertDataAplikasi' )->setBody( [
         //     'request' => json_encode( $request )
         // ] )->post( 'form_params' );
-        // $request + [ 'fid_aplikasi' => $post_application_bri[ 'contents' ] ];
         // // kondisi OK baru bisa lanjut
 
+        // $request + [ 'fid_aplikasi' => $post_application_bri[ 'contents' ] ];
         // // Perlu tambah data prescreening (id_prescreening)
         // $post_prescreening_bri = Asmx::setEndpoint( 'InsertDataPrescreening' )->setBody( [
         //     'request' => json_encode( $request )

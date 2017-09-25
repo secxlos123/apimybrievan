@@ -37,7 +37,7 @@ class EFormController extends Controller
      */
     public function show( $type, $eform_id )
     {
-        $eform = EForm::with( 'visit_report' )->find( $eform_id );
+        $eform = EForm::with( 'visit_report' )->findOrFail( $eform_id );
         return response()->success( [
             'contents' => $eform
         ] );
@@ -70,7 +70,7 @@ class EFormController extends Controller
     public function submitScreening( EFormRequest $request )
     {
         DB::beginTransaction();
-        $eform = EForm::find( $request->id );
+        $eform = EForm::findOrFail( $request->id );
         $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
 
         DB::commit();
@@ -89,7 +89,7 @@ class EFormController extends Controller
     public function disposition( EFormRequest $request, $id )
     {
         DB::beginTransaction();
-        $eform = EForm::find( $id );
+        $eform = EForm::findOrFail( $id );
         $eform->update( [ 'ao_id' => $request->ao_id ] );
 
         DB::commit();
@@ -109,14 +109,30 @@ class EFormController extends Controller
     public function approve( Request $request, $eform_id )
     {
         DB::beginTransaction();
-        $eform = EForm::find( $eform_id );
-        $eform->update( [ 'is_approved' => true ] );
-        event( new Approved( $eform ) );
+        $eform = EForm::approve( $eform_id );
+        // event( new Approved( $eform ) );
 
         DB::commit();
         return response()->success( [
             'message' => 'E-form berhasil diapprove.',
             'contents' => $eform
         ], 201 );
+    }
+
+    /**
+     * Insert data to core BRI.
+     *
+     * @param integer $step_id
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function insertCoreBRI( Request $request, $eform_id, $step_id )
+    {
+        DB::beginTransaction();
+        $eform = EForm::findOrFail( $eform_id );
+        $result = $eform->insertCoreBRI( $step_id );
+
+        DB::commit();
+        dd( $result );
     }
 }

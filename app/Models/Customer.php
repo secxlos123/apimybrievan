@@ -28,7 +28,7 @@ class Customer extends User
      *
      * @return string
      */
-    public function getIsRegisterSimpleAttribute()
+    public function getIsSimpleAttribute()
     {
         return ! empty( $this->detail );
     }
@@ -184,7 +184,8 @@ class Customer extends User
     public function getScheduleAttribute()
     {
         $schedules = [];
-        foreach ( $this->eforms as $key => $eform ) {
+        $eforms = $this->eforms()->select( [ 'appointment_date', 'ao_id', 'office_id' ] )->where( 'appointment_date', '>=', date( 'Y-m-d' ) )->get();
+        foreach ( $eforms as $key => $eform ) {
             $schedules[] = [
                 'date' => $eform->appointment_date,
                 'ao_name' => $eform->ao_name,
@@ -242,12 +243,12 @@ class Customer extends User
      *
      * @return void
      */
-    public function verify( $status )
+    public function verify( $data )
     {
-        if( $status == 'verify' ) {
-            // 
+        if( $data[ 'verify_status' ] == 'verify' ) {
+            $this->detail()->update( $data );
         }
-        if( $status == 'verified' ) {
+        if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true
             ] );

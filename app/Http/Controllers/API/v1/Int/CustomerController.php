@@ -93,7 +93,7 @@ class CustomerController extends Controller
 	{
 		DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
-		$customer->verify( $request->verify_status );
+		$customer->verify( $request->all() );
 
 		DB::commit();
 		if( $request->verify_status == 'verify' ) {

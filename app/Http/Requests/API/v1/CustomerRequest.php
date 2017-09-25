@@ -47,7 +47,19 @@ class CustomerRequest extends BaseRequest
             case 'put':
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
-                        'verify_status' => 'required|in:verify,verified'
+                        'verify_status' => 'required|in:verify,verified',
+                        'first_name' => 'required',
+                        'last_name' => '',
+                        'gender' => 'required',
+                        'birth_place' => 'required',
+                        'birth_date' => 'required|date',
+                        'phone' => 'required',
+                        'mobile_phone' => 'required|regex:(08)',
+                        'address' => 'required',
+                        'citizenship' => 'required',
+                        'status' => 'required|in:0,1,2',
+                        'address_status' => 'required',
+                        'mother_name' => 'required'
                     ];
                 } else {
                     return [

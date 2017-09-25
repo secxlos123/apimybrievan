@@ -348,7 +348,14 @@ class RemovableController extends Controller
                 Schema::table( 'customer_details', function ( Blueprint $table ) {
                     $table->boolean( 'is_verified' )->default( false );
                 } );
-                $update_message[] = 'Add is_verified on customer_details table become nullable!';
+                $update_message[] = 'Change is_verified on customer_details table become nullable!';
+            }
+
+            if( ! Schema::hasColumn( 'eforms', 'additional_parameters' ) ) {
+                Schema::table( 'eforms', function ( Blueprint $table ) {
+                    $table->text( 'additional_parameters' )->default( "{}" );
+                } );
+                $update_message[] = 'Add additional_parameters on eforms table!';
             }
 
             if( empty( $update_message ) ) {

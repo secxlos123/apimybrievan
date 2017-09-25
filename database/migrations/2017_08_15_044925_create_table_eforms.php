@@ -28,6 +28,7 @@ class CreateTableEforms extends Migration
             $table->string( 'product_type' )->nullable();
             $table->integer( 'prescreening_status' )->nullable();
             $table->boolean( 'is_approved' )->default( false );
+            $table->text( 'additional_parameters' )->default( "{}" );
             $table->timestamps();
 
             /**
