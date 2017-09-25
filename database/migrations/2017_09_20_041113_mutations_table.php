@@ -20,7 +20,9 @@ class MutationsTable extends Migration
             $table->string( 'number' )->nullable();
             $table->string( 'file' )->nullable();
 
-            $table->foreign( 'visit_report_id' )->references( 'id' )->on( 'visit_reports' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
+            $table->foreign( 'visit_report_id' )
+                ->references( 'id' )->on( 'visit_reports' )
+                ->onUpdate( 'cascade' )->onDelete( 'cascade' );
         } );
     }
 

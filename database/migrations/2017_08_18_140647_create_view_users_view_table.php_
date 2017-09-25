@@ -26,18 +26,12 @@ class CreateViewUsersViewTable extends Migration
             users.gender            AS gender,
             users.is_actived        AS is_actived,
             users.image             AS image,
-            offices.name            AS office_name,
-            user_details.office_id  AS office_id,
-            user_details.nip        AS nip,
-            user_details.position   AS position,
             roles.id                AS role_id,
             roles.name              AS role_name,
             roles.slug              AS role_slug
           FROM users
           JOIN role_users ON role_users.user_id = users.id
           JOIN roles ON roles.id = role_users.role_id
-          LEFT JOIN user_details ON users.id = user_details.user_id
-          LEFT JOIN offices ON user_details.office_id = offices.id
           WHERE NOT roles.slug IN ('developer', 'customer', 'others')
         ");
     }

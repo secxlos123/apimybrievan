@@ -21,7 +21,9 @@ class BankStatementsTable extends Migration
             $table->string( 'type' )->nullable();
             $table->text( 'note' )->nullable();
 
-            $table->foreign( 'mutation_id' )->references( 'id' )->on( 'mutations' )->onUpdate( 'cascade' )->onDelete( 'cascade' );
+            $table->foreign( 'mutation_id' )
+                ->references( 'id' )->on( 'mutations' )
+                ->onUpdate( 'cascade' )->onDelete( 'cascade' );
         } );
     }
 

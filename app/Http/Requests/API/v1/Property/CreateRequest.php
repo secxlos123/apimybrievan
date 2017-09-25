@@ -41,7 +41,7 @@ class CreateRequest extends FormRequest
             'name'       => ['required', $ruleName],
             'city_id'    => 'required|exists:cities,id',
             'address'    => 'required',
-            'category'   => 'required|in:apartment,ruko,rumah,vila,kantor,komersial',
+            'category'   => 'required|in:0,1,2',
             'latitude'   => 'required',
             'longitude'  => 'required',
             'facilities' => 'required',

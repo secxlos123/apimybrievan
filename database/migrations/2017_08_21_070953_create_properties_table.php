@@ -17,7 +17,8 @@ class CreatePropertiesTable extends Migration
             $table->increments('id');
             $table->integer('developer_id')->unsigned()->nullable();
             $table->integer('city_id')->unsigned();
-            $table->integer('approved_by')->unsigned()->nullable();
+            $table->string('approved_by')->nullable();
+            $table->string('prop_id_bri')->nullable();
             $table->string('name');
             $table->string('pic_name');
             $table->string('pic_phone');
@@ -37,10 +38,6 @@ class CreatePropertiesTable extends Migration
             $table->foreign( 'city_id' )->references( 'id' )->on( 'cities' )
                 ->onUpdate( 'cascade' )
                 ->onDelete( 'cascade' );
-
-            $table->foreign( 'approved_by' )->references( 'id' )->on( 'users' )
-                ->onUpdate( 'cascade' )
-                ->onDelete( 'set null' );
         });
     }
 

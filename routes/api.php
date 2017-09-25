@@ -31,6 +31,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'economy-sectors', 'EconomySectorController@index' );
 		Route::get( 'use-reasons', 'UseReasonController@index' );
 
+		Route::get( 'kemendagri', 'CustomerController@kemendagri' );
+		Route::get( 'customer-bri', 'CustomerController@customer' );
+
 		Route::resource( 'eforms', 'EFormController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
