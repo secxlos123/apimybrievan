@@ -94,12 +94,12 @@ class AuthRequest extends BaseRequest
                         'mobile_phone' => 'required|numeric|digits:12',
                         'status' => 'required|in:0,1,2',
                         'mother_name' => 'required',
-                        'birth_place' => 'required',
+                        'birth_place_id' => 'required',
                         'birth_date' => 'required|date',
                         'identity' => 'required|image|mimes:jpg,jpeg,png',
                         'couple_nik' => 'required_if:status,1|numeric|digits:16',
                         'couple_name' => 'required_if:status,1',
-                        'couple_birth_place' => 'required_if:status,1',
+                        'couple_birth_place_id' => 'required_if:status,1',
                         'couple_birth_date' => 'required_if:status,1|date',
                         'couple_identity' => 'required_if:status,1|image'
                     ];

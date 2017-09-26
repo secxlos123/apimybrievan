@@ -14,35 +14,34 @@ class AccountOfficerController extends Controller
      */
     public function index( Request $request )
     {
-        // $limit = $request->input( 'limit' ) ?: 10;
-        // $account_officers = AccountOfficer::filter( $request )->paginate( $limit );
+        $user_login = \RestwsHc::getUser();
+        $get_list_AO = \RestwsHc::setBody( [
+            'request' => json_encode( [
+                'requestMethod' => 'get_list_tenaga_pemasar',
+                'requestData' => [
+                    'id_user' => $request->header( 'pn' ),
+                    'kode_branch' => $user_login[ 'branch_id' ]
+                ]
+            ] )
+        ] )->setHeaders( [
+            'Authorization' => request()->header( 'Authorization' )
+        ] )->post( 'form_params' );
+        $get_list_AO[ 'responseData' ] = array_map( function( $content ) {
+            return [
+                'id' => $content[ 'PERNR' ],
+                'name' => $content[ 'SNAME' ],
+                'role_id' => $content[ 'HILFM' ],
+                'position' => $content[ 'HTEXT' ]
+            ];
+        }, $get_list_AO[ 'responseData' ] );
         $account_officers = [
             "current_page" => 1,
-            "data" => [
-                [
-                    'id' => '1',
-                    'nip' => '123',
-                    'name' => 'Dummy One',
-                    'position' => 'Account Officer',
-                    'email' => 'dummy@one.com',
-                    'gender' => 'Laki-laki',
-                    'image' => url( 'img/avatar.jpg' )
-                ],
-                [
-                    'id' => '2',
-                    'nip' => '1234',
-                    'name' => 'Dummy Two',
-                    'position' => 'Account Officer',
-                    'email' => 'dummy@two.com',
-                    'gender' => 'Laki-laki',
-                    'image' => url( 'img/avatar.jpg' )
-                ]
-            ],
+            "data" => $get_list_AO[ 'responseData' ],
             "from" => 1,
             "last_page" => 1,
             "next_page_url" => null,
-            "path" => "http://api.bri.dev/api/v1/int/account-officers",
-            "per_page" => 10,
+            "path" => "",
+            "per_page" => count( $get_list_AO[ 'responseData' ] ),
             "prev_page_url" => null,
             "to" => 1,
             "total" => 1

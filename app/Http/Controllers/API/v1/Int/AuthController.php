@@ -29,12 +29,21 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
         if( $login[ 'responseCode' ] == '00' ) {
+            if( in_array( $data[ 'hilfm' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
+                $role = 'ao';
+            } else if( in_array( $data[ 'hilfm' ], [ 21, 49, 50, 51 ] ) ) {
+                $role = 'mp';
+            } else if( in_array( $data[ 'hilfm' ], [ 5, 11, 12, 14, 19 ] ) ) {
+                $role = 'pinca';
+            } else { $role = 'none'; }
             return response()->success( [
                 'message' => 'Login Sukses',
                 'contents'=> [
                     'token' => 'Bearer ' . $data[ 'token' ],
                     'pn' => $data[ 'pn' ],
-                    'name' => $data[ 'nama' ]
+                    'name' => $data[ 'nama' ],
+                    'branch' => $data[ 'branch' ],
+                    'role' => $role
                 ]
             ], 200 );
         } else {

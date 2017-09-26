@@ -43,7 +43,7 @@ class AuthController extends Controller
             'role' => $user->roles->first()->slug,
             'permission' => $user->roles->first()->permissions
         ];
-        event( new CustomerRegister( $user, $activation->code ) );
+        // event( new CustomerRegister( $user, $activation->code ) );
 
         DB::commit();
         return response()->success( [
@@ -146,8 +146,8 @@ class AuthController extends Controller
     {
         $token = $request->header( 'Authorization' );
         $user = JWTAuth::toUser( str_replace( 'Bearer ', '', $token ) );
-        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] ) );
-        $user->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'gender', 'image' ] ) );
+        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'image' ] ) );
+        $user->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'image' ] ) );
         $user->refresh();
 
         return response()->success( [

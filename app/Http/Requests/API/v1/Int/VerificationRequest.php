@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Requests\API\v1\Int;
+
+use App\Http\Requests\BaseRequest;
+
+class VerificationRequest extends BaseRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        switch ( strtolower( $this->method() ) ) {
+            case 'post':
+                return [
+                    'nik' => 'required|numeric|digits:16'
+                ];
+                break;
+            
+            default:
+                return [
+                    //
+                ];
+                break;
+        }
+    }
+}

@@ -90,7 +90,8 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
-        $eform->update( [ 'ao_id' => $request->ao_id ] );
+        $ao_id = substr( '00000000' . $request->ao_id, -8 );
+        $eform->update( [ 'ao_id' => $ao_id ] );
 
         DB::commit();
         return response()->success( [
@@ -103,13 +104,13 @@ class EFormController extends Controller
      * Set E-Form AO disposition.
      *
      * @param integer $eform_id
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function approve( Request $request, $eform_id )
+    public function approve( EFormRequest $request, $eform_id )
     {
         DB::beginTransaction();
-        $eform = EForm::approve( $eform_id );
+        $eform = EForm::approve( $eform_id, $request );
         // event( new Approved( $eform ) );
 
         DB::commit();

@@ -33,7 +33,7 @@ class CustomerRequest extends BaseRequest
                     'mobile_phone' => 'required|regex:(08)',
                     'status' => 'required|in:0,1,2',
                     'mother_name' => 'required',
-                    'birth_place_id' => 'required',
+                    'birth_place_id' => 'required|numeric|exists:cities,id',
                     'birth_date' => 'required|date',
                     'identity' => 'required|image|mimes:jpg,jpeg,png',
                     'couple_nik' => 'required_if:status,1|numeric|digits:16',
@@ -48,18 +48,19 @@ class CustomerRequest extends BaseRequest
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
                         'verify_status' => 'required|in:verify,verified',
-                        'first_name' => 'required',
+                        'cif_number' => 'required_if:verify_status,verify',
+                        'first_name' => 'required_if:verify_status,verify',
                         'last_name' => '',
-                        'gender' => 'required',
-                        'birth_place_id' => 'required',
-                        'birth_date' => 'required|date',
-                        'phone' => 'required',
-                        'mobile_phone' => 'required|regex:(08)',
-                        'address' => 'required',
-                        'citizenship_id' => 'required',
-                        'status' => 'required|in:0,1,2',
-                        'address_status' => 'required',
-                        'mother_name' => 'required'
+                        'gender' => 'required_if:verify_status,verify',
+                        'birth_place_id' => 'required_if:verify_status,verify',
+                        'birth_date' => 'required_if:verify_status,verify|date',
+                        'phone' => 'required_if:verify_status,verify',
+                        'mobile_phone' => 'required_if:verify_status,verify|regex:(08)',
+                        'address' => 'required_if:verify_status,verify',
+                        'citizenship_id' => 'required_if:verify_status,verify',
+                        'status' => 'required_if:verify_status,verify|in:0,1,2',
+                        'address_status' => 'required_if:verify_status,verify',
+                        'mother_name' => 'required_if:verify_status,verify'
                     ];
                 } else {
                     return [
@@ -70,7 +71,7 @@ class CustomerRequest extends BaseRequest
                         'birth_date' => 'required|date',
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
-                        'city' => 'required',
+                        'city_id' => 'required|numeric|exists:cities,id',
                         'phone' => 'required|regex:(08)',
                         'citizenship_id' => 'required',
                         'status' => 'required|in:0,1,2',

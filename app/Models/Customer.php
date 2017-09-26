@@ -43,7 +43,7 @@ class Customer extends User
         $detail = $this->detail->toArray();
         if( $detail[ 'status' ] != 1 ) {
             $detail = array_diff_key( $detail, array_flip( [
-                'couple_nik', 'couple_name', 'couple_birth_date', 'couple_birth_place', 'couple_identity'
+                'couple_nik', 'couple_name', 'couple_birth_date', 'couple_birth_place_id', 'couple_identity'
             ] ) );
         }
         $total_data = count( $detail );
@@ -83,18 +83,22 @@ class Customer extends User
         if( count( $detail = $this->detail ) ) {
             $personal_data += [
                 'nik' => $detail->nik,
-                'birth_place' => $detail->birth_place,
+                'birth_place_id' => $detail->birth_place_id,
+                'birth_place' => $this->birth_place,
                 'birth_date' => $detail->birth_date,
                 'address' => $detail->address,
-                'city' => $detail->city,
-                'citizenship' => $detail->citizenship,
+                'city_id' => $detail->city_id,
+                'city' => $detail->city->name,
+                'citizenship_id' => $detail->citizenship_id,
+                'citizenship' => $detail->citizenship_id,
                 'status' => $detail->status,
                 'address_status' => $detail->address_status,
                 'mother_name' => $detail->mother_name,
                 'couple_name' => $detail->couple_name,
                 'couple_nik' => $detail->couple_nik,
                 'couple_birth_date' => $detail->couple_birth_date,
-                'couple_birth_place' => $detail->couple_birth_place,
+                'couple_birth_place_id' => $detail->couple_birth_place_id,
+                'couple_birth_place' => $this->couple_birth_place,
                 'couple_identity' => $detail->couple_identity
             ];
         }
@@ -111,10 +115,13 @@ class Customer extends User
     {
         if( count( $detail = $this->detail ) ) {
             return [
-                'type' => $detail->work_type,
-                'work' => $detail->work,
+                'type_id' => $detail->job_type_id,
+                'type' => $detail->job_type_id,
+                'work_id' => $detail->job_id,
+                'work' => $detail->job_id,
                 'company_name' => $detail->company_name,
-                'work_field' => $detail->work_field,
+                'work_field_id' => $detail->job_field_id,
+                'work_field' => $detail->job_field_id,
                 'position' => $detail->position,
                 'work_duration' => $detail->work_duration,
                 'office_address' => $detail->office_address
@@ -184,16 +191,42 @@ class Customer extends User
     public function getScheduleAttribute()
     {
         $schedules = [];
-        $eforms = $this->eforms()->select( [ 'appointment_date', 'ao_id', 'office_id' ] )->where( 'appointment_date', '>=', date( 'Y-m-d' ) )->get();
+        $eforms = $this->eforms()->select( [ 'appointment_date', 'ao_id', 'branch_id' ] )->where( 'appointment_date', '>=', date( 'Y-m-d' ) )->get();
         foreach ( $eforms as $key => $eform ) {
             $schedules[] = [
                 'date' => $eform->appointment_date,
                 'ao_name' => $eform->ao_name,
-                'office' => $eform->office_id,
+                'branch' => $eform->branch_id,
                 'agenda' => ''
             ];
         }
         return $schedules;
+    }
+
+    /**
+     * Get customer branch name.
+     *
+     * @return bool
+     */
+    public function getBirthPlaceAttribute()
+    {
+        if( $this->detail->birth_place_city ) {
+            return $this->detail->birth_place_city->name;
+        }
+        return '';
+    }
+
+    /**
+     * Get customer branch name.
+     *
+     * @return bool
+     */
+    public function getCoupleBirthPlaceAttribute()
+    {
+        if( $this->detail->couple_birth_place_city ) {
+            return $this->detail->couple_birth_place_city->name;
+        }
+        return '';
     }
 
     /**
@@ -202,8 +235,9 @@ class Customer extends User
      * @return void
      */
     public static function create( $data ) {
+        $user_model = new User;
         $password = str_random( 8 );
-        $separate_array_keys = array_flip( [ 'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image', 'phone', 'mobile_phone', 'gender' ] );
+        $separate_array_keys = array_flip( $user_model->fillable );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
         $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
