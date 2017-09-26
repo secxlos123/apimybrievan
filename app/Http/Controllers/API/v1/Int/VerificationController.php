@@ -26,7 +26,7 @@ class VerificationController extends Controller
             'request' => json_encode( [
                 'requestMethod' => 'get_kemendagri_profile_nik',
                 'requestData' => [
-                    'nik'     => $request->nik,
+                    'nik'     => $eform->nik,
                     'id_user' => $request->header( 'pn' )
                 ],
             ])

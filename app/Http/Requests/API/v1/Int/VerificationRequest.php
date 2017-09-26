@@ -26,7 +26,7 @@ class VerificationRequest extends BaseRequest
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 return [
-                    'nik' => 'required|numeric|digits:16'
+                    // 'nik' => 'required|numeric|digits:16'
                 ];
                 break;
             
