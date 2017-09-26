@@ -318,7 +318,10 @@ class User extends Authenticatable
             $userFill[] = "users.{$fillable}";
         }
 
-        return $query->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )
+        return $query
+            ->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )
+            ->leftJoin( 'cities as c', 'customer_details.city_id', '=', 'c.id' )
+            ->leftJoin( 'cities as bplace', 'customer_details.birth_place_id', '=', 'bplace.id' )
             ->where( function( $user ) use( $request ) {
                 
                 $user->whereRaw( 
@@ -348,7 +351,7 @@ class User extends Authenticatable
                 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name',
                 'customer_details.couple_birth_date', 'customer_details.couple_birth_place_id',
                 'customer_details.identity', 'customer_details.address'
-            ], $userFill ) )->selectRaw( 'customer_details.city_id AS city, customer_details.birth_place_id AS birth_place' );
+            ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place' );
     }
 
     /**
