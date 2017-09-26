@@ -43,7 +43,7 @@ class EFormRequest extends BaseRequest
                         'dp' => 'required_if:product_type,kpr,required|numeric',
                         'request_amount' => 'required_if:product_type,kpr,required|numeric',
                         'nik' => 'required|exists:customer_details,nik',
-                        // 'office_id' => 'required|exists:offices,id',
+                        'branch_id' => 'required',
                         'appointment_date' => 'required|date',
                         'address' => 'required',
                         'longitude' => 'required',

@@ -33,12 +33,12 @@ class CustomerRequest extends BaseRequest
                     'mobile_phone' => 'required|regex:(08)',
                     'status' => 'required|in:0,1,2',
                     'mother_name' => 'required',
-                    'birth_place' => 'required',
+                    'birth_place_id' => 'required',
                     'birth_date' => 'required|date',
                     'identity' => 'required|image|mimes:jpg,jpeg,png',
                     'couple_nik' => 'required_if:status,1|numeric|digits:16',
                     'couple_name' => 'required_if:status,1',
-                    'couple_birth_place' => 'required_if:status,1',
+                    'couple_birth_place_id' => 'required_if:status,1',
                     'couple_birth_date' => 'required_if:status,1|date',
                     'couple_identity' => 'required_if:status,1|image'
                 ];
@@ -51,12 +51,12 @@ class CustomerRequest extends BaseRequest
                         'first_name' => 'required',
                         'last_name' => '',
                         'gender' => 'required',
-                        'birth_place' => 'required',
+                        'birth_place_id' => 'required',
                         'birth_date' => 'required|date',
                         'phone' => 'required',
                         'mobile_phone' => 'required|regex:(08)',
                         'address' => 'required',
-                        'citizenship' => 'required',
+                        'citizenship_id' => 'required',
                         'status' => 'required|in:0,1,2',
                         'address_status' => 'required',
                         'mother_name' => 'required'
@@ -66,17 +66,17 @@ class CustomerRequest extends BaseRequest
                         'nik' => 'required|numeric|digits:16|unique:customer_details,nik,' . $this->customer . ',user_id',
                         'email' => 'required|email|unique:users,email,' . $this->customer,
                         'first_name' => 'required',
-                        'birth_place' => 'required',
+                        'birth_place_id' => 'required',
                         'birth_date' => 'required|date',
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city' => 'required',
                         'phone' => 'required|regex:(08)',
-                        'citizenship' => 'required',
+                        'citizenship_id' => 'required',
                         'status' => 'required|in:0,1,2',
                         'couple_nik' => 'required_if:status,1|numeric|digits:16',
                         'couple_name' => 'required_if:status,1',
-                        'couple_birth_place' => 'required_if:status,1',
+                        'couple_birth_place_id' => 'required_if:status,1',
                         'couple_birth_date' => 'required_if:status,1|date',
                         'couple_identity' => 'required_if:status,1|image',
                         'address_status' => 'required',
@@ -84,10 +84,10 @@ class CustomerRequest extends BaseRequest
                         'mobile_phone' => 'required|regex:(08)',
                         'emergency_contact' => 'required|regex:(08)',
                         'emergency_relation' => 'required',
-                        'work_type' => 'required',
-                        'work' => 'required',
+                        'job_type_id' => 'required',
+                        'job_id' => 'required',
                         'company_name' => 'required',
-                        'work_field' => 'required',
+                        'job_field_id' => 'required',
                         'position' => 'required',
                         'work_duration' => 'required',
                         'office_address' => 'required',
@@ -124,7 +124,7 @@ class CustomerRequest extends BaseRequest
     protected function validationData()
     {
         if( $this->has( 'status' ) & $this->status != '1' ) {
-            return $this->except( [ 'couple_nik', 'couple_name', 'couple_birth_place', 'couple_birth_date', 'couple_identity' ] );
+            return $this->except( [ 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity' ] );
         }
         return $this->all();
     }
