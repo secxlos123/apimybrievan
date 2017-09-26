@@ -29,6 +29,11 @@ class EFormRequest extends BaseRequest
                     return [
                         'ao_id' => 'required',
                     ];
+                } else if( $this->segment( 6 ) == 'approve' ) {
+                    return [
+                        'pros' => 'required',
+                        'cons' => 'required'
+                    ];
                 } else {
                     return [
                         'product_type' => 'required|in:kpr',

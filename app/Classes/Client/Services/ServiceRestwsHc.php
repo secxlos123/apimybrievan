@@ -28,13 +28,13 @@ class ServiceRestwsHc extends Client
      *
      * @var array
      */
-    public function getUser()
+    public static function getUser( $pn = null )
     {
-        $get_user_info_service = $this->setBody( [
+        $get_user_info_service = \RestwsHc::setBody( [
             'request' => json_encode( [
                 'requestMethod' => 'get_user_info',
                 'requestData' => [
-                    'id_cari' => request()->header( 'pn' ),
+                    'id_cari' => empty( $pn ) ? request()->header( 'pn' ) : $pn,
                     'id_user' => request()->header( 'pn' )
                 ]
             ] )
@@ -48,7 +48,7 @@ class ServiceRestwsHc extends Client
                     'nip' => $get_user_info_service[ 'responseData' ][ 'NIP' ],
                     'role_id' => $get_user_info_service[ 'responseData' ][ 'HILFM' ],
                     'branch_id' => $get_user_info_service[ 'responseData' ][ 'BRANCH' ],
-                    'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
+                    // 'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
                 ];
             }
         }

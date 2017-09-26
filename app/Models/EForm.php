@@ -40,7 +40,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'branch', 'ao', 'kpr', 'visit_report' ];
+    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'branch', 'ao' ];
 
     /**
      * The attributes that should be cast to native types.
@@ -111,16 +111,16 @@ class EForm extends Model
 
     /**
      * Get AO detail information.
-     *
+     *      
      * @return string
      */
     public function getAoNameAttribute()
     {
-        if( $ao = $this->ao ) {
-            return $ao->fullname;
+        $AO = \RestwsHc::getUser( $this->ao_id );
+        if( $AO ) {
+            return $AO[ 'name' ];
         }
-
-        return '-';
+        return null;
     }
 
     /**
@@ -131,9 +131,15 @@ class EForm extends Model
     public function getStatusAttribute()
     {
         if( $this->is_approved ) {
-            return 'Diterima';
+            return 'Submit';
         }
-        return 'Pengajuan Baru';
+        if( $this->visit_report ) {
+            return 'Initiate';
+        }
+        if( $this->ao_id ) {
+            return 'Dispose';
+        }
+        return 'Rekomend';
     }
 
     /**
@@ -202,10 +208,14 @@ class EForm extends Model
      *
      * @return string
      */
-    public static function approve( $eform_id )
+    public static function approve( $eform_id, $request )
     {
         $eform = static::find( $eform_id );
-        $eform->update( [ 'is_approved' => true ] );
+        $eform->update( [
+            'pros' => $request->pros,
+            'cons' => $request->cons,
+            'is_approved' => true
+        ] );
         return $eform;
     }
 

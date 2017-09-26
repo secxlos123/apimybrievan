@@ -196,6 +196,23 @@ class CustomerDetail extends Model
     }
 
     /**
+     * Get user citizenship information.
+     *
+     * @return string
+     */
+    public function getCitizenshipAttribute( $value )
+    {
+        $citizenship_search = \Asmx::setEndpoint( 'GetNegara' )->setQuery( [
+            'limit' => 1,
+            'search' => $this->citizenship_id,
+        ] )->post();
+        if( $citizenship_search[ 'code' ] == 200 && ! empty( $citizenship_search[ 'data' ] ) ) {
+            return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
+        }
+        return null;
+    }
+
+    /**
      * Set customer npwp image.
      *
      * @return void
@@ -346,5 +363,35 @@ class CustomerDetail extends Model
         $filename = $this->user_id . '-diforce_certificate.' . $image->getClientOriginalExtension();
         $image->move( $path, $filename );
         $this->attributes[ 'diforce_certificate' ] = $filename;
+    }
+
+    /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function city()
+    {
+        return $this->belongsTo( City::class, 'city_id' );
+    }
+
+    /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function birth_place_city()
+    {
+        return $this->belongsTo( City::class, 'birth_place_id' );
+    }
+
+    /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function couple_birth_place_city()
+    {
+        return $this->belongsTo( City::class, 'couple_birth_place_id' );
     }
 }

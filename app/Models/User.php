@@ -330,8 +330,8 @@ class User extends Authenticatable
                 if( $request->has( 'nik' ) ) {
                     $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
                 }
-                if( $request->has( 'city' ) ) {
-                    $user->where( 'customer_details.city', 'ilike', '%' . $request->input( 'city' ) . '%' );
+                if( $request->has( 'city_id' ) ) {
+                    $user->where( 'customer_details.city_id', 'ilike', '%' . $request->input( 'city_id' ) . '%' );
                 }
                 if( $request->has( 'phone' ) ) {
                     $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
@@ -343,12 +343,12 @@ class User extends Authenticatable
                 $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
             } )
             ->select( array_merge( [
-                'users.id', 'customer_details.nik', 'customer_details.birth_date', 'customer_details.birth_place',
-                'customer_details.city', 'customer_details.status', 'customer_details.mother_name',
+                'users.id', 'customer_details.nik', 'customer_details.birth_date', 'customer_details.birth_place_id',
+                'customer_details.city_id', 'customer_details.status', 'customer_details.mother_name',
                 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name',
-                'customer_details.couple_birth_date', 'customer_details.couple_birth_place',
+                'customer_details.couple_birth_date', 'customer_details.couple_birth_place_id',
                 'customer_details.identity', 'customer_details.address'
-            ], $userFill ) );
+            ], $userFill ) )->selectRaw( 'customer_details.city_id AS city, customer_details.birth_place_id AS birth_place' );
     }
 
     /**

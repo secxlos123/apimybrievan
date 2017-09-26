@@ -18,6 +18,7 @@ class CitizenshipController extends Controller
     public function index( Request $request )
     {
         $citizenship_list_service = Asmx::setEndpoint( 'GetNegara' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,
