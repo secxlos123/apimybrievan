@@ -18,7 +18,7 @@ class Property extends Model
      */
     protected $fillable = [
         'developer_id', 'city_id', 'name', 'address', 'category', 'latitude', 'longitude',
-        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved'
+        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description'
     ];
 
     /**
@@ -52,6 +52,16 @@ class Property extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getFacilitiesAttribute($facilities)
+    {
+        return htmlspecialchars_decode($facilities);
     }
 
     /**
@@ -142,17 +152,20 @@ class Property extends Model
                 /**
                  * Query for filter by prop_type.
                  */
-                if ($request->has('prop_type_id')) $property->where('prop_type_id', $request->input('prop_type_id'));
+                if ($request->has('types'))
+                    $property->whereBetween('prop_types', explode('|', $request->input('types')));
 
                 /**
                  * Query for filter by city_id.
                  */
-                if ($request->has('prop_city_id')) $property->where('prop_city_id', $request->input('prop_city_id'));
+                if ($request->has('prop_city_id'))
+                    $property->where('prop_city_id', $request->input('prop_city_id'));
 
                 /**
                  * Query for filter by range items.
                  */
-                if ($request->has('items')) $property->whereBetween('prop_items', explode('|', $request->input('items')));
+                if ($request->has('items'))
+                    $property->whereBetween('prop_items', explode('|', $request->input('items')));
 
                 /**
                  * Query for filter by developer or user login.
@@ -185,5 +198,27 @@ class Property extends Model
             ->orWhere('prop_pic_name', 'ilike', "%{$request->input('search')}%")
             ->orWhere('prop_pic_phone', 'ilike', "%{$request->input('search')}%")
             ->orWhere('prop_city_name', 'ilike', "%{$request->input('search')}%");
+    }
+
+    public function scopeDistance($query, $lat, $lng, $radius = 100, $unit = "km")
+    {
+        $unit = ($unit === "km") ? 6378.10 : 3963.17;
+        $lat  = (float) $lat;
+        $lng  = (float) $lng;
+        $radius = (double) $radius;
+
+        $distance = "( {$unit}
+            * acos( cos( radians( cast( {$lat} as double precision ) ) ) 
+            * cos( radians( cast( latitude as double precision ) ) ) 
+            * cos( radians( cast( longitude as double precision ) ) 
+                 - radians( cast( {$lng} as double precision ) ) )
+                 + sin( radians( cast( {$lat}  as double precision ) ) )
+            * sin( radians( cast( latitude as double precision ) ) ) ) )";
+
+        return $query->select('*')
+            ->selectRaw("{$distance} as distance")
+            ->havingRaw("{$distance} <= {$radius}")
+            ->groupBy( "id" )
+            ->orderBy( 'distance', 'asc' );
     }
 }
