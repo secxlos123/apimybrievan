@@ -143,6 +143,16 @@ class EForm extends Model
     }
 
     /**
+     * Get AO detail information.
+     *
+     * @return string
+     */
+    public function getPrescreeningStatusAttribute()
+    {
+        return 'Hijau';
+    }
+
+    /**
      * Get eform aging detail information.
      *
      * @return string
