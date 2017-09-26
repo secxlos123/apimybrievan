@@ -33,7 +33,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'office', 'ao_name', 'status', 'aging', 'is_visited' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -101,12 +101,12 @@ class EForm extends Model
      *
      * @return string
      */
-    public function getOfficeAttribute()
+    public function getBranchAttribute()
     {
-        if( $office = $this->branch ) {
-            return $this->branch->name;
-        }
-        return '-';
+        // if( $branch = $this->branch ) {
+        //     return $this->branch->name;
+        // }
+        return 'Branch Name';
     }
 
     /**

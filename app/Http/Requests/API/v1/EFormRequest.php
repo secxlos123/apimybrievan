@@ -27,7 +27,7 @@ class EFormRequest extends BaseRequest
             case 'post':
                 if( $this->segment(6) == 'disposition' ) {
                     return [
-                        'ao_id' => 'required|exists:users,id',
+                        'ao_id' => 'required',
                     ];
                 } else {
                     return [

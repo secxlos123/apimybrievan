@@ -18,7 +18,7 @@ class CreateTableCustomerDetails extends Migration
             $table->integer( 'user_id' )->unsigned();
             $table->integer( 'city_id' )->unsigned()->nullable();
             $table->string( 'nik' )->nullable();
-            $table->string( 'birth_place_id' )->nullable();
+            $table->integer( 'birth_place_id' )->nullable();
             $table->date( 'birth_date' )->nullable();
             $table->text( 'address' )->nullable();
             $table->string( 'citizenship_id' )->nullable();
@@ -48,7 +48,7 @@ class CreateTableCustomerDetails extends Migration
             $table->string( 'dependent_amount' )->nullable();
             $table->string( 'couple_nik' )->nullable();
             $table->string( 'couple_name' )->nullable();
-            $table->string( 'couple_birth_place_id' )->nullable();
+            $table->integer( 'couple_birth_place_id' )->nullable();
             $table->date( 'couple_birth_date' )->nullable();
             $table->string( 'couple_identity' )->nullable();
             $table->boolean( 'is_verified' )->default( false );
@@ -58,6 +58,14 @@ class CreateTableCustomerDetails extends Migration
                 ->onUpdate( 'cascade' )->onDelete( 'cascade' );
 
             $table->foreign( 'city_id' )
+                ->references( 'id' )->on( 'cities' )
+                ->onUpdate( 'cascade' )->onDelete( 'set null' );
+
+            $table->foreign( 'birth_place_id' )
+                ->references( 'id' )->on( 'cities' )
+                ->onUpdate( 'cascade' )->onDelete( 'set null' );
+
+            $table->foreign( 'couple_birth_place_id' )
                 ->references( 'id' )->on( 'cities' )
                 ->onUpdate( 'cascade' )->onDelete( 'set null' );
         } );
