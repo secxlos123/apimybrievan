@@ -13,7 +13,14 @@ class ServiceRestwsHc extends Client
      */
     public function uri()
     {
-        return config('restapi.restwshc');
+        $base_url = config('restapi.restwshc');
+
+        if (in_array(env('APP_ENV'), ['local', 'staging'])) {
+            $this->endpoint = json_decode($this->body['request'])->requestMethod;
+            $base_url .= $this->endpoint;
+        }
+
+        return $base_url;
     }
 
     /**
