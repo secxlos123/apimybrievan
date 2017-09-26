@@ -348,7 +348,7 @@ class User extends Authenticatable
                 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name',
                 'customer_details.couple_birth_date', 'customer_details.couple_birth_place_id',
                 'customer_details.identity', 'customer_details.address'
-            ], $userFill ) );
+            ], $userFill ) )->selectRaw( 'customer_details.city_id AS city, customer_details.birth_place_id AS birth_place' );
     }
 
     /**
