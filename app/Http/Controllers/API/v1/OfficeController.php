@@ -21,11 +21,11 @@ class OfficeController extends Controller
     {
         $expiresAt = Carbon::now()->addMinutes(10);
 
-        if (! Cache::has('offices') || cache('lat') != $request->input('lat') || cache('long') != $request->input('long') ) {
-            Cache::put('offices', $this->fetch($request), $expiresAt);
+        if (! Cache::has('branchs') || cache('lat') != $request->input('lat') || cache('long') != $request->input('long') ) {
+            Cache::put('branchs', $this->fetch($request), $expiresAt);
         }
 
-        $branchs = Cache::get('offices', function () use ($request) {            
+        $branchs = Cache::get('branchs', function () use ($request) {            
             return $this->fetch($request);
         });
 
@@ -35,12 +35,15 @@ class OfficeController extends Controller
         $page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10); // Number of items per page
         $offset = ($page * $perPage) - $perPage;
+        $offices = collect($branchs['responseData'])->reject(function ($branch) {
+            return ! in_array($branch['jenis_uker'], ['KCP', 'KC']);
+        })->slice($offset, $perPage)->values();
 
         /**
          * Generate pagination
          */
         $histories = new LengthAwarePaginator(
-            collect($branchs['responseData'])->slice($offset, $perPage)->values(), // Only grab the items we need
+            $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
