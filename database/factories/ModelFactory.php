@@ -54,6 +54,7 @@ $factory->define(App\Models\Property::class, function (Faker\Generator $faker) {
 	    'latitude'	 => $faker->latitude,
 	    'longitude'	 => $faker->longitude,
         'facilities' => $faker->text,
+        'description'=> $faker->text,
     ];
 });
 

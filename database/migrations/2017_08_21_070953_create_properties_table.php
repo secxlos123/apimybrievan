@@ -26,6 +26,7 @@ class CreatePropertiesTable extends Migration
             $table->enum('category', [0, 1, 2]);
             $table->string('latitude');
             $table->string('longitude');
+            $table->longText('description');
             $table->longText('facilities');
             $table->string('slug');
             $table->boolean('is_approved')->default(false);
