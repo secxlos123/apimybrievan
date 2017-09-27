@@ -19,12 +19,12 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
-        $expiresAt = Carbon::now()->addMinutes(10);
+        $expiresAt = Carbon::now()->addMinutes(5);
 
         if (! Cache::has('branchs') 
             || cache('lat') != $request->input('lat')
             || cache('long') != $request->input('long')
-            || cache('kode_branch') != $request->input('kode_branch') 
+            || cache('branch') != $request->input('branch') 
             || cache('distance') != $request->input('distance') ) {
             Cache::put('branchs', $this->fetch($request), $expiresAt);
         }
@@ -35,15 +35,19 @@ class OfficeController extends Controller
 
         cache([ 'lat' => $request->input('lat') ], $expiresAt);
         cache([ 'long' => $request->input('long') ], $expiresAt);
-        cache([ 'kode_branch' => $request->input('kode_branch') ], $expiresAt);
+        cache([ 'branch' => $request->input('branch') ], $expiresAt);
         cache([ 'distance' => $request->input('distance') ], $expiresAt);
 
         $page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10); // Number of items per page
-        $offset = ($page * $perPage) - $perPage;
-        $offices = collect($branchs['responseData'])->reject(function ($branch) {
-            return ! in_array($branch['jenis_uker'], ['KCP', 'KC']);
-        })->slice($offset, $perPage)->values();
+        $offset  = ($page * $perPage) - $perPage;
+        $offices = [];
+
+        if ($branchs['responseData'] != '') {
+            $offices = collect($branchs['responseData'])->reject(function ($branch) {
+                return ! in_array($branch['jenis_uker'], ['KCP', 'KC']);
+            })->slice($offset, $perPage)->values();
+        }
 
         /**
          * Generate pagination
@@ -55,6 +59,16 @@ class OfficeController extends Controller
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
         );
+
+        $histories->transform(function ($history) {
+            return [
+                'branch' => $history['kode_uker'],
+                'unit' => $history['unit_kerja'],
+                'address' => $history['alamat'],
+                'lat' => $history['latitude'],
+                'long' => $history['longitude'],
+            ];
+        });
 
         return response()->success([
             'contents' => $histories,
@@ -75,7 +89,7 @@ class OfficeController extends Controller
                 'requestMethod' => 'get_near_branch_v2',
                 'requestData'   => [
                     'app_id' => 'appidmybri',
-                    'kode_branch' => $request->get('kode_branch', 0),
+                    'kode_branch' => $request->get('branch', 0),
                     'distance'    => $request->get('distance', 10),
 
                     // if request latitude and longitude not present default latitude and longitude cimahi
