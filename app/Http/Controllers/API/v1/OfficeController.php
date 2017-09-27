@@ -21,16 +21,22 @@ class OfficeController extends Controller
     {
         $expiresAt = Carbon::now()->addMinutes(10);
 
-        if (! Cache::has('branchs') || cache('lat') != $request->input('lat') || cache('long') != $request->input('long') ) {
+        if (! Cache::has('branchs') 
+            || cache('lat') != $request->input('lat')
+            || cache('long') != $request->input('long')
+            || cache('kode_branch') != $request->input('kode_branch') 
+            || cache('distance') != $request->input('distance') ) {
             Cache::put('branchs', $this->fetch($request), $expiresAt);
         }
 
-        $branchs = Cache::get('branchs', function () use ($request) {            
+        $branchs = Cache::get('branchs', function () use ($request) {
             return $this->fetch($request);
         });
 
         cache([ 'lat' => $request->input('lat') ], $expiresAt);
         cache([ 'long' => $request->input('long') ], $expiresAt);
+        cache([ 'kode_branch' => $request->input('kode_branch') ], $expiresAt);
+        cache([ 'distance' => $request->input('distance') ], $expiresAt);
 
         $page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10); // Number of items per page
@@ -68,6 +74,7 @@ class OfficeController extends Controller
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
                 'requestData'   => [
+                    'app_id' => 'appidmybri',
                     'kode_branch' => $request->get('kode_branch', 0),
                     'distance'    => $request->get('distance', 10),
 
