@@ -24,7 +24,6 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 
 	// route that required for login
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
-
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::post( 'register-simple', 'AuthController@update' );
 			Route::post( 'register-complete', 'AuthController@update' );

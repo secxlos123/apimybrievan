@@ -21,7 +21,7 @@ class EFormController extends Controller
     public function index( Request $request )
     {
         $limit = $request->input( 'limit' ) ?: 10;
-        $eforms = EForm::orderBy( 'id', 'desc' )->paginate( $limit );
+        $eforms = EForm::filter( $request )->orderBy( 'id', 'desc' )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $eforms
@@ -111,13 +111,20 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::approve( $eform_id, $request );
-        // event( new Approved( $eform ) );
-
-        DB::commit();
-        return response()->success( [
-            'message' => 'E-form berhasil diapprove.',
-            'contents' => $eform
-        ], 201 );
+        if( $eform instanceof EForm ) {
+            DB::commit();
+            return response()->success( [
+                'message' => 'E-form berhasil diapprove.',
+                'contents' => $eform
+            ], 201 );
+            // event( new Approved( $eform ) );
+        } else {
+            DB::rollback();
+            return response()->success( [
+                'message' => 'E-form gagal diapprove.',
+                'contents' => $eform
+            ], 404 );
+        }
     }
 
     /**

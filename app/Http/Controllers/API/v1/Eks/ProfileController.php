@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\TempUser;
 use App\Http\Requests\API\v1\Profile\UpdateRequest;
 
+use App\Models\Customer;
+
 class ProfileController extends Controller
 {
     /**
@@ -15,10 +17,18 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index( Request $request )
     {
-        $profile = User::getProfile($request);
-        return response()->success(['contents' => $profile]);
+        $user = $request->user();
+        if( $user->inRole( 'customer' ) ) {
+            $profile = Customer::find( $user->id );
+        } else {
+            $profile = User::getProfile( $request );
+        }
+
+        return response()->success( [
+            'contents' => $profile
+        ] );
     }
 
     /**

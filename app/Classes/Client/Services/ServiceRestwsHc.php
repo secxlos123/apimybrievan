@@ -43,10 +43,18 @@ class ServiceRestwsHc extends Client
         ] )->post( 'form_params' );
         if( ! empty( $get_user_info_service ) ) {
             if( $get_user_info_service[ 'responseCode' ] == '00' ) {
+                if( in_array( $get_user_info_service[ 'responseData' ][ 'HILFM' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
+                    $role = 'ao';
+                } else if( in_array( $get_user_info_service[ 'responseData' ][ 'HILFM' ], [ 21, 49, 50, 51 ] ) ) {
+                    $role = 'mp';
+                } else if( in_array( $get_user_info_service[ 'responseData' ][ 'HILFM' ], [ 5, 11, 12, 14, 19 ] ) ) {
+                    $role = 'pinca';
+                } else { $role = 'none'; }
                 return [
                     'name' => $get_user_info_service[ 'responseData' ][ 'SNAME' ],
                     'nip' => $get_user_info_service[ 'responseData' ][ 'NIP' ],
                     'role_id' => $get_user_info_service[ 'responseData' ][ 'HILFM' ],
+                    'role' => $role,
                     'branch_id' => $get_user_info_service[ 'responseData' ][ 'BRANCH' ],
                     // 'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
                 ];

@@ -88,7 +88,7 @@ class Customer extends User
                 'birth_date' => $detail->birth_date,
                 'address' => $detail->address,
                 'city_id' => $detail->city_id,
-                'city' => $detail->city->name,
+                'city' => $detail->city ? $detail->city->name : '',
                 'citizenship_id' => $detail->citizenship_id,
                 'citizenship' => $detail->citizenship_id,
                 'status' => $detail->status,
@@ -280,9 +280,13 @@ class Customer extends User
     public function verify( $data )
     {
         if( $data[ 'verify_status' ] == 'verify' ) {
-            $this->detail()->update( $data );
-        }
-        if( $data[ 'verify_status' ] == 'verified' ) {
+            $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
+            $data[ 'gender' ] = str_replace( 'PEREMPUAN', 'P', $data[ 'gender' ] );
+            $data[ 'gender' ] = str_replace( 'LAKI-LAKI', 'L', $data[ 'gender' ] );
+            $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
+            $data[ 'gender' ] = str_replace( 'Laki-Laki', 'L', $data[ 'gender' ] );
+            $this->update( array_except( $data, [ 'verify_status', '_method', 'cif_number' ] ) );
+        } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true
             ] );

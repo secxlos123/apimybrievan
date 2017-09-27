@@ -105,6 +105,7 @@ class VerificationController extends Controller
             'message' => 'Sukses',
             'contents' => [
                 'customer' => [
+                    'id' => $customer->id,
                     'is_completed' => $customer->is_completed,
                     'name' => $customer->full_name,
                     'gender' => $customer->gender,

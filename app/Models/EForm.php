@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
+use Illuminate\Http\Request;
 use App\Models\Customer;
 use Sentinel;
 use Asmx;
@@ -220,14 +221,16 @@ class EForm extends Model
      */
     public static function approve( $eform_id, $request )
     {
+        $eform = static::find( $eform_id );
         for ( $i=1; $i <= 7; $i++ ) {
-            $result = $this->insertCoreBRI( $i );
+            $result = $eform->insertCoreBRI( $i );
             if( $result === false ) {
                 \Log::info( 'Error step ' . $i );
-                $i--;
+                return $result;
+                // $i--;
             }
+            \Log::info( 'Step ' . $i . ' Berhasil.' );
         }
-        $eform = static::find( $eform_id );
         $eform->update( [
             'pros' => $request->pros,
             'cons' => $request->cons,
@@ -247,94 +250,117 @@ class EForm extends Model
         $customer = $this->customer;
         $customer_detail = $customer->detail;
         $request = [
-            "nik_pemohon" => $this->nik,
-            "nama_pemohon" => $this->customer_name,
-            // "tempat_lahir_pemohon":"Jambi",
-            "tempat_lahir_pemohon" => $customer_detail->birth_place_id,
-            "tanggal_lahir_pemohon" => $customer_detail->birth_date,
-            // "alamat_pemohon":"ini alamat pemohon",
-            "alamat_pemohon" => $customer_detail->address,
-            // "jenis_kelamin_pemohon":"l",
-            "jenis_kelamin_pemohon" => $customer->gender, // L harusnya 0 atau 1 atau 2 atau 3
-            "kewarganegaraan_pemohon" => $customer_detail->citizenship_id,
-            "pekerjaan_pemohon_value" => $customer_detail->job_id,
-            // "status_pernikahan_pemohon_value":"2",
-            "status_pernikahan_pemohon_value" => $customer_detail->status, // Belum sama dengan value dari BRI
-            // "status_pisah_harta_pemohon":"Pisah Harta",
+            "nik_pemohon" => empty( $this->nik ) ? '' : $this->nik,
+            "nama_pemohon" => empty( $this->customer_name ) ? '' : $this->customer_name,
+    // "tempat_lahir_pemohon" => "Jambi",
+    // "tanggal_lahir_pemohon" => "1989-07-25",
+    // "alamat_pemohon" => "ini alamat pemohon",
+    // "jenis_kelamin_pemohon" => "l",
+    // "kewarganegaraan_pemohon" => "ID",
+    // "pekerjaan_pemohon_value" => "001",
+    // "status_pernikahan_pemohon_value" => "2",
+    // "status_pisah_harta_pemohon" => "Pisah Harta",
+    // "nik_pasangan" => "3174062507891237",
+    // "nama_pasangan" => "Nama Bojo",
+    // "status_tempat_tinggal_value" => "0",
+    // "telepon_pemohon" => "123456789",
+    // "hp_pemohon" => "082177777669",
+    // "email_pemohon" => "prayantaalfian@gmail.com",
+    // "jenis_pekerjaan_value" => "17",
+    // "pekerjaan_value" => "18",
+    // "nama_perusahaan" => "Nama Perusahaan 19",
+    // "bidang_usaha_value" => "20",
+    // "jabatan_value" => "21",
+    // "lama_usaha" => "12",
+    // "alamat_usaha" => "ini alamat usaha",
+    // "jenis_penghasilan" => "Singe Income",
+    // "gaji_bulanan_pemohon" => "8100000",
+    // "pendapatan_lain_pemohon" => "7100000",
+    // "gaji_bulanan_pasangan" => "2100000",
+    // "pendapatan_lain_pasangan" => "1100000",
+    // "angsuran" => "500000",
+    // "jenis_kpp_value" => "KPR Perorangan PNS / BUMN",
+    // "permohonan_pinjaman" => "151000000",
+    // "uang_muka" => "51000000",
+    // "jangka_waktu" => "240",
+    // "jenis_dibiayai_value" => "123456789",
+    // "sektor_ekonomi_value" => "123456789",
+    // "project_value" => "1086",
+    // "program_value" => "27",
+    // "pihak_ketiga_value" => "1016",
+    // "sub_pihak_ketiga_value" => "1",
+    // "nama_keluarga" => "siSepupu",
+    // "hubungan_keluarga" => "Sepupu",
+    // "telepon_keluarga" => "123456789",
+    // "jenis_kredit" => "KPR",
+    // "tujuan_penggunaan_value" => "3",
+    // "tujuan_penggunaan" => "Pembelian Rumah Baru",
+    // "kode_cabang" => "0206",
+    // "id_prescreening" => "12",
+    // "nama_ibu" => "Ibu Terbaik",
+    // "npwp_pemohon" => "36.930.247.6-409.000",
+    // "nama_pengelola" => "Oblag",
+    // "pn_pengelola" => "00139644",
+            // "tempat_lahir_pemohon" => "Jambi",
+            "tempat_lahir_pemohon" => empty( $customer_detail->birth_place_id ) ? '' : $customer_detail->birth_place_id,
+            "tanggal_lahir_pemohon" => empty( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
+            "alamat_pemohon" => empty( $customer_detail->address ) ? '' : $customer_detail->address,
+            // "jenis_kelamin_pemohon" => "l",
+            "jenis_kelamin_pemohon" => empty( $customer->gender ) ? '' : $customer->gender, // L harusnya 0 atau 1 atau 2 atau 3
+            "kewarganegaraan_pemohon" => empty( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
+            "pekerjaan_pemohon_value" => empty( $customer_detail->job_id ) ? '' : $customer_detail->job_id,
+            // "status_pernikahan_pemohon_value" => "2",
+            "status_pernikahan_pemohon_value" => empty( $customer_detail->status ) ? '' : $customer_detail->status, // Belum sama dengan value dari BRI
             "status_pisah_harta_pemohon" => "Pisah Harta",
-            "nik_pasangan" => $customer_detail->couple_nik,
-            "nama_pasangan" => $customer_detail->couple_name,
-            // "status_tempat_tinggal_value":"0",
-            "status_tempat_tinggal_value" => $customer_detail->address_status,
-            "telepon_pemohon" => $customer->phone,
-            "hp_pemohon" => $customer->mobile_phone,
-            "email_pemohon" => $customer->email,
-            "jenis_pekerjaan_value" => $customer_detail->job_type_id,
-            "pekerjaan_value" => $customer_detail->job_id,
-            "nama_perusahaan" => $customer_detail->company_name,
-            "bidang_usaha_value" => $customer_detail->job_field_id,
-            // "jabatan_value":"21",
-            "jabatan_value" => $customer_detail->position,
-            "lama_usaha" => $customer_detail->work_duration,
-            "alamat_usaha" => $customer_detail->office_address,
-            // "jenis_penghasilan":"Singe Income",
+            "nik_pasangan" => empty( $customer_detail->couple_nik ) ? '' : $customer_detail->couple_nik,
+            "nama_pasangan" => empty( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
+            "status_tempat_tinggal_value" => "0",
+            "status_tempat_tinggal_value" => empty( $customer_detail->address_status ) ? '0' : $customer_detail->address_status,
+            "telepon_pemohon" => empty( $customer->phone ) ? '' : $customer->phone,
+            "hp_pemohon" => empty( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
+            "email_pemohon" => empty( $customer->email ) ? '' : $customer->email,
+            "jenis_pekerjaan_value" => empty( $customer_detail->job_type_id ) ? '' : $customer_detail->job_type_id,
+            "pekerjaan_value" => empty( $customer_detail->job_id ) ? '' : $customer_detail->job_id,
+            "nama_perusahaan" => empty( $customer_detail->company_name ) ? '' : $customer_detail->company_name,
+            "bidang_usaha_value" => empty( $customer_detail->job_field_id ) ? '' : $customer_detail->job_field_id,
+            "jabatan_value" => "21",
+            "jabatan_value" => empty( $customer_detail->position ) ? '' : $customer_detail->position,
+            "lama_usaha" => empty( $customer_detail->work_duration ) ? '0' : $customer_detail->work_duration,
+            "alamat_usaha" => empty( $customer_detail->office_address ) ? '' : $customer_detail->office_address,
             "jenis_penghasilan" => "Single Income", // Tidak ada di design dan database
-            "gaji_bulanan_pemohon" => $customer_detail->salary,
-            "pendapatan_lain_pemohon" => $customer_detail->other_salary,
-            // "gaji_bulanan_pasangan":"2100000",
+            "gaji_bulanan_pemohon" => empty( $customer_detail->salary ) ? '' : $customer_detail->salary,
+            "pendapatan_lain_pemohon" => empty( $customer_detail->other_salary ) ? '' : $customer_detail->other_salary,
             "gaji_bulanan_pasangan" => "2100000", // Belum ada
-            // "pendapatan_lain_pasangan":"1100000",
             "pendapatan_lain_pasangan" => "1100000", // Belum ada
-            "angsuran" => $customer_detail->loan_installment,
-            // "jenis_kpp_value":"KPR Perorangan PNS / BUMN",
+            "angsuran" => empty( $customer_detail->loan_installment ) ? '' : $customer_detail->loan_installment,
             "jenis_kpp_value" => "KPR Perorangan PNS / BUMN", // Tidak ada di design dan database, ada dropdownnya GetJenisKPP
-            "permohonan_pinjaman" => $kpr->request_amount,
-            // "uang_muka":"51000000",
+            "permohonan_pinjaman" => empty( $kpr->request_amount ) ? '' : $kpr->request_amount,
+            // "uang_muka" => "51000000",
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            // "jangka_waktu":"240",
             "jangka_waktu" => ( $kpr->year * 12 ),
-            // "jenis_dibiayai_value":"123456789",
             "jenis_dibiayai_value" => "123456789", // Tidak ada di design dan database
-            // "sektor_ekonomi_value":"123456789",
             "sektor_ekonomi_value" => "123456789", // Tidak ada di design dan database
-            // "project_value":"1086",
             "project_value" => "1086", // Tidak ada di design dan database
-            // "program_value":"27",
             "program_value" => "27", // Tidak ada di design dan database
-            // "pihak_ketiga_value":"1016",
-            "pihak_ketiga_value" => "1016", // Tidak ada di design dan database
-            // "sub_pihak_ketiga_value":"1",
+            "pihak_ketiga_value" => empty( $kpr->developer_id ) ? '' : $kpr->developer_id,
             "sub_pihak_ketiga_value" => "1", // Tidak ada di design dan database
-            // "nama_keluarga":"siSepupu",
             "nama_keluarga" => "siSepupu", // Tidak ada di design dan database
-            // "hubungan_keluarga":"Sepupu",
-            "hubungan_keluarga" => $customer_detail->emergency_relation,
-            // "telepon_keluarga":"123456789",
-            "telepon_keluarga" => $customer_detail->emergency_contact,
-            // "jenis_kredit":"KPR",
-            "jenis_kredit" => $this->product_type,
-            // "tujuan_penggunaan_value":"3",
+            "hubungan_keluarga" => empty( $customer_detail->emergency_relation ) ? '' : $customer_detail->emergency_relation,
+            "telepon_keluarga" => empty( $customer_detail->emergency_contact ) ? '' : $customer_detail->emergency_contact,
+            "jenis_kredit" => strtoupper( $this->product_type ),
             "tujuan_penggunaan_value" => "3", // Tidak ada di design dan database
-            // "tujuan_penggunaan":"Pembelian Rumah Baru",
             "tujuan_penggunaan" => "Pembelian Rumah Baru", // Tidak ada di design dan database
-            // "kode_cabang":"0206",
-            "kode_cabang" => $this->office_id, // Value belum sama dengan pihak BRI
-            // "id_prescreening":"12",
+            "kode_cabang" => empty( $this->branch_id ) ? '' : $this->branch_id,
             "id_prescreening" => "12", // Tidak ada di design dan database dan perlu sync dengan BRI
-            // "nama_ibu":"Ibu Terbaik",
-            "nama_ibu" => $customer_detail->mother_name,
-            // "npwp_pemohon":"36.930.247.6-409.000",
+            "nama_ibu" => empty( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => "36.930.247.6-409.000", // Tidak ada di design dan database
-            // "nama_pengelola":"Oblag",
             "nama_pengelola" => "Oblag", // Nama AO
-            // "pn_pengelola":"00139644"
-            "pn_pengelola" => request()->header( 'pn' ),
+            "pn_pengelola" => "00139644",
             "cif" => '' //Informasi nomor CIF
         ];
         $request += $this->additional_parameters;
-
         if( $step_id == 1 ) {
-            $post_cif_bri = Asmx::setEndpoint( 'InsertDataCif' )->setBody( [
+            $post_to_bri = Asmx::setEndpoint( 'InsertDataCif' )->setBody( [
                 'request' => json_encode( $request )
             ] )->post( 'form_params' );
             if( $post_to_bri[ 'code' ] == 200 ) {
@@ -343,7 +369,7 @@ class EForm extends Model
                 return true;
             }
         } else if( $step_id == 2 ) {
-            $post_cifsdn_bri = Asmx::setEndpoint( 'InsertDataCifSdn' )->setBody( [
+            $post_to_bri = Asmx::setEndpoint( 'InsertDataCifSdn' )->setBody( [
                 'request' => json_encode( $request )
             ] )->post( 'form_params' );
             if( $post_to_bri[ 'code' ] == 200 ) {
@@ -389,7 +415,7 @@ class EForm extends Model
                 return true;
             }
         }
-        return false;
+        return $post_to_bri;
     }
 
     /**
@@ -432,6 +458,30 @@ class EForm extends Model
         //         }
         //     }
         // } );
+    }
+
+    /**
+     * Scope a query to filter eform.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilter( $query, Request $request )
+    {
+        return $query->where( function( $eform ) use( $request ) {
+            if( $request->has( 'status' ) ) {
+                if( $request->status == 'Submit' ) {
+                    $eform->whereIsApproved( true );
+                } else if( $request->status == 'Initiate' ) {
+                    $eform->has( 'visit_report' )->whereIsApproved( false );
+                } else if( $request->status == 'Dispose' ) {
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                } else if( $request->status == 'Rekomend' ) {
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                }
+            }
+        } );
     }
 
     /**

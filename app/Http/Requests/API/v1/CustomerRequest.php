@@ -48,17 +48,17 @@ class CustomerRequest extends BaseRequest
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
                         'verify_status' => 'required|in:verify,verified',
-                        'cif_number' => 'required_if:verify_status,verify',
+                        'cif_number' => '',
                         'first_name' => 'required_if:verify_status,verify',
                         'last_name' => '',
                         'gender' => 'required_if:verify_status,verify',
                         // 'birth_place_id' => 'required_if:verify_status,verify',
-                        'birth_date' => 'required_if:verify_status,verify|date',
+                        'birth_date' => 'required_if:verify_status,verify',
                         'phone' => 'required_if:verify_status,verify',
                         'mobile_phone' => 'required_if:verify_status,verify|regex:(08)',
                         'address' => 'required_if:verify_status,verify',
                         // 'citizenship_id' => 'required_if:verify_status,verify',
-                        'status' => 'required_if:verify_status,verify|in:0,1,2',
+                        // 'status' => 'required_if:verify_status,verify|in:0,1,2',
                         'address_status' => 'required_if:verify_status,verify',
                         'mother_name' => 'required_if:verify_status,verify'
                     ];
@@ -72,7 +72,7 @@ class CustomerRequest extends BaseRequest
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city_id' => 'required|numeric|exists:cities,id',
-                        'phone' => 'required|regex:(08)',
+                        'phone' => 'required',
                         'citizenship_id' => 'required',
                         'status' => 'required|in:0,1,2',
                         'couple_nik' => 'required_if:status,1|numeric|digits:16',
@@ -83,7 +83,7 @@ class CustomerRequest extends BaseRequest
                         'address_status' => 'required',
                         'mother_name' => 'required',
                         'mobile_phone' => 'required|regex:(08)',
-                        'emergency_contact' => 'required|regex:(08)',
+                        'emergency_contact' => 'required',
                         'emergency_relation' => 'required',
                         'job_type_id' => 'required',
                         'job_id' => 'required',
@@ -96,15 +96,15 @@ class CustomerRequest extends BaseRequest
                         'other_salary' => 'required|numeric',
                         'loan_installment' => 'required',
                         'dependent_amount' => 'required',
-                        'legal_document' => 'required|image|mimes:jpg,jpeg,png',
-                        'salary_slip' => 'required|image|mimes:jpg,jpeg,png',
+                        'legal_document' => 'required|file',
+                        'salary_slip' => 'required|file',
                         'identity' => 'image|mimes:jpg,jpeg,png',
                         'image' => 'image|mimes:jpg,jpeg,png',
                         'npwp' => 'required|image|mimes:jpg,jpeg,png',
-                        'bank_statement' => 'required|image|mimes:jpg,jpeg,png',
-                        'family_card' => 'required|image|mimes:jpg,jpeg,png',
-                        'marrital_certificate' => 'required_if:status,0,1|image|mimes:jpg,jpeg,png',
-                        'diforce_certificate' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
+                        'bank_statement' => 'required|file',
+                        'family_card' => 'required|file',
+                        'marrital_certificate' => 'required_if:status,1|file',
+                        'diforce_certificate' => 'required_if:status,2|file'
                     ];
                 }
                 break;

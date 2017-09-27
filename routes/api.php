@@ -20,6 +20,7 @@ Route::post( 'urgent-function', 'RemovableController@run' );
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
+		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );
 		Route::get( 'job-type-list', 'JobTypeController@index' );
