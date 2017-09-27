@@ -13,16 +13,9 @@ class Developer extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'city_id', 'company_name', 'address', 'summary',
-        'created_by', 'approved_by', 'is_approved', 'pks_number', 'plafond'
+        'user_id', 'city_id', 'company_name', 'address', 'summary', 'pks_description',
+        'created_by', 'approved_by', 'is_approved', 'pks_number', 'plafond', 'dev_id_bri'
     ];
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [ 'image' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -38,7 +31,7 @@ class Developer extends Model
      */
     public function user()
     {
-        return $this->belongsTo( User::class, 'dev_id' );
+        return $this->belongsTo( User::class, 'user_id' );
     }
 
     /**
@@ -102,6 +95,8 @@ class Developer extends Model
                  */
                 if ($request->has('project')) $developer->whereBetween('project', explode('|', $request->input('project')));
             })
+            ->select('*')
+            ->selectRaw('(select users.image from users where users.id = developers_view_table.dev_id) as image')
             ->orderBy($sort[0], $sort[1]);
     }
 
@@ -120,15 +115,5 @@ class Developer extends Model
             ->orWhere('email', 'ilike', "%{$request->input('search')}%")
             ->orWhere('phone_number', 'ilike', "%{$request->input('search')}%")
             ->orWhere('city_name', 'ilike', "%{$request->input('search')}%");
-    }
-
-    /**
-     * Get user developer avatar url.
-     *
-     * @return string
-     */
-    public function getImageAttribute()
-    {
-        return $this->user->image;
     }
 }

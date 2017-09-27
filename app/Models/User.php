@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
-use App\Jobs\SendPasswordEmail;
-use Illuminate\Http\Request;
 use Activation;
+use App\Events\Developer\CreateOrUpdate;
+use App\Jobs\SendPasswordEmail;
+use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 use File;
+use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -235,6 +236,7 @@ class User extends Authenticatable
     protected function getResponse($user)
     {
         if ($user->inRole('developer')) {
+            event( new CreateOrUpdate ($user->developer) );
             return $this->responseDeveloper($user);
         } else if ($user->inRole('customer')) {
             return [];

@@ -42,6 +42,7 @@ class PropertyController extends Controller
         \DB::beginTransaction();
         try {
             $property = Property::create($request->all());
+            $this->service($property);
             $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
             $code = 201;
             \DB::commit();
@@ -78,6 +79,7 @@ class PropertyController extends Controller
         \DB::beginTransaction();
         try {
             $property->update($request->all());
+            $this->service($property);
             $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
             $code = 200;
             \DB::commit();
@@ -98,5 +100,35 @@ class PropertyController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Submit to service BRI
+     * 
+     * @return void
+     */
+    public function service($property)
+    {
+        $property->load('developer');
+
+        $current = [
+            'tipe_project' => 'KPR',
+            'nama_project' => $property->name,
+            'alamat_project' => $property->address,
+            'pic_project' => $property->pic_name,
+            'pks_project' => $property->developer->pks_number,
+            'deskripsi_project' => $property->description,
+            'telepon_project' => $property->pic_phone,
+            'hp_project' => $property->pic_project,
+            'fax_project' => '', 
+            'deskripsi_pks_project' => $property->developer->pks_description,
+            'project_value' => $property->prop_id_bri ?: '',
+        ];
+
+        $id = \Asmx::setEndpoint('InsertDataProject')
+            ->setBody(['request' => json_encode($current)])
+            ->post('form_params');
+        
+        $property->update(['prop_id_bri' => $id['contents']]);
     }
 }

@@ -44,6 +44,14 @@ class DeveloperController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $developers = Developer::getLists($request)->paginate($limit);
+        $developers->transform(function ($developer) {
+            $temp = $developer->toArray();
+
+            if ($developer->image) 
+                $temp['image'] = url("uploads/avatars/{$developer->image}");
+            
+            return $temp;
+        });
         return response()->success(['contents' => $developers]);
     }
 
@@ -72,24 +80,9 @@ class DeveloperController extends Controller
      */
     public function update(UpdateRequest $request, User $developer)
     {
-        // {
-        //     "tipe_pihak_ketiga" : "DEVELOPER",
-        //     "nama_pihak_ketiga" : "PT GRAHA RAYHAN TRI PUTRA (TEST)",
-        //     "alamat_pihak_ketiga" : "JL. Pengadegan Timur I No 30 Pancoran",
-        //     "pic_pihak_ketiga" : "Bally Saputra",
-        //     "pks_pihak_ketiga" : "09 tanggal 8 Agustus 2012",
-        //     "deskripsi_pihak_ketiga" : "Developer",
-        //     "telepon_pihak_ketiga" : "0217994222",
-        //     "hp_pihak_ketiga" : "",
-        //     "fax_pihak_ketiga" : "",
-        //     "deskripsi_pks_pihak_ketiga" : "Pemberian Fasilitas KPA",
-        //     "plafon_induk_pihak_ketiga" : "0",
-        //     "grup_sub_pihak_ketiga" : "null",
-        //     "pihak_ketiga_value" : "25"
-        // }
-        
         $user = $this->storeUpdate($request, $developer);
-        if ($user) return response()->success(['message' => 'Data developer berhasil dirubah.', 'contents' => $user]);
+        if ($user)
+            return response()->success(['message' => 'Data developer berhasil dirubah.', 'contents' => $user]);
         return response()->error(['message' => 'Maaf server sedang gangguan.'], 500);
     }
 
