@@ -21,6 +21,8 @@ class OfficeController extends Controller
     {
         $expiresAt = Carbon::now()->addMinutes(10);
 
+        Cache::flush();
+
         if (! Cache::has('branchs') 
             || cache('lat') != $request->input('lat')
             || cache('long') != $request->input('long')

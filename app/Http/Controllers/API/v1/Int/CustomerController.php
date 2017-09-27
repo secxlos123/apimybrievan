@@ -93,7 +93,7 @@ class CustomerController extends Controller
 	{
 		DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
-		$customer->verify( $request->all() );
+		$customer->verify( $request->except( [ 'birth_place_id', 'citizenship_id' ] ) );
 
 		DB::commit();
 		if( $request->verify_status == 'verify' ) {

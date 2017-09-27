@@ -220,6 +220,13 @@ class EForm extends Model
      */
     public static function approve( $eform_id, $request )
     {
+        for ( $i=1; $i <= 7; $i++ ) {
+            $result = $this->insertCoreBRI( $i );
+            if( $result === false ) {
+                \Log::info( 'Error step ' . $i );
+                $i--;
+            }
+        }
         $eform = static::find( $eform_id );
         $eform->update( [
             'pros' => $request->pros,
@@ -240,67 +247,47 @@ class EForm extends Model
         $customer = $this->customer;
         $customer_detail = $customer->detail;
         $request = [
-            // "nik_pemohon":"3174062507890007",
             "nik_pemohon" => $this->nik,
-            // "nama_pemohon":"Gilang Bikin WS",
             "nama_pemohon" => $this->customer_name,
             // "tempat_lahir_pemohon":"Jambi",
-            "tempat_lahir_pemohon" => $customer_detail->birth_place,
-            // "tanggal_lahir_pemohon":"1989-07-25",
+            "tempat_lahir_pemohon" => $customer_detail->birth_place_id,
             "tanggal_lahir_pemohon" => $customer_detail->birth_date,
             // "alamat_pemohon":"ini alamat pemohon",
             "alamat_pemohon" => $customer_detail->address,
             // "jenis_kelamin_pemohon":"l",
             "jenis_kelamin_pemohon" => $customer->gender, // L harusnya 0 atau 1 atau 2 atau 3
-            // "kewarganegaraan_pemohon":"ID",
-            "kewarganegaraan_pemohon" => $customer_detail->citizenship, // Value belum sama dengan pihak BRI
-            // "pekerjaan_pemohon_value":"001",
-            "pekerjaan_pemohon_value" => $customer_detail->work,
+            "kewarganegaraan_pemohon" => $customer_detail->citizenship_id,
+            "pekerjaan_pemohon_value" => $customer_detail->job_id,
             // "status_pernikahan_pemohon_value":"2",
             "status_pernikahan_pemohon_value" => $customer_detail->status, // Belum sama dengan value dari BRI
             // "status_pisah_harta_pemohon":"Pisah Harta",
-            "status_pisah_harta_pemohon" => "Pisah Harta", // Tidak ada di design dan database
-            // "nik_pasangan":"3174062507891237",
-            "nik_pasangan" => "3174062507891237", // Tidak ada di design dan database
-            // "nama_pasangan":"Nama Bojo",
-            "nama_pasangan" => "Nama Bojo", // Tidak ada di design dan database
+            "status_pisah_harta_pemohon" => "Pisah Harta",
+            "nik_pasangan" => $customer_detail->couple_nik,
+            "nama_pasangan" => $customer_detail->couple_name,
             // "status_tempat_tinggal_value":"0",
             "status_tempat_tinggal_value" => $customer_detail->address_status,
-            // "telepon_pemohon":"123456789",
             "telepon_pemohon" => $customer->phone,
-            // "hp_pemohon":"082177777669",
             "hp_pemohon" => $customer->mobile_phone,
-            // "email_pemohon":"prayantaalfian@gmail.com",
             "email_pemohon" => $customer->email,
-            // "jenis_pekerjaan_value":"17",
-            "jenis_pekerjaan_value" => $customer_detail->work_type,
-            // "pekerjaan_value":"18",
-            "pekerjaan_value" => $customer_detail->work,
-            // "nama_perusahaan":"Nama Perusahaan 19",
+            "jenis_pekerjaan_value" => $customer_detail->job_type_id,
+            "pekerjaan_value" => $customer_detail->job_id,
             "nama_perusahaan" => $customer_detail->company_name,
-            // "bidang_usaha_value":"20",
-            "bidang_usaha_value" => $customer_detail->work_field,
+            "bidang_usaha_value" => $customer_detail->job_field_id,
             // "jabatan_value":"21",
             "jabatan_value" => $customer_detail->position,
-            // "lama_usaha":"12",
             "lama_usaha" => $customer_detail->work_duration,
-            // "alamat_usaha":"ini alamat usaha",
             "alamat_usaha" => $customer_detail->office_address,
             // "jenis_penghasilan":"Singe Income",
             "jenis_penghasilan" => "Single Income", // Tidak ada di design dan database
-            // "gaji_bulanan_pemohon":"8100000",
             "gaji_bulanan_pemohon" => $customer_detail->salary,
-            // "pendapatan_lain_pemohon":"7100000",
             "pendapatan_lain_pemohon" => $customer_detail->other_salary,
             // "gaji_bulanan_pasangan":"2100000",
             "gaji_bulanan_pasangan" => "2100000", // Belum ada
             // "pendapatan_lain_pasangan":"1100000",
             "pendapatan_lain_pasangan" => "1100000", // Belum ada
-            // "angsuran":"500000",
             "angsuran" => $customer_detail->loan_installment,
             // "jenis_kpp_value":"KPR Perorangan PNS / BUMN",
             "jenis_kpp_value" => "KPR Perorangan PNS / BUMN", // Tidak ada di design dan database, ada dropdownnya GetJenisKPP
-            // "permohonan_pinjaman":"151000000",
             "permohonan_pinjaman" => $kpr->request_amount,
             // "uang_muka":"51000000",
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),

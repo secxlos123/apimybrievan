@@ -115,12 +115,6 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 	Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
 		Route::post( 'disposition', 'EFormController@disposition' )->name( 'eforms.disposition' );
 		Route::post( 'approve', 'EFormController@approve' );
-		Route::post( 'step-{step_id}-cif', 'EFormController@insertCoreBRI' );
-		Route::post( 'step-{step_id}-cif-sdn', 'EFormController@insertCoreBRI' );
-		Route::post( 'step-{step_id}-application', 'EFormController@insertCoreBRI' );
-		Route::post( 'step-{step_id}-prescreening', 'EFormController@insertCoreBRI' );
-		Route::post( 'step-{step_id}-scoring-kpr', 'EFormController@insertCoreBRI' );
-		Route::post( 'step-{step_id}-credit-purpose', 'EFormController@insertCoreBRI' );
-		Route::post( 'step-{step_id}-master', 'EFormController@insertCoreBRI' );
+		Route::post( 'step-{step_id}', 'EFormController@insertCoreBRI' ); // step id must between 1 - 7
 	} );
 });
