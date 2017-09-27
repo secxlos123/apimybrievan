@@ -29,6 +29,14 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
         if( $login[ 'responseCode' ] == '00' ) {
+            if( ! in_array( $login[ 'responseData' ][ 'tipe_uker' ], [ 'KC', "KCP" ] ) ) {
+                $request->headers->set( 'pn', $pn );
+                $this->destroy( $request );
+                return response()->success( [
+                    'message' => 'Unauthorized',
+                    'contents'=> []
+                ], 401 );
+            }
             if( in_array( $data[ 'hilfm' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
                 $role = 'ao';
             } else if( in_array( $data[ 'hilfm' ], [ 21, 49, 50, 51 ] ) ) {

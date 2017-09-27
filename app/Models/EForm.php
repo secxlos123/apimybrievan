@@ -1,4 +1,4 @@
-<?php
+'<?php
 
 namespace App\Models;
 
@@ -14,7 +14,7 @@ class EForm extends Model
 {
     /**
      * The table name.
-     *
+     *`
      * @var string
      */
     protected $table = 'eforms';
@@ -25,7 +25,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address'
     ];
 
     /**

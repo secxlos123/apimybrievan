@@ -88,7 +88,7 @@ class AuthRequest extends BaseRequest
                     }
                     return [
                         'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
-                        'email' => 'required|email',
+                        // 'email' => 'required|email',
                         'first_name' => 'required',
                         'last_name' => '',
                         'mobile_phone' => 'required|numeric|digits:12',
