@@ -66,7 +66,10 @@ class VerificationController extends Controller
         $cif = RestwsHc::setBody( [
             'request' => json_encode( [
                 'requestMethod' => 'get_customer_profile_nik',
-                'requestData'   => [ 'nik' => $request->nik ],
+                'requestData'   => [
+                    'app_id' => 'appidmybri',
+                    'nik' => $eform->nik
+                ],
             ] )
         ] )->post('form_params');
         if( $cif[ 'responseCode' ] == '00' ) {
