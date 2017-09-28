@@ -27,8 +27,8 @@ class BaseRequest extends FormRequest
             'developer_name'=> 'required|alpha_spaces',
             'city_id'       => 'required|exists:cities,id',
             'address'       => 'required',
-            'phone'         => 'required|digits:12|numeric',
-            'mobile_phone'  => 'required|digits:12|numeric',
+            'phone'         => 'required',
+            'mobile_phone'  => 'required',
             'image'         => 'image|max:1024',
             'pks_number'    => 'required',
             'plafond'       => 'required'
