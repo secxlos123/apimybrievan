@@ -107,7 +107,7 @@ class PropertyType extends Model
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
         $select = $request->has('dropdown')
             ? ['id', 'name', 'building_area']
-            : ['id', 'property_id', 'name', 'surface_area', 'building_area', 'certificate', 'slug'];
+            : ['id', 'property_id', 'name', 'surface_area', 'building_area', 'certificate', 'slug', 'price'];
 
         if ( ! $request->has('dropdown') ) {
             $query->with('photos')->selectRaw('(select count(property_items.id) from property_items where property_types.id = property_items.property_type_id) as items');
