@@ -162,6 +162,12 @@ class Property extends Model
                     $property->where('prop_city_id', $request->input('prop_city_id'));
 
                 /**
+                 * Query for filter by category.
+                 */
+                if ($request->has('category'))
+                    $property->where('prop_category', $request->input('category'));
+
+                /**
                  * Query for filter by range items.
                  */
                 if ($request->has('items'))
