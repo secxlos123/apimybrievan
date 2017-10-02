@@ -206,14 +206,24 @@ class Property extends Model
             ->orWhere('prop_city_name', 'ilike', "%{$request->input('search')}%");
     }
 
-    public function scopeDistance($query, $lat, $lng, $radius = 100, $unit = "km")
+    /**
+     * [scopeDistance description]
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  string  $lat    Latitude
+     * @param  string  $lng    Longitude
+     * @param  integer $radius Radius
+     * @param  string  $type   Type for seach
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDistance($query, $lat, $lng, $radius = 100, $type = "km")
     {
-        $unit = ($unit === "km") ? 6378.10 : 3963.17;
+        $type = ($type === "km") ? 6378.10 : 3963.17;
         $lat  = (float) $lat;
         $lng  = (float) $lng;
         $radius = (double) $radius;
 
-        $distance = "( {$unit}
+        $distance = "( {$type}
             * acos( cos( radians( cast( {$lat} as double precision ) ) ) 
             * cos( radians( cast( latitude as double precision ) ) ) 
             * cos( radians( cast( longitude as double precision ) ) 
@@ -221,10 +231,50 @@ class Property extends Model
                  + sin( radians( cast( {$lat}  as double precision ) ) )
             * sin( radians( cast( latitude as double precision ) ) ) ) )";
 
-        return $query->select('*')
+        return $query
             ->selectRaw("{$distance} as distance")
             ->havingRaw("{$distance} <= {$radius}")
             ->groupBy( "id" )
             ->orderBy( 'distance', 'asc' );
+    }
+
+    /**
+     * Get nearby property
+     * 
+     * @param  Request $request
+     * @return array          
+     */
+    protected function nearby(Request $request)
+    {
+        $lat    = $request->get('lat', '');
+        $long   = $request->get('long', '');
+        $radius = $request->get('radius', 10);
+        $type   = $request->get('type', 'km');
+        $limit  = $request->get('limit', 6);
+
+        $properties = $this->distance($lat, $long, $radius, $type)
+               ->with(['photo', 'developer', 'city'])
+               ->withCount(['propertyTypes as types', 'propertyItems as items'])
+               ->addSelect([
+                    'id', 'name', 'slug', 'latitude', 'longitude', 'category',
+                    'developer_id', 'pic_phone', 'city_id'
+                ])
+               ->limit($limit)
+               ->get();
+
+        $properties->transform(function ($property) {
+            $data = [];
+            foreach ($property->toArray() as $key => $value) {
+                $key = str_replace('_count', '', $key);
+                $data["prop_{$key}"] = $value;
+            }
+            $data['prop_developer_name'] = $data['prop_developer']['company_name'];
+            $data['prop_photo'] = $data['prop_photo']['image'];
+            $data['prop_city_name'] = ! is_null( $data['prop_city'] ) ? $data['prop_city']['name'] : '';
+            unset( $data['prop_developer'], $data['prop_city'], $data['prop_distance'] );
+            return $data;
+        });
+
+        return $properties;
     }
 }

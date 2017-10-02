@@ -15,14 +15,23 @@
  * Route group for api v1
  */
 Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
+
+	/**
+	 * Route for authentication
+	 */
 	Route::group( [ 'prefix' => 'auth' ], function () {
 		Route::post( 'login', 'AuthController@store' );
 		Route::post( 'register', 'AuthController@register' );
 	} );
 
+	/**
+	 * Route for activate new customer
+	 */
 	Route::post( 'activate', 'AuthController@activate' );
 
-	// route that required for login
+	/**
+	 * Route for customer or developer require authentication
+	 */
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::post( 'register-simple', 'AuthController@update' );
@@ -106,6 +115,11 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 		});
 
 	} );
+
+	/**
+	 * Route for homepage frontend
+	 */
+	Route::get('properties', 'PropertyController@nearby');
 
 	/**
 	 * Route group password

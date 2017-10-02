@@ -42,7 +42,9 @@ class PropertyController extends Controller
         \DB::beginTransaction();
         try {
             $property = Property::create($request->all());
-            $this->service($property);
+
+            // $this->service($property); // this logic for saving data to internal bri
+
             $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
             $code = 201;
             \DB::commit();
@@ -62,8 +64,9 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        $prop = $property->load('photo')->toArray();
+        $prop = $property->load('photo', 'developer')->toArray();
         $prop['photo'] = $property->photo ? $property->photo->image : null;
+        $prop['developer'] = $property->developer->company_name;
         return response()->success(['contents' => $prop]);
     }
 
@@ -79,13 +82,15 @@ class PropertyController extends Controller
         \DB::beginTransaction();
         try {
             $property->update($request->all());
-            $this->service($property);
-            $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
+
+            // $this->service($property); // this logic for saving data to internal bri
+
+            $status = 'success'; $message = "Project {$property->name} berhasil dirubah.";
             $code = 200;
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = "Project {$request->input('name')} gagal disimpan.";
+            $status = 'error'; $message = "Project {$request->input('name')} gagal dirubah.";
             $code = 500;
         }
         return response()->{$status}(compact('message'), $code);
@@ -130,5 +135,17 @@ class PropertyController extends Controller
             ->post('form_params');
         
         $property->update(['prop_id_bri' => $id['contents']]);
+    }
+
+    /**
+     * Get properties by nearby location
+     * 
+     * @param  Request $request 
+     * @return \Illuminate\Http\Response          
+     */
+    public function nearby(Request $request)
+    {
+        $properties = Property::nearby($request);
+        return response()->success(['contents' => $properties]);
     }
 }
