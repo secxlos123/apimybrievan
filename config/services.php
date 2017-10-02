@@ -19,6 +19,11 @@ return [
         'secret' => env('MAILGUN_SECRET'),
     ],
 
+    'bri' => [
+        'domain' => config('restapi.restwshc'),
+        'secret' => config('restapi.key'),
+    ],
+
     'ses' => [
         'key' => env('SES_KEY'),
         'secret' => env('SES_SECRET'),

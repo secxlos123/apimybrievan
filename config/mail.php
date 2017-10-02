@@ -14,9 +14,10 @@ return [
     | Supported: "smtp", "sendmail", "mailgun", "mandrill", "ses",
     |            "sparkpost", "log", "array"
     |
+    | driver bri from service email bri
     */
 
-    'driver' => env('MAIL_DRIVER', 'smtp'),
+    'driver' => 'bri',
 
     /*
     |--------------------------------------------------------------------------
