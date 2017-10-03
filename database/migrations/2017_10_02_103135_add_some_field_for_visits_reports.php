@@ -14,7 +14,7 @@ class AddSomeFieldForVisitsReports extends Migration
      */
     public function up()
     {
-        Schema::create( 'visit_reports', function ( Blueprint $table ) {
+        Schema::table( 'visit_reports', function ( Blueprint $table ) {
             $table->integer( 'npwp' )->nullable();
             $table->string( 'income_type' )->nullable();
             $table->string( 'couples_monthly_salary' )->nullable();
