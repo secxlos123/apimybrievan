@@ -29,6 +29,7 @@ class AddSomeFieldForVisitsReports extends Migration
             $table->integer( 'use_reason_value' )->nullable();
             $table->string( 'use_reason' )->nullable();
             $table->integer( 'id_prescreening')->nullable();
+        });
     }
 
     /**
