@@ -257,7 +257,7 @@ class Property extends Model
                ->with(['photo', 'developer', 'city'])
                ->withCount(['propertyTypes as types', 'propertyItems as items'])
                ->addSelect([
-                    'id', 'name', 'slug', 'latitude', 'longitude', 'category',
+                    'id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name',
                     'developer_id', 'pic_phone', 'city_id', $rawPrice
                 ])
                ->limit($limit)
