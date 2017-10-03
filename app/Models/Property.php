@@ -170,6 +170,12 @@ class Property extends Model
                 /**
                  * Query for filter by range items.
                  */
+                if ($request->has('price'))
+                    $property->whereBetween('prop_price', explode('|', $request->input('price')));
+
+                /**
+                 * Query for filter by range items.
+                 */
                 if ($request->has('items'))
                     $property->whereBetween('prop_items', explode('|', $request->input('items')));
 
