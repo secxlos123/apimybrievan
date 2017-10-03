@@ -170,6 +170,12 @@ class Property extends Model
                 /**
                  * Query for filter by range items.
                  */
+                if ($request->has('price'))
+                    $property->whereBetween('prop_price', explode('|', $request->input('price')));
+
+                /**
+                 * Query for filter by range items.
+                 */
                 if ($request->has('items'))
                     $property->whereBetween('prop_items', explode('|', $request->input('items')));
 
@@ -208,7 +214,7 @@ class Property extends Model
 
     /**
      * [scopeDistance description]
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param  string  $lat    Latitude
      * @param  string  $lng    Longitude
@@ -224,9 +230,9 @@ class Property extends Model
         $radius = (double) $radius;
 
         $distance = "( {$type}
-            * acos( cos( radians( cast( {$lat} as double precision ) ) ) 
-            * cos( radians( cast( latitude as double precision ) ) ) 
-            * cos( radians( cast( longitude as double precision ) ) 
+            * acos( cos( radians( cast( {$lat} as double precision ) ) )
+            * cos( radians( cast( latitude as double precision ) ) )
+            * cos( radians( cast( longitude as double precision ) )
                  - radians( cast( {$lng} as double precision ) ) )
                  + sin( radians( cast( {$lat}  as double precision ) ) )
             * sin( radians( cast( latitude as double precision ) ) ) ) )";
@@ -240,9 +246,9 @@ class Property extends Model
 
     /**
      * Get nearby property
-     * 
+     *
      * @param  Request $request
-     * @return array          
+     * @return array
      */
     protected function nearby(Request $request)
     {
@@ -256,8 +262,8 @@ class Property extends Model
                ->with(['photo', 'developer', 'city'])
                ->withCount(['propertyTypes as types', 'propertyItems as items'])
                ->addSelect([
-                    'id', 'name', 'slug', 'latitude', 'longitude', 'category',
-                    'developer_id', 'pic_phone', 'city_id'
+                    'id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name',
+                    'developer_id', 'pic_phone', 'city_id', $rawPrice
                 ])
                ->limit($limit)
                ->get();
