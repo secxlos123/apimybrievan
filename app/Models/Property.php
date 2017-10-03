@@ -246,18 +246,19 @@ class Property extends Model
      */
     protected function nearby(Request $request)
     {
-        $lat    = $request->get('lat', '');
-        $long   = $request->get('long', '');
+        $lat    = $request->get('lat', '35.022848');
+        $long   = $request->get('long', '2.82466');
         $radius = $request->get('radius', 10);
         $type   = $request->get('type', 'km');
         $limit  = $request->get('limit', 6);
+        $rawPrice = \DB::raw('(SELECT MAX(property_types.price) from property_types where property_types.property_id = properties.id) as price');
 
         $properties = $this->distance($lat, $long, $radius, $type)
                ->with(['photo', 'developer', 'city'])
                ->withCount(['propertyTypes as types', 'propertyItems as items'])
                ->addSelect([
                     'id', 'name', 'slug', 'latitude', 'longitude', 'category',
-                    'developer_id', 'pic_phone', 'city_id'
+                    'developer_id', 'pic_phone', 'city_id', $rawPrice
                 ])
                ->limit($limit)
                ->get();
