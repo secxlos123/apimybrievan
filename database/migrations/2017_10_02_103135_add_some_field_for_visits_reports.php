@@ -9,6 +9,7 @@ class AddSomeFieldForVisitsReports extends Migration
     /**
      * Run the migrations.
      *
+     * @todo  removed
      * @return void
      */
     public function up()
