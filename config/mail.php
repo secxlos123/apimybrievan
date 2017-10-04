@@ -17,7 +17,7 @@ return [
     | driver bri from service email bri
     */
 
-    'driver' => 'bri',
+    'driver' => env('MAIL_DRIVER', 'bri'),
 
     /*
     |--------------------------------------------------------------------------
