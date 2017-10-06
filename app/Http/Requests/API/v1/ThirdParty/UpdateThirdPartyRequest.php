@@ -24,12 +24,12 @@ class UpdateThirdPartyRequest extends FormRequest
     public function rules()
     {
         return [
-            'nama_perusahaan' => 'required|string|regex:/^[a-zA-Z._ -]+$/|min:5|max:150',
-            'alamat_perusahaan' => 'required|string',
+            'name' => 'required|string|regex:/^[a-zA-Z._ -]+$/|min:5|max:150',
+            'address' => 'required|string',
             'city_id' => 'required|integer|exists:cities,id',
-            'no_telp' => 'required|string|regex:/^[0-9]+$/|max:15',
+            'phone_number' => 'required|string|regex:/^[0-9]+$/|max:15',
             'email' => 'required|email|max:150',
-            'status' => 'string',
+            'is_actived' => 'string',
         ];
     }
 

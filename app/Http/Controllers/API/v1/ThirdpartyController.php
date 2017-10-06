@@ -18,7 +18,7 @@ class ThirdpartyController extends Controller
     public function index(Request $request)
     {
         $limit = $request->input('limit') ?: 10;
-        $thirdparty = ThirdParty::with('city')->paginate($limit);
+        $thirdparty = ThirdParty::GetLists($request)->paginate($limit);
         return response()->success([
             'contents' => $thirdparty,
         ], 200);
@@ -43,12 +43,12 @@ class ThirdpartyController extends Controller
     public function store(ThirdPartyRequest $request)
     {
         $save = ThirdParty::create([
-            'nama_perusahaan' => $request->nama_perusahaan,
-            'alamat_perusahaan' => $request->alamat_perusahaan,
+            'name' => $request->name,
+            'address' => $request->address,
             'city_id' => $request->city_id,
-            'no_telp' => $request->no_telp,
+            'phone_number' => $request->phone_number,
             'email' => $request->email,
-            'status' => $request->status,
+            'is_actived' => $request->is_actived,
         ]);
 
         if ($save) {
@@ -96,12 +96,12 @@ class ThirdpartyController extends Controller
     public function update(UpdateThirdPartyRequest $request, $id)
     {
         $update = ThirdParty::find($id);
-        $update->nama_perusahaan = $request->nama_perusahaan;
-        $update->alamat_perusahaan = $request->alamat_perusahaan;
+        $update->name = $request->name;
+        $update->address = $request->address;
         $update->city_id = $request->city_id;
-        $update->no_telp = $request->no_telp;
+        $update->phone_number = $request->phone_number;
         $update->email = $request->email;
-        $update->status = $request->status;
+        $update->is_actived = $request->is_actived;
 
         $update->save();
         if ($update) {

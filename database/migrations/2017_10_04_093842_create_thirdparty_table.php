@@ -15,12 +15,12 @@ class CreateThirdpartyTable extends Migration
     {
         Schema::create('third_parties', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nama_perusahaan', 150);
-            $table->longText('alamat_perusahaan');
+            $table->string('name', 150);
+            $table->longText('address');
             $table->unsignedInteger('city_id');
-            $table->bigInteger('no_telp');
+            $table->bigInteger('phone_number');
             $table->string('email', 50);
-            $table->enum('status', ['active', 'disabled'])->default('active');
+            $table->enum('is_actived', ['active', 'disabled'])->default('active');
             $table->timestamps();
 
             $table->foreign('city_id')
