@@ -26,7 +26,22 @@ class CreateVisitReportsTable extends Migration
             $table->string( 'seller_phone' )->nullable();
             $table->bigInteger( 'selling_price' )->nullable();
             $table->text( 'reason_for_sale' )->nullable();
+            
             $table->string( 'relation_with_seller' )->nullable();
+            $table->integer( 'npwp' )->nullable();
+            $table->string( 'income_type' )->nullable();
+            $table->string( 'couples_monthly_salary' )->nullable();
+            $table->string( 'other_income_couples' )->nullable();
+            $table->string( 'kpp_type' )->nullable();
+            $table->integer( 'financed_type' )->nullable();
+            $table->integer( 'sector_economy' )->nullable();
+            $table->integer( 'project_value' )->nullable();
+            $table->integer( 'program_value' )->nullable();
+            $table->integer( 'sub_third_party_value' )->nullable();
+            $table->string( 'family_name' )->nullable();
+            $table->integer( 'use_reason_value' )->nullable();
+            $table->string( 'use_reason' )->nullable();
+
             $table->timestamps();
 
             $table->foreign( 'eform_id' )

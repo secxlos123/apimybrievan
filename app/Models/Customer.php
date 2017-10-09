@@ -77,31 +77,30 @@ class Customer extends User
     {
         $personal_data = [
             'name' => $this->fullname,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
             'gender' => $this->gender,
-            'email' => $this->email
+            'mobile_phone' => $this->mobile_phone,
+            'email' => $this->email,
+            'nik' => $this->detail ? $this->detail->nik : '',
+            'birth_place_id' => $this->detail ? $this->detail->birth_place_id : '',
+            'birth_place' => $this->birth_place,
+            'birth_date' => $this->detail ? $this->detail->birth_date : '',
+            'address' => $this->detail ? $this->detail->address : '',
+            'city_id' => $this->detail ? $this->detail->city_id : '',
+            'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
+            'citizenship_id' => $this->detail ? $this->detail->citizenship_id : '',
+            'citizenship' => $this->detail ? $this->detail->citizenship_id : '',
+            'status' => $this->detail ? $this->detail->status : '',
+            'address_status' => $this->detail ? $this->detail->address_status : '',
+            'mother_name' => $this->detail ? $this->detail->mother_name : '',
+            'couple_name' => $this->detail ? $this->detail->couple_name : '',
+            'couple_nik' => $this->detail ? $this->detail->couple_nik : '',
+            'couple_birth_date' => $this->detail ? $this->detail->couple_birth_date : '',
+            'couple_birth_place_id' => $this->detail ? $this->detail->couple_birth_place_id : '',
+            'couple_birth_place' => $this->couple_birth_place,
+            'couple_identity' => $this->detail ? $this->detail->couple_identity : ''
         ];
-        if( count( $detail = $this->detail ) ) {
-            $personal_data += [
-                'nik' => $detail->nik,
-                'birth_place_id' => $detail->birth_place_id,
-                'birth_place' => $this->birth_place,
-                'birth_date' => $detail->birth_date,
-                'address' => $detail->address,
-                'city_id' => $detail->city_id,
-                'city' => $detail->city ? $detail->city->name : '',
-                'citizenship_id' => $detail->citizenship_id,
-                'citizenship' => $detail->citizenship_id,
-                'status' => $detail->status,
-                'address_status' => $detail->address_status,
-                'mother_name' => $detail->mother_name,
-                'couple_name' => $detail->couple_name,
-                'couple_nik' => $detail->couple_nik,
-                'couple_birth_date' => $detail->couple_birth_date,
-                'couple_birth_place_id' => $detail->couple_birth_place_id,
-                'couple_birth_place' => $this->couple_birth_place,
-                'couple_identity' => $detail->couple_identity
-            ];
-        }
 
         return $personal_data;
     }

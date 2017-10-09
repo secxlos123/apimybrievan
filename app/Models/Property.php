@@ -65,6 +65,16 @@ class Property extends Model
     }
 
     /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getDescriptionAttribute($description)
+    {
+        return htmlspecialchars_decode($description);
+    }
+
+    /**
      * Get parent property of developer.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -257,6 +267,7 @@ class Property extends Model
         $radius = $request->get('radius', 10);
         $type   = $request->get('type', 'km');
         $limit  = $request->get('limit', 6);
+        $rawPrice = \DB::raw('(SELECT max(property_types.price) from property_types where property_types.property_id = properties.id) as price');
 
         $properties = $this->distance($lat, $long, $radius, $type)
                ->with(['photo', 'developer', 'city'])
