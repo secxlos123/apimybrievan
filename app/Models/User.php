@@ -80,6 +80,16 @@ class User extends Authenticatable
     }
 
     /**
+     * The relation to user pihak ke -3
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function thirdparty()
+    {
+        return $this->hasOne( ThirdParty::class );
+    }
+
+    /**
      * Get fullname for the user.
      *
      * @return string
@@ -240,7 +250,10 @@ class User extends Authenticatable
             return $this->responseDeveloper($user);
         } else if ($user->inRole('customer')) {
             return [];
-        } else {
+        }
+        elseif ($user->inRole('others')) {
+            return $this->responseThirdparty($user);
+         } else {
             return $this->responseUser($user);
         }
     }
@@ -303,6 +316,28 @@ class User extends Authenticatable
             'plafond'       => number_format($developer->plafond),
             'is_actived'    => $user->is_actived,
             'is_approved'   => $developer->is_approved,
+        ];
+    }
+
+    /**
+     * Get Profile.Pihak ke -3
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Models\User
+     */
+    protected function responseThirdparty($user)
+    {
+        $user->load(['thirdparty.city']);
+        $thirdparty = $user->thirdparty;
+
+        return [
+            'id'            => $user->id,
+            'name'          => $user->fullname,
+            'email'         => $user->email,
+            'phone_number'  => $thirdparty->phone_number,
+            'address'       => $thirdparty->address,
+            'city_id'       => $thirdparty->city->id,
+            'city_name'     => $thirdparty->city->name,
         ];
     }
 

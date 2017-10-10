@@ -117,4 +117,10 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::post( 'approve', 'EFormController@approve' );
 		Route::post( 'step-{step_id}', 'EFormController@insertCoreBRI' ); // step id must between 1 - 7
 	} );
+
+	/**
+	* Route ThirdParty (pihak ke-3)
+	*/
+	Route::resource('thirdparty', 'ThirdpartyController',['only' => ['index','show','store', 'update','destroy']]);
+	
 });

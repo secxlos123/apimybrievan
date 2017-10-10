@@ -3,13 +3,27 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\v1\ThirdParty\ThirdPartyRequest;
-use App\Http\Requests\API\v1\ThirdParty\UpdateThirdPartyRequest;
+use App\Http\Requests\API\v1\ThirdParty\CreateRequest;
+use App\Http\Requests\API\v1\ThirdParty\UpdateRequest;
 use App\Models\ThirdParty;
+use App\Helpers\Traits\ManageUserTrait;
 use Illuminate\Http\Request;
+use App\Models\User;
+use DB;
 
 class ThirdpartyController extends Controller
 {
+    use ManageUserTrait;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $activedFor = 'others';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $relation = 'thirdparty';
     /**
      * Display a listing of the resource.
      *
@@ -19,9 +33,14 @@ class ThirdpartyController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $thirdparty = ThirdParty::GetLists($request)->paginate($limit);
-        return response()->success([
+        if (count($thirdparty) !=0) {
+            return response()->success([
             'contents' => $thirdparty,
         ], 200);
+        }
+        return response()->error([
+            'message' => 'Data pihak ke-3 Tidak Ada.',
+        ], 500);
     }
 
     /**
@@ -40,21 +59,14 @@ class ThirdpartyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ThirdPartyRequest $request)
+    public function store(CreateRequest $request)
     {
-        $save = ThirdParty::create([
-            'name' => $request->name,
-            'address' => $request->address,
-            'city_id' => $request->city_id,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'is_actived' => $request->is_actived,
-        ]);
 
+        $save = $this->storeUpdate($request, []);
         if ($save) {
             return response()->success([
                 'message' => 'Data pihak ke-3 berhasil ditambah.',
-                'contents' => $request->all(),
+                'contents' => $save,
             ], 201);
         }
 
@@ -72,7 +84,16 @@ class ThirdpartyController extends Controller
      */
     public function show($id)
     {
-        //
+        $detail = ThirdParty::GetDetail($id)->get();
+        if (count($detail)!= 0) {
+            return response()->success([
+                'contents' => $detail,
+            ], 200);
+        }
+
+        return response()->error([
+            'message' => 'Data pihak ke-3 Tidak Ada.',
+        ], 500);
     }
 
     /**
@@ -93,27 +114,45 @@ class ThirdpartyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateThirdPartyRequest $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
+        DB::beginTransaction();
+        try{
         $update = ThirdParty::find($id);
         $update->name = $request->name;
         $update->address = $request->address;
         $update->city_id = $request->city_id;
         $update->phone_number = $request->phone_number;
-        $update->email = $request->email;
-        $update->is_actived = $request->is_actived;
-
-        $update->save();
         if ($update) {
+        $user = User::find($id);
+        list($first_name, $last_name) = name_separator($request->name);
+        $user->first_name = $first_name;
+        $user->last_name = $last_name;
+        $user->save();
+        $update->save();
+        }else
+        {
+             \DB::rollback();
+            return response()->error([
+            'message' => 'Data pihak ke-3 Tidak Dapat Diupdate.',
+        ], 500);
+        }
+        if ($update && $user) {
             return response()->success([
                 'message' => 'Data pihak ke-3 berhasil Diupdate.',
-                'contents' => $request->all(),
+                'contents' => $update,
             ], 200);
         }
 
-        return response()->error([
+        }catch (\Exception $e) {
+            \DB::rollback();
+            return response()->error([
             'message' => 'Data pihak ke-3 Tidak Dapat Diupdate.',
         ], 500);
+        }
+        
+
+        
     }
 
     /**
