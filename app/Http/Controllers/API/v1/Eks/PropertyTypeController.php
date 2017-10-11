@@ -58,13 +58,28 @@ class PropertyTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(PropertyType $property_type)
+    public function show($slug)
     {
-        $prop = $property_type->load('photos')->toArray();
-        $prop['photos'] = $property_type->photos->transform(function ($photo) {
+        $prop = PropertyType::with('photos')
+            ->withCount('propertyItems as items')
+            ->whereSlug($slug)
+            ->first();
+
+        $prop->photos = $prop->photos->transform(function ($photo) {
             return $photo->image;
         });
-        return response()->success(['contents' => $prop]);
+
+        $property = $prop->property;
+        $others = [
+            'property_name'    => $property->name,
+            'property_address' => $property->address,
+            'developer_name'   => $property->developer->company_name,
+            'developer_logo'   => $property->developer->user->image,
+        ];
+
+        return response()->success([
+            'contents' => array_merge(array_except($prop->toArray(), 'property'), $others) 
+        ]);
     }
 
     /**

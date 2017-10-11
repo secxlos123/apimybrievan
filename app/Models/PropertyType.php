@@ -109,20 +109,26 @@ class PropertyType extends Model
             ? ['id', 'name', 'building_area']
             : ['id', 'property_id', 'name', 'surface_area', 'building_area', 'certificate', 'slug', 'price'];
 
-        if ( ! $request->has('dropdown') ) {
-            $query->with('photos')->selectRaw('(select count(property_items.id) from property_items where property_types.id = property_items.property_type_id) as items');
-        }
-
-        return $query
+        $query
             ->where(function ($propertyType) use (&$request) {
                 if ($request->has('property_id')) $propertyType->where('property_id', $request->input('property_id'));
                 if ($request->has('certificate')) $propertyType->where('certificate', $request->input('certificate'));
             })
             ->where(function ($propertyType) use (&$request, &$query) {
                 if ($request->has('search')) $query->search($request);
+                
+                if ($request->user()->inRole('developer')) 
+                    $query->developerOwned($request->user()->developer->id);
             })
             ->select($select)
             ->orderBy($sort[0], $sort[1]);
+
+        if ( ! $request->has('dropdown') ) {
+            $query->with('photos')
+                ->addSelect(\DB::raw('(select count(property_items.id) from property_items where property_types.id = property_items.property_type_id) as items'));
+        }
+
+        return $query;
     }
 
     /**

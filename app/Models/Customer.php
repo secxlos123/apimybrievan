@@ -40,22 +40,24 @@ class Customer extends User
      */
     public function getIsCompletedAttribute()
     {
-        $detail = $this->detail->toArray();
-        if( $detail[ 'status' ] != 1 ) {
-            $detail = array_diff_key( $detail, array_flip( [
-                'couple_nik', 'couple_name', 'couple_birth_date', 'couple_birth_place_id', 'couple_identity'
-            ] ) );
+        if ($this->detail) {
+            $detail = $this->detail->toArray();
+            if( $detail[ 'status' ] != 1 ) {
+                $detail = array_diff_key( $detail, array_flip( [
+                    'couple_nik', 'couple_name', 'couple_birth_date', 'couple_birth_place_id', 'couple_identity'
+                ] ) );
+            }
+            $total_data = count( $detail );
+            $filled = array_filter( $detail, function( $var ) {
+                return $var !== NULL && $var !== '';
+            } );
+            $total_filled_data = count( $filled );
+            if( $total_data - $total_filled_data == 0 ) {
+                return true;
+            }
         }
-        $total_data = count( $detail );
-        $filled = array_filter( $detail, function( $var ) {
-            return $var !== NULL && $var !== '';
-        } );
-        $total_filled_data = count( $filled );
-        if( $total_data - $total_filled_data == 0 ) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return false;
     }
 
     /**
@@ -65,7 +67,7 @@ class Customer extends User
      */
     public function getIsVerifiedAttribute()
     {
-        return $this->detail->is_verified;
+        return $this->detail ? $this->detail->is_verified : false;
     }
 
     /**
@@ -209,8 +211,10 @@ class Customer extends User
      */
     public function getBirthPlaceAttribute()
     {
-        if( $this->detail->birth_place_city ) {
-            return $this->detail->birth_place_city->name;
+        if ($this->detail) {
+            if( $this->detail->birth_place_city ) {
+                return $this->detail->birth_place_city->name;
+            }
         }
         return '';
     }
@@ -222,8 +226,10 @@ class Customer extends User
      */
     public function getCoupleBirthPlaceAttribute()
     {
-        if( $this->detail->couple_birth_place_city ) {
-            return $this->detail->couple_birth_place_city->name;
+        if ($this->detail) {
+            if( $this->detail->couple_birth_place_city ) {
+                return $this->detail->couple_birth_place_city->name;
+            }
         }
         return '';
     }
