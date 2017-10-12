@@ -33,13 +33,13 @@ class SendMailNotification
         $user = $event->user;
         $url = '';
         if( $activation_code ) {
-            $url = env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/ActivateAccount/' . $user->id . '/' . $activation_code;
+            $url = env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/activate/' . $user->id . '/' . $activation_code;
         }
         $mail = [
             'url' => $url,
             'email' => $user->email
         ];
-        
+
         Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
     }
 }
