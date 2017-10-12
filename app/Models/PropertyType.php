@@ -117,8 +117,10 @@ class PropertyType extends Model
             ->where(function ($propertyType) use (&$request, &$query) {
                 if ($request->has('search')) $query->search($request);
                 
-                if ($request->user()->inRole('developer')) 
-                    $query->developerOwned($request->user()->developer->id);
+                if ($user = $request->user()) {
+                    if ($user->inRole('developer')) 
+                        $query->developerOwned($request->user()->developer->id);
+                }
             })
             ->select($select)
             ->orderBy($sort[0], $sort[1]);
