@@ -286,7 +286,7 @@ class Property extends Model
                 $data["prop_{$key}"] = $value;
             }
             $data['prop_developer_name'] = $data['prop_developer']['company_name'];
-            $data['prop_photo'] = $data['prop_photo']['image'];
+            $data['prop_photo'] = $data['prop_photo']['image'] ?: asset('img/noimage.jpg');
             $data['prop_city_name'] = ! is_null( $data['prop_city'] ) ? $data['prop_city']['name'] : '';
             unset( $data['prop_developer'], $data['prop_city'], $data['prop_distance'] );
             return $data;
