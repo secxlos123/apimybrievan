@@ -27,7 +27,8 @@ class UpdateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $this->replace($this->except(['email','_method']));
+        $this->merge(['created_by' => $this->header('pn')]);
+        $this->replace($this->except(['email', '_method']));
         return parent::getValidatorInstance();
     }
 

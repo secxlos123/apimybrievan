@@ -26,6 +26,13 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			'only' => [ 'index', 'store', 'update' ]
 		] );
 
+		/**
+		* Route ThirdParty (pihak ke-3)
+		*/
+		Route::resource('thirdparty', 'ThirdpartyController',[
+			'only' => ['index','store', 'update']
+		]);
+
 		Route::resource( 'customer', 'CustomerController', [
 			'except' => [ 'edit', 'create' ]
 		] );
@@ -106,6 +113,24 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			 */
 			Route::match(['put', 'patch'], 'actived', 'DeveloperController@actived')->name('developer.actived');
 		});
+
+		/**
+		 * Route group for controller when uses trait ManageUserTrait
+		 */
+		Route::group(['prefix' => 'thirdparty/{model}'], function () {
+
+			/**
+			 * Route for get detail a pihak ke-3
+			 */
+			Route::get('/', 'ThirdpartyController@show')->name('thirdparty.show');
+
+			/**
+			 * Route for actived a pihak ke-3
+			 */
+			Route::match(['put', 'patch'], 'actived', 'ThirdpartyController@actived')->name('thirdparty.actived');
+		});
+
+
 	});
 
 
@@ -118,9 +143,4 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::post( 'step-{step_id}', 'EFormController@insertCoreBRI' ); // step id must between 1 - 7
 	} );
 
-	/**
-	* Route ThirdParty (pihak ke-3)
-	*/
-	Route::resource('thirdparty', 'ThirdpartyController',['only' => ['index','show','store', 'update','destroy']]);
-	
 });

@@ -14,7 +14,7 @@ class ThirdParty extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'address', 'city_id', 'phone_number', 'email','user_id'
+        'name', 'address', 'city_id', 'phone_number', 'email', 'user_id', 'created_by',
     ];
 
     /**
@@ -23,7 +23,7 @@ class ThirdParty extends Model
      * @var array
      */
     protected $hidden = [
-        'created_by','created_at', 'updated_at',
+        'created_at', 'updated_at',
     ];
     /**
      * Set Default Primary Key
@@ -63,6 +63,7 @@ class ThirdParty extends Model
         $thirdPartyfill = $this->thirdPartyfill();
 
         return $query->leftJoin('cities', 'third_parties.city_id', '=', 'cities.id')
+            ->leftJoin('users', 'third_parties.user_id', '=', 'users.id')
             ->where(function ($thirdparty) use ($request) {
 
                 if ($request->has('name')) {
@@ -90,7 +91,7 @@ class ThirdParty extends Model
                         ->orWhere('cities.name', 'ilike', '%' . $request->input('search') . '%');
                 }
 
-            })->select(array_merge(['third_parties.id'], $thirdPartyfill))->selectRaw('cities.name AS city_name');
+            })->select(array_merge(['users.is_actived'], $thirdPartyfill))->selectRaw('cities.name AS city_name');
     }
 
     /**
@@ -106,8 +107,9 @@ class ThirdParty extends Model
         
 
         return $query->leftJoin('cities', 'third_parties.city_id', '=', 'cities.id')
+            ->leftJoin('users', 'third_parties.user_id', '=', 'users.id')
             ->where('third_parties.user_id', '=', $id)
-            ->select($thirdPartyfill)
+            ->select(array_merge(['users.is_actived'],$thirdPartyfill))
             ->selectRaw('cities.name AS city_name');
     }
     

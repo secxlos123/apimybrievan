@@ -338,6 +338,7 @@ class User extends Authenticatable
             'address'       => $thirdparty->address,
             'city_id'       => $thirdparty->city->id,
             'city_name'     => $thirdparty->city->name,
+            'is_actived'    => $user->is_actived
         ];
     }
 

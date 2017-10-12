@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use App\Exceptions\ApiAuthorizationException;
 
@@ -61,6 +62,10 @@ class Handler extends ExceptionHandler
         } else if( $exception instanceof \Swift_TransportException ) {
             return response()->error( [
                 'message' => 'Gagal mengirim email'
+            ], 404 );
+        } else if ($exception instanceof NotFoundHttpException) {
+            return response()->error( [
+                'message' => 'Url Tidak Valid'
             ], 404 );
         }
         // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
