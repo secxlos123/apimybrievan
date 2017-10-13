@@ -81,3 +81,20 @@ $factory->define(App\Models\PropertyItem::class, function (Faker\Generator $fake
         'status'	   => $faker->randomElement(['new', 'second']),
     ];
 });
+
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
+$factory->define(App\Models\EForm::class, function (Faker\Generator $faker) {
+    return [
+         'internal_id'      => $faker->randomNumber(6),
+         'ao_id'            => '00168857',
+         'appointment_date' => $faker->date($format = 'd-m-Y', $max = 'now'),
+         'branch_id'        => $faker->randomNumber(4),
+         'longitude'        => $faker->longitude($min = -180, $max = 180),
+         'latitude'         => $faker->latitude($min = -90, $max = 90),
+         'nik'              => $faker->randomNumber(5),
+         'ref_number'       => $faker->swiftBicNumber,
+         'product_type'     => $faker->ean8,
+        'address'           => $faker->address
+
+    ];
+});

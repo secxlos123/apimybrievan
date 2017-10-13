@@ -48,6 +48,23 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::get('types', 'DropdownController@types');
 			Route::get('units', 'DropdownController@items');
 		});
+
+		/**
+		* Route schedule 
+		*/
+		Route::resource('schedule', 'AppointmentController',[
+			'only' => ['index','store', 'update']
+		]);
+		/**
+		 * Route group for controller when uses trait ManageUserTrait
+		 */
+		Route::group(['prefix' => 'schedule/{id}'], function () {
+			/**
+			 * Route for status schedule
+			 */
+			Route::match(['put', 'patch'], 'status', 'AppointmentController@status')->name('schedule.status');
+		});
+
 	} );
 
 	Route::group( [ 'namespace' => 'Int' ], function () {
