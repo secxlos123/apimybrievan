@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Activation;
-use App\Events\Developer\CreateOrUpdate;
 use App\Jobs\SendPasswordEmail;
 use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 use File;
@@ -246,7 +245,6 @@ class User extends Authenticatable
     protected function getResponse($user)
     {
         if ($user->inRole('developer')) {
-            event( new CreateOrUpdate ($user->developer) );
             return $this->responseDeveloper($user);
         } else if ($user->inRole('customer')) {
             return [];
@@ -316,6 +314,7 @@ class User extends Authenticatable
             'plafond'       => number_format($developer->plafond),
             'is_actived'    => $user->is_actived,
             'is_approved'   => $developer->is_approved,
+            'developer'     => $developer
         ];
     }
 
