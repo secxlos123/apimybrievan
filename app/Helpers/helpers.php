@@ -72,7 +72,7 @@ if (! function_exists('removed_photos')) {
      * @param  mixed    $model
      * @return void
      */
-    function removed_photos($model)
+    function removed_photos($model, $driver = 'uploads')
     {
         if (request()->has('removed_photos') && $model->photos) {
 
@@ -84,7 +84,7 @@ if (! function_exists('removed_photos')) {
             });
 
             foreach ($photos as $photo) {
-                Storage::delete($photo->path);
+                Storage::disk($driver)->delete($photo->path);
                 $photo->delete();
             }
         }
@@ -99,19 +99,19 @@ if (! function_exists('saving_photos')) {
      * @param  mixed    $model
      * @return void
      */
-    function saving_photos($model)
+    function saving_photos($model, $driver = 'uploads')
     {
         /**
          * This logic for remove image for property type
          */
-        removed_photos($model);
+        removed_photos($model, $driver);
 
         /**
          * Call function generate_paths on helpers file
-         * request photos is array type, properties is a drive for saving to storage, last variable is folder
+         * request photos is array type, properties is a driver for saving to storage, last variable is folder
          */
         if (request()->hasFile('photos')) {
-            $paths = generate_paths(request('photos'), 'properties', $model->id);
+            $paths = generate_paths(request('photos'), $driver, $model->id);
             $model->photos()->createMany($paths);
         }
     }

@@ -17,6 +17,6 @@ class PropertyItemObserver
         /**
          * This logic for saving many photos
          */
-        saving_photos($property_item);
+        saving_photos($property_item, 'units');
     }
 }

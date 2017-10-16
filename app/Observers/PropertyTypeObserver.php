@@ -17,6 +17,6 @@ class PropertyTypeObserver
         /**
          * This logic for saving many photos
          */
-        saving_photos($property_type);
+        saving_photos($property_type, 'types');
     }
 }

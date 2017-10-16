@@ -52,6 +52,13 @@ class Photo extends Model
      */
     public function getImageAttribute()
     {
-        return \Storage::disk('properties')->url($this->attributes['path']);
+        switch ($this->attributes['photoable_type']) {
+            case 'App\Models\Property': $disk = 'properties'; break;
+            case 'App\Models\PropertyType': $disk = 'types'; break;
+            case 'App\Models\PropertyItem': $disk = 'units'; break;
+            default: $disk = 'uploads'; break;
+        }
+        
+        return \Storage::disk($disk)->url($this->attributes['path']);
     }
 }

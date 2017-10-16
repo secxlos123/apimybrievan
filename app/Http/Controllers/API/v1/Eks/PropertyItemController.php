@@ -22,9 +22,11 @@ class PropertyItemController extends Controller
         $propertyItems = PropertyItem::getLists($request)->paginate($limit);
         $propertyItems->transform(function ($propItem) {
             $items = $propItem->toArray();
+            $items['property_type_name'] = $propItem->propertyType->name;
             $items['photos'] = $propItem->photos->transform(function ($photo) {
                 return $photo->image;
             });
+            unset($items['property_type']);
             return $items;
         });
         return response()->success(['contents' => $propertyItems]);
@@ -60,10 +62,14 @@ class PropertyItemController extends Controller
      */
     public function show(PropertyItem $property_item)
     {
-        $prop = $property_item->load('photos')->toArray();
+        $prop = $property_item->load('propertyType.property', 'photos')->toArray();
         $prop['photos'] = $property_item->photos->transform(function ($photo) {
             return $photo->image;
         });
+        $prop['property_id']   = $prop['property_type']['property_id'];
+        $prop['property_name'] = $prop['property_type']['property']['name'];
+        $prop['property_type_name'] = $prop['property_type']['name'];
+        unset($prop['property_type']);
         return response()->success(['contents' => $prop]);
     }
 

@@ -39,21 +39,7 @@ class PropertyController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        \DB::beginTransaction();
-        try {
-            $property = Property::create($request->all());
-
-            // $this->service($property); // this logic for saving data to internal bri
-
-            $status = 'success'; $message = "Project {$property->name} berhasil disimpan.";
-            $code = 201;
-            \DB::commit();
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            $status = 'error'; $message = "Project {$request->input('name')} gagal disimpan.";
-            $code = 500;
-        }
-        return response()->{$status}(compact('message'), $code);
+        return $this->storeOrUpdate($request, []);
     }
 
     /**
@@ -65,8 +51,11 @@ class PropertyController extends Controller
     public function show(Property $property)
     {
         $prop = $property->load('photo', 'developer')->toArray();
+        $developer = $property->developer;
         $prop['photo'] = $property->photo ? $property->photo->image : null;
-        $prop['developer'] = $property->developer->company_name;
+        $prop['developer_name'] = $developer->company_name;
+        $prop['developer_logo'] = $developer->user->image;
+        unset($prop['developer']);
         return response()->success(['contents' => $prop]);
     }
 
@@ -79,21 +68,7 @@ class PropertyController extends Controller
      */
     public function update(CreateRequest $request, Property $property)
     {
-        \DB::beginTransaction();
-        try {
-            $property->update($request->all());
-
-            // $this->service($property); // this logic for saving data to internal bri
-
-            $status = 'success'; $message = "Project {$property->name} berhasil dirubah.";
-            $code = 200;
-            \DB::commit();
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            $status = 'error'; $message = "Project {$request->input('name')} gagal dirubah.";
-            $code = 500;
-        }
-        return response()->{$status}(compact('message'), $code);
+        return $this->storeOrUpdate($request, $property);
     }
 
     /**
@@ -105,6 +80,38 @@ class PropertyController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Handling store and update property
+     * 
+     * @param  Request $request  [description]
+     * @param  \App\Models\Property|array  $property [description]
+     * @return \Illuminate\Http\Response
+     */
+    public function storeOrUpdate(Request $request, $property)
+    {
+        \DB::beginTransaction();
+        try {
+            if ( ! $property instanceof Property ) {
+                $property = Property::create($request->all());
+                $code = 201; $method = 'disimpan';
+            } else {
+                $property->update($request->all());
+                $code = 200; $method = 'dirubah';
+            }
+
+            // $this->service($property); // this logic for saving data to internal bri
+
+            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $status = 'error'; $message = "Project {$request->input('name')} gagal {$method}.";
+            $code = 500;
+        }
+
+        return response()->{$status}(compact('message'), $code);
     }
 
     /**

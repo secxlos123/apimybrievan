@@ -62,6 +62,20 @@ return [
             'visibility' => 'public',
         ],
 
+        'types' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/types'),
+            'url' => env('APP_URL').'/storage/types',
+            'visibility' => 'public',
+        ],
+
+        'units' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/units'),
+            'url' => env('APP_URL').'/storage/units',
+            'visibility' => 'public',
+        ],
+
         'uploads' => [
             'driver' => 'local',
             'root' => storage_path('app/public/uploads'),
