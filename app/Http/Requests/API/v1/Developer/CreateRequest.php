@@ -14,7 +14,7 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'company_name'  => 'required|unique,developers,company_name', 'email' => 'required|email|unique:users,email',
+            'company_name'  => 'required|unique:developers,company_name', 'email' => 'required|email|unique:users,email',
         ]);
     }
 
