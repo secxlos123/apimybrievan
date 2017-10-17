@@ -14,15 +14,23 @@
 /**
  * Route group for api v1
  */
-Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
+Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 
 	/**
 	 * Route for authentication
 	 */
-	Route::group( [ 'prefix' => 'auth' ], function () {
+	Route::group([ 'prefix' => 'auth' ], function () {
+		
+		/**
+		 * Route for post request login
+		 */
 		Route::post( 'login', 'AuthController@store' );
+
+		/**
+		 * Route for post request register
+		 */
 		Route::post( 'register', 'AuthController@register' );
-	} );
+	});
 
 	/**
 	 * Route for activate new customer
@@ -30,72 +38,116 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 	Route::post( 'activate', 'AuthController@activate' );
 
 	/**
+	 * Route group password
+	 */
+	Route::group(['prefix' => 'password'], function () {
+
+		/**
+		 * Route for reset and send new password
+		 */
+		Route::post('reset', 'PasswordController@reset');
+	});
+
+	/**
 	 * Route for customer or developer require authentication
 	 */
-	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
-		Route::group( [ 'prefix' => 'auth' ], function () {
+	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
+
+		/**
+		 * Route for customer for register simple, complete and logout
+		 */
+		Route::group([ 'prefix' => 'auth' ], function () {
+
+			/**
+			 * Route for customer for register simple
+			 */
 			Route::post( 'register-simple', 'AuthController@update' );
+
+			/**
+			 * Route for customer for register complete
+			 */
 			Route::post( 'register-complete', 'AuthController@update' );
+
+			/**
+			 * Route for customer for logout
+			 */
 			Route::delete( 'logout', 'AuthController@destroy' );
 		} );
 
 		/**
 		 * Route property
 		 */
-		Route::resource('property', 'PropertyController', [
-			'except' => [ 'create', 'edit' ],
-		]);
+		Route::resource('property', 'PropertyController', [ 'except' => [ 'create', 'edit' ] ]);
 
 		/**
 		 * Route property type get by property
 		 */
-		Route::group([
-			'as' => 'property.',
-			'prefix' => 'property/{property}',
-			'middleware' => [ 'property.access' ]
-		], function() {
+		Route::prefix('property/{property}')->name('property.')->middleware('property.access')->group(function() {
 
-			Route::get('property-type', 'PropertyTypeController@index')
-				->name('property-type.index');
+			/**
+			 * Route property type get by property
+			 */
+			Route::get('property-type', [
+				'as'   => 'property-type.index',
+				'uses' => 'PropertyTypeController@index',
+			]);
 
-			Route::get('property-type/{property_type}', 'PropertyTypeController@showProperty')
-				->name('property-type.show');
+			/**
+			 * Route property type get by property
+			 */
+			Route::get('property-type/{property_type}', [
+				'as'   => 'property-type.show',
+				'uses' => 'PropertyTypeController@showProperty'
+			]);
 
-			Route::match(['put', 'patch'], 'property-type/{property_type}', 'PropertyTypeController@updateProperty')
-				->name('property-type.update');
+			/**
+			 * Route property type get by property
+			 */
+			Route::match(['put', 'patch'], 'property-type/{property_type}', [
+				'as'   => 'property-type.update',
+				'uses' => 'PropertyTypeController@updateProperty'
+			]);
 		});
 
 		/**
 		 * Route property type
 		 */
-		Route::resource('property-type', 'PropertyTypeController', [
-			'except' => [ 'create', 'edit' ],
-		]);
+		Route::resource('property-type', 'PropertyTypeController', [ 'except' => [ 'create', 'edit' ] ]);
 
 		/**
 		 * Route property type
 		 */
-		Route::resource('property-item', 'PropertyItemController', [
-			'except' => [ 'create', 'edit' ],
-		]);
+		Route::resource('property-item', 'PropertyItemController', ['except' => [ 'create', 'edit' ] ]);
 
 		/**
 		 * Route property type
 		 */
-		Route::group([
-			'as' => 'property-type.',
-			'prefix' => 'property-type/{property_type}',
-			'middleware' => [ 'property-type.access' ]
-		], function () {
+		Route::prefix('property-type/{property_type}')->name('property-type.')
+			->middleware('property-type.access')->group(function() {
 
-			Route::get('property-item', 'PropertyItemController@index')
-				->name('property-item.index');
+			/**
+			 * Route property type
+			 */
+			Route::get('property-item', [
+				'as'   => 'property-item.index',
+				'uses' => 'PropertyItemController@index'
+			]);
 
-			Route::get('property-item/{property_item}', 'PropertyItemController@showPropertyType')
-				->name('property-item.show');
+			/**
+			 * Route property type
+			 */
+			Route::get('property-item/{property_item}', [
+				'as'   => 'property-item.show',
+				'uses' => 'PropertyItemController@showPropertyType'
+			]);
 
-			Route::match(['put', 'patch'], 'property-item/{property_item}', 'PropertyItemController@updatePropertyType')
-				->name('property-item.update');
+			/**
+			 * Route property type
+			 */
+			Route::match(['put', 'patch'], 'property-item/{property_item}', [
+				'as'   => 'property-item.update',
+				'uses' => 'PropertyItemController@updatePropertyType'
+			]);
 		});
 
 		/**
@@ -114,36 +166,5 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 			Route::match(['put', 'patch'], 'update', 'ProfileController@update');
 		});
 
-	} );
-
-	/**
-	 * Route for homepage frontend
-	 */
-	Route::get( 'nearby-properties', 'PropertyController@nearby' );
-
-	Route::get( 'developers', '\App\Http\Controllers\API\v1\Int\DeveloperController@index' );
-
-	Route::group(['prefix' => 'properties'], function () {
-
-		/**
-		 * Route for homepage frontend
-		 */
-		Route::get( '/', 'PropertyController@index' );
-
-		/**
-		 * Route for homepage frontend
-		 */
-		Route::get( '{property}', 'PropertyController@show' );
-	});
-
-	/**
-	 * Route group password
-	 */
-	Route::group(['prefix' => 'password'], function () {
-
-		/**
-		 * Route for reset and send new password
-		 */
-		Route::post('reset', 'PasswordController@reset');
 	});
 });
