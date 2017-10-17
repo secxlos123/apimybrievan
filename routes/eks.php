@@ -119,9 +119,22 @@ Route::group( [ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() 
 	/**
 	 * Route for homepage frontend
 	 */
-	Route::get( 'properties', 'PropertyController@nearby' );
+	Route::get( 'nearby-properties', 'PropertyController@nearby' );
 
 	Route::get( 'developers', '\App\Http\Controllers\API\v1\Int\DeveloperController@index' );
+
+	Route::group(['prefix' => 'properties'], function () {
+
+		/**
+		 * Route for homepage frontend
+		 */
+		Route::get( '/', 'PropertyController@index' );
+
+		/**
+		 * Route for homepage frontend
+		 */
+		Route::get( '{property}', 'PropertyController@show' );
+	});
 
 	/**
 	 * Route group password
