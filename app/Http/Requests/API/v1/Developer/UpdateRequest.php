@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $this->replace($this->except(['email', 'company_name', '_method']));
+        $this->replace($this->except(['email', 'company_name','pks_number','plafond', '_method']));
         return parent::getValidatorInstance();
     }
 }

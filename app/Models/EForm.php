@@ -41,7 +41,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'branch', 'ao' ];
+    protected $hidden = [ 'ao_id', 'updated_at', 'branch', 'ao' ];
 
     /**
      * The attributes that should be cast to native types.
