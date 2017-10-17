@@ -360,23 +360,33 @@ class User extends Authenticatable
             ->leftJoin( 'cities as bplace', 'customer_details.birth_place_id', '=', 'bplace.id' )
             ->where( function( $user ) use( $request ) {
                 
-                $user->whereRaw( 
+                if ($request->has('name')) {
+                    $user->whereRaw( 
                     "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ]
                 );
-
-                $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+                }
+                if ($request->has('email')) {
+                    $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+                }
 
                 if( $request->has( 'nik' ) ) {
                     $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
                 }
                 if( $request->has( 'city_id' ) ) {
-                    $user->where( 'customer_details.city_id', 'ilike', '%' . $request->input( 'city_id' ) . '%' );
+                    $user->where( 'customer_details.city_id', '=', $request->input( 'city_id' ) );
                 }
                 if( $request->has( 'phone' ) ) {
                     $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
                 }
                 if( $request->has( 'gender' ) ) {
                     $user->where( 'users.gender', 'ilike', '%' . $request->input( 'gender' ) . '%' );
+                }
+                if ($request->has('search')) {
+                    $user->whereRaw( 
+                    "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'search' ) . '%' ]
+                    )
+                    ->orWhere( 'customer_details.nik', 'ilike', '%' . $request->input( 'search' ) . '%' )
+                    ->orWhere('customer_details.city_id', '=', $request->input( 'search' ));
                 }
             
                 $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );

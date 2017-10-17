@@ -491,7 +491,7 @@ class EForm extends Model
             if ($request->has('start_date') || $request->has('end_date')) {
                 $start_date= $request->input('start_date');
                 $end_date = $request->has('end_date') ? $request->input('end_date') : date('Y-m-d');
-                $eform->whereBetween('appointment_date',array($start_date,$end_date));
+                $eform->whereBetween('eforms.created_at',array($start_date,$end_date));
             }
         } )->orderBy('eforms.'.$sort[0], $sort[1]);
     }
