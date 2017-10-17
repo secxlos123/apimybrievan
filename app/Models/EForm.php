@@ -489,8 +489,8 @@ class EForm extends Model
                   ->orWhere('users.last_name', 'ilike', '%' . $request->input('search') . '%');
             }
             if ($request->has('start_date') || $request->has('end_date')) {
-                $start_date= $request->input('start_date');
-                $end_date = $request->has('end_date') ? $request->input('end_date') : date('Y-m-d');
+                $start_date= date('Y-m-d',strtotime($request->input('start_date')));
+                $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
                 $eform->whereBetween('eforms.created_at',array($start_date,$end_date));
             }
         } )->orderBy('eforms.'.$sort[0], $sort[1]);
