@@ -41,7 +41,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'ao_id', 'created_at', 'updated_at', 'branch', 'ao' ];
+    protected $hidden = [ 'ao_id', 'updated_at', 'branch', 'ao' ];
 
     /**
      * The attributes that should be cast to native types.
@@ -161,23 +161,23 @@ class EForm extends Model
     public function getAgingAttribute()
     {
         $days = $this->created_at->diffInDays();
-        $weeks = (integer) ( $days / 7 );
-        $days = $days % 7;
-        $months = (integer) ( $weeks / 4 );
-        $weeks = $weeks % 4;
-        $result = '';
-        if( $months != 0 ) {
-            $result .= $months . ' bulan ';
-        }
-        if( $weeks != 0 ) {
-            $result .= $weeks . ' minggu ';
-        }
-        if( $days != 0 ) {
-            $result .= $days . ' hari ';
-        } else {
-            $result = 'Baru';
-        }
-        return $result;
+        // $weeks = (integer) ( $days / 7 );
+        // $days = $days % 7;
+        // $months = (integer) ( $weeks / 4 );
+        // $weeks = $weeks % 4;
+        // $result = '';
+        // if( $months != 0 ) {
+        //     $result .= $months . ' bulan ';
+        // }
+        // if( $weeks != 0 ) {
+        //     $result .= $weeks . ' minggu ';
+        // }
+        // if( $days != 0 ) {
+        //     $result .= $days . ' hari ';
+        // } else {
+        //     $result = 'Baru';
+        // }
+        return $days;
     }
 
     /**
@@ -469,7 +469,9 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
-        return $query->where( function( $eform ) use( $request ) {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['appointment_date', 'asc'];
+        return $query->leftJoin('users','eforms.user_id','=','users.id')
+        ->where( function( $eform ) use( $request ) {
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
@@ -481,7 +483,17 @@ class EForm extends Model
                     $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
                 }
             }
-        } );
+            if ($request->has('search')) {
+                 $eform->where('eforms.ref_number', '=', $request->input('search'))
+                  ->orWhere('users.first_name', 'ilike', '%' . $request->input('search') . '%')
+                  ->orWhere('users.last_name', 'ilike', '%' . $request->input('search') . '%');
+            }
+            if ($request->has('start_date') || $request->has('end_date')) {
+                $start_date= $request->input('start_date');
+                $end_date = $request->has('end_date') ? $request->input('end_date') : date('Y-m-d');
+                $eform->whereBetween('appointment_date',array($start_date,$end_date));
+            }
+        } )->orderBy($sort[0], $sort[1]);
     }
 
     /**

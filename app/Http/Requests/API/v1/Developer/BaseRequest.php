@@ -29,9 +29,7 @@ class BaseRequest extends FormRequest
             'address'       => 'required',
             'phone'         => 'required',
             'mobile_phone'  => 'required',
-            'image'         => 'image|max:1024',
-            'pks_number'    => 'required',
-            'plafond'       => 'required'
+            'image'         => 'image|max:1024'
         ];
     }
 

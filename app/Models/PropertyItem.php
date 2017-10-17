@@ -17,6 +17,15 @@ class PropertyItem extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_available' => 'integer'
+    ];
+
+    /**
      * The attributes that are rules for validations.
      *
      * @var array
@@ -61,20 +70,21 @@ class PropertyItem extends Model
         if ( ! $request->has('dropdown') ) $query->with('photos');
 
         return $query
-            ->where(function ($propertyType) use (&$request) {
+            ->with('propertyType')
+            ->where(function ($item) use (&$request) {
                 if ($request->has('property_type_id')) 
-                    $propertyType->where('property_type_id', $request->input('property_type_id'));
+                    $item->where('property_type_id', $request->input('property_type_id'));
 
                 if ($request->has('is_available')) 
-                    $propertyType->where('is_available', $request->input('is_available'));
+                    $item->where('is_available', $request->input('is_available'));
 
                 if ($request->has('status')) 
-                    $propertyType->where('status', $request->input('status'));
+                    $item->where('status', $request->input('status'));
 
                 if ($request->has('price')) 
-                    $propertyType->whereBetween('price', explode('|', $request->input('price')));
+                    $item->whereBetween('price', explode('|', $request->input('price')));
             })
-            ->where(function ($propertyType) use (&$request, &$query) {
+            ->where(function ($item) use (&$request, &$query) {
                 if ($request->has('search')) $query->search($request);
             })
             ->whereHas('propertyType', function ($type) use (&$request) {
@@ -99,9 +109,10 @@ class PropertyItem extends Model
     public function scopeSearch($query, Request $request)
     {
         return $query
-            ->where('certificate', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('surface_area', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('building_area', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('name', 'ilike', "%{$request->input('search')}%");
+            ->where('address', 'ilike', "%{$request->input('search')}%")
+            ->orWhere(\DB::raw('CAST(price as varchar)'), 'ilike', "%{$request->input('search')}%")
+            ->orWhereHas('propertyType', function ($type) use (&$request) {
+                $type->where('property_types.name', 'ilike', "%{$request->input('search')}%");
+            });
     }
 }

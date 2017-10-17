@@ -20,11 +20,17 @@ class PropertyItemController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $propertyItems = PropertyItem::getLists($request)->paginate($limit);
-        $propertyItems->transform(function ($propItem) {
+        $propertyItems->transform(function ($propItem) use (&$request) {
             $items = $propItem->toArray();
-            $items['photos'] = $propItem->photos->transform(function ($photo) {
-                return $photo->image;
-            });
+
+            if ( ! $request->has('dropdown') ) {
+                $items['property_type_name'] = $propItem->propertyType->name;
+                $items['photos'] = $propItem->photos->transform(function ($photo) {
+                    return $photo->image;
+                });
+            }
+
+            unset($items['property_type']);
             return $items;
         });
         return response()->success(['contents' => $propertyItems]);
@@ -60,10 +66,14 @@ class PropertyItemController extends Controller
      */
     public function show(PropertyItem $property_item)
     {
-        $prop = $property_item->load('photos')->toArray();
+        $prop = $property_item->load('propertyType.property', 'photos')->toArray();
         $prop['photos'] = $property_item->photos->transform(function ($photo) {
             return $photo->image;
         });
+        $prop['property_id']   = $prop['property_type']['property_id'];
+        $prop['property_name'] = $prop['property_type']['property']['name'];
+        $prop['property_type_name'] = $prop['property_type']['name'];
+        unset($prop['property_type']);
         return response()->success(['contents' => $prop]);
     }
 

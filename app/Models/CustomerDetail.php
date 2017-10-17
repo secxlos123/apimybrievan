@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 use File;
 
@@ -224,7 +225,19 @@ class CustomerDetail extends Model
             File::delete( $path . $this->attributes[ 'npwp' ] );
         }
 
-        $filename = $this->user_id . '-npwp.' . $image->getClientOriginalExtension();
+        if (!$image->getClientOriginalExtension()) {
+            if ($image->getMimeType() == 'image/jpg') {
+                $extension = 'jpg';
+            }elseif ($image->getMimeType() == 'image/jpeg') {
+                $extension = 'jpeg';
+            }else{
+                $extension = 'png';
+            }
+        }else{
+            $extension = $image->getClientOriginalExtension();
+        }
+
+        $filename = $this->user_id . '-npwp.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'npwp' ] = $filename;
     }
@@ -240,8 +253,19 @@ class CustomerDetail extends Model
         if ( ! empty( $this->attributes[ 'identity' ] ) ) {
             File::delete( $path . $this->attributes[ 'identity' ] );
         }
-
-        $filename = $this->user_id . '-identity.' . $image->getClientOriginalExtension();
+        if (!$image->getClientOriginalExtension()) {
+            if ($image->getMimeType() == 'image/jpg') {
+                $extension = 'jpg';
+            }elseif ($image->getMimeType() == 'image/jpeg') {
+                $extension = 'jpeg';
+            }else{
+                $extension = 'png';
+            }
+        }else{
+            $extension = $image->getClientOriginalExtension();
+        }
+        // log::info('image = '.$image->getMimeType());
+        $filename = $this->user_id . '-identity.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'identity' ] = $filename;
     }
@@ -257,8 +281,19 @@ class CustomerDetail extends Model
         if ( ! empty( $this->attributes[ 'couple_identity' ] ) ) {
             File::delete( $path . $this->attributes[ 'couple_identity' ] );
         }
+        if (!$image->getClientOriginalExtension()) {
+            if ($image->getMimeType() == 'image/jpg') {
+                $extension = 'jpg';
+            }elseif ($image->getMimeType() == 'image/jpeg') {
+                $extension = 'jpeg';
+            }else{
+                $extension = 'png';
+            }
+        }else{
+            $extension = $image->getClientOriginalExtension();
+        }
 
-        $filename = $this->user_id . '-couple_identity.' . $image->getClientOriginalExtension();
+        $filename = $this->user_id . '-couple_identity.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'couple_identity' ] = $filename;
     }
@@ -275,7 +310,19 @@ class CustomerDetail extends Model
             File::delete( $path . $this->attributes[ 'legal_document' ] );
         }
 
-        $filename = $this->user_id . '-legal_document.' . $image->getClientOriginalExtension();
+        if (!$image->getClientOriginalExtension()) {
+            if ($image->getMimeType() == 'image/jpg') {
+                $extension = 'jpg';
+            }elseif ($image->getMimeType() == 'image/jpeg') {
+                $extension = 'jpeg';
+            }else{
+                $extension = 'png';
+            }
+        }else{
+            $extension = $image->getClientOriginalExtension();
+        }
+
+        $filename = $this->user_id . '-legal_document.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'legal_document' ] = $filename;
     }

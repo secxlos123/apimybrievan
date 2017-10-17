@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\Register;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +16,12 @@
 Route::get('/routes', function () {
 	$routeCollection = Route::getRoutes();
 	return view('routes', compact('routeCollection'));
+});
+
+Route::get('email', function () {
+	$mail = [ 'url' => '', 'email' => 'candra.s@smooets.com'];
+	$send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
+	dd($send);
 });
 
 Route::get('/login', function () {

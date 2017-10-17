@@ -172,6 +172,18 @@ class Property extends Model
                     $property->where('prop_city_id', $request->input('prop_city_id'));
 
                 /**
+                 * Query for filter by city_id.
+                 */
+                if ($request->has('name'))
+                    $property->where('prop_name', 'ilike', "%{$request->input('name')}%");
+
+                /**
+                 * Query for filter by city_id.
+                 */
+                if ($request->has('pic'))
+                    $property->where('prop_pic_name', 'ilike', "%{$request->input('pic')}%");
+
+                /**
                  * Query for filter by category.
                  */
                 if ($request->has('category'))
