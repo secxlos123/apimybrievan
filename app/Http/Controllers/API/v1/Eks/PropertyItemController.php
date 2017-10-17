@@ -20,12 +20,16 @@ class PropertyItemController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $propertyItems = PropertyItem::getLists($request)->paginate($limit);
-        $propertyItems->transform(function ($propItem) {
+        $propertyItems->transform(function ($propItem) use (&$request) {
             $items = $propItem->toArray();
-            $items['property_type_name'] = $propItem->propertyType->name;
-            $items['photos'] = $propItem->photos->transform(function ($photo) {
-                return $photo->image;
-            });
+
+            if ( ! $request->has('dropdown') ) {
+                $items['property_type_name'] = $propItem->propertyType->name;
+                $items['photos'] = $propItem->photos->transform(function ($photo) {
+                    return $photo->image;
+                });
+            }
+
             unset($items['property_type']);
             return $items;
         });
