@@ -177,7 +177,7 @@ class EForm extends Model
         // } else {
         //     $result = 'Baru';
         // }
-        return $days;
+        return $days . ' hari ';
     }
 
     /**
@@ -493,7 +493,7 @@ class EForm extends Model
                 $end_date = $request->has('end_date') ? $request->input('end_date') : date('Y-m-d');
                 $eform->whereBetween('appointment_date',array($start_date,$end_date));
             }
-        } )->orderBy($sort[0], $sort[1]);
+        } )->orderBy('eforms.'.$sort[0], $sort[1]);
     }
 
     /**
