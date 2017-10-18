@@ -19,7 +19,7 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
 	/**
 	 * Route for namespace API\v1\Eks
 	 */
-	Route::namespace('Eks')->group(function () {
+	Route::group(['namespace' => 'Eks'], function () {
 
 		/**
 		 * Route for get nearby properties
@@ -45,7 +45,7 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
 	/**
 	 * Route for namespace API\v1\Int
 	 */
-	Route::namespace('Int')->group(function () {
+	Route::group(['namespace' => 'Int'], function () {
 
 		/**
 		 * Route for get list developers
