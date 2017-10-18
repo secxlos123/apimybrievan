@@ -27,8 +27,7 @@ class BaseRequest extends FormRequest
             'name'                  => 'required|alpha_spaces',
             'email'                 => 'required|email|unique:users,email',
             'birth_date'            => 'required|date',
-            'join_date'             => 'required|date',
-            'admin_developer_id'    => 'required'
+            'join_date'             => 'required|date'
         ];
     }
 
