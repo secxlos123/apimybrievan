@@ -101,10 +101,14 @@ class PropertyController extends Controller
                 $code = 200; $method = 'dirubah';
             }
 
-            // $this->service($property); // this logic for saving data to internal bri
-
-            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-            \DB::commit();
+            // this logic for saving data to internal bri
+            if ($this->service($property)) {
+                $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+                \DB::commit();
+            } else {
+                throw new Exception("Error Processing Request", 1);
+            }
+            
         } catch (\Exception $e) {
             \DB::rollBack();
             $status = 'error'; $message = "Project {$request->input('name')} gagal {$method}.";
@@ -140,8 +144,13 @@ class PropertyController extends Controller
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-        
-        $property->update(['prop_id_bri' => $id['contents']]);
+
+        if ($id['code'] == 200) {
+            $property->update(['prop_id_bri' => $id['contents']]);
+            return true;
+        }
+
+        return false;        
     }
 
     /**
