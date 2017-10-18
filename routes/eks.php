@@ -20,7 +20,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	 * Route for authentication
 	 */
 	Route::group([ 'prefix' => 'auth' ], function () {
-		
+
 		/**
 		 * Route for post request login
 		 */
@@ -118,6 +118,13 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		 * Route property type
 		 */
 		Route::resource('property-item', 'PropertyItemController', ['except' => [ 'create', 'edit' ] ]);
+
+		/**
+		 * Route developer agent
+		 */
+		Route::resource( 'developer-agent', 'DeveloperAgentController', [
+			'only' => [ 'index', 'store', 'update' ]
+		] );
 
 		/**
 		 * Route property type
