@@ -30,6 +30,24 @@ class CreateViewDeveloperPropertiesViewTable extends Migration
                 ( SELECT count(property_items.id) FROM property_items inner join property_types on property_types.id = property_items.property_type_id where properties.id = property_types.property_id ) AS prop_items
             FROM properties
                 INNER JOIN cities ON properties.city_id = cities.id
+
+                UNION SELECT
+                    properties.id AS prop_id,
+                    properties.name AS prop_name,
+                    properties.name AS prop_pic_name,
+                    properties.name AS prop_pic_phone,
+                    properties.name AS prop_slug,
+                    properties.city_id AS prop_city_id,
+                    properties.category AS prop_category,
+                    properties.name AS prop_city_name,
+                    properties.city_id AS prop_price,
+                    properties.developer_id AS prop_dev_id,
+                    properties.city_id AS prop_types,
+                    properties.city_id AS prop_items
+                    FROM properties 
+                    LEFT JOIN developers ON properties.developer_id = developers.id
+                    where developers.dev_id_bri='1'
+
         ");
     }
 
