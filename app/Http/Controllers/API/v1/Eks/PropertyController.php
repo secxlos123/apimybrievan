@@ -106,13 +106,13 @@ class PropertyController extends Controller
                 $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
                 \DB::commit();
             } else {
-                throw new Exception("Error Processing Request", 1);
+                throw new \Exception("Error Processing Request", 422);
             }
             
         } catch (\Exception $e) {
             \DB::rollBack();
             $status = 'error'; $message = "Project {$request->input('name')} gagal {$method}.";
-            $code = 500;
+            $code = $e->getCode();
         }
 
         return response()->{$status}(compact('message'), $code);
@@ -144,6 +144,7 @@ class PropertyController extends Controller
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
+        \Log::info($id);
 
         if ($id['code'] == 200) {
             $property->update(['prop_id_bri' => $id['contents']]);
