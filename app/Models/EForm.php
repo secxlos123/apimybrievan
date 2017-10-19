@@ -470,8 +470,7 @@ class EForm extends Model
     public function scopeFilter( $query, Request $request )
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['appointment_date', 'asc'];
-        return $query->leftJoin('users','eforms.user_id','=','users.id')
-        ->where( function( $eform ) use( $request ) {
+        return $query->where( function( $eform ) use( $request ) {
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
@@ -484,9 +483,7 @@ class EForm extends Model
                 }
             }
             if ($request->has('search')) {
-                 $eform->where('eforms.ref_number', '=', $request->input('search'))
-                  ->orWhere('users.first_name', 'ilike', '%' . $request->input('search') . '%')
-                  ->orWhere('users.last_name', 'ilike', '%' . $request->input('search') . '%');
+                 $eform->where('eforms.ref_number', '=', $request->input('search'));
             }
             if ($request->has('start_date') || $request->has('end_date')) {
                 $start_date= date('Y-m-d',strtotime($request->input('start_date')));
