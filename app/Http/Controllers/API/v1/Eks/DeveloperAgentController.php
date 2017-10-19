@@ -36,11 +36,12 @@ class DeveloperAgentController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $developers = UserDeveloper::getLists($request)->paginate($limit);
-        $developers->transform(function ($developer) {
-            $temp = $developer->toArray();
-            $temp['image'] = $developer->image ? url("uploads/avatars/{$developer->image}") : asset('img/noimage.jpg');
-            return $temp;
-        });
+        \log::info('dev = '.$developers);
+        // $developers->transform(function ($developer) {
+        //     $temp = $developer->toArray();
+        //     $temp['image'] = $developer->image ? url("uploads/avatars/{$developer->image}") : asset('img/noimage.jpg');
+        //     return $temp;
+        // });
 
         return response()->success(['contents' => $developers]);
     }

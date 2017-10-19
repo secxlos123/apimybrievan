@@ -65,11 +65,11 @@ class UserDeveloper extends Model
                 /**
                  * Query for filter by admin developer id.
                  */
-                $developer->where('admin_developer_id', $this->user_id);
+                $developer->where('admin_developer_id', $request->user()->id);
 
             })
             ->select('*')
-            ->selectRaw('(select users.image from users where users.id = user_developers.user_id) as image')
+            // ->selectRaw('(select users.image from users where users.id = user_developers.user_id) as image')
             ->orderBy($sort[0], $sort[1]);
     }
 }
