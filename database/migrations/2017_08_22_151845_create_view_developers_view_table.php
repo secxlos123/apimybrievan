@@ -16,7 +16,8 @@ class CreateViewDevelopersViewTable extends Migration
         \DB::unprepared("DROP VIEW IF EXISTS developers_view_table");
         \DB::unprepared("CREATE VIEW developers_view_table AS
           SELECT 
-              users.id AS dev_id, 
+              users.id AS dev_id,
+              developers.dev_id_bri AS bri, 
               developers.company_name AS company_name, 
               concat(users.first_name, ' ', users.last_name) AS name,
               users.email AS email,
@@ -34,6 +35,23 @@ class CreateViewDevelopersViewTable extends Migration
           FROM developers
               inner JOIN users ON users.id = developers.user_id
               inner JOIN cities ON cities.id = developers.city_id
+          
+          UNION SELECT
+              developers.user_id AS dev_id,
+              developers.dev_id_bri AS bri,
+              developers.company_name AS company_name,
+              developers.company_name As name,
+              developers.company_name AS email,
+              developers.company_name AS phone_number,
+              developers.is_approved AS is_actived,
+              developers.city_id AS city_id,
+              developers.company_name AS city_name,
+          (
+            SELECT count(*) FROM properties
+            where developers.id = properties.developer_id
+          ) As project
+          FROM developers where developers.dev_id_bri = '1'
+
         ");
     }
 

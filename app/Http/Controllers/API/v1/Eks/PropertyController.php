@@ -101,14 +101,18 @@ class PropertyController extends Controller
                 $code = 200; $method = 'dirubah';
             }
 
-            // $this->service($property); // this logic for saving data to internal bri
-
-            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-            \DB::commit();
+            // this logic for saving data to internal bri
+            if ($this->service($property)) {
+                $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+                \DB::commit();
+            } else {
+                throw new \Exception("Error Processing Request", 422);
+            }
+            
         } catch (\Exception $e) {
             \DB::rollBack();
             $status = 'error'; $message = "Project {$request->input('name')} gagal {$method}.";
-            $code = 500;
+            $code = $e->getCode();
         }
 
         return response()->{$status}(compact('message'), $code);
@@ -126,22 +130,28 @@ class PropertyController extends Controller
         $current = [
             'tipe_project' => 'KPR',
             'nama_project' => $property->name,
-            'alamat_project' => $property->address,
-            'pic_project' => $property->pic_name,
-            'pks_project' => $property->developer->pks_number,
+            // 'alamat_project' => $property->address,
+            'pic_project' => $property->pic_name ?: '',
+            'pks_project' => $property->developer->pks_number ?: '-',
             'deskripsi_project' => $property->description,
-            'telepon_project' => $property->pic_phone,
-            'hp_project' => $property->pic_project,
+            'telepon_project' => $property->pic_phone ?: '',
+            'hp_project' => $property->pic_project ?: '',
             'fax_project' => '', 
-            'deskripsi_pks_project' => $property->developer->pks_description,
+            'deskripsi_pks_project' => $property->developer->pks_description ?: '',
             'project_value' => $property->prop_id_bri ?: '',
         ];
 
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-        
-        $property->update(['prop_id_bri' => $id['contents']]);
+        \Log::info($id);
+
+        if ($id['code'] == 200) {
+            $property->update(['prop_id_bri' => $id['contents']]);
+            return true;
+        }
+
+        return false;        
     }
 
     /**

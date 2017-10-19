@@ -248,10 +248,11 @@ class User extends Authenticatable
             return $this->responseDeveloper($user);
         } else if ($user->inRole('customer')) {
             return [];
-        }
-        elseif ($user->inRole('others')) {
+        }elseif ($user->inRole('others')) {
             return $this->responseThirdparty($user);
-         } else {
+        }elseif ($user->inRole('developer-sales')) {
+            return $this->responseDeveloperSales($user);
+        }else {
             return $this->responseUser($user);
         }
     }
@@ -319,6 +320,27 @@ class User extends Authenticatable
     }
 
     /**
+     * Get developer agent
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Models\User
+     */
+    protected function responseDeveloperSales($user)
+    {
+        log::info($user);
+        $developer = $user->developer;
+
+        return [
+            'id'            => $user->id,
+            'name'          => $user->name,
+            'email'         => $user->email,
+            'birth_date'    => $developer->birth_date,
+            'join_date'     => $developer->join_date,
+            'admin_developer_id' => $developer->admin_developer_id
+        ];
+    }
+
+    /**
      * Get Profile.Pihak ke -3
      *
      * @param  \Illuminate\Http\Request  $request
@@ -360,18 +382,21 @@ class User extends Authenticatable
             ->leftJoin( 'cities as c', 'customer_details.city_id', '=', 'c.id' )
             ->leftJoin( 'cities as bplace', 'customer_details.birth_place_id', '=', 'bplace.id' )
             ->where( function( $user ) use( $request ) {
-                
-                $user->whereRaw( 
+
+                if ($request->has('name')) {
+                    $user->whereRaw(
                     "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ]
                 );
-
-                $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+                }
+                if ($request->has('email')) {
+                    $user->where( 'users.email', 'ilike', '%' . $request->input( 'email' ) . '%' );
+                }
 
                 if( $request->has( 'nik' ) ) {
                     $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
                 }
                 if( $request->has( 'city_id' ) ) {
-                    $user->where( 'customer_details.city_id', 'ilike', '%' . $request->input( 'city_id' ) . '%' );
+                    $user->where( 'customer_details.city_id', '=', $request->input( 'city_id' ) );
                 }
                 if( $request->has( 'phone' ) ) {
                     $user->where( 'users.phone', 'ilike', '%' . $request->input( 'phone' ) . '%' );
@@ -379,7 +404,14 @@ class User extends Authenticatable
                 if( $request->has( 'gender' ) ) {
                     $user->where( 'users.gender', 'ilike', '%' . $request->input( 'gender' ) . '%' );
                 }
-            
+                if ($request->has('search')) {
+                    $user->whereRaw(
+                    "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'search' ) . '%' ]
+                    )
+                    ->orWhere( 'customer_details.nik', 'ilike', '%' . $request->input( 'search' ) . '%' )
+                    ->orWhere('customer_details.city_id', '=', $request->input( 'search' ));
+                }
+
                 $user->whereHas( 'roles', function( $role ) { $role->whereSlug( 'customer' ); } );
             } )
             ->select( array_merge( [
@@ -420,7 +452,7 @@ class User extends Authenticatable
     public function scopeGetLists($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
-        
+
         return $query->from('users_view_table')
             ->where(function ($user) use (&$request, &$query) {
 

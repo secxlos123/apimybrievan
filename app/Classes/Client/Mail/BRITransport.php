@@ -61,6 +61,8 @@ class BRITransport extends Transport
         /**
          * Wait for testing
          */
+        
+        \RestwsHc::setBody($this->payload($message))->post('form_params');
         // $this->client->post($this->url, $this->payload($message));
 
         $this->sendPerformed($message);
@@ -78,17 +80,17 @@ class BRITransport extends Transport
     protected function payload(Swift_Mime_Message $message)
     {
         return [
-            'form_params' => [
+            // 'form_params' => [
                 'request' => json_encode([
                     'requestMethod' => 'send_email',
                     'requestData' =>  [
-                        'id_user' => $this->key, // app_id
+                        'app_id'  => $this->key, // app_id
                         'subject' => $message->getSubject(),
-                        'content' => $message->toString(),
-                        'to' => $this->getTo($message),
+                        'content' => $message->getBody(),
+                        'to' => array_keys($message->getTo())[0],
                     ]
                 ])
-            ],
+            // ],
 
         ];
     }

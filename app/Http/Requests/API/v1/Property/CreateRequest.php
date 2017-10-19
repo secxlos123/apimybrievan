@@ -42,11 +42,11 @@ class CreateRequest extends FormRequest
             'city_id'    => 'required|exists:cities,id',
             'address'    => 'required',
             'category'   => 'required|in:0,1,2',
-            'latitude'   => 'required',
-            'longitude'  => 'required',
+            // 'latitude'   => 'required',
+            // 'longitude'  => 'required',
             'facilities' => 'required',
             'pic_name'   => 'required|alpha_spaces',
-            'pic_phone'  => 'required|digits:12|numeric',
+            'pic_phone'  => 'required|digits_between:9,16|numeric',
             'photo'      => 'required|image|max:1024',
         ];
 
@@ -88,10 +88,15 @@ class CreateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
+        $latitude  = '-6.90390';
+        $longitude = '107.61860';
+
         if ($this->method() != 'PUT') {
             $developer_id = $this->user()->developer->id;
             $this->merge(compact('developer_id'));
         }
+
+        $this->merge(compact('latitude', 'longitude'));
         return parent::getValidatorInstance();
     }
 }

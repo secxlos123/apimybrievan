@@ -29,7 +29,16 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
         if( $login[ 'responseCode' ] == '00' ) {
-            if( ! in_array( $login[ 'responseData' ][ 'tipe_uker' ], [ 'KC', "KCP" ] ) ) {
+                        
+            if( in_array( $data[ 'hilfm' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
+                $role = 'ao';
+            } else if( in_array( $data[ 'hilfm' ], [ 21, 49, 50, 51 ] ) ) {
+                $role = 'mp';
+            } else if( in_array( $data[ 'hilfm' ], [ 5, 11, 12, 14, 19 ] ) ) {
+                $role = 'pinca';
+            } else if( in_array( $data[ 'hilfm' ], [26] ) ) {
+                $role = 'staff';
+            } else {
                 $request->headers->set( 'pn', $pn );
                 $this->destroy( $request );
                 return response()->success( [
@@ -37,13 +46,7 @@ class AuthController extends Controller
                     'contents'=> []
                 ], 401 );
             }
-            if( in_array( $data[ 'hilfm' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
-                $role = 'ao';
-            } else if( in_array( $data[ 'hilfm' ], [ 21, 49, 50, 51 ] ) ) {
-                $role = 'mp';
-            } else if( in_array( $data[ 'hilfm' ], [ 5, 11, 12, 14, 19 ] ) ) {
-                $role = 'pinca';
-            } else { $role = 'none'; }
+            
             return response()->success( [
                 'message' => 'Login Sukses',
                 'contents'=> [
@@ -51,9 +54,11 @@ class AuthController extends Controller
                     'pn' => $data[ 'pn' ],
                     'name' => $data[ 'nama' ],
                     'branch' => $data[ 'branch' ],
-                    'role' => $role
+                    'role' => $role,
+                    'uker' => $data['tipe_uker']
                 ]
             ], 200 );
+
         } else {
             return response()->success( [
                 'message' => $login[ 'responseData' ],
