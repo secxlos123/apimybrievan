@@ -130,14 +130,14 @@ class PropertyController extends Controller
         $current = [
             'tipe_project' => 'KPR',
             'nama_project' => $property->name,
-            'alamat_project' => $property->address,
-            'pic_project' => $property->pic_name,
-            'pks_project' => $property->developer->pks_number,
+            // 'alamat_project' => $property->address,
+            'pic_project' => $property->pic_name ?: '',
+            'pks_project' => $property->developer->pks_number ?: '-',
             'deskripsi_project' => $property->description,
-            'telepon_project' => $property->pic_phone,
-            'hp_project' => $property->pic_project,
+            'telepon_project' => $property->pic_phone ?: '',
+            'hp_project' => $property->pic_project ?: '',
             'fax_project' => '', 
-            'deskripsi_pks_project' => $property->developer->pks_description,
+            'deskripsi_pks_project' => $property->developer->pks_description ?: '',
             'project_value' => $property->prop_id_bri ?: '',
         ];
 
