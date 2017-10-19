@@ -5,9 +5,12 @@ namespace App\Http\Controllers\API\v1\Eks;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserDeveloper;
+use App\Models\User;
 use App\Helpers\Traits\ManageUserTrait;
 use App\Http\Requests\API\v1\DeveloperAgent\CreateRequest;
 use App\Http\Requests\API\v1\DeveloperAgent\UpdateRequest;
+use Activation;
+use App\Jobs\SendPasswordEmail;
 use Illuminate\Support\Facades\Log;
 
 class DeveloperAgentController extends Controller
@@ -38,7 +41,7 @@ class DeveloperAgentController extends Controller
             $temp['image'] = $developer->image ? url("uploads/avatars/{$developer->image}") : asset('img/noimage.jpg');
             return $temp;
         });
-        log::info('dev = '.$developers);
+
         return response()->success(['contents' => $developers]);
     }
 
@@ -60,10 +63,34 @@ class DeveloperAgentController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        $user = $this->storeUpdate($request, []);
-        log::info('req = '.$user);
-        if ($user) return $this->redirectTo($user, 'disimpan');
-        return response()->error(['message' => 'Maaf server sedang gangguan.'], 500);
+        $role_id = \Sentinel::findRoleBySlug('developer-sales')->id;
+        list($first_name, $last_name) = name_separator($request->input('name'));
+        $request->merge( compact( 'role_id', 'first_name', 'last_name' ) );
+
+        $password = str_random(8);
+        $request->merge(['password' => bcrypt($password)]);
+        $user = User::create($request->all());
+        $activation = Activation::create($user);
+        Activation::complete($user, $activation->code);
+        dispatch(new SendPasswordEmail($user, $password, 'registered'));
+        $user->roles()->sync($request->input('role_id'));
+
+        if ($user) {
+            $saveData = new UserDeveloper();
+            $saveData->user_id = $user->id;
+            $saveData->birth_date = $request->birth_date;
+            $saveData->join_date = $request->join_date;
+            $saveData->admin_developer_id = $request->user()->id;
+            $saveData->save();
+            return response()->success([
+                'message' => 'Data agent developer berhasil ditambah.',
+                'contents' => $user,
+            ], 201);
+        }
+
+        return response()->error([
+            'message' => 'Data agent developer Tidak Dapat Ditambah.',
+        ], 500);
     }
 
     /**
@@ -97,7 +124,21 @@ class DeveloperAgentController extends Controller
      */
     public function update(UpdateRequest $request, $id)
     {
-        //
+        $user->update($request->all());
+        if ($user) {
+            $saveData = UserDeveloper::where('user_id', $user->id)->first();
+            $saveData->birth_date = $request->birth_date;
+            $saveData->join_date = $request->join_date;
+            $saveData->save();
+            return response()->success([
+                'message' => 'Data agent developer berhasil diubah.',
+                'contents' => $user,
+            ], 201);
+        }
+
+        return response()->error([
+            'message' => 'Data agent developer Tidak Dapat diubah.',
+        ], 500);
     }
 
     /**
