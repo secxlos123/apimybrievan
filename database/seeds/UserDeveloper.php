@@ -13,42 +13,8 @@ class UserDeveloper extends Seeder
     {
         DB::beginTransaction();
         try {
-        		$dev = DB::table('developers')->where('id', '=', 1)->get();
-        		
-        		 if (count($dev) > 1) {
-        		 	DB::table('developers')->where('id', '=', 1)
-					->update(array(
-        		 	'id'=> 1,
-        		 	'dev_id_bri' => 1, 
-        		 	'company_name' => "TIDAK ADA",
-        			'created_by'=>	"",
-        			'pks_number'=> "",
-        			'plafond'=>"0",
-        			'address'=>"",
-        			'summary'=>"",
-        			'is_approved'=> "t"
-        		));
-					DB::table('properties')->where('id', '=', 1)
-					->update(array(
-        		  	'id'=> 1,
-        		  	'developer_id' => 1,		 	 
-        		  	'name' => "TIDAK MENGIKUTI PROJECT",
-        		  	'pic_name'=>"",
-        		  	'pic_phone'=>"",
-        		  	'address'=>"",
-        		  	'category'=>0,
-        		  	'latitude'=>"",
-        		  	'longitude'=>"",
-        		  	'description'=>"",
-        		  	'facilities'=>"",
-        		  	'slug'=>0,
-        		  	'is_approved'=> "t"
-        		  ));
-        		 }
-        		 else
-        		 {
-        		 	DB::table('developers')->insert(array(
-        		 	'id'=> 1,
+
+        		 	$id = DB::table('developers')->insertGetId(array(
         		 	'dev_id_bri' => 1, 
         		 	'company_name' => "TIDAK ADA",
         			'created_by'=>	"",
@@ -59,8 +25,7 @@ class UserDeveloper extends Seeder
         			'is_approved'=> "t"
         		));
 					DB::table('properties')->insert(array(
-        		  	'id'=> 1,
-        		  	'developer_id' => 1,		 	 
+        		  	'developer_id' => $id,		 	 
         		  	'name' => "TIDAK MENGIKUTI PROJECT",
         		  	'pic_name'=>"",
         		  	'pic_phone'=>"",
@@ -73,7 +38,7 @@ class UserDeveloper extends Seeder
         		  	'slug'=>0,
         		  	'is_approved'=> "t"
         		  ));
-        		 }
+        		 
         		 
         		
        
