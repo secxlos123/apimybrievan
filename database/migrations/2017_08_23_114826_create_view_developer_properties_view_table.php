@@ -41,7 +41,7 @@ class CreateViewDeveloperPropertiesViewTable extends Migration
                     properties.category AS prop_category,
                     properties.name AS prop_city_name,
                     properties.city_id AS prop_price,
-                    properties.developer_id AS prop_dev_id,
+                    developers.user_id AS prop_dev_id,
                     properties.city_id AS prop_types,
                     properties.city_id AS prop_items
                     FROM properties 

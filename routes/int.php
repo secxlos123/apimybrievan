@@ -27,8 +27,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		] );
 
 		Route::resource( 'customer', 'CustomerController', [
-			'except' => [ 'edit', 'create' ]
+			'only' => [ 'destroy' ]
 		] );
+
 		Route::put( 'customers/{id}/verify', 'CustomerController@verify' );
 
 		Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {

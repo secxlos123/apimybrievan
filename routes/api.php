@@ -48,7 +48,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::get('types', 'DropdownController@types');
 			Route::get('units', 'DropdownController@items');
 		});
+		
+		Route::resource( 'customer', 'Int\CustomerController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 	} );
+
 
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 } );
