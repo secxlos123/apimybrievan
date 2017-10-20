@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-
+use Auth;
 use File;
 
 class CustomerDetail extends Model
@@ -220,7 +220,12 @@ class CustomerDetail extends Model
      */
     public function setNpwpAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ($this->user_id) {
+            $id = $this->user_id;
+        }else{
+            $id = user_info('id');
+        }
+        $path = public_path( 'uploads/users/' . $id . '/' );
         if ( ! empty( $this->attributes[ 'npwp' ] ) ) {
             File::delete( $path . $this->attributes[ 'npwp' ] );
         }
@@ -237,7 +242,7 @@ class CustomerDetail extends Model
             $extension = $image->getClientOriginalExtension();
         }
 
-        $filename = $this->user_id . '-npwp.' . $extension;
+        $filename = $id . '-npwp.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'npwp' ] = $filename;
     }
@@ -249,10 +254,17 @@ class CustomerDetail extends Model
      */
     public function setIdentityAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ($this->user_id) {
+            $id = $this->user_id;
+        }else{
+            $id = user_info('id');
+        }
+
+        $path = public_path( 'uploads/users/' . $id . '/' );
         if ( ! empty( $this->attributes[ 'identity' ] ) ) {
             File::delete( $path . $this->attributes[ 'identity' ] );
         }
+
         if (!$image->getClientOriginalExtension()) {
             if ($image->getMimeType() == 'image/jpg') {
                 $extension = 'jpg';
@@ -264,8 +276,8 @@ class CustomerDetail extends Model
         }else{
             $extension = $image->getClientOriginalExtension();
         }
-        // log::info('image = '.$image->getMimeType());
-        $filename = $this->user_id . '-identity.' . $extension;
+
+        $filename = $id . '-identity.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'identity' ] = $filename;
     }
@@ -277,10 +289,17 @@ class CustomerDetail extends Model
      */
     public function setCoupleIdentityAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ($this->user_id) {
+            $id = $this->user_id;
+        }else{
+            $id = user_info('id');
+        }
+
+        $path = public_path( 'uploads/users/' . $id . '/' );
         if ( ! empty( $this->attributes[ 'couple_identity' ] ) ) {
             File::delete( $path . $this->attributes[ 'couple_identity' ] );
         }
+
         if (!$image->getClientOriginalExtension()) {
             if ($image->getMimeType() == 'image/jpg') {
                 $extension = 'jpg';
@@ -293,7 +312,7 @@ class CustomerDetail extends Model
             $extension = $image->getClientOriginalExtension();
         }
 
-        $filename = $this->user_id . '-couple_identity.' . $extension;
+        $filename = $id . '-couple_identity.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'couple_identity' ] = $filename;
     }
@@ -305,7 +324,13 @@ class CustomerDetail extends Model
      */
     public function setLegalDocumentAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+        if ($this->user_id) {
+            $id = $this->user_id;
+        }else{
+            $id = user_info('id');
+        }
+
+        $path = public_path( 'uploads/users/' . $id . '/' );
         if ( ! empty( $this->attributes[ 'legal_document' ] ) ) {
             File::delete( $path . $this->attributes[ 'legal_document' ] );
         }
@@ -322,7 +347,7 @@ class CustomerDetail extends Model
             $extension = $image->getClientOriginalExtension();
         }
 
-        $filename = $this->user_id . '-legal_document.' . $extension;
+        $filename = $id . '-legal_document.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'legal_document' ] = $filename;
     }
