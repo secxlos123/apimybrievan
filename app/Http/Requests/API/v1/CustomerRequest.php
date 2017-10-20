@@ -30,7 +30,7 @@ class CustomerRequest extends BaseRequest
                     'first_name' => 'required',
                     'last_name' => '',
                     'email' => 'required|email|unique:users,email',
-                    'mobile_phone' => 'required|regex:(08)',
+                    'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
                     'status' => 'required|in:0,1,2',
                     'mother_name' => 'required',
                     'birth_place_id' => 'required|numeric|exists:cities,id',
