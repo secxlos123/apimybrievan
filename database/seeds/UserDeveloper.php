@@ -5,58 +5,53 @@ use Illuminate\Database\Seeder;
 class UserDeveloper extends Seeder
 {
     /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+    * Run the database seeds.
+    *
+    * @return void
+    */
     public function run()
     {
         DB::beginTransaction();
         try {
+            $action = 'update';
+            if ( ! $user = App\Models\User::findEmail('mybri@bri.co.id') ) {
+                $user = App\Models\User::create([
+                    'email'     => 'mybri@bri.co.id',
+                    'password'  => bcrypt('12345678'),
+                    'first_name'=> 'INDEPENDENT',
+                    'last_name' => 'BRI',
+                ]);
 
-        		 	$user = APP\Models\User::create(array(
-        		 	'email' => 'mybri@bri.co.id',
-                    'password'=> bcrypt('12345678'),
-                    'first_name'=>'INDEPENDENT',
-                    'last_name' => 'BRI'
-                    ));
-                    $user->roles()->attach(4);
-                    $activation = Activation::create($user);
-                    Activation::complete($user, $activation->code);
+                $action = 'create';
+            }
 
-                    $city = App\Models\City::all()->random();
-                    $developer = App\Models\Developer::create(array(
-                        'user_id' => $user->id,
-                        'dev_id_bri' => 1,  
-                        'company_name' => "INDEPENDENT", 
-                        'created_by'=>  "", 
-                        'pks_number'=> "", 
-                        'plafond'=>"0", 
-                        'address'=>"", 
-                        'summary'=>"", 
-                        'is_approved'=> "t" 
+            $developer = $user->developer()->updateOrCreate(['dev_id_bri' => 1], [
+                'dev_id_bri'    => 1,  
+                'company_name'  => 'INDEPENDENT',
+                'created_by'    => 'BRI',
+                'pks_number'    => '-',
+                'address'       => '-',
+                'summary'       => '-',
+                'plafond'       => '-'
+            ]);
 
-                    ));
-                    $properties = App\Models\Property::create(array(
-                    'developer_id' => $developer->id,           
-                    'name' => "INDEPENDENT",
-                    'pic_name'=>"",
-                    'pic_phone'=>"",
-                    'address'=>"",
-                    'category'=>0,
-                    'latitude'=>"",
-                    'longitude'=>"",
-                    'description'=>"",
-                    'facilities'=>"",
-                    'slug'=>0,
-                    'is_approved'=> "t"
-                    ));
-        		 
-        	DB::commit();
+            $developer->properties()->updateOrCreate(['prop_id_bri' => 1], [
+                'name' => 'INDEPENDENT',
+                'prop_id_bri' => 1,
+                'description' => '-',
+                'facilities'  => '-',
+                'pic_phone' => '-',
+                'address'   => '-',
+                'category'  => 3,
+                'latitude'  => '0',
+                'longitude' => '0',
+                'pic_name'  => 'BRI'
+            ]);
+
+            DB::commit();
         } catch (Exception $e) {
-        	dd($e);
-        	DB::rollback();
-        	
+            DB::rollback();
+            dd($e->getMessage());
         }
     }
 }
