@@ -286,11 +286,13 @@ class Customer extends User
     {
         if( $data[ 'verify_status' ] == 'verify' ) {
             $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
+            $data[ 'couple_birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'couple_birth_date' ] ) );
             $data[ 'gender' ] = str_replace( 'PEREMPUAN', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'LAKI-LAKI', 'L', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Laki-Laki', 'L', $data[ 'gender' ] );
-            $this->update( array_except( $data, [ 'verify_status', '_method', 'cif_number' ] ) );
+            $data['emergency_contact'] = $data['emergency_mobile_phone'];
+            $this->update( array_except( $data, ['emergency_mobile_phone','form_id','email','verify_status', '_method', 'cif_number' ] ) );
         } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true
