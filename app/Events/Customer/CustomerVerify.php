@@ -10,9 +10,8 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-use App\Models\CustomerDetail;
+use App\Models\Customer;
 use App\Models\EForm;
-use App\Models\User;
 
 class CustomerVerify
 {
@@ -20,18 +19,16 @@ class CustomerVerify
 
     public $customer;
     public $eform;
-    public $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct( User $user, CustomerDetail $customer, EForm $eform )
+    public function __construct( Customer $customer, EForm $eform )
     {
         $this->customer = $customer;
         $this->eform = $eform;
-        $this->user = $user;
     }
 
     /**

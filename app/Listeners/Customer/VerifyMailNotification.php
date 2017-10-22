@@ -29,9 +29,9 @@ class VerifyMailNotification
      */
     public function handle( CustomerVerify $event )
     {
-        $customer = $event->customer;
+        $customer = $event->customer->detail;
+        $customer_data= $event->customer;
         $eform = $event->eform;
-        $user = $event->user;
         $nikah = '';
         $tempat= '';
 
@@ -66,17 +66,17 @@ class VerifyMailNotification
         }
 
         $mail = [
-            'email' => $customer->email,
-            'name' => $customer->fullname,
+            'email' => $customer_data->email,
+            'name' => $customer_data->fullname,
             'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/' . $eform->token,
             'nik' => $customer->nik,
             'address'=> $customer->address,
-            'phone'=> $user->phone,
-            'mobile_phone'=>$user->mobile_phone,
+            'phone'=> $customer_data->phone,
+            'mobile_phone'=>$customer_data->mobile_phone,
             'mother_name'=>$customer->mother_name,
             'birth_place_id'=> $customer->birth_place_city->name,
             'identity'=> $customer->identity,
-            'gender'=>$user->gender,
+            'gender'=>$customer_data->gender,
             'status'=>$nikah,
             'address_status'=>$tempat,
             'citizenship_id'=>$customer->citizenship_id,
