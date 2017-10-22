@@ -34,7 +34,7 @@ class VerifyMailNotification
         $mail = [
             'email' => $customer->email,
             'name' => $customer->fullname,
-            'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/' . $form->token;
+            'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/' . $eform->token,
             'eform' => $eform,
             'customer' => $customer
         ];

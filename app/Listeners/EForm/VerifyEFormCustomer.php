@@ -7,7 +7,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Illuminate\Support\Facades\Mail;
-use App\Mail\VerificationEFormCustomer;
+use App\Mail\ConfirmationEFormCustomer;
 
 class VerifyEFormCustomer
 {
@@ -37,6 +37,6 @@ class VerifyEFormCustomer
             'status' => $eform->status == 'approve' ? 'Setuju' : 'Tidak Setuju'
         ];
         
-        Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
+        Mail::to( $mail[ 'email' ] )->send( new ConfirmationEFormCustomer( $mail ) );
     }
 }

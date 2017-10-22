@@ -96,7 +96,7 @@ class CustomerController extends Controller
 		DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
 		$customer->verify( $request->except( [ 'birth_place', 'birth_place_id', 'citizenship', 'citizenship_id' ] ) );
-		$eform = EForm::generateToken( $customer->user_id );
+		$eform = EForm::generateToken( $customer->personal['user_id'] );
 
 		DB::commit();
 		if( $request->verify_status == 'verify' ) {

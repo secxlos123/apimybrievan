@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class VerificationEFormCustomer extends Mailable
+class ConfirmationEFormCustomer extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -35,6 +35,6 @@ class VerificationEFormCustomer extends Mailable
      */
     public function build()
     {
-        return $this->view( 'mails.verify_eform_customer', $this->mail );
+        return $this->view( 'mails.notification_eform_customer', $this->mail );
     }
 }

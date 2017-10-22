@@ -78,6 +78,7 @@ class Customer extends User
     public function getPersonalAttribute()
     {
         $personal_data = [
+            'user_id' => $this->detail ? $this->detail->user_id : '',
             'name' => $this->fullname,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
