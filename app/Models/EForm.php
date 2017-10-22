@@ -26,7 +26,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status'
     ];
 
     /**
@@ -521,5 +521,51 @@ class EForm extends Model
     public function kpr()
     {
         return $this->hasOne( KPR::class, 'eform_id' );
+    }
+
+    /**
+     * Verify E-Form customer data.
+     *
+     * @return array
+     */
+    public static function verify( $token, $status )
+    {
+        $status = false;
+        $target = static::where('token', $token)->first();
+
+        if ($target) {
+            $lastData = static::where('user_id', $target->user_id)
+                ->orderBy('updated_at', 'desc')
+                ->first();
+
+            if ($lastData->token == $target->token) {
+                $status = true;
+                $target->update(['status' => $status]);
+            }
+        }
+
+        return array(
+            'message' => $status
+            , 'contents' => $target
+        );
+    }
+
+    /**
+     * Generate token for verification.
+     *
+     * @param int $user_id
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function generateToken( $user_id )
+    {
+        $lastData = static::where( 'user_id', $user_id )
+            ->orderBy( 'created_at', 'desc' )
+            ->first();
+
+        $lastData->update( [
+            'token' => strtr(base64_encode(openssl_encrypt(date('y-m-d h:i:s'), 'AES-128-ECB', 'l1tprofiler')), '+/=', '-_,')
+        ]);
+
+        return $lastData;
     }
 }

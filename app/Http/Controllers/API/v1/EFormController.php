@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Events\EForm\Approved;
+use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
 use App\Models\KPR;
 use DB;
@@ -142,5 +143,25 @@ class EFormController extends Controller
 
         DB::commit();
         dd( $result );
+    }
+
+    /**
+     * Approve / Reject verification specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string $token
+     * @param  string $status
+     * @return \Illuminate\Http\Response
+     */
+    public function verify( Request $request, $token, $status )
+    {
+        DB::beginTransaction();
+        $verify = EForm::verify( $token, $status );
+        
+        if ($verify['data']) {
+            event( new Verify( $verify['data'] ) );
+        }
+
+        return response()->success( $verify );
     }
 }

@@ -19,8 +19,14 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Customer\CustomerRegistered' => [
             'App\Listeners\Customer\SendMailNotification',
         ],
+        'App\Events\Customer\CustomerVerify' => [
+            'App\Listeners\Customer\VerifyMailNotification',
+        ],
         'App\Events\EForm\Approved' => [
             'App\Listeners\EForm\Approved\MailNotificationToCustomer',
+        ],
+        'App\Events\EForm\VerifyEForm' => [
+            'App\Listeners\EForm\VerifyEFormCustomer',
         ],
         'App\Events\Developer\CreateOrUpdate' => [
             'App\Listeners\Developer\CreateOrUpdate',
