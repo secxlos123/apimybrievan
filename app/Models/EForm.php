@@ -564,6 +564,7 @@ class EForm extends Model
 
         $lastData->update( [
             'token' => strtr(base64_encode(openssl_encrypt(date('y-m-d h:i:s'), 'AES-128-ECB', 'l1tprofiler')), '+/=', '-_,')
+            , 'status' => 'unverified'
         ]);
 
         return $lastData;
