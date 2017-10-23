@@ -156,7 +156,6 @@ class EFormController extends Controller
      */
     public function verify( Request $request, $token, $status )
     {
-        dd(Customer::find(6)->toArray());
         DB::beginTransaction();
         $verify = EForm::verify( $token, $status );
         
