@@ -72,12 +72,13 @@ class CustomerDetail extends Model
      */
     public function getIdentityAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
-        } else {
-            $image = url( 'img/noimage.jpg' );
+
+        if( ! empty( $value ) ) {
+            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
+                return url( 'uploads/users/' . $this->user_id . '/' . $value );
+            }
         }
-        return $image;
+        return url( 'img/noimage.jpg' );
     }
 
     /**
@@ -190,7 +191,7 @@ class CustomerDetail extends Model
      *
      * @return string
      */
-    public function getStatusAttribute( $value )
+    public function getStatusHubunganAttribute( $value )
     {
         if( $value == 0 ) {
             return 'Tidak menikah';
