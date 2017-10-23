@@ -83,6 +83,7 @@ class Customer extends User
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'gender' => $this->gender,
+            'phone' => $this->phone,
             'mobile_phone' => $this->mobile_phone,
             'email' => $this->email,
             'nik' => $this->detail ? $this->detail->nik : '',
@@ -157,8 +158,6 @@ class Customer extends User
     public function getContactAttribute()
     {
         return [
-            'phone' => $this->phone,
-            'mobile_phone' => $this->mobile_phone,
             'emergency_contact' => $this->detail ? $this->detail->emergency_contact : '',
             'emergency_relation' => $this->detail ? $this->detail->emergency_relation : '',
             'emergency_name' => $this->detail ? $this->detail->emergency_name : ''

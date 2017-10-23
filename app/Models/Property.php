@@ -267,7 +267,7 @@ class Property extends Model
         return $query
             ->selectRaw("{$distance} as distance")
             ->havingRaw("{$distance} <= {$radius}")
-            ->groupBy( "id" )
+            ->groupBy( "properties.id" )
             ->orderBy( 'distance', 'asc' );
     }
 
@@ -290,9 +290,11 @@ class Property extends Model
                ->with(['photo', 'developer', 'city'])
                ->withCount(['propertyTypes as types', 'propertyItems as items'])
                ->addSelect([
-                    'id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name', 'address',
-                    'developer_id', 'pic_phone', 'city_id', $rawPrice
+                    'properties.id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name', 'properties.address',
+                    'developer_id', 'pic_phone', 'properties.city_id', $rawPrice
                 ])
+               ->leftJoin('developers','developers.id','=','properties.developer_id')
+               ->whereNotIn('developers.dev_id_bri',[1])
                ->limit($limit)
                ->get();
 
