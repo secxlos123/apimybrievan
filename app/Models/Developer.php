@@ -94,6 +94,11 @@ class Developer extends Model
                  * Query for filter by range project.
                  */
                 if ($request->has('project')) $developer->whereBetween('project', explode('|', $request->input('project')));
+
+                /**
+                 * Query for without independent
+                 */
+                if ($request->has('without_independent')) $developer->where('bri', '!=', '1');
             })
             ->select('*')
             ->selectRaw('(select users.image from users where users.id = developers_view_table.dev_id) as image')
