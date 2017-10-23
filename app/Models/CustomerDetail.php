@@ -197,6 +197,24 @@ class CustomerDetail extends Model
     }
 
     /**
+     * Get user String Address_status.
+     * @author Akse
+     * @return string
+     */
+    public function getStatusAddressAttribute( $value )
+    {
+        if( $value == 0 ) {
+            return 'Milik Sendiri';
+        } else if( $value == 1 ) {
+            return 'Milik Orang Tua/Mertua atau Rumah Dinas';
+        } else if( $value == 3 ) {
+            return 'Tinggal di Rumah Kontrakan';
+        }
+
+        return null;
+    }
+
+    /**
      * Get user citizenship information.
      *
      * @return string

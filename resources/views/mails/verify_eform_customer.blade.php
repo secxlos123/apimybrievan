@@ -44,6 +44,10 @@
                                     <td style="padding:5px; font-weight: bold;">{!! $mail['address'] !!}</td>
                                 </tr>
                                 <tr>
+                                    <td style="padding:5px; ">Kota : </td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['city_id'] !!}</td>
+                                </tr>
+                                <tr>
                                     <td style="padding:5px; ">No. Telepon : </td>
                                     <td style="padding:5px; font-weight: bold;">{!! $mail['phone'] !!}</td>
                                 </tr>
