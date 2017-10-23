@@ -202,6 +202,11 @@ class Property extends Model
                     $property->whereBetween('prop_items', explode('|', $request->input('items')));
 
                 /**
+                 * Query for filter by range items.
+                 */
+                if ($request->has('without_independent')) $property->where('bri', '!=', '1');
+
+                /**
                  * Query for filter by developer or user login.
                  */
                 if ($developerId) $property->where('prop_dev_id', $developerId);

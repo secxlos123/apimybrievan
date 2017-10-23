@@ -92,7 +92,7 @@ class Customer extends User
             'address' => $this->detail ? $this->detail->address : '',
             'city_id' => $this->detail ? $this->detail->city_id : '',
             'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
-            'citizenship_id' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc1'] : null) : null,
+            'citizenship_id' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc1'] : '') : '',
             'citizenship' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc2'] : '') : '',
             'status' => $this->detail ? $this->detail->status : '',
             'address_status' => $this->detail ? $this->detail->address_status : '',
@@ -115,21 +115,19 @@ class Customer extends User
      */
     public function getWorkAttribute()
     {
-        if( count( $detail = $this->detail ) ) {
-            return [
-                'type_id' => $detail->job_type_id ? $detail->job_type_id['desc1'] : null,
-                'type' => $detail->job_type_id ? $detail->job_type_id['desc2'] : '',
-                'work_id' => $detail->job_id ? $detail->job_id['desc1'] : null,
-                'work' => $detail->job_id ? $detail->job_id['desc2'] : '',
-                'company_name' => $detail->company_name,
-                'work_field_id' => $detail->job_field_id ? $detail->job_field_id['desc1'] : null,
-                'work_field' => $detail->job_field_id ? $detail->job_field_id['desc2'] : '',
-                'position' => $detail->position,
-                'work_duration' => $detail->work_duration,
-                'work_duration_month' => $detail->work_duration_month ? $detail->work_duration_month : 0,
-                'office_address' => $detail->office_address
-            ];
-        }
+        return [
+            'type_id' => $this->detail ? ($this->detail->job_type_id ? $this->detail->job_type_id['desc1'] : '') : '',
+            'type' => $this->detail ? ($this->detail->job_type_id ? $this->detail->job_type_id['desc2'] : '') : '',
+            'work_id' => $this->detail ? ($this->detail->job_id ? $this->detail->job_id['desc1'] : '') : '',
+            'work' => $this->detail ? ($this->detail->job_id ? $this->detail->job_id['desc2'] : '') : '',
+            'company_name' => $this->detail ? $this->detail->company_name : '',
+            'work_field_id' => $this->detail ? ($this->detail->job_field_id ? $this->detail->job_field_id['desc1'] : '') : '',
+            'work_field' => $this->detail ? ($this->detail->job_field_id ? $this->detail->job_field_id['desc2'] : '') : '',
+            'position' => $this->detail ? $this->detail->position : '',
+            'work_duration' => $this->detail ? $this->detail->work_duration : '',
+            'work_duration_month' => $this->detail ? ($this->detail->work_duration_month ? $this->detail->work_duration_month : '') : '',
+            'office_address' => $this->detail ? $this->detail->office_address : ''
+        ];
     }
 
     /**
@@ -139,17 +137,15 @@ class Customer extends User
      */
     public function getFinancialAttribute()
     {
-        if( count( $detail = $this->detail ) ) {
-            return [
-                'salary' => $detail->salary,
-                'other_salary' => $detail->other_salary,
-                'loan_installment' => $detail->loan_installment,
-                'dependent_amount' => $detail->dependent_amount,
-                'salary_couple' => $detail->couple_salary,
-                'other_salary_couple' => $detail->couple_other_salary,
-                'loan_installment_couple' => $detail->couple_loan_installment
-            ];
-        }
+        return [
+            'salary' => $this->detail ? $this->detail->salary : '',
+            'other_salary' => $this->detail ? $this->detail->other_salary : '',
+            'loan_installment' => $this->detail ? $this->detail->loan_installment : '',
+            'dependent_amount' => $this->detail ? $this->detail->dependent_amount : '',
+            'salary_couple' => $this->detail ? $this->detail->couple_salary : '',
+            'other_salary_couple' => $this->detail ? $this->detail->couple_other_salary : '',
+            'loan_installment_couple' => $this->detail ? $this->detail->couple_loan_installment : ''
+        ];
     }
 
     /**
@@ -159,15 +155,13 @@ class Customer extends User
      */
     public function getContactAttribute()
     {
-        if( count( $detail = $this->detail ) ) {
-            return [
-                'phone' => $this->phone,
-                'mobile_phone' => $this->mobile_phone,
-                'emergency_contact' => $detail->emergency_contact,
-                'emergency_relation' => $detail->emergency_relation,
-                'emergency_name' => $detail->emergency_name
-            ];
-        }
+        return [
+            'phone' => $this->phone,
+            'mobile_phone' => $this->mobile_phone,
+            'emergency_contact' => $this->detail ? $this->detail->emergency_contact : '',
+            'emergency_relation' => $this->detail ? $this->detail->emergency_relation : '',
+            'emergency_name' => $this->detail ? $this->detail->emergency_name : ''
+        ];
     }
 
     /**
@@ -177,17 +171,11 @@ class Customer extends User
      */
     public function getOtherAttribute()
     {
-        $other_data = [
-            'image' => $this->image
+        return [
+            'image' => $this->image,
+            'identity' => $this->detail ? $this->detail->identity : '',
+            'npwp' => $this->detail ? $this->detail->npwp : '',
         ];
-        if( count( $detail = $this->detail ) ) {
-            $other_data += [
-                'identity' => $detail->identity,
-                'npwp' => $detail->npwp,
-            ];
-        }
-
-        return $other_data;
     }
 
     /**

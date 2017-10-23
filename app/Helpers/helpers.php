@@ -1,7 +1,7 @@
 <?php
 
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Illuminate\Support\Facades\Storage;
-use Sentinel;
 
 if (! function_exists('csv_to_array')) {
 
