@@ -207,7 +207,7 @@ class CustomerDetail extends Model
             'limit' => 1,
             'search' => $this->citizenship_id,
         ] )->post();
-        if( $citizenship_search[ 'code' ] == 200 && ! empty( $citizenship_search[ 'data' ] ) ) {
+        if( $citizenship_search[ 'code' ] == 200 ) {
             return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
         }
         return null;
