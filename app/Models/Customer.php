@@ -92,8 +92,8 @@ class Customer extends User
             'address' => $this->detail ? $this->detail->address : '',
             'city_id' => $this->detail ? $this->detail->city_id : '',
             'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
-            'citizenship_id' => $this->detail ? $this->detail->citizenship_id : '',
-            'citizenship' => $this->detail ? $this->detail->citizenship_id : '',
+            'citizenship_id' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc1'] : null) : null,
+            'citizenship' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc2'] : '') : '',
             'status' => $this->detail ? $this->detail->status : '',
             'address_status' => $this->detail ? $this->detail->address_status : '',
             'mother_name' => $this->detail ? $this->detail->mother_name : '',
@@ -117,15 +117,16 @@ class Customer extends User
     {
         if( count( $detail = $this->detail ) ) {
             return [
-                'type_id' => $detail->job_type_id,
-                'type' => $detail->job_type_id,
-                'work_id' => $detail->job_id,
-                'work' => $detail->job_id,
+                'type_id' => $detail->job_type_id ? $detail->job_type_id['desc1'] : null,
+                'type' => $detail->job_type_id ? $detail->job_type_id['desc2'] : '',
+                'work_id' => $detail->job_id ? $detail->job_id['desc1'] : null,
+                'work' => $detail->job_id ? $detail->job_id['desc2'] : '',
                 'company_name' => $detail->company_name,
-                'work_field_id' => $detail->job_field_id,
-                'work_field' => $detail->job_field_id,
+                'work_field_id' => $detail->job_field_id ? $detail->job_field_id['desc1'] : null,
+                'work_field' => $detail->job_field_id ? $detail->job_field_id['desc2'] : '',
                 'position' => $detail->position,
                 'work_duration' => $detail->work_duration,
+                'work_duration_month' => $detail->work_duration_month ? $detail->work_duration_month : 0,
                 'office_address' => $detail->office_address
             ];
         }
@@ -143,7 +144,10 @@ class Customer extends User
                 'salary' => $detail->salary,
                 'other_salary' => $detail->other_salary,
                 'loan_installment' => $detail->loan_installment,
-                'dependent_amount' => $detail->dependent_amount
+                'dependent_amount' => $detail->dependent_amount,
+                'salary_couple' => $detail->couple_salary,
+                'other_salary_couple' => $detail->couple_other_salary,
+                'loan_installment_couple' => $detail->couple_loan_installment
             ];
         }
     }
@@ -160,7 +164,8 @@ class Customer extends User
                 'phone' => $this->phone,
                 'mobile_phone' => $this->mobile_phone,
                 'emergency_contact' => $detail->emergency_contact,
-                'emergency_relation' => $detail->emergency_relation
+                'emergency_relation' => $detail->emergency_relation,
+                'emergency_name' => $detail->emergency_name
             ];
         }
     }

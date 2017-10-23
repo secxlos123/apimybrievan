@@ -9,6 +9,7 @@ use App\Http\Requests\API\v1\EFormRequest;
 use App\Events\EForm\Approved;
 use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
+use App\Models\Customer;
 use App\Models\KPR;
 use DB;
 
@@ -155,6 +156,7 @@ class EFormController extends Controller
      */
     public function verify( Request $request, $token, $status )
     {
+        dd(Customer::find(6)->toArray());
         DB::beginTransaction();
         $verify = EForm::verify( $token, $status );
         

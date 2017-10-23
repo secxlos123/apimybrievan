@@ -231,6 +231,63 @@ class CustomerDetail extends Model
         return null;
     }
 
+    public function globalGetAttribute( $endpoint, $value ) {
+        $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
+            'limit' => 1,
+            'search' => $value,
+        ] )->post();
+        
+        if( $search[ 'code' ] == 200 ) {
+            foreach ($search[ 'contents' ][ 'data' ] as $data) {
+                if ( $data['desc1'] == $value ) {
+                    return $data;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get user citizenship information.
+     *
+     * @return array
+     */
+    public function getCitizenshipIdAttribute( $value )
+    {
+        return $this->globalGetAttribute( 'GetNegara', $value );
+    }
+
+    /**
+     * Get Job information.
+     *
+     * @return array
+     */
+    public function getJobIdAttribute( $value )
+    {
+        return $this->globalGetAttribute( 'GetPekerjaan', $value );
+    }
+
+    /**
+     * Get Job Type information.
+     *
+     * @return array
+     */
+    public function getJobTypeIdAttribute( $value )
+    {
+        return $this->globalGetAttribute( 'GetJenisPekerjaan', $value );
+    }
+
+    /**
+     * Get Job Field information.
+     *
+     * @return array
+     */
+    public function getJobFieldIdAttribute( $value )
+    {
+        return $this->globalGetAttribute( 'GetBidangPekerjaan', $value );
+    }
+
     /**
      * Set customer npwp image.
      *
