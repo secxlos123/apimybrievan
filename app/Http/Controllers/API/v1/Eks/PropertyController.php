@@ -16,18 +16,21 @@ class PropertyController extends Controller
      */
     public function index(Request $request, $developerId = null)
     {
+        $long = $request->input('long') ? $request->input('long') : 0;
+        $lat = $request->input('lat') ? $request->input('lat') : 0;
+
         if ( ! $developerId && $request->user() ) 
             $developerId = $request->user()->inRole('developer') ? $request->user()->id : null;
         
         $limit = $request->input('limit') ?: 10;
         $properties = Property::getLists($request, $developerId)->paginate($limit);
-
-        $properties->transform(function ($prop) {
+        
+        $properties->transform(function ($prop) use ($long, $lat) {
             $props = $prop->toArray();
             $props['prop_photo'] = $prop->propPhoto ? $prop->propPhoto->image : null;
+            $props['distance'] = Property::getDistance($prop->prop_id, $long, $lat);
             return $props;
         });
-
         return response()->success(['contents' => $properties]);
     }
 

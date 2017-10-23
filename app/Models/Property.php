@@ -311,4 +311,26 @@ class Property extends Model
 
         return $properties;
     }
+
+    /**
+     * Get distance
+     *
+     * @param  integer $id
+     * @param  integer $long
+     * @param  integer $lat
+     * @return array
+     */
+    public static function getDistance( $id, $long, $lat )
+    {
+        $data = static::select(['longitude', 'latitude'])
+            ->find($id);
+
+        $theta = $data->longitude - $long;
+        $dist = sin(deg2rad($data->latitude)) * sin(deg2rad($lat)) +  cos(deg2rad($data->latitude)) * cos(deg2rad($lat)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $distance = ($dist * 60 * 1.1515) * 1.609344;
+
+        return round($distance, 2);
+    }
 }
