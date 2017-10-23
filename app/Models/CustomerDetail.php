@@ -33,6 +33,15 @@ class CustomerDetail extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'status_id'
+    ];
+
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -286,6 +295,26 @@ class CustomerDetail extends Model
     public function getJobFieldIdAttribute( $value )
     {
         return $this->globalGetAttribute( 'GetBidangPekerjaan', $value );
+    }
+
+    /**
+     * Get Status Integer.
+     *
+     * @return string
+     */
+    public function getStatusIdAttribute()
+    {
+        if( $this->status == 'Tidak menikah' ) {
+            return 0;
+        } else if( $this->status == 'Menikah' ) {
+            return 1;
+        } else if( $this->status == 'Janda' ) {
+            return 2;
+        } else if( $this->status == 'Duda' ) {
+            return 3;
+        }
+
+        return null;
     }
 
     /**

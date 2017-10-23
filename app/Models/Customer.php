@@ -102,7 +102,8 @@ class Customer extends User
             'couple_birth_date' => $this->detail ? $this->detail->couple_birth_date : '',
             'couple_birth_place_id' => $this->detail ? $this->detail->couple_birth_place_id : '',
             'couple_birth_place' => $this->couple_birth_place,
-            'couple_identity' => $this->detail ? $this->detail->couple_identity : ''
+            'couple_identity' => $this->detail ? $this->detail->couple_identity : '',
+            'status_id' => $this->detail ? $this->detail->status_id : ''
         ];
 
         return $personal_data;
