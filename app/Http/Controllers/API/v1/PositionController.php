@@ -18,9 +18,10 @@ class PositionController extends Controller
     public function index( Request $request )
     {
         $position_list_service = Asmx::setEndpoint( 'GetJabatan' )->setQuery( [
-            'limit' => $request->limit,
-            'page' => $request->page,
-            'sort' => $request->sort
+            'search' => $request->search,
+            'limit'  => $request->limit,
+            'page'   => $request->page,
+            'sort'   => $request->sort
         ] )->post();
         $positions = $position_list_service[ 'contents' ];
         $positions[ 'data' ] = array_map( function( $content ) {

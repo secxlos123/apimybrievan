@@ -82,7 +82,7 @@
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Kewarganegaraan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']!!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']['desc2']!!}</td>
                                 </tr>
 
                                 @if ($mail['status'] == 2 )
@@ -133,7 +133,7 @@
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Jabatan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['position'] !!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['position']['desc2'] !!}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Lama Kerja : </td>
