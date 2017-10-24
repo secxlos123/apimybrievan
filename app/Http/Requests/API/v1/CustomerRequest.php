@@ -82,7 +82,7 @@ class CustomerRequest extends BaseRequest
                         'emergency_name'=>'required_if:verify_status,verify',
                         'emergency_mobile_phone'=>'required_if:verify_status,verify',
                         'emergency_relation'=>'required_if:verify_status,verify',
-                        'identity'=>'required_if:verify_status,verify|image|mimes:jpg,jpeg,png',
+                        'identity'=>'image|mimes:jpg,jpeg,png',
                         'first_name'=>'',
                         'last_name'=>'',
                         'verify_status'=>'required|in:verify,verified',
