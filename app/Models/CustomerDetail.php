@@ -47,147 +47,117 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $hidden = [
-        'id', 'user_id'
+        'id'
     ];
 
     /**
-     * Get user avatar image url.
+     * Global function for check file.
+     *
+     * @return string
+     */
+    public function globalImageCheck( $filename )
+    {
+        if( ! empty( $filename ) ) {
+            if( File::exists( public_path('uploads/users/' . $this->user_id . '/' . $filename) ) ) {
+                return url( 'uploads/users/' . $this->user_id . '/' . $filename );
+            }
+        }
+
+        return url( 'img/noimage.jpg' );
+    }
+
+    /**
+     * Get user NPWP image url.
      *
      * @return string
      */
     public function getNpwpAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
-        } else {
-            $image = url( 'img/noimage.jpg' );
-        }
-        return $image;
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Identity image url.
      *
      * @return string
      */
     public function getIdentityAttribute( $value )
     {
-
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Couple Identity image url.
      *
      * @return string
      */
     public function getCoupleIdentityAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Legal Document image url.
      *
      * @return string
      */
     public function getLegalDocumentAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Salary Slip image url.
      *
      * @return string
      */
     public function getSalarySlipAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Bank Statement image url.
      *
      * @return string
      */
     public function getBankStatementAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Family Card image url.
      *
      * @return string
      */
     public function getFamilyCardAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Marrital Certificate image url.
      *
      * @return string
      */
     public function getMarritalCertificateAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Diforce Certificate image url.
      *
      * @return string
      */
     public function getDiforceCertificateAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Parse Couple relation name.
      *
      * @return string
      */
@@ -239,6 +209,11 @@ class CustomerDetail extends Model
         return null;
     }
 
+    /**
+     * Global function for Get ASMX data
+     *
+     * @return string
+     */
     public function globalGetAttribute( $endpoint, $value ) {
         $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
             'limit' => 1,
