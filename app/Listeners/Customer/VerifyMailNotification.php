@@ -32,7 +32,6 @@ class VerifyMailNotification
         $customer = $event->customer->detail;
         $customer_data = $event->customer;
         $eform = $event->eform;
-
         $mail = [
             'email' => $customer_data->email,
             'name' => $customer_data->fullname,
@@ -47,6 +46,7 @@ class VerifyMailNotification
             'birth_place_id'=> $customer->birth_place_city->name,
             'identity'=> $customer->identity,
             'gender'=>$customer_data->gender,
+            'status_id'=>$customer->status_id,
             'status'=>$customer->status,
             'address_status'=> $customer->address_status,
             'citizenship_id'=>$customer->citizenship_id,

@@ -299,6 +299,24 @@ class CustomerDetail extends Model
         return null;
     }
 
+     /**
+     * Get Status Integer.
+     *
+     * @return string
+     */
+    public function getAddressStatusIdAttribute()
+    {
+        if( $this->address_status == 'Milik Sendiri' ) {
+            return 0;
+        } else if( $this->address_status == 'Milik Orang Tua/Mertua atau Rumah Dinas' ) {
+            return 1;
+        } else if( $this->address_status == 'Tinggal di Rumah Kontrakan' ) {
+            return 3;
+        }
+
+        return null;
+    }
+
     /**
      * Set customer npwp image.
      *

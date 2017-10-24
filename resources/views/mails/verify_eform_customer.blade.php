@@ -85,7 +85,7 @@
                                     <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']['desc2']!!}</td>
                                 </tr>
 
-                                @if ($mail['status'] == 2 )
+                                @if ($mail['status_id'] == '2' )
 
                                 <tr>
                                     <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA PASANGAN</td>
@@ -164,7 +164,7 @@
                                     <td style="padding:5px; font-weight: bold;">{!! $mail['dependent_amount'] !!}</td>
                                 </tr>
 
-                                @if ($mail['status'] == 2 )
+                                @if ($mail['status_id'] == '2' )
                                 
                                 <tr>
                                     <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA KEUANGAN PASANGAN</td>
