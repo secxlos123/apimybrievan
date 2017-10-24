@@ -82,7 +82,7 @@
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Kewarganegaraan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']['desc2'] !!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']!!}</td>
                                 </tr>
 
                                 @if ($mail['status'] == 2 )
