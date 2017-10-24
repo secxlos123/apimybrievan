@@ -165,7 +165,7 @@ class CustomerRequest extends BaseRequest
      */
     protected function validationData()
     {
-        if( $this->has( 'status' ) & $this->status != '1' ) {
+        if( $this->has( 'status' ) & $this->status != '2' ) {
             return $this->except( [ 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity' ] );
         }
         return $this->all();

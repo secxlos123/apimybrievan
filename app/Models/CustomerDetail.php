@@ -193,14 +193,12 @@ class CustomerDetail extends Model
      */
     public function getStatusHubunganAttribute( $value )
     {
-        if( $value == 0 ) {
+        if( $value == 1 ) {
             return 'Tidak menikah';
-        } else if( $value == 1 ) {
-            return 'Menikah';
         } else if( $value == 2 ) {
-            return 'Janda';
+            return 'Menikah';
         } else if( $value == 3 ) {
-            return 'Duda';
+            return 'Duda/Janda';
         }
 
         return null;
