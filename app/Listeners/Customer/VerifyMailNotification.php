@@ -43,6 +43,7 @@ class VerifyMailNotification
             'phone'=> $customer_data->phone,
             'mobile_phone'=>$customer_data->mobile_phone,
             'mother_name'=>$customer->mother_name,
+            'birth_date'=> $customer->birth_date,
             'birth_place_id'=> $customer->birth_place_city->name,
             'identity'=> $customer->Identity,
             'gender'=>$customer_data->gender,
