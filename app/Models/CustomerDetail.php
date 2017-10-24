@@ -73,7 +73,7 @@ class CustomerDetail extends Model
      */
     public function getNpwpAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -83,7 +83,7 @@ class CustomerDetail extends Model
      */
     public function getIdentityAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -93,7 +93,7 @@ class CustomerDetail extends Model
      */
     public function getCoupleIdentityAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -103,7 +103,7 @@ class CustomerDetail extends Model
      */
     public function getLegalDocumentAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -113,7 +113,7 @@ class CustomerDetail extends Model
      */
     public function getSalarySlipAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -123,7 +123,7 @@ class CustomerDetail extends Model
      */
     public function getBankStatementAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -133,7 +133,7 @@ class CustomerDetail extends Model
      */
     public function getFamilyCardAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -143,7 +143,7 @@ class CustomerDetail extends Model
      */
     public function getMarritalCertificateAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
@@ -153,7 +153,7 @@ class CustomerDetail extends Model
      */
     public function getDiforceCertificateAttribute( $value )
     {
-        return globalImageCheck( $value );
+        return $this->globalImageCheck( $value );
     }
 
     /**
