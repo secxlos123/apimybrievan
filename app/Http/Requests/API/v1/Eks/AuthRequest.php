@@ -59,7 +59,7 @@ class AuthRequest extends BaseRequest
                         'city' => 'required',
                         'phone' => 'required|numeric|digits_between:9,16',
                         'citizenship' => 'required',
-                        'status' => 'required|in:0,1,2',
+                        'status' => 'required|in:1,2,3',
                         'address_status' => 'required',
                         'mother_name' => 'required',
                         'mobile_phone' => 'required|numeric|digits_between:9,16',
@@ -92,16 +92,16 @@ class AuthRequest extends BaseRequest
                         'first_name' => 'required',
                         'last_name' => '',
                         'mobile_phone' => 'required|numeric|digits_between:9,16',
-                        'status' => 'required|in:0,1,2',
+                        'status' => 'required|in:1,2,3',
                         'mother_name' => 'required',
                         'birth_place_id' => 'required',
                         'birth_date' => 'required|date',
                         'identity' => 'required|image|mimes:jpg,jpeg,png',
-                        'couple_nik' => 'required_if:status,1|numeric|digits:16',
-                        'couple_name' => 'required_if:status,1',
-                        'couple_birth_place_id' => 'required_if:status,1',
-                        'couple_birth_date' => 'required_if:status,1|date',
-                        'couple_identity' => 'required_if:status,1|image'
+                        'couple_nik' => 'required_if:status,2|numeric|digits:16',
+                        'couple_name' => 'required_if:status,2',
+                        'couple_birth_place_id' => 'required_if:status,2',
+                        'couple_birth_date' => 'required_if:status,2|date',
+                        'couple_identity' => 'required_if:status,2|image'
                     ];
                 } else {
                     return [];
