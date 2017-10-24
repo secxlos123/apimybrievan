@@ -161,7 +161,7 @@ class CustomerDetail extends Model
      *
      * @return string
      */
-    public function getStatusHubunganAttribute( $value )
+    public function getStatusAttribute( $value )
     {
         if( $value == 1 ) {
             return 'Tidak menikah';
@@ -179,7 +179,7 @@ class CustomerDetail extends Model
      * @author Akse
      * @return string
      */
-    public function getStatusAddressAttribute( $value )
+    public function getAddressStatusAttribute( $value )
     {
         if( $value == 0 ) {
             return 'Milik Sendiri';
@@ -276,7 +276,7 @@ class CustomerDetail extends Model
      *
      * @return array
      */
-    public function getPositionIdAttribute( $value )
+    public function getPositionAttribute( $value )
     {
         return $this->globalGetAttribute( 'GetJabatan', $value );
     }
@@ -289,12 +289,10 @@ class CustomerDetail extends Model
     public function getStatusIdAttribute()
     {
         if( $this->status == 'Tidak menikah' ) {
-            return 0;
-        } else if( $this->status == 'Menikah' ) {
             return 1;
-        } else if( $this->status == 'Janda' ) {
+        } else if( $this->status == 'Menikah' ) {
             return 2;
-        } else if( $this->status == 'Duda' ) {
+        } else if( $this->status == 'Duda/Janda' ) {
             return 3;
         }
 

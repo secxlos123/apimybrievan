@@ -125,7 +125,8 @@ class Customer extends User
             'company_name' => $this->detail ? $this->detail->company_name : '',
             'work_field_id' => $this->detail ? ($this->detail->job_field_id ? $this->detail->job_field_id['desc1'] : '') : '',
             'work_field' => $this->detail ? ($this->detail->job_field_id ? $this->detail->job_field_id['desc2'] : '') : '',
-            'position' => $this->detail ? $this->detail->position : '',
+            'position_id' => $this->detail ? ($this->detail->position ? $this->detail->position['desc1'] : '') : '',
+            'position' => $this->detail ? ($this->detail->position ? $this->detail->position['desc2'] : '') : '',
             'work_duration' => $this->detail ? $this->detail->work_duration : '',
             'work_duration_month' => $this->detail ? ($this->detail->work_duration_month ? $this->detail->work_duration_month : '') : '',
             'office_address' => $this->detail ? $this->detail->office_address : ''
