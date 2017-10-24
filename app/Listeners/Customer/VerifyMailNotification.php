@@ -39,7 +39,7 @@ class VerifyMailNotification
             'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/' . $eform->token,
             'nik' => $customer->nik,
             'address'=> $customer->address,
-            'city_id'=> $customer->detail->city_id ? $customer->detail->city->name : '',
+            'city_id'=> $customer->city_id ? $customer->city->name : '',
             'phone'=> $customer_data->phone,
             'mobile_phone'=>$customer_data->mobile_phone,
             'mother_name'=>$customer->mother_name,
