@@ -30,7 +30,7 @@ class VerifyMailNotification
     public function handle( CustomerVerify $event )
     {
         $customer = $event->customer->detail;
-        $customer_data= $event->customer;
+        $customer_data = $event->customer;
         $eform = $event->eform;
 
         $mail = [
@@ -39,20 +39,21 @@ class VerifyMailNotification
             'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/' . $eform->token,
             'nik' => $customer->nik,
             'address'=> $customer->address,
-            'city_id'=> $customer->city->name,
+            'city_id'=> $customer->city_id ? $customer->city->name : '',
             'phone'=> $customer_data->phone,
             'mobile_phone'=>$customer_data->mobile_phone,
             'mother_name'=>$customer->mother_name,
+            'birth_date'=> $customer->birth_date,
             'birth_place_id'=> $customer->birth_place_city->name,
-            'identity'=> $customer->Identity,
+            'identity'=> $customer->identity,
             'gender'=>$customer_data->gender,
-            'status'=>$customer->Status,
+            'status'=>$customer->StatusHubungan,
             'address_status'=> $customer->StatusAddress,
-            'citizenship_id'=>$customer->Citizenship,
+            'citizenship_id'=>$customer->citizenship,
             'couple_nik'=>$customer->couple_nik,
             'couple_name'=>$customer->couple_name,
-            'couple_identity'=>$customer->CoupleIdentity,
-            'couple_birth_place_id'=> $customer->couple_birth_place_city->name,
+            'couple_identity'=>$customer->identity,
+            'couple_birth_place_id'=> $customer->couple_birth_place_id ? $customer->couple_birth_place_city->name : '',
             'job_field_id'=>$customer->job_field_id,
             'job_type_id'=>$customer->job_type_id,
             'job_id'=>$customer->job_id,
