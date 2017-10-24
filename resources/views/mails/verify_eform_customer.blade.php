@@ -82,7 +82,7 @@
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Kewarganegaraan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id'] !!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']['desc2'] !!}</td>
                                 </tr>
 
                                 @if ($mail['status'] == 2 )
@@ -117,15 +117,15 @@
 
                                 <tr>
                                     <td style="padding:5px; ">Bidang Pekerjaan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['job_field_id'] !!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['job_field_id']['desc2'] !!}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Jenis Pekerjaan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['job_type_id'] !!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['job_type_id']['desc2'] !!}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Pekerjaan : </td>
-                                    <td style="padding:5px; font-weight: bold;">{!! $mail['job_id'] !!}</td>
+                                    <td style="padding:5px; font-weight: bold;">{!! $mail['job_id']['desc2'] !!}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding:5px; ">Nama Perusahaan : </td>
