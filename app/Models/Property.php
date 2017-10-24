@@ -256,19 +256,24 @@ class Property extends Model
         $lng  = (float) $lng;
         $radius = (double) $radius;
 
-        $distance = "( {$type}
+        $distance = "round( CAST( ( {$type}
             * acos( cos( radians( cast( {$lat} as double precision ) ) )
             * cos( radians( cast( latitude as double precision ) ) )
             * cos( radians( cast( longitude as double precision ) )
                  - radians( cast( {$lng} as double precision ) ) )
                  + sin( radians( cast( {$lat}  as double precision ) ) )
-            * sin( radians( cast( latitude as double precision ) ) ) ) )";
+            * sin( radians( cast( latitude as double precision ) ) ) ) ) as numeric), 2)";
 
-        return $query
+        $query = $query
             ->selectRaw("{$distance} as distance")
-            ->havingRaw("{$distance} <= {$radius}")
             ->groupBy( "properties.id" )
             ->orderBy( 'distance', 'asc' );
+
+        if ($radius > -1) {
+            $query = $query->havingRaw("{$distance} <= {$radius}");
+        }
+
+        return $query;
     }
 
     /**
@@ -287,16 +292,19 @@ class Property extends Model
         $rawPrice = \DB::raw('(SELECT max(property_types.price) from property_types where property_types.property_id = properties.id) as price');
 
         $properties = $this->distance($lat, $long, $radius, $type)
-               ->with(['photo', 'developer', 'city'])
-               ->withCount(['propertyTypes as types', 'propertyItems as items'])
-               ->addSelect([
+                ->with(['photo', 'developer', 'city'])
+                ->withCount(['propertyTypes as types', 'propertyItems as items'])
+                ->addSelect([
                     'properties.id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name', 'properties.address',
                     'developer_id', 'pic_phone', 'properties.city_id', $rawPrice
                 ])
-               ->leftJoin('developers','developers.id','=','properties.developer_id')
-               ->whereNotIn('developers.dev_id_bri',[1])
-               ->limit($limit)
-               ->get();
+                ->leftJoin('developers','developers.id','=','properties.developer_id')
+                ->where( function($query) {
+                    return $query->whereNotIn('developers.dev_id_bri',['1'])
+                        ->orWhereNull('developers.dev_id_bri');
+                })
+                ->limit($limit)
+                ->get();
 
         $properties->transform(function ($property) {
             $data = [];
@@ -307,7 +315,7 @@ class Property extends Model
             $data['prop_developer_name'] = $data['prop_developer']['company_name'];
             $data['prop_photo'] = $data['prop_photo']['image'] ?: asset('img/noimage.jpg');
             $data['prop_city_name'] = ! is_null( $data['prop_city'] ) ? $data['prop_city']['name'] : '';
-            unset( $data['prop_developer'], $data['prop_city'], $data['prop_distance']);
+            unset( $data['prop_developer'], $data['prop_city']);
             return $data;
         });
 
@@ -327,11 +335,13 @@ class Property extends Model
         $data = static::select(['longitude', 'latitude'])
             ->find($id);
 
-        $theta = $data->longitude - $long;
-        $dist = sin(deg2rad($data->latitude)) * sin(deg2rad($lat)) +  cos(deg2rad($data->latitude)) * cos(deg2rad($lat)) * cos(deg2rad($theta));
-        $dist = acos($dist);
-        $dist = rad2deg($dist);
-        $distance = ($dist * 60 * 1.1515) * 1.609344;
+        $distance = ( 6378.10
+            * acos( cos( deg2rad( $lat ) )
+            * cos( deg2rad( $data->latitude ) )
+            * cos( deg2rad( $data->longitude )
+                 - deg2rad( $long ) )
+                 + sin( deg2rad( $lat ) )
+            * sin( deg2rad( $data->latitude ) ) ) );
 
         return round($distance, 2);
     }
