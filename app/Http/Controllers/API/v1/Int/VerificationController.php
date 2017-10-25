@@ -121,7 +121,7 @@ class VerificationController extends Controller
                     'citizenship_id' => $customer->detail->citizenship_id,
                     'status' => $customer->detail->status_id,
                     'status_name' => $customer->detail->status,
-                    'address_status' => $customer->detail->address_status,
+                    'address_status' => $customer->detail->address_status_id,
                     'address_status_name'=> $customer->detail->address_status,
                     'mother_name' => $customer->detail->mother_name,
                     'email' => $customer->email,
