@@ -70,6 +70,7 @@ class CustomerRequest extends BaseRequest
                         'company_name'=>'required_if:verify_status,verify',
                         'position'=>'required_if:verify_status,verify',
                         'work_duration'=>'required_if:verify_status,verify',
+                        'work_duration_month' => 'required_if:verify_status,verify',
                         'office_address'=>'required_if:verify_status,verify',
                         'salary'=>'required_if:verify_status,verify',
                         'other_salary'=>'required_if:verify_status,verify',

@@ -53,6 +53,7 @@ class VerifyMailNotification
             'couple_nik'=>$customer->couple_nik,
             'couple_name'=>$customer->couple_name,
             'couple_identity'=>$customer->identity,
+            'couple_birth_date'=> $customer->couple_birth_date,
             'couple_birth_place_id'=> $customer->couple_birth_place_id ? $customer->couple_birth_place_city->name : '',
             'job_field_id'=>$customer->job_field_id,
             'job_type_id'=>$customer->job_type_id,
