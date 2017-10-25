@@ -262,6 +262,8 @@ class Customer extends User
      */
     public function update( array $attributes = [], array $options = [] )
     {
+        $keys = array('npwp', 'identity', 'couple_identity', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
+
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
         parent::update( $user_data );
@@ -269,6 +271,13 @@ class Customer extends User
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
         $this->detail()->update( $customer_data );
+        $this->detail->updateAllImageAttribute( $keys, $customer_data );
+
+        foreach ($keys as $key) {
+            if ( isset($data[ $key ]) ) {
+                unset( $data[ $key ] );
+            }
+        }
 
         return true;
     }

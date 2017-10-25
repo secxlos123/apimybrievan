@@ -57,13 +57,18 @@ class CustomerDetail extends Model
      */
     public function globalImageCheck( $filename )
     {
+        $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
             if( File::exists( public_path('uploads/users/' . $this->user_id . '/' . $filename) ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $filename );
+                $path = 'uploads/users/' . $this->user_id . '/' . $filename;
             }
         }
 
-        return url( 'img/noimage.jpg' );
+        if (strpos(ENV('APP_URL'), 'localhost') !== false) {
+            return public_path( $path );
+        }
+        
+        return url( $path );
     }
 
     /**
@@ -318,37 +323,82 @@ class CustomerDetail extends Model
     }
 
     /**
+     * Global function for set image attribute.
+     *
+     * @return void
+     */
+    public function globalSetImageAttribute( $image, $attribute )
+    {
+        if (gettype($image) == "string") {
+            $this->attributes[ $attribute ] = $image;
+
+        } else {
+            $return = $this->globalSetImage( $image, $attribute );
+            if ( $return ) {
+                $this->attributes[ $attribute ] = $return;
+            }
+        }
+    }
+
+    /**
+     * Global function for set image.
+     *
+     * @return void
+     */
+    public function globalSetImage( $image, $attribute )
+    {
+        if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
+            $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+            if ( ! empty( $this->attributes[ $attribute ] ) ) {
+                File::delete( $path . $this->attributes[ $attribute ] );
+            }
+
+            $extension = 'png';
+
+            if ( !$image->getClientOriginalExtension() ) {
+                if ( $image->getMimeType() == 'image/jpg' ) {
+                    $extension = 'jpg';
+                } elseif ( $image->getMimeType() == 'image/jpeg' ) {
+                    $extension = 'jpeg';
+                }
+            } else {
+                $extension = $image->getClientOriginalExtension();
+            }
+
+            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $image->move( $path, $filename );
+            return $filename;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Update all image needed.
+     *
+     * @return void
+     */
+    public function updateAllImageAttribute( $keys, $data )
+    {
+        $newData = array();
+        foreach ($keys as $key) {
+            if ( isset($data[ $key ]) && !empty($data[ $key ]) ) {
+                $image = $this->globalSetImage( $data[ $key ], $key );
+                if ($image) {
+                    $this->update([ $key => $image ]);                    
+                }
+            }
+        }
+    }
+
+    /**
      * Set customer npwp image.
      *
      * @return void
      */
     public function setNpwpAttribute( $image )
     {
-        if ($this->user_id) {
-            $id = $this->user_id;
-        }else{
-            $id = user_info('id');
-        }
-        $path = public_path( 'uploads/users/' . $id . '/' );
-        if ( ! empty( $this->attributes[ 'npwp' ] ) ) {
-            File::delete( $path . $this->attributes[ 'npwp' ] );
-        }
-
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $id . '-npwp.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'npwp' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'npwp' );
     }
 
     /**
@@ -358,32 +408,7 @@ class CustomerDetail extends Model
      */
     public function setIdentityAttribute( $image )
     {
-        if ($this->user_id) {
-            $id = $this->user_id;
-        }else{
-            $id = user_info('id');
-        }
-
-        $path = public_path( 'uploads/users/' . $id . '/' );
-        if ( ! empty( $this->attributes[ 'identity' ] ) ) {
-            File::delete( $path . $this->attributes[ 'identity' ] );
-        }
-
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $id . '-identity.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'identity' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'identity' );
     }
 
     /**
@@ -393,32 +418,7 @@ class CustomerDetail extends Model
      */
     public function setCoupleIdentityAttribute( $image )
     {
-        if ($this->user_id) {
-            $id = $this->user_id;
-        }else{
-            $id = user_info('id');
-        }
-
-        $path = public_path( 'uploads/users/' . $id . '/' );
-        if ( ! empty( $this->attributes[ 'couple_identity' ] ) ) {
-            File::delete( $path . $this->attributes[ 'couple_identity' ] );
-        }
-
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $id . '-couple_identity.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'couple_identity' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'couple_identity' );
     }
 
     /**
@@ -428,32 +428,7 @@ class CustomerDetail extends Model
      */
     public function setLegalDocumentAttribute( $image )
     {
-        if ($this->user_id) {
-            $id = $this->user_id;
-        }else{
-            $id = user_info('id');
-        }
-
-        $path = public_path( 'uploads/users/' . $id . '/' );
-        if ( ! empty( $this->attributes[ 'legal_document' ] ) ) {
-            File::delete( $path . $this->attributes[ 'legal_document' ] );
-        }
-
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $id . '-legal_document.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'legal_document' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'legal_document' );
     }
 
     /**
@@ -463,14 +438,7 @@ class CustomerDetail extends Model
      */
     public function setSalarySlipAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'salary_slip' ] ) ) {
-            File::delete( $path . $this->attributes[ 'salary_slip' ] );
-        }
-
-        $filename = $this->user_id . '-salary_slip.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'salary_slip' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'salary_slip' );
     }
 
     /**
@@ -480,14 +448,7 @@ class CustomerDetail extends Model
      */
     public function setBankStatementAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'bank_statement' ] ) ) {
-            File::delete( $path . $this->attributes[ 'bank_statement' ] );
-        }
-
-        $filename = $this->user_id . '-bank_statement.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'bank_statement' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'bank_statement' );
     }
 
     /**
@@ -497,14 +458,7 @@ class CustomerDetail extends Model
      */
     public function setFamilyCardAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'family_card' ] ) ) {
-            File::delete( $path . $this->attributes[ 'family_card' ] );
-        }
-
-        $filename = $this->user_id . '-family_card.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'family_card' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'family_card' );
     }
 
     /**
@@ -514,14 +468,7 @@ class CustomerDetail extends Model
      */
     public function setMarritalCertificateAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'marrital_certificate' ] ) ) {
-            File::delete( $path . $this->attributes[ 'marrital_certificate' ] );
-        }
-
-        $filename = $this->user_id . '-marrital_certificate.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'marrital_certificate' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'marrital_certificate' );
     }
 
     /**
@@ -531,14 +478,7 @@ class CustomerDetail extends Model
      */
     public function setDiforceCertificateAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'diforce_certificate' ] ) ) {
-            File::delete( $path . $this->attributes[ 'diforce_certificate' ] );
-        }
-
-        $filename = $this->user_id . '-diforce_certificate.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'diforce_certificate' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'diforce_certificate' );
     }
 
     /**
