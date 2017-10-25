@@ -46,7 +46,7 @@ class EFormRequest extends BaseRequest
                         'year' => 'required_if:product_type,kpr,required|numeric',
                         'active_kpr' => 'required_if:product_type,kpr,required|numeric',
                         'dp' => 'required_if:product_type,kpr,required|numeric',
-                        'request_amount' => 'required_if:product_type,kpr,required|numeric',
+                        'request_amount' => 'required_if:product_type,kpr,required',
                         'nik' => 'required|exists:customer_details,nik',
                         'branch_id' => 'required',
                         'appointment_date' => 'required|date',
