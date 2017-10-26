@@ -26,8 +26,14 @@ class VisitReport extends Model
         'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller'
     ];
 
-    // ['npwp', 'legal_document', 'salary_slip', 'family_card', 'marrital_certificate', 'divorce_certificate', 'photo_with_customer', 'offering_letter', 'proprietary', 'building_permit', 'down_payment', 'building_tax'];
-
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'npwp_number_masking'
+    ];
 
     /**
      * Bootstrap any application services.
@@ -77,7 +83,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'family_card' );
     }
-    
+
     /**
      * Set Report Marrital Certificate image.
      *
@@ -87,7 +93,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'marrital_certificate' );
     }
-    
+
     /**
      * Set Report Divorce Certificate image.
      *
@@ -97,7 +103,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'divorce_certificate' );
     }
-    
+
     /**
      * Set Report Photo With Customer image.
      *
@@ -107,7 +113,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'photo_with_customer' );
     }
-    
+
     /**
      * Set Report Offering Letter image.
      *
@@ -117,7 +123,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'offering_letter' );
     }
-    
+
     /**
      * Set Report Proprietary image.
      *
@@ -127,7 +133,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'proprietary' );
     }
-    
+
     /**
      * Set Report Building Permit image.
      *
@@ -137,7 +143,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'building_permit' );
     }
-    
+
     /**
      * Set Report Down Payment image.
      *
@@ -147,7 +153,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'down_payment' );
     }
-    
+
     /**
      * Set Report Building Tax image.
      *
@@ -169,123 +175,147 @@ class VisitReport extends Model
     }
 
     /**
+     * Set Report NPWP Number.
+     *
+     * @return void
+     */
+    public function setNpwpNumberAttribute( $value )
+    {
+        $this->attributes[ 'npwp_number' ] = str_replace(',', '.', str_replace('.', '', $value));
+    }
+
+    /**
      * Get Report Legal Document image url.
      *
      * @return string
      */
-    public function getLegalDocumentAttribute( $value )
+    public function getLegalDocumentAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Salary Slip image url.
      *
      * @return string
      */
-    public function getSalarySlipAttribute( $value )
+    public function getSalarySlipAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Family Card image url.
      *
      * @return string
      */
-    public function getFamilyCardAttribute( $value )
+    public function getFamilyCardAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Marrital Certificate image url.
      *
      * @return string
      */
-    public function getMarritalCertificateAttribute( $value )
+    public function getMarritalCertificateAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Divorce Certificate image url.
      *
      * @return string
      */
-    public function getDivorceCertificateAttribute( $value )
+    public function getDivorceCertificateAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Photo With Customer image url.
      *
      * @return string
      */
-    public function getPhotoWithCustomerAttribute( $value )
+    public function getPhotoWithCustomerAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Offering Letter image url.
      *
      * @return string
      */
-    public function getOfferingLetterAttribute( $value )
+    public function getOfferingLetterAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report roprietary image url.
      *
      * @return string
      */
-    public function getProprietaryAttribute( $value )
+    public function getProprietaryAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Building Permit image url.
      *
      * @return string
      */
-    public function getBuildingPermitAttribute( $value )
+    public function getBuildingPermitAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Down Payment image url.
      *
      * @return string
      */
-    public function getDownPaymentAttribute( $value )
+    public function getDownPaymentAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
-    
+
     /**
      * Get Report Building Tax image url.
      *
      * @return string
      */
-    public function getBuildingTaxAttribute( $value )
+    public function getBuildingTaxAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
     }
 
     /**
-     * Get user NPWP image url.
+     * Get Report NPWP image url.
      *
      * @return string
      */
-    public function getNpwpAttribute( $value )
+    public function getNpwpAttribute( $image )
     {
-        return $this->globalImageCheck( $value );
+        return $this->globalImageCheck( $image );
+    }
+
+    /**
+     * Get Report NPWP Number Masking.
+     *
+     * @return string
+     */
+    public function getNpwpNumberMaskingAttribute( $value )
+    {
+        return preg_replace(
+            '/([0-9]{2})?([0-9]{3})?([0-9]{3})?([0-9]{1})?([0-9]{3})?([0-9]{3})/'
+            , '$1.$2.$3.$4-$5.$6'
+            , str_pad(substr($value, 0, 15), 15, "0")
+        );
     }
 
     /**
