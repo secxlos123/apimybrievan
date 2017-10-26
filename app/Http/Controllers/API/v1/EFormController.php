@@ -160,8 +160,9 @@ class EFormController extends Controller
         $verify = EForm::verify( $token, $status );
         
         if ($verify['contents']) {
-            event( new Verify( $verify['contents'] ) );
+            event( new VerifyEForm( $verify['contents'] ) );
         }
+        DB::commit();
 
         return response()->success( $verify );
     }
