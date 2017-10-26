@@ -46,7 +46,7 @@ class VisitReportRequest extends BaseRequest
             'mutations.*.file' => 'required|file',
             'mutations.*.tables' => 'required|array',
             'mutations.*.tables.*.date' => 'required|date',
-            'mutations.*.tables.*.amount' => 'required|numeric',
+            'mutations.*.tables.*.amount' => 'required',
             'mutations.*.tables.*.type' => 'required',
             'mutations.*.tables.*.note' => '',
             

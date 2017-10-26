@@ -541,6 +541,7 @@ class EForm extends Model
             if ($lastData->token == $target->token) {
                 $status = true;
                 $target->update(['status' => $status]);
+                $target->customer->detail()->update(['is_verified' => true]);
             }
         }
 
