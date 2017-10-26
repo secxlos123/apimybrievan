@@ -96,7 +96,7 @@ class Customer extends User
             'citizenship_id' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc1'] : '') : '',
             'citizenship' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc2'] : '') : '',
             'status' => $this->detail ? $this->detail->status : '',
-            'address_status_id'=> $this->detail ? $this->detail->address_status : '',
+            'address_status_id'=> $this->detail ? $this->detail->address_status_id : '',
             'address_status' => $this->detail ? $this->detail->address_status : '',
             'mother_name' => $this->detail ? $this->detail->mother_name : '',
             'couple_name' => $this->detail ? $this->detail->couple_name : '',
