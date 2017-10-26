@@ -59,8 +59,9 @@ class CustomerDetail extends Model
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            if( File::exists( public_path('uploads/users/' . $this->user_id . '/' . $filename) ) ) {
-                $path = 'uploads/users/' . $this->user_id . '/' . $filename;
+            $image = 'uploads/users/' . $this->user_id . '/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
             }
         }
 

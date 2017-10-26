@@ -26,6 +26,8 @@ class VisitReport extends Model
         'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller'
     ];
 
+    // ['npwp', 'legal_document', 'salary_slip', 'family_card', 'marrital_certificate', 'divorce_certificate', 'photo_with_customer', 'offering_letter', 'proprietary', 'building_permit', 'down_payment', 'building_tax'];
+
 
     /**
      * Bootstrap any application services.
@@ -47,53 +49,315 @@ class VisitReport extends Model
     }
 
     /**
-     * Set photo with customer.
+     * Set Report Legal Document image.
+     *
+     * @return void
+     */
+    public function setLegalDocumentAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'legal_document' );
+    }
+
+    /**
+     * Set Report Salary Slip image.
+     *
+     * @return void
+     */
+    public function setSalarySlipAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'salary_slip' );
+    }
+    
+    /**
+     * Set Report Family Card image.
+     *
+     * @return void
+     */
+    public function setFamilyCardAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'family_card' );
+    }
+    
+    /**
+     * Set Report Marrital Certificate image.
+     *
+     * @return void
+     */
+    public function setMarritalCertificateAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'marrital_certificate' );
+    }
+    
+    /**
+     * Set Report Divorce Certificate image.
+     *
+     * @return void
+     */
+    public function setDivorceCertificateAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'divorce_certificate' );
+    }
+    
+    /**
+     * Set Report Photo With Customer image.
      *
      * @return void
      */
     public function setPhotoWithCustomerAttribute( $image )
     {
-        $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
-        if ( ! empty( $this->attributes[ 'photo_with_customer' ] ) ) {
-            File::delete( $path . $this->attributes[ 'photo_with_customer' ] );
-        }
-
-        $filename = time() . '-photo-with-customer.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'photo_with_customer' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'photo_with_customer' );
     }
-
+    
     /**
-     * Set photo with customer.
+     * Set Report Offering Letter image.
      *
      * @return void
      */
-    public function setIncomeSalaryImageAttribute( $image )
+    public function setOfferingLetterAttribute( $image )
     {
-        $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
-        if ( ! empty( $this->attributes[ 'income_salary_image' ] ) ) {
-            File::delete( $path . $this->attributes[ 'income_salary_image' ] );
-        }
-
-        $filename = time() . '-income-salary-image.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'income_salary_image' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'offering_letter' );
     }
-
+    
     /**
-     * Set mutation file upload.
+     * Set Report Proprietary image.
      *
      * @return void
      */
-    public function setMutationFileAttribute( $image )
+    public function setProprietaryAttribute( $image )
     {
-        $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
-        if ( ! empty( $this->attributes[ 'mutation_file' ] ) ) {
-            File::delete( $path . $this->attributes[ 'mutation_file' ] );
+        $this->globalSetImageAttribute( $image, 'proprietary' );
+    }
+    
+    /**
+     * Set Report Building Permit image.
+     *
+     * @return void
+     */
+    public function setBuildingPermitAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'building_permit' );
+    }
+    
+    /**
+     * Set Report Down Payment image.
+     *
+     * @return void
+     */
+    public function setDownPaymentAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'down_payment' );
+    }
+    
+    /**
+     * Set Report Building Tax image.
+     *
+     * @return void
+     */
+    public function setBuildingTaxAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'building_tax' );
+    }
+
+    /**
+     * Set Report NPWP image.
+     *
+     * @return void
+     */
+    public function setNpwpAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'npwp' );
+    }
+
+    /**
+     * Get Report Legal Document image url.
+     *
+     * @return string
+     */
+    public function getLegalDocumentAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Salary Slip image url.
+     *
+     * @return string
+     */
+    public function getSalarySlipAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Family Card image url.
+     *
+     * @return string
+     */
+    public function getFamilyCardAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Marrital Certificate image url.
+     *
+     * @return string
+     */
+    public function getMarritalCertificateAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Divorce Certificate image url.
+     *
+     * @return string
+     */
+    public function getDivorceCertificateAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Photo With Customer image url.
+     *
+     * @return string
+     */
+    public function getPhotoWithCustomerAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Offering Letter image url.
+     *
+     * @return string
+     */
+    public function getOfferingLetterAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report roprietary image url.
+     *
+     * @return string
+     */
+    public function getProprietaryAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Building Permit image url.
+     *
+     * @return string
+     */
+    public function getBuildingPermitAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Down Payment image url.
+     *
+     * @return string
+     */
+    public function getDownPaymentAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+    
+    /**
+     * Get Report Building Tax image url.
+     *
+     * @return string
+     */
+    public function getBuildingTaxAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+
+    /**
+     * Get user NPWP image url.
+     *
+     * @return string
+     */
+    public function getNpwpAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
+
+    /**
+     * Global function for check file.
+     *
+     * @return string
+     */
+    public function globalImageCheck( $filename )
+    {
+        $path =  'img/noimage.jpg';
+        if( ! empty( $filename ) ) {
+            $image = 'uploads/eforms/' . $this->eform_id . '/visit_report/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
+            }
         }
 
-        $filename = time() . '-mutations.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'mutation_file' ] = $filename;
+        if (strpos(ENV('APP_URL'), 'localhost') !== false) {
+            return public_path( $path );
+        }
+        
+        return url( $path );
+    }
+
+    /**
+     * Global function for set image attribute.
+     *
+     * @return void
+     */
+    public function globalSetImageAttribute( $image, $attribute )
+    {
+        if (gettype($image) == "string") {
+            $this->attributes[ $attribute ] = $image;
+
+        } else {
+            $return = $this->globalSetImage( $image, $attribute );
+            if ( $return ) {
+                $this->attributes[ $attribute ] = $return;
+            }
+        }
+    }
+
+    /**
+     * Global function for set image.
+     *
+     * @return void
+     */
+    public function globalSetImage( $image, $attribute )
+    {
+        if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
+            $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
+            if ( ! empty( $this->attributes[ $attribute ] ) ) {
+                File::delete( $path . $this->attributes[ $attribute ] );
+            }
+
+            $extension = 'png';
+
+            if ( !$image->getClientOriginalExtension() ) {
+                if ( $image->getMimeType() == 'image/jpg' ) {
+                    $extension = 'jpg';
+                } elseif ( $image->getMimeType() == 'image/jpeg' ) {
+                    $extension = 'jpeg';
+                }
+            } else {
+                $extension = $image->getClientOriginalExtension();
+            }
+
+            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $image->move( $path, $filename );
+            return $filename;
+        } else {
+            return null;
+        }
     }
 }

@@ -43,13 +43,19 @@ class Mutation extends Model
      */
     public function getFileAttribute( $value )
     {
-        $image = url( 'img/noimage.jpg' );
-        if(  ! empty( $value ) ) {
-            if( File::exists( 'uploads/eforms/' . $this->visit_report->eform_id . '/visit_report/' . $value ) ) {
-                $image = url( 'uploads/eforms/' . $this->visit_report->eform_id . '/visit_report/' . $value );
+        $path =  'img/noimage.jpg';
+        if( ! empty( $value ) ) {
+            $image = 'uploads/eforms/' . $this->visit_report->eform_id . '/visit_report/' . $value;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
             }
         }
-        return $image;
+
+        if (strpos(ENV('APP_URL'), 'localhost') !== false) {
+            return public_path( $path );
+        }
+        
+        return url( $path );
     }
 
     /**
@@ -64,9 +70,21 @@ class Mutation extends Model
             File::delete( $path . $this->attributes[ 'file' ] );
         }
 
-        $filename = 'mutation-' . $this->attributes[ 'bank' ] . '.' . $file->getClientOriginalExtension();
+        $extension = 'png';
+
+        if ( !$file->getClientOriginalExtension() ) {
+            if ( $file->getMimeType() == 'image/jpg' ) {
+                $extension = 'jpg';
+            } elseif ( $file->getMimeType() == 'image/jpeg' ) {
+                $extension = 'jpeg';
+            }
+        } else {
+            $extension = $file->getClientOriginalExtension();
+        }
+
+        $filename = $this->user_id . '-' . 'file' . '.' . $extension;
         $file->move( $path, $filename );
-        $this->attributes[ 'file' ] = $filename;
+        $this->attributes[ 'file' ] = $filename;        
     }
 
     /**
