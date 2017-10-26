@@ -26,7 +26,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status'
     ];
 
     /**
@@ -530,7 +530,7 @@ class EForm extends Model
      */
     public static function verify( $token, $status )
     {
-        $status = false;
+        $returnStatus = false;
         $target = static::where('token', $token)->first();
 
         if ($target) {
@@ -539,14 +539,15 @@ class EForm extends Model
                 ->first();
 
             if ($lastData->token == $target->token) {
-                $status = true;
-                $target->update(['status' => $status]);
-                $target->customer->detail()->update(['is_verified' => true]);
+                $returnStatus = true;
+                $target->update(['response_status' => $status]);
+                $verifiedStatus = ($status == "approve" ? true : false);
+                $target->customer->detail()->update(['is_verified' => $verifiedStatus]);
             }
         }
 
         return array(
-            'message' => $status
+            'message' => $returnStatus
             , 'contents' => $target
         );
     }
@@ -564,8 +565,8 @@ class EForm extends Model
             ->first();
 
         $lastData->update( [
-            'token' => strtr(base64_encode(openssl_encrypt(date('y-m-d h:i:s'), 'AES-128-ECB', 'l1tprofiler')), '+/=', '-_,')
-            , 'status' => 'unverified'
+            'token' => strtr(base64_encode(openssl_encrypt(date('y-m-d h:i:s'), 'AES-128-ECB', 'APImyBRI')), '+/=', '-_,')
+            , 'response_status' => 'unverified'
         ]);
 
         return $lastData;
