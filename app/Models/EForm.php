@@ -117,10 +117,11 @@ class EForm extends Model
      */
     public function getAoNameAttribute()
     {
-        $AO = \RestwsHc::getUser( $this->ao_id );
-        if( $AO ) {
+        if ( $this->ao_id ) {
+            $AO = \RestwsHc::getUser( $this->ao_id );
             return $AO[ 'name' ];
         }
+
         return null;
     }
 
@@ -470,7 +471,10 @@ class EForm extends Model
     public function scopeFilter( $query, Request $request )
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['appointment_date', 'asc'];
-        return $query->where( function( $eform ) use( $request ) {
+        $user = \RestwsHc::getUser();
+
+        return $query->where( function( $eform ) use( $request, &$user ) {
+
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
@@ -482,14 +486,21 @@ class EForm extends Model
                     $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
                 }
             }
+
             if ($request->has('search')) {
                  $eform->where('eforms.ref_number', '=', $request->input('search'));
             }
+
             if ($request->has('start_date') || $request->has('end_date')) {
                 $start_date= date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
                 $eform->whereBetween('eforms.created_at',array($start_date,$end_date));
             }
+
+            if ($user['role'] == 'ao') {
+                $eform->where('ao_id', $user['pn']);
+            }
+
         } )->orderBy('eforms.'.$sort[0], $sort[1]);
     }
 

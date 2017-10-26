@@ -53,12 +53,13 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        $prop = $property->load('photo', 'developer')->toArray();
+        $prop = $property->load('photo', 'developer', 'city')->toArray();
         $developer = $property->developer;
         $prop['photo'] = $property->photo ? $property->photo->image : null;
         $prop['developer_name'] = $developer->company_name;
         $prop['developer_logo'] = $developer->user->image;
-        unset($prop['developer']);
+        $prop['city_name'] = $property->city ? $property->city->name : null;
+        unset($prop['developer'], $prop['city']);
         return response()->success(['contents' => $prop]);
     }
 

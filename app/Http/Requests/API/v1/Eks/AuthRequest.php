@@ -25,6 +25,7 @@ class AuthRequest extends BaseRequest
      */
     public function rules()
     {
+        \Log::info($this->all());
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 if( $this->segment( 5 ) == 'register' ) {
@@ -58,7 +59,7 @@ class AuthRequest extends BaseRequest
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city' => 'required',
-                        'phone' => 'required|numeric|digits_between:9,16',
+                        'phone' => 'required|numeric|digits_between:7,16',
                         'citizenship' => 'required',
                         'status' => 'required|in:1,2,3',
                         'address_status' => 'required',
@@ -84,7 +85,7 @@ class AuthRequest extends BaseRequest
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        'couple_identity' => 'required_if:is_simple,0|required_if:status,2|image'
+                        'couple_identity' => 'required_if:status,2|image'
                     ];
                 } else if ( $this->segment( 5 ) == 'register-simple' ) {
                     $login_session = Sentinel::getUser();
@@ -108,7 +109,7 @@ class AuthRequest extends BaseRequest
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        'couple_identity' => 'required_if:is_simple,0|required_if:status,2|image'
+                        'couple_identity' => 'required_if:status,2|image'
                     ];
                 } else {
                     return [];
