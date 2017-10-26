@@ -33,13 +33,13 @@ class VisitReportRequest extends BaseRequest
             // 'phone' => 'required',
             // 'account' => 'required',
             // 'amount' => 'required',
-            // 'type' => 'required',
+            'npwp_number' => 'required',
             'purpose_of_visit' => 'required',
-            'result' => 'required',
-            // 'source' => 'required|in:fixed,not_fixed',
-            // 'income' => 'required_if:source,fixed',
-            // 'income_salary' => 'required_if:source,fixed',
-            // 'income_allowance' => 'required_if:source,fixed',
+            'visit_result' => 'required',
+            'source' => 'required|in:fixed,unfixed',
+            'income' => 'required_if:source,fixed',
+            'income_salary' => 'required_if:source,fixed',
+            'income_allowance' => 'required_if:source,fixed',
             'mutations' => 'required|array',
             'mutations.*.bank' => 'required',
             'mutations.*.number' => 'required',
@@ -53,12 +53,29 @@ class VisitReportRequest extends BaseRequest
             'pros' => 'required',
             'cons' => 'required',
             'photo_with_customer' => 'required|image|mimes:jpg,jpeg,png',
-            // 'seller_name' => 'required',
-            // 'seller_address' => 'required',
-            // 'seller_phone' => 'required',
-            // 'selling_price' => 'required|numeric',
-            // 'reason_for_sale' => 'required',
-            // 'relation_with_seller' => 'required'
+            'seller_name' => '',
+            'seller_address' => '',
+            'seller_phone' => '',
+            'selling_price' => '',
+            'reason_for_sale' => '',
+            'relation_with_seller' => '',
+            'npwp'=> 'required|image|mimes:jpg,jpeg,png',
+            'legal_document' => 'required|image|mimes:jpg,jpeg,png',
+            'salary_slip'=> 'required|image|mimes:jpg,jpeg,png',
+            'family_card'=> 'required|image|mimes:jpg,jpeg,png',
+            'marrital_certificate'=> 'required|image|mimes:jpg,jpeg,png',
+            'divorce_certificate'=> 'required|image|mimes:jpg,jpeg,png',
+            'offering_letter'=> 'required|image|mimes:jpg,jpeg,png',
+            'proprietary'=> 'image|mimes:jpg,jpeg,png',
+            'building_permit'=> 'image|mimes:jpg,jpeg,png',
+            'down_payment'=> 'required|image|mimes:jpg,jpeg,png',
+            'building_tax'=> 'required|image|mimes:jpg,jpeg,png',
+            'recommended'=> 'required|in:yes,no',
+            'recommendation'=> 'required'
+
+
+
+
         ];
     }
 

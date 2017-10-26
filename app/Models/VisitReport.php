@@ -22,8 +22,7 @@ class VisitReport extends Model
      * @var array
      */
     protected $fillable = [
-        'eform_id', 'purpose_of_visit', 'result', 'photo_with_customer', 'pros', 'cons',
-        'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller'
+         'eform_id', 'purpose_of_visit', 'visit_result', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale' , 'relation_with_seller', 'npwp_number', 'income', 'income_salary' , 'income_allowance', 'kpp_type','type_financed','economy_sector','project_list', 'program_list', 'id_prescreening', 'npwp', 'use_reason','use_reason_id', 'source' , 'recommended', 'recommendation' , 'legal_document', 'marrital_certificate', 'divorce_certificate', 'offering_letter', 'down_payment', 'building_tax'
     ];
 
     /**
