@@ -26,7 +26,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recomended', 'recomendation'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation'
     ];
 
     /**
@@ -132,7 +132,7 @@ class EForm extends Model
      */
     public function getStatusAttribute()
     {
-        if ( !$this->is_approved && $this->recomended) {
+        if ( !$this->is_approved && $this->recommended) {
             return 'Rejected';
         }
         if( $this->is_approved ) {
@@ -239,8 +239,8 @@ class EForm extends Model
         $eform->update( [
             'pros' => $request->pros,
             'cons' => $request->cons,
-            'recomendation' => $request->recomendation,
-            'recomended' => $request->recomended == "yes" ? true : false,
+            'recommendation' => $request->recommendation,
+            'recommended' => $request->recommended == "yes" ? true : false,
             'is_approved' => $request->is_approved
         ] );
         return $eform;

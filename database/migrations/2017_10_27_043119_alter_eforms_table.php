@@ -14,8 +14,8 @@ class AlterEformsTable extends Migration
     public function up()
     {
         Schema::table('eforms', function (Blueprint $table) {
-            $table->text('recomendation')->nullable();
-            $table->boolean('recomended')->default(false);
+            $table->text('recommendation')->nullable();
+            $table->boolean('recommended')->default(false);
 
         });
     }
@@ -28,7 +28,7 @@ class AlterEformsTable extends Migration
     public function down()
     {
         Schema::table('eforms', function (Blueprint $table) {
-            $table->dropColumn(['recomendation', 'recomended']);
+            $table->dropColumn(['recommendation', 'recommended']);
 
         });
     }
