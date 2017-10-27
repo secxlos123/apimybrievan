@@ -115,8 +115,9 @@ class EFormController extends Controller
         $eform = EForm::approve( $eform_id, $request );
         if( $eform instanceof EForm ) {
             DB::commit();
+
             return response()->success( [
-                'message' => 'E-form berhasil diapprove.',
+                'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
             // event( new Approved( $eform ) );
