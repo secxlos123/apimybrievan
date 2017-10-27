@@ -26,7 +26,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recomended', 'recomendation'
     ];
 
     /**
@@ -132,6 +132,9 @@ class EForm extends Model
      */
     public function getStatusAttribute()
     {
+        if ( !$this->is_approved && $this->recomended) {
+            return 'Rejected';
+        }
         if( $this->is_approved ) {
             return 'Submit';
         }
@@ -223,19 +226,22 @@ class EForm extends Model
     public static function approve( $eform_id, $request )
     {
         $eform = static::find( $eform_id );
-        for ( $i=1; $i <= 7; $i++ ) {
-            $result = $eform->insertCoreBRI( $i );
-            if( $result === false ) {
-                \Log::info( 'Error step ' . $i );
-                return $result;
-                // $i--;
+        if ( $request->is_approved ) {
+            for ( $i=1; $i <= 7; $i++ ) {
+                $result = $eform->insertCoreBRI( $i );
+                if( $result === false ) {
+                    \Log::info( 'Error step ' . $i );
+                    return $result;
+                }
+                \Log::info( 'Step ' . $i . ' Berhasil.' );
             }
-            \Log::info( 'Step ' . $i . ' Berhasil.' );
         }
         $eform->update( [
             'pros' => $request->pros,
             'cons' => $request->cons,
-            'is_approved' => true
+            'recomendation' => $request->recomendation,
+            'recomended' => $request->recomended == "yes" ? true : false,
+            'is_approved' => $request->is_approved
         ] );
         return $eform;
     }
