@@ -180,7 +180,7 @@ class VisitReport extends Model
      */
     public function setNpwpNumberAttribute( $value )
     {
-        $this->attributes[ 'npwp_number' ] = str_replace(',', '.', str_replace('.', '', $value));
+        $this->attributes[ 'npwp_number' ] = str_replace('-', '', str_replace('.', '', $value));
     }
 
     /**
@@ -364,7 +364,7 @@ class VisitReport extends Model
      */
     public function globalSetImage( $image, $attribute )
     {
-        if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
+        if ( gettype($image) == 'object' ) {
             $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 \File::delete( $path . $this->attributes[ $attribute ] );

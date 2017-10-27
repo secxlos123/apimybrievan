@@ -21,6 +21,7 @@ class VisitReportController extends Controller
     public function store( $eform_id, VisitReportRequest $request )
     {
         DB::beginTransaction();
+        \Log::info([ 'eform_id' => $eform_id ] + $request->all());
         $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $request->all() );
 
         DB::commit();
