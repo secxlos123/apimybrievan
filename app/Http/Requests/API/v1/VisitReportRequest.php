@@ -36,7 +36,7 @@ class VisitReportRequest extends BaseRequest
             'npwp_number' => 'required',
             'purpose_of_visit' => 'required',
             'visit_result' => 'required',
-            'source' => 'required|in:fixed,not_fixed',
+            'source' => 'required|in:fixed,nonfixed',
             'income' => 'required_if:source,fixed',
             'income_salary' => 'required_if:source,fixed',
             'income_allowance' => 'required_if:source,fixed',

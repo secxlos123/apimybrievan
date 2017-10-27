@@ -382,7 +382,7 @@ class VisitReport extends Model
                 $extension = $image->getClientOriginalExtension();
             }
 
-            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $filename = $this->eform_id . '-' . $attribute . '.' . $extension;
             $image->move( $path, $filename );
             return $filename;
         } else {
