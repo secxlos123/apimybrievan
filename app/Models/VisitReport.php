@@ -331,10 +331,6 @@ class VisitReport extends Model
                 $path = $image;
             }
         }
-
-        if (strpos(ENV('APP_URL'), 'localhost') !== false) {
-            return public_path( $path );
-        }
         
         return url( $path );
     }
