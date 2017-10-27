@@ -510,7 +510,7 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['appointment_date', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
         $user = \RestwsHc::getUser();
 
         return $query->where( function( $eform ) use( $request, &$user ) {
