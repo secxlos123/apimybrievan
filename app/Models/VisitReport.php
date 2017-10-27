@@ -327,7 +327,7 @@ class VisitReport extends Model
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
             $image = 'uploads/eforms/' . $this->eform_id . '/visit_report/' . $filename;
-            if( File::exists( public_path( $image ) ) ) {
+            if( \File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
         }
@@ -367,7 +367,7 @@ class VisitReport extends Model
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
             $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
-                File::delete( $path . $this->attributes[ $attribute ] );
+                \File::delete( $path . $this->attributes[ $attribute ] );
             }
 
             $extension = 'png';
