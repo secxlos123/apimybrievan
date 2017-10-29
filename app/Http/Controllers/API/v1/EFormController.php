@@ -160,11 +160,20 @@ class EFormController extends Controller
         DB::beginTransaction();
         $verify = EForm::verify( $token, $status );
         
-        if ($verify['contents']) {
-            event( new VerifyEForm( $verify['contents'] ) );
-        }
-        DB::commit();
+        if( $verify['message'] ) {
+            if ($verify['contents']) {
+                event( new VerifyEForm( $verify['contents'] ) );
+            }
+            DB::commit();
+            $code = 201;
 
-        return response()->success( $verify );
+        } else {
+            DB::rollback();
+            $code = 404;
+
+        }
+
+
+        return response()->success( $verify, $code );
     }
 }
