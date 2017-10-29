@@ -47,7 +47,9 @@ class OfficeController extends Controller
 
         if ($branchs['responseData'] != '') {
             $offices = collect($branchs['responseData'])->reject(function ($branch) {
-                return ! in_array($branch['jenis_uker'], ['KCP', 'KC']);
+                
+                // Client mintanya kantor cabang aja, klo mau nambah tinggal tambah KCP atau KP 
+                return ! in_array($branch['jenis_uker'], ['KC']);
             })->slice($offset, $perPage)->values();
         }
 

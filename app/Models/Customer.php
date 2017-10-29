@@ -293,7 +293,11 @@ class Customer extends User
     {
         if( $data[ 'verify_status' ] == 'verify' ) {
             $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
-            $data[ 'couple_birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'couple_birth_date' ] ) );
+
+            if (isset( $data[ 'couple_birth_date' ] )) {
+                $data[ 'couple_birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'couple_birth_date' ] ) );
+            }
+            
             $data[ 'gender' ] = str_replace( 'PEREMPUAN', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'LAKI-LAKI', 'L', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );

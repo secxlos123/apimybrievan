@@ -257,15 +257,9 @@ class EForm extends Model
     {
         $eform = static::find( $eform_id );
         if ( $request->is_approved ) {
-            for ( $i=1; $i <= 7; $i++ ) {
-                $result = $eform->insertCoreBRI( $i );
-                if( $result === false ) {
-                    \Log::info( 'Error step ' . $i );
-                    return $result;
-                }
-                \Log::info( 'Step ' . $i . ' Berhasil.' );
-            }
+            $result = $eform->insertCoreBRI(null);
         }
+
         $eform->update( [
             'pros' => $request->pros,
             'cons' => $request->cons,
@@ -283,16 +277,29 @@ class EForm extends Model
      */
     public function insertCoreBRI( $step_id )
     {
+        \Log::info("console 1");
         $kpr = $this->kpr;
-        $customer = $this->customer;
-        $customer_detail = $customer->personal;
-        $customer_work = $customer->work;
-        $customer_finance = $customer->Financial;
-        $customer_contact = $customer->contact;
-        $customer_other = $customer->other;
+        \Log::info("console 2");
+        $customer = clone $this->customer;
+        \Log::info("console 3");
+        $customer_detail = (object) $customer->personal;
+        \Log::info("console 4");
+        $customer_work = (object) $customer->work;
+        \Log::info("console 5");
+        $customer_finance = (object) $customer->Financial;
+        \Log::info("console 6");
+        $customer_contact = (object) $customer->contact;
+        \Log::info("console 7");
+        $customer_other = (object) $customer->other;
+        \Log::info("console 8");
+        $lkn = $this->visit_report;
+        \Log::info("console 9");
+        \Log::info($customer);
+        \Log::info($step_id);
+        \Log::info("==============================================================================================");
         $request = [
-            "nik_pemohon" => empty( $this->nik ) ? '' : $this->nik,
-            "nama_pemohon" => empty( $this->customer_name ) ? '' : $this->customer_name,
+            "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
     // "tempat_lahir_pemohon" => "Jambi",
     // "tanggal_lahir_pemohon" => "1989-07-25",
     // "alamat_pemohon" => "ini alamat pemohon",
@@ -343,119 +350,148 @@ class EForm extends Model
     // "nama_pengelola" => "Oblag",
     // "pn_pengelola" => "00139644",
             // "tempat_lahir_pemohon" => "Jambi",
-            "tempat_lahir_pemohon" => empty( $customer_detail->birth_place ) ? '' : $customer_detail->birth_place,
-            "tanggal_lahir_pemohon" => empty( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
-            "alamat_pemohon" => empty( $customer_detail->address ) ? '' : $customer_detail->address,
+            "tempat_lahir_pemohon" => $customer_detail->birth_place ? $customer_detail->birth_place : '',
+            "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
             // "jenis_kelamin_pemohon" => "l",
-            "jenis_kelamin_pemohon" => empty( $customer->gender ) ? '' : $customer->gender, // L harusnya 0 atau 1 atau 2 atau 3
-            "kewarganegaraan_pemohon" => empty( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
-            "pekerjaan_pemohon_value" => empty( $customer_work->work_id ) ? '' : $customer_work->work_id,
+            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender, // L harusnya 0 atau 1 atau 2 atau 3
+            "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
+            "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
             // "status_pernikahan_pemohon_value" => "2",
-            "status_pernikahan_pemohon_value" => empty( $customer_detail->status_id ) ? '' : $customer_detail->status_id, // Belum sama dengan value dari BRI
-            "status_pisah_harta_pemohon" => empty($customer_finance->satus_income)?'': $customer_finance->satus_income,
-            "nik_pasangan" => empty( $customer_detail->couple_nik ) ? '' : $customer_detail->couple_nik,
-            "nama_pasangan" => empty( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
-            "status_tempat_tinggal_value" => empty( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
-            //"status_tempat_tinggal_value" => empty( $customer_detail->address_status ) ? '0' : $customer_detail->address_status,
-            "telepon_pemohon" => empty( $customer->phone ) ? '' : $customer->phone,
-            "hp_pemohon" => empty( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
-            "email_pemohon" => empty( $customer->email ) ? '' : $customer->email,
-            "jenis_pekerjaan_value" => empty( $customer_work->type_id ) ? '' : $customer_work->type_id,
-            "pekerjaan_value" => empty( $customer_work->work_id ) ? '' : $customer_work->work_id,
-            "nama_perusahaan" => empty( $customer_work->company_name ) ? '' : $customer_work->company_name,
-            "bidang_usaha_value" => empty( $customer_work->work_field_id ) ? '' : $customer_work->work_field_id,
-            "jabatan_value" => empty( $customer_work->position_id ) ? '' : $customer_work->position_id,
-            "lama_usaha" => empty( $customer_work->work_duration ) ? '0' : $customer_work->work_duration,
-            "alamat_usaha" => empty( $customer_work->office_address ) ? '' : $customer_work->office_address,
-            "jenis_penghasilan" =>  empty($customer_finance->status_finance)?'': $customer_finance->status_finance,
+            "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id, // Belum sama dengan value dari BRI
+            "status_pisah_harta_pemohon" => !( $customer_finance->status_income ) ? '': $customer_finance->status_income,
+            "nik_pasangan" => !( $customer_detail->couple_nik ) ? '' : $customer_detail->couple_nik,
+            "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
+            "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '0' : $customer_detail->address_status_id,
+            //"status_tempat_tinggal_value" => !( $customer_detail->address_status ) ? '0' : $customer_detail->address_status,
+            "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
+            "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
+            "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
+            "jenis_pekerjaan_value" => !( $customer_work->type_id ) ? '' : $customer_work->type_id,
+            "pekerjaan_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
+            "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
+            "bidang_usaha_value" => !( $customer_work->work_field_id ) ? '' : $customer_work->work_field_id,
+            "jabatan_value" => !( $customer_work->position_id ) ? '' : $customer_work->position_id,
+            "lama_usaha" => !( $customer_work->work_duration ) ? '' : $customer_work->work_duration,
+            "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
+            "jenis_penghasilan" =>  !($customer_finance->status_finance ) ? '': $customer_finance->status_finance,
              // Tidak ada di design dan database
-            "gaji_bulanan_pemohon" => empty( $customer_finance->salary ) ? '0' : $customer_finance->salary,
-            "pendapatan_lain_pemohon" => empty( $customer_finance->other_salary ) ? '0' : $customer_finance->other_salary,
-            "gaji_bulanan_pasangan" => empty( $customer_finance->salary_couple ) ? '0' : $customer_finance->salary_couple,
-            "pendapatan_lain_pasangan" => empty( $customer_finance->other_salary_couple ) ? '0' : $customer_finance->other_salary_couple, 
-            "angsuran" => empty( $customer_finance->loan_installment ) ? '0' : $customer_finance->loan_installment,
-            "jenis_kpp_value" => empty( $lkn->kpp_type ) ? '' : $lkn->kpp_type,
-            "permohonan_pinjaman" => empty( $kpr->request_amount ) ? '' : $kpr->request_amount,
+            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : $customer_finance->salary,
+            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : $customer_finance->other_salary,
+            "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '' : $customer_finance->salary_couple,
+            "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '' : $customer_finance->other_salary_couple, 
+            "angsuran" => !( $customer_finance->loan_installment ) ? '' : $customer_finance->loan_installment,
+            "jenis_kpp_value" => !( $lkn->kpp_type ) ? '' : $lkn->kpp_type,
+            "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             // "uang_muka" => "51000000",
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
             "jangka_waktu" => ( $kpr->year * 12 ),
-            "jenis_dibiayai_value" => empty( $lkn->type_financed ) ? '' : $lkn->type_financed, // Tidak ada di design dan database
-            "sektor_ekonomi_value" => empty( $lkn->economy_sector ) ? '' : $lkn->economy_sector,//"123456789", // Tidak ada di design dan database
-            "project_value" => empty( $lkn->project_list ) ? '' : $lkn->project_list,//"1086", // Tidak ada di design dan database
-            "program_value" => empty( $lkn->program_list ) ? '' : $lkn->program_list,//"27", // Tidak ada di design dan database
-            "pihak_ketiga_value" => empty( $kpr->developer_id ) ? '' : $kpr->developer_id,
+            "jenis_dibiayai_value" => !( $lkn->type_financed ) ? '' : $lkn->type_financed, // Tidak ada di design dan database
+            "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,//"123456789", // Tidak ada di design dan database
+            "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list,//"1086", // Tidak ada di design dan database
+            "program_value" => !( $lkn->program_list ) ? '' : $lkn->program_list,//"27", // Tidak ada di design dan database
+            "pihak_ketiga_value" => !( $kpr->developer_id ) ? '' : $kpr->developer_id,
             "sub_pihak_ketiga_value" => "1", // Tidak ada di design dan database
-            "nama_keluarga" => empty( $customer_detail->emergency_name ) ? '' : $customer_detail->emergency_name,
-            "hubungan_keluarga" => empty( $customer_detail->emergency_relation ) ? '' : $customer_detail->emergency_relation,
-            "telepon_keluarga" => empty( $customer_detail->emergency_contact ) ? '' : $customer_detail->emergency_contact,
+            "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
+            "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
+            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "tujuan_penggunaan_value" => empty( $lkn->use_reason_id ) ? '' : $lkn->use_reason_id, // Tidak ada di design dan database
-            "tujuan_penggunaan" => empty( $lkn->use_reason ) ? '' : $lkn->use_reason, // Tidak ada di design dan database
-            "kode_cabang" => empty( $this->branch_id ) ? '' : $this->branch_id,
-            "id_prescreening" => empty( $lkn->id_prescreening ) ? '' : $lkn->id_prescreening, // Tidak ada di design dan database dan perlu sync dengan BRI
-            "nama_ibu" => empty( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
-            "npwp_pemohon" => empty( $lkn->id_prescreening ) ? '' : $lkn->id_prescreening, // Tidak ada di design dan database
+            "tujuan_penggunaan_value" => !( $lkn->use_reason_id ) ? '' : $lkn->use_reason_id, // Tidak ada di design dan database
+            "tujuan_penggunaan" => !( $lkn->use_reason ) ? '' : $lkn->use_reason, // Tidak ada di design dan database
+            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "id_prescreening" => !( $lkn->id_prescreening ) ? '' : $lkn->id_prescreening, // Tidak ada di design dan database dan perlu sync dengan BRI
+            "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
+            "npwp_pemohon" => !( $lkn->id_prescreening ) ? '' : $lkn->id_prescreening, // Tidak ada di design dan database
             "nama_pengelola" => $this->ao_name, // Nama AO
             "pn_pengelola" => $this->ao_id,//"00139644",
-            "cif" => $this->cif_number//Informasi nomor CIF
+            "cif" => $this->cif_number ?: ''//Informasi nomor CIF
         ];
         $request += $this->additional_parameters;
-        if( $step_id == 1 ) {
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataCif' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                $this->additional_parameters += $this->additional_parameters + [ 'fid_cif_las' => $post_to_bri[ 'contents' ] ];
-                $this->save();
-                return true;
-            }
-        } else if( $step_id == 2 ) {
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataCifSdn' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                return true;
-            }
-        } else if( $step_id == 3 ) {
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataAplikasi' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                $this->additional_parameters += $this->additional_parameters + [ 'fid_aplikasi' => $post_to_bri[ 'contents' ] ];
-                $this->save();
-                return true;
-            }
-        } else if( $step_id == 4 ) {
-            // Perlu tambah data prescreening (id_prescreening)
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataPrescreening' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                return true;
-            }
-        } else if( $step_id == 5 ) {
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataScoringKpr' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                return true;
-            }
-        } else if( $step_id == 6 ) {
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataTujuanKredit' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                return true;
-            }
-        } else if( $step_id == 7 ) {
-            $post_to_bri = Asmx::setEndpoint( 'InsertDataMaster' )->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
-            if( $post_to_bri[ 'code' ] == 200 ) {
-                $this->update( [ 'is_approved' => true ] );
-                return true;
+        \Log::info($request);
+
+        for ( $i=1; $i <= 7; $i++ ) {
+            if( $i == 1 ) {
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataCif' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    $this->additional_parameters += $this->additional_parameters + [ 'fid_cif_las' => $post_to_bri[ 'contents' ] ];
+                    $request[ 'fid_cif_las' ] = $post_to_bri[ 'contents' ];
+                    $this->save();
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
+            } else if( $i == 2 ) {
+                \Log::info("masuk step 2");
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataCifSdn' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
+            } else if( $i == 3 ) {
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataAplikasi' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    $this->additional_parameters += $this->additional_parameters + [ 'fid_aplikasi' => $post_to_bri[ 'contents' ] ];
+                    $request[ 'fid_aplikasi' ] = $post_to_bri[ 'contents' ];
+                    $this->save();
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
+            } else if( $i == 4 ) {
+                // Perlu tambah data prescreening (id_prescreening)
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataPrescreening' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
+            } else if( $i == 5 ) {
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataScoringKpr' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
+            } else if( $i == 6 ) {
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataTujuanKredit' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
+            } else if( $i == 7 ) {
+                $post_to_bri = Asmx::setEndpoint( 'InsertDataMaster' )->setBody( [
+                    'request' => json_encode( $request )
+                ] )->post( 'form_params' );
+                \Log::info($post_to_bri);
+                if( $post_to_bri[ 'code' ] == 200 ) {
+                    $this->update( [ 'is_approved' => true ] );
+                    \Log::info( 'Step ' . $i . ' Berhasil.' );
+                    continue;
+                }
+                \Log::info( 'Error step ' . $i );
             }
         }
+
         return $post_to_bri;
     }
 

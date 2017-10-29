@@ -217,6 +217,11 @@ class CustomerDetail extends Model
      * @return string
      */
     public function globalGetAttribute( $endpoint, $value ) {
+        return array (
+            'desc1' => '98',
+            'desc2' => 'NON RESIDENT',
+        );
+
         $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
             'limit' => 1,
             'search' => $value,
