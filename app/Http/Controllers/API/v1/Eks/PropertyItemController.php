@@ -66,7 +66,7 @@ class PropertyItemController extends Controller
      */
     public function show(PropertyItem $property_item)
     {
-        $prop = $property_item->load('propertyType.property', 'photos')->toArray();
+        $prop = $property_item->load('propertyType.property.developer', 'photos')->toArray();
         $prop['photos'] = $property_item->photos->transform(function ($photo) {
             return $photo->image;
         });
