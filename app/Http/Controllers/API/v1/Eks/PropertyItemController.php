@@ -73,6 +73,10 @@ class PropertyItemController extends Controller
         $prop['property_id']   = $prop['property_type']['property_id'];
         $prop['property_name'] = $prop['property_type']['property']['name'];
         $prop['property_type_name'] = $prop['property_type']['name'];
+        $prop['developer_id'] = $prop['property_type']['property']['developer']['id'];
+        $id = $prop['property_type']['property']['developer']['user_id'];
+        $user = \App\Models\User::findOrFail($id);
+        $prop['developer_name'] = $user->first_name.' '.$user->last_name;
         unset($prop['property_type']);
         return response()->success(['contents' => $prop]);
     }
