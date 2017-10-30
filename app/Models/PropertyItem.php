@@ -70,10 +70,10 @@ class PropertyItem extends Model
         if ( ! $request->has('dropdown') ) $query->with('photos');
 
         return $query
-            ->with('propertyType')
+            ->with('propertyType.p')
             ->where(function ($item) use (&$request) {
                 if ($request->has('property_type_id')) 
-                    $item->where('property_items.property_type_id', $request->input('property_items.property_type_id'));
+                    $item->where('property_items.property_type_id', $request->input('property_type_id'));
 
                 if ($request->has('is_available')) 
                     $item->where('property_items.is_available', $request->input('is_available'));
