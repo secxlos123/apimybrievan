@@ -83,7 +83,7 @@
                                     </tr>
                                     <tr>
                                         <td style="padding:5px; ">Kewarganegaraan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_id']['desc2']!!}</td>
+                                        <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_name']!!}</td>
                                     </tr>
 
                                     @if ($mail['status_id'] == '2' )
@@ -118,15 +118,15 @@
 
                                     <tr>
                                         <td style="padding:5px; ">Bidang Pekerjaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_field_id']['desc2'] !!}</td>
+                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_field_name'] !!}</td>
                                     </tr>
                                     <tr>
                                         <td style="padding:5px; ">Jenis Pekerjaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_type_id']['desc2'] !!}</td>
+                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_type_name'] !!}</td>
                                     </tr>
                                     <tr>
                                         <td style="padding:5px; ">Pekerjaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_id']['desc2'] !!}</td>
+                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_name'] !!}</td>
                                     </tr>
                                     <tr>
                                         <td style="padding:5px; ">Nama Perusahaan : </td>
@@ -134,7 +134,7 @@
                                     </tr>
                                     <tr>
                                         <td style="padding:5px; ">Jabatan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['position']['desc2'] !!}</td>
+                                        <td style="padding:5px; font-weight: bold;">{!! $mail['position_name']!!}</td>
                                     </tr>
                                     <tr>
                                         <td style="padding:5px; ">Lama Kerja : </td>

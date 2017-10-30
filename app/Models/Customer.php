@@ -93,8 +93,8 @@ class Customer extends User
             'address' => $this->detail ? $this->detail->address : '',
             'city_id' => $this->detail ? $this->detail->city_id : '',
             'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
-            'citizenship_id' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc1'] : '') : '',
-            'citizenship' => $this->detail ? ($this->detail->citizenship_id ? $this->detail->citizenship_id['desc2'] : '') : '',
+            'citizenship_id' => $this->detail ? $this->detail->citizenship_id : '',
+            'citizenship' => $this->detail ? $this->detail->citizenship_name : '',
             'status' => $this->detail ? $this->detail->status : '',
             'address_status_id'=> $this->detail ? $this->detail->address_status_id : '',
             'address_status' => $this->detail ? $this->detail->address_status : '',
@@ -119,17 +119,17 @@ class Customer extends User
     public function getWorkAttribute()
     {
         return [
-            'type_id' => $this->detail ? ($this->detail->job_type_id ? $this->detail->job_type_id['desc1'] : '') : '',
-            'type' => $this->detail ? ($this->detail->job_type_id ? $this->detail->job_type_id['desc2'] : '') : '',
-            'work_id' => $this->detail ? ($this->detail->job_id ? $this->detail->job_id['desc1'] : '') : '',
-            'work' => $this->detail ? ($this->detail->job_id ? $this->detail->job_id['desc2'] : '') : '',
+            'type_id' => $this->detail ? $this->detail->job_type_id : '',
+            'type' => $this->detail ? $this->detail->job_type_name : '',
+            'work_id' => $this->detail ? $this->detail->job_id : '',
+            'work' => $this->detail ? $this->detail->job_name : '',
             'company_name' => $this->detail ? $this->detail->company_name : '',
-            'work_field_id' => $this->detail ? ($this->detail->job_field_id ? $this->detail->job_field_id['desc1'] : '') : '',
-            'work_field' => $this->detail ? ($this->detail->job_field_id ? $this->detail->job_field_id['desc2'] : '') : '',
-            'position_id' => $this->detail ? ($this->detail->position ? $this->detail->position['desc1'] : '') : '',
-            'position' => $this->detail ? ($this->detail->position ? $this->detail->position['desc2'] : '') : '',
+            'work_field_id' => $this->detail ? $this->detail->job_field_id : '',
+            'work_field' => $this->detail ? $this->detail->job_field_name : '',
+            'position_id' => $this->detail ? $this->detail->position : '',
+            'position' => $this->detail ? $this->detail->position_name : '',
             'work_duration' => $this->detail ? $this->detail->work_duration : '',
-            'work_duration_month' => $this->detail ? ($this->detail->work_duration_month ? $this->detail->work_duration_month : '') : '',
+            'work_duration_month' => $this->detail ? $this->detail->work_duration_month : '',
             'office_address' => $this->detail ? $this->detail->office_address : ''
         ];
     }

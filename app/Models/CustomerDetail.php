@@ -29,7 +29,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month'
+        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name',
     ];
 
     /**
@@ -194,99 +194,99 @@ class CustomerDetail extends Model
         return null;
     }
 
-    /**
-     * Get user citizenship information.
-     *
-     * @return string
-     */
-    public function getCitizenshipAttribute( $value )
-    {
-        $citizenship_search = \Asmx::setEndpoint( 'GetNegara' )->setQuery( [
-            'limit' => 1,
-            'search' => $this->citizenship_id,
-        ] )->post();
-        if( $citizenship_search[ 'code' ] == 200 ) {
-            return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
-        }
-        return null;
-    }
+    // /**
+    //  * Get user citizenship information.
+    //  *
+    //  * @return string
+    //  */
+    // public function getCitizenshipAttribute( $value )
+    // {
+    //     $citizenship_search = \Asmx::setEndpoint( 'GetNegara' )->setQuery( [
+    //         'limit' => 1,
+    //         'search' => $this->citizenship_id,
+    //     ] )->post();
+    //     if( $citizenship_search[ 'code' ] == 200 ) {
+    //         return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
+    //     }
+    //     return null;
+    // }
 
-    /**
-     * Global function for Get ASMX data
-     *
-     * @return string
-     */
-    public function globalGetAttribute( $endpoint, $value ) {
-        return array (
-            'desc1' => '98',
-            'desc2' => 'NON RESIDENT',
-        );
+    // /**
+    //  * Global function for Get ASMX data
+    //  *
+    //  * @return string
+    //  */
+    // public function globalGetAttribute( $endpoint, $value ) {
+    //     return array (
+    //         'desc1' => '98',
+    //         'desc2' => 'NON RESIDENT',
+    //     );
 
-        $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
-            'limit' => 1,
-            'search' => $value,
-        ] )->post();
+    //     $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
+    //         'limit' => 1,
+    //         'search' => $value,
+    //     ] )->post();
         
-        if( $search[ 'code' ] == 200 ) {
-            foreach ($search[ 'contents' ][ 'data' ] as $data) {
-                if ( $data['desc1'] == $value ) {
-                    return $data;
-                }
-            }
-        }
+    //     if( $search[ 'code' ] == 200 ) {
+    //         foreach ($search[ 'contents' ][ 'data' ] as $data) {
+    //             if ( $data['desc1'] == $value ) {
+    //                 return $data;
+    //             }
+    //         }
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 
-    /**
-     * Get user citizenship information.
-     *
-     * @return array
-     */
-    public function getCitizenshipIdAttribute( $value )
-    {
-        return $this->globalGetAttribute( 'GetNegara', $value );
-    }
+    // /**
+    //  * Get user citizenship information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getCitizenshipIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetNegara', $value );
+    // }
 
-    /**
-     * Get Job information.
-     *
-     * @return array
-     */
-    public function getJobIdAttribute( $value )
-    {
-        return $this->globalGetAttribute( 'GetPekerjaan', $value );
-    }
+    // /**
+    //  * Get Job information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getJobIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetPekerjaan', $value );
+    // }
 
-    /**
-     * Get Job Type information.
-     *
-     * @return array
-     */
-    public function getJobTypeIdAttribute( $value )
-    {
-        return $this->globalGetAttribute( 'GetJenisPekerjaan', $value );
-    }
+    // /**
+    //  * Get Job Type information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getJobTypeIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetJenisPekerjaan', $value );
+    // }
 
-    /**
-     * Get Job Field information.
-     *
-     * @return array
-     */
-    public function getJobFieldIdAttribute( $value )
-    {
-        return $this->globalGetAttribute( 'GetBidangPekerjaan', $value );
-    }
+    // /**
+    //  * Get Job Field information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getJobFieldIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetBidangPekerjaan', $value );
+    // }
 
-    /**
-     * Get Jabatan information.
-     *
-     * @return array
-     */
-    public function getPositionAttribute( $value )
-    {
-        return $this->globalGetAttribute( 'GetJabatan', $value );
-    }
+    // /**
+    //  * Get Jabatan information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getPositionAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetJabatan', $value );
+    // }
 
     /**
      * Get Status Integer.
