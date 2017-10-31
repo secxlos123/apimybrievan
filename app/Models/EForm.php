@@ -244,12 +244,12 @@ class EForm extends Model
              $result = $eform->insertCoreBRI();
         }
         if ($result) {
-        $eform->update( [
-            'pros' => $request->pros,
-            'cons' => $request->cons,
-            'recommendation' => $request->recommendation,
-            'recommended' => $request->recommended == "yes" ? true : false,
-            'is_approved' => $request->is_approved
+            $eform->update( [
+                'pros' => $request->pros,
+                'cons' => $request->cons,
+                'recommendation' => $request->recommendation,
+                'recommended' => $request->recommended == "yes" ? true : false,
+                'is_approved' => $request->is_approved
             ] );
         }
         return $eform;
@@ -260,7 +260,7 @@ class EForm extends Model
      *
      * @return string
      */
-    public function insertCoreBRI( $step_id )
+    public function insertCoreBRI()
     {
         \Log::info("console 1");
         $kpr = $this->kpr;
@@ -280,7 +280,6 @@ class EForm extends Model
         $lkn = $this->visit_report;
         \Log::info("console 9");
         \Log::info($customer);
-        \Log::info($step_id);
         \Log::info("==============================================================================================");
         /*
         $request = [
@@ -413,21 +412,23 @@ class EForm extends Model
         foreach ($endpoint as $value => $key) {
             \Log::info("Start Step " . $step);
             
-            $request = $this->{"step".$step1}($this->additional_parameters);
+            $request = $this->{"step".$step}($this->additional_parameters);
             $allRequest += $request;
 
             $sendRequest = ($step == 7 ? $allRequest : $request);
             
-            \Log::info($sendRequest);
+            \Log::info(json_encode($sendRequest));
             
             $set = $this->SentToBri( $sendRequest, $key[0], $key[1] );
-            $step++;
             
             if (!$set) {
                 \Log::info('Error Step Ke -'.$step);
                 $return = false;
                 break;
             }
+
+            \Log::info('Berhasil Step Ke -'.$step);
+            $step++;
         }
 
         if ($step == 7) {
@@ -595,6 +596,11 @@ class EForm extends Model
                 'request' => json_encode( $request )
             ] )->post( 'form_params' );
 
+        \Log::info('============================================================================================');
+        \Log::info($endpoint);
+        \Log::info($post_to_bri);
+        \Log::info('============================================================================================');
+
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
@@ -621,6 +627,7 @@ class EForm extends Model
         $lkn = $this->visit_report;
 
         $request = $data + [
+            "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "tempat_lahir_pemohon" => $customer_detail->birth_place ? $customer_detail->birth_place : '',
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
@@ -698,6 +705,7 @@ class EForm extends Model
         $lkn = $this->visit_report;
 
         $request = $data + [
+            "jenis_kredit" => strtoupper( $this->product_type ),
             "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
@@ -736,12 +744,12 @@ class EForm extends Model
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "angsuran" => !( $customer_finance->loan_installment ) ? '' : $customer_finance->loan_installment,
-            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : $customer_finance->other_salary,
+            "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
+            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary)),
             "jangka_waktu" => ( $kpr->year * 12 ),
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : $customer_finance->salary
+            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary))
         ];
 
         return $request;

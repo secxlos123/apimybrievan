@@ -31,8 +31,8 @@ class EFormRequest extends BaseRequest
                     ];
                 } else if( $this->segment( 6 ) == 'approve' ) {
                     return [
-                        'pros' => 'required',
-                        'cons' => 'required'
+                        // 'pros' => 'required',
+                        // 'cons' => 'required'
                     ];
                 } else {
                     return [
