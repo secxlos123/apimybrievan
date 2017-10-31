@@ -202,6 +202,59 @@ class Property extends Model
                     $property->whereBetween('prop_items', explode('|', $request->input('items')));
 
                 /**
+                 * Filter bedroom
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('bedroom')) {
+                    $id = $request->input('bedroom');
+                    if ($id > 4) {
+                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= $id) ");
+                    }else{
+                    $property->whereRaw("prop_id in (select property_id from property_types where bedroom = $id) ");
+                    }
+                }
+
+                /**
+                 * Filter bathroom
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('bathroom')) {
+                    $id = $request->input('bathroom');
+                    $property->whereRaw("prop_id in (select property_id from property_types where bathroom = $id) ");
+                }
+
+                /**
+                 * Filter carport
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('carport')) {
+                    $id = $request->input('carport');
+                    if ($id > 0) {
+                        $property->whereRaw("prop_id in (select property_id from property_types where carport >= $id ) ");
+                    }else{
+                    $property->whereRaw("prop_id in (select property_id from property_types where carport = $id ) ");
+                    }
+                }
+
+                /**
+                 * Filter surface_area
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('surface_area')) {
+                    $data = explode('|', $request->input('surface_area'));
+                    $property->whereRaw("prop_id in (select property_id from property_types where surface_area between $data[0] and $data[1]) ");
+                }
+
+                /**
+                 * Filter building area
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('building_area')) {
+                    $data = explode('|', $request->input('building_area'));
+                    $property->whereRaw("prop_id in (select property_id from property_types where building_area between $data[0] and $data[1]) ");
+                }
+
+                /**
                  * Query for filter by range items.
                  */
                 if ($request->has('without_independent')) $property->where('bri', '!=', '1');
