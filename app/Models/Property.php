@@ -208,9 +208,9 @@ class Property extends Model
                 if ($request->has('bedroom')) {
                     $id = $request->input('bedroom');
                     if ($id > 4) {
-                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= $id) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= ?) ",array($id));
                     }else{
-                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom = $id) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom = ?) ",array($id));
                     }
                 }
 
@@ -221,9 +221,9 @@ class Property extends Model
                 if ($request->has('bathroom')) {
                     $id = $request->input('bathroom');
                     if ($id > 3) {
-                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom > $id) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom > ?) ",array($id));
                     }else{
-                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom = $id) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom = ?) ",array($id));
                     }
                 }
 
@@ -234,9 +234,9 @@ class Property extends Model
                 if ($request->has('carport')) {
                     $id = $request->input('carport');
                     if ($id > 0) {
-                        $property->whereRaw("prop_id in (select property_id from property_types where carport >= $id ) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where carport >= ? ) ",array($id));
                     }else{
-                        $property->whereRaw("prop_id in (select property_id from property_types where carport = $id ) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where carport = ? ) ",array($id));
                     }
                 }
 
@@ -246,7 +246,7 @@ class Property extends Model
                  */
                 if ($request->has('surface_area')) {
                     $data = explode('|', $request->input('surface_area'));
-                    $property->whereRaw("prop_id in (select property_id from property_types where surface_area between $data[0] and $data[1]) ");
+                    $property->whereRaw("prop_id in (select property_id from property_types where surface_area between ? and ?) ",$data);
                 }
 
                 /**
@@ -255,7 +255,7 @@ class Property extends Model
                  */
                 if ($request->has('building_area')) {
                     $data = explode('|', $request->input('building_area'));
-                    $property->whereRaw("prop_id in (select property_id from property_types where building_area between $data[0] and $data[1]) ");
+                    $property->whereRaw("prop_id in (select property_id from property_types where building_area between ? and ?) ",$data);
                 }
 
                 /**
