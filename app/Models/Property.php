@@ -18,7 +18,7 @@ class Property extends Model
      */
     protected $fillable = [
         'developer_id', 'city_id', 'name', 'address', 'category', 'latitude', 'longitude',
-        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description'
+        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description', 'pks_number'
     ];
 
     /**
@@ -210,7 +210,7 @@ class Property extends Model
                     if ($id > 4) {
                         $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= $id) ");
                     }else{
-                    $property->whereRaw("prop_id in (select property_id from property_types where bedroom = $id) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom = $id) ");
                     }
                 }
 
@@ -220,7 +220,11 @@ class Property extends Model
                  */
                 if ($request->has('bathroom')) {
                     $id = $request->input('bathroom');
-                    $property->whereRaw("prop_id in (select property_id from property_types where bathroom = $id) ");
+                    if ($id > 3) {
+                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom > $id) ");
+                    }else{
+                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom = $id) ");
+                    }
                 }
 
                 /**
@@ -232,7 +236,7 @@ class Property extends Model
                     if ($id > 0) {
                         $property->whereRaw("prop_id in (select property_id from property_types where carport >= $id ) ");
                     }else{
-                    $property->whereRaw("prop_id in (select property_id from property_types where carport = $id ) ");
+                        $property->whereRaw("prop_id in (select property_id from property_types where carport = $id ) ");
                     }
                 }
 

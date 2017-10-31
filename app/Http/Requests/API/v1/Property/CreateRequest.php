@@ -44,6 +44,7 @@ class CreateRequest extends FormRequest
             'category'   => 'required|in:0,1,2',
             // 'latitude'   => 'required',
             // 'longitude'  => 'required',
+            'pks_number' => 'required',
             'facilities' => 'required',
             'pic_name'   => 'required|alpha_spaces',
             'pic_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
