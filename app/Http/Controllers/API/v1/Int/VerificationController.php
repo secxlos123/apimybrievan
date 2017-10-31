@@ -109,6 +109,7 @@ class VerificationController extends Controller
             'contents' => [
                 'customer' => [
                     'id' => $customer->id,
+                    'nik' => $eform->nik,
                     'is_completed' => $customer->is_completed,
                     'name' => $customer->full_name,
                     'gender' => $customer->gender,
