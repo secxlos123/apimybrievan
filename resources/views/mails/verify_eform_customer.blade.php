@@ -29,7 +29,7 @@
                             <br>
                             Berikut E Form yang sudah kami verifikasi.
                             <br>
-                            @if (ENV('APP_ENV') == 'local') {
+                            @if (ENV('APP_ENV') == 'local') 
                                 <table align="left" class="table-inner" width="550" border="1" cellspacing="0" cellpadding="0" style="font-family: 'Open Sans', Arial, sans-serif;">
                                 	
                                     <tr>

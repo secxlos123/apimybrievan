@@ -71,11 +71,10 @@ class VisitReportRequest extends BaseRequest
             'down_payment'=> 'required|image|mimes:jpg,jpeg,png',
             'building_tax'=> 'required|image|mimes:jpg,jpeg,png',
             'recommended'=> 'required|in:yes,no',
-            'recommendation'=> 'required'
-
-
-
-
+            'recommendation'=> '',
+            'legal_bussiness_document'=>'required|image|mimes:jpg,jpeg,png',
+            'license_of_practice'=>'required|image|mimes:jpg,jpeg,png',
+            'work_letter'=>'required|image|mimes:jpg,jpeg,png'
         ];
     }
 

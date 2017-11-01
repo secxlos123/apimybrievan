@@ -92,4 +92,14 @@ class Mutation extends Model
     {
         return $this->belongsTo( VisitReport::class, 'visit_report_id' );
     }
+
+    /**
+     * The relation to visit report.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function bankstatement()
+    {
+        return $this->hasMany( BankStatement::class, 'id' );
+    }
 }

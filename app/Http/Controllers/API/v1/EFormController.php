@@ -39,7 +39,7 @@ class EFormController extends Controller
      */
     public function show( $type, $eform_id )
     {
-        $eform = EForm::with( 'visit_report' )->findOrFail( $eform_id );
+        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
             'contents' => $eform
         ] );

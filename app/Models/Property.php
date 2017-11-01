@@ -172,6 +172,13 @@ class Property extends Model
                     $property->where('prop_city_id', $request->input('prop_city_id'));
 
                 /**
+                 * Query for filter by prop_types.
+                 */
+                if ($request->has('prop_types'))
+                    $property->where('prop_types', $request->input('prop_types'));
+
+
+                /**
                  * Query for filter by city_id.
                  */
                 if ($request->has('name'))

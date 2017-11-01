@@ -22,7 +22,52 @@ class VisitReport extends Model
      * @var array
      */
     protected $fillable = [
-         'eform_id', 'purpose_of_visit', 'visit_result', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale' , 'relation_with_seller', 'npwp_number', 'income', 'income_salary' , 'income_allowance', 'kpp_type','type_financed','economy_sector','project_list', 'program_list', 'id_prescreening', 'npwp', 'use_reason','use_reason_id', 'source' , 'recommended', 'recommendation' , 'legal_document', 'marrital_certificate', 'divorce_certificate', 'offering_letter', 'down_payment', 'building_tax'
+        'eform_id',
+        'purpose_of_visit',
+        'visit_result',
+        'photo_with_customer',
+        'pros',
+        'cons',
+        'seller_name',
+        'seller_address',
+        'seller_phone',
+        'selling_price',
+        'reason_for_sale',
+        'relation_with_seller',
+        'npwp_number',
+        'income',
+        'income_salary',
+        'income_allowance',
+        'kpp_type',
+        'type_financed',
+        'economy_sector',
+        'project_list',
+        'program_list',
+        'kpp_type_name',
+        'type_financed_name',
+        'economy_sector_name',
+        'project_list_name',
+        'program_list_name',
+        'id_prescreening',
+        'npwp',
+        'use_reason_name',
+        'use_reason',
+        'source',
+        'recommended',
+        'recommendation',
+        'legal_document',
+        'marrital_certificate',
+        'divorce_certificate',
+        'offering_letter',
+        'down_payment',
+        'building_tax',
+        'salary_slip',
+        'proprietary',
+        'building_permit',
+        'legal_bussiness_document',
+        'license_of_practice',
+        'work_letter',
+        'family_card'
     ];
 
     /**
@@ -51,6 +96,34 @@ class VisitReport extends Model
                 ] + $bank_statement_data );
             }
         }
+    }
+
+    /**
+     * Set Report legal_bussiness_document image.
+     *
+     * @return void
+     */
+    public function setLegalBussinessDocumentAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'legal_bussiness_document' );
+    }
+    /**
+     * Set Report license_of_practice image.
+     *
+     * @return void
+     */
+    public function setLicenseOfPracticeAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'license_of_practice' );
+    }
+    /**
+     * Set Report work_letter image.
+     *
+     * @return void
+     */
+    public function setWorkLetterAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'work_letter' );
     }
 
     /**
@@ -303,6 +376,35 @@ class VisitReport extends Model
         return $this->globalImageCheck( $image );
     }
 
+     /**
+     * Get Report LegalBussinessDocument image url.
+     *
+     * @return string
+     */
+    public function getLegalBussinessDocumentAttribute( $image )
+    {
+        return $this->globalImageCheck( $image );
+    }
+    /**
+     * Get Report LicenseOfPractice image.
+     *
+     * @return string
+     */
+    public function getLicenseOfPracticeAttribute( $image )
+    {
+        return $this->globalImageCheck( $image );
+    }
+    /**
+     * Get Report WorkLetter image.
+     *
+     * @return string
+     */
+    public function getWorkLetterAttribute( $image )
+    {
+        return $this->globalImageCheck( $image );
+    }
+
+
     /**
      * Get Report NPWP Number Masking.
      *
@@ -384,5 +486,15 @@ class VisitReport extends Model
         } else {
             return null;
         }
+    }
+
+    /**
+     * The relation to visit report.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function mutation()
+    {
+        return $this->hasMany( Mutation::class, 'id' );
     }
 }
