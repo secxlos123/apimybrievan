@@ -100,6 +100,6 @@ class Mutation extends Model
      */
     public function bankstatement()
     {
-        return $this->hasMany( BankStatement::class, 'id' );
+        return $this->hasMany( BankStatement::class );
     }
 }

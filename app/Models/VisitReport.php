@@ -495,6 +495,6 @@ class VisitReport extends Model
      */
     public function mutation()
     {
-        return $this->hasMany( Mutation::class, 'id' );
+        return $this->hasMany( Mutation::class );
     }
 }
