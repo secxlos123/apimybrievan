@@ -72,9 +72,9 @@ class VisitReportRequest extends BaseRequest
             'building_tax'=> 'required|image|mimes:jpg,jpeg,png',
             'recommended'=> 'required|in:yes,no',
             'recommendation'=> '',
-            'legal_bussiness_document'=>'required|image|mimes:jpg,jpeg,png',
+            'legal_bussiness_document'=>'required_if:source,non-fixed|image|mimes:jpg,jpeg,png',
             'license_of_practice'=>'required|image|mimes:jpg,jpeg,png',
-            'work_letter'=>'required|image|mimes:jpg,jpeg,png'
+            'work_letter'=>'required_if:source,fixed|image|mimes:jpg,jpeg,png'
         ];
     }
 

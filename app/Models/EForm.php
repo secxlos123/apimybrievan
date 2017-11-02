@@ -35,7 +35,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'cif_number', 'status', 'aging', 'is_visited' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -122,35 +122,6 @@ class EForm extends Model
             $AO = \RestwsHc::getUser( $this->ao_id );
             return $AO[ 'name' ];
         }
-
-        return null;
-    }
-
-    /**
-     * Get CIF number information.
-     *      
-     * @return string
-     */
-    public function getCifNumberAttribute()
-    {
-        if ($this->nik) {
-            $cif = RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_customer_profile_nik',
-                'requestData'   => [
-                    'app_id' => 'appidmybri',
-                    'nik' => $this->nik
-                 ],
-            ] )
-            ] )->post('form_params');
-        if( $cif[ 'responseCode' ] == '00' ) {
-            return $cif[ 'responseData' ][ 'info' ][ 0 ][ 'cifno' ];
-        }
-        else
-        {
-            return null;
-        }
-    }
 
         return null;
     }
@@ -648,7 +619,7 @@ class EForm extends Model
             "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
-            "cif" => $this->cif_number ?: ''
+            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
         ];
 
         return $request;
