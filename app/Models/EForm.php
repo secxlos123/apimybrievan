@@ -469,6 +469,10 @@ class EForm extends Model
                 $eform->where('ao_id', $user['pn']);
             }
 
+            if ($request->has('branch_id')) {
+                $eform->where('branch_id', $request->input('branch_id'));
+            }
+
         } )->orderBy('eforms.'.$sort[0], $sort[1]);
     }
 
