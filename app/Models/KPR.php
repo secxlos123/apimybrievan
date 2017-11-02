@@ -28,7 +28,7 @@ class KPR extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount' ];
+    protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name' ];
 
     /**
      * The attributes that should be hidden for arrays.
