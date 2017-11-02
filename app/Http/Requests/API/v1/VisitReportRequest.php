@@ -49,6 +49,7 @@ class VisitReportRequest extends BaseRequest
             'mutations.*.tables.*.amount' => 'required',
             'mutations.*.tables.*.type' => 'required',
             'mutations.*.tables.*.note' => '',
+            'status_id'=>'required|in:1,2,3',
             
             'pros' => 'required',
             'cons' => 'required',
@@ -63,8 +64,8 @@ class VisitReportRequest extends BaseRequest
             'legal_document' => 'required',
             'salary_slip'=> 'required',
             'family_card'=> 'required|image|mimes:jpg,jpeg,png',
-            'marrital_certificate'=> 'required|image|mimes:jpg,jpeg,png',
-            'divorce_certificate'=> 'required|image|mimes:jpg,jpeg,png',
+            'marrital_certificate'=> 'required_if:status_id,2|image|mimes:jpg,jpeg,png',
+            'divorce_certificate'=> 'required_if:status_id,3|image|mimes:jpg,jpeg,png',
             'offering_letter'=> 'required|image|mimes:jpg,jpeg,png',
             'proprietary'=> 'image|mimes:jpg,jpeg,png',
             'building_permit'=> 'image|mimes:jpg,jpeg,png',
