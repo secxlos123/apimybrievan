@@ -78,7 +78,7 @@ class Mutation extends Model
             $extension = $file->getClientOriginalExtension();
         }
 
-        $filename = $this->user_id . '-' . 'file' . '.' . $extension;
+        $filename = $this->visit_report->eform_id. '-' .$this->id . '-' . 'file' . '.' . $extension;
         $file->move( $path, $filename );
         $this->attributes[ 'file' ] = $filename;        
     }

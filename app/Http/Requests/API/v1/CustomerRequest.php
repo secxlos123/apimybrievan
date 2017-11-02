@@ -47,7 +47,7 @@ class CustomerRequest extends BaseRequest
             case 'put':
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
-
+                        'cif_number' => 'required_if:verify_status,verify',
                         'form_id'=>'required_if:verify_status,verify',
                         'birth_place_id'=>'required_if:verify_status,verify|exists:cities,id',
                         'birth_date'=>'required_if:verify_status,verify',
