@@ -31,6 +31,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['gender_sim'];
 
     /**
      * The attributes that should be casted to native types.
@@ -131,6 +137,23 @@ class User extends Authenticatable
             return 'Laki-laki';
         } else if( $value == 'P' ) {
             return 'Perempuan';
+        } else {
+            return '-';
+        }
+    }
+
+    /**
+     * Get user gender sim word.
+     *
+     * @return string
+     */
+    public function getGenderSimAttribute()
+    {
+        $value = $this->gender;
+        if( $value == 'Laki-laki' ) {
+            return 'L';
+        } else if( $value == 'Perempuan' ) {
+            return 'P';
         } else {
             return '-';
         }

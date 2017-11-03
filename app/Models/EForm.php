@@ -607,7 +607,7 @@ class EForm extends Model
             "tempat_lahir_pemohon" => $customer_detail->birth_place ? $customer_detail->birth_place : '',
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
-            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
+            "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : $customer->gender_sim,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
@@ -684,7 +684,7 @@ class EForm extends Model
             "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
-            "jenis_kpp_value" => !( $lkn->kpp_type ) ? '' : $lkn->kpp_type,
+            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "program_value" => !( $lkn->program_list ) ? '' : $lkn->program_list,
             "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list,
@@ -741,8 +741,8 @@ class EForm extends Model
         $lkn = $this->visit_report;
 
         $request = $data + [
-            "tujuan_penggunaan_value" => !( $lkn->use_reason_id ) ? '' : $lkn->use_reason_id,
-            "tujuan_penggunaan" => !( $lkn->use_reason ) ? '' : $lkn->use_reason
+            "tujuan_penggunaan_value" => !( $lkn->use_reason ) ? '' : $lkn->use_reason,
+            "tujuan_penggunaan" => !( $lkn->use_reason_name ) ? '' : $lkn->use_reason_name
         ];
         return $request;
     }
