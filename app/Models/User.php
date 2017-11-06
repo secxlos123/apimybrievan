@@ -512,4 +512,28 @@ class User extends Authenticatable
             ->orWhere('role_name', 'ilike', "%{$request->input('search')}%")
             ->orWhere('role_slug', 'ilike', "%{$request->input('search')}%");
     }
+
+    /**
+     * Update password.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array $return
+     */
+    public function changePassword(Request $request)
+    {
+        $return = array(
+            'success' => false
+            , 'message' => 'Password gagal di ubah.'
+        );
+
+
+        $update = $this->update(['password' => $request->input('new_password')]);
+
+        if (!$update) {
+            $return['status'] = true;
+            $return['message'] = 'Password Berhasil di Ubah.';
+        }
+
+        return $return;
+    }
 }

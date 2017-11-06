@@ -48,4 +48,24 @@ class ProfileController extends Controller
 
         return response()->success(['message' => 'Data profile berhasil dirubah.']);
     }
+
+    /**
+     * Change password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function change_password(Request $request)
+    {
+        $user = $request->user();
+        
+        $return = $user->changePassword($request);
+
+        if ($return['success']) {
+            return response()->success(['message' => $return['message']]);
+        }
+        
+        return response()->error(['message' => $return['message']]);
+
+    }
 }
