@@ -18,6 +18,7 @@ class JobController extends Controller
     public function index( Request $request )
     {
         $job_list_service = Asmx::setEndpoint( 'GetPekerjaan' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,

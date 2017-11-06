@@ -66,13 +66,17 @@ class PropertyItemController extends Controller
      */
     public function show(PropertyItem $property_item)
     {
-        $prop = $property_item->load('propertyType.property', 'photos')->toArray();
+        $prop = $property_item->load('propertyType.property.developer', 'photos')->toArray();
         $prop['photos'] = $property_item->photos->transform(function ($photo) {
             return $photo->image;
         });
         $prop['property_id']   = $prop['property_type']['property_id'];
         $prop['property_name'] = $prop['property_type']['property']['name'];
         $prop['property_type_name'] = $prop['property_type']['name'];
+        $prop['developer_id'] = $prop['property_type']['property']['developer']['id'];
+        $id = $prop['property_type']['property']['developer']['user_id'];
+        $user = \App\Models\User::findOrFail($id);
+        $prop['developer_name'] = $user->first_name.' '.$user->last_name;
         unset($prop['property_type']);
         return response()->success(['contents' => $prop]);
     }

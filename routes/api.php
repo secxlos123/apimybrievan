@@ -39,7 +39,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 
-		Route::get( 'cities', 'CityController' );
 
 		Route::get( 'offices', 'OfficeController@index' );
 
@@ -48,6 +47,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::get('types', 'DropdownController@types');
 			Route::get('units', 'DropdownController@items');
 		});
+
+		Route::resource( 'customer', 'Int\CustomerController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 
 		/**
 		* Route schedule 
@@ -68,4 +71,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	} );
 
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
+	Route::group( [ 'prefix' => '{type}' ], function () {
+		Route::get( 'cities', 'CityController' );
+	} );
 } );

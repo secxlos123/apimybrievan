@@ -26,4 +26,14 @@ class BankStatement extends Model
      * @var boolean
      */
     public $timestamps = false;
+
+     /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function mutation()
+    {
+        return $this->belongsTo( Mutation::class, 'mutation_id' );
+    }
 }

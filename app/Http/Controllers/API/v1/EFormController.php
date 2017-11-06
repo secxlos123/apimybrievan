@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Events\EForm\Approved;
+use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
+use App\Models\Customer;
 use App\Models\KPR;
 use DB;
 
@@ -37,7 +39,7 @@ class EFormController extends Controller
      */
     public function show( $type, $eform_id )
     {
-        $eform = EForm::with( 'visit_report' )->findOrFail( $eform_id );
+        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
             'contents' => $eform
         ] );
@@ -113,8 +115,9 @@ class EFormController extends Controller
         $eform = EForm::approve( $eform_id, $request );
         if( $eform instanceof EForm ) {
             DB::commit();
+
             return response()->success( [
-                'message' => 'E-form berhasil diapprove.',
+                'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
             // event( new Approved( $eform ) );
@@ -142,5 +145,35 @@ class EFormController extends Controller
 
         DB::commit();
         dd( $result );
+    }
+
+    /**
+     * Approve / Reject verification specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string $token
+     * @param  string $status
+     * @return \Illuminate\Http\Response
+     */
+    public function verify( Request $request, $token, $status )
+    {
+        DB::beginTransaction();
+        $verify = EForm::verify( $token, $status );
+        
+        if( $verify['message'] ) {
+            if ($verify['contents']) {
+                event( new VerifyEForm( $verify['contents'] ) );
+            }
+            DB::commit();
+            $code = 201;
+
+        } else {
+            DB::rollback();
+            $code = 404;
+
+        }
+
+
+        return response()->success( $verify, $code );
     }
 }

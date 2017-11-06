@@ -1,16 +1,17 @@
 <?php
 
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Illuminate\Support\Facades\Storage;
 
 if (! function_exists('csv_to_array')) {
-	
+
     /**
      * Convert csv file to array.
      *
      * @param  string $file path to file
-     * @param  array $headers 
+     * @param  array $headers
      * @param  string $delimiter
-     * 
+     *
      * @return array
      */
 	function csv_to_array($file = '', array $headers, $delimiter = ',')
@@ -30,7 +31,7 @@ if (! function_exists('csv_to_array')) {
 }
 
 if (! function_exists('name_separator')) {
-    
+
     /**
      * Return an array of first name and last name from given full name.
      *
@@ -46,7 +47,7 @@ if (! function_exists('name_separator')) {
 }
 
 if (! function_exists('generate_paths')) {
-    
+
     /**
      * Listen for generate path of photos and save to storage.
      *
@@ -65,7 +66,7 @@ if (! function_exists('generate_paths')) {
 }
 
 if (! function_exists('removed_photos')) {
-    
+
     /**
      * Logic for deleted photos
      *
@@ -92,7 +93,7 @@ if (! function_exists('removed_photos')) {
 }
 
 if (! function_exists('saving_photos')) {
-    
+
     /**
      * Logic for saving photos
      *
@@ -119,27 +120,56 @@ if (! function_exists('saving_photos')) {
 
 if (! function_exists('curl_post')) {
 
-    function curl_post($url, array $post = NULL, array $options = array()) 
+    function curl_post($url, array $post = NULL, array $options = array())
     {
-        $defaults = [ 
-            CURLOPT_POST => 1, 
-            CURLOPT_HEADER => 0, 
-            CURLOPT_URL => $url, 
-            CURLOPT_FRESH_CONNECT => 1, 
-            CURLOPT_RETURNTRANSFER => 1, 
-            CURLOPT_FORBID_REUSE => 1, 
-            CURLOPT_TIMEOUT => 4, 
-            CURLOPT_POSTFIELDS => http_build_query($post) 
-        ]; 
+        $defaults = [
+            CURLOPT_POST => 1,
+            CURLOPT_HEADER => 0,
+            CURLOPT_URL => $url,
+            CURLOPT_FRESH_CONNECT => 1,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_FORBID_REUSE => 1,
+            CURLOPT_TIMEOUT => 4,
+            CURLOPT_POSTFIELDS => http_build_query($post)
+        ];
 
-        $ch = curl_init(); 
-        curl_setopt_array($ch, ($options + $defaults)); 
+        $ch = curl_init();
+        curl_setopt_array($ch, ($options + $defaults));
 
-        if( ! $result = curl_exec($ch)) { 
-            trigger_error(curl_error($ch)); 
-        } 
+        if( ! $result = curl_exec($ch)) {
+            trigger_error(curl_error($ch));
+        }
 
-        curl_close($ch); 
-        return $result; 
-    } 
+        curl_close($ch);
+        return $result;
+    }
+}
+
+if (! function_exists('user_info')) {
+    /**
+     * Get logged user info.
+     *
+     * @param  string $column
+     * @return mixed
+     */
+    function user_info($column = null)
+    {
+        if ($user = Sentinel::check()) {
+            if (is_null($column)) {
+                return $user;
+            }
+
+            if ('full_name' == $column) {
+                return user_info('first_name').' '.user_info('last_name');
+            }
+
+            if ('role' == $column) {
+                return user_info()->roles[0];
+            }
+
+            return $user->{$column};
+        }
+
+        return null;
+    }
 }

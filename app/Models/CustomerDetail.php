@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-
+use Auth;
 use File;
 
 class CustomerDetail extends Model
@@ -29,7 +29,16 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'is_verified'
+        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number'
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'status_id'
     ];
 
     /**
@@ -38,179 +47,350 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $hidden = [
-        'id', 'user_id'
+        'id'
     ];
 
     /**
-     * Get user avatar image url.
+     * Global function for check file.
+     *
+     * @return string
+     */
+    public function globalImageCheck( $filename )
+    {
+        $path =  'img/noimage.jpg';
+        if( ! empty( $filename ) ) {
+            $image = 'uploads/users/' . $this->user_id . '/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
+            }
+        }
+        
+        return url( $path );
+    }
+
+    /**
+     * Get user NPWP image url.
      *
      * @return string
      */
     public function getNpwpAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
-        } else {
-            $image = url( 'img/noimage.jpg' );
-        }
-        return $image;
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Identity image url.
      *
      * @return string
      */
     public function getIdentityAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->user_id . '/' . $value );
-        } else {
-            $image = url( 'img/noimage.jpg' );
-        }
-        return $image;
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Couple Identity image url.
      *
      * @return string
      */
     public function getCoupleIdentityAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Legal Document image url.
      *
      * @return string
      */
     public function getLegalDocumentAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Salary Slip image url.
      *
      * @return string
      */
     public function getSalarySlipAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Bank Statement image url.
      *
      * @return string
      */
     public function getBankStatementAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Family Card image url.
      *
      * @return string
      */
     public function getFamilyCardAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Marrital Certificate image url.
      *
      * @return string
      */
     public function getMarritalCertificateAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Get user Diforce Certificate image url.
      *
      * @return string
      */
     public function getDiforceCertificateAttribute( $value )
     {
-        if( ! empty( $value ) ) {
-            if( File::exists( 'uploads/users/' . $this->user_id . '/' . $value ) ) {
-                return url( 'uploads/users/' . $this->user_id . '/' . $value );
-            }
-        }
-        return url( 'img/noimage.jpg' );
+        return $this->globalImageCheck( $value );
     }
 
     /**
-     * Get user avatar image url.
+     * Parse Couple relation name.
      *
      * @return string
      */
     public function getStatusAttribute( $value )
     {
-        if( $value == 0 ) {
+        if( $value == 1 ) {
             return 'Tidak menikah';
-        } else if( $value == 1 ) {
-            return 'Menikah';
         } else if( $value == 2 ) {
-            return 'Janda';
+            return 'Menikah';
         } else if( $value == 3 ) {
-            return 'Duda';
+            return 'Duda/Janda';
         }
 
         return null;
     }
 
     /**
-     * Get user citizenship information.
+     * Get user String Address_status.
+     * @author Akse
+     * @return string
+     */
+    public function getAddressStatusAttribute( $value )
+    {
+        if( $value == 0 ) {
+            return 'Milik Sendiri';
+        } else if( $value == 1 ) {
+            return 'Milik Orang Tua/Mertua atau Rumah Dinas';
+        } else if( $value == 3 ) {
+            return 'Tinggal di Rumah Kontrakan';
+        }
+
+        return null;
+    }
+
+    // /**
+    //  * Get user citizenship information.
+    //  *
+    //  * @return string
+    //  */
+    // public function getCitizenshipAttribute( $value )
+    // {
+    //     $citizenship_search = \Asmx::setEndpoint( 'GetNegara' )->setQuery( [
+    //         'limit' => 1,
+    //         'search' => $this->citizenship_id,
+    //     ] )->post();
+    //     if( $citizenship_search[ 'code' ] == 200 ) {
+    //         return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
+    //     }
+    //     return null;
+    // }
+
+    // /**
+    //  * Global function for Get ASMX data
+    //  *
+    //  * @return string
+    //  */
+    // public function globalGetAttribute( $endpoint, $value ) {
+    //     return array (
+    //         'desc1' => '98',
+    //         'desc2' => 'NON RESIDENT',
+    //     );
+
+    //     $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
+    //         'limit' => 1,
+    //         'search' => $value,
+    //     ] )->post();
+        
+    //     if( $search[ 'code' ] == 200 ) {
+    //         foreach ($search[ 'contents' ][ 'data' ] as $data) {
+    //             if ( $data['desc1'] == $value ) {
+    //                 return $data;
+    //             }
+    //         }
+    //     }
+
+    //     return null;
+    // }
+
+    // /**
+    //  * Get user citizenship information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getCitizenshipIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetNegara', $value );
+    // }
+
+    // /**
+    //  * Get Job information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getJobIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetPekerjaan', $value );
+    // }
+
+    // /**
+    //  * Get Job Type information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getJobTypeIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetJenisPekerjaan', $value );
+    // }
+
+    // /**
+    //  * Get Job Field information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getJobFieldIdAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetBidangPekerjaan', $value );
+    // }
+
+    // /**
+    //  * Get Jabatan information.
+    //  *
+    //  * @return array
+    //  */
+    // public function getPositionAttribute( $value )
+    // {
+    //     return $this->globalGetAttribute( 'GetJabatan', $value );
+    // }
+
+    /**
+     * Get Status Integer.
      *
      * @return string
      */
-    public function getCitizenshipAttribute( $value )
+    public function getStatusIdAttribute()
     {
-        $citizenship_search = \Asmx::setEndpoint( 'GetNegara' )->setQuery( [
-            'limit' => 1,
-            'search' => $this->citizenship_id,
-        ] )->post();
-        if( $citizenship_search[ 'code' ] == 200 && ! empty( $citizenship_search[ 'data' ] ) ) {
-            return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
+        if( $this->status == 'Tidak menikah' ) {
+            return 1;
+        } else if( $this->status == 'Menikah' ) {
+            return 2;
+        } else if( $this->status == 'Duda/Janda' ) {
+            return 3;
         }
+
         return null;
+    }
+
+     /**
+     * Get Status Integer.
+     *
+     * @return string
+     */
+    public function getAddressStatusIdAttribute()
+    {
+        if( $this->address_status == 'Milik Sendiri' ) {
+            return 0;
+        } else if( $this->address_status == 'Milik Orang Tua/Mertua atau Rumah Dinas' ) {
+            return 1;
+        } else if( $this->address_status == 'Tinggal di Rumah Kontrakan' ) {
+            return 3;
+        }
+
+        return null;
+    }
+
+    /**
+     * Global function for set image attribute.
+     *
+     * @return void
+     */
+    public function globalSetImageAttribute( $image, $attribute )
+    {
+        if (gettype($image) == "string") {
+            $this->attributes[ $attribute ] = $image;
+
+        } else {
+            $return = $this->globalSetImage( $image, $attribute );
+            if ( $return ) {
+                $this->attributes[ $attribute ] = $return;
+            }
+        }
+    }
+
+    /**
+     * Global function for set image.
+     *
+     * @return void
+     */
+    public function globalSetImage( $image, $attribute )
+    {
+        if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
+            $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+            if ( ! empty( $this->attributes[ $attribute ] ) ) {
+                File::delete( $path . $this->attributes[ $attribute ] );
+            }
+
+            $extension = 'png';
+
+            if ( !$image->getClientOriginalExtension() ) {
+                if ( $image->getMimeType() == 'image/jpg' ) {
+                    $extension = 'jpg';
+                } elseif ( $image->getMimeType() == 'image/jpeg' ) {
+                    $extension = 'jpeg';
+                }
+            } else {
+                $extension = $image->getClientOriginalExtension();
+            }
+
+            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $image->move( $path, $filename );
+            return $filename;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Update all image needed.
+     *
+     * @return void
+     */
+    public function updateAllImageAttribute( $keys, $data )
+    {
+        $newData = array();
+        foreach ($keys as $key) {
+            if ( isset($data[ $key ]) && !empty($data[ $key ]) ) {
+                $image = $this->globalSetImage( $data[ $key ], $key );
+                if ($image) {
+                    $this->update([ $key => $image ]);                    
+                }
+            }
+        }
     }
 
     /**
@@ -220,26 +400,7 @@ class CustomerDetail extends Model
      */
     public function setNpwpAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'npwp' ] ) ) {
-            File::delete( $path . $this->attributes[ 'npwp' ] );
-        }
-
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $this->user_id . '-npwp.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'npwp' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'npwp' );
     }
 
     /**
@@ -249,25 +410,7 @@ class CustomerDetail extends Model
      */
     public function setIdentityAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'identity' ] ) ) {
-            File::delete( $path . $this->attributes[ 'identity' ] );
-        }
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-        // log::info('image = '.$image->getMimeType());
-        $filename = $this->user_id . '-identity.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'identity' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'identity' );
     }
 
     /**
@@ -277,25 +420,7 @@ class CustomerDetail extends Model
      */
     public function setCoupleIdentityAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'couple_identity' ] ) ) {
-            File::delete( $path . $this->attributes[ 'couple_identity' ] );
-        }
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $this->user_id . '-couple_identity.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'couple_identity' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'couple_identity' );
     }
 
     /**
@@ -305,26 +430,7 @@ class CustomerDetail extends Model
      */
     public function setLegalDocumentAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'legal_document' ] ) ) {
-            File::delete( $path . $this->attributes[ 'legal_document' ] );
-        }
-
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == 'image/jpg') {
-                $extension = 'jpg';
-            }elseif ($image->getMimeType() == 'image/jpeg') {
-                $extension = 'jpeg';
-            }else{
-                $extension = 'png';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-
-        $filename = $this->user_id . '-legal_document.' . $extension;
-        $image->move( $path, $filename );
-        $this->attributes[ 'legal_document' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'legal_document' );
     }
 
     /**
@@ -334,14 +440,7 @@ class CustomerDetail extends Model
      */
     public function setSalarySlipAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'salary_slip' ] ) ) {
-            File::delete( $path . $this->attributes[ 'salary_slip' ] );
-        }
-
-        $filename = $this->user_id . '-salary_slip.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'salary_slip' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'salary_slip' );
     }
 
     /**
@@ -351,14 +450,7 @@ class CustomerDetail extends Model
      */
     public function setBankStatementAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'bank_statement' ] ) ) {
-            File::delete( $path . $this->attributes[ 'bank_statement' ] );
-        }
-
-        $filename = $this->user_id . '-bank_statement.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'bank_statement' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'bank_statement' );
     }
 
     /**
@@ -368,14 +460,7 @@ class CustomerDetail extends Model
      */
     public function setFamilyCardAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'family_card' ] ) ) {
-            File::delete( $path . $this->attributes[ 'family_card' ] );
-        }
-
-        $filename = $this->user_id . '-family_card.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'family_card' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'family_card' );
     }
 
     /**
@@ -385,14 +470,7 @@ class CustomerDetail extends Model
      */
     public function setMarritalCertificateAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'marrital_certificate' ] ) ) {
-            File::delete( $path . $this->attributes[ 'marrital_certificate' ] );
-        }
-
-        $filename = $this->user_id . '-marrital_certificate.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'marrital_certificate' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'marrital_certificate' );
     }
 
     /**
@@ -402,14 +480,7 @@ class CustomerDetail extends Model
      */
     public function setDiforceCertificateAttribute( $image )
     {
-        $path = public_path( 'uploads/users/' . $this->user_id . '/' );
-        if ( ! empty( $this->attributes[ 'diforce_certificate' ] ) ) {
-            File::delete( $path . $this->attributes[ 'diforce_certificate' ] );
-        }
-
-        $filename = $this->user_id . '-diforce_certificate.' . $image->getClientOriginalExtension();
-        $image->move( $path, $filename );
-        $this->attributes[ 'diforce_certificate' ] = $filename;
+        $this->globalSetImageAttribute( $image, 'diforce_certificate' );
     }
 
     /**

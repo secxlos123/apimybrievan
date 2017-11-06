@@ -25,6 +25,7 @@ class AuthRequest extends BaseRequest
      */
     public function rules()
     {
+        \Log::info($this->all());
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 if( $this->segment( 5 ) == 'register' ) {
@@ -49,6 +50,7 @@ class AuthRequest extends BaseRequest
                         $additional = ',' . $customer_detail->id;
                     }
                     return [
+                        'is_simple' => 'required|in:0,1',
                         'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
                         'first_name' => 'required',
                         'last_name' => '',
@@ -57,13 +59,13 @@ class AuthRequest extends BaseRequest
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city' => 'required',
-                        'phone' => 'required|numeric|digits:12',
+                        'phone' => 'required|numeric|digits_between:7,16',
                         'citizenship' => 'required',
-                        'status' => 'required|in:0,1,2',
+                        'status' => 'required|in:1,2,3',
                         'address_status' => 'required',
                         'mother_name' => 'required',
-                        'mobile_phone' => 'required|numeric|digits:12',
-                        'emergency_contact' => 'required|numeric|digits:12',
+                        'mobile_phone' => 'required|numeric|digits_between:9,16',
+                        'emergency_contact' => 'required|numeric|digits_between:9,16',
                         'emergency_relation' => 'required',
                         'work_type' => 'required',
                         'work' => 'required',
@@ -72,13 +74,18 @@ class AuthRequest extends BaseRequest
                         'position' => 'required',
                         'work_duration' => 'required',
                         'office_address' => 'required',
-                        'salary' => 'required|integer',
-                        'other_salary' => 'required|integer',
-                        'loan_installment' => 'required',
-                        'dependent_amount' => 'required',
-                        'identity' => 'image|mimes:jpg,jpeg,png',
+                        'salary' => 'required',
+                        // 'other_salary' => 'required',
+                        // 'loan_installment' => 'required',
+                        // 'dependent_amount' => 'required',
+                        'identity' => 'required_if:is_simple,0|image|mimes:jpg,jpeg,png',
                         'npwp' => 'image|mimes:jpg,jpeg,png',
-                        'image' => 'image|mimes:jpg,jpeg,png'
+                        'image' => 'image|mimes:jpg,jpeg,png',
+                        'couple_nik' => 'required_if:status,2|numeric|digits:16',
+                        'couple_name' => 'required_if:status,2',
+                        'couple_birth_place_id' => 'required_if:status,2',
+                        'couple_birth_date' => 'required_if:status,2|date',
+                        'couple_identity' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
                     ];
                 } else if ( $this->segment( 5 ) == 'register-simple' ) {
                     $login_session = Sentinel::getUser();
@@ -87,21 +94,22 @@ class AuthRequest extends BaseRequest
                         $additional = ',' . $customer_detail->id;
                     }
                     return [
+                        'is_simple' => 'required|in:0,1',
                         'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
                         // 'email' => 'required|email',
                         'first_name' => 'required',
                         'last_name' => '',
-                        'mobile_phone' => 'required|numeric|digits:12',
-                        'status' => 'required|in:0,1,2',
+                        'mobile_phone' => 'required|numeric|digits_between:9,16',
+                        'status' => 'required|in:1,2,3',
                         'mother_name' => 'required',
                         'birth_place_id' => 'required',
                         'birth_date' => 'required|date',
-                        'identity' => 'required|image|mimes:jpg,jpeg,png',
-                        'couple_nik' => 'required_if:status,1|numeric|digits:16',
-                        'couple_name' => 'required_if:status,1',
-                        'couple_birth_place_id' => 'required_if:status,1',
-                        'couple_birth_date' => 'required_if:status,1|date',
-                        'couple_identity' => 'required_if:status,1|image'
+                        'identity' => 'required_if:is_simple,0|image|mimes:jpg,jpeg,png',
+                        'couple_nik' => 'required_if:status,2|numeric|digits:16',
+                        'couple_name' => 'required_if:status,2',
+                        'couple_birth_place_id' => 'required_if:status,2',
+                        'couple_birth_date' => 'required_if:status,2|date',
+                        'couple_identity' => 'required_if:status,2|image'
                     ];
                 } else {
                     return [];
@@ -120,7 +128,7 @@ class AuthRequest extends BaseRequest
      */
     protected function validationData()
     {
-        if( $this->has( 'status' ) & $this->status != '1' ) {
+        if( $this->has( 'status' ) & $this->status != '2' ) {
             return $this->except( [ 'couple_nik', 'couple_name', 'couple_birth_place', 'couple_birth_date', 'couple_identity' ] );
         }
         return $this->all();

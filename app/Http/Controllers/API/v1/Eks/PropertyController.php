@@ -16,18 +16,21 @@ class PropertyController extends Controller
      */
     public function index(Request $request, $developerId = null)
     {
+        $long = $request->input('long') ? $request->input('long') : 0;
+        $lat = $request->input('lat') ? $request->input('lat') : 0;
+
         if ( ! $developerId && $request->user() ) 
             $developerId = $request->user()->inRole('developer') ? $request->user()->id : null;
         
         $limit = $request->input('limit') ?: 10;
         $properties = Property::getLists($request, $developerId)->paginate($limit);
-
-        $properties->transform(function ($prop) {
+        
+        $properties->transform(function ($prop) use ($long, $lat) {
             $props = $prop->toArray();
             $props['prop_photo'] = $prop->propPhoto ? $prop->propPhoto->image : null;
+            $props['distance'] = Property::getDistance($prop->prop_id, $long, $lat);
             return $props;
         });
-
         return response()->success(['contents' => $properties]);
     }
 
@@ -50,12 +53,13 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        $prop = $property->load('photo', 'developer')->toArray();
+        $prop = $property->load('photo', 'developer', 'city')->toArray();
         $developer = $property->developer;
         $prop['photo'] = $property->photo ? $property->photo->image : null;
         $prop['developer_name'] = $developer->company_name;
         $prop['developer_logo'] = $developer->user->image;
-        unset($prop['developer']);
+        $prop['city_name'] = $property->city ? $property->city->name : null;
+        unset($prop['developer'], $prop['city']);
         return response()->success(['contents' => $prop]);
     }
 
@@ -102,16 +106,15 @@ class PropertyController extends Controller
             }
 
             // this logic for saving data to internal bri
-            if ($this->service($property)) {
-                $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-                \DB::commit();
-            } else {
-                throw new \Exception("Error Processing Request", 422);
+            if (env('APP_ENV') == 'production') {
+                $this->service($property);
             }
-            
+
+            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+            \DB::commit();            
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = "Project {$request->input('name')} gagal {$method}.";
+            $status = 'error'; $message = $e->getMessage();
             $code = $e->getCode();
         }
 
@@ -144,14 +147,14 @@ class PropertyController extends Controller
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-        \Log::info($id);
 
+        \Log::info($id);
         if ($id['code'] == 200) {
             $property->update(['prop_id_bri' => $id['contents']]);
             return true;
         }
 
-        return false;        
+        throw new \Exception($id['contents'], 422);
     }
 
     /**

@@ -78,10 +78,12 @@ class Customer extends User
     public function getPersonalAttribute()
     {
         $personal_data = [
+            'user_id' => $this->detail ? $this->detail->user_id : '',
             'name' => $this->fullname,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'gender' => $this->gender,
+            'phone' => $this->phone,
             'mobile_phone' => $this->mobile_phone,
             'email' => $this->email,
             'nik' => $this->detail ? $this->detail->nik : '',
@@ -92,8 +94,9 @@ class Customer extends User
             'city_id' => $this->detail ? $this->detail->city_id : '',
             'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
             'citizenship_id' => $this->detail ? $this->detail->citizenship_id : '',
-            'citizenship' => $this->detail ? $this->detail->citizenship_id : '',
+            'citizenship' => $this->detail ? $this->detail->citizenship_name : '',
             'status' => $this->detail ? $this->detail->status : '',
+            'address_status_id'=> $this->detail ? $this->detail->address_status_id : '',
             'address_status' => $this->detail ? $this->detail->address_status : '',
             'mother_name' => $this->detail ? $this->detail->mother_name : '',
             'couple_name' => $this->detail ? $this->detail->couple_name : '',
@@ -101,7 +104,9 @@ class Customer extends User
             'couple_birth_date' => $this->detail ? $this->detail->couple_birth_date : '',
             'couple_birth_place_id' => $this->detail ? $this->detail->couple_birth_place_id : '',
             'couple_birth_place' => $this->couple_birth_place,
-            'couple_identity' => $this->detail ? $this->detail->couple_identity : ''
+            'couple_identity' => $this->detail ? $this->detail->couple_identity : '',
+            'status_id' => $this->detail ? $this->detail->status_id : '',
+            'cif_number'=> $this->detail ? $this->detail->cif_number : ''
         ];
 
         return $personal_data;
@@ -114,20 +119,20 @@ class Customer extends User
      */
     public function getWorkAttribute()
     {
-        if( count( $detail = $this->detail ) ) {
-            return [
-                'type_id' => $detail->job_type_id,
-                'type' => $detail->job_type_id,
-                'work_id' => $detail->job_id,
-                'work' => $detail->job_id,
-                'company_name' => $detail->company_name,
-                'work_field_id' => $detail->job_field_id,
-                'work_field' => $detail->job_field_id,
-                'position' => $detail->position,
-                'work_duration' => $detail->work_duration,
-                'office_address' => $detail->office_address
-            ];
-        }
+        return [
+            'type_id' => $this->detail ? $this->detail->job_type_id : '',
+            'type' => $this->detail ? $this->detail->job_type_name : '',
+            'work_id' => $this->detail ? $this->detail->job_id : '',
+            'work' => $this->detail ? $this->detail->job_name : '',
+            'company_name' => $this->detail ? $this->detail->company_name : '',
+            'work_field_id' => $this->detail ? $this->detail->job_field_id : '',
+            'work_field' => $this->detail ? $this->detail->job_field_name : '',
+            'position_id' => $this->detail ? $this->detail->position : '',
+            'position' => $this->detail ? $this->detail->position_name : '',
+            'work_duration' => $this->detail ? $this->detail->work_duration : '',
+            'work_duration_month' => $this->detail ? $this->detail->work_duration_month : '',
+            'office_address' => $this->detail ? $this->detail->office_address : ''
+        ];
     }
 
     /**
@@ -137,14 +142,17 @@ class Customer extends User
      */
     public function getFinancialAttribute()
     {
-        if( count( $detail = $this->detail ) ) {
-            return [
-                'salary' => $detail->salary,
-                'other_salary' => $detail->other_salary,
-                'loan_installment' => $detail->loan_installment,
-                'dependent_amount' => $detail->dependent_amount
-            ];
-        }
+        return [
+            'salary' => $this->detail ? $this->detail->salary : '',
+            'other_salary' => $this->detail ? $this->detail->other_salary : '',
+            'loan_installment' => $this->detail ? $this->detail->loan_installment : '',
+            'dependent_amount' => $this->detail ? $this->detail->dependent_amount : '',
+            'status_income' => $this->detail ? ($this->detail->couple_salary == NULL ? 'Pisah Harta':'Gabung Harta') : NULL,
+            'status_finance' => $this->detail ? ($this->detail->couple_salary == NULL ? 'Single Income':'Join Income') : NULL,
+            'salary_couple' => $this->detail ? $this->detail->couple_salary : '',
+            'other_salary_couple' => $this->detail ? $this->detail->couple_other_salary : '',
+            'loan_installment_couple' => $this->detail ? $this->detail->couple_loan_installment : ''
+        ];
     }
 
     /**
@@ -154,14 +162,11 @@ class Customer extends User
      */
     public function getContactAttribute()
     {
-        if( count( $detail = $this->detail ) ) {
-            return [
-                'phone' => $this->phone,
-                'mobile_phone' => $this->mobile_phone,
-                'emergency_contact' => $detail->emergency_contact,
-                'emergency_relation' => $detail->emergency_relation
-            ];
-        }
+        return [
+            'emergency_contact' => $this->detail ? $this->detail->emergency_contact : '',
+            'emergency_relation' => $this->detail ? $this->detail->emergency_relation : '',
+            'emergency_name' => $this->detail ? $this->detail->emergency_name : ''
+        ];
     }
 
     /**
@@ -171,17 +176,11 @@ class Customer extends User
      */
     public function getOtherAttribute()
     {
-        $other_data = [
-            'image' => $this->image
+        return [
+            'image' => $this->image,
+            'identity' => $this->detail ? $this->detail->identity : '',
+            'npwp' => $this->detail ? $this->detail->npwp : '',
         ];
-        if( count( $detail = $this->detail ) ) {
-            $other_data += [
-                'identity' => $detail->identity,
-                'npwp' => $detail->npwp,
-            ];
-        }
-
-        return $other_data;
     }
 
     /**
@@ -266,6 +265,8 @@ class Customer extends User
      */
     public function update( array $attributes = [], array $options = [] )
     {
+        $keys = array('npwp', 'identity', 'couple_identity', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
+
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
         parent::update( $user_data );
@@ -273,6 +274,13 @@ class Customer extends User
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
         $this->detail()->update( $customer_data );
+        $this->detail->updateAllImageAttribute( $keys, $customer_data );
+
+        foreach ($keys as $key) {
+            if ( isset($data[ $key ]) ) {
+                unset( $data[ $key ] );
+            }
+        }
 
         return true;
     }
@@ -286,11 +294,17 @@ class Customer extends User
     {
         if( $data[ 'verify_status' ] == 'verify' ) {
             $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
+
+            if (isset( $data[ 'couple_birth_date' ] )) {
+                $data[ 'couple_birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'couple_birth_date' ] ) );
+            }
+            
             $data[ 'gender' ] = str_replace( 'PEREMPUAN', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'LAKI-LAKI', 'L', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Laki-Laki', 'L', $data[ 'gender' ] );
-            $this->update( array_except( $data, [ 'verify_status', '_method', 'cif_number' ] ) );
+            $data['emergency_contact'] = $data['emergency_mobile_phone'];
+            $this->update( array_except( $data, ['emergency_mobile_phone','form_id','email','verify_status', '_method'] ) );
         } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true

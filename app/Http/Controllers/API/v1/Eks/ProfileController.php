@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TempUser;
 use App\Http\Requests\API\v1\Profile\UpdateRequest;
-
+use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
 
 class ProfileController extends Controller
@@ -47,5 +47,25 @@ class ProfileController extends Controller
         }
 
         return response()->success(['message' => 'Data profile berhasil dirubah.']);
+    }
+
+    /**
+     * Change password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function change_password(ChangePasswordRequest $request)
+    {
+        $user = $request->user();
+        
+        $return = $user->changePassword($request);
+
+        if ($return['success']) {
+            return response()->success(['message' => $return['message']]);
+        }
+        
+        return response()->error(['message' => $return['message']]);
+
     }
 }

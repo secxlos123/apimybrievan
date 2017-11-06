@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\CustomerRequest;
+use App\Events\Customer\CustomerVerify;
 use App\Models\Customer;
+use App\Models\EForm;
 use App\Models\User;
 use Sentinel;
 use DB;
@@ -73,7 +75,7 @@ class CustomerController extends Controller
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function show( $id )
+	public function show( $type, $id )
 	{
 		$customer = Customer::findOrFail( $id );
 		return response()->success( [
@@ -93,10 +95,12 @@ class CustomerController extends Controller
 	{
 		DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
-		$customer->verify( $request->except( [ 'birth_place', 'birth_place_id', 'citizenship', 'citizenship_id' ] ) );
+		$customer->verify( $request->except('join_income') );
+		$eform = EForm::generateToken( $customer->personal['user_id'] );
 
 		DB::commit();
 		if( $request->verify_status == 'verify' ) {
+			event( new CustomerVerify( $customer, $eform ) );
 			return response()->success( [
 				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',
 				'contents' => $customer

@@ -31,6 +31,12 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['gender_sim'];
 
     /**
      * The attributes that should be casted to native types.
@@ -131,6 +137,23 @@ class User extends Authenticatable
             return 'Laki-laki';
         } else if( $value == 'P' ) {
             return 'Perempuan';
+        } else {
+            return '-';
+        }
+    }
+
+    /**
+     * Get user gender sim word.
+     *
+     * @return string
+     */
+    public function getGenderSimAttribute()
+    {
+        $value = $this->gender;
+        if( $value == 'Laki-laki' ) {
+            return 'L';
+        } else if( $value == 'Perempuan' ) {
+            return 'P';
         } else {
             return '-';
         }
@@ -308,8 +331,8 @@ class User extends Authenticatable
             'address'       => $developer->address,
             'mobile_phone'  => $user->mobile_phone,
             'image'         => $user->image,
-            'city_id'       => $developer->city->id,
-            'city_name'     => $developer->city->name,
+            'city_id'       => $developer->city ? $developer->city->id : '',
+            'city_name'     => $developer->city ? $developer->city->name : '',
             'summary'       => $developer->summary,
             'pks_number'    => $developer->pks_number,
             'plafond'       => number_format($developer->plafond),
@@ -489,5 +512,43 @@ class User extends Authenticatable
             ->orWhere('nip', 'ilike', "%{$request->input('search')}%")
             ->orWhere('role_name', 'ilike', "%{$request->input('search')}%")
             ->orWhere('role_slug', 'ilike', "%{$request->input('search')}%");
+    }
+
+    /**
+     * Update password.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array $return
+     */
+    public function changePassword(Request $request)
+    {
+        $return = array(
+            'success' => false
+            , 'message' => 'Password gagal di ubah.'
+        );
+
+        $hasher = \Sentinel::getHasher();
+
+        $oldPassword = $request->old_password;
+        $password = $request->password;
+        $passwordConf = $request->password_confirmation;
+
+        $user = \Sentinel::getUser();
+
+        if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf) 
+        {
+            return $return;
+        }
+        else
+        {
+
+           \Sentinel::update($user, array('password' => $password));
+            $return['status'] = true;
+            $return['message'] = 'Password Berhasil di Ubah.';
+        }
+
+        return $return;
+
+        
     }
 }

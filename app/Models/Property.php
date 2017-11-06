@@ -18,7 +18,7 @@ class Property extends Model
      */
     protected $fillable = [
         'developer_id', 'city_id', 'name', 'address', 'category', 'latitude', 'longitude',
-        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description'
+        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description', 'pks_number'
     ];
 
     /**
@@ -172,6 +172,13 @@ class Property extends Model
                     $property->where('prop_city_id', $request->input('prop_city_id'));
 
                 /**
+                 * Query for filter by prop_types.
+                 */
+                if ($request->has('prop_types'))
+                    $property->where('prop_types', $request->input('prop_types'));
+
+
+                /**
                  * Query for filter by city_id.
                  */
                 if ($request->has('name'))
@@ -200,6 +207,68 @@ class Property extends Model
                  */
                 if ($request->has('items'))
                     $property->whereBetween('prop_items', explode('|', $request->input('items')));
+
+                /**
+                 * Filter bedroom
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('bedroom')) {
+                    $id = $request->input('bedroom');
+                    if ($id > 4) {
+                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= ?) ",array($id));
+                    }else{
+                        $property->whereRaw("prop_id in (select property_id from property_types where bedroom = ?) ",array($id));
+                    }
+                }
+
+                /**
+                 * Filter bathroom
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('bathroom')) {
+                    $id = $request->input('bathroom');
+                    if ($id > 3) {
+                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom > ?) ",array($id));
+                    }else{
+                        $property->whereRaw("prop_id in (select property_id from property_types where bathroom = ?) ",array($id));
+                    }
+                }
+
+                /**
+                 * Filter carport
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('carport')) {
+                    $id = $request->input('carport');
+                    if ($id > 0) {
+                        $property->whereRaw("prop_id in (select property_id from property_types where carport >= ? ) ",array($id));
+                    }else{
+                        $property->whereRaw("prop_id in (select property_id from property_types where carport = ? ) ",array($id));
+                    }
+                }
+
+                /**
+                 * Filter surface_area
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('surface_area')) {
+                    $data = explode('|', $request->input('surface_area'));
+                    $property->whereRaw("prop_id in (select property_id from property_types where surface_area between ? and ?) ",$data);
+                }
+
+                /**
+                 * Filter building area
+                 * @author erwan.akse@wgs.co.id
+                 */
+                if ($request->has('building_area')) {
+                    $data = explode('|', $request->input('building_area'));
+                    $property->whereRaw("prop_id in (select property_id from property_types where building_area between ? and ?) ",$data);
+                }
+
+                /**
+                 * Query for filter by range items.
+                 */
+                if ($request->has('without_independent')) $property->where('bri', '!=', '1');
 
                 /**
                  * Query for filter by developer or user login.
@@ -251,19 +320,24 @@ class Property extends Model
         $lng  = (float) $lng;
         $radius = (double) $radius;
 
-        $distance = "( {$type}
+        $distance = "round( CAST( ( {$type}
             * acos( cos( radians( cast( {$lat} as double precision ) ) )
             * cos( radians( cast( latitude as double precision ) ) )
             * cos( radians( cast( longitude as double precision ) )
                  - radians( cast( {$lng} as double precision ) ) )
                  + sin( radians( cast( {$lat}  as double precision ) ) )
-            * sin( radians( cast( latitude as double precision ) ) ) ) )";
+            * sin( radians( cast( latitude as double precision ) ) ) ) ) as numeric), 2)";
 
-        return $query
+        $query = $query
             ->selectRaw("{$distance} as distance")
-            ->havingRaw("{$distance} <= {$radius}")
-            ->groupBy( "id" )
+            ->groupBy( "properties.id" )
             ->orderBy( 'distance', 'asc' );
+
+        if ($radius > -1) {
+            $query = $query->havingRaw("{$distance} <= {$radius}");
+        }
+
+        return $query;
     }
 
     /**
@@ -282,14 +356,19 @@ class Property extends Model
         $rawPrice = \DB::raw('(SELECT max(property_types.price) from property_types where property_types.property_id = properties.id) as price');
 
         $properties = $this->distance($lat, $long, $radius, $type)
-               ->with(['photo', 'developer', 'city'])
-               ->withCount(['propertyTypes as types', 'propertyItems as items'])
-               ->addSelect([
-                    'id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name', 'address',
-                    'developer_id', 'pic_phone', 'city_id', $rawPrice
+                ->with(['photo', 'developer', 'city'])
+                ->withCount(['propertyTypes as types', 'propertyItems as items'])
+                ->addSelect([
+                    'properties.id', 'name', 'slug', 'latitude', 'longitude', 'category', 'pic_name', 'properties.address',
+                    'developer_id', 'pic_phone', 'properties.city_id', $rawPrice
                 ])
-               ->limit($limit)
-               ->get();
+                ->leftJoin('developers','developers.id','=','properties.developer_id')
+                ->where( function($query) {
+                    return $query->whereNotIn('developers.dev_id_bri',['1'])
+                        ->orWhereNull('developers.dev_id_bri');
+                })
+                ->limit($limit)
+                ->get();
 
         $properties->transform(function ($property) {
             $data = [];
@@ -300,10 +379,34 @@ class Property extends Model
             $data['prop_developer_name'] = $data['prop_developer']['company_name'];
             $data['prop_photo'] = $data['prop_photo']['image'] ?: asset('img/noimage.jpg');
             $data['prop_city_name'] = ! is_null( $data['prop_city'] ) ? $data['prop_city']['name'] : '';
-            unset( $data['prop_developer'], $data['prop_city'], $data['prop_distance']);
+            unset( $data['prop_developer'], $data['prop_city']);
             return $data;
         });
 
         return $properties;
+    }
+
+    /**
+     * Get distance
+     *
+     * @param  integer $id
+     * @param  integer $long
+     * @param  integer $lat
+     * @return array
+     */
+    public static function getDistance( $id, $long, $lat )
+    {
+        $data = static::select(['longitude', 'latitude'])
+            ->find($id);
+
+        $distance = ( 6378.10
+            * acos( cos( deg2rad( $lat ) )
+            * cos( deg2rad( $data->latitude ) )
+            * cos( deg2rad( $data->longitude )
+                 - deg2rad( $long ) )
+                 + sin( deg2rad( $lat ) )
+            * sin( deg2rad( $data->latitude ) ) ) );
+
+        return round($distance, 2);
     }
 }
