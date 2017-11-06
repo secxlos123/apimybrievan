@@ -526,14 +526,28 @@ class User extends Authenticatable
             , 'message' => 'Password gagal di ubah.'
         );
 
+        $hasher = \Sentinel::getHasher();
 
-        $update = $this->update(['password' => $request->input('new_password')]);
+        $oldPassword = $request->old_password;
+        $password = $request->password;
+        $passwordConf = $request->password_confirmation;
 
-        if (!$update) {
+        $user = \Sentinel::getUser();
+
+        if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf) 
+        {
+            return $return;
+        }
+        else
+        {
+
+           \Sentinel::update($user, array('password' => $password));
             $return['status'] = true;
             $return['message'] = 'Password Berhasil di Ubah.';
         }
 
         return $return;
+
+        
     }
 }

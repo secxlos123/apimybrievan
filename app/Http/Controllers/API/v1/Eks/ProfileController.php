@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TempUser;
 use App\Http\Requests\API\v1\Profile\UpdateRequest;
-
+use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
 
 class ProfileController extends Controller
@@ -55,7 +55,7 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function change_password(Request $request)
+    public function change_password(ChangePasswordRequest $request)
     {
         $user = $request->user();
         
