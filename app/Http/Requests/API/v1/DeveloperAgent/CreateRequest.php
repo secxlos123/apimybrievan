@@ -15,7 +15,10 @@ class CreateRequest extends FormRequest
      */
     public function rules()
     {
-        return parent::rules();
+        return array_merge(parent::rules(), [
+            'mobile_phone' => 'required|string|regex:/^[0-9]+$/|max:15',
+
+        ]);
     }
 
     /**

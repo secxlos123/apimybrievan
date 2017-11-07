@@ -123,7 +123,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		 * Route developer agent
 		 */
 		Route::resource( 'developer-agent', 'DeveloperAgentController', [
-			'only' => [ 'index', 'store', 'update' ]
+			'only' => [ 'index', 'store', 'update','show' ]
 		] );
 
 		/**

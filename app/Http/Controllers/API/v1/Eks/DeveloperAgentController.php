@@ -66,7 +66,7 @@ class DeveloperAgentController extends Controller
     {
         $role_id = \Sentinel::findRoleBySlug('developer-sales')->id;
         list($first_name, $last_name) = name_separator($request->input('name'));
-        $request->merge( compact( 'role_id', 'first_name', 'last_name' ) );
+        $request->merge( compact( 'role_id', 'first_name', 'last_name','mobile_phone' ) );
 
         $password = str_random(8);
         $request->merge(['password' => bcrypt($password)]);
@@ -102,7 +102,18 @@ class DeveloperAgentController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = User::with('userdeveloper')->where('id',$id)->first();
+       
+       if ($data->userdeveloper) {
+           return response()->success([
+            'contents' => $data
+        ],200);
+       }
+
+        return response()->error([
+            'message' => 'Id agent developer Tidak Valid.',
+        ], 500);
+        
     }
 
     /**

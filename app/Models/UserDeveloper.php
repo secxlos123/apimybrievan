@@ -50,9 +50,13 @@ class UserDeveloper extends Model
      */
     public function scopeGetLists($query, Request $request)
     {
+
+        $userdeveloperfill = $this->userdeveloperfill();
+
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
+            ->leftJoin('users', 'user_developers.user_id', '=', 'users.id')
             ->where(function ($developer) use (&$request, &$query) {
 
                 /**
@@ -68,8 +72,23 @@ class UserDeveloper extends Model
                 $developer->where('admin_developer_id', $request->user()->id);
 
             })
-            ->select('*')
+            ->select(array_merge(['users.is_actived','users.first_name','users.last_name','users.email','users.last_login','users.mobile_phone'],$userdeveloperfill))
             // ->selectRaw('(select users.image from users where users.id = user_developers.user_id) as image')
-            ->orderBy($sort[0], $sort[1]);
+            ->orderBy('user_developers'.'.'.$sort[0], $sort[1]);
+    }
+
+    /**
+     * Get Fillable Table
+     * @return array third party fillable table
+     * @author Akse (erwan.akse@wgs.co.id)
+     */
+    private function userdeveloperfill()
+    {
+        $userdeveloperfill = [];
+        foreach ($this->fillable as $fillable) {
+            $userdeveloperfill[] = "user_developers.{$fillable}";
+        }
+        return $userdeveloperfill;
+
     }
 }

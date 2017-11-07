@@ -95,6 +95,16 @@ class User extends Authenticatable
     }
 
     /**
+     * The relation to user agent developer
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function userdeveloper()
+    {
+        return $this->hasOne( UserDeveloper::class );
+    }
+
+    /**
      * Get fullname for the user.
      *
      * @return string
