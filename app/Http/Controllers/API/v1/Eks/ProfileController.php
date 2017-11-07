@@ -9,6 +9,8 @@ use App\Models\TempUser;
 use App\Http\Requests\API\v1\Profile\UpdateRequest;
 use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
+use App\Models\ThirdParty;
+
 
 class ProfileController extends Controller
 {
@@ -41,12 +43,46 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         
+        if ($user->inRole('customer'))
+        {
+            \DB::beginTransaction();
+            $customer = Customer::findOrFail( $user->id );
+            $customer->update( $request->all() );
+            \DB::commit();
+            
+            if ($customer) {
+                return response()->success( [
+                'message' => 'Data nasabah berhasil dirubah.',
+                'contents' => $customer
+                ] );
+            }
+            
+        }
+        
+        if ($user->inRole('other')) {
+
+            \DB::beginTransaction();
+            $thirdparty = ThirdParty::findOrFail( $user->id );
+            $thirdparty->update( $request->all() );
+            \DB::commit();
+            
+            if ($thirdparty) {
+                return response()->success( [
+                'message' => 'Data Pihak ke-3 berhasil dirubah.',
+                'contents' => $customer
+                ] );
+            }
+            
+        }
+
         if ($user->inRole('developer') || $user->inRole('others')) {
             $request->merge(['user_id' => $user->id]);
             $temp = TempUser::updateOrCreate(['user_id' => $user->id], $request->all());
         }
 
-        return response()->success(['message' => 'Data profile berhasil dirubah.']);
+
+
+        return response()->error(['message' => 'Data profile Tidak Dapat Diirubah.']);
     }
 
     /**
