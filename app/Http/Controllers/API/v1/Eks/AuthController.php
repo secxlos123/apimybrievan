@@ -28,16 +28,20 @@ class AuthController extends Controller
     public function register( AuthRequest $request )
     {
         DB::beginTransaction();
-        $baseData = $request->all();
+        
+        if ($request->is_simple == 0) {
+            $baseData = $request->all();
 
-        $baseData['job_type_id'] = $baseData['type_id'];
-        $baseData['job_type_name'] = $baseData['type'];
-        $baseData['job_id'] = $baseData['work_id'];
-        $baseData['job_name'] = $baseData['work'];
-        $baseData['job_field_id'] = $baseData['work_field_id'];
-        $baseData['job_field_name'] = $baseData['work_field'];
-        $baseData['position'] = $baseData['position_id'];
-        $baseData['position_name'] = $baseData['position'];
+            $baseData['job_type_id'] = $baseData['type_id'];
+            $baseData['job_type_name'] = $baseData['type'];
+            $baseData['job_id'] = $baseData['work_id'];
+            $baseData['job_name'] = $baseData['work'];
+            $baseData['job_field_id'] = $baseData['work_field_id'];
+            $baseData['job_field_name'] = $baseData['work_field'];
+            $baseData['position'] = $baseData['position_id'];
+            $baseData['position_name'] = $baseData['position'];
+        }
+        
 
         $user = Sentinel::register( $request->all() );
         $activation = Activation::create( $user );
