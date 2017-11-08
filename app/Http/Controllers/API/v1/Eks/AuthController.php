@@ -29,21 +29,17 @@ class AuthController extends Controller
     {
         DB::beginTransaction();
         
-        if ($request->is_simple == 0) {
-            $baseData = $request->all();
+        $baseData = $request->all();
 
-            $baseData['job_type_id'] = $baseData['type_id'];
-            $baseData['job_type_name'] = $baseData['type'];
-            $baseData['job_id'] = $baseData['work_id'];
-            $baseData['job_name'] = $baseData['work'];
-            $baseData['job_field_id'] = $baseData['work_field_id'];
-            $baseData['job_field_name'] = $baseData['work_field'];
-            $baseData['position'] = $baseData['position_id'];
-            $baseData['position_name'] = $baseData['position'];
+        $baseArray = array ('job_type_id' => 'type_id', 'job_type_name' => 'type', 'job_id' => 'work_id', 'job_name' => 'work', 'job_field_id' => 'work_field_id', 'job_field_name' => 'work_field', 'position' => 'position_id', 'position_name' => 'position');
+
+        foreach ($baseArray as $target => $base) {
+            if ( isset($baseData[$base]) ) {
+                $baseData[$target] = $baseData[$base];
+            }
         }
-        
 
-        $user = Sentinel::register( $request->all() );
+        $user = Sentinel::register( $baseData );
         $activation = Activation::create( $user );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
