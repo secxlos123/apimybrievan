@@ -46,11 +46,14 @@ class ProfileController extends Controller
         if ($user->inRole('customer'))
         {
             \DB::beginTransaction();
-            $customer = Customer::findOrFail( $user->id );
-            $customer->update( $request->all() );
+            $customer = $this->storeUpdate($request, $user); 
+             CustomerDetail::findOrFail( $user->id );
+            $customer->update( $request->except('_token','name','phone','mobile_phone','gender','_jsvalidation','_jsvalidation_validate_all'));
+            $user = User::findOrFail($user->id);
+            $user->update($request->only('first_name','last_name','phone','mobile_phone','gender'));
             \DB::commit();
             
-            if ($customer) {
+            if ($user) {
                 return response()->success( [
                 'message' => 'Data nasabah berhasil dirubah.',
                 'contents' => $customer
@@ -69,7 +72,7 @@ class ProfileController extends Controller
             if ($thirdparty) {
                 return response()->success( [
                 'message' => 'Data Pihak ke-3 berhasil dirubah.',
-                'contents' => $customer
+                'contents' => $thirdparty
                 ] );
             }
             
@@ -78,6 +81,14 @@ class ProfileController extends Controller
         if ($user->inRole('developer') || $user->inRole('others')) {
             $request->merge(['user_id' => $user->id]);
             $temp = TempUser::updateOrCreate(['user_id' => $user->id], $request->all());
+
+
+            if ($temp) {
+                return response()->success( [
+                'message' => 'Data Pihak Developer berhasil dirubah.',
+                'contents' => $temp
+                ] );
+            }
         }
 
 
@@ -98,10 +109,10 @@ class ProfileController extends Controller
         $return = $user->changePassword($request);
 
         if ($return['success']) {
-            return response()->success(['message' => $return['message']]);
+            return response()->success(['message' => $return['message']],200);
         }
         
-        return response()->error(['message' => $return['message']]);
+        return response()->error(['message' => $return['message']],422);
 
     }
 }

@@ -37,7 +37,7 @@ class VisitReportRequest extends BaseRequest
             'purpose_of_visit' => 'required',
             'visit_result' => 'required',
             'source' => 'required|in:fixed,nonfixed',
-            'income' => 'required_if:source,fixed',
+            'income' => 'required_if:source,nonfixed',
             'income_salary' => 'required_if:source,fixed',
             'income_allowance' => 'required_if:source,fixed',
             'mutations' => 'required|array',
