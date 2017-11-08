@@ -136,6 +136,7 @@ class DeveloperAgentController extends Controller
      */
     public function update(UpdateRequest $request, $id)
     {
+        $user = User::findOrFail($id);
         $user->update($request->all());
         if ($user) {
             $saveData = UserDeveloper::where('user_id', $user->id)->first();
