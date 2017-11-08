@@ -44,11 +44,11 @@ class ServiceRestwsHc extends Client
         if( ! empty( $get_user_info_service ) ) {
             if( $get_user_info_service[ 'responseCode' ] == '00' ) {
 
-                if( in_array( $get_user_info_service[ 'responseData' ][ 'HILFM' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
+                if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                     $role = 'ao';
-                } else if( in_array( $get_user_info_service[ 'responseData' ][ 'HILFM' ], [ 21, 49, 50, 51 ] ) ) {
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 21, 49, 50, 51 ] ) ) {
                     $role = 'mp';
-                } else if( in_array( $get_user_info_service[ 'responseData' ][ 'HILFM' ], [ 5, 11, 12, 14, 19 ] ) ) {
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                     $role = 'pinca';
                 } else {
                     $role = 'none';

@@ -31,13 +31,13 @@ class AuthController extends Controller
         \Log::info($data);
         if( $login[ 'responseCode' ] == '00' ) {
                         
-            if( in_array( $data[ 'hilfm' ], [ 37, 38, 39, 41, 42, 43 ] ) ) {
+            if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                 $role = 'ao';
-            } else if( in_array( $data[ 'hilfm' ], [ 21, 49, 50, 51 ] ) ) {
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
                 $role = 'mp';
-            } else if( in_array( $data[ 'hilfm' ], [ 5, 11, 12, 14, 19 ] ) ) {
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                 $role = 'pinca';
-            } else if( in_array( $data[ 'hilfm' ], [26] ) ) {
+            } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
             } else {
                 $request->headers->set( 'pn', $pn );
