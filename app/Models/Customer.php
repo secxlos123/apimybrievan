@@ -308,6 +308,7 @@ class Customer extends User
         } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true
+                , 'response_status' => 'approve'
             ] );
         }
     }
