@@ -547,7 +547,8 @@ class User extends Authenticatable
 
         if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf) 
         {
-            return $return;
+             $return['status'] = false;
+            $return['message'] = 'Password Lama Tidak Valid';
         }
         else
         {
