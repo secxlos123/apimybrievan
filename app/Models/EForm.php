@@ -468,9 +468,6 @@ class EForm extends Model
             if ( $user['role'] == 'ao' ) {
                 $eform->where('ao_id', $user['pn']);
 
-            } else if ( in_array( $user['role'], [ 'mp', 'pinca' ] ) ) {
-                $eform->where('response_status', 'approve');
-
             }
 
             if ($request->has('branch_id')) {
