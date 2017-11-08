@@ -165,6 +165,22 @@ class DeveloperAgentController extends Controller
         //
     }
 
+    /**
+    * Update Data Developer Agent Banned
+    * @param int $id
+    * @return \Illuminate\Http\Response
+    */
+    public function banned(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+     
+        $user->update($request->all());
+        return response()->success([
+            'message' => 'Data Activated Agent Developer ini Berhasil update',
+            'contents' => $user,
+            ], 201);
+    }
+
 
     /**
      * Return if this store or update success

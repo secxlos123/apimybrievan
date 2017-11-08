@@ -205,7 +205,7 @@
 
                                 <br>
                             @endif
-                            Silahkan response dengan menekan salah satu tombol yang ada di bawah ini.
+                            Dengan ini saya mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit, serta menyetujui bahwa data-data tersebut diatas adalah benar. 
                             <br>
                             <table align="center" class="table-inner" width="550" border="0" cellspacing="0" cellpadding="0">
                                 <tr>

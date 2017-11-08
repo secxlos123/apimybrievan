@@ -127,6 +127,11 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		] );
 
 		/**
+		*Route developer agent banned
+		*/
+		Route::put('developer-agent/banned/{id}', 'DeveloperAgentController@banned');
+
+		/**
 		 * Route property type
 		 */
 		Route::prefix('property-type/{property_type}')->name('property-type.')
