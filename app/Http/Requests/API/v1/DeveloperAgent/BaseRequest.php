@@ -25,7 +25,6 @@ class BaseRequest extends FormRequest
     {
         return [
             'name'                  => 'required|alpha_spaces',
-            'email'                 => 'required|email|unique:users,email',
             'birth_date'            => 'required|date',
             'join_date'             => 'required|date'
         ];

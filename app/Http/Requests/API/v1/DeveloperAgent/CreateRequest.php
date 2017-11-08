@@ -17,6 +17,7 @@ class CreateRequest extends FormRequest
     {
         return array_merge(parent::rules(), [
             'mobile_phone' => 'required|string|regex:/^[0-9]+$/|max:15',
+            'email' => 'required|email|unique:users,email'
 
         ]);
     }
