@@ -72,7 +72,7 @@ class ProfileController extends Controller
             if ($thirdparty) {
                 return response()->success( [
                 'message' => 'Data Pihak ke-3 berhasil dirubah.',
-                'contents' => $customer
+                'contents' => $thirdparty
                 ] );
             }
             
@@ -81,6 +81,14 @@ class ProfileController extends Controller
         if ($user->inRole('developer') || $user->inRole('others')) {
             $request->merge(['user_id' => $user->id]);
             $temp = TempUser::updateOrCreate(['user_id' => $user->id], $request->all());
+
+
+            if ($temp) {
+                return response()->success( [
+                'message' => 'Data Pihak Developer berhasil dirubah.',
+                'contents' => $temp
+                ] );
+            }
         }
 
 
@@ -104,7 +112,7 @@ class ProfileController extends Controller
             return response()->success(['message' => $return['message']],200);
         }
         
-        return response()->error(['message' => $return['message']],500);
+        return response()->error(['message' => $return['message']],422);
 
     }
 }
