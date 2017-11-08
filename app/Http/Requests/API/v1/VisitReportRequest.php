@@ -60,7 +60,7 @@ class VisitReportRequest extends BaseRequest
             'selling_price' => '',
             'reason_for_sale' => '',
             'relation_with_seller' => '',
-            'npwp'=> 'required|image|file',
+            'npwp'=> 'required|file',
             'legal_document' => 'required',
             'salary_slip'=> 'required',
             'family_card'=> 'required|file',
