@@ -32,14 +32,9 @@ class ThirdpartyController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $thirdparty = ThirdParty::GetLists($request)->paginate($limit);
-        if (count($thirdparty) != 0) {
             return response()->success([
                 'contents' => $thirdparty,
             ], 200);
-        }
-        return response()->error([
-            'message' => 'Data pihak ke-3 Tidak Ada.',
-        ], 500);
     }
 
     /**
@@ -56,7 +51,7 @@ class ThirdpartyController extends Controller
             return response()->success([
                 'message' => 'Data pihak ke-3 berhasil ditambah.',
                 'contents' => $save,
-            ], 201);
+            ], 200);
         }
 
         return response()->error([
