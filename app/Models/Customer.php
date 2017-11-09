@@ -274,7 +274,7 @@ class Customer extends User
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
         $this->detail()->update( $customer_data );
-        $this->detail->updateAllImageAttribute( $keys, $customer_data );
+        $this->detail->updateAllImageAttribute( $keys, $customer_data, 'customer' );
 
         foreach ($keys as $key) {
             if ( isset($data[ $key ]) ) {

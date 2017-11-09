@@ -194,100 +194,6 @@ class CustomerDetail extends Model
         return null;
     }
 
-    // /**
-    //  * Get user citizenship information.
-    //  *
-    //  * @return string
-    //  */
-    // public function getCitizenshipAttribute( $value )
-    // {
-    //     $citizenship_search = \Asmx::setEndpoint( 'GetNegara' )->setQuery( [
-    //         'limit' => 1,
-    //         'search' => $this->citizenship_id,
-    //     ] )->post();
-    //     if( $citizenship_search[ 'code' ] == 200 ) {
-    //         return $citizenship_search[ 'contents' ][ 'data' ][ 0 ][ 'desc2' ];
-    //     }
-    //     return null;
-    // }
-
-    // /**
-    //  * Global function for Get ASMX data
-    //  *
-    //  * @return string
-    //  */
-    // public function globalGetAttribute( $endpoint, $value ) {
-    //     return array (
-    //         'desc1' => '98',
-    //         'desc2' => 'NON RESIDENT',
-    //     );
-
-    //     $search = \Asmx::setEndpoint( $endpoint )->setQuery( [
-    //         'limit' => 1,
-    //         'search' => $value,
-    //     ] )->post();
-        
-    //     if( $search[ 'code' ] == 200 ) {
-    //         foreach ($search[ 'contents' ][ 'data' ] as $data) {
-    //             if ( $data['desc1'] == $value ) {
-    //                 return $data;
-    //             }
-    //         }
-    //     }
-
-    //     return null;
-    // }
-
-    // /**
-    //  * Get user citizenship information.
-    //  *
-    //  * @return array
-    //  */
-    // public function getCitizenshipIdAttribute( $value )
-    // {
-    //     return $this->globalGetAttribute( 'GetNegara', $value );
-    // }
-
-    // /**
-    //  * Get Job information.
-    //  *
-    //  * @return array
-    //  */
-    // public function getJobIdAttribute( $value )
-    // {
-    //     return $this->globalGetAttribute( 'GetPekerjaan', $value );
-    // }
-
-    // /**
-    //  * Get Job Type information.
-    //  *
-    //  * @return array
-    //  */
-    // public function getJobTypeIdAttribute( $value )
-    // {
-    //     return $this->globalGetAttribute( 'GetJenisPekerjaan', $value );
-    // }
-
-    // /**
-    //  * Get Job Field information.
-    //  *
-    //  * @return array
-    //  */
-    // public function getJobFieldIdAttribute( $value )
-    // {
-    //     return $this->globalGetAttribute( 'GetBidangPekerjaan', $value );
-    // }
-
-    // /**
-    //  * Get Jabatan information.
-    //  *
-    //  * @return array
-    //  */
-    // public function getPositionAttribute( $value )
-    // {
-    //     return $this->globalGetAttribute( 'GetJabatan', $value );
-    // }
-
     /**
      * Get Status Integer.
      *
@@ -329,13 +235,13 @@ class CustomerDetail extends Model
      *
      * @return void
      */
-    public function globalSetImageAttribute( $image, $attribute )
+    public function globalSetImageAttribute( $image, $attribute, $callbackPosition = null )
     {
         if (gettype($image) == "string") {
             $this->attributes[ $attribute ] = $image;
 
         } else {
-            $return = $this->globalSetImage( $image, $attribute );
+            $return = $this->globalSetImage( $image, $attribute, $callbackPosition );
             if ( $return ) {
                 $this->attributes[ $attribute ] = $return;
             }
@@ -347,8 +253,14 @@ class CustomerDetail extends Model
      *
      * @return void
      */
-    public function globalSetImage( $image, $attribute )
+    public function globalSetImage( $image, $attribute, $callbackPosition = null )
     {
+        $doFunction = true;
+
+        if ($callbackPosition) {
+            $doFunction = isset($this->attributes[ $attribute ]);            
+        }
+
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
             $path = public_path( 'uploads/users/' . $this->user_id . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
@@ -380,7 +292,7 @@ class CustomerDetail extends Model
      *
      * @return void
      */
-    public function updateAllImageAttribute( $keys, $data )
+    public function updateAllImageAttribute( $keys, $data, $callbackPosition = null )
     {
         $newData = array();
         foreach ($keys as $key) {
