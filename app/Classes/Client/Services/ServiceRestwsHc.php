@@ -55,7 +55,7 @@ class ServiceRestwsHc extends Client
                 }
 
                 if (ENV('APP_ENV') == 'local') {
-                    $branch = '012';
+                    $branch = '12';
                 } else {
                     $branch = $get_user_info_service[ 'responseData' ][ 'BRANCH' ];
                 }

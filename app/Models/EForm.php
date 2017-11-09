@@ -204,6 +204,16 @@ class EForm extends Model
     }
 
     /**
+     * Set branch id information.
+     *
+     * @return string
+     */
+    public function setBranchIdAttribute( $value )
+    {
+        $this->attributes[ 'user_id' ] = intval($value);
+    }
+
+    /**
      * Approve E-Form function.
      *
      * @return string

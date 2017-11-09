@@ -25,7 +25,7 @@ class AuthRequest extends BaseRequest
      */
     public function rules()
     {
-        \Log::info($this->all());
+        // \Log::info($this->all());
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 if( $this->segment( 5 ) == 'register' ) {
@@ -58,7 +58,7 @@ class AuthRequest extends BaseRequest
                         'birth_date' => 'required|date',
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
-                        'city' => 'required',
+                        'city_id' => 'required',
                         'phone' => 'required|numeric|digits_between:7,16',
                         'citizenship' => 'required',
                         'status' => 'required|in:1,2,3',
