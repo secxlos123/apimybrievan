@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TempUser;
-use App\Http\Requests\API\v1\Profile\UpdateRequest;
+use App\Http\Requests\API\v1\Profile\CustomerRequest;
 use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
 use App\Models\ThirdParty;
@@ -39,25 +39,29 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request)
+    public function update(CustomerRequest $request)
     {
         $user = $request->user();
         
         if ($user->inRole('customer'))
         {
             \DB::beginTransaction();
-            $customer = $this->storeUpdate($request, $user); 
-             CustomerDetail::findOrFail( $user->id );
-            $customer->update( $request->except('_token','name','phone','mobile_phone','gender','_jsvalidation','_jsvalidation_validate_all'));
-            $user = User::findOrFail($user->id);
-            $user->update($request->only('first_name','last_name','phone','mobile_phone','gender'));
+            
+            $customer = Customer::findOrFail( $user->id );
+            $customer->update( $request->except('_token','name','type_id','work_id','position_id'));
+            
             \DB::commit();
             
-            if ($user) {
+            if ($customer) {
                 return response()->success( [
                 'message' => 'Data nasabah berhasil dirubah.',
                 'contents' => $customer
-                ] );
+                ],200 );
+            }else
+            {
+                return response()->success( [
+                'message' => 'Data nasabah Tidak Dapat dirubah.'
+                ],422 );
             }
             
         }
@@ -93,7 +97,7 @@ class ProfileController extends Controller
 
 
 
-        return response()->error(['message' => 'Data profile Tidak Dapat Diirubah.']);
+        return response()->error(['message' => 'Data profile Tidak Dapat Diirubah.'],422);
     }
 
     /**
@@ -110,9 +114,10 @@ class ProfileController extends Controller
 
         if ($return['success']) {
             return response()->success(['message' => $return['message']],200);
-        }
-        
-        return response()->error(['message' => $return['message']],422);
+            }
+        else{
+            return response()->error(['message' => $return['message']],422);
+            }
 
     }
 }

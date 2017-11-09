@@ -176,7 +176,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 			 * Route for update profile
 			 */
 			Route::match(['put', 'patch'], 'update', 'ProfileController@update');
-
+			Route::match(['put', 'patch'], 'update/{type}', 'ProfileController@update');
 			Route::put('password' ,'ProfileController@change_password' );
 		});
 
