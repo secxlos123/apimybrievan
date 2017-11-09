@@ -36,11 +36,11 @@ class CustomerRequest extends BaseRequest
                     'birth_place_id' => 'required|numeric|exists:cities,id',
                     'birth_date' => 'required|date',
                     'identity' => 'required|image|mimes:jpg,jpeg,png',
-                    'couple_nik' => 'required_if:status,1|numeric|digits:16',
-                    'couple_name' => 'required_if:status,1',
-                    'couple_birth_place_id' => 'required_if:status,1',
-                    'couple_birth_date' => 'required_if:status,1|date',
-                    'couple_identity' => 'required_if:status,1|image'
+                    'couple_nik' => 'required_if:status,2|numeric|digits:16',
+                    'couple_name' => 'required_if:status,2',
+                    'couple_birth_place_id' => 'required_if:status,2',
+                    'couple_birth_date' => 'required_if:status,2|date',
+                    'couple_identity' => 'required_if:status,2|image'
                 ];
                 break;
             
@@ -123,11 +123,11 @@ class CustomerRequest extends BaseRequest
                         'citizenship_id' => 'required',
                         'citizenship_name' => 'required',
                         'status' => 'required|in:0,1,2',
-                        'couple_nik' => 'required_if:status,1|numeric|digits:16',
-                        'couple_name' => 'required_if:status,1',
-                        'couple_birth_place_id' => 'required_if:status,1',
-                        'couple_birth_date' => 'required_if:status,1|date',
-                        'couple_identity' => 'required_if:status,1|image',
+                        'couple_nik' => 'required_if:status,2|numeric|digits:16',
+                        'couple_name' => 'required_if:status,2',
+                        'couple_birth_place_id' => 'required_if:status,2',
+                        'couple_birth_date' => 'required_if:status,2|date',
+                        'couple_identity' => 'required_if:status,2|image',
                         'address_status' => 'required',
                         'mother_name' => 'required',
                         'mobile_phone' => 'required|regex:(08)',
@@ -152,10 +152,10 @@ class CustomerRequest extends BaseRequest
                         'salary_slip' => 'required|file',
                         'identity' => 'image|mimes:jpg,jpeg,png',
                         'image' => 'image|mimes:jpg,jpeg,png',
-                        'npwp' => 'required|image|mimes:jpg,jpeg,png',
+                        'npwp' => 'required|file',
                         'bank_statement' => 'required|file',
                         'family_card' => 'required|file',
-                        'marrital_certificate' => 'required_if:status,1|file',
+                        'marrital_certificate' => 'required_if:status,2|file',
                         'diforce_certificate' => 'required_if:status,2|file'
                     ];
                 }

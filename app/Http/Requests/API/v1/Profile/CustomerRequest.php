@@ -57,6 +57,12 @@ class CustomerRequest extends FormRequest
             'office_address'=>'required'
             ];
         }
+        else if ($this->segment( 6 ) == 'avatar')
+        {
+             return [
+            'image' => 'required|image|mimes:jpg,jpeg,png'
+            ];
+        }
          else if ($this->segment( 6 ) == 'financial')
         {
             return [
@@ -79,6 +85,12 @@ class CustomerRequest extends FormRequest
         {
             return[
              'npwp'=>'required'   
+            ];
+        }
+        elseif ($this->user()->inRole('developer')) 
+        {    
+            return[
+             'name' => 'required|alpha_spaces',
             ];
         }
 
