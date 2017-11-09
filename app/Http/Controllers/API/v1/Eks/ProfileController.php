@@ -48,7 +48,77 @@ class ProfileController extends Controller
             \DB::beginTransaction();
             
             $customer = Customer::findOrFail( $user->id );
-            $customer->update( $request->except('_token','name','type_id','work_id','position_id'));
+            if( $this->segment( 6 ) == 'personal' )
+            {
+
+            $returnParams =  [
+                 'nik' ,
+                 'name' ,
+                 'birth_place_id' ,
+                 'birth_date' ,
+                 'address' ,
+                 'city_id' ,
+                 'gender' ,
+                 'citizenship_id' ,
+                 'status' ,
+                 'address_status',
+                 'phone' ,
+                 'mobile_phone' ,
+                 'identity' ,
+                 'mother_name' ,
+                ];
+            }
+            else if ($this->segment( 6 ) == 'work')
+            {
+                 $returnParams =  [
+                'type_id' ,
+                'work_id' ,
+                'company_name' ,
+                'position_id' ,
+                'citizenship_id' ,
+                'work_duration',
+                'work_duration_month',
+                'office_address',
+                ];
+            }
+            else if ($this->segment( 6 ) == 'avatar')
+            {
+                 $returnParams =  [
+                'image' ,
+                ];
+            }
+             else if ($this->segment( 6 ) == 'financial')
+            {
+                $returnParams =  [
+                'salary' ,
+                'other_salary' ,
+                'loan_installment' ,
+                'dependent_amount' ,
+                ];
+                
+            }
+            else if ($this->segment( 6 ) == 'contact')
+            {
+                $returnParams =  [
+                'emergency_contact' ,
+                'emergency_relation' ,
+                'emergency_name' ,
+                ];
+            }
+            else if ($this->segment( 6 ) == 'other')
+            {
+                $returnParams = [
+                 'npwp',
+                ];
+            }
+            elseif ($this->user()->inRole('developer')) 
+            {    
+                $returnParams = [
+                 'name' ,
+                ];
+            }
+
+            $customer->update( $request->only($returnParams));
             
             \DB::commit();
             
@@ -66,21 +136,21 @@ class ProfileController extends Controller
             
         }
         
-        if ($user->inRole('other')) {
+        // if ($user->inRole('other')) {
 
-            \DB::beginTransaction();
-            $thirdparty = ThirdParty::findOrFail( $user->id );
-            $thirdparty->update( $request->all() );
-            \DB::commit();
+        //     \DB::beginTransaction();
+        //     $thirdparty = ThirdParty::findOrFail( $user->id );
+        //     $thirdparty->update( $request->all() );
+        //     \DB::commit();
             
-            if ($thirdparty) {
-                return response()->success( [
-                'message' => 'Data Pihak ke-3 berhasil dirubah.',
-                'contents' => $thirdparty
-                ] );
-            }
+        //     if ($thirdparty) {
+        //         return response()->success( [
+        //         'message' => 'Data Pihak ke-3 berhasil dirubah.',
+        //         'contents' => $thirdparty
+        //         ] );
+        //     }
             
-        }
+        // }
 
         if ($user->inRole('developer') || $user->inRole('others')) {
             $request->merge(['user_id' => $user->id]);
