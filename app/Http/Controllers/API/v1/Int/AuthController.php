@@ -47,6 +47,13 @@ class AuthController extends Controller
                     'contents'=> []
                 ], 401 );
             }
+
+            if (ENV('APP_ENV') == 'local') {
+                $branch = '269';
+            } else {
+                $branch = $data[ 'branch' ];
+            }
+
             \Log::info($role);
             return response()->success( [
                 'message' => 'Login Sukses',
@@ -54,7 +61,7 @@ class AuthController extends Controller
                     'token' => 'Bearer ' . $data[ 'token' ],
                     'pn' => $data[ 'pn' ],
                     'name' => $data[ 'nama' ],
-                    'branch' => $data[ 'branch' ],
+                    'branch' => $branch,
                     'role' => $role,
                     'uker' => $data['tipe_uker']
                 ]

@@ -53,13 +53,19 @@ class ServiceRestwsHc extends Client
                 } else {
                     $role = 'none';
                 }
+
+                if (ENV('APP_ENV') == 'local') {
+                    $branch = '269';
+                } else {
+                    $branch = $get_user_info_service[ 'responseData' ][ 'BRANCH' ];
+                }
                 
                 return [
                     'name' => $get_user_info_service[ 'responseData' ][ 'SNAME' ],
                     'nip' => $get_user_info_service[ 'responseData' ][ 'NIP' ],
                     'role_id' => $get_user_info_service[ 'responseData' ][ 'HILFM' ],
                     'role' => $role,
-                    'branch_id' => $get_user_info_service[ 'responseData' ][ 'BRANCH' ],
+                    'branch_id' => $branch,
                     'pn' => $get_user_info_service[ 'responseData' ][ 'PERNR' ],
                     // 'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
                 ];
