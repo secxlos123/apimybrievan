@@ -410,12 +410,12 @@ class VisitReport extends Model
      *
      * @return string
      */
-    public function getNpwpNumberMaskingAttribute( $value )
+    public function getNpwpNumberMaskingAttribute(  )
     {
         return preg_replace(
             '/([0-9]{2})?([0-9]{3})?([0-9]{3})?([0-9]{1})?([0-9]{3})?([0-9]{3})/'
             , '$1.$2.$3.$4-$5.$6'
-            , str_pad(substr($value, 0, 15), 15, "0")
+            , str_pad(substr($this->npwp_number, 0, 15), 15, "0")
         );
     }
 
