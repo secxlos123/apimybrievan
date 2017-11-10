@@ -33,6 +33,13 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			'only' => ['index','store', 'update']
 		]);
 
+		/**
+		* Route collateral (Collateral)
+		*/
+		Route::resource('collateral', 'CollateralController',[
+			'only' => ['index']
+		]);
+
 		Route::resource( 'customer', 'CustomerController', [
 			'only' => [ 'destroy' ]
 		] );
