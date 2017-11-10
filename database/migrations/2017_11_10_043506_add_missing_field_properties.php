@@ -14,7 +14,8 @@ class AddMissingFieldProperties extends Migration
     public function up()
     {
         Schema::table('properties', function (Blueprint $table) {
-            $table->string('staff')->nullable();
+            $table->bigInteger('staff_id')->nullable();
+            $table->string('staff_name')->nullable();
             $table->enum('status', ['waiting', 'new', 'approved','rejected'])->default('new')->nullable();
         });
     }
@@ -27,7 +28,8 @@ class AddMissingFieldProperties extends Migration
     public function down()
     {
         Schema::table('properties', function (Blueprint $table) {
-            $table->dropColumn('staff');
+            $table->dropColumn('staff_id');
+            $table->dropColumn('staff_name');
             $table->dropColumn('status');
         });
     }
