@@ -104,11 +104,20 @@ class CustomerRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $job_type_id = $this->input('type_id');
-        $job_id = $this->input('work_id');
-        $position = $this->input('position_id');
-        list($first_name, $last_name) = name_separator($this->input('name'));
-        $this->merge( compact( 'first_name', 'last_name','job_type_id','job_id','position' ) );
+        $baseArray = array( 'type_id', 'work_id', 'position_id', 'name' );
+
+        foreach ($baseArray as $name) {
+            if ( null !== $this->input($name) ) {
+                if ( $name == 'name' ) {
+                    list($first_name, $last_name) = name_separator($this->input('name'));
+                    $this->merge( compact( 'first_name', 'last_name' ) );
+                } else {
+                    $newData = $this->input('type_id');
+                    $this->merge( compact('newData') );
+                }
+            }
+        }
+
         return parent::getValidatorInstance();
     }
 }
