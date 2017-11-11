@@ -47,8 +47,12 @@ class ViewSeeder extends Seeder
                 properties.city_id AS prop_city_id,
                 properties.category AS prop_category,
                 cities.name AS prop_city_name,
+                properties.staff_id AS staff_id,
+                properties.staff_name AS staff_name,
+                properties.status AS status,
                 ( SELECT max(property_types.price) FROM property_types WHERE properties.id = property_types.property_id ) AS prop_price,
                 ( SELECT developers.user_id FROM developers WHERE properties.developer_id = developers.id ) AS prop_dev_id,
+                ( SELECT developers.dev_id_bri FROM developers WHERE properties.developer_id = developers.id ) AS dev_id_bri,
                 ( SELECT count(property_types.id) FROM property_types WHERE properties.id = property_types.property_id ) AS prop_types,
                 ( SELECT count(property_items.id) FROM property_items inner join property_types on property_types.id = property_items.property_type_id where properties.id = property_types.property_id ) AS prop_items
             FROM properties
