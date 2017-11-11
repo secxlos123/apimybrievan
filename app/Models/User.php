@@ -547,14 +547,14 @@ class User extends Authenticatable
 
         if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf) 
         {
-             $return['status'] = false;
+             $return['success'] = false;
             $return['message'] = 'Password Lama Tidak Valid';
         }
         else
         {
 
            \Sentinel::update($user, array('password' => $password));
-            $return['status'] = true;
+            $return['success'] = true;
             $return['message'] = 'Password Berhasil di Ubah.';
         }
 

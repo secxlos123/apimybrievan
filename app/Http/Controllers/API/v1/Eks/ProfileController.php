@@ -66,21 +66,21 @@ class ProfileController extends Controller
             
         }
         
-        if ($user->inRole('other')) {
+        // if ($user->inRole('other')) {
 
-            \DB::beginTransaction();
-            $thirdparty = ThirdParty::findOrFail( $user->id );
-            $thirdparty->update( $request->all() );
-            \DB::commit();
+        //     \DB::beginTransaction();
+        //     $thirdparty = ThirdParty::findOrFail( $user->id );
+        //     $thirdparty->update( $request->all() );
+        //     \DB::commit();
             
-            if ($thirdparty) {
-                return response()->success( [
-                'message' => 'Data Pihak ke-3 berhasil dirubah.',
-                'contents' => $thirdparty
-                ] );
-            }
+        //     if ($thirdparty) {
+        //         return response()->success( [
+        //         'message' => 'Data Pihak ke-3 berhasil dirubah.',
+        //         'contents' => $thirdparty
+        //         ] );
+        //     }
             
-        }
+        // }
 
         if ($user->inRole('developer') || $user->inRole('others')) {
             $request->merge(['user_id' => $user->id]);

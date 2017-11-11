@@ -29,15 +29,7 @@ class AuthController extends Controller
     {
         DB::beginTransaction();
         
-        $baseData = $request->all();
-
-        $baseArray = array ('job_type_id' => 'type_id', 'job_type_name' => 'type', 'job_id' => 'work_id', 'job_name' => 'work', 'job_field_id' => 'work_field_id', 'job_field_name' => 'work_field', 'position' => 'position_id', 'position_name' => 'position');
-
-        foreach ($baseArray as $target => $base) {
-            if ( isset($baseData[$base]) ) {
-                $baseData[$target] = $baseData[$base];
-            }
-        }
+        $baseData = $this->reArrangeRequest( $request->all() );
 
         $user = Sentinel::register( $baseData );
         $activation = Activation::create( $user );
@@ -159,15 +151,46 @@ class AuthController extends Controller
      */
     public function update( AuthRequest $request )
     {
+        $baseData = $this->reArrangeRequest( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'image', 'gender' ] ) );
+
         $token = $request->header( 'Authorization' );
         $user = JWTAuth::toUser( str_replace( 'Bearer ', '', $token ) );
-        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'image' ] ) );
-        $user->updateCustomerDetail( $request->except( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'image' ] ) );
+        $user->update( $request->only( [ 'first_name', 'last_name', 'phone', 'mobile_phone', 'image', 'gender' ] ) );
+        $user->updateCustomerDetail( $baseData );
         $user->refresh();
 
         return response()->success( [
             'message' => 'Register Komplit Sukses',
             'contents' => $user
         ], 201 );
+    }
+
+    /**
+     * Update missmatch field name
+     *
+     * @param Array $request
+     * @return Array $request
+     */
+    public function reArrangeRequest( $request )
+    {
+        \Log::info($request);
+
+        $baseArray = array (
+            'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
+            , 'job_id' => 'work', 'job_name' => 'work_name'
+            , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
+            , 'citizenship_name' => 'citizenship'
+        );
+
+        foreach ($baseArray as $target => $base) {
+            if ( isset($request[$base]) ) {
+                $request[$target] = $request[$base];
+                unset($request[$base]);
+            }
+        }
+        \Log::info("=======================================================");
+        \Log::info($request);
+
+        return $request;
     }
 }

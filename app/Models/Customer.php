@@ -180,6 +180,9 @@ class Customer extends User
             'image' => $this->image,
             'identity' => $this->detail ? $this->detail->identity : '',
             'npwp' => $this->detail ? $this->detail->npwp : '',
+            'family_card' => $this->detail ? $this->detail->family_card : '',
+            'marrital_certificate' => $this->detail ? $this->detail->marrital_certificate : '',
+            'diforce_certificate' => $this->detail ? $this->detail->diforce_certificate : '',
         ];
     }
 
@@ -274,7 +277,7 @@ class Customer extends User
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
         $this->detail()->update( $customer_data );
-        $this->detail->updateAllImageAttribute( $keys, $customer_data );
+        $this->detail->updateAllImageAttribute( $keys, $customer_data, 'customer' );
 
         foreach ($keys as $key) {
             if ( isset($data[ $key ]) ) {

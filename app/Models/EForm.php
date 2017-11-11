@@ -42,7 +42,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'ao_id', 'updated_at', 'branch', 'ao' ];
+    protected $hidden = [ 'updated_at', 'branch', 'ao' ];
 
     /**
      * The attributes that should be cast to native types.
@@ -201,6 +201,16 @@ class EForm extends Model
             $ref_number .= '01';
         }
         $this->attributes[ 'ref_number' ] = $ref_number;
+    }
+
+    /**
+     * Set branch id information.
+     *
+     * @return string
+     */
+    public function setBranchIdAttribute( $value )
+    {
+        $this->attributes[ 'user_id' ] = intval($value);
     }
 
     /**

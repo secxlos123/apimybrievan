@@ -49,7 +49,7 @@ class AuthController extends Controller
             }
 
             if (ENV('APP_ENV') == 'local') {
-                $branch = '012';
+                $branch = '12';
             } else {
                 $branch = $data[ 'branch' ];
             }

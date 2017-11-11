@@ -25,7 +25,7 @@ class AuthRequest extends BaseRequest
      */
     public function rules()
     {
-        \Log::info($this->all());
+        // \Log::info($this->all());
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 if( $this->segment( 5 ) == 'register' ) {
@@ -58,13 +58,13 @@ class AuthRequest extends BaseRequest
                         'birth_date' => 'required|date',
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
-                        'city' => 'required',
+                        'city_id' => 'required',
                         'phone' => 'required|numeric|digits_between:7,16',
                         'citizenship' => 'required',
                         'status' => 'required|in:1,2,3',
                         'address_status' => 'required',
                         'mother_name' => 'required',
-                        'mobile_phone' => 'required|numeric|digits_between:9,16',
+                        'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
                         'emergency_contact' => 'required|numeric|digits_between:9,16',
                         'emergency_relation' => 'required',
                         'work_type' => 'required',
@@ -99,7 +99,7 @@ class AuthRequest extends BaseRequest
                         // 'email' => 'required|email',
                         'first_name' => 'required',
                         'last_name' => '',
-                        'mobile_phone' => 'required|numeric|digits_between:9,16',
+                        'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
                         'status' => 'required|in:1,2,3',
                         'mother_name' => 'required',
                         'birth_place_id' => 'required',
