@@ -179,13 +179,13 @@ class AuthController extends Controller
             'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
             , 'job_id' => 'work', 'job_name' => 'work_name'
             , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
-            , 'position' => 'position', 'position_name' => 'position_name'
             , 'citizenship_name' => 'citizenship'
         );
 
         foreach ($baseArray as $target => $base) {
             if ( isset($request[$base]) ) {
                 $request[$target] = $request[$base];
+                unset($request[$base]);
             }
         }
         \Log::info("=======================================================");

@@ -166,7 +166,7 @@ class CustomerDetail extends Model
     public function getStatusAttribute( $value )
     {
         if( $value == 1 ) {
-            return 'Tidak menikah';
+            return 'Belum menikah';
         } else if( $value == 2 ) {
             return 'Menikah';
         } else if( $value == 3 ) {
@@ -201,7 +201,7 @@ class CustomerDetail extends Model
      */
     public function getStatusIdAttribute()
     {
-        if( $this->status == 'Tidak menikah' ) {
+        if( $this->status == 'Belum menikah' ) {
             return 1;
         } else if( $this->status == 'Menikah' ) {
             return 2;

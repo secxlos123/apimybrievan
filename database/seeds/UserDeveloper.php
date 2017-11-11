@@ -18,7 +18,7 @@ class UserDeveloper extends Seeder
                 $user = App\Models\User::create([
                     'email'     => 'mybri@bri.co.id',
                     'password'  => bcrypt('12345678'),
-                    'first_name'=> 'INDEPENDENT',
+                    'first_name'=> 'Non Kerja Sama',
                     'last_name' => 'BRI',
                 ]);
 
@@ -27,7 +27,7 @@ class UserDeveloper extends Seeder
 
             $developer = $user->developer()->updateOrCreate(['dev_id_bri' => 1], [
                 'dev_id_bri'    => 1,  
-                'company_name'  => 'INDEPENDENT',
+                'company_name'  => 'Non Kerja Sama',
                 'created_by'    => 'BRI',
                 'pks_number'    => '-',
                 'address'       => '-',
@@ -36,7 +36,7 @@ class UserDeveloper extends Seeder
             ]);
 
             $developer->properties()->updateOrCreate(['prop_id_bri' => 1], [
-                'name' => 'INDEPENDENT',
+                'name' => 'Non Kerja Sama',
                 'prop_id_bri' => 1,
                 'description' => '-',
                 'facilities'  => '-',

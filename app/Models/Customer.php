@@ -180,6 +180,9 @@ class Customer extends User
             'image' => $this->image,
             'identity' => $this->detail ? $this->detail->identity : '',
             'npwp' => $this->detail ? $this->detail->npwp : '',
+            'family_card' => $this->detail ? $this->detail->family_card : '',
+            'marrital_certificate' => $this->detail ? $this->detail->marrital_certificate : '',
+            'diforce_certificate' => $this->detail ? $this->detail->diforce_certificate : '',
         ];
     }
 
