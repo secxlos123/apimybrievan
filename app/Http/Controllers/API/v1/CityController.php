@@ -19,4 +19,16 @@ class CityController extends Controller
         $cities = City::getLists($request)->paginate($limit);
         return response()->success(['contents' => $cities]);
     }
+
+    /**
+     * Display a all of city listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        $city = City::all();
+        return response()->success(['contents' => $city]);
+    }
+
 }
