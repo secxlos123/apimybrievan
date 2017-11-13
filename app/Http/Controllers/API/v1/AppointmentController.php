@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Sentinel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Appointment\StatusRequest;
 use App\Http\Requests\API\v1\Appointment\CreateRequest;
@@ -20,7 +21,7 @@ class AppointmentController extends Controller
     {
         $data = Appointment::visibleColumn()->withEform();
         if ($request->is('api/v1/eks/schedule')) {
-            $data = $data->atTime($request->month, $request->year)->get();
+            $data = $data->customer($request->user()->id, $request->month, $request->year)->get();
         } else {
           $data = $data->ao($request->header('pn'),  $request->month, $request->year)->paginate(300);
         }
@@ -73,9 +74,17 @@ class AppointmentController extends Controller
      * @param  \App\Appointment  $appointment
      * @return \Illuminate\Http\Response
      */
-    public function show(Appointment $appointment)
+    public function show(Appointment $appointment, Request $request, $id)
     {
-        //
+      Appointment::visibleColumn()
+        ->withEform()
+        ->customer($request->user()->id, $request->month, $request->year)
+        ->where((new Appointment)->getTable() . '.id', $id)
+        ->first();
+
+        return response()->success([
+          'contents' => $appointment
+        ]);
     }
 
     /**

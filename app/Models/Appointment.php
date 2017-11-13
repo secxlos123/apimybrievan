@@ -51,6 +51,20 @@ class Appointment extends Model
               ->ascAppointment();
     }
 
+    /**
+     * Scope for get appointment by customer, month and year
+     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  string $month
+     * @param  string $year
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopeCustomer($query, $memberId, $month, $year)
+    {
+      return $query->where($this->getTable() . '.user_id', $memberId)
+              ->atTime($month, $year)
+              ->ascAppointment();
+    }
+
     public function scopeAtTime($query, $month, $year)
     {
       return $query->whereMonth($this->getTable() . '.appointment_date', $month)
