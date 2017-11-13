@@ -23,4 +23,20 @@ class CollateralController extends Controller
             ], 200);
         
     }
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $collateral = Collateral::GetDetails($id);
+            return response()->success([
+                'contents' => $collateral,
+            ], 200);
+        
+    }
 }

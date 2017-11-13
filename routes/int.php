@@ -37,7 +37,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		* Route collateral (Collateral)
 		*/
 		Route::resource('collateral', 'CollateralController',[
-			'only' => ['index']
+			'only' => ['index','show']
 		]);
 
 		Route::resource( 'customer', 'CustomerController', [
