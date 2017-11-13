@@ -34,6 +34,9 @@ class AppointmentController extends Controller
 
         return response()->error([
             'message' => 'Data schedule User Tidak ada.',
+            'contents' => [
+              'data' => []
+            ]
         ], 500);
     }
 
