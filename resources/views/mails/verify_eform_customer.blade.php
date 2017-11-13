@@ -1,5 +1,5 @@
 @extends( 'mails.template' )
-@section( 'title', 'Verification E Form Customer' )
+@section( 'title', 'VERIFIKASI PERMOHONAN KREDIT KPR-BRI' )
 @section( 'content' )
     <table align="center" bgcolor="#FFFFFF" style="box-shadow: 0px 3px 0px #bdc3c7; border-radius:4px;" width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
@@ -27,7 +27,7 @@
                         <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">
                             <span style="font-weight: bold;">Hai, {!! $mail[ 'name' ] !!}!</span>
                             <br>
-                            Berikut E Form yang sudah kami verifikasi.
+                            Berikut, data permohonan anda:
                             <br>
                             @if (ENV('APP_ENV') == 'local') 
                                 <table align="left" class="table-inner" width="550" border="1" cellspacing="0" cellpadding="0" style="font-family: 'Open Sans', Arial, sans-serif;">
@@ -205,7 +205,13 @@
 
                                 <br>
                             @endif
-                            Dengan ini saya mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit, serta menyetujui bahwa data-data tersebut diatas adalah benar. 
+                                <ol>
+                                    <li>Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit. </li>
+                                    <li>Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya</li>
+                                    <li>Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.</li>
+                                    <li>Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.</li>
+                                    <li>Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI</li>
+                                </ol>
                             <br>
                             <table align="center" class="table-inner" width="550" border="0" cellspacing="0" cellpadding="0">
                                 <tr>

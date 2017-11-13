@@ -54,7 +54,28 @@ class EFormController extends Controller
     public function store( EFormRequest $request )
     {
         DB::beginTransaction();
-        $kpr = KPR::create( $request->all() );
+
+        $baseRequest = $request->all();
+
+        \Log::info($baseRequest);
+
+        $baseArray = array (
+            'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
+            , 'job_id' => 'work', 'job_name' => 'work_name'
+            , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
+            , 'citizenship_name' => 'citizenship', 'created_by' => 'ao_id'
+        );
+
+        foreach ($baseArray as $target => $base) {
+            if ( isset($baseRequest[$base]) ) {
+                $baseRequest[$target] = $baseRequest[$base];
+                unset($baseRequest[$base]);
+            }
+        }
+        \Log::info("=======================================================");
+        \Log::info($baseRequest);
+
+        $kpr = KPR::create( $baseRequest );
 
         DB::commit();
         return response()->success( [
@@ -97,7 +118,7 @@ class EFormController extends Controller
 
         DB::commit();
         return response()->success( [
-            'message' => 'Disposisi e-form berhasil disimpan.',
+            'message' => 'E-Form berhasil di disposisi',
             'contents' => $eform
         ], 201 );
     }

@@ -38,8 +38,8 @@ class CustomerRequest extends FormRequest
              'citizenship_id' => 'required',
              'status' => 'required|in:0,1,2',
              'address_status'=>'required|in:0,1,3',
-             'phone' => 'digits:12|numeric',
-             'mobile_phone' => 'digits:12|numeric',
+             // 'phone' => 'digits:12|numeric',
+             'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
              'identity' => 'image|mimes:jpg,jpeg,png',
              'mother_name'=>''
             ];
@@ -51,7 +51,7 @@ class CustomerRequest extends FormRequest
             'work_id' => 'required',
             'company_name' => 'required',
             'position_id' => 'required',
-            'citizenship_id' => 'required',
+            'work_field_id' => 'required',
             'work_duration'=>'required',
             'work_duration_month'=>'',
             'office_address'=>'required'
@@ -84,7 +84,12 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'other')
         {
             return[
-             'npwp'=>'required'   
+             // 'npwp'=>'required',
+             // 'family_card'=>'required',
+             // 'couple_identity'=>'required_if:status_id,2',
+             // 'marrital_certificate'=>'required_if:status_id,2',
+             // 'diforce_certificate'=>'required_if:status_id,3',
+             // 'status_id'=>'required'   
             ];
         }
         elseif ($this->user()->inRole('developer')) 
@@ -104,20 +109,13 @@ class CustomerRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $baseArray = array( 'type_id', 'work_id', 'position_id', 'name' );
-
-        foreach ($baseArray as $name) {
-            if ( null !== $this->input($name) ) {
-                if ( $name == 'name' ) {
+        
+            if ( null !== $this->input('name') ) {
                     list($first_name, $last_name) = name_separator($this->input('name'));
                     $this->merge( compact( 'first_name', 'last_name' ) );
-                } else {
-                    $newData = $this->input('type_id');
-                    $this->merge( compact('newData') );
-                }
-            }
-        }
+                } 
 
         return parent::getValidatorInstance();
     }
+
 }
