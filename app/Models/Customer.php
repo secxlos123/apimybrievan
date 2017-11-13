@@ -242,16 +242,23 @@ class Customer extends User
      * @return void
      */
     public static function create( $data ) {
+    	\Log::info('==========ini data awal=======');
+    	\Log::info($data);
         $user_model = new User;
         $password = str_random( 8 );
         $separate_array_keys = array_flip( $user_model->fillable );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
-        $user = Sentinel::registerAndActivate( $user_data );
+        \Log::info('============ini data setelah pabeulit=======');
+    	\Log::info($user_data);
+	    $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
-        $customer_data = [ 'user_id' => $user->id ] + array_diff_key( $data, $separate_array_keys );
-        CustomerDetail::create( $customer_data );
-
+	    \Log::info('==========ini data separate====');
+	    \Log::info($separate_array_keys);
+        $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'] ] + array_diff_key( $data, $separate_array_keys );
+      	\Log::info('==========ini data insert ke detail=======');
+	    \Log::info($customer_data);
+	CustomerDetail::create( $customer_data );
         // send mail notification
         $customer = static::find( $user->id );
         // event( new CustomerRegistered( $customer, $password ) );
@@ -277,7 +284,9 @@ class Customer extends User
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
         $this->detail()->update( $customer_data );
-        $this->detail->updateAllImageAttribute( $keys, $customer_data, 'customer' );
+        if ($this->detail) {
+            $this->detail->updateAllImageAttribute( $keys, $customer_data, 'customer' );
+        } 
 
         foreach ($keys as $key) {
             if ( isset($data[ $key ]) ) {

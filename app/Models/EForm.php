@@ -204,16 +204,6 @@ class EForm extends Model
     }
 
     /**
-     * Set branch id information.
-     *
-     * @return string
-     */
-    public function setBranchIdAttribute( $value )
-    {
-        $this->attributes[ 'user_id' ] = intval($value);
-    }
-
-    /**
      * Approve E-Form function.
      *
      * @return string
@@ -481,7 +471,7 @@ class EForm extends Model
             }
 
             if ($request->has('branch_id')) {
-                $eform->where('branch_id', (string) intval($request->input('branch_id')) );
+                $eform->where(\DB::Raw("TRIM(LEADING '0' FROM branch_id)"), (string) intval($request->input('branch_id')) );
             }
 
         } )->orderBy('eforms.'.$sort[0], $sort[1]);

@@ -47,11 +47,15 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'work')
         {
              return [
-            'type_id' => 'required',
-            'work_id' => 'required',
+            'job_type_id' => 'required',
+            'job_type_name'=>'required',
+            'job_id' => 'required',
+            'job_name'=>'required',
             'company_name' => 'required',
-            'position_id' => 'required',
-            'work_field_id' => 'required',
+            'position' => 'required',
+            'position_name'=>'required',
+            'job_field_id' => 'required',
+            'job_field_name'=>'required',
             'work_duration'=>'required',
             'work_duration_month'=>'',
             'office_address'=>'required'
@@ -84,8 +88,8 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'other')
         {
             return[
-             // 'npwp'=>'required',
-             // 'family_card'=>'required',
+              'npwp'=>'required',
+              'family_card'=>'required'
              // 'couple_identity'=>'required_if:status_id,2',
              // 'marrital_certificate'=>'required_if:status_id,2',
              // 'diforce_certificate'=>'required_if:status_id,3',
