@@ -16,9 +16,15 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Appointment::paginate(5);
+        $data = Appointment::visibleColumn()->withEform();
+        if ($request->is('api/v1/eks/schedule')) {
+            $data = $data->atTime($request->month, $request->year)->get();
+        } else {
+          $data = $data->ao($request->header('pn'),  $request->month, $request->year)->paginate(300);
+        }
+
         if ($data) {
             return response()->success([
                 'contents' => $data,
@@ -48,7 +54,7 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        $save = Appointment::Create($request->all());
+        $save = Appointment::create($request->all());
         if ($save) {
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',

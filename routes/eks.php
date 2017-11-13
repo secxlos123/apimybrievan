@@ -185,4 +185,5 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 
 Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1' ], function() {
 	Route::get( 'eform/{token}/{status}', 'EFormController@verify' );
+	Route::get('/schedule', 'AppointmentController@index');
 });

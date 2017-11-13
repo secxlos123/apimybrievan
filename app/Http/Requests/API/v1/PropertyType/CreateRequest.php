@@ -36,7 +36,7 @@ class CreateRequest extends FormRequest
                 $property->where('developer_id', $user);
             })
         ];
-        
+
         if ($this->method() == 'PUT') unset($property_types['photos']);
 
         return $property_types;
