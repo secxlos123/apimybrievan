@@ -97,15 +97,14 @@ class PropertyItem extends Model
             })
             ->select($select)
             ->selectRaw("
-                (select developers.user_id from developers where developers.id = (select developers.id from developers where developers.id =
+                (select developers.id from developers where developers.id = (select developers.id from developers where developers.id =
                 (select properties.developer_id from properties where properties.id =
                 (select property_types.property_id from property_types where property_types.id = property_type_id
                 )))) as developer_id,
-                (select CONCAT(users.first_name,' ', users.last_name) from users where users.id =
-                (select developers.user_id from developers where developers.id = (select developers.id from developers where developers.id =
+                (select developers.company_name from developers where developers.id = (select developers.id from developers where developers.id =
                 (select properties.developer_id from properties where properties.id =
                 (select property_types.property_id from property_types where property_types.id = property_type_id
-                ))))) as developer_name")
+                )))) as developer_name")
             ->orderBy($sort[0], $sort[1]);
     }
 
