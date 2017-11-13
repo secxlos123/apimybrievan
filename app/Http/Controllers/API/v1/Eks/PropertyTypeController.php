@@ -78,7 +78,7 @@ class PropertyTypeController extends Controller
         ];
 
         return response()->success([
-            'contents' => array_merge(array_except($prop->toArray(), 'property'), $others) 
+            'contents' => array_merge(array_except($prop->toArray(), 'property'), $others)
         ]);
     }
 
