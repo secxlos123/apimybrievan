@@ -3,6 +3,8 @@
 namespace App\Http\Requests\API\v1\Profile;
 
 use App\Http\Requests\BaseRequest as FormRequest;
+use App\Models\CustomerDetail;
+use App\Models\User;
 
 class CustomerRequest extends FormRequest
 {
@@ -27,8 +29,14 @@ class CustomerRequest extends FormRequest
         if( $this->segment( 6 ) == 'personal' )
         {
 
+            $login_session = Sentinel::getUser();
+                    $additional = '';
+                    if( $customer_detail = $login_session->customer_detail ) {
+                        $additional = ',' . $customer_detail->id;
+                    }
+
         return [
-             'nik' => 'required',
+             'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
              'name' => 'required|alpha_spaces',
              'birth_place_id' => 'required|exists:cities,id',
              'birth_date' => 'required|date',
@@ -104,6 +112,27 @@ class CustomerRequest extends FormRequest
         }
 
 
+    }
+
+    /**
+     * [messages description]
+     * @author erwan.akse@wgs.co.id
+     * @return [type] [description]
+     */
+    public function messages()
+    {
+        $email = '';
+        $nik =  isset($this->nik)?$this->nik:NULL;
+        if ($nik != NULL) {
+            $detail = CustomerDetail::where('nik','=',$nik)->first();
+            if (count($detail) != 0) {
+                $user = User::find($detail->user_id);
+                $email = $user->email; 
+            }
+        }
+        return [
+            'nik.unique' => 'Nomor Induk Kartu Penduduk Telah Digunakan Oleh Email '.$email,
+        ];
     }
 
     /**
