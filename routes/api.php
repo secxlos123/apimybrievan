@@ -73,5 +73,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 	Route::group( [ 'prefix' => '{type}' ], function () {
 		Route::get( 'cities', 'CityController' );
+		Route::get('city', 'CityController@getAll');
 	} );
 } );

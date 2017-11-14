@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\API\v1\ThirdParty;
 use App\Http\Requests\API\v1\ThirdParty\BaseRequest as FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CreateRequest extends FormRequest
 {

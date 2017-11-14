@@ -92,7 +92,7 @@ class DeveloperController extends Controller
 
     /**
      * Return if this store or update success
-     * 
+     *
      * @param  array $user   [description]
      * @param  string $method [description]
      * @return \Illuminate\Http\Response

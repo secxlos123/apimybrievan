@@ -89,7 +89,7 @@ class ProfileController extends Controller
 
             if ($temp) {
                 return response()->success( [
-                'message' => 'Data Pihak Developer berhasil dirubah.',
+                'message' => 'Data Profile berhasil dirubah.',
                 'contents' => $temp
                 ] );
             }

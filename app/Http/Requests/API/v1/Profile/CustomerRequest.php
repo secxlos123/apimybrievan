@@ -110,6 +110,17 @@ class CustomerRequest extends FormRequest
              'name' => 'required|alpha_spaces',
             ];
         }
+        elseif ($this->user()->inRole('others'))
+        {
+            return[
+            'name' => 'required|alpha_spaces',
+            'email' => 'required|email|unique:third_parties,email|max:150',
+            'address' => 'required|string',
+            'city_id' => 'required|integer|exists:cities,id',
+            'phone_number' => 'required|string|regex:/^[0-9]+$/|max:15',
+
+            ];
+        }
 
 
     }

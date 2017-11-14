@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Sentinel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Appointment\StatusRequest;
 use App\Http\Requests\API\v1\Appointment\CreateRequest;
@@ -16,9 +17,15 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Appointment::paginate(5);
+        $data = Appointment::visibleColumn()->withEform();
+        if ($request->is('api/v1/eks/schedule')) {
+            $data = $data->customer($request->user()->id, $request->month, $request->year)->get();
+        } else {
+          $data = $data->ao($request->header('pn'),  $request->month, $request->year)->paginate(300);
+        }
+
         if ($data) {
             return response()->success([
                 'contents' => $data,
@@ -27,6 +34,9 @@ class AppointmentController extends Controller
 
         return response()->error([
             'message' => 'Data schedule User Tidak ada.',
+            'contents' => [
+              'data' => []
+            ]
         ], 500);
     }
 
@@ -48,7 +58,7 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        $save = Appointment::Create($request->all());
+        $save = Appointment::create($request->all());
         if ($save) {
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',
@@ -67,9 +77,17 @@ class AppointmentController extends Controller
      * @param  \App\Appointment  $appointment
      * @return \Illuminate\Http\Response
      */
-    public function show(Appointment $appointment)
+    public function show(Appointment $appointment, Request $request, $id)
     {
-        //
+      Appointment::visibleColumn()
+        ->withEform()
+        ->customer($request->user()->id, $request->month, $request->year)
+        ->where((new Appointment)->getTable() . '.id', $id)
+        ->first();
+
+        return response()->success([
+          'contents' => $appointment
+        ]);
     }
 
     /**
