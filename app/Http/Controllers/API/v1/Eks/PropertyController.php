@@ -106,10 +106,7 @@ class PropertyController extends Controller
             }
 
             // this logic for saving data to internal bri
-            if (env('APP_ENV') == 'production') {
-                $this->service($property);
-            }
-
+            $this->service($property);
             $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
             \DB::commit();            
         } catch (\Exception $e) {
@@ -148,7 +145,6 @@ class PropertyController extends Controller
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
 
-        \Log::info($id);
         if ($id['code'] == 200) {
             $property->update(['prop_id_bri' => $id['contents']]);
             return true;

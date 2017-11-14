@@ -3,6 +3,8 @@
 namespace App\Http\Requests\API\v1\Profile;
 
 use App\Http\Requests\BaseRequest as FormRequest;
+use App\Models\CustomerDetail;
+use App\Models\User;
 
 class CustomerRequest extends FormRequest
 {
@@ -27,8 +29,14 @@ class CustomerRequest extends FormRequest
         if( $this->segment( 6 ) == 'personal' )
         {
 
+            $login_session = Sentinel::getUser();
+                    $additional = '';
+                    if( $customer_detail = $login_session->customer_detail ) {
+                        $additional = ',' . $customer_detail->id;
+                    }
+
         return [
-             'nik' => 'required',
+             'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
              'name' => 'required|alpha_spaces',
              'birth_place_id' => 'required|exists:cities,id',
              'birth_date' => 'required|date',
@@ -47,11 +55,15 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'work')
         {
              return [
-            'type_id' => 'required',
-            'work_id' => 'required',
+            'job_type_id' => 'required',
+            'job_type_name'=>'required',
+            'job_id' => 'required',
+            'job_name'=>'required',
             'company_name' => 'required',
-            'position_id' => 'required',
-            'work_field_id' => 'required',
+            'position' => 'required',
+            'position_name'=>'required',
+            'job_field_id' => 'required',
+            'job_field_name'=>'required',
             'work_duration'=>'required',
             'work_duration_month'=>'',
             'office_address'=>'required'
@@ -84,8 +96,8 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'other')
         {
             return[
-             // 'npwp'=>'required',
-             // 'family_card'=>'required',
+              'npwp'=>'required',
+              'family_card'=>'required'
              // 'couple_identity'=>'required_if:status_id,2',
              // 'marrital_certificate'=>'required_if:status_id,2',
              // 'diforce_certificate'=>'required_if:status_id,3',
@@ -98,8 +110,40 @@ class CustomerRequest extends FormRequest
              'name' => 'required|alpha_spaces',
             ];
         }
+        elseif ($this->user()->inRole('others'))
+        {
+            return[
+            'name' => 'required|alpha_spaces',
+            'email' => 'required|email|unique:third_parties,email|max:150',
+            'address' => 'required|string',
+            'city_id' => 'required|integer|exists:cities,id',
+            'phone_number' => 'required|string|regex:/^[0-9]+$/|max:15',
+
+            ];
+        }
 
 
+    }
+
+    /**
+     * [messages description]
+     * @author erwan.akse@wgs.co.id
+     * @return [type] [description]
+     */
+    public function messages()
+    {
+        $email = '';
+        $nik =  isset($this->nik)?$this->nik:NULL;
+        if ($nik != NULL) {
+            $detail = CustomerDetail::where('nik','=',$nik)->first();
+            if (count($detail) != 0) {
+                $user = User::find($detail->user_id);
+                $email = $user->email; 
+            }
+        }
+        return [
+            'nik.unique' => 'Nomor Induk Kartu Penduduk Telah Digunakan Oleh Email '.$email,
+        ];
     }
 
     /**

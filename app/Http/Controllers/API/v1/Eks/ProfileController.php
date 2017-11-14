@@ -48,7 +48,7 @@ class ProfileController extends Controller
             \DB::beginTransaction();
             
             $customer = Customer::findOrFail( $user->id );
-            $customer->update( $request->except('_token','name','type_id','work_id','position_id'));
+            $customer->update( $request->except('_token','name'));
             
             \DB::commit();
             
@@ -89,7 +89,7 @@ class ProfileController extends Controller
 
             if ($temp) {
                 return response()->success( [
-                'message' => 'Data Pihak Developer berhasil dirubah.',
+                'message' => 'Data Profile berhasil dirubah.',
                 'contents' => $temp
                 ] );
             }
