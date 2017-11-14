@@ -28,7 +28,9 @@ class AppointmentController extends Controller
 
         if ($data) {
             return response()->success([
-                'contents' => $data,
+                'contents' => [
+                  'data' => $data
+                ],
             ], 200);
         }
 

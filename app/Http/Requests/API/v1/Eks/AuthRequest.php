@@ -3,7 +3,8 @@
 namespace App\Http\Requests\API\v1\Eks;
 
 use App\Http\Requests\BaseRequest;
-
+use App\Models\CustomerDetail;
+use App\Models\User;
 use Sentinel;
 
 class AuthRequest extends BaseRequest
@@ -119,6 +120,27 @@ class AuthRequest extends BaseRequest
                 return [];
                 break;
         };
+    }
+
+    /**
+     * [messages description]
+     * @author erwan.akse@wgs.co.id
+     * @return [type] [description]
+     */
+    public function messages()
+    {
+        $email = '';
+        $nik =  isset($this->nik)?$this->nik:NULL;
+        if ($nik != NULL) {
+            $detail = CustomerDetail::where('nik','=',$nik)->first();
+            if (count($detail) != 0) {
+                $user = User::find($detail->user_id);
+                $email = $user->email; 
+            }
+        }
+        return [
+            'nik.unique' => 'Nomor Induk Kartu Penduduk Telah Digunakan Oleh Email '.$email,
+        ];
     }
 
     /**

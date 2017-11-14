@@ -48,7 +48,7 @@ class ProfileController extends Controller
             \DB::beginTransaction();
             
             $customer = Customer::findOrFail( $user->id );
-            $customer->update( $request->except('_token','name','type_id','work_id','position_id'));
+            $customer->update( $request->except('_token','name'));
             
             \DB::commit();
             
