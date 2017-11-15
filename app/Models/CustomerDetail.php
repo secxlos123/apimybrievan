@@ -64,7 +64,7 @@ class CustomerDetail extends Model
                 $path = $image;
             }
         }
-        
+
         return url( $path );
     }
 
@@ -258,7 +258,7 @@ class CustomerDetail extends Model
         $doFunction = true;
 
         if ($callbackPosition) {
-            $doFunction = isset($this->attributes[ $attribute ]);            
+            $doFunction = isset($this->attributes[ $attribute ]);
         }
 
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
@@ -299,7 +299,9 @@ class CustomerDetail extends Model
             if ( isset($data[ $key ]) && !empty($data[ $key ]) ) {
                 $image = $this->globalSetImage( $data[ $key ], $key );
                 if ($image) {
-                    $this->update([ $key => $image ]);                    
+                    info($key);
+                    info($image);
+                    $this->update([ $key => $image ]);
                 }
             }
         }
