@@ -96,8 +96,8 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'other')
         {
             return[
-              'npwp'=>'required',
-              'family_card'=>'required'
+              // 'npwp'=>'required',
+              // 'family_card'=>'required'
              // 'couple_identity'=>'required_if:status_id,2',
              // 'marrital_certificate'=>'required_if:status_id,2',
              // 'diforce_certificate'=>'required_if:status_id,3',
