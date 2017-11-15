@@ -545,7 +545,7 @@ class User extends Authenticatable
 
         $user = \Sentinel::getUser();
 
-        if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf) 
+        if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf)
         {
              $return['success'] = false;
             $return['message'] = 'Password Lama Tidak Valid';
@@ -560,6 +560,6 @@ class User extends Authenticatable
 
         return $return;
 
-        
+
     }
 }

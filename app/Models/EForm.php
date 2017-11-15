@@ -113,7 +113,7 @@ class EForm extends Model
 
     /**
      * Get AO detail information.
-     *      
+     *
      * @return string
      */
     public function getAoNameAttribute()
@@ -211,6 +211,7 @@ class EForm extends Model
     public static function approve( $eform_id, $request )
     {
         $eform = static::find( $eform_id );
+        $result = false;
         if ( $request->is_approved ) {
              $result = $eform->insertCoreBRI();
         }
@@ -335,7 +336,7 @@ class EForm extends Model
             "gaji_bulanan_pemohon" => $customer_finance['salary']  ? $customer_finance['salary'] : '',
             "pendapatan_lain_pemohon" => $customer_finance['other_salary']  ? $customer_finance['other_salary'] : '',
             "gaji_bulanan_pasangan" => $customer_finance['salary_couple']  ? $customer_finance['salary_couple'] : '',
-            "pendapatan_lain_pasangan" => $customer_finance['other_salary_couple'] ? $customer_finance['other_salary_couple'] : '', 
+            "pendapatan_lain_pasangan" => $customer_finance['other_salary_couple'] ? $customer_finance['other_salary_couple'] : '',
             "angsuran" => $customer_finance['loan_installment']  ? $customer_finance['loan_installment'] : '',
             "jenis_kpp_value" => $lkn->kpp_type  ? $lkn->kpp_type : '',
             "permohonan_pinjaman" => $kpr->request_amount  ? $kpr->request_amount : '',
@@ -360,7 +361,7 @@ class EForm extends Model
             "npwp_pemohon" => $lkn->id_prescreening  ? $lkn->id_prescreening : '', // Tidak ada di design dan database
             "nama_pengelola" => $this->ao_name ? $this->ao_name : '' , // Nama AO
             "pn_pengelola" => $this->ao_id ? $this->ao_id : '', //"00139644",
-            "cif" => $this->cif_number ? $this->cif_number : '' 
+            "cif" => $this->cif_number ? $this->cif_number : ''
              //Informasi nomor CIF
         ];
         $request += $this->additional_parameters;
@@ -379,19 +380,19 @@ class EForm extends Model
         $step = 1;
         $allRequest = array();
         $return = true;
-        
+
         foreach ($endpoint as $value => $key) {
             \Log::info("Start Step " . $step);
-            
+
             $request = $this->{"step".$step}($this->additional_parameters);
             $allRequest += $request;
 
             $sendRequest = ($step == 7 ? $allRequest : $request);
-            
+
             \Log::info(json_encode($sendRequest));
-            
+
             $set = $this->SentToBri( $sendRequest, $key[0], $key[1] );
-            
+
             if (!$set) {
                 \Log::info('Error Step Ke -'.$step);
                 $return = false;
