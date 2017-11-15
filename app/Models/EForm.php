@@ -442,7 +442,7 @@ class EForm extends Model
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
         $user = \RestwsHc::getUser();
 
-        return $query->where( function( $eform ) use( $request, &$user ) {
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
 
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
@@ -455,6 +455,14 @@ class EForm extends Model
                     $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
                 }
             }
+
+            if ($request->has('ref_number')) {
+                 $eform->where('eforms.ref_number', '=', $request->input('ref_number'));
+            }
+
+            // if (($request->has('customer_name'))&&($request->has('customer_name'))) {
+            //      $eform->where('eforms.customer_name', '=', $request->input('customer_name'))->where('eforms.ref_number', '=', $request->input('ref_number'));
+            // }
 
             if ($request->has('search')) {
                  $eform->where('eforms.ref_number', '=', $request->input('search'));
@@ -475,7 +483,14 @@ class EForm extends Model
                 $eform->where(\DB::Raw("TRIM(LEADING '0' FROM branch_id)"), (string) intval($request->input('branch_id')) );
             }
 
-        } )->orderBy('eforms.'.$sort[0], $sort[1]);
+        } );
+
+        if ($request->has('customer_name')) {
+            $eform =  $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id' )
+             ->where(\DB::RAW("users.first_name"), 'like', '%'.$request->input('customer_name').'%');
+        }
+
+        return $eform->orderBy('eforms.'.$sort[0], $sort[1]);
     }
 
     /**
