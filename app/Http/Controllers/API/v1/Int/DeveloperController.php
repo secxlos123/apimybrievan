@@ -41,16 +41,20 @@ class DeveloperController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $id = null)
     {
         $limit = $request->input('limit') ?: 10;
-        $developers = Developer::getLists($request)->paginate($limit);
+        if (!$id) {
+          $developers = Developer::getLists($request)->paginate($limit);
+        } else {
+          $developers = Developer::where('id', $id)->get();
+        }
         $developers->transform(function ($developer) {
             $temp = $developer->toArray();
             $temp['image'] = $developer->image ? url("uploads/avatars/{$developer->image}") : asset('img/noimage.jpg');
             return $temp;
         });
-        return response()->success(['contents' => $developers]);
+        return response()->success(['contents' => !$id ? $developers : $developers->first()]);
     }
 
     /**
