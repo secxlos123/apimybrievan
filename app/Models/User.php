@@ -360,13 +360,14 @@ class User extends Authenticatable
      */
     protected function responseDeveloperSales($user)
     {
-        log::info($user);
-        $developer = $user->developer;
+        \log::info($user);
+        $developer = $user->userdeveloper;
 
         return [
             'id'            => $user->id,
-            'name'          => $user->name,
+            'name'          => $user->fullname,
             'email'         => $user->email,
+            'mobile_phone'  => $user->mobile_phone,
             'birth_date'    => $developer->birth_date,
             'join_date'     => $developer->join_date,
             'admin_developer_id' => $developer->admin_developer_id

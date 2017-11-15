@@ -125,6 +125,31 @@ class AuthController extends Controller
                     'is_register_completed' => $user->is_register_completed
                 ] + $additional,
             ];
+        }else{
+            $user = JWTAuth::toUser($token);
+            $additional = [ 'nik' => null ];
+            if( $customer = $user->customer_detail ) {
+                $additional = [
+                    'nik' => $customer->nik
+                ];
+            }
+            $code = 200; $status = 'success';
+            $response = [
+                'message' => 'Login Sukses',
+                'contents'=> [
+                    'token' => 'Bearer ' . $token,
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'first_name' => $user->first_name,
+                    'last_name'  => $user->last_name,
+                    'fullname'   => $user->fullname,
+                    'image'  => $user->image,
+                    'role' => $user->roles->first()->slug,
+                    'permission' => $user->roles->first()->permissions,
+                    'is_register_simple' => $user->is_register_simple,
+                    'is_register_completed' => $user->is_register_completed
+                ] + $additional,
+            ];
         }
 
         // all good so return the token
