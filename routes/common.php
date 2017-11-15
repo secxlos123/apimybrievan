@@ -50,6 +50,6 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
 		/**
 		 * Route for get list developers
 		 */
-		Route::get('developers', 'DeveloperController@index');
+		Route::get('developers/{id?}', 'DeveloperController@index');
 	});
 });
