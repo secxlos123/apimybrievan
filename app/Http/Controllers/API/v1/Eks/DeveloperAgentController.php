@@ -73,8 +73,8 @@ class DeveloperAgentController extends Controller
         $user = User::create($request->all());
         $activation = Activation::create($user);
         Activation::complete($user, $activation->code);
-        $email = dispatch(new SendPasswordEmail($user, $password, 'registered'));
-        \Log::info($email);
+        dispatch(new SendPasswordEmail($user, $password, 'registered'));
+        // \Log::info($email);
         $user->roles()->sync($request->input('role_id'));
 
         if ($user) {
