@@ -29,7 +29,7 @@ class CustomerRequest extends FormRequest
         if( $this->segment( 6 ) == 'personal' )
         {
 
-            $login_session = Sentinel::getUser();
+            $login_session = \Sentinel::getUser();
                     $additional = '';
                     if( $customer_detail = $login_session->customer_detail ) {
                         $additional = ',' . $customer_detail->id;
@@ -83,7 +83,7 @@ class CustomerRequest extends FormRequest
             'loan_installment' => 'required',
             'dependent_amount' => 'required',
             ];
-            
+
         }
         else if ($this->segment( 6 ) == 'contact')
         {
@@ -96,16 +96,16 @@ class CustomerRequest extends FormRequest
         else if ($this->segment( 6 ) == 'other')
         {
             return[
-              'npwp'=>'required',
-              'family_card'=>'required'
+              // 'npwp'=>'required',
+              // 'family_card'=>'required'
              // 'couple_identity'=>'required_if:status_id,2',
              // 'marrital_certificate'=>'required_if:status_id,2',
              // 'diforce_certificate'=>'required_if:status_id,3',
-             // 'status_id'=>'required'   
+             // 'status_id'=>'required'
             ];
         }
-        elseif ($this->user()->inRole('developer')) 
-        {    
+        elseif ($this->user()->inRole('developer'))
+        {
             return[
              'name' => 'required|alpha_spaces',
             ];
@@ -138,7 +138,7 @@ class CustomerRequest extends FormRequest
             $detail = CustomerDetail::where('nik','=',$nik)->first();
             if (count($detail) != 0) {
                 $user = User::find($detail->user_id);
-                $email = $user->email; 
+                $email = $user->email;
             }
         }
         return [
@@ -153,11 +153,11 @@ class CustomerRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        
+
             if ( null !== $this->input('name') ) {
                     list($first_name, $last_name) = name_separator($this->input('name'));
                     $this->merge( compact( 'first_name', 'last_name' ) );
-                } 
+                }
 
         return parent::getValidatorInstance();
     }

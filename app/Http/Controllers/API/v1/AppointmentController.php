@@ -20,18 +20,29 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         $data = Appointment::visibleColumn()->withEform();
-        if ($request->is('api/v1/eks/schedule')) {
+        $eks = $request->is('api/v1/eks/schedule');
+        if ($eks) {
             $data = $data->customer($request->user()->id, $request->month, $request->year)->get();
         } else {
           $data = $data->ao($request->header('pn'),  $request->month, $request->year)->paginate(300);
         }
-
         if ($data) {
-            return response()->success([
-                'contents' => [
+            if (count($data) > 0) {
+              if ($eks) {
+                $data = [
                   'data' => $data
-                ],
-            ], 200);
+                ];
+              }
+              return response()->success([
+                  'contents' => $data
+              ], 200);
+            } else {
+              return response()->success([
+                  'contents' => [
+                    'data' => []
+                  ],
+              ], 200);
+            }
         }
 
         return response()->error([
@@ -64,7 +75,7 @@ class AppointmentController extends Controller
         if ($save) {
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',
-                'contents' => $save,
+                'contents' => collect($save)->merge($request->all()),
             ], 201);
         }
 
@@ -81,14 +92,14 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment, Request $request, $id)
     {
-      Appointment::visibleColumn()
+      $appointment = $appointment->visibleColumn()
         ->withEform()
         ->customer($request->user()->id, $request->month, $request->year)
         ->where((new Appointment)->getTable() . '.id', $id)
         ->first();
 
         return response()->success([
-          'contents' => $appointment
+          'contents' => $appointment ? $appointment : (object)[]
         ]);
     }
 
@@ -118,7 +129,7 @@ class AppointmentController extends Controller
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
             return response()->success([
                 'message' => 'Data schedule User berhasil Dirubah.',
-                'contents' => $Update,
+                'contents' => Appointment::visibleColumn()->withEform()->find($id),
             ], 201);
         }
 

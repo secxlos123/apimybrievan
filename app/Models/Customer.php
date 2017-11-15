@@ -283,10 +283,12 @@ class Customer extends User
         $separate_array_keys = array_flip( $this->fillable );
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
-        $this->detail()->update( $customer_data );
+        if (count($customer_data) > 0) {
+          $this->detail()->update( $customer_data );
+        }
         if ($this->detail) {
             $this->detail->updateAllImageAttribute( $keys, $customer_data, 'customer' );
-        } 
+        }
 
         foreach ($keys as $key) {
             if ( isset($data[ $key ]) ) {
@@ -310,7 +312,7 @@ class Customer extends User
             if (isset( $data[ 'couple_birth_date' ] )) {
                 $data[ 'couple_birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'couple_birth_date' ] ) );
             }
-            
+
             $data[ 'gender' ] = str_replace( 'PEREMPUAN', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'LAKI-LAKI', 'L', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
