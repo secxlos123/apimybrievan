@@ -299,9 +299,7 @@ class CustomerDetail extends Model
             if ( isset($data[ $key ]) && !empty($data[ $key ]) ) {
                 $image = $this->globalSetImage( $data[ $key ], $key );
                 if ($image) {
-                    info($key);
-                    info($image);
-                    $this->update([ $key => $image ]);
+                    // $this->update([ $key => $image ]);
                 }
             }
         }
