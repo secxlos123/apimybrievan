@@ -49,7 +49,7 @@ class ProfileController extends Controller
 
             $customer = Customer::findOrFail( $user->id );
             // $customer->update( $request->except('_token','name') );
-            $customer->update( $request->except('_token', 'name', 'couple_birth_place', 'city', 'birth_place') );
+            $customer->update( $request->except('_token', 'name', 'couple_birth_place', 'city', 'birth_place', 'citizenship') );
 
             \DB::commit();
 
