@@ -297,10 +297,10 @@ class CustomerDetail extends Model
         $newData = array();
         foreach ($keys as $key) {
             if ( isset($data[ $key ]) && !empty($data[ $key ]) ) {
-                // $image = $this->globalSetImage( $data[ $key ], $key );
-                // if ($image) {
-                //     $this->update([ $key => $image ]);
-                // }
+                $image = $this->globalSetImage( $data[ $key ], $key );
+                if ($image) {
+                    $this->update([ $key => $image ]);
+                }
             }
         }
     }
