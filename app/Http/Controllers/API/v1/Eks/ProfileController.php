@@ -42,16 +42,17 @@ class ProfileController extends Controller
     public function update(CustomerRequest $request)
     {
         $user = $request->user();
-        
+
         if ($user->inRole('customer'))
         {
             \DB::beginTransaction();
-            
+
             $customer = Customer::findOrFail( $user->id );
-            $customer->update( $request->except('_token','name'));
-            
+            // $customer->update( $request->except('_token','name') );
+            $customer->update( $request->except('_token', 'name', 'couple_birth_place', 'city', 'birth_place') );
+
             \DB::commit();
-            
+
             if ($customer) {
                 return response()->success( [
                 'message' => 'Data nasabah berhasil dirubah.',
@@ -63,23 +64,23 @@ class ProfileController extends Controller
                 'message' => 'Data nasabah Tidak Dapat dirubah.'
                 ],422 );
             }
-            
+
         }
-        
+
         // if ($user->inRole('other')) {
 
         //     \DB::beginTransaction();
         //     $thirdparty = ThirdParty::findOrFail( $user->id );
         //     $thirdparty->update( $request->all() );
         //     \DB::commit();
-            
+
         //     if ($thirdparty) {
         //         return response()->success( [
         //         'message' => 'Data Pihak ke-3 berhasil dirubah.',
         //         'contents' => $thirdparty
         //         ] );
         //     }
-            
+
         // }
 
         if ($user->inRole('developer') || $user->inRole('others')) {
@@ -109,7 +110,7 @@ class ProfileController extends Controller
     public function change_password(ChangePasswordRequest $request)
     {
         $user = $request->user();
-        
+
         $return = $user->changePassword($request);
 
         if ($return['success']) {
