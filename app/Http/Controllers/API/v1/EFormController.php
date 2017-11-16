@@ -159,7 +159,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::approve( $eform_id, $request );
-        if( $eform instanceof EForm ) {
+        if( $eform['status'] ) {
             DB::commit();
 
             return response()->success( [
@@ -170,7 +170,7 @@ class EFormController extends Controller
         } else {
             DB::rollback();
             return response()->success( [
-                'message' => 'E-form gagal diapprove.',
+                'message' => $eform['message'],
                 'contents' => $eform
             ], 404 );
         }

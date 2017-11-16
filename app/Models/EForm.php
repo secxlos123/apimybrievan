@@ -72,7 +72,7 @@ class EForm extends Model
      */
     public function getCustomerNameAttribute()
     {
-        return $this->customer->fullname;
+        return str_replace('"', '', str_replace("'", '', $this->customer->fullname));
     }
 
     /**
@@ -211,11 +211,11 @@ class EForm extends Model
     public static function approve( $eform_id, $request )
     {
         $eform = static::find( $eform_id );
-        $result = false;
+        $resul['status'] = false;
         if ( $request->is_approved ) {
              $result = $eform->insertCoreBRI();
         }
-        if ($result) {
+        if ($result['status']) {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
@@ -224,13 +224,13 @@ class EForm extends Model
                 'is_approved' => $request->is_approved
             ] );
         }
-        return $eform;
+        return $result;
     }
 
     /**
      * Function to insert data to core BRI.
      *
-     * @return string
+     * @return array
      */
     public function insertCoreBRI()
     {
@@ -379,7 +379,10 @@ class EForm extends Model
 
         $step = 1;
         $allRequest = array();
-        $return = true;
+        $return = array(
+            'status' => true
+            , 'message' => ''
+        );
 
         foreach ($endpoint as $value => $key) {
             \Log::info("Start Step " . $step);
@@ -392,10 +395,14 @@ class EForm extends Model
             \Log::info(json_encode($sendRequest));
 
             $set = $this->SentToBri( $sendRequest, $key[0], $key[1] );
-            \Log::info($set);
-            if (!$set) {
+
+            if (!$set['status']) {
                 \Log::info('Error Step Ke -'.$step);
-                $return = false;
+                $return = array(
+                    'status' => false
+                    , 'message' => $set[ 'message' ]
+                );
+                \Log::info($return);
                 break;
             }
 
@@ -439,7 +446,7 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
         $user = \RestwsHc::getUser();
 
         if ( $sort[0] == "ref_number" ) {
@@ -492,12 +499,12 @@ class EForm extends Model
         if ( $user['role'] != 'ao' ) {
             $eform = $eform->select([
                     'eforms.*'
-                    , \DB::Raw(" case when ao_id is not null then 1 else 0 end as new_order ")
+                    , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
                 ])
                 ->orderBy('new_order', 'asc');
 
         }
-        
+        \Log::info($eform->toSql());
         return $eform->orderBy('eforms.'.$sort[0], $sort[1]);
     }
 
@@ -590,11 +597,15 @@ class EForm extends Model
      */
     public function SentToBri($request, $endpoint, $value = null)
     {
-        $return = false;
         $post_to_bri = Asmx::setEndpoint( $endpoint )
             ->setBody( [
                 'request' => json_encode( $request )
             ] )->post( 'form_params' );
+
+        $return = array(
+            'status' => false
+            , 'message' => isset($post_to_bri[ 'contents' ]) ? $post_to_bri[ 'contents' ] : ''
+        );
 
         \Log::info('============================================================================================');
         \Log::info($endpoint);
@@ -606,7 +617,10 @@ class EForm extends Model
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
                 $this->save();
             }
-            $return = true;
+            $return = array(
+                'status' => true
+                , 'message' => ''
+            );
         }
 
         return $return;
@@ -620,6 +634,7 @@ class EForm extends Model
      */
     public function step1($data)
     {
+        \Log::info("step1");
         $customer = clone $this->customer;
         $customer_detail = (object) $customer->personal;
         $customer_work = (object) $customer->work;
@@ -662,6 +677,7 @@ class EForm extends Model
      */
     public function step2($data)
     {
+        \Log::info("step2");
         $customer = clone $this->customer;
         $customer_detail = (object) $customer->personal;
         $customer_work = (object) $customer->work;
@@ -699,12 +715,14 @@ class EForm extends Model
      */
     public function step3($data)
     {
+        \Log::info("step3");
         $kpr = $this->kpr;
         $customer = clone $this->customer;
         $customer_detail = (object) $customer->personal;
         $lkn = $this->visit_report;
 
         $request = $data + [
+            "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
             "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
@@ -727,6 +745,7 @@ class EForm extends Model
      */
     public function step4($data)
     {
+        \Log::info("step4");
         return $data;
     }
 
@@ -738,6 +757,7 @@ class EForm extends Model
      */
     public function step5($data)
     {
+        \Log::info("step5");
         $kpr = $this->kpr;
         $customer = clone $this->customer;
         $customer_finance = (object) $customer->Financial;
@@ -763,6 +783,7 @@ class EForm extends Model
      */
     public function step6($data)
     {
+        \Log::info("step6");
         $lkn = $this->visit_report;
 
         $request = $data + [
@@ -780,6 +801,7 @@ class EForm extends Model
      */
     public function step7($data)
     {
+        \Log::info("step7");
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name , 
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id 
