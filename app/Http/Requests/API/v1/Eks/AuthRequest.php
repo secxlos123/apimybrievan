@@ -32,7 +32,7 @@ class AuthRequest extends BaseRequest
                 if( $this->segment( 5 ) == 'register' ) {
                     return [
                         'email' => 'required|email|unique:users,email',
-                        'password' => 'required|min:6',
+                        'password' => 'required|min:6|regex:/^(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/|confirmed'
                     ];
                 } else if ( $this->segment( 5 ) == 'login' ) {
                     return [
