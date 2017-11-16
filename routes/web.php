@@ -1,6 +1,7 @@
 <?php
 
 use App\Mail\Register;
+use App\Mail\VerificationEFormCustomer;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +20,16 @@ Route::get('/routes', function () {
 });
 
 Route::get('email', function () {
-	$mail = [ 'url' => '', 'email' => 'candra.s@smooets.com'];
-	$send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
+	 $mail = [ 'url' => 'aktivasi akun 3', 'email' => 'rahmatramadhan13@gmail.com'];
+	 $send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
+
+	//$mail = [
+        //'email' => 'rahmatramadhan13@gmail.com',
+         //'name' => 'mohammad rachmat ramadhan plus dua',
+       //  'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/ashkda23878923uhy7dh32kct23'
+     //];
+
+	//$send = Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
 	dd($send);
 });
 
