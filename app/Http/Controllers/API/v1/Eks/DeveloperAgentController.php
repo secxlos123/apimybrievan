@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserDeveloper;
 use App\Models\User;
+use JWTAuth;
 use App\Helpers\Traits\ManageUserTrait;
 use App\Http\Requests\API\v1\DeveloperAgent\CreateRequest;
 use App\Http\Requests\API\v1\DeveloperAgent\UpdateRequest;
@@ -73,8 +74,9 @@ class DeveloperAgentController extends Controller
         $user = User::create($request->all());
         $activation = Activation::create($user);
         Activation::complete($user, $activation->code);
-        $email = dispatch(new SendPasswordEmail($user, $password, 'registered'));
-        \Log::info($email);
+        dispatch(new SendPasswordEmail($user, $password, 'registered'));
+        $token = JWTAuth::fromUser( $user );
+         \Log::info($token);
         $user->roles()->sync($request->input('role_id'));
 
         if ($user) {

@@ -19,12 +19,12 @@ class PropertyController extends Controller
         $long = $request->input('long') ? $request->input('long') : 0;
         $lat = $request->input('lat') ? $request->input('lat') : 0;
 
-        if ( ! $developerId && $request->user() ) 
+        if ( ! $developerId && $request->user() )
             $developerId = $request->user()->inRole('developer') ? $request->user()->id : null;
-        
+
         $limit = $request->input('limit') ?: 10;
         $properties = Property::getLists($request, $developerId)->paginate($limit);
-        
+
         $properties->transform(function ($prop) use ($long, $lat) {
             $props = $prop->toArray();
             $props['prop_photo'] = $prop->propPhoto ? $prop->propPhoto->image : null;
@@ -88,7 +88,7 @@ class PropertyController extends Controller
 
     /**
      * Handling store and update property
-     * 
+     *
      * @param  Request $request  [description]
      * @param  \App\Models\Property|array  $property [description]
      * @return \Illuminate\Http\Response
@@ -108,7 +108,7 @@ class PropertyController extends Controller
             // this logic for saving data to internal bri
             $this->service($property);
             $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-            \DB::commit();            
+            \DB::commit();
         } catch (\Exception $e) {
             \DB::rollBack();
             $status = 'error'; $message = $e->getMessage();
@@ -120,7 +120,7 @@ class PropertyController extends Controller
 
     /**
      * Submit to service BRI
-     * 
+     *
      * @return void
      */
     public function service($property)
@@ -136,7 +136,7 @@ class PropertyController extends Controller
             'deskripsi_project' => $property->description,
             'telepon_project' => $property->pic_phone ?: '',
             'hp_project' => $property->pic_project ?: '',
-            'fax_project' => '', 
+            'fax_project' => '',
             'deskripsi_pks_project' => $property->developer->pks_description ?: '',
             'project_value' => $property->prop_id_bri ?: '',
         ];
@@ -155,9 +155,9 @@ class PropertyController extends Controller
 
     /**
      * Get properties by nearby location
-     * 
-     * @param  Request $request 
-     * @return \Illuminate\Http\Response          
+     *
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
      */
     public function nearby(Request $request)
     {
