@@ -58,7 +58,9 @@ class BRITransport extends Transport
     {
         \Log::info('=========================================ini data masukan================');
         \Log::info($message);
-        $this->beforeSendPerformed($message);
+        $data = $this->beforeSendPerformed($message);
+        \Log::info('=========================================ini data before masukan================');
+        \Log::info($data);
         /**
          * Wait for testing
          */
@@ -78,8 +80,9 @@ class BRITransport extends Transport
         \Log::info($res->getStatusCode());
         \Log::info('=========================================Respon Content data Service================');
     	\Log::info($res->getBody()->getContents());
-        $this->sendPerformed($message);
-
+        \Log::info('=========================================ini data sent sendPerformed================');
+        $sent = $this->sendPerformed($message);
+        \Log::info($sent);
         return $this->numberOfRecipients($message);
     }
 
