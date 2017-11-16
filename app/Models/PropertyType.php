@@ -155,10 +155,8 @@ class PropertyType extends Model
     public function scopeSearch($query, Request $request)
     {
         return $query
-            ->where('certificate', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('surface_area', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('building_area', 'ilike', "%{$request->input('search')}%")
-            ->orWhere('name', 'ilike', "%{$request->input('search')}%");
+            ->where('certificate', 'ilike', "%".$request->input('search')."%")
+            ->orWhere('name', 'ilike', "%".$request->input('search')."%");
     }
 
     /**
