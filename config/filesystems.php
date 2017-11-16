@@ -45,41 +45,41 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => public_path('uploads'),
         ],
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'root' => public_path('uploads'),
+            'url' => env('APP_URL').'/uploads',
             'visibility' => 'public',
         ],
         
         'properties' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/properties'),
-            'url' => env('APP_URL').'/storage/properties',
+            'root' => public_path('uploads/properties'),
+            'url' => env('APP_URL').'/uploads/properties',
             'visibility' => 'public',
         ],
 
         'types' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/types'),
-            'url' => env('APP_URL').'/storage/types',
+            'root' => public_path('uploads/types'),
+            'url' => env('APP_URL').'/uploads/types',
             'visibility' => 'public',
         ],
 
         'units' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/units'),
-            'url' => env('APP_URL').'/storage/units',
+            'root' => public_path('uploads/units'),
+            'url' => env('APP_URL').'/uploads/units',
             'visibility' => 'public',
         ],
 
         'uploads' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/uploads'),
-            'url' => env('APP_URL').'/storage/uploads',
+            'root' => public_path('uploads'),
+            'url' => env('APP_URL').'/uploads',
             'visibility' => 'public',
         ],
 

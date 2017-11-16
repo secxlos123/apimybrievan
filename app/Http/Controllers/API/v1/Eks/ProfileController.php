@@ -22,6 +22,8 @@ class ProfileController extends Controller
     public function index( Request $request )
     {
         $user = $request->user();
+        \Log::info('===============ini data Profile User======================');
+        \Log::info($user);
         if( $user->inRole( 'customer' ) ) {
             $profile = Customer::find( $user->id );
         } else {

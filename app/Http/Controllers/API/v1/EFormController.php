@@ -109,6 +109,26 @@ class EFormController extends Controller
     }
 
     /**
+     * Get data for prescreening.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    // public function postPrescreening( Request $request )
+    // {
+    //     $kpp_list_service = Asmx::setEndpoint( 'GetJenisDibiayai' )->setQuery( [
+    //         'search' => $request->search,
+    //         'limit' => $request->limit,
+    //         'page' => $request->page,
+    //         'sort' => $request->sort,
+    //     ] )->post();
+
+    //     return response()->success( [
+    //         'message' => 'Screening e-form berhasil disimpan.',
+    //         'contents' => $eform
+    //     ], 201 );
+    // }
+
+    /**
      * Set E-Form AO disposition.
      *
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request

@@ -44,7 +44,7 @@ class CustomerRequest extends FormRequest
              'city_id' => 'required|numeric|exists:cities,id',
              'gender' => 'required|in:L,P',
              'citizenship_id' => 'required',
-             'status' => 'required|in:0,1,2',
+             'status' => 'required|in:1,2,3',
              'address_status'=>'required|in:0,1,3',
              // 'phone' => 'digits:12|numeric',
              'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',

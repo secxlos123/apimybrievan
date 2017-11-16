@@ -392,7 +392,7 @@ class EForm extends Model
             \Log::info(json_encode($sendRequest));
 
             $set = $this->SentToBri( $sendRequest, $key[0], $key[1] );
-
+            \Log::info($set);
             if (!$set) {
                 \Log::info('Error Step Ke -'.$step);
                 $return = false;
@@ -439,56 +439,65 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
-        return $query->where( function( $eform ) use( $request, &$user ) {
-            if( $request->has( 'status' ) ) {
-                if( $request->status == 'Submit' ) {
-                    $eform->whereIsApproved( true );
-                } else if( $request->status == 'Initiate' ) {
-                    $eform->has( 'visit_report' )->whereIsApproved( false );
-                } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+        if ( $sort[0] == "ref_number" ) {
+            $sort = ['created_at', 'desc'];
+        }
+
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+                if( $request->has( 'status' ) ) {
+                    if( $request->status == 'Submit' ) {
+                        $eform->whereIsApproved( true );
+                    } else if( $request->status == 'Initiate' ) {
+                        $eform->has( 'visit_report' )->whereIsApproved( false );
+                    } else if( $request->status == 'Dispose' ) {
+                        $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    } else if( $request->status == 'Rekomend' ) {
+                        $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    }
                 }
-            }
+            } );
 
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if ($request->has('ref_number')) {
-                 $eform->where('eforms.ref_number', '=', $request->input('ref_number'));
+                $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
             }
-
-            // if (($request->has('customer_name'))&&($request->has('customer_name'))) {
-            //      $eform->where('eforms.customer_name', '=', $request->input('customer_name'))->where('eforms.ref_number', '=', $request->input('ref_number'));
-            // }
 
             if ($request->has('search')) {
-                $eform->where('eforms.ref_number', '=', $request->input('search'));
+                $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
             }
+        } );
 
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if ($request->has('start_date') || $request->has('end_date')) {
                 $start_date= date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
-                $eform->whereBetween('eforms.created_at',array($start_date,$end_date));
+                $eform->orWhereBetween('eforms.created_at',array($start_date,$end_date));
             }
+        } );
 
+        $eform = $eform->where( function( $eform ) use( $request, &$user ) {
             if ( $user['role'] == 'ao' ) {
-                $eform->where('ao_id', $user['pn']);
+                $eform = $eform->where('eforms.ao_id', $user['pn']);
 
             }
 
             if ($request->has('branch_id')) {
-                $eform->where(\DB::Raw("TRIM(LEADING '0' FROM branch_id)"), (string) intval($request->input('branch_id')) );
+                $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')) );
             }
-
         } );
 
-        if ($request->has('customer_name')) {
-            $eform =  $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id' )
-             ->where(\DB::RAW("users.first_name"), 'like', '%'.$request->input('customer_name').'%');
-        }
+        if ( $user['role'] != 'ao' ) {
+            $eform = $eform->select([
+                    'eforms.*'
+                    , \DB::Raw(" case when ao_id is not null then 1 else 0 end as new_order ")
+                ])
+                ->orderBy('new_order', 'asc');
 
+        }
+        
         return $eform->orderBy('eforms.'.$sort[0], $sort[1]);
     }
 
@@ -737,7 +746,7 @@ class EForm extends Model
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
             "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary)),
-            "jangka_waktu" => ( $kpr->year * 12 ),
+            "jangka_waktu" => $kpr->year,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
             "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary))
