@@ -29,7 +29,7 @@ class CustomerRequest extends FormRequest
         if( $this->segment( 6 ) == 'personal' )
         {
 
-            $login_session = Sentinel::getUser();
+            $login_session = \Sentinel::getUser();
                     $additional = '';
                     if( $customer_detail = $login_session->customer_detail ) {
                         $additional = ',' . $customer_detail->id;

@@ -60,7 +60,7 @@ class AuthRequest extends BaseRequest
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city_id' => 'required',
-                        'phone' => 'required|numeric|digits_between:7,16',
+                        //'phone' => 'required|numeric|digits_between:7,16',
                         'citizenship' => 'required',
                         'status' => 'required|in:1,2,3',
                         'address_status' => 'required',
@@ -139,7 +139,7 @@ class AuthRequest extends BaseRequest
             }
         }
         return [
-            'nik.unique' => 'Nomor Induk Kartu Penduduk Telah Digunakan Oleh Email '.$email,
+            'nik.unique' => 'NIK telah terdaftar mohon login menggunakan email yang telah terdaftar '.$email,
         ];
     }
 

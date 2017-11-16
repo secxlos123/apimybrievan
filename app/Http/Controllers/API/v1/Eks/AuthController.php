@@ -48,9 +48,7 @@ class AuthController extends Controller
             'permission' => $user->roles->first()->permissions
         ];
         
-        if (in_array(env('APP_ENV'), ['local', 'staging'])) {
-            event( new CustomerRegister( $user, $activation->code ) );
-        }
+        event( new CustomerRegister( $user, $activation->code ) );
 
         DB::commit();
         return response()->success( [

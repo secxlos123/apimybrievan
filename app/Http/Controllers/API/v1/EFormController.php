@@ -57,6 +57,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
+        if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+            $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+            $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+        }
+
         \Log::info($baseRequest);
 
         $baseArray = array (

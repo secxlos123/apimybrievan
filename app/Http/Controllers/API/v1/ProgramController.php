@@ -18,6 +18,7 @@ class ProgramController extends Controller
     public function index( Request $request )
     {
         $program_list_service = Asmx::setEndpoint( 'GetProgram' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,

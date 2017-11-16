@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\CustomerRequest;
 use App\Events\Customer\CustomerVerify;
 use App\Models\Customer;
+use App\Models\CustomerDetail;
 use App\Models\EForm;
 use App\Models\User;
 use Sentinel;
@@ -77,7 +78,13 @@ class CustomerController extends Controller
 	 */
 	public function show( $type, $id )
 	{
-		$customer = Customer::findOrFail( $id );
+		$customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
+
+		if (count($customerDetail) > 0) {
+			$customer = Customer::findOrFail( $customerDetail->user_id );
+		} else {
+			$customer = Customer::findOrFail( $id );
+		}
 		return response()->success( [
 			'message' => 'Sukses',
 			'contents' => $customer

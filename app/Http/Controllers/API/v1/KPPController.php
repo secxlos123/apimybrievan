@@ -18,6 +18,7 @@ class KPPController extends Controller
     public function index( Request $request )
     {
         $kpp_list_service = Asmx::setEndpoint( 'GetJenisKPP' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,

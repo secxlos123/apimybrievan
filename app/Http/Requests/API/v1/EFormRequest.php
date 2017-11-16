@@ -23,6 +23,11 @@ class EFormRequest extends BaseRequest
      */
     public function rules()
     {
+        if ($this->input('developer')) {
+            $property = 'required_unless:developer,1';
+        } else {
+            $property = '';
+        }
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 if( $this->segment(6) == 'disposition' ) {
@@ -37,9 +42,10 @@ class EFormRequest extends BaseRequest
                 } else {
                     return [
                         'product_type' => 'required|in:kpr',
-                        'status_property' => 'required_if:product_type,kpr,required|in:new,second',
-                        'developer' => 'required_if:product_type,kpr,required_if:status_property,new',
-                        'property' => 'required_if:product_type,kpr,required_if:status_property,new',
+                        'status_property' => 'required_if:product_type,kpr,required',
+                        'developer' => 'required_if:status_property,1',
+                        'kpr_type_property' => 'required_if:developer,>,1',
+                        'property' => $property,
                         'price' => 'required_if:product_type,kpr,required|numeric',
                         'building_area' => 'required_if:product_type,kpr,required|numeric',
                         'home_location' => 'required_if:product_type,kpr,required',

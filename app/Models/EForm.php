@@ -134,18 +134,18 @@ class EForm extends Model
     public function getStatusAttribute()
     {
         if ( !$this->is_approved && $this->recommended) {
-            return 'Rejected';
+            return 'Kredit Ditolak';
         }
         if( $this->is_approved ) {
-            return 'Submit';
+            return 'Proses CLF';
         }
         if( $this->visit_report ) {
-            return 'Initiate';
+            return 'Prakarsa';
         }
         if( $this->ao_id ) {
-            return 'Dispose';
+            return 'Disposisi Pengajuan';
         }
-        return 'Rekomend';
+        return 'Pengajuan Kredit';
     }
 
     /**
@@ -196,7 +196,7 @@ class EForm extends Model
         $ref_number .= date( 'm' );
         $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] )->max( 'ref_number' );
         if( $ref_number_check ) {
-            $ref_number .= substr( ( '00' . ( integer ) substr( $ref_number_check, -2 ) + 1 ), -2 );
+            $ref_number .= substr( ( '00' . ( integer ) substr( $ref_number_check, -2 ) + 1 ), -10 );
         } else {
             $ref_number .= '01';
         }
@@ -442,7 +442,6 @@ class EForm extends Model
         $user = \RestwsHc::getUser();
 
         return $query->where( function( $eform ) use( $request, &$user ) {
-
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
@@ -456,7 +455,7 @@ class EForm extends Model
             }
 
             if ($request->has('search')) {
-                 $eform->where('eforms.ref_number', '=', $request->input('search'));
+                $eform->where('eforms.ref_number', '=', $request->input('search'));
             }
 
             if ($request->has('start_date') || $request->has('end_date')) {
@@ -624,7 +623,7 @@ class EForm extends Model
             "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
-            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
+            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number
         ];
 
         return $request;
@@ -644,7 +643,7 @@ class EForm extends Model
         $lkn = $this->visit_report;
 
         $request = $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
@@ -682,7 +681,7 @@ class EForm extends Model
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
@@ -756,6 +755,10 @@ class EForm extends Model
      */
     public function step7($data)
     {
-        return $data;
+        $request = $data + [
+            "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name , 
+            "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id 
+        ];
+        return $request;
     }
 }

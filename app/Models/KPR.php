@@ -28,7 +28,7 @@ class KPR extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name' ];
+    protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -56,7 +56,7 @@ class KPR extends Model
         \Log::info($data);
         $eform = EForm::create( $data );
         $data[ 'developer_id' ] = $data[ 'developer' ];
-        $data[ 'property_id' ] = $data[ 'property' ];
+        $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
         $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
 
         // $customer = $eform->customer;

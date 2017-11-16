@@ -56,15 +56,28 @@ class BRITransport extends Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
+        \Log::info('=========================================ini data masukan================');
+        \Log::info($message);
         $this->beforeSendPerformed($message);
-
         /**
          * Wait for testing
          */
         
-        \RestwsHc::setBody($this->payload($message))->post('form_params');
-        // $this->client->post($this->url, $this->payload($message));
-
+        //\RestwsHc::setBody($this->payload($message))->post('form_params');
+        \Log::info('=========================================sent data================');
+        $res = $this->client->post($this->url.'/send_emailv2', 
+        	  ['form_params' => [ 
+        	  	'headers' => ['Content-type' => 'application/x-www-form-urlencoded'] ,
+        	  	'app_id'  => $this->key,
+        	  	'subject' => $message->getSubject(),
+        	  	'content' => $message->getBody(),
+        	  	'to' => array_keys($message->getTo())[0]
+        	  	],
+        	  ]);
+        \Log::info('=========================================Respon data Service================');
+        \Log::info($res->getStatusCode());
+        \Log::info('=========================================Respon Content data Service================');
+    	\Log::info($res->getBody()->getContents());
         $this->sendPerformed($message);
 
         return $this->numberOfRecipients($message);
@@ -80,17 +93,15 @@ class BRITransport extends Transport
     protected function payload(Swift_Mime_Message $message)
     {
         return [
-            // 'form_params' => [
-                'request' => json_encode([
-                    'requestMethod' => 'send_email',
-                    'requestData' =>  [
-                        'app_id'  => $this->key, // app_id
-                        'subject' => $message->getSubject(),
-                        'content' => $message->getBody(),
-                        'to' => array_keys($message->getTo())[0],
-                    ]
-                ])
-            // ],
+             // 'request' => [
+             //    'requestMethod' => 'send_emailv2',
+             //     'requestData' =>  [
+                    'app_id'  => $this->key, // app_id
+                    'subject' => $message->getSubject(),
+                    'content' => $message->getBody(),
+                    'to' => array_keys($message->getTo())[0],
+             //     ]
+             // ]
 
         ];
     }

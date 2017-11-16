@@ -18,6 +18,7 @@ class ProjectController extends Controller
     public function index( Request $request )
     {
         $project_list_service = Asmx::setEndpoint( 'GetProject' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,

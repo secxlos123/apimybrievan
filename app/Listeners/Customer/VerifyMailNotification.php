@@ -33,7 +33,7 @@ class VerifyMailNotification
         $customer_data = $event->customer;
         $eform = $event->eform;
 
-        if (ENV('APP_ENV') == 'local') {
+        
             $mail = [
                 'email' => $customer_data->email,
                 'name' => $customer_data->fullname,
@@ -75,18 +75,7 @@ class VerifyMailNotification
                 'emergency_contact'=>$customer->emergency_contact,
                 'emergency_relation'=>$customer->emergency_relation
             ];
-            
-            Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
-            
-        } else {
-            $mail = [
-                'email' => $customer_data->email,
-                'name' => $customer_data->fullname,
-                'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/' . $eform->token
-            ];
 
-            Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
-
-        }
+        Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
     }
 }
