@@ -14,7 +14,7 @@
                     <td height="20px"></td>
                 </tr>
                 <tr>
-                    <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:30px; color:#3b3b3b; font-weight: bold; ">Aktivasi Akun Anda</td>
+                    <td align="center">Aktivasi Akun Anda</td>
                 </tr>
                 <tr>
                     <td height="20px"></td>
@@ -26,8 +26,8 @@
                     <td height="20px"></td>
                 </tr>
                 <tr>
-                    <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">
-                        <span style="font-weight: bold;">Hai, {!! $mail['email'] !!}!</span>
+                    <td align="center">
+                        <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
                         Terima kasih telah mendaftarkan akun Anda di My BRI.
                         <br>
@@ -45,8 +45,8 @@
             <table class="textbutton" align="center" border="0" cellspacing="0" cellpadding="0">
                 <tbody>
                     <tr>
-                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif;">
-                            <a href="{!! $mail[ 'url' ] !!}">Aktivasi Akun</a>
+                        <td align="center">
+                            <a href="{!! $mail[ 'url' ] !!}">Tautan</a>
                         </td>
                     </tr>
                 </tbody>

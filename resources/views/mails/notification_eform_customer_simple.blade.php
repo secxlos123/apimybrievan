@@ -1,1 +1,50 @@
-<table tampilanxxx="border-spacing: 0; border-collapse: collapse; table-layout: fixed; margin: 0 auto;" width="100%" border="0" align="center" cellpadding="0" cellspacing="0" bgcolor="#00529C"><tr><td align="center"><table class="table600" width="600" border="0" align="center" cellpadding="0" cellspacing="0"><tr><td tampilanxxx="border-collapse: collapse;" height="60"></td></tr><tr><td tampilanxxx="border-collapse: collapse;" align="center"><table tampilanxxx="border-top:3px solid #F7941E; border-radius:4px;box-shadow: 0px 3px 0px #F7941E;" bgcolor="#FFFFFF" width="100%" border="0" align="center" cellpadding="0" cellspacing="0"><tr><td tampilanxxx="border-collapse: collapse;" align="center"><table width="550" align="center" class="table-inner" border="0" cellspacing="0" cellpadding="0"><tr><td tampilanxxx="border-collapse: collapse;" height="15"></td></tr><tr><td tampilanxxx="border-collapse: collapse;"><table class="table3-3" width="50" border="0" align="left" cellpadding="0" cellspacing="0"><tr><td align="center" tampilanxxx="line-height:0px; border-collapse: collapse;"><img tampilanxxx="display:block; line-height:0px; font-size:0px; border:0px; display: block !important;" src="images/logo.png" width="40" height="40" alt="logo" /></td></tr></table><table width="1" height="15" border="0" cellpadding="0" cellspacing="0" align="left"><tr><td height="15" tampilanxxx="font-size: 0;line-height: 0;border-collapse: collapse;"><p tampilanxxx="padding-left: 24px;">&nbsp;</p></td></tr></table><table align="right" class="table3-3" width="160" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" tampilanxxx="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;"><span tampilanxxx="font-weight: bold; color:#00529c; border-collapse: collapse;">No. Ref</span>: xxxxx</td></tr></table></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="15"></td></tr></table></td></tr></table></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="25"></td></tr><tr><td tampilanxxx="border-collapse: collapse;" align="center"><table align="center" bgcolor="#FFFFFF" tampilanxxx="box-shadow: 0px 3px 0px #bdc3c7; border-radius:4px;" width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td tampilanxxx="border-collapse: collapse;" align="center"><table align="center" class="table-inner" width="500" border="0" cellspacing="0" cellpadding="0"><tr><td tampilanxxx="border-collapse: collapse;" height="50"></td></tr><tr><td align="center" tampilanxxx="font-family: 'Open Sans', Arial, sans-serif; font-size:30px; color:#3b3b3b; font-weight: bold; border-collapse: collapse;">Notification E Form Customer</td></tr><tr><td tampilanxxx="border-collapse: collapse;" align="center"><table width="25" border="0" cellspacing="0" cellpadding="0"><tr><td height="20" tampilanxxx="border-bottom:2px solid #00529c; border-collapse: collapse;"></td></tr></table></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="20"></td></tr><tr><td align="center" tampilanxxx="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px; border-collapse: collapse;"><span tampilanxxx="font-weight: bold;">Hai, {!! $mail[ 'name' ] !!}!</span><br>Terima Kasih telah melakukan konfirmasi E Form.<br/>Anda dengan memilih <strong>{!! $mail[ 'status' ] !!}</strong>.<br></td></tr></table></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="40"></td></tr><tr><td tampilanxxx="border-collapse: collapse;" align="center" bgcolor="#ecf0f1"><table align="center" class="table-inner" width="550" border="0" cellspacing="0" cellpadding="0"><tr><td tampilanxxx="border-collapse: collapse;" height="30"></td></tr><tr><td tampilanxxx="border-collapse: collapse;" align="center"></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="30"></td></tr></table></td></tr></table></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="20"></td></tr><tr><td tampilanxxx="border-collapse: collapse;"><table align="left" class="table3-3" width="390" border="0" cellspacing="0" cellpadding="0"><tr><td tampilanxxx="font-family: 'Open Sans', Arial, sans-serif; font-size:12px; color:#ffffff; line-height:30px; border-collapse: collapse;">© 2017<a tampilanxxx="color: #fff; text-decoration: none;" href="#">Bank Rakyat Indonesia</a>. All Rights Reserved.</td></tr></table><table width="1" height="25" border="0" cellpadding="0" cellspacing="0" align="left"><tr><td height="25" tampilanxxx="font-size: 0;line-height: 0;border-collapse: collapse;"><p tampilanxxx="padding-left: 24px;">&nbsp;</p></td></tr></table></td></tr><tr><td tampilanxxx="border-collapse: collapse;" height="60"></td></tr></table></td></tr></table>
+ <table align="center" bgcolor="#fafafa" width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td height="20px"></td>
+    </tr>
+    <tr>
+        <td align="center">
+            <table align="center" class="table-inner" width="500px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="center">
+                        <img align="center" width="200px" src="https://mybri.stagingapps.net/assets/images/logo/Logo-Website.png">
+                    </td>
+                </tr>
+                <tr>
+                    <td height="20px"></td>
+                </tr>
+                <tr>
+                    <td align="center">Notification E-Form Customer</td>
+                </tr>
+                <tr>
+                    <td height="20px"></td>
+                </tr>
+                <tr>
+                    <td bgcolor="#F7941E" height="5" align="center"></td>
+                </tr>
+                <tr>
+                    <td height="20px"></td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <span>Hai, {!! $mail['email'] !!}!</span>
+                        <br/>
+                        Terima Kasih telah melakukan konfirmasi E-Form.
+                        <br/>
+                        Anda dengan memilih <b>{!! $mail[ 'status' ] !!}</b>.
+                        <br/>
+                        Terima kasih.
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td height="20px"></td>
+    </tr>
+    <tr>
+        <td align="center" bgcolor="#fafafa">
+            <img align="center" width="500" src="https://mybri.stagingapps.net/assets/images/logo/footer.png">
+        </td>
+    </tr>
+</table>
