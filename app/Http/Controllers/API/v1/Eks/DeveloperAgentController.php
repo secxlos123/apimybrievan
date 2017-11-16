@@ -175,9 +175,25 @@ class DeveloperAgentController extends Controller
     */
     public function banned(Request $request, $id)
     {
+        $cek = $request->all();
+        \Log::info($cek);
+        \Log::info("---------------------------------------------------");
         $user = User::findOrFail($id);
+        \Log::info($user);
+        if($user->is_actived == true)
+        {
+            $user->update($request->all());
+            Activation::remove($user);
+        }
+        elseif($user->is_actived == false)
+        {
+            $user = User::findOrFail($id);
+            $user->update($request->all());
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
+        }
      
-        $user->update($request->all());
+        // $user->update($request->all());
         return response()->success([
             'message' => 'Data Activated Agent Developer ini Berhasil update',
             'contents' => $user,
