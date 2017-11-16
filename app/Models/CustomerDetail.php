@@ -237,14 +237,16 @@ class CustomerDetail extends Model
      */
     public function globalSetImageAttribute( $image, $attribute, $callbackPosition = null )
     {
-        if (gettype($image) == "string") {
+        if ($image != "") {
             $this->attributes[ $attribute ] = $image;
 
-        } else {
-            $return = $this->globalSetImage( $image, $attribute, $callbackPosition );
-            if ( $return ) {
-                $this->attributes[ $attribute ] = $return;
+            if (gettype($image) != "string") {
+                $return = $this->globalSetImage( $image, $attribute, $callbackPosition );
+                if ( $return ) {
+                    $this->attributes[ $attribute ] = $return;
+                }
             }
+            
         }
     }
 

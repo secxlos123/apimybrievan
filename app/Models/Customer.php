@@ -258,7 +258,7 @@ class Customer extends User
         $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'] ] + array_diff_key( $data, $separate_array_keys );
       	\Log::info('==========ini data insert ke detail=======');
 	    \Log::info($customer_data);
-	CustomerDetail::create( $customer_data );
+        CustomerDetail::create( $customer_data );
         // send mail notification
         $customer = static::find( $user->id );
         // event( new CustomerRegistered( $customer, $password ) );

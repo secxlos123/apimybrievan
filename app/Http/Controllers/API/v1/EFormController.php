@@ -57,6 +57,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
+        if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+            $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+            $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+        }
+
         \Log::info($baseRequest);
 
         $baseArray = array (
@@ -102,6 +107,26 @@ class EFormController extends Controller
             'contents' => $eform
         ], 201 );
     }
+
+    /**
+     * Get data for prescreening.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    // public function postPrescreening( Request $request )
+    // {
+    //     $kpp_list_service = Asmx::setEndpoint( 'GetJenisDibiayai' )->setQuery( [
+    //         'search' => $request->search,
+    //         'limit' => $request->limit,
+    //         'page' => $request->page,
+    //         'sort' => $request->sort,
+    //     ] )->post();
+
+    //     return response()->success( [
+    //         'message' => 'Screening e-form berhasil disimpan.',
+    //         'contents' => $eform
+    //     ], 201 );
+    // }
 
     /**
      * Set E-Form AO disposition.

@@ -17,7 +17,7 @@ class CreateVisitReportsTable extends Migration
             $table->increments( 'id' );
             $table->integer( 'eform_id' )->unsigned();
             $table->string( 'purpose_of_visit' )->nullable();
-            $table->string( 'result' )->nullable();
+            $table->text( 'result' )->nullable();
             $table->string( 'photo_with_customer' )->nullable();
             $table->text( 'pros' )->nullable();
             $table->text( 'cons' )->nullable();

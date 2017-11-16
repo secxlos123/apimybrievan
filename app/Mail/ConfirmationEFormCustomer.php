@@ -35,6 +35,9 @@ class ConfirmationEFormCustomer extends Mailable
      */
     public function build()
     {
+        if (env('APP_ENV') == 'production') {
+            return $this->view( 'mails.notification_eform_customer_simple', $this->mail );
+        }
         return $this->view( 'mails.notification_eform_customer', $this->mail );
     }
 }

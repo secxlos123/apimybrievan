@@ -18,6 +18,7 @@ class CostTypeController extends Controller
     public function index( Request $request )
     {
         $kpp_list_service = Asmx::setEndpoint( 'GetJenisDibiayai' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,

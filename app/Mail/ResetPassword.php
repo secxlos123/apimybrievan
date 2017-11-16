@@ -36,7 +36,7 @@ class ResetPassword extends Mailable
     public function build()
     {
         if (env('APP_ENV') == 'production') {
-            return $this->view( 'mails.register-simple', $this->mail );
+            return $this->view( 'mails.reset-password_simple', $this->mail );
         }
         
         return $this->view('mails.reset-password', $this->mail);

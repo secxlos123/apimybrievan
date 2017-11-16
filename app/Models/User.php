@@ -36,7 +36,9 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $appends = ['gender_sim'];
+    protected $appends = [
+        'gender_sim'
+    ];
 
     /**
      * The attributes that should be casted to native types.
@@ -243,12 +245,14 @@ class User extends Authenticatable
     {
         if ( ! $user instanceof $this ) {
             $password = str_random(8);
+	        \Log::info('================================== Password ============================');
+	        \Log::info($password);
             $request->merge(['password' => bcrypt($password)]);
             $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
             dispatch(new SendPasswordEmail($user, $password, 'registered'));
-        } else {
+        } else { 
             $user->update($request->all());
         }
 
@@ -411,10 +415,21 @@ class User extends Authenticatable
             $userFill[] = "users.{$fillable}";
         }
 
+        $subQuery = "(select max(id) as eform_id, user_id from ( select c.user_id, eforms.id from eforms 
+            left join customer_details as c on eforms.user_id = c.user_id
+            left join visit_reports as v on eforms.id = v.eform_id
+            order by eforms.created_at desc) data group by user_id) as last_eform
+        ";
+
         return $query
             ->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )
             ->leftJoin( 'cities as c', 'customer_details.city_id', '=', 'c.id' )
             ->leftJoin( 'cities as bplace', 'customer_details.birth_place_id', '=', 'bplace.id' )
+            ->leftJoin( \DB::Raw($subQuery), function( $join ) {
+                return $join->on('last_eform.user_id', '=', 'users.id');
+            })
+            ->leftJoin( 'eforms as e', 'last_eform.eform_id', '=', 'e.id' )
+            ->leftJoin( 'visit_reports as v', 'e.id', '=', 'v.eform_id' )
             ->where( function( $user ) use( $request ) {
 
                 if ($request->has('name')) {
@@ -428,6 +443,9 @@ class User extends Authenticatable
 
                 if( $request->has( 'nik' ) ) {
                     $user->where( 'customer_details.nik', 'ilike', '%' . $request->input( 'nik' ) . '%' );
+                }
+                if( $request->has( 'user_id' ) ) {
+                    $user->where( 'users.id', '=', $request->input( 'user_id' ) );
                 }
                 if( $request->has( 'city_id' ) ) {
                     $user->where( 'customer_details.city_id', '=', $request->input( 'city_id' ) );
@@ -454,6 +472,14 @@ class User extends Authenticatable
                 'customer_details.couple_identity', 'customer_details.couple_nik', 'customer_details.couple_name',
                 'customer_details.couple_birth_date', 'customer_details.couple_birth_place_id',
                 'customer_details.identity', 'customer_details.address'
+                , \DB::Raw("
+                    case when e.id is null then 'Tidak Ada Pengajuan'
+                    when e.is_approved = false and e.recommended = true then 'Kredit Ditolak' 
+                    when e.is_approved = true then 'Proses CLF' 
+                    when v.id is not null then 'Prakarsa' 
+                    when e.ao_id is not null then 'Disposisii Pengajuan' 
+                    else 'Pengajuan Kredit' end as application_status
+                ")
             ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place' );
     }
 

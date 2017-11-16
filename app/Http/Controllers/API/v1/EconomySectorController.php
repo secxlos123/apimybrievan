@@ -18,6 +18,7 @@ class EconomySectorController extends Controller
     public function index( Request $request )
     {
         $economy_sector_list_service = Asmx::setEndpoint( 'GetSektorEkonomi' )->setQuery( [
+            'search' => $request->search,
             'limit' => $request->limit,
             'page' => $request->page,
             'sort' => $request->sort,
