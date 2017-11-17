@@ -45,6 +45,6 @@ class CreateViewDevelopersViewTable extends Migration
      */
     public function down()
     {
-        \DB::unprepared("DROP VIEW developers_view_table");
+        \DB::unprepared("DROP VIEW IF EXISTS developers_view_table");
     }
 }
