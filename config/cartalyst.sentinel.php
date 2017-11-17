@@ -113,7 +113,7 @@ return [
 
         'model' => 'Cartalyst\Sentinel\Persistences\EloquentPersistence',
 
-        'single' => false,
+        'single' => true,
 
     ],
 

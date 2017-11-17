@@ -98,18 +98,18 @@ class EForm extends Model
         return 0;
     }
 
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    public function getBranchAttribute()
-    {
-        // if( $branch = $this->branch ) {
-        //     return $this->branch->name;
-        // }
-        return 'Branch Name';
-    }
+    // /**
+    //  * Get AO detail information.
+    //  *
+    //  * @return string
+    //  */
+    // public function getBranchAttribute()
+    // {
+    //     // if( $branch = $this->branch ) {
+    //     //     return $this->branch->name;
+    //     // }
+    //     return 'Branch Name';
+    // }
 
     /**
      * Get AO detail information.
@@ -446,11 +446,11 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
         if ( $sort[0] == "ref_number" ) {
-            $sort = ['created_at', 'desc'];
+            $sort = ['created_at', 'asc'];
         }
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
@@ -474,6 +474,9 @@ class EForm extends Model
 
             if ($request->has('search')) {
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
+
+            if ($request->has('customer_name')){
+            }
             }
         } );
 
@@ -504,8 +507,12 @@ class EForm extends Model
                 ->orderBy('new_order', 'asc');
 
         }
+        
+        $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
+        
         \Log::info($eform->toSql());
-        return $eform->orderBy('eforms.'.$sort[0], $sort[1]);
+
+        return $eform;
     }
 
     /**
