@@ -47,7 +47,7 @@ class CreateRequest extends FormRequest
             'pks_number' => 'required',
             'facilities' => 'required',
             'pic_name'   => 'required|alpha_spaces',
-            'pic_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
+            'pic_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
             'photo'      => 'required|image|max:1024',
         ];
 

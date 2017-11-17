@@ -70,7 +70,7 @@ class BRITransport extends Transport
         $res = $this->client->post($this->url.'/send_emailv2', 
         	  ['form_params' => [ 
         	  	'headers' => ['Content-type' => 'application/x-www-form-urlencoded'] ,
-        	  	'app_id'  => $this->key,
+        	  	'app_id'  => 'mybriapi',
         	  	'subject' => $message->getSubject(),
         	  	'content' => $message->getBody(),
         	  	'to' => array_keys($message->getTo())[0]
@@ -99,7 +99,7 @@ class BRITransport extends Transport
              // 'request' => [
              //    'requestMethod' => 'send_emailv2',
              //     'requestData' =>  [
-                    'app_id'  => $this->key, // app_id
+                    'app_id'  => 'mybriapi',
                     'subject' => $message->getSubject(),
                     'content' => $message->getBody(),
                     'to' => array_keys($message->getTo())[0],

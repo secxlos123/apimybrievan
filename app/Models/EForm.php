@@ -195,11 +195,13 @@ class EForm extends Model
         $ref_number .= date( 'y' );
         $ref_number .= date( 'm' );
         $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] )->max( 'ref_number' );
-        if( $ref_number_check ) {
-            $ref_number .= substr( ( '00' . ( integer ) substr( $ref_number_check, -2 ) + 1 ), -10 );
+
+        if( count($ref_number_check) > 0 ) {
+            $ref_number .= ((integer) substr($ref_number_check, 0, 7)) + 1;
         } else {
-            $ref_number .= '01';
+            $ref_number .= '1';
         }
+
         $this->attributes[ 'ref_number' ] = $ref_number;
     }
 

@@ -73,7 +73,7 @@ class OfficeController extends Controller
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
                 'requestData'   => [
-                    'app_id' => 'appidmybri',
+                    'app_id' => 'mybriapi',
                     'kode_branch' => $request->get('branch', 0),
                     'distance'    => $request->get('distance', 10),
 

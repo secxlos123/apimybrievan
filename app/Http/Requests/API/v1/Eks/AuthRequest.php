@@ -26,13 +26,13 @@ class AuthRequest extends BaseRequest
      */
     public function rules()
     {
-        // \Log::info($this->all());
+        \Log::info($this->all());
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 if( $this->segment( 5 ) == 'register' ) {
                     return [
                         'email' => 'required|email|unique:users,email',
-                        'password' => 'required|min:6|regex:/^(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/|confirmed'
+                        'password' => 'required|min:6|regex:/^(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/'
                     ];
                 } else if ( $this->segment( 5 ) == 'login' ) {
                     return [
@@ -60,13 +60,13 @@ class AuthRequest extends BaseRequest
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city_id' => 'required',
-                        //'phone' => 'required|numeric|digits_between:7,16',
+                        //'phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
                         'citizenship' => 'required',
                         'status' => 'required|in:1,2,3',
                         'address_status' => 'required',
                         'mother_name' => 'required',
-                        'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
-                        'emergency_contact' => 'required|numeric|digits_between:9,16',
+                        'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
+                        'emergency_contact' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
                         'emergency_relation' => 'required',
                         'work_type' => 'required',
                         'work' => 'required',
@@ -100,7 +100,7 @@ class AuthRequest extends BaseRequest
                         // 'email' => 'required|email',
                         'first_name' => 'required',
                         'last_name' => '',
-                        'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
+                        'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
                         'status' => 'required|in:1,2,3',
                         'mother_name' => 'required',
                         'birth_place_id' => 'required',

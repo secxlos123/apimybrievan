@@ -18,7 +18,7 @@ class CreateThirdpartyTable extends Migration
             $table->string('name', 150)->nullable();
             $table->longText('address')->nullable();
             $table->unsignedInteger('city_id')->nullable();
-            $table->bigInteger('phone_number')->nullable();
+            $table->string('phone_number')->nullable();
             $table->string('email', 50)->nullable();
             $table->enum('is_actived', ['active', 'disabled'])->default('active');
             $table->timestamps();
