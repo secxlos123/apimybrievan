@@ -67,7 +67,7 @@ class VerificationController extends Controller
             'request' => json_encode( [
                 'requestMethod' => 'get_customer_profile_nik',
                 'requestData'   => [
-                    'app_id' => 'appidmybri',
+                    'app_id' => 'mybriapi',
                     'nik' => $eform->nik
                 ],
             ] )

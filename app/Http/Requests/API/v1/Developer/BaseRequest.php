@@ -28,7 +28,7 @@ class BaseRequest extends FormRequest
             'city_id'       => 'required|exists:cities,id',
             'address'       => 'required',
             // 'phone'         => 'required',
-            'mobile_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:16',
+            'mobile_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
             'image'         => 'image|max:1024'
         ];
     }

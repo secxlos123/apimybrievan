@@ -200,25 +200,34 @@
                                 <td>Hubungan : </td>
                                 <td>{!! $mail['emergency_relation'] !!}</td>
                             </tr>
+                            <tr>
+                                <td height="20px"></td>
+                            </tr>
                         </table>
                         <br>
-                        <ol>
-                            <li>
-                                Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit.
-                            </li>
-                            <li>
-                                Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya.
-                            </li>
-                            <li>
-                                Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.
-                            </li>
-                            <li>
-                                Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.
-                            </li>
-                            <li>
-                                Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI.
-                            </li>
-                        </ol>
+                        <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>
+                                    <ol>
+                                        <li>
+                                            Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit.
+                                        </li>
+                                        <li>
+                                            Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya.
+                                        </li>
+                                        <li>
+                                            Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.
+                                        </li>
+                                        <li>
+                                            Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.
+                                        </li>
+                                        <li>
+                                            Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI.
+                                        </li>
+                                    </ol>
+                                </td>
+                            </tr>
+                        </table>
                         <br>
                     </td>
                 </tr>
