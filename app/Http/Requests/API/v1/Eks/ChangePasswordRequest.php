@@ -26,7 +26,7 @@ class ChangePasswordRequest extends BaseRequest
         return
         [
             'old_password' => 'required',
-            'password' => 'required|min:6|confirmed'
+            'password' => 'required|min:6|regex:/^(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/|confirmed'
 
         ];   
     }
