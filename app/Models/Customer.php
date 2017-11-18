@@ -91,6 +91,7 @@ class Customer extends User
             'birth_place' => $this->birth_place,
             'birth_date' => $this->detail ? $this->detail->birth_date : '',
             'address' => $this->detail ? $this->detail->address : '',
+            'current_address' => $this->detail ? $this->detail->current_address : '',
             'city_id' => $this->detail ? $this->detail->city_id : '',
             'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
             'citizenship_id' => $this->detail ? $this->detail->citizenship_id : '',
