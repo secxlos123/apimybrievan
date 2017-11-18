@@ -68,8 +68,8 @@ class AuthController extends Controller
             ], 200 );
 
         } else {
-            return response()->success( [
-                'message' => $login[ 'responseData' ],
+            return response()->error( [
+                'message' => 'Gagal Terhubung Dengan Server',
                 'contents'=> []
             ], 422 );
         }
