@@ -49,6 +49,8 @@ class ProfileController extends Controller
         if ($user->inRole('customer'))
         {
             \DB::beginTransaction();
+            $profile = Customer::find( $user->id );
+            $profile->update($request->except('_token', 'name','_method'));
             $customer = CustomerDetail::updateOrCreate(['user_id'=>$user->id],$request->except('_token', 'name','_method') );
             \DB::commit();
 
