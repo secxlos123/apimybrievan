@@ -119,6 +119,7 @@ class VerificationController extends Controller
                     'phone' => $customer->phone,
                     'mobile_phone' => $customer->mobile_phone,
                     'address' => $customer->detail->address,
+                    'current_address' => $customer->detail->current_address,
                     'citizenship_id' => $customer->detail->citizenship_id,
                     'citizenship_name' => $customer->detail->citizenship_name,
                     'status' => $customer->detail->status_id,
