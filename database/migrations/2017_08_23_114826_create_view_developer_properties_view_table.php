@@ -41,6 +41,6 @@ class CreateViewDeveloperPropertiesViewTable extends Migration
      */
     public function down()
     {
-        \DB::unprepared("DROP VIEW developer_properties_view_table");
+        \DB::unprepared("DROP VIEW IF EXISTS developer_properties_view_table");
     }
 }

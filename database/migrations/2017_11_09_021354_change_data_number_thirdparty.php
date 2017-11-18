@@ -26,7 +26,7 @@ class ChangeDataNumberThirdparty extends Migration
     public function down()
     {
         Schema::table('third_parties', function (Blueprint $table) {
-             $table->bigInteger('phone_number')->nullable()->change();
+             $table->string('phone_number')->nullable()->change();
         });
     }
 }

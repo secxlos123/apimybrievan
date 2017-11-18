@@ -26,9 +26,7 @@ class ChangeDataTypeOnLkn extends Migration
      */
     public function down()
     {
-        Schema::table('visit_reports', function (Blueprint $table) {
-            // $table->integer('npwp_number')->nullable()->change();
-            // $table->integer('selling_price')->nullable()->change();
-        });
+        \DB::statement("ALTER TABLE visit_reports ALTER npwp_number TYPE INTEGER USING 0 ");
+        \DB::statement("ALTER TABLE visit_reports ALTER selling_price TYPE BIGINT USING 0 ");
     }
 }

@@ -28,7 +28,7 @@ class CreateVisitReportsTable extends Migration
             $table->text( 'reason_for_sale' )->nullable();
             
             $table->string( 'relation_with_seller' )->nullable();
-            $table->integer( 'npwp' )->nullable();
+            $table->integer( 'npwp_id' )->nullable();
             $table->string( 'income_type' )->nullable();
             $table->string( 'couples_monthly_salary' )->nullable();
             $table->string( 'other_income_couples' )->nullable();

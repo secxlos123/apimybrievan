@@ -16,7 +16,7 @@ class CreateTableKpr extends Migration
         Schema::create( 'kpr', function ( Blueprint $table ) {
             $table->increments( 'id' );
             $table->integer( 'eform_id' );
-            $table->enum( 'status_property', [ 'new', 'second' ] );
+            $table->string( 'status_property' );
             $table->integer( 'developer_id' )->nullable();
             $table->integer( 'property_id' )->nullable();
             $table->double( 'price' );

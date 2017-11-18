@@ -43,6 +43,6 @@ class CreateViewUsersViewTable extends Migration
      */
     public function down()
     {
-        \DB::unprepared("DROP VIEW users_view_table");
+        \DB::unprepared("DROP VIEW IF EXISTS users_view_table");
     }
 }

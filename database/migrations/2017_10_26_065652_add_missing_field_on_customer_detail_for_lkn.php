@@ -27,7 +27,7 @@ class AddMissingFieldOnCustomerDetailForLkn extends Migration
             $table->renameColumn('sub_third_party_value', 'id_prescreening');
             $table->enum('recommended', ['yes', 'no'])->nullable();
             $table->longText('recommendation')->nullable();
-            $table->renameColumn('npwp', 'npwp_number');
+            $table->renameColumn('npwp_id', 'npwp_number');
             $table->renameColumn('family_name', 'npwp');
             $table->string('legal_document')->nullable();
             $table->string('marrital_certificate')->nullable();
@@ -60,7 +60,7 @@ class AddMissingFieldOnCustomerDetailForLkn extends Migration
             $table->renameColumn('id_prescreening', 'sub_third_party_value');
             $table->dropColumn('recommended');
             $table->dropColumn('recommendation');
-            $table->renameColumn('npwp_number', 'npwp');
+            $table->renameColumn('npwp_number', 'npwp_id');
             $table->renameColumn('npwp', 'family_name');
             $table->dropColumn('legal_document');
             $table->dropColumn('marrital_certificate');
