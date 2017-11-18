@@ -6,6 +6,7 @@ use Activation;
 use App\Jobs\SendPasswordEmail;
 use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 use File;
+use Developer;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 
@@ -364,9 +365,14 @@ class User extends Authenticatable
      */
     protected function responseDeveloperSales($user)
     {
-        \log::info($user);
         $developer = $user->userdeveloper;
-
+        $id = $developer->admin_developer_id;
+        $query = \DB::table('developers')
+                ->join('cities', 'cities.id', '=', 'developers.city_id')
+                ->join('users', 'users.id', '=', 'developers.user_id')
+                ->select('developers.company_name', 'developers.address', 'users.mobile_phone', 'cities.name as city_name')
+                ->where('user_id', $id)->get();
+        foreach ($query as $key => $value) {
         return [
             'id'            => $user->id,
             'name'          => $user->fullname,
@@ -374,8 +380,13 @@ class User extends Authenticatable
             'mobile_phone'  => $user->mobile_phone,
             'birth_date'    => $developer->birth_date,
             'join_date'     => $developer->join_date,
-            'admin_developer_id' => $developer->admin_developer_id
+            'admin_developer_id' => $developer->admin_developer_id,
+            'company_name'  => $value->company_name,
+            'address'       => $value->address,
+            'phone_number'  => $value->mobile_phone,
+            'city_name'     => $value->city_name,
         ];
+         }
     }
 
     /**
