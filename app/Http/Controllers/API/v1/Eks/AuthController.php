@@ -86,9 +86,16 @@ class AuthController extends Controller
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
         try {
+             $check = Sentinel::findByCredentials(['login' => $request->email]);
+             if ($check) {
+                if (!$activation = Activation::completed($check)){
+                 return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
+                }
+             }
+             
             // attempt to verify the credentials and create a token for the user
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->error(['message' => 'invalid_credentials'], 401);
+                return response()->error(['message' => 'Identitas tersebut tidak cocok dengan data kami.'], 401);
             }
         } catch (JWTException $e) {
             // something went wrong whilst attempting to encode the token
