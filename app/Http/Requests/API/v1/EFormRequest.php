@@ -23,6 +23,7 @@ class EFormRequest extends BaseRequest
      */
     public function rules()
     {
+        \Log::info($this->all());
         if ($this->input('developer')) {
             $property = 'required_unless:developer,1';
         } else {
@@ -63,14 +64,14 @@ class EFormRequest extends BaseRequest
                     ];
                 }
                 break;
-            
+
             case 'put':
                 return [
                     'id' => 'required|exists:eforms,id',
                     'prescreening_status' => 'required|integer'
                 ];
                 break;
-            
+
             default:
                 return [
                     //
