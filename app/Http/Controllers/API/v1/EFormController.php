@@ -188,7 +188,7 @@ class EFormController extends Controller
         } else {
             DB::rollback();
             return response()->success( [
-                'message' => $eform['message'],
+                'message' => $eform['message'] ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
             ], 404 );
         }
