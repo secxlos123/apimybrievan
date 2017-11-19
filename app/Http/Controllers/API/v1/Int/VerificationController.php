@@ -22,87 +22,6 @@ class VerificationController extends Controller
     {
         $eform = EForm::findOrFail( $eform_id );
         $customer = $eform->customer;
-        $kemendagri = RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_kemendagri_profile_nik',
-                'requestData' => [
-                    'nik'     => $eform->nik,
-                    'id_user' => $request->header( 'pn' )
-                ],
-            ])
-        ] )->setHeaders( [
-            'Authorization' => $request->header( 'Authorization' )
-        ] )->post( 'form_params' );
-        if( $kemendagri[ 'responseCode' ] == '00' ) {
-            $kemendagri_result = [
-                'name' => $kemendagri[ 'responseData' ][ 0 ][ 'namaLengkap' ],
-                'gender' => $kemendagri[ 'responseData' ][ 0 ][ 'jenisKelamin' ],
-                'birth_place' => $kemendagri[ 'responseData' ][ 0 ][ 'tempatLahir' ],
-                'birth_date' => $kemendagri[ 'responseData' ][ 0 ][ 'tanggalLahir' ],
-                'phone' => '',
-                'mobile_phone' => '',
-                'address' => $kemendagri[ 'responseData' ][ 0 ][ 'alamat' ],
-                'citizenship' => '',
-                'status' => $kemendagri[ 'responseData' ][ 0 ][ 'statusKawin' ],
-                'address_status' => '',
-                'mother_name' => $kemendagri[ 'responseData' ][ 0 ][ 'namaIbu' ]
-            ];
-        } else {
-            $kemendagri_result = [
-                'name' => '',
-                'gender' => '',
-                'birth_place' => '',
-                'birth_date' => '',
-                'phone' => '',
-                'mobile_phone' => '',
-                'address' => '',
-                'citizenship' => '',
-                'status' => '',
-                'address_status' => '',
-                'mother_name' => ''
-            ];
-        }
-
-        $cif = RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_customer_profile_nik',
-                'requestData'   => [
-                    'app_id' => 'mybriapi',
-                    'nik' => $eform->nik
-                ],
-            ] )
-        ] )->post('form_params');
-        if( $cif[ 'responseCode' ] == '00' ) {
-            $cif_result = [
-                'cif_number' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'cifno' ],
-                'name' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'nama_sesuai_id' ],
-                'gender' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'jenis_kelamin' ],
-                'birth_place' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'tempat_lahir' ],
-                'birth_date' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'tanggal_lahir' ],
-                'phone' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'telp_rumah' ],
-                'mobile_phone' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'handphone' ],
-                'address' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'alamat_id1' ],
-                'citizenship' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'kewarganegaraan' ],
-                'status' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'status_nikah' ],
-                'address_status' => '',
-                'mother_name' => $cif[ 'responseData' ][ 'info' ][ 0 ][ 'nama_ibu_kandung' ]
-            ];
-        } else {
-            $cif_result = [
-                'cif_number' => '',
-                'name' => '',
-                'gender' => '',
-                'birth_place' => '',
-                'birth_date' => '',
-                'phone' => '',
-                'mobile_phone' => '',
-                'address' => '',
-                'citizenship' => '',
-                'status' => '',
-                'address_status' => '',
-                'mother_name' => ''
-            ];
-        }
 
         return response()->success( [
             'message' => 'Sukses',
@@ -162,9 +81,141 @@ class VerificationController extends Controller
 
 
                 ],
-                'kemendagri' => $kemendagri_result,
-                'cif' => $cif_result
+                'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) ),
+                'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
             ]
         ], 200 );
+    }
+    /**
+     * Display the specified resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function searchNik( Request $request )
+    {
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => [
+                'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $request->input('new_nik'), $request->header( 'pn' ) ),
+                'cif' => $this->getCIF( $request->header( 'Authorization' ), $request->input('new_nik'), $request->header( 'pn' ) )
+            ]
+        ], 200 );
+    }
+
+    /**
+     * Get Kemendagri Data.
+     *
+     * @param  string  $authorization
+     * @param  string  $nik
+     * @param  string  $pn
+     * @return \Illuminate\Http\Response
+     */
+    public function getKemendagri( $authorization, $nik, $pn )
+    {
+        $kemendagri = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_kemendagri_profile_nik',
+                    'requestData' => [
+                        'nik'     => $nik
+                        , 'id_user' => $pn
+                    ],
+                ])
+            ])
+            ->setHeaders([
+                'Authorization' => $authorization
+            ])
+            ->post( 'form_params' );
+
+        $keys = [
+            'name' => 'namaLengkap'
+            , 'gender' => 'jenisKelamin'
+            , 'birth_place' => 'tempatLahir'
+            , 'birth_date' => 'tanggalLahir'
+            , 'phone' => ''
+            , 'mobile_phone' => ''
+            , 'address' => 'alamat'
+            , 'citizenship' => ''
+            , 'status' => 'statusKawin'
+            , 'address_status' => ''
+            , 'mother_name' => 'namaIbu'
+        ];
+
+        $return = array();
+
+        foreach ($keys as $key => $field) {
+            $return[$key] = $this->mapData(
+                $kemendagri['responseData'][0]
+                , $field
+                , $kemendagri['responseCode']
+            );
+        }
+
+        return $return;
+    }
+
+    /**
+     * Get CIF Data.
+     *
+     * @param  string  $authorization
+     * @param  string  $nik
+     * @param  string  $pn
+     * @return \Illuminate\Http\Response
+     */
+    public function getCIF( $authorization, $nik, $pn )
+    {
+        $kemendagri = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_customer_profile_nik',
+                    'requestData' => [
+                        'app_id' => 'mybriapi'
+                        , 'nik'     => $nik
+                    ],
+                ])
+            ])
+            ->setHeaders([
+                'Authorization' => $authorization
+            ])
+            ->post( 'form_params' );
+
+        $keys = [
+            'cif_number' => 'cifno'
+            , 'name' => 'nama_sesuai_id'
+            , 'gender' => 'jenis_kelamin'
+            , 'birth_place' => 'tempat_lahir'
+            , 'birth_date' => 'tanggal_lahir'
+            , 'phone' => 'telp_rumah'
+            , 'mobile_phone' => 'handphone'
+            , 'address' => 'alamat_id1'
+            , 'citizenship' => 'kewarganegaraan'
+            , 'status' => 'status_nikah'
+            , 'address_status' => ''
+            , 'mother_name' => 'nama_ibu_kandung'
+        ];
+
+        $return = array();
+
+        foreach ($keys as $key => $field) {
+            $return[$key] = $this->mapData(
+                $kemendagri['responseData']['info'][0]
+                , $field
+                , $kemendagri['responseCode']
+            );
+        }
+
+        return $return;
+    }
+
+    /**
+     * Mapping Data.
+     *
+     * @param  array  $data
+     * @param  string  $field
+     * @param  string  $responseCode
+     * @return \Illuminate\Http\Response
+     */
+    public function mapData( $data, $field, $responseCode )
+    {
+        return $responseCode == '00' ? ( isset($data[$field]) ? $data[$field] : '' ) : '';
     }
 }

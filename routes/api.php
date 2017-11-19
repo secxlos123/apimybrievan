@@ -53,7 +53,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		] );
 
 		/**
-		* Route schedule 
+		* Route schedule
 		*/
 		Route::resource('schedule', 'AppointmentController',[
 			'only' => ['index','store', 'update']
@@ -70,7 +70,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 		// Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
 	} );
-	
+
 
 	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 	Route::group( [ 'prefix' => '{type}' ], function () {

@@ -509,9 +509,9 @@ class EForm extends Model
                 ->orderBy('new_order', 'asc');
 
         }
-        
+
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
-        
+
         \Log::info($eform->toSql());
 
         return $eform;
@@ -655,7 +655,8 @@ class EForm extends Model
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "tempat_lahir_pemohon" => $customer_detail->birth_place ? $customer_detail->birth_place : '',
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
-            "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
+            // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
+            "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
             "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : $customer->gender_sim,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
@@ -702,7 +703,8 @@ class EForm extends Model
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
-            "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
+            // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
+            "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
             "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
@@ -812,8 +814,8 @@ class EForm extends Model
     {
         \Log::info("step7");
         $request = $data + [
-            "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name , 
-            "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id 
+            "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
+            "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id
         ];
         return $request;
     }

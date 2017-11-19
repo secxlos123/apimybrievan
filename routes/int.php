@@ -54,6 +54,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 				Route::post( 'show', 'VerificationController@show' );
 			} );
 		} );
+		Route::group( [ 'prefix' => 'verification' ], function () {
+			Route::post( 'search-nik', 'VerificationController@searchNik' );
+		} );
 	} );
 } );
 
