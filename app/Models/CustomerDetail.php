@@ -246,7 +246,7 @@ class CustomerDetail extends Model
                     $this->attributes[ $attribute ] = $return;
                 }
             }
-            
+
         }
     }
 

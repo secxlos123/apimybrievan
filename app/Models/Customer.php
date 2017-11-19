@@ -256,7 +256,15 @@ class Customer extends User
         $role->users()->attach( $user );
 	    \Log::info('==========ini data separate====');
 	    \Log::info($separate_array_keys);
-        $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'] ] + array_diff_key( $data, $separate_array_keys );
+
+        if ( $data['status'] == 2 ) {
+            $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'], 'couple_identity'=> $data['couple_identity'] ] + array_diff_key( $data, $separate_array_keys );
+
+        } else {
+            $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'] ] + array_diff_key( $data, $separate_array_keys );
+
+        }
+
       	\Log::info('==========ini data insert ke detail=======');
 	    \Log::info($customer_data);
         CustomerDetail::create( $customer_data );
