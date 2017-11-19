@@ -80,8 +80,7 @@ class OfficeController extends Controller
 
                     // if request latitude and longitude not present default latitude and longitude cimahi
                     'latitude'  => $request->get('lat', -6.884082),
-                    'longitude' => $request->get('long', 107.541304),
-                    'search' => $request->get('name', ''),
+                    'longitude' => $request->get('long', 107.541304)
                 ]
             ])
         ])

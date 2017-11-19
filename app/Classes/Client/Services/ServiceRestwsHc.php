@@ -59,7 +59,7 @@ class ServiceRestwsHc extends Client
                 } else {
                     $branch = $get_user_info_service[ 'responseData' ][ 'BRANCH' ];
                 }
-                
+
                 return [
                     'name' => $get_user_info_service[ 'responseData' ][ 'SNAME' ],
                     'nip' => $get_user_info_service[ 'responseData' ][ 'NIP' ],
