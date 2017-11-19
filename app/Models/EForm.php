@@ -214,7 +214,7 @@ class EForm extends Model
     public static function approve( $eform_id, $request )
     {
         $eform = static::find( $eform_id );
-        $resul['status'] = false;
+        $result['status'] = false;
         if ( $request->is_approved ) {
              $result = $eform->insertCoreBRI();
         }
