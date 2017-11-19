@@ -9,6 +9,7 @@ use App\Models\TempUser;
 use App\Http\Requests\API\v1\Profile\CustomerRequest;
 use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
+use App\Models\CustomerDetail;
 use App\Models\ThirdParty;
 
 
@@ -48,11 +49,9 @@ class ProfileController extends Controller
         if ($user->inRole('customer'))
         {
             \DB::beginTransaction();
-
-            $customer = Customer::findOrFail( $user->id );
-            // $customer->update( $request->except('_token','name') );
-            $customer->update( $request->except('_token', 'name', 'couple_birth_place', 'city', 'birth_place', 'citizenship') );
-
+            $profile = Customer::find( $user->id );
+            $profile->update($request->except('_token', 'name','_method'));
+            $customer = CustomerDetail::updateOrCreate(['user_id'=>$user->id],$request->except('_token', 'name','_method') );
             \DB::commit();
 
             if ($customer) {
