@@ -194,10 +194,14 @@ class EForm extends Model
         $ref_number = strtoupper( substr( $customer->first_name, 0, 3 ) );
         $ref_number .= date( 'y' );
         $ref_number .= date( 'm' );
-        $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] )->max( 'ref_number' );
+        $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] );
+        \Log::info($ref_number_check->get());
+        $ref_number_check = $ref_number_check->max( 'ref_number' );
+        \Log::info($ref_number_check);
 
         if( count($ref_number_check) > 0 ) {
-            $ref_number .= ((integer) substr($ref_number_check, 0, 7)) + 1;
+
+            $ref_number .= ((integer) substr($ref_number_check, 7)) + 1;
         } else {
             $ref_number .= '1';
         }

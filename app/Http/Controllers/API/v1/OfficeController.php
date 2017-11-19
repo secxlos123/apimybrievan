@@ -28,8 +28,8 @@ class OfficeController extends Controller
 
         if ($branchs['responseData'] != '') {
             $offices = collect($branchs['responseData'])->reject(function ($branch) {
-                
-                // Client mintanya kantor cabang aja, klo mau nambah tinggal tambah KCP atau KP 
+
+                // Client mintanya kantor cabang aja, klo mau nambah tinggal tambah KCP atau KP
                 return ! in_array($branch['jenis_uker'], ['KC']);
             })->slice($offset, $perPage)->values();
         }
@@ -63,12 +63,13 @@ class OfficeController extends Controller
 
     /**
      * Fetch data from internal BRI
-     * 
+     *
      * @param  Request $request [description]
      * @return array
      */
     private function fetch(Request $request)
     {
+        \Log::info($request->all());
         return RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
@@ -80,6 +81,7 @@ class OfficeController extends Controller
                     // if request latitude and longitude not present default latitude and longitude cimahi
                     'latitude'  => $request->get('lat', -6.884082),
                     'longitude' => $request->get('long', 107.541304),
+                    'search' => $request->get('name', ''),
                 ]
             ])
         ])
