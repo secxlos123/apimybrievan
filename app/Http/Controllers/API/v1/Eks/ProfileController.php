@@ -50,14 +50,15 @@ class ProfileController extends Controller
         {
             \DB::beginTransaction();
             $profile = User::find( $user->id );
-            $profile->update($request->only('first_name','last_name','image','phone','mobile_phone','gender'));
-            $customer = CustomerDetail::updateOrCreate(['user_id'=>$user->id],$request->except('_token', 'name','_method') );
+           
+            $profile->customer_detail()->updateOrCreate(['user_id'=>$user->id],$request->except('_token', 'name','_method'));
+            
             \DB::commit();
 
-            if ($customer) {
+            if ($profile) {
                 return response()->success( [
                 'message' => 'Data nasabah berhasil dirubah.',
-                'contents' => $customer
+                'contents' => $profile
                 ],200 );
             }else
             {
