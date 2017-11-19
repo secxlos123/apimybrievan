@@ -184,11 +184,11 @@ class EFormController extends Controller
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
-            // event( new Approved( $eform ) );
+             event( new Approved( $eform ) );
         } else {
             DB::rollback();
             return response()->success( [
-                'message' => $eform['message'] ? $eform['message'] : 'Approval E-Form Gagal',
+                'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
             ], 404 );
         }
