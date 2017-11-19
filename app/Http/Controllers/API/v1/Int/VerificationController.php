@@ -94,11 +94,12 @@ class VerificationController extends Controller
      */
     public function searchNik( Request $request )
     {
+        $nik = is_null($request->input('new_nik')) ? $request->input('nik') : $request->input('new_nik');
         return response()->success( [
             'message' => 'Sukses',
             'contents' => [
-                'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $request->input('new_nik'), $request->header( 'pn' ) ),
-                'cif' => $this->getCIF( $request->header( 'Authorization' ), $request->input('new_nik'), $request->header( 'pn' ) )
+                'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $nik, $request->header( 'pn' ) ),
+                'cif' => $this->getCIF( $request->header( 'Authorization' ), $nik, $request->header( 'pn' ) )
             ]
         ], 200 );
     }
@@ -113,7 +114,7 @@ class VerificationController extends Controller
      */
     public function getKemendagri( $authorization, $nik, $pn )
     {
-        $kemendagri = RestwsHc::setBody([
+        $data = RestwsHc::setBody([
                 'request' => json_encode([
                     'requestMethod' => 'get_kemendagri_profile_nik',
                     'requestData' => [
@@ -145,9 +146,9 @@ class VerificationController extends Controller
 
         foreach ($keys as $key => $field) {
             $return[$key] = $this->mapData(
-                $kemendagri['responseData'][0]
+                $data['responseData']
                 , $field
-                , $kemendagri['responseCode']
+                , $data['responseCode']
             );
         }
 
@@ -164,7 +165,7 @@ class VerificationController extends Controller
      */
     public function getCIF( $authorization, $nik, $pn )
     {
-        $kemendagri = RestwsHc::setBody([
+        $data = RestwsHc::setBody([
                 'request' => json_encode([
                     'requestMethod' => 'get_customer_profile_nik',
                     'requestData' => [
@@ -197,9 +198,9 @@ class VerificationController extends Controller
 
         foreach ($keys as $key => $field) {
             $return[$key] = $this->mapData(
-                $kemendagri['responseData']['info'][0]
+                $data['responseData']
                 , $field
-                , $kemendagri['responseCode']
+                , $data['responseCode']
             );
         }
 
@@ -216,6 +217,19 @@ class VerificationController extends Controller
      */
     public function mapData( $data, $field, $responseCode )
     {
-        return $responseCode == '00' ? ( isset($data[$field]) ? $data[$field] : '' ) : '';
+        if ( $responseCode != '00' && $responseCode != '88' ){
+            return '';
+
+        } else {
+            if ( isset($data['info']) ) {
+                $data = $data['info'][0];
+
+            } else {
+                $data = $data[0];
+
+            }
+            return $responseCode == '00' ? ( isset($data[$field]) ? $data[$field] : '' ) : '';
+
+        }
     }
 }
