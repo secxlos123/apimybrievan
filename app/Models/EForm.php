@@ -133,7 +133,7 @@ class EForm extends Model
         if ( !$this->is_approved && $this->recommended) {
             return 'Kredit Ditolak';
         }
-        if( $this->is_approved ) {
+        if( $this->is_approved && $this->customer->detail->is_verified ) {
             return 'Proses CLF';
         }
         if( $this->visit_report ) {
