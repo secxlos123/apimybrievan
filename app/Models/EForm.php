@@ -42,7 +42,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $hidden = [ 'updated_at', 'branch', 'ao' ];
+    protected $hidden = [ 'updated_at', 'ao' ];
 
     /**
      * The attributes that should be cast to native types.
@@ -98,18 +98,15 @@ class EForm extends Model
         return 0;
     }
 
-    // /**
-    //  * Get AO detail information.
-    //  *
-    //  * @return string
-    //  */
-    // public function getBranchAttribute()
-    // {
-    //     // if( $branch = $this->branch ) {
-    //     //     return $this->branch->name;
-    //     // }
-    //     return 'Branch Name';
-    // }
+    /**
+     * Get Branch detail information.
+     *
+     * @return string
+     */
+    public function getBranchAttribute()
+    {
+        return 'Branch Name';
+    }
 
     /**
      * Get AO detail information.

@@ -40,6 +40,24 @@ class EFormController extends Controller
     public function show( $type, $eform_id )
     {
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+
+        $get_user_info_service = \RestwsHc::setBody( [
+            'request' => json_encode( [
+                'requestMethod' => 'get_user_info',
+                'requestData' => [
+                    'id_cari' => $eform->ao_id,
+                    'id_user' => request()->header( 'pn' )
+                ]
+            ] )
+        ] )->setHeaders( [
+            'Authorization' => request()->header( 'Authorization' )
+        ] )->post( 'form_params' );
+
+        $eform = $eform->toArray();
+        if ( $get_user_info_service['responseCode'] == '00' ) {
+            $eform['branch'] = $get_user_info_service['responseData']['WERKS_TX'];
+        }
+
         return response()->success( [
             'contents' => $eform
         ] );
@@ -205,7 +223,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $verify = EForm::verify( $token, $status );
-        
+
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 event( new VerifyEForm( $verify['contents'] ) );
