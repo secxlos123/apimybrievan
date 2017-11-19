@@ -83,6 +83,20 @@ return [
             'visibility' => 'public',
         ],
 
+        'users' => [
+            'driver' => 'local',
+            'root' => public_path('uploads/users'),
+            'url' => env('APP_URL').'/uploads/users',
+            'visibility' => 'public',
+        ],
+
+        'eforms' => [
+            'driver' => 'local',
+            'root' => public_path('uploads/eforms'),
+            'url' => env('APP_URL').'/uploads/eforms',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_KEY'),

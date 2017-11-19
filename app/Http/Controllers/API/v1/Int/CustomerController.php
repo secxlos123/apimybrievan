@@ -122,15 +122,31 @@ class CustomerController extends Controller
 
 	public function getimage(Request $request)
     {
-        $data = CustomerDetail::Dbws($request)->first();
-
+        $data = CustomerDetail::Dbws($request)->get()->toArray();	
         if (count($data)>0) {
+        	$image=array();
+        	foreach ($data as $key => $value) {
+        		$userId = $value['user_id'];
+        		$eformId = $value['eform_id'];
+        		foreach ($value as $key2 => $value2) {
+        			if ( $key2 != 'user_id' && $key2 != 'eform_id') {
+        				$image[$key][$key2] = '';
+        				if ( !empty($value2) ) {
+		        			if ($key2 == 'ktp' || $key2 == 'ktppasangan') {
+		        				$image[$key][$key2] = \Storage::disk('users')->url($userId.'/'.$value2);
+		        				continue;
+		        			}
+		        			$image[$key][$key2] = \Storage::disk('eforms')->url($eformId.'/visit_report/'.$value2);
+        				}
+        			}
+        		}
+        	}
             return response()->success( [
-            'contents' => $data
+            'contents' => $image
         ], 200 );
         }
         return response()->error([
             'message' => 'Data Tidak Ditemukan',
-        ], 422);
+        ], 422 );
     }
 }
