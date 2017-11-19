@@ -612,8 +612,9 @@ class EForm extends Model
     {
         $post_to_bri = Asmx::setEndpoint( $endpoint )
             ->setBody( [
-                'request' => json_encode( $request )
-            ] )->post( 'form_params' );
+                'Request' => json_encode( $request )
+            ] )
+            ->post( 'form_params' );
 
         $return = array(
             'status' => false
