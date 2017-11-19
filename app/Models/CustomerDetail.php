@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Auth;
 use File;
 
@@ -305,6 +306,39 @@ class CustomerDetail extends Model
                 }
             }
         }
+    }
+
+    /**
+     * Query scope .
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDbws($query, Request $request)
+    {
+        return $query->leftJoin('eforms','customer_details.id','=','eforms.user_id')
+                    ->leftJoin('visit_reports','eforms.id','=','visit_reports.eform_id')
+                    ->where(function ($data) use ($request) {
+                        $data->where('customer_details.nik','=',$request->input('nik'));
+                    })->selectRaw(" 
+                                    customer_details.identity AS KTP,
+                                    customer_details.couple_identity AS KTPPASANGAN,
+                                    visit_reports.divorce_certificate AS Akta_Pisah_Harta,
+                                    visit_reports.marrital_certificate AS Akta_Nikah_Atau_Akta_Cerai,
+                                    visit_reports.down_payment AS Bukti_Uang_Muka,
+                                    visit_reports.photo_with_customer AS Foto_Debitur,
+                                    visit_reports.npwp AS Kartu_Npwp,
+                                    visit_reports.legal_document AS Dokumen_legal_Agunan,
+                                    visit_reports.offering_letter AS Surat_Penawaran,
+                                    visit_reports.building_tax AS PBB,
+                                    visit_reports.salary_slip AS Slip_Gaji,
+                                    visit_reports.proprietary AS SHM_Atau_SHGB,
+                                    visit_reports.building_permit AS IMB,
+                                    visit_reports.legal_bussiness_document AS Dokumen_legal_Usaha,
+                                    visit_reports.license_of_practice AS Surat_Izin_Praktek_Usaha,
+                                    visit_reports.work_letter AS Surat_Keterangan_Kerja,
+                                    visit_reports.family_card AS Kartu_Keluarga "
+                                );
     }
 
     /**

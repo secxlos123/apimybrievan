@@ -119,4 +119,18 @@ class CustomerController extends Controller
 			] );
 		}
 	}
+
+	public function getimage(Request $request)
+    {
+        $data = CustomerDetail::Dbws($request)->first();
+
+        if (count($data)>0) {
+            return response()->success( [
+            'contents' => $data
+        ], 200 );
+        }
+        return response()->error([
+            'message' => 'Data Tidak Ditemukan',
+        ], 422);
+    }
 }
