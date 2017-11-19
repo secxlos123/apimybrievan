@@ -253,7 +253,7 @@ class User extends Authenticatable
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
             dispatch(new SendPasswordEmail($user, $password, 'registered'));
-        } else { 
+        } else {
             $user->update($request->all());
         }
 
@@ -426,7 +426,7 @@ class User extends Authenticatable
             $userFill[] = "users.{$fillable}";
         }
 
-        $subQuery = "(select max(id) as eform_id, user_id from ( select c.user_id, eforms.id from eforms 
+        $subQuery = "(select max(id) as eform_id, user_id from ( select c.user_id, eforms.id from eforms
             left join customer_details as c on eforms.user_id = c.user_id
             left join visit_reports as v on eforms.id = v.eform_id
             order by eforms.created_at desc) data group by user_id) as last_eform
@@ -436,6 +436,7 @@ class User extends Authenticatable
             ->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )
             ->leftJoin( 'cities as c', 'customer_details.city_id', '=', 'c.id' )
             ->leftJoin( 'cities as bplace', 'customer_details.birth_place_id', '=', 'bplace.id' )
+            ->leftJoin( 'cities as cbplace', 'customer_details.couple_birth_place_id', '=', 'cbplace.id' )
             ->leftJoin( \DB::Raw($subQuery), function( $join ) {
                 return $join->on('last_eform.user_id', '=', 'users.id');
             })
@@ -485,13 +486,13 @@ class User extends Authenticatable
                 'customer_details.identity', 'customer_details.address'
                 , \DB::Raw("
                     case when e.id is null then 'Tidak Ada Pengajuan'
-                    when e.is_approved = false and e.recommended = true then 'Kredit Ditolak' 
-                    when e.is_approved = true then 'Proses CLF' 
-                    when v.id is not null then 'Prakarsa' 
-                    when e.ao_id is not null then 'Disposisii Pengajuan' 
+                    when e.is_approved = false and e.recommended = true then 'Kredit Ditolak'
+                    when e.is_approved = true then 'Proses CLF'
+                    when v.id is not null then 'Prakarsa'
+                    when e.ao_id is not null then 'Disposisii Pengajuan'
                     else 'Pengajuan Kredit' end as application_status
                 ")
-            ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place' );
+            ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place, cbplace.name AS couple_birth_place' );
     }
 
     /**
