@@ -321,6 +321,8 @@ class CustomerDetail extends Model
                     ->where(function ($data) use ($request) {
                         $data->where('customer_details.nik','=',$request->input('nik'));
                     })->selectRaw(" 
+                                    customer_details.user_id,
+                                    visit_reports.eform_id,
                                     customer_details.identity AS KTP,
                                     customer_details.couple_identity AS KTPPASANGAN,
                                     visit_reports.divorce_certificate AS Akta_Pisah_Harta,
