@@ -114,7 +114,7 @@
                                     <td>{!! $mail['couple_birth_place_id'].",".$mail['couple_birth_date']  !!}</td>
                                 </tr>
                             @endif
-                            
+
                             <tr>
                                 <td align="center">DATA PEKERJAAN</td>
                             </tr>
@@ -245,6 +245,7 @@
                         <td align="center">
                             <a href="{!! $mail[ 'url' ] !!}/approve">Setuju</a>
                         </td>
+                        <td width="40"></td>
                         <td align="center">
                             <a href="{!! $mail[ 'url' ] !!}/reject">Tidak Setuju</a>
                         </td>
