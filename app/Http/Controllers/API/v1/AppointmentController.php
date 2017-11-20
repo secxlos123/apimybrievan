@@ -69,9 +69,10 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateRequest $request)
     {
-        $save = Appointment::create($request->all());
+        $postTaken = ['title', 'appointment_date', 'user_id', 'ao_id', 'eform_id', 'ref_number', 'address', 'latitude', 'longitude', 'guest_name', 'desc', 'status'];
+        $save = Appointment::create($request->only($postTaken));
         if ($save) {
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',
