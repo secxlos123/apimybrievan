@@ -51,9 +51,7 @@ class ProfileController extends Controller
             \DB::beginTransaction();
             $profile = User::find( $user->id );
 
-           if ($request->has('image')) {
-                $profile->update($request->only('image'));
-            }
+            $profile->update($request->only('image'));
 
            if ($request->has('name') && $request->input('name') != '') {
                $profile->update($request->only('first_name','last_name','image','gender','phone','mobile_phone'));
