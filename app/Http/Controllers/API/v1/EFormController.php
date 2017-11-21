@@ -167,16 +167,20 @@ class EFormController extends Controller
         ] )->post( 'form_params' );
 
         if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
+
             return response()->success( [
             'message' => 'Data Screening e-form',
-            'contents' => ['status'=>'hijau']
+            'contents' => ['dhn'=>$dhn['responseData'],
+                           'sicd' => $sicd['responseData'],
+                           'pefindo'=>[] ]
         ], 200 );
+
         }
 
         return response()->error( [
             'message' => 'Data Screening Tidak Ditemukan',
-            'contents' => ['status'=>'merah']
-        ], 422 );
+            'contents' => []
+        ], 200 );
     }
 
     /**
