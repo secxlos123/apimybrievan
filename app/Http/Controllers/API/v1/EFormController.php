@@ -143,7 +143,7 @@ class EFormController extends Controller
                 'requestData' => [
                     'id_user' => request()->header( 'pn' ),
                     'nik'=> $data->nik,
-                    'nama_nasabah'=> strtoupper($personal['first_name'].'+'.$personal['last_name']),
+                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
                     'tgl_lahir'=> $personal['birth_date']
                 ]
             ] )
@@ -157,7 +157,7 @@ class EFormController extends Controller
                 'requestData' => [
                     'id_user' => request()->header( 'pn' ),
                     'nik'=> $data->nik,
-                    'nama_nasabah'=> strtoupper($personal['first_name'].'+'.$personal['last_name']),
+                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
                     'tgl_lahir'=> $personal['birth_date'],
                     'kode_branch'=> $data->branch_id
                 ]
@@ -169,38 +169,39 @@ class EFormController extends Controller
         if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
 
             return response()->success( [
-            'message' => 'Data Screening e-form',
-            'contents' => ['dhn'=>$dhn['responseData'],
-                           'sicd' => $sicd['responseData'],
-                           'pefindo'=>[] ]
-        ], 200 );
+                'message' => 'Data Screening e-form',
+                'contents' => [
+                    'eform' => $data,
+                    'dhn'=>$dhn['responseData'],
+                    'sicd' => $sicd['responseData']
+                ]
+            ], 200 );
 
         }
 
         return response()->error( [
             'message' => 'Data Screening Tidak Ditemukan',
-            'contents' => ['dhn'=> 
-                            ['kategori'=>'',
-                             'keterangan'=>'',
-                             'warna'=>'',
-                             'result'=>''
-                            ],
-                           'sicd'=> [
-                            [
-                                'status'=>'',
-                                'acctno'=>'',
-                                'cbal'=>'',
-                                'bikole'=>'',
-                                'result'=>'',
-                                'cif'=>'',
-                                'nama_debitur'=>'',
-                                'tgl_lahir'=>'',
-                                'alamat'=>'',
-                                'no_identitas'=>''
-
-                            ]
-                            ]
-                        ]
+            'contents' => [
+                'eform' => $data
+                , 'dhn'=> [
+                    'kategori'=>'',
+                    'keterangan'=>'',
+                    'warna'=>'',
+                    'result'=>''
+                ]
+                , 'sicd'=> [
+                    'status'=>'',
+                    'acctno'=>'',
+                    'cbal'=>'',
+                    'bikole'=>'',
+                    'result'=>'',
+                    'cif'=>'',
+                    'nama_debitur'=>'',
+                    'tgl_lahir'=>'',
+                    'alamat'=>'',
+                    'no_identitas'=>''
+                ]
+            ]
         ], 200 );
     }
 
