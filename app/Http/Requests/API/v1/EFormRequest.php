@@ -25,7 +25,11 @@ class EFormRequest extends BaseRequest
     {
         \Log::info($this->all());
         if ($this->input('developer')) {
-            $property = 'required_unless:developer,1';
+            if ( $this->input('developer') == ENV('DEVELOPER_KEY', 1) ) {
+                $property = '';
+            } else {
+                $property = 'required_unless:developer,1';
+            }
         } else {
             $property = '';
         }
