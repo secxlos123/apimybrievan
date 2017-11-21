@@ -143,7 +143,7 @@ class EFormController extends Controller
                 'requestData' => [
                     'id_user' => request()->header( 'pn' ),
                     'nik'=> $data->nik,
-                    'nama_nasabah'=> $data->customer_name,
+                    'nama_nasabah'=> strtoupper($personal['first_name'].'+'.$personal['last_name']),
                     'tgl_lahir'=> $personal['birth_date']
                 ]
             ] )
@@ -157,7 +157,7 @@ class EFormController extends Controller
                 'requestData' => [
                     'id_user' => request()->header( 'pn' ),
                     'nik'=> $data->nik,
-                    'nama_nasabah'=> $data->customer_name,
+                    'nama_nasabah'=> strtoupper($personal['first_name'].'+'.$personal['last_name']),
                     'tgl_lahir'=> $personal['birth_date'],
                     'kode_branch'=> $data->branch_id
                 ]
@@ -179,7 +179,28 @@ class EFormController extends Controller
 
         return response()->error( [
             'message' => 'Data Screening Tidak Ditemukan',
-            'contents' => []
+            'contents' => ['dhn'=> 
+                            ['kategori'=>'',
+                             'keterangan'=>'',
+                             'warna'=>'',
+                             'result'=>''
+                            ],
+                           'sicd'=> [
+                            [
+                                'status'=>'',
+                                'acctno'=>'',
+                                'cbal'=>'',
+                                'bikole'=>'',
+                                'result'=>'',
+                                'cif'=>'',
+                                'nama_debitur'=>'',
+                                'tgl_lahir'=>'',
+                                'alamat'=>'',
+                                'no_identitas'=>''
+
+                            ]
+                            ]
+                        ]
         ], 200 );
     }
 
