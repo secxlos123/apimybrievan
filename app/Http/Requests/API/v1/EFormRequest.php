@@ -27,10 +27,13 @@ class EFormRequest extends BaseRequest
         if ($this->input('developer')) {
             if ( $this->input('developer') == ENV('DEVELOPER_KEY', 1) ) {
                 $property = '';
+                $kpr_type_property = 'required';
             } else {
+                $kpr_type_property = '';
                 $property = 'required_unless:developer,1';
             }
         } else {
+            $kpr_type_property = '';
             $property = '';
         }
         switch ( strtolower( $this->method() ) ) {
@@ -50,7 +53,7 @@ class EFormRequest extends BaseRequest
                         'product_type' => 'required|in:kpr',
                         'status_property' => 'required_if:product_type,kpr,required',
                         'developer' => 'required_if:status_property,1',
-                        'kpr_type_property' => 'required_if:developer,>,1',
+                        'kpr_type_property' => $kpr_type_property,
                         'property' => $property,
                         'price' => 'required_if:product_type,kpr,required|numeric',
                         'building_area' => 'required_if:product_type,kpr,required|numeric',
