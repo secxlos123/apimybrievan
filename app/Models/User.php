@@ -106,6 +106,11 @@ class User extends Authenticatable
         return $this->hasOne( UserDeveloper::class );
     }
 
+    public function favourite()
+    {
+      return $this->hasOne( Favourite::class );
+    }
+
     /**
      * Get fullname for the user.
      *

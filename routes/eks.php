@@ -180,6 +180,14 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 			Route::put('password' ,'ProfileController@change_password' );
 		});
 
+		/**
+		 * Route for favourite
+		 * @var [type]
+		 */
+		Route::resource('favourite', 'FavouriteController', [
+			'only' => ['store', 'show']
+		]);
+
 	});
 });
 
