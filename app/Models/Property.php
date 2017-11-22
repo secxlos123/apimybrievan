@@ -33,7 +33,8 @@ class Property extends Model
     protected $appends = [
       'city',
       'propertyTypes',
-      'propertyItems'
+      'propertyItems',
+      'photos'
     ];
 
     /**
@@ -85,14 +86,31 @@ class Property extends Model
       return $this->city()->first();
     }
 
+    /**
+     * Get property types
+     * @return \App\Models\PropertyType
+     */
     public function getPropertyTypesAttribute()
     {
       return $this->propertyTypes()->get();
     }
 
+    /**
+     * Get property item
+     * @return \App\Models\PropertyItem
+     */
     public function getPropertyItemsAttribute()
     {
       return $this->propertyItems()->get();
+    }
+
+    /**
+     * Get property item
+     * @return \App\Models\PropertyItem
+     */
+    public function getPhotosAttribute()
+    {
+      return $this->photo()->get();
     }
 
     /**
