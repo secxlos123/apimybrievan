@@ -669,6 +669,9 @@ class EForm extends Model
         $customer_work = (object) $customer->work;
         $customer_contact = (object) $customer->contact;
         $lkn = $this->visit_report;
+        $year = !( $customer_work->work_duration ) ? 0 : $customer_work->work_duration;
+        $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
+        $lama_usaha = $year *12 + $mount;
 
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
@@ -688,7 +691,7 @@ class EForm extends Model
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
-            "lama_usaha" => !( $customer_work->work_duration ) ? '' : $customer_work->work_duration,
+            "lama_usaha" => $lama_usaha,
             "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
             "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
@@ -796,11 +799,11 @@ class EForm extends Model
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
-            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary)),
+            "pendapatan_lain_pemohon" => !( $kpr->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income_salary)),
             "jangka_waktu" => $kpr->year,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary))
+            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income))
         ];
 
         return $request;

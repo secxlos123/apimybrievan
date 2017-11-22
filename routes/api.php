@@ -72,6 +72,29 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+
+		/**
+		 * Collateral routes
+		 */
+		Route::resource('collateral', 'CollateralController', [
+			'only' => ['index', 'store', 'update']
+		]);
+		Route::get('collateral/{developerId}/{propertyId}', ['as' => 'collateral.detail', 'uses' => 'CollateralController@show'])
+			->where(['developerId' => '[0-9]+', 'propertyId' => '[0-9]+']);
+		Route::post('/collateral/disposition/{collateralId}', ['as' => 'collateral.disposition', 'uses' => 'CollateralController@disposition'])
+			->where('collateralId', '[0-9]+');
+		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
+			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
+
+		/**
+		 * Collateral ots routes
+		 */
+		Route::group(['prefix' => 'collateral/ots'], function($router) {
+			Route::post('/{collateralId}', ['as' => 'collateral.ots.store', 'uses' => 'CollateralController@storeOts'])
+				->where('collateralId', '[0-9]+');
+			Route::get('/{collateralId}', ['as' => 'collateral.ots.show', 'uses' => 'CollateralController@getOts'])
+				->where('collateralId', '[0-9]+');
+		});
 	} );
 
 
