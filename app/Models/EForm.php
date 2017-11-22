@@ -781,11 +781,11 @@ class EForm extends Model
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
-            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary)),
+            "pendapatan_lain_pemohon" => !( $kpr->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income_salary)),
             "jangka_waktu" => $kpr->year,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary))
+            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income))
         ];
 
         return $request;
