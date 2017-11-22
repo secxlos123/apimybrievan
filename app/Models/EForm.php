@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail'
     ];
 
     /**
@@ -150,9 +150,20 @@ class EForm extends Model
      *
      * @return string
      */
-    public function getPrescreeningStatusAttribute()
+    public function getPrescreeningStatusAttribute( $value )
     {
-        return 'Hijau';
+        if ( $value == 1 ) {
+            return 'Hijau';
+
+        } elseif ( $value == 2 ) {
+            return 'Kuning';
+
+        } elseif ( $value == 3 ) {
+            return 'Merah';
+
+        }
+
+        return 'Kuning';
     }
 
     /**
@@ -511,6 +522,13 @@ class EForm extends Model
 
         }
 
+        if ( $request->has('is_screening') ) {
+            if ( $request->input('is_screening') != 'All' ) {
+                $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
+
+            }
+        }
+
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
 
         \Log::info($eform->toSql());
@@ -781,11 +799,11 @@ class EForm extends Model
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
-            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary)),
+            "pendapatan_lain_pemohon" => !( $kpr->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income_salary)),
             "jangka_waktu" => $kpr->year,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary))
+            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income))
         ];
 
         return $request;
