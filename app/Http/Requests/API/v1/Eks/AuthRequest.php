@@ -86,7 +86,7 @@ class AuthRequest extends BaseRequest
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        'couple_identity' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
+                        // 'couple_identity' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
                     ];
                 } else if ( $this->segment( 5 ) == 'register-simple' ) {
                     $login_session = Sentinel::getUser();
@@ -110,7 +110,7 @@ class AuthRequest extends BaseRequest
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        'couple_identity' => 'required_if:status,2|image'
+                        // 'couple_identity' => 'required_if:status,2|image'
                     ];
                 } else {
                     return [];
@@ -135,7 +135,7 @@ class AuthRequest extends BaseRequest
             $detail = CustomerDetail::where('nik','=',$nik)->first();
             if (count($detail) != 0) {
                 $user = User::find($detail->user_id);
-                $email = $user->email; 
+                $email = $user->email;
             }
         }
         return [
