@@ -54,10 +54,18 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 				Route::post( 'show', 'VerificationController@show' );
 			} );
 		} );
+
 		Route::group( [ 'prefix' => 'verification' ], function () {
 			Route::post( 'search-nik', 'VerificationController@searchNik' );
 		} );
-		
+
+		Route::resource( 'prescreening', 'PrescreeningController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+
+		Route::resource( 'scorings', 'ScoringController', [
+			'except' => [ 'edit', 'create' ]
+		] );
 	} );
 } );
 
@@ -144,7 +152,6 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 
 
 	});
-
 
 	/**
 	 * Manage e-form from internal BRI

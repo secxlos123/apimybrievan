@@ -39,7 +39,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 
-
 		Route::get( 'offices', 'OfficeController@index' );
 
 		Route::group(['prefix' => 'dropdown'], function () {
@@ -69,6 +68,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
+
+		Route::resource( 'prescreening', 'PrescreeningController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 	} );
 
 
