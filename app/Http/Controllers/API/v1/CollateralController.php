@@ -68,8 +68,12 @@ class CollateralController extends Controller
      * Store new collateral
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateCollateral $request)
+    public function store(CreateCollateral $request, $eks)
     {
+      if ($eks !== 'eks') return response()->error([
+        'message' => 'Tidak Bisa Membuat collateral jika dalam internal'
+      ]);
+
       $data = [
         'developer_id' => $request->user()->id,
         'property_id' => $request->property_id,
