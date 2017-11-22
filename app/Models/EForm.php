@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail'
     ];
 
     /**
@@ -150,9 +150,20 @@ class EForm extends Model
      *
      * @return string
      */
-    public function getPrescreeningStatusAttribute()
+    public function getPrescreeningStatusAttribute( $value )
     {
-        return 'Hijau';
+        if ( $value == 1 ) {
+            return 'Hijau';
+
+        } elseif ( $value == 2 ) {
+            return 'Kuning';
+
+        } elseif ( $value == 3 ) {
+            return 'Merah';
+
+        }
+
+        return 'Kuning';
     }
 
     /**
@@ -509,6 +520,13 @@ class EForm extends Model
                 ])
                 ->orderBy('new_order', 'asc');
 
+        }
+
+        if ( $request->has('is_screening') ) {
+            if ( $request->input('is_screening') != 'All' ) {
+                $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
+
+            }
         }
 
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);

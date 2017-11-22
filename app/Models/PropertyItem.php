@@ -25,6 +25,10 @@ class PropertyItem extends Model
         'is_available' => 'integer'
     ];
 
+    protected $appends = [
+      'photos'
+    ];
+
     /**
      * The attributes that are rules for validations.
      *
@@ -36,6 +40,12 @@ class PropertyItem extends Model
         'price'   => 'required|numeric',
         'photos.*'=> 'image|max:1024',
     ];
+
+
+    public function getPhotosAttribute()
+    {
+      return $this->photos()->get();
+    }
 
     /**
      * Get parent property of developer.
