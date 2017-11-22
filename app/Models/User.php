@@ -191,6 +191,21 @@ class User extends Authenticatable
         return $image;
     }
 
+     /**
+     * Get user Couple image url.
+     *
+     * @return string
+     */
+    public function getCoupleIdentityAttribute( $value )
+    {
+        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        } else {
+            $image = url( 'img/noimage.jpg' );
+        }
+        return $image;
+    }
+
     /**
      * Get user avatar image url.
      *
