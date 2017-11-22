@@ -31,7 +31,9 @@ class Property extends Model
     ];
 
     protected $appends = [
-      'city'
+      'city',
+      'propertyTypes',
+      'propertyItems'
     ];
 
     /**
@@ -81,6 +83,16 @@ class Property extends Model
     public function getCityAttribute()
     {
       return $this->city()->first();
+    }
+
+    public function getPropertyTypesAttribute()
+    {
+      return $this->propertyTypes()->get();
+    }
+
+    public function getPropertyItemsAttribute()
+    {
+      return $this->propertyItems()->get();
     }
 
     /**
