@@ -104,7 +104,14 @@ class PropertyItem extends Model
                 (select developers.company_name from developers where developers.id = (select developers.id from developers where developers.id =
                 (select properties.developer_id from properties where properties.id =
                 (select property_types.property_id from property_types where property_types.id = property_type_id
-                )))) as developer_name")
+                )))) as developer_name,
+                (select developers.dev_id_bri from developers where developers.id = (select developers.id from developers where developers.id =
+                (select properties.developer_id from properties where properties.id =
+                (select property_types.property_id from property_types where property_types.id = property_type_id
+                )))) as dev_id_bri,
+                (select properties.status from properties where properties.id = (select property_types.property_id from property_types where property_types.id = property_type_id
+                )) as prop_status
+                ")
             ->orderBy($sort[0], $sort[1]);
     }
 

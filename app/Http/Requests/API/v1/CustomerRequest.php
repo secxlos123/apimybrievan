@@ -42,10 +42,10 @@ class CustomerRequest extends BaseRequest
                     'couple_name' => 'required_if:status,2',
                     'couple_birth_place_id' => 'required_if:status,2',
                     'couple_birth_date' => 'required_if:status,2|date',
-                    'couple_identity' => 'required_if:status,2|image'
+                    // 'couple_identity' => 'required_if:status,2|image'
                 ];
                 break;
-            
+
             case 'put':
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
@@ -95,7 +95,7 @@ class CustomerRequest extends BaseRequest
                         'last_name'=>'',
                         'verify_status'=>'required|in:verify,verified',
                         'gender'=>'required_if:verify_status,verify'
-                        
+
                         // 'verify_status' => 'required|in:verify,verified',
                         // 'cif_number' => '',
                         // 'first_name' => 'required_if:verify_status,verify',
@@ -129,7 +129,7 @@ class CustomerRequest extends BaseRequest
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        'couple_identity' => 'required_if:status,2|image',
+                        // 'couple_identity' => 'required_if:status,2|image',
                         'address_status' => 'required',
                         'mother_name' => 'required',
                         'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
@@ -162,7 +162,7 @@ class CustomerRequest extends BaseRequest
                     ];
                 }
                 break;
-            
+
             default:
                 return [
                     //
@@ -184,9 +184,9 @@ class CustomerRequest extends BaseRequest
             $detail = CustomerDetail::where('nik','=',$nik)->first();
             if (count($detail) != 0) {
                 $user = User::find($detail->user_id);
-                $email = $user->email; 
+                $email = $user->email;
             }
-            
+
         }
         return [
             'nik.unique' => 'Nomor Induk Kartu Penduduk Telah Digunakan Oleh Email '.$email,

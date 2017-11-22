@@ -22,18 +22,28 @@ class OfficeController extends Controller
         \Log::info($request->all());
         $branchs = $this->fetch($request);
         $page = $request->get('page', 1); // Get the ?page=1 from the url
-        $perPage = $request->get('limit', 10); // Number of items per page
+        $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
         $offices = [];
 
         if ($branchs['responseData'] != '') {
-            $offices = collect($branchs['responseData'])->reject(function ($branch) {
+            foreach ($branchs['responseData'] as $branch) {
+                $search = true;
 
-                // Client mintanya kantor cabang aja, klo mau nambah tinggal tambah KCP atau KP
-                return ! in_array($branch['jenis_uker'], ['KC']);
-            })->slice($offset, $perPage)->values();
+                if ( $request->has('name') ) {
+                    $search = strtoupper($request->input('name'));
+                    $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
+                }
+
+                if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
+                    $offices[] = $branch;
+                }
+            }
+            // $offices = collect($branchs['responseData'])->reject(function ($branch) use($search) {
+            //     // Client mintanya kantor cabang aja, klo mau nambah tinggal tambah KCP atau KP
+            //     return (( !in_array($branch['jenis_uker'], ['KC']) ) && (  ) ;
+            // })->slice($offset, $perPage)->values();
         }
-
         /**
          * Generate pagination
          */

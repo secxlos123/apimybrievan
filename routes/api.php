@@ -68,6 +68,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::match(['put', 'patch'], 'status', 'AppointmentController@status')->name('schedule.status');
 		});
 
+		Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
 		// Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
 
 		/**

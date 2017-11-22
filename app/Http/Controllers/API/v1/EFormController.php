@@ -131,20 +131,79 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public function postPrescreening( Request $request )
-    // {
-    //     $kpp_list_service = Asmx::setEndpoint( 'GetJenisDibiayai' )->setQuery( [
-    //         'search' => $request->search,
-    //         'limit' => $request->limit,
-    //         'page' => $request->page,
-    //         'sort' => $request->sort,
-    //     ] )->post();
+    public function postPrescreening( Request $request )
+    {
+        \Log::info($request);
+        $data = EForm::findOrFail($request->eform);
+        $personal = $data->customer->personal;
+        \Log::info($personal);
+        $dhn = \RestwsHc::setBody( [
+            'request' => json_encode( [
+                'requestMethod' => 'get_dhn_consumer',
+                'requestData' => [
+                    'id_user' => request()->header( 'pn' ),
+                    'nik'=> $data->nik,
+                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
+                    'tgl_lahir'=> $personal['birth_date']
+                ]
+            ] )
+        ] )->setHeaders( [
+            'Authorization' => request()->header( 'Authorization' )
+        ] )->post( 'form_params' );
 
-    //     return response()->success( [
-    //         'message' => 'Screening e-form berhasil disimpan.',
-    //         'contents' => $eform
-    //     ], 201 );
-    // }
+        $sicd = \RestwsHc::setBody( [
+            'request' => json_encode( [
+                'requestMethod' => 'get_sicd_consumer',
+                'requestData' => [
+                    'id_user' => request()->header( 'pn' ),
+                    'nik'=> $data->nik,
+                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
+                    'tgl_lahir'=> $personal['birth_date'],
+                    'kode_branch'=> $data->branch_id
+                ]
+            ] )
+        ] )->setHeaders( [
+            'Authorization' => request()->header( 'Authorization' )
+        ] )->post( 'form_params' );
+
+        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
+
+            return response()->success( [
+                'message' => 'Data Screening e-form',
+                'contents' => [
+                    'eform' => $data,
+                    'dhn'=>$dhn['responseData'],
+                    'sicd' => $sicd['responseData']
+                ]
+            ], 200 );
+
+        }
+
+        return response()->error( [
+            'message' => 'Data Screening Tidak Ditemukan',
+            'contents' => [
+                'eform' => $data
+                , 'dhn'=> [
+                    'kategori'=>'',
+                    'keterangan'=>'',
+                    'warna'=>'',
+                    'result'=>''
+                ]
+                , 'sicd'=> [
+                    'status'=>'',
+                    'acctno'=>'',
+                    'cbal'=>'',
+                    'bikole'=>'',
+                    'result'=>'',
+                    'cif'=>'',
+                    'nama_debitur'=>'',
+                    'tgl_lahir'=>'',
+                    'alamat'=>'',
+                    'no_identitas'=>''
+                ]
+            ]
+        ], 200 );
+    }
 
     /**
      * Set E-Form AO disposition.

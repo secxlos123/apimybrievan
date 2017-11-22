@@ -15,13 +15,13 @@ class Customer extends User
      *
      * @var array
      */
-    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved' ];
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule' ];
+    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved' ];
 
     /**
      * Get information about register simple status.
@@ -205,6 +205,26 @@ class Customer extends User
             ];
         }
         return $schedules;
+    }
+
+    /**
+     * Get status is_approved.
+     *
+     * @return bool
+     */
+
+    public function getIsApprovedAttribute()
+    {
+        $stat_approved = [];
+        $eform = $this->eforms()->select(['is_approved'])->get();
+        foreach ($eform as $key => $stat) {
+            \Log::info($stat->is_approved);
+            $stat_approved = [
+                'status' => $stat->is_approved
+            ];
+        }
+
+        return $stat_approved;
     }
 
     /**

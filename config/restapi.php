@@ -1,7 +1,7 @@
 <?php
 
 return [
-	
+
 	/*
     |--------------------------------------------------------------------------
     | CLIENT_ASMX return xml
@@ -16,6 +16,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    // 'restwshc'  => env('CLIENT_RESTWSHC', 'https://pinjaman.bri.co.id/restws_hc'),
 	'restwshc'  => env('CLIENT_RESTWSHC', 'http://10.35.65.111/skpp_concept/restws_hc'),
 
   	'key'  		=> env('CLIENT_KEY', '$2y$10$OoDAS6saH1b3D/nZJ4DXKuOTqVumFTACUZDFkZfepS1h15jDNxdzK'),
