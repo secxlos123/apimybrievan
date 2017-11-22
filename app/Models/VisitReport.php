@@ -67,7 +67,9 @@ class VisitReport extends Model
         'legal_bussiness_document',
         'license_of_practice',
         'work_letter',
-        'family_card'
+        'family_card',
+        'couple_salary',
+        'couple_other_salary'
     ];
 
     /**

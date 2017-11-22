@@ -22,6 +22,7 @@ class EFormController extends Controller
      */
     public function index( Request $request )
     {
+        \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
         $eforms = EForm::filter( $request )->paginate( $limit );
         return response()->success( [
@@ -131,20 +132,129 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public function postPrescreening( Request $request )
-    // {
-    //     $kpp_list_service = Asmx::setEndpoint( 'GetJenisDibiayai' )->setQuery( [
-    //         'search' => $request->search,
-    //         'limit' => $request->limit,
-    //         'page' => $request->page,
-    //         'sort' => $request->sort,
-    //     ] )->post();
+    public function postPrescreening( Request $request )
+    {
+        $data = EForm::findOrFail($request->eform);
+        $personal = $data->customer->personal;
 
-    //     return response()->success( [
-    //         'message' => 'Screening e-form berhasil disimpan.',
-    //         'contents' => $eform
-    //     ], 201 );
-    // }
+        $dhn = \RestwsHc::setBody( [
+            'request' => json_encode( [
+                'requestMethod' => 'get_dhn_consumer',
+                'requestData' => [
+                    'id_user' => request()->header( 'pn' ),
+                    'nik'=> $data->nik,
+                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
+                    'tgl_lahir'=> $personal['birth_date']
+                ]
+            ] )
+        ] )->setHeaders( [
+            'Authorization' => request()->header( 'Authorization' )
+        ] )->post( 'form_params' );
+
+        if ($dhn['responseCode'] != '00') {
+            $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
+
+        }
+
+        $sicd = \RestwsHc::setBody( [
+            'request' => json_encode( [
+                'requestMethod' => 'get_sicd_consumer',
+                'requestData' => [
+                    'id_user' => request()->header( 'pn' ),
+                    'nik'=> $data->nik,
+                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
+                    'tgl_lahir'=> $personal['birth_date'],
+                    'kode_branch'=> $data->branch_id
+                ]
+            ] )
+        ] )->setHeaders( [
+            'Authorization' => request()->header( 'Authorization' )
+        ] )->post( 'form_params' );
+
+        if ($sicd['responseCode'] != '00') {
+            $sicd = ['responseData' => ['bikole' => 1], 'responseCode' => '01'];
+
+        }
+
+        $score = $data->pefindo_score;
+        $pefindoC = 'Kuning';
+        if ( $score >= 250 && $score <= 573 ) {
+            $pefindo = 'Merah';
+
+        } elseif ( $score >= 677 && $score <= 900 ) {
+            $pefindo = 'Hijau';
+
+        }
+
+        $dhnC = $dhn['responseData']['warna'];
+
+        if ( $sicd['responseData']['bikole'] == 1 ) {
+            $sicdC = 'Hijau';
+
+        } elseif ( $sicd['responseData']['bikole'] == 2 ) {
+            $sicdC = 'Kuning';
+
+        } else {
+            $sicdC = 'Merah';
+
+        }
+
+        $calculate = array($pefindoC, $dhnC, $sicdC);
+
+        if ( in_array('Merah', $calculate) ) {
+            $result = '3';
+
+        } else if ( in_array('Hijau', $calculate) ) {
+            $result = '1';
+
+        } else {
+            $result = '2';
+
+        }
+
+        $data->update([
+            'prescreening_status' => $result
+            , 'dhn_detail' => json_decode($dhn['responseData'])
+            , 'sicd_detail' => json_decode($sicd['responseData'])
+        ]);
+
+        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
+            return response()->success( [
+                'message' => 'Data Screening e-form',
+                'contents' => [
+                    'eform' => $data,
+                    'dhn'=>$dhn['responseData'],
+                    'sicd' => $sicd['responseData']
+                ]
+            ], 200 );
+
+        }
+
+        return response()->error( [
+            'message' => 'Data Screening Tidak Ditemukan',
+            'contents' => [
+                'eform' => $data
+                , 'dhn'=> [
+                    'kategori'=>'',
+                    'keterangan'=>'',
+                    'warna'=>'Hijau',
+                    'result'=>''
+                ]
+                , 'sicd'=> [
+                    'status'=>'',
+                    'acctno'=>'',
+                    'cbal'=>'',
+                    'bikole'=>'1',
+                    'result'=>'',
+                    'cif'=>'',
+                    'nama_debitur'=>'',
+                    'tgl_lahir'=>'',
+                    'alamat'=>'',
+                    'no_identitas'=>''
+                ]
+            ]
+        ], 200 );
+    }
 
     /**
      * Set E-Form AO disposition.

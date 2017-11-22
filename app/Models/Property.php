@@ -30,6 +30,13 @@ class Property extends Model
         'created_at', 'updated_at'
     ];
 
+    protected $appends = [
+      'city',
+      'propertyTypes',
+      'propertyItems',
+      'photos'
+    ];
+
     /**
      * Return the sluggable configuration array for this model.
      *
@@ -72,6 +79,38 @@ class Property extends Model
     public function getDescriptionAttribute($description)
     {
         return htmlspecialchars_decode($description);
+    }
+
+    public function getCityAttribute()
+    {
+      return $this->city()->first();
+    }
+
+    /**
+     * Get property types
+     * @return \App\Models\PropertyType
+     */
+    public function getPropertyTypesAttribute()
+    {
+      return $this->propertyTypes()->get();
+    }
+
+    /**
+     * Get property item
+     * @return \App\Models\PropertyItem
+     */
+    public function getPropertyItemsAttribute()
+    {
+      return $this->propertyItems()->get();
+    }
+
+    /**
+     * Get property item
+     * @return \App\Models\PropertyItem
+     */
+    public function getPhotosAttribute()
+    {
+      return $this->photo()->get();
     }
 
     /**

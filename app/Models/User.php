@@ -106,6 +106,11 @@ class User extends Authenticatable
         return $this->hasOne( UserDeveloper::class );
     }
 
+    public function favourite()
+    {
+      return $this->hasOne( Favourite::class );
+    }
+
     /**
      * Get fullname for the user.
      *
@@ -177,6 +182,21 @@ class User extends Authenticatable
      * @return string
      */
     public function getIdentityAttribute( $value )
+    {
+        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        } else {
+            $image = url( 'img/noimage.jpg' );
+        }
+        return $image;
+    }
+
+     /**
+     * Get user Couple image url.
+     *
+     * @return string
+     */
+    public function getCoupleIdentityAttribute( $value )
     {
         if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
             $image = url( 'uploads/users/' . $this->id . '/' . $value );
@@ -504,7 +524,7 @@ class User extends Authenticatable
                     when e.is_approved = false and e.recommended = true then 'Kredit Ditolak' 
                     when e.is_approved = true then 'Proses CLF' 
                     when v.id is not null then 'Prakarsa' 
-                    when e.ao_id is not null then 'Disposisii Pengajuan' 
+                    when e.ao_id is not null then 'Disposisi Pengajuan' 
                     else 'Pengajuan Kredit' end as application_status
                 ")
             ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place' );

@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail'
     ];
 
     /**
@@ -150,9 +150,20 @@ class EForm extends Model
      *
      * @return string
      */
-    public function getPrescreeningStatusAttribute()
+    public function getPrescreeningStatusAttribute( $value )
     {
-        return 'Hijau';
+        if ( $value == 1 ) {
+            return 'Hijau';
+
+        } elseif ( $value == 2 ) {
+            return 'Kuning';
+
+        } elseif ( $value == 3 ) {
+            return 'Merah';
+
+        }
+
+        return 'Kuning';
     }
 
     /**
@@ -511,6 +522,13 @@ class EForm extends Model
 
         }
 
+        if ( $request->has('is_screening') ) {
+            if ( $request->input('is_screening') != 'All' ) {
+                $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
+
+            }
+        }
+
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
 
         \Log::info($eform->toSql());
@@ -651,6 +669,9 @@ class EForm extends Model
         $customer_work = (object) $customer->work;
         $customer_contact = (object) $customer->contact;
         $lkn = $this->visit_report;
+        $year = !( $customer_work->work_duration ) ? 0 : $customer_work->work_duration;
+        $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
+        $lama_usaha = $year *12 + $mount;
 
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
@@ -670,7 +691,7 @@ class EForm extends Model
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
-            "lama_usaha" => !( $customer_work->work_duration ) ? '' : $customer_work->work_duration,
+            "lama_usaha" => $lama_usaha,
             "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
             "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
@@ -778,11 +799,11 @@ class EForm extends Model
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
-            "pendapatan_lain_pemohon" => !( $customer_finance->other_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary)),
+            "pendapatan_lain_pemohon" => !( $kpr->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income_salary)),
             "jangka_waktu" => $kpr->year,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $customer_finance->salary ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary))
+            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income))
         ];
 
         return $request;

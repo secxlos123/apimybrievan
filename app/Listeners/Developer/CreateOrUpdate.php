@@ -37,7 +37,9 @@ class CreateOrUpdate
         $id = \Asmx::setEndpoint('InsertDataPihakKetiga')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-        
-        $developer->update(['dev_id_bri' => $id['contents']]);
+            if($id['code'] ==  '200' ){
+                
+                $developer->update(['dev_id_bri' => $id['contents']]);
+            }
     }
 }
