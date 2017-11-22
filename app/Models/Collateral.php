@@ -7,11 +7,130 @@ use Illuminate\Http\Request;
 
 class Collateral extends Model
 {
-    
+
+    /**
+     * The fillable columns
+     * @var array
+     */
+    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by'];
+
+    /**
+     * The hidden columns
+     * @var [type]
+     */
+    protected $hidden = ['property_id', 'developer_id'];
+
+    CONST STATUS = [
+      'baru',
+      'sedang di proses',
+      'menunggu persetujuan',
+      'disetujui',
+      'ditolak'
+    ];
 
 
+    /**
+     * Relation with developer
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function developer()
+    {
+      return $this->belongsTo(User::class, 'developer_id');
+    }
 
+    /**
+     * Relation with developer
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function property()
+    {
+      return $this->belongsTo(Property::class, 'property_id');
+    }
 
+    /**
+     * Relation with ots in area
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsInArea()
+    {
+      return $this->hasOne(OtsInArea::class, 'collateral_id');
+    }
+
+    /**
+     * Relation with ots letter
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsLetter()
+    {
+      return $this->hasOne(OtsAccordingLetterLand::class, 'collateral_id');
+    }
+
+    /**
+     * Relation with ots building
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsBuilding()
+    {
+      return $this->hasOne(OtsBuildingDesc::class, 'collateral_id');
+    }
+
+    /**
+     * Relation with ots environment
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsEnvironment()
+    {
+      return $this->hasOne(OtsEnvironment::class, 'collateral_id');
+    }
+
+    /**
+     * Relation with ots valuation
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsValuation()
+    {
+      return $this->hasOne(OtsValuation::class, 'collateral_id');
+    }
+
+    /**
+     * Relation with ots other
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsOther()
+    {
+      return $this->hasOne(OtsAnotherData::class, 'collateral_id');
+    }
+
+    public function scopeWithAll($query)
+    {
+      return $query
+          ->with('property')
+          ->with('developer')
+          ->with('otsInArea')
+          ->with('otsLetter')
+          ->with('otsBuilding')
+          ->with('otsEnvironment')
+          ->with('otsValuation')
+          ->with('otsOther');
+    }
+
+    /**
+     * Eloquent lifecyle
+     * @return void
+     */
+    protected static function boot()
+    {
+      parent::boot();
+      // static::creating(function($model) {
+      //   $model->status = 'pending';
+      // });
+      static::updating(function($model) {
+        if (!$model->approved_by) {
+          unset($model->approved_by);
+          info($model);
+        }
+      });
+    }
 
     /**
      * Scope a query to get lists of roles.
