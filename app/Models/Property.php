@@ -30,6 +30,10 @@ class Property extends Model
         'created_at', 'updated_at'
     ];
 
+    protected $appends = [
+      'city'
+    ];
+
     /**
      * Return the sluggable configuration array for this model.
      *
@@ -72,6 +76,11 @@ class Property extends Model
     public function getDescriptionAttribute($description)
     {
         return htmlspecialchars_decode($description);
+    }
+
+    public function getCityAttribute()
+    {
+      return $this->city()->first();
     }
 
     /**
