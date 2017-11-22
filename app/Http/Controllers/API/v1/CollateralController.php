@@ -141,7 +141,7 @@ class CollateralController extends Controller
     {
       $collateral = $this->collateral->where('status', Collateral::STATUS[2])->findOrFail($collateralId);
       $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : Collateral::STATUS[4];
-      $collateral->approved_by = $this->request->user()->id;
+      $collateral->approved_by = $this->request->header('pn');
       $collateral->save();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
