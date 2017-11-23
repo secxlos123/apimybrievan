@@ -80,6 +80,8 @@ class OfficeController extends Controller
     private function fetch(Request $request)
     {
         \Log::info($request->all());
+        $long = number_format($request->get('long', 107.541304), 5);
+        $lat = number_format($request->get('lat', 107.541304), 5);
         return RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
@@ -89,8 +91,8 @@ class OfficeController extends Controller
                     'distance'    => $request->get('distance', 10),
 
                     // if request latitude and longitude not present default latitude and longitude cimahi
-                    'latitude'  => $request->get('lat', -6.884082),
-                    'longitude' => $request->get('long', 107.541304)
+                    'latitude'  => $lat,
+                    'longitude' => $long
                 ]
             ])
         ])
