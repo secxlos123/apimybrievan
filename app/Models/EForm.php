@@ -486,11 +486,15 @@ class EForm extends Model
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
             }
 
+            if ($request->has('prescreening')) {
+                $eform->orWhere('eforms.prescreening_status', $request->input('prescreening'));
+            }
+
             if ($request->has('search')) {
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
 
-            if ($request->has('customer_name')){
-            }
+                if ($request->has('customer_name')){
+                }
             }
         } );
 
