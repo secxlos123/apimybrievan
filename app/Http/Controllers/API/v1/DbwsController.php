@@ -15,8 +15,8 @@ class DbwsController extends Controller
 
         if (count($data) > 0) {
         $image=array();
-        $userId = $data->eforms_id;
-        $eformId = $data->user_id;
+        $userId = $data->user_id;
+        $eformId = $data->eforms_id;
         foreach ($data as $key => $value) {
         			if ( $key != 'user_id' && $key != 'eforms_id' && $key != 'nik' ) {
         				if ( !empty($value) ) {

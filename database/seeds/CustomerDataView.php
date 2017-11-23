@@ -15,7 +15,7 @@ class CustomerDataView extends Seeder
     	\DB::unprepared(" CREATE VIEW customer_view_table AS
 	    		Select 
 				eforms.id AS eforms_id,
-				customer_details.id AS user_id,
+				customer_details.user_id AS user_id,
 				customer_details.nik,
 				customer_details.identity,
 				customer_details.couple_identity,
