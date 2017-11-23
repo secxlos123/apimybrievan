@@ -13,8 +13,11 @@ class CityTableSeeder extends Seeder
     {
         $file = __DIR__. '/../csv/cities.csv';
         $data = csv_to_array($file, ['name']);
-        foreach(collect($data)->chunk(50) as $chunk) {
-            \DB::table('cities')->insert($chunk->toArray());
+        $city = DB::table('cities')->where('name', $data[0]['name'])->first();
+        if ( !$city ) {
+            foreach(collect($data)->chunk(50) as $chunk) {
+                \DB::table('cities')->insert($chunk->toArray());
+            }
         }
     }
 }

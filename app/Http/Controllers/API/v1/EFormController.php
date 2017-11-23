@@ -22,6 +22,7 @@ class EFormController extends Controller
      */
     public function index( Request $request )
     {
+        \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
         $eforms = EForm::filter( $request )->paginate( $limit );
         return response()->success( [
@@ -133,10 +134,9 @@ class EFormController extends Controller
      */
     public function postPrescreening( Request $request )
     {
-        \Log::info($request);
         $data = EForm::findOrFail($request->eform);
         $personal = $data->customer->personal;
-        \Log::info($personal);
+
         $dhn = \RestwsHc::setBody( [
             'request' => json_encode( [
                 'requestMethod' => 'get_dhn_consumer',
@@ -150,6 +150,11 @@ class EFormController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+
+        if ($dhn['responseCode'] != '00') {
+            $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
+
+        }
 
         $sicd = \RestwsHc::setBody( [
             'request' => json_encode( [
@@ -166,8 +171,55 @@ class EFormController extends Controller
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
 
-        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
+        if ($sicd['responseCode'] != '00') {
+            $sicd = ['responseData' => ['bikole' => 1], 'responseCode' => '01'];
 
+        }
+
+        $score = $data->pefindo_score;
+        $pefindoC = 'Kuning';
+        if ( $score >= 250 && $score <= 573 ) {
+            $pefindo = 'Merah';
+
+        } elseif ( $score >= 677 && $score <= 900 ) {
+            $pefindo = 'Hijau';
+
+        }
+
+        $dhnC = $dhn['responseData']['warna'];
+
+        if ( $sicd['responseData']['bikole'] == 1 ) {
+            $sicdC = 'Hijau';
+
+        } elseif ( $sicd['responseData']['bikole'] == 2 ) {
+            $sicdC = 'Kuning';
+
+        } else {
+            $sicdC = 'Merah';
+
+        }
+
+        $calculate = array($pefindoC, $dhnC, $sicdC);
+
+        if ( in_array('Merah', $calculate) ) {
+            $result = '3';
+
+        } else if ( in_array('Hijau', $calculate) ) {
+            $result = '1';
+
+        } else {
+            $result = '2';
+
+        }
+        \Log::info($dhn['responseData']);
+         \Log::info($sicd['responseData']);
+        $data->update([
+            'prescreening_status' => $result
+            , 'dhn_detail' => $dhn['responseData']['warna']
+            , 'sicd_detail' => $sicd['responseData']['bikole']
+        ]);
+
+        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
             return response()->success( [
                 'message' => 'Data Screening e-form',
                 'contents' => [
@@ -186,14 +238,14 @@ class EFormController extends Controller
                 , 'dhn'=> [
                     'kategori'=>'',
                     'keterangan'=>'',
-                    'warna'=>'',
+                    'warna'=>'Hijau',
                     'result'=>''
                 ]
                 , 'sicd'=> [
                     'status'=>'',
                     'acctno'=>'',
                     'cbal'=>'',
-                    'bikole'=>'',
+                    'bikole'=>'1',
                     'result'=>'',
                     'cif'=>'',
                     'nama_debitur'=>'',

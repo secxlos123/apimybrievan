@@ -21,6 +21,10 @@ class PropertyType extends Model
 		'bathroom', 'bedroom', 'floors', 'carport', 'certificate',
     ];
 
+    protected $appends = [
+      'photos'
+    ];
+
     /**
      * The attributes that are rules for validations.
      *
@@ -64,6 +68,15 @@ class PropertyType extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /**
+     * Get property item
+     * @return \App\Models\PropertyItem
+     */
+    public function getPhotosAttribute()
+    {
+      return $this->photos()->get();
     }
 
     /**
@@ -113,22 +126,22 @@ class PropertyType extends Model
             ->where(function ($propertyType) use (&$request) {
                 if ($request->has('property_id'))
                     $propertyType->where('property_id', $request->input('property_id'));
-            
+
                 if ($request->has('certificate'))
                     $propertyType->where('certificate', $request->input('certificate'));
-            
+
                 if ($request->has('surface_area'))
                     $propertyType->whereBetween('surface_area', explode('|', $request->input('surface_area')));
-            
+
                 if ($request->has('building_area'))
                     $propertyType->whereBetween('building_area', explode('|', $request->input('building_area')));
-            
+
                 if ($request->has('proyek_type'))
                     $propertyType->where('name', 'ilike', "%{$request->input('proyek_type')}%");
             })
             ->where(function ($propertyType) use (&$request, &$query) {
                 if ($request->has('search')) $query->search($request);
-            
+
                 if ($user = $request->user()) {
                     if ($user->inRole('developer'))
                         $query->developerOwned($request->user()->developer->id);

@@ -191,6 +191,21 @@ class User extends Authenticatable
         return $image;
     }
 
+     /**
+     * Get user Couple image url.
+     *
+     * @return string
+     */
+    public function getCoupleIdentityAttribute( $value )
+    {
+        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
+            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        } else {
+            $image = url( 'img/noimage.jpg' );
+        }
+        return $image;
+    }
+
     /**
      * Get user avatar image url.
      *
@@ -215,14 +230,16 @@ class User extends Authenticatable
     public function setImageAttribute( $image )
     {
         if ( !empty( $image ) ) {
-            $path = public_path( static::$image_path );
-            if ( ! empty( $this->attributes[ 'image' ] ) ) {
-                File::delete( $path . $this->attributes[ 'image' ] );
-            }
+            if ( gettype($image) != 'string' ) {
+                $path = public_path( static::$image_path );
+                if ( ! empty( $this->attributes[ 'image' ] ) ) {
+                    File::delete( $path . $this->attributes[ 'image' ] );
+                }
 
-            $filename = time() . '.' . $image->getClientOriginalExtension();
-            $image->move( $path, $filename );
-            $this->attributes[ 'image' ] = $filename;
+                $filename = time() . '.' . $image->getClientOriginalExtension();
+                $image->move( $path, $filename );
+                $this->attributes[ 'image' ] = $filename;
+            }
         }
     }
 
@@ -257,7 +274,7 @@ class User extends Authenticatable
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
             dispatch(new SendPasswordEmail($user, $password, 'registered'));
-        } else { 
+        } else {
             $user->update($request->all());
         }
 
@@ -377,18 +394,35 @@ class User extends Authenticatable
                 ->select('developers.company_name', 'developers.address', 'users.mobile_phone', 'cities.name as city_name')
                 ->where('user_id', $id)->get();
         foreach ($query as $key => $value) {
-        return [
-            'id'            => $user->id,
-            'name'          => $user->fullname,
-            'email'         => $user->email,
-            'mobile_phone'  => $user->mobile_phone,
+        $userdeveloper = [
+            'id'            => $developer->id,
+            'user_id'       => $developer->user_id,
             'birth_date'    => $developer->birth_date,
             'join_date'     => $developer->join_date,
             'admin_developer_id' => $developer->admin_developer_id,
+           ];
+        $developerdata = [
             'company_name'  => $value->company_name,
             'address'       => $value->address,
             'phone_number'  => $value->mobile_phone,
-            'city_name'     => $value->city_name,
+            'city_name'     => $value->city_name, ];
+        return [
+            'id'            => $user->id,
+            'email'         => $user->email,
+            'permisions'    => $user->roles->first()->permissions,
+            'last_login'    => $user->last_login,
+            'name'          => $user->fullname,
+            'first_name'    => $user->first_name,
+            'last_name'     => $user->last_name,
+            'image'         => $user->image,
+            'phone'         => $user->phone,
+            'mobile_phone'  => $user->mobile_phone,
+            'gender'        => $user->gender,
+            'is_actived'    => $user->is_actived,
+            'userdeveloper' => $userdeveloper,
+            'developer'     => $developerdata
+
+
         ];
          }
     }
@@ -430,7 +464,7 @@ class User extends Authenticatable
             $userFill[] = "users.{$fillable}";
         }
 
-        $subQuery = "(select max(id) as eform_id, user_id from ( select c.user_id, eforms.id from eforms 
+        $subQuery = "(select max(id) as eform_id, user_id from ( select c.user_id, eforms.id from eforms
             left join customer_details as c on eforms.user_id = c.user_id
             left join visit_reports as v on eforms.id = v.eform_id
             order by eforms.created_at desc) data group by user_id) as last_eform
@@ -489,10 +523,10 @@ class User extends Authenticatable
                 'customer_details.identity', 'customer_details.address'
                 , \DB::Raw("
                     case when e.id is null then 'Tidak Ada Pengajuan'
-                    when e.is_approved = false and e.recommended = true then 'Kredit Ditolak' 
-                    when e.is_approved = true then 'Proses CLF' 
-                    when v.id is not null then 'Prakarsa' 
-                    when e.ao_id is not null then 'Disposisi Pengajuan' 
+                    when e.is_approved = false and e.recommended = true then 'Kredit Ditolak'
+                    when e.is_approved = true then 'Proses CLF'
+                    when v.id is not null then 'Prakarsa'
+                    when e.ao_id is not null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as application_status
                 ")
             ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place' );
