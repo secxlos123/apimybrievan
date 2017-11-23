@@ -487,7 +487,15 @@ class EForm extends Model
             }
 
             if ($request->has('prescreening')) {
-                $eform->orWhere('eforms.prescreening_status', $request->input('prescreening'));
+                $prescreening = $request->input('prescreening');
+                if (strtolower($prescreening) == 'hijau') {
+                    $prescreening = 1;
+                } elseif (strtolower($prescreening) == 'kuning') {
+                    $prescreening = 2;
+                } elseif (strtolower($prescreening) == 'merah') {
+                    $prescreening = 3;
+                }
+                $eform->orWhere('eforms.prescreening_status', $prescreening);
             }
 
             if ($request->has('search')) {
