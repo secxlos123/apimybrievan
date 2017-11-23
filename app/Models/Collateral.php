@@ -127,7 +127,6 @@ class Collateral extends Model
       static::updating(function($model) {
         if (!$model->approved_by) {
           unset($model->approved_by);
-          info($model);
         }
       });
     }

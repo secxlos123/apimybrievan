@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
+use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
 
 class CollateralController extends Controller
 {
@@ -130,6 +131,12 @@ class CollateralController extends Controller
       });
     }
 
+    /**
+     * Get ots collateral
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     public function getOts($eks, $collateralId)
     {
       return $this->makeResponse(
@@ -137,26 +144,54 @@ class CollateralController extends Controller
       );
     }
 
-    public function changeStatus($eks, $action, $collateralId)
+    /**
+     * Change status
+     * @param  string $eks
+     * @param  string $action
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
+    public function changeStatus(ChangeStatusRequest $request, $eks, $action, $collateralId)
     {
-      $collateral = $this->collateral->where('status', Collateral::STATUS[2])->findOrFail($collateralId);
-      $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : Collateral::STATUS[4];
-      $collateral->approved_by = $this->request->header('pn');
+      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
+      $prevStatus = $collateral->status;
+      $handleReject = function($prevStatus) {
+        return $prevStatus === Collateral::STATUS[1] ? Collateral::STATUS[0] : Collateral::STATUS[4];
+      };
+      $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : $handleReject($prevStatus);
+      if ($action === 'approve') {
+        $collateral->approved_by = $this->request->header('pn');
+      }
+      if ($action === 'reject') {
+        $collateral->remark = $this->request->remark;
+      }
       $collateral->save();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
     }
 
+    /**
+     * Disposition change staff name, staff id
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     public function disposition($eks, $collateralId)
     {
       $this->request->request->add(['status' => Collateral::STATUS[1]]);
-      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status'));
+      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark'));
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
     }
 
+    /**
+     *
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     private function uploadAndGetFileNameImage($otsOther)
     {
       $image = $this->request->file('other.image_condition_area');
