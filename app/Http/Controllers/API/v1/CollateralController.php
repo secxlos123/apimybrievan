@@ -68,8 +68,12 @@ class CollateralController extends Controller
      * Store new collateral
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateCollateral $request)
+    public function store(CreateCollateral $request, $eks)
     {
+      if ($eks !== 'eks') return response()->error([
+        'message' => 'Tidak Bisa Membuat collateral jika dalam internal'
+      ]);
+
       $data = [
         'developer_id' => $request->user()->id,
         'property_id' => $request->property_id,
@@ -137,7 +141,7 @@ class CollateralController extends Controller
     {
       $collateral = $this->collateral->where('status', Collateral::STATUS[2])->findOrFail($collateralId);
       $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : Collateral::STATUS[4];
-      $collateral->approved_by = $this->request->user()->id;
+      $collateral->approved_by = $this->request->header('pn');
       $collateral->save();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
