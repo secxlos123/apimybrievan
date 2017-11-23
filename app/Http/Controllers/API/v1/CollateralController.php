@@ -130,6 +130,12 @@ class CollateralController extends Controller
       });
     }
 
+    /**
+     * Get ots collateral
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     public function getOts($eks, $collateralId)
     {
       return $this->makeResponse(
@@ -137,6 +143,13 @@ class CollateralController extends Controller
       );
     }
 
+    /**
+     * Change status
+     * @param  string $eks
+     * @param  string $action
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     public function changeStatus($eks, $action, $collateralId)
     {
       $collateral = $this->collateral->where('status', Collateral::STATUS[2])->findOrFail($collateralId);
@@ -148,15 +161,27 @@ class CollateralController extends Controller
       );
     }
 
+    /**
+     * Disposition change staff name, staff id
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     public function disposition($eks, $collateralId)
     {
       $this->request->request->add(['status' => Collateral::STATUS[1]]);
-      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status'));
+      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark'));
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
     }
 
+    /**
+     *
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
     private function uploadAndGetFileNameImage($otsOther)
     {
       $image = $this->request->file('other.image_condition_area');
