@@ -211,11 +211,12 @@ class EFormController extends Controller
             $result = '2';
 
         }
-
+        \Log::info($dhn['responseData']);
+         \Log::info($sicd['responseData']);
         $data->update([
             'prescreening_status' => $result
-            , 'dhn_detail' => json_decode($dhn['responseData'])
-            , 'sicd_detail' => json_decode($sicd['responseData'])
+            , 'dhn_detail' => $dhn['responseData']['warna']
+            , 'sicd_detail' => $sicd['responseData']['bikole']
         ]);
 
         if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
