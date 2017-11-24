@@ -42,7 +42,7 @@ class CreateOts extends FormRequest
     {
       return [
         'area.collateral_type' => 'required',
-        'area.city_id' => 'required|exists:cities,id',
+        'area.city_id' => 'required|regex:/^[\d.]+$/|exists:cities,id',
         'area.location' => 'required',
         'area.latitude' => 'required',
         'area.longtitude' => 'required',
