@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail','status_eform','branch'
     ];
 
     /**
@@ -228,16 +228,33 @@ class EForm extends Model
         $result['status'] = false;
         if ( $request->is_approved ) {
              $result = $eform->insertCoreBRI();
-        }
-        if ($result['status']) {
+
+             if ($result['status']) {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
                 'recommendation' => $request->recommendation,
                 'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved
-            ] );
+                'is_approved' => $request->is_approved,
+                'status_eform' => 'approved'
+                ] );
+            }
+
         }
+        else
+        {
+            $eform->update( [
+                'pros' => $request->pros,
+                'cons' => $request->cons,
+                'recommendation' => $request->recommendation,
+                'recommended' => $request->recommended == "yes" ? true : false,
+                'is_approved' => $request->is_approved,
+                'status_eform' => 'Rejected'
+                ] );
+            $result['status'] = true;
+
+        }
+        
         return $result;
     }
 
