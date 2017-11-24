@@ -87,6 +87,7 @@ class VisitReport extends Model
      * @return void
      */
     public static function create( $data ) {
+	if ( isset($data['mutations']) ){
         $visit_report = ( new static )->newQuery()->create( $data );
         foreach ( $data[ 'mutations' ] as $key => $mutation_data ) {
             $mutation = Mutation::create( [
@@ -98,6 +99,7 @@ class VisitReport extends Model
                 ] + $bank_statement_data );
             }
         }
+}
     }
 
     /**
