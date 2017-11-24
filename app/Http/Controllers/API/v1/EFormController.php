@@ -12,6 +12,7 @@ use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\KPR;
+use App\Models\BRIGUNA;
 use DB;
 
 class EFormController extends Controller
@@ -77,9 +78,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
-        if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
-            $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
-            $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+        if ( $request->product_type == 'kpr' ) {
+            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+                $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+            }
         }
 
         \Log::info($baseRequest);
@@ -100,7 +103,14 @@ class EFormController extends Controller
         \Log::info("=======================================================");
         \Log::info($baseRequest);
 
-        $kpr = KPR::create( $baseRequest );
+
+        if ( $request->product_type == 'briguna' ) {
+            $kpr = BRIGUNA::create( $baseRequest );
+
+        } else {
+            $kpr = KPR::create( $baseRequest );
+
+        }
 
         DB::commit();
         return response()->success( [
@@ -304,7 +314,7 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::approve( $eform_id, $request );
         if( $eform['status'] ) {
-            
+
                 $data =  EForm::findOrFail($eform_id);
                 if ($request->is_approved) {
                     event( new Approved( $data ) );
@@ -318,7 +328,7 @@ class EFormController extends Controller
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
-            
+
         } else {
             DB::rollback();
             return response()->success( [
