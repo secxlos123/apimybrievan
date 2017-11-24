@@ -163,7 +163,7 @@ class EForm extends Model
 
         }
 
-        return 'Kuning';
+        return '-';
     }
 
     /**
@@ -489,8 +489,24 @@ class EForm extends Model
             if ($request->has('search')) {
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
 
-            if ($request->has('customer_name')){
+                if ($request->has('customer_name')){
+                }
             }
+        } );
+
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+            if ($request->has('prescreening')) {
+                $prescreening = $request->input('prescreening');
+                if (strtolower($prescreening) != 'all') {
+                    if (strtolower($prescreening) == 'hijau') {
+                        $prescreening = 1;
+                    } elseif (strtolower($prescreening) == 'kuning') {
+                        $prescreening = 2;
+                    } elseif (strtolower($prescreening) == 'merah') {
+                        $prescreening = 3;
+                    }
+                    $eform->Where('eforms.prescreening_status', $prescreening);
+                }
             }
         } );
 

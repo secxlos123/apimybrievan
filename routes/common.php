@@ -53,6 +53,6 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
 		Route::get('developers/{id?}', 'DeveloperController@index');
 	});
 
-	Route::post('dbws_mybri', 'Int\CustomerController@getimage');
+	Route::post('dbws_mybri', 'DbwsController@getimage');
 
 });
