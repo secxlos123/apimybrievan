@@ -37,6 +37,29 @@ class OtsInArea extends Model
       'surface_area'
     ];
 
+    protected $appends = [
+      'city'
+    ];
+
+
+    /**
+     * Get related city
+     * @return
+     */
+    public function getCityAttribute()
+    {
+      return $this->city()->first();
+    }
+
+    /**
+     * Relation with city
+     * @return \Illuminate\Database\Eloquent\BelongsTo
+     */
+    public function city()
+    {
+      return $this->belongsTo(City::class, 'city_id');
+    }
+
     /**
      * Relation with collateral
      * @return \Illuminate\Database\Eloquent\BelongsTo
