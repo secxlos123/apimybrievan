@@ -130,7 +130,10 @@ class EForm extends Model
      */
     public function getStatusAttribute()
     {
-        if ( !$this->is_approved && $this->recommended) {
+        // if ( !$this->is_approved && $this->recommended) {
+        //     return 'Kredit Ditolak';
+        // }
+         if ($this->status_eform == 'Rejected' ) {
             return 'Kredit Ditolak';
         }
         if( $this->is_approved && $this->customer->detail->is_verified ) {
@@ -142,6 +145,7 @@ class EForm extends Model
         if( $this->ao_id ) {
             return 'Disposisi Pengajuan';
         }
+       
         return 'Pengajuan Kredit';
     }
 
@@ -494,6 +498,8 @@ class EForm extends Model
                         $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
                     } else if( $request->status == 'Rekomend' ) {
                         $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    } elseif ($request->status == 'Rejected') {
+                        $eform->where('status_eform', 'Rejected');
                     }
                 }
             } );
@@ -515,13 +521,6 @@ class EForm extends Model
             if ($request->has('prescreening')) {
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
-                    if (strtolower($prescreening) == 'hijau') {
-                        $prescreening = 1;
-                    } elseif (strtolower($prescreening) == 'kuning') {
-                        $prescreening = 2;
-                    } elseif (strtolower($prescreening) == 'merah') {
-                        $prescreening = 3;
-                    }
                     $eform->Where('eforms.prescreening_status', $prescreening);
                 }
             }

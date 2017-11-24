@@ -48,7 +48,7 @@ class CollateralController extends Controller
     public function index()
     {
       return $this->makeResponse(
-        $this->collateral->withAll()->paginate($this->request->has('limit') ? $this->request->limit : 10)
+        $this->collateral->withAll()->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
       );
     }
 
@@ -188,7 +188,7 @@ class CollateralController extends Controller
 
     /**
      *
-     * @param  string $eks
+     * @param  string $otsOther
      * @param  integer $collateralId
      * @return \Illuminate\Http\Response
      */
