@@ -28,7 +28,7 @@ class AuthController extends Controller
     public function register( AuthRequest $request )
     {
         DB::beginTransaction();
-        
+
         $baseData = $this->reArrangeRequest( $request->all() );
 
         $user = Sentinel::register( $baseData );
@@ -43,11 +43,11 @@ class AuthController extends Controller
             'first_name' => $user->first_name,
             'last_name'  => $user->last_name,
             'fullname'   => $user->fullname,
-            'mobile_phone' => $user->mobile_phone,   
+            'mobile_phone' => $user->mobile_phone,
             'role' => $user->roles->first()->slug,
             'permission' => $user->roles->first()->permissions
         ];
-        
+
         event( new CustomerRegister( $user, $activation->code ) );
 
         DB::commit();
@@ -67,12 +67,25 @@ class AuthController extends Controller
     {
         DB::beginTransaction();
         $user = User::find( $request->user_id );
-        Activation::complete( $user, $request->code );
-
+        $activation = Activation::completed($user);
+        \Log::info($activation);
+        if ($activation) {
+            $check = 0;
+        }else{
+            Activation::complete( $user, $request->code );
+            $check = 1;
+        }
         DB::commit();
-        return response()->success( [
-            'message' => 'Aktivasi Sukses',
-        ], 201 );
+
+        if ($check == 1) {
+            return response()->success( [
+                'message' => 'Aktivasi Sukses',
+            ], 201 );
+        }else{
+            return response()->success( [
+                'message' => 'User already activated',
+            ], 422 );
+        }
     }
 
     /**
@@ -92,7 +105,7 @@ class AuthController extends Controller
                  return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
                 }
              }
-             
+
             // attempt to verify the credentials and create a token for the user
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->error(['message' => 'Identitas tersebut tidak cocok dengan data kami.'], 401);
