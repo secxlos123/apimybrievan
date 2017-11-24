@@ -150,6 +150,7 @@ class EFormController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+        \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
             $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
@@ -170,9 +171,10 @@ class EFormController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+         \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => ['bikole' => 1], 'responseCode' => '01'];
+            $sicd = ['responseData' => [['bikole' => 1]], 'responseCode' => '01'];
 
         }
 
@@ -188,10 +190,10 @@ class EFormController extends Controller
 
         $dhnC = $dhn['responseData']['warna'];
 
-        if ( $sicd['responseData']['bikole'] == 1 ) {
+        if ( $sicd['responseData'][0]['bikole'] == 1 ) {
             $sicdC = 'Hijau';
 
-        } elseif ( $sicd['responseData']['bikole'] == 2 ) {
+        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
             $sicdC = 'Kuning';
 
         } else {
@@ -204,20 +206,30 @@ class EFormController extends Controller
         if ( in_array('Merah', $calculate) ) {
             $result = '3';
 
-        } else if ( in_array('Hijau', $calculate) ) {
-            $result = '1';
-
-        } else {
+        } else if ( in_array('Kuning', $calculate) ) {
             $result = '2';
 
+        } else {
+            $result = '1';
+
         }
-        \Log::info($dhn['responseData']);
-         \Log::info($sicd['responseData']);
+
         $data->update([
             'prescreening_status' => $result
-            , 'dhn_detail' => $dhn['responseData']['warna']
-            , 'sicd_detail' => $sicd['responseData']['bikole']
+            , 'dhn_detail' => json_encode($dhn['responseData'])
+            , 'sicd_detail' => json_encode($sicd['responseData'])
         ]);
+
+        $explode = explode(',', $data->uploadscore);
+        $html = '';
+
+        foreach ($explode as $value) {
+            if ($value != '') {
+                $html .= asset('uploads/prescreening/'.$data->id.'/'.$value) . ',';
+            }
+        }
+
+        $data['uploadscore'] = $html;
 
         if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
             return response()->success( [
@@ -236,22 +248,24 @@ class EFormController extends Controller
             'contents' => [
                 'eform' => $data
                 , 'dhn'=> [
-                    'kategori'=>'',
-                    'keterangan'=>'',
+                    'kategori'=>'-',
+                    'keterangan'=>'-',
                     'warna'=>'Hijau',
-                    'result'=>''
+                    'result'=>'-'
                 ]
                 , 'sicd'=> [
-                    'status'=>'',
-                    'acctno'=>'',
-                    'cbal'=>'',
-                    'bikole'=>'1',
-                    'result'=>'',
-                    'cif'=>'',
-                    'nama_debitur'=>'',
-                    'tgl_lahir'=>'',
-                    'alamat'=>'',
-                    'no_identitas'=>''
+                    [
+                        'status'=>'-',
+                        'acctno'=>'-',
+                        'cbal'=>'-',
+                        'bikole'=>'1',
+                        'result'=>'-',
+                        'cif'=>'-',
+                        'nama_debitur'=>'-',
+                        'tgl_lahir'=>'-',
+                        'alamat'=>'-',
+                        'no_identitas'=>'-'
+                    ]
                 ]
             ]
         ], 200 );

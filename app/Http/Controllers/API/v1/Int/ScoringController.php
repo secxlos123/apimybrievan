@@ -219,11 +219,11 @@ class ScoringController extends Controller
         if ( in_array('Merah', $calculate) ) {
             $result = '3';
 
-        } else if ( in_array('Hijau', $calculate) ) {
-            $result = '1';
+        } else if ( in_array('Kuning', $calculate) ) {
+            $result = '2';
 
         } else {
-            $result = '2';
+            $result = '1';
 
         }
 
