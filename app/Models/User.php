@@ -474,6 +474,7 @@ class User extends Authenticatable
             ->leftJoin( 'customer_details', 'users.id', '=', 'customer_details.user_id' )
             ->leftJoin( 'cities as c', 'customer_details.city_id', '=', 'c.id' )
             ->leftJoin( 'cities as bplace', 'customer_details.birth_place_id', '=', 'bplace.id' )
+            ->leftJoin( 'cities as cbplace', 'customer_details.couple_birth_place_id', '=', 'cbplace.id' )
             ->leftJoin( \DB::Raw($subQuery), function( $join ) {
                 return $join->on('last_eform.user_id', '=', 'users.id');
             })
@@ -529,7 +530,7 @@ class User extends Authenticatable
                     when e.ao_id is not null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as application_status
                 ")
-            ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place' );
+            ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place, cbplace.name AS couple_birth_place' );
     }
 
     /**
