@@ -13,6 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'App\Events\EForm\RejectedEform' => [
+            'App\Listeners\EForm\Rejected\RejectedToCustomer',
+        ],
         'App\Events\Customer\CustomerRegister' => [
             'App\Listeners\Customer\Register\SendMailNotification',
         ],
@@ -31,6 +34,7 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Developer\CreateOrUpdate' => [
             'App\Listeners\Developer\CreateOrUpdate',
         ],
+        
     ];
 
     /**

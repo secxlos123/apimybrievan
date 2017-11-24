@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Events\EForm\Approved;
+use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
 use App\Models\Customer;
@@ -289,13 +290,21 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::approve( $eform_id, $request );
         if( $eform['status'] ) {
-            DB::commit();
-
-            return response()->success( [
+            
+                $data =  EForm::findOrFail($eform_id);
+                if ($request->is_approved) {
+                    event( new Approved( $data ) );
+                }
+                else
+                {
+                    event( new RejectedEform( $data ) );
+                }
+                DB::commit();
+                return response()->success( [
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
-             event( new Approved( $eform ) );
+            
         } else {
             DB::rollback();
             return response()->success( [
