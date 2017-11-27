@@ -41,6 +41,8 @@ class AuthController extends Controller
                 $role = 'prescreening';
             } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
+            } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
+                $role = 'collateral';
             } else {
                 $request->headers->set( 'pn', $pn );
                 $this->destroy( $request );

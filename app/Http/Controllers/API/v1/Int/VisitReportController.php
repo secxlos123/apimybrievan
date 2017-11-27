@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\VisitReportRequest;
+use App\Models\EForm;
 use App\Models\VisitReport;
 use DB;
 
@@ -26,6 +27,12 @@ class VisitReportController extends Controller
 	if (!isset($data['mutations'])){
 $data['mutations'] = array();
 }
+        $eform = EForm::find($eform_id);
+        $eform->update([
+            'address' => $request->input('address')
+            , 'appointment_date' => $request->input('date')
+        ]);
+
         $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $data );
 
         DB::commit();
