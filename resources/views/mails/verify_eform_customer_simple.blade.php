@@ -140,7 +140,7 @@
                             </tr>
                             <tr>
                                 <td>Lama Kerja : </td>
-                                <td>{!! $mail['work_duration'] !!}</td>
+                                <td>{!! $mail['work_duration'] !!} Tahun {!! $mail['work_duration_month'] !!} Bulan</td>
                             </tr>
                             <tr>
                                 <td>Alamat Kantor : </td>
@@ -152,15 +152,15 @@
                             </tr>
                             <tr>
                                 <td>Gaji/Pendapatan : </td>
-                                <td>{!! $mail['salary'] !!}</td>
+                                <td>Rp. {!! number_format($mail['salary'],2) !!}</td>
                             </tr>
                             <tr>
                                 <td>Pendapatan Lain : </td>
-                                <td>{!! $mail['other_salary'] !!}</td>
+                                <td>Rp. {!! number_format($mail['other_salary'],2) !!}</td>
                             </tr>
                             <tr>
                                 <td>Angsuran Pinjaman : </td>
-                                <td>{!! $mail['loan_installment'] !!}</td>
+                                <td>Rp. {!! number_format($mail['loan_installment'],2) !!}</td>
                             </tr>
                             <tr>
                                 <td>Jumlah Tanggungan : </td>
@@ -173,15 +173,15 @@
                                 </tr>
                                 <tr>
                                     <td>Gaji/Pendapatan : </td>
-                                    <td>{!! $mail['couple_salary'] !!}</td>
+                                    <td>Rp. {!! number_format($mail['couple_salary'],2) !!}</td>
                                 </tr>
                                 <tr>
                                     <td>Pendapatan Lain : </td>
-                                    <td>{!! $mail['couple_other_salary'] !!}</td>
+                                    <td>Rp. {!! number_format($mail['couple_other_salary'],2) !!}</td>
                                 </tr>
                                 <tr>
                                     <td>Angsuran Pinjaman : </td>
-                                    <td>{!! $mail['couple_loan_installment'] !!}</td>
+                                    <td>Rp. {!! number_format($mail['couple_loan_installment'],2) !!}</td>
                                 </tr>
                             @endif
 
