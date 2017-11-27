@@ -163,9 +163,10 @@ class ScoringController extends Controller
         \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
-            $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
+            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
 
         }
+        \Log::info($dhn);
 
         $sicd = \RestwsHc::setBody( [
             'request' => json_encode( [
