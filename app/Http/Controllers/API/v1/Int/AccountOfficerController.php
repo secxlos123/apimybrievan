@@ -20,7 +20,7 @@ class AccountOfficerController extends Controller
                 'requestMethod' => 'get_list_tenaga_pemasar',
                 'requestData' => [
                     'id_user' => $request->header( 'pn' ),
-                    'kode_branch' => $user_login[ 'branch_id' ]
+                    'kode_branch' => ($request->has('branch_id') : $request->branch_id ? $user_login[ 'branch_id' ]),
                 ]
             ] )
         ] )->setHeaders( [
