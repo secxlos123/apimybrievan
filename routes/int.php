@@ -58,12 +58,6 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::group( [ 'prefix' => 'verification' ], function () {
 			Route::post( 'search-nik', 'VerificationController@searchNik' );
 		} );
-
-		
-
-		Route::resource( 'scorings', 'ScoringController', [
-			'except' => [ 'edit', 'create' ]
-		] );
 	} );
 } );
 
@@ -77,7 +71,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
-		
+
 	/**
 	 * Route group for namespace controller Int
 	 */
