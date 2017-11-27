@@ -64,7 +64,7 @@ class VisitReportRequest extends BaseRequest
             // 'legal_document' => 'required',
             'salary_slip'=> 'required_if:source,fixed|file',
             'family_card'=> 'required|file',
-            'marrital_certificate'=> 'required_if:status_id,2|file',
+            'marrital_certificate'=> 'file',
             'divorce_certificate'=> 'file',
             'offering_letter'=> 'required|file',
             'proprietary'=> 'file',
