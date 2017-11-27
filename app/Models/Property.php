@@ -307,7 +307,11 @@ class Property extends Model
                 /**
                  * Query for filter by range items.
                  */
-                if ($request->has('without_independent')) $property->where('bri', '!=', '1');
+                if ($request->has('without_independent')){
+                    if ($request->without_independent) {
+                        $property->where('bri', '=', NULL);
+                    }
+                }
 
                 /**
                  * Query for filter by developer or user login.
