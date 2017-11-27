@@ -185,7 +185,7 @@ class EFormController extends Controller
          \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => [['bikole' => 1]], 'responseCode' => '01'];
+            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
 
         }
 
@@ -201,7 +201,7 @@ class EFormController extends Controller
 
         $dhnC = $dhn['responseData']['warna'];
 
-        if ( $sicd['responseData'][0]['bikole'] == 1 ) {
+        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-') {
             $sicdC = 'Hijau';
 
         } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
@@ -269,7 +269,7 @@ class EFormController extends Controller
                         'status'=>'-',
                         'acctno'=>'-',
                         'cbal'=>'-',
-                        'bikole'=>'1',
+                        'bikole'=>'-',
                         'result'=>'-',
                         'cif'=>'-',
                         'nama_debitur'=>'-',

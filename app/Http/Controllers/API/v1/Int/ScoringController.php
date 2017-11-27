@@ -193,7 +193,7 @@ class ScoringController extends Controller
 
         $dhnC = $dhn['warna'];
 
-        if ( $sicd['bikole'] == 1 ) {
+        if ( $sicd['bikole'] == 1 || $sicd['bikole'] == '-' ) {
             $sicdC = 'Hijau';
 
         } elseif ( $sicd['bikole'] == 2 ) {
