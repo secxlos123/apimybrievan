@@ -222,7 +222,7 @@ class ScoringController extends Controller
         $dats['sicd_detail'] = json_encode($sicd);
 
 		DB::beginTransaction();
-		$Scoring = Scoring::findOrFail( $id );
+		$Scoring = Eform::findOrFail( $id );
 		$Scoring->update( $dats );
 		DB::commit();
 		return response()->success( [
