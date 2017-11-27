@@ -164,7 +164,7 @@ class EFormController extends Controller
         \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
-            $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
+            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
 
         }
 
@@ -259,10 +259,12 @@ class EFormController extends Controller
             'contents' => [
                 'eform' => $data
                 , 'dhn'=> [
-                    'kategori'=>'-',
-                    'keterangan'=>'-',
-                    'warna'=>'Hijau',
-                    'result'=>'-'
+                    [
+                        'kategori'=>'-',
+                        'keterangan'=>'-',
+                        'warna'=>'Hijau',
+                        'result'=>'-'
+                    ]
                 ]
                 , 'sicd'=> [
                     [
