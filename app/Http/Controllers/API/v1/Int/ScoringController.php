@@ -165,7 +165,7 @@ class ScoringController extends Controller
             $dhn = ['warna' => 'Hijau'];
 
         } else {
-            $dhn = $dhn['responseData'];
+            $dhn = $dhn['responseData'][0];
 
         }
 
@@ -188,7 +188,7 @@ class ScoringController extends Controller
             $sicd = ['bikole' => 1];
 
         } else {
-            $sicd = $sicd['responseData'];
+            $sicd = $sicd['responseData'][0];
         }
 
         $dhnC = $dhn['warna'];
