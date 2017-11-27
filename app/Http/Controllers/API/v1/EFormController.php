@@ -12,6 +12,7 @@ use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\KPR;
+use App\Models\BRIGUNA;
 use DB;
 
 class EFormController extends Controller
@@ -77,9 +78,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
-        if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
-            $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
-            $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+        if ( $request->product_type == 'kpr' ) {
+            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+                $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+            }
         }
 
         \Log::info($baseRequest);
@@ -100,7 +103,14 @@ class EFormController extends Controller
         \Log::info("=======================================================");
         \Log::info($baseRequest);
 
-        $kpr = KPR::create( $baseRequest );
+
+        if ( $request->product_type == 'briguna' ) {
+            $kpr = BRIGUNA::create( $baseRequest );
+
+        } else {
+            $kpr = KPR::create( $baseRequest );
+
+        }
 
         DB::commit();
         return response()->success( [
@@ -151,6 +161,7 @@ class EFormController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+        \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
             $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
@@ -171,9 +182,10 @@ class EFormController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+         \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => ['bikole' => 1], 'responseCode' => '01'];
+            $sicd = ['responseData' => [['bikole' => 1]], 'responseCode' => '01'];
 
         }
 
@@ -189,10 +201,10 @@ class EFormController extends Controller
 
         $dhnC = $dhn['responseData']['warna'];
 
-        if ( $sicd['responseData']['bikole'] == 1 ) {
+        if ( $sicd['responseData'][0]['bikole'] == 1 ) {
             $sicdC = 'Hijau';
 
-        } elseif ( $sicd['responseData']['bikole'] == 2 ) {
+        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
             $sicdC = 'Kuning';
 
         } else {
@@ -205,20 +217,30 @@ class EFormController extends Controller
         if ( in_array('Merah', $calculate) ) {
             $result = '3';
 
-        } else if ( in_array('Hijau', $calculate) ) {
-            $result = '1';
-
-        } else {
+        } else if ( in_array('Kuning', $calculate) ) {
             $result = '2';
 
+        } else {
+            $result = '1';
+
         }
-        \Log::info($dhn['responseData']);
-         \Log::info($sicd['responseData']);
+
         $data->update([
             'prescreening_status' => $result
-            , 'dhn_detail' => $dhn['responseData']['warna']
-            , 'sicd_detail' => $sicd['responseData']['bikole']
+            , 'dhn_detail' => json_encode($dhn['responseData'])
+            , 'sicd_detail' => json_encode($sicd['responseData'])
         ]);
+
+        $explode = explode(',', $data->uploadscore);
+        $html = '';
+
+        foreach ($explode as $value) {
+            if ($value != '') {
+                $html .= asset('uploads/prescreening/'.$data->id.'/'.$value) . ',';
+            }
+        }
+
+        $data['uploadscore'] = $html;
 
         if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
             return response()->success( [
@@ -237,22 +259,24 @@ class EFormController extends Controller
             'contents' => [
                 'eform' => $data
                 , 'dhn'=> [
-                    'kategori'=>'',
-                    'keterangan'=>'',
+                    'kategori'=>'-',
+                    'keterangan'=>'-',
                     'warna'=>'Hijau',
-                    'result'=>''
+                    'result'=>'-'
                 ]
                 , 'sicd'=> [
-                    'status'=>'',
-                    'acctno'=>'',
-                    'cbal'=>'',
-                    'bikole'=>'1',
-                    'result'=>'',
-                    'cif'=>'',
-                    'nama_debitur'=>'',
-                    'tgl_lahir'=>'',
-                    'alamat'=>'',
-                    'no_identitas'=>''
+                    [
+                        'status'=>'-',
+                        'acctno'=>'-',
+                        'cbal'=>'-',
+                        'bikole'=>'1',
+                        'result'=>'-',
+                        'cif'=>'-',
+                        'nama_debitur'=>'-',
+                        'tgl_lahir'=>'-',
+                        'alamat'=>'-',
+                        'no_identitas'=>'-'
+                    ]
                 ]
             ]
         ], 200 );
@@ -290,7 +314,7 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::approve( $eform_id, $request );
         if( $eform['status'] ) {
-            
+
                 $data =  EForm::findOrFail($eform_id);
                 if ($request->is_approved) {
                     event( new Approved( $data ) );
@@ -304,7 +328,7 @@ class EFormController extends Controller
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
-            
+
         } else {
             DB::rollback();
             return response()->success( [

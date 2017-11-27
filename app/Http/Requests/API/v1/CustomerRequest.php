@@ -28,6 +28,8 @@ class CustomerRequest extends BaseRequest
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 return [
+                    'product_leads' => '',
+                    'mobile_phone_couple' =>'required_if:product_leads,briguna,required|string|regex:/^[0-9]+$/|min:9|max:12',
                     'nik' => 'required|numeric|digits:16|unique:customer_details,nik',
                     'first_name' => 'required',
                     'last_name' => '',

@@ -39,14 +39,38 @@ class CustomerController extends Controller
 	 */
 	public function store( CustomerRequest $request )
 	{
-		DB::beginTransaction();
-		$customer = Customer::create( $request->all() );
+		$data = $request->all();
+		$product_leads = '';
+		if ( isset($request->product_leads) ){
+			$product_leads = $request->product_leads;
+		}
 
-		DB::commit();
-		return response()->success( [
-			'message' => 'Data nasabah berhasil ditambahkan.',
-			'contents' => $customer
-		], 201 );
+		if ( $product_leads == '' || $product_leads == 'kpr' ){
+			DB::beginTransaction();
+			$customer = Customer::create( $request->all() );
+
+			DB::commit();
+			return response()->success( [
+				'message' => 'Data nasabah berhasil ditambahkan.',
+				'contents' => $customer
+			], 201 );
+
+		} elseif ( $product_leads == 'briguna' ) {
+			$data['address'] = $data['alamat'].' rt '.$data['rt'].'/rw '.$data['rw'].', kelurahan='.
+								$data['kelurahan'].'kecamatan='.$data['kecamatan'].','.$data['kota'].' '.$data['kode_pos'];
+
+			$data['address_domisili'] = $data['alamat_domisili'].' rt '.$data['rt_domisili'].'/rw '.
+								$data['rw_domisili'].', kelurahan='.$data['kelurahan_domisili'].'kecamatan='.$data['kecamatan_domisili'].','.$data['kota_domisili'].' '.$data['kode_pos_domisili'];
+			DB::beginTransaction();
+			$customer = Customer::create( $data );
+
+			DB::commit();
+			return response()->success( [
+				'message' => 'Data nasabah berhasil ditambahkan.',
+				'contents' => $data
+			], 201 );
+
+		}
 	}
 
 	/**
