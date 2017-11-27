@@ -106,7 +106,7 @@ class DeveloperAgentController extends Controller
     public function show($id)
     {
         $data = User::with('userdeveloper')->where('id',$id)->first();
-       
+
        if ($data->userdeveloper) {
            return response()->success([
             'contents' => $data
@@ -116,7 +116,7 @@ class DeveloperAgentController extends Controller
         return response()->error([
             'message' => 'Id agent developer Tidak Valid.',
         ], 500);
-        
+
     }
 
     /**
@@ -140,11 +140,12 @@ class DeveloperAgentController extends Controller
     public function update(UpdateRequest $request, $id)
     {
         $user = User::findOrFail($id);
+        \Log::info($request->all());
         $user->update($request->all());
         if ($user) {
             $saveData = UserDeveloper::where('user_id', $user->id)->first();
-            $saveData->birth_date = $request->birth_date;
-            $saveData->join_date = $request->join_date;
+            $saveData->birth_date = date("Y-m-d", strtotime($request->birth_date));
+            $saveData->join_date = date("Y-m-d", strtotime($request->join_date));
             $saveData->save();
             return response()->success([
                 'message' => 'Data agent developer berhasil diubah.',
@@ -192,7 +193,7 @@ class DeveloperAgentController extends Controller
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
         }
-     
+
         // $user->update($request->all());
         return response()->success([
             'message' => 'Data Activated Agent Developer ini Berhasil update',
