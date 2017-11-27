@@ -134,16 +134,6 @@ class ScoringController extends Controller
 
 		}
 
-		$score = $request->input('pefindo_score');
-		$pefindoC = 'Kuning';
-		if ( $score >= 250 && $score <= 573 ) {
-			$pefindoC = 'Merah';
-
-		} elseif ( $score >= 677 && $score <= 900 ) {
-			$pefindoC = 'Hijau';
-
-		}
-
 		$data = EForm::findOrFail( $id );
 		$personal = $data->customer->personal;
 
@@ -189,15 +179,25 @@ class ScoringController extends Controller
 
         }
 
-        $score = $data->pefindo_score;
-        $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
-            $pefindoC = 'Merah';
+        // $score = $data->pefindo_score;
+        // $pefindoC = 'Kuning';
+        // if ( $score >= 250 && $score <= 573 ) {
+        //     $pefindoC = 'Merah';
 
-        } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindoC = 'Hijau';
+        // } elseif ( $score >= 677 && $score <= 900 ) {
+        //     $pefindoC = 'Hijau';
 
-        }
+        // }
+
+		$score = $request->input('pefindo_score');
+		$pefindoC = 'Kuning';
+		if ( $score >= 250 && $score <= 573 ) {
+			$pefindoC = 'Merah';
+
+		} elseif ( $score >= 677 && $score <= 900 ) {
+			$pefindoC = 'Hijau';
+
+		}
 
         $dhnC = $dhn['responseData'][0]['warna'];
 
