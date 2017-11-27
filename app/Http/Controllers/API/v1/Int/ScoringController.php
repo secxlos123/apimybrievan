@@ -160,12 +160,10 @@ class ScoringController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+        \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
-            $dhn = ['warna' => 'Hijau'];
-
-        } else {
-            $dhn = $dhn['responseData'][0];
+            $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
 
         }
 
@@ -183,20 +181,29 @@ class ScoringController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+         \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['bikole' => '-'];
+            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
 
-        } else {
-            $sicd = $sicd['responseData'][0];
         }
 
-        $dhnC = $dhn['warna'];
+        $score = $data->pefindo_score;
+        $pefindoC = 'Kuning';
+        if ( $score >= 250 && $score <= 573 ) {
+            $pefindoC = 'Merah';
 
-        if ( $sicd['bikole'] == 1 || $sicd['bikole'] == '-' ) {
+        } elseif ( $score >= 677 && $score <= 900 ) {
+            $pefindoC = 'Hijau';
+
+        }
+
+        $dhnC = $dhn['responseData'][0]['warna'];
+
+        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
             $sicdC = 'Hijau';
 
-        } elseif ( $sicd['bikole'] == 2 ) {
+        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
             $sicdC = 'Kuning';
 
         } else {
@@ -222,12 +229,11 @@ class ScoringController extends Controller
         $dats['sicd_detail'] = json_encode($sicd);
 
 		DB::beginTransaction();
-		$Scoring = Eform::findOrFail( $id );
-		$Scoring->update( $dats );
+        $data->update($dats);
 		DB::commit();
 		return response()->success( [
 			'message' => 'Data nasabah berhasil dirubah.',
-			'contents' => $Scoring
+			'contents' => $data
 		] );
 	}
 
