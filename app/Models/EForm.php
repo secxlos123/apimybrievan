@@ -145,7 +145,7 @@ class EForm extends Model
         if( $this->ao_id ) {
             return 'Disposisi Pengajuan';
         }
-       
+
         return 'Pengajuan Kredit';
     }
 
@@ -258,7 +258,7 @@ class EForm extends Model
             $result['status'] = true;
 
         }
-        
+
         return $result;
     }
 
@@ -534,24 +534,26 @@ class EForm extends Model
             }
         } );
 
-        $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-            if ( $user['role'] == 'ao' ) {
-                $eform = $eform->where('eforms.ao_id', $user['pn']);
+        if ( !$request->has('is_screening') ) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
+                if ( $user['role'] == 'ao' ) {
+                    $eform = $eform->where('eforms.ao_id', $user['pn']);
+
+                }
+
+                if ($request->has('branch_id')) {
+                    $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')) );
+                }
+            } );
+
+            if ( $user['role'] != 'ao' ) {
+                $eform = $eform->select([
+                        'eforms.*'
+                        , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
+                    ])
+                    ->orderBy('new_order', 'asc');
 
             }
-
-            if ($request->has('branch_id')) {
-                $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')) );
-            }
-        } );
-
-        if ( $user['role'] != 'ao' ) {
-            $eform = $eform->select([
-                    'eforms.*'
-                    , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
-                ])
-                ->orderBy('new_order', 'asc');
-
         }
 
         if ( $request->has('is_screening') ) {
