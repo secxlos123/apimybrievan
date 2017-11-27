@@ -185,7 +185,7 @@ class ScoringController extends Controller
         ] )->post( 'form_params' );
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['bikole' => 1];
+            $sicd = ['bikole' => '-'];
 
         } else {
             $sicd = $sicd['responseData'][0];
