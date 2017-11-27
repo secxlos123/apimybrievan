@@ -199,7 +199,7 @@ class EFormController extends Controller
 
         }
 
-        $dhnC = $dhn['responseData']['warna'];
+        $dhnC = $dhn['responseData'][0]['warna'];
 
         if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-') {
             $sicdC = 'Hijau';
