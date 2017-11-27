@@ -35,7 +35,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -150,7 +150,7 @@ class EForm extends Model
     }
 
     /**
-     * Get AO detail information.
+     * Get Prescreening color information.
      *
      * @return string
      */
@@ -168,6 +168,24 @@ class EForm extends Model
         }
 
         return '-';
+    }
+
+    /**
+     * Get Pefindo color information.
+     *
+     * @return string
+     */
+    public function getPefindoColorAttribute( $value )
+    {
+        if ( $value >= 250 && $value <= 573 ) {
+            return 'Merah';
+
+        } elseif ( $value >= 677 && $value <= 900 ) {
+            return 'Hijau';
+
+        } else {
+            return 'Kuning';
+        }
     }
 
     /**

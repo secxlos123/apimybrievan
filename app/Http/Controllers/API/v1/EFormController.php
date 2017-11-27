@@ -192,10 +192,10 @@ class EFormController extends Controller
         $score = $data->pefindo_score;
         $pefindoC = 'Kuning';
         if ( $score >= 250 && $score <= 573 ) {
-            $pefindo = 'Merah';
+            $pefindoC = 'Merah';
 
         } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindo = 'Hijau';
+            $pefindoC = 'Hijau';
 
         }
 

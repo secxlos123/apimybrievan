@@ -191,16 +191,6 @@ class ScoringController extends Controller
             $sicd = $sicd['responseData'];
         }
 
-        $score = $data->pefindo_score;
-        $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
-            $pefindo = 'Merah';
-
-        } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindo = 'Hijau';
-
-        }
-
         $dhnC = $dhn['warna'];
 
         if ( $sicd['bikole'] == 1 ) {
