@@ -546,9 +546,11 @@ class EForm extends Model
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if ($request->has('start_date') || $request->has('end_date')) {
-                $start_date= date('Y-m-d',strtotime($request->input('start_date')));
+                $start_date = date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
-                $eform->orWhereBetween('eforms.created_at',array($start_date,$end_date));
+
+                $eform->where('eforms.created_at', '>=', $start_date)
+                ->where('eforms.created_at', '<=', $end_date);
             }
         } );
 
