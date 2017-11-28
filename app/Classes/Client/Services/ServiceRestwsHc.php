@@ -52,8 +52,8 @@ class ServiceRestwsHc extends Client
                     $role = 'pinca';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 59 ] ) ) {
                     $role = 'prescreening';
-                    if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
-                        $role = str_replace(' ', '-', strtolower($data[ 'posisi' ])); 
+                    if( in_array( strtolower($get_user_info_service[ 'responseData' ][ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
+                        $role = str_replace(' ', '-', strtolower($get_user_info_service[ 'responseData' ][ 'posisi' ])); 
                     }
                 } else {
                     $role = 'staff';
