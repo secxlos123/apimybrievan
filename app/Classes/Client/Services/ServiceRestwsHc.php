@@ -41,6 +41,7 @@ class ServiceRestwsHc extends Client
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+        
         if( ! empty( $get_user_info_service ) ) {
             if( $get_user_info_service[ 'responseCode' ] == '00' ) {
 
@@ -52,8 +53,8 @@ class ServiceRestwsHc extends Client
                     $role = 'pinca';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 59 ] ) ) {
                     $role = 'prescreening';
-                    if( in_array( strtolower($get_user_info_service[ 'responseData' ][ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
-                        $role = str_replace(' ', '-', strtolower($get_user_info_service[ 'responseData' ][ 'posisi' ])); 
+                    if( in_array( strtolower($get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
+                        $role = str_replace(' ', '-', strtolower($get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ])); 
                     }
                 } else {
                     $role = 'staff';
