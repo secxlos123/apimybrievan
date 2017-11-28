@@ -336,7 +336,7 @@ class EFormController extends Controller
             return response()->success( [
                 'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
-            ], 404 );
+            ], 400 );
         }
     }
 
