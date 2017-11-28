@@ -36,37 +36,37 @@ class CustomerRequest extends FormRequest
                     }
 
         return [
-             'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
-             'name' => 'required|alpha_spaces',
-             'birth_place_id' => 'required|exists:cities,id',
-             'birth_date' => 'required|date',
-             'address' => 'required',
-             'city_id' => 'required|numeric|exists:cities,id',
-             'gender' => 'required|in:L,P',
-             'citizenship_id' => 'required',
-             'status' => 'required|in:1,2,3',
-             'address_status'=>'required|in:0,1,3',
-             // 'phone' => 'digits:12|numeric',
-             'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
+             // 'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
+             'name' => 'alpha_spaces',
+             'birth_place_id' => 'exists:cities,id',
+             'birth_date' => 'date',
+             // 'address' => 'required',
+             // 'city_id' => 'numeric|exists:cities,id',
+             'gender' => 'in:L,P',
+             // 'citizenship_id' => 'required',
+             'status' => 'in:1,2,3',
+             'address_status'=>'in:0,1,3',
+             // // 'phone' => 'digits:12|numeric',
+             'mobile_phone' => 'string|regex:/^[0-9]+$/|min:9|max:12',
              'identity' => 'image|mimes:jpg,jpeg,png',
-             'mother_name'=>''
+             // 'mother_name'=>''
             ];
         }
         else if ($this->segment( 6 ) == 'work')
         {
              return [
-            'job_type_id' => 'required',
-            'job_type_name'=>'required',
-            'job_id' => 'required',
-            'job_name'=>'required',
-            'company_name' => 'required',
-            'position' => 'required',
-            'position_name'=>'required',
-            'job_field_id' => 'required',
-            'job_field_name'=>'required',
-            'work_duration'=>'required',
+            'job_type_id' => '',
+            'job_type_name'=>'',
+            'job_id' => '',
+            'job_name'=>'',
+            'company_name' => '',
+            'position' => '',
+            'position_name'=>'',
+            'job_field_id' => '',
+            'job_field_name'=>'',
+            'work_duration'=>'',
             'work_duration_month'=>'',
-            'office_address'=>'required'
+            'office_address'=>''
             ];
         }
         else if ($this->segment( 6 ) == 'avatar')
@@ -78,19 +78,19 @@ class CustomerRequest extends FormRequest
          else if ($this->segment( 6 ) == 'financial')
         {
             return [
-            'salary' => 'required',
-            'other_salary' => 'required',
-            'loan_installment' => 'required',
-            'dependent_amount' => 'required',
+            'salary' => '',
+            'other_salary' => '',
+            'loan_installment' => '',
+            'dependent_amount' => '',
             ];
 
         }
         else if ($this->segment( 6 ) == 'contact')
         {
             return [
-            'emergency_contact' => 'required',
-            'emergency_relation' => 'required',
-            'emergency_name' => 'required',
+            'emergency_contact' => '',
+            'emergency_relation' => '',
+            'emergency_name' => '',
             ];
         }
         else if ($this->segment( 6 ) == 'other')
@@ -107,17 +107,17 @@ class CustomerRequest extends FormRequest
         elseif ($this->user()->inRole('developer'))
         {
             return[
-             'name' => 'required|alpha_spaces',
+             'name' => 'alpha_spaces',
             ];
         }
         elseif ($this->user()->inRole('others'))
         {
             return[
-            'name' => 'required|alpha_spaces',
-            'email' => 'required|email|unique:third_parties,email|max:150',
-            'address' => 'required|string',
-            'city_id' => 'required|integer|exists:cities,id',
-            'phone_number' => 'required|string|regex:/^[0-9]+$/|max:15',
+            'name' => 'alpha_spaces',
+            'email' => 'email|unique:third_parties,email|max:150',
+            'address' => 'string',
+            'city_id' => 'integer|exists:cities,id',
+            'phone_number' => 'string|regex:/^[0-9]+$/|max:15',
 
             ];
         }
