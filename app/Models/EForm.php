@@ -549,8 +549,8 @@ class EForm extends Model
                 $start_date = date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
 
-                $eform->where('eforms.created_at', '>=', $start_date)
-                ->where('eforms.created_at', '<=', $end_date);
+                $eform->where('eforms.created_at', '>=', $start_date . ' 00:00:00')
+                ->where('eforms.created_at', '<=', $end_date . ' 23:59:59');
             }
         } );
 
