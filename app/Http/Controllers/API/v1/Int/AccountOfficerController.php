@@ -14,13 +14,14 @@ class AccountOfficerController extends Controller
      */
     public function index( Request $request )
     {
+        $branch_id =  $request->has('branch_id') ? $request->branch_id : $user_login[ 'branch_id' ];
         $user_login = \RestwsHc::getUser();
         $get_list_AO = \RestwsHc::setBody( [
             'request' => json_encode( [
                 'requestMethod' => 'get_list_tenaga_pemasar',
                 'requestData' => [
                     'id_user' => $request->header( 'pn' ),
-                    'kode_branch' => ($request->has('branch_id') : $request->branch_id ? $user_login[ 'branch_id' ]),
+                    'kode_branch' => $branch_id,
                 ]
             ] )
         ] )->setHeaders( [
