@@ -12,7 +12,7 @@ class Collateral extends Model
      * The fillable columns
      * @var array
      */
-    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by'];
+    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by','is_staff'];
 
     /**
      * The hidden columns
