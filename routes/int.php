@@ -58,6 +58,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::group( [ 'prefix' => 'verification' ], function () {
 			Route::post( 'search-nik', 'VerificationController@searchNik' );
 		} );
+		Route::get( 'staff-list', 'StaffController@index' );
 
 
 

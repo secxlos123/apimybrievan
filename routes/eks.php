@@ -48,10 +48,21 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		Route::post('reset', 'PasswordController@reset');
 	});
 
+
+	/**
+	 * Route for Calculator
+	 **/
+
+
 	/**
 	 * Route for customer or developer require authentication
 	 */
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
+	
+		Route::get('generateFlat', 'CalculatorController@generateFlat');
+		Route::get('generateEfektif', 'CalculatorController@generateEfektif');
+		Route::get('generateEfektifFixedFloat', 'CalculatorController@generateEfektif_FixedFloat');
+		Route::get('generateEfektifFixedFloorFloat', 'CalculatorController@generateEfektif_FixedFloorFloat');
 
 		/**
 		 * Route for customer for register simple, complete and logout
@@ -187,7 +198,6 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		Route::resource('favourite', 'FavouriteController', [
 			'only' => ['store', 'show']
 		]);
-
 	});
 });
 

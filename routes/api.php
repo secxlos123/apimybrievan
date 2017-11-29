@@ -31,7 +31,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'project-list', 'ProjectController@index' );
 		Route::get( 'economy-sectors', 'EconomySectorController@index' );
 		Route::get( 'use-reasons', 'UseReasonController@index' );
-
+		Route::get( 'kanwil-list', 'KanwilController@index' );
 		Route::get( 'kemendagri', 'CustomerController@kemendagri' );
 		Route::get( 'customer-bri', 'CustomerController@customer' );
 
