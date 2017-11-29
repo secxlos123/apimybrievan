@@ -180,7 +180,7 @@ class CollateralController extends Controller
     public function disposition($eks, $collateralId)
     {
       $this->request->request->add(['status' => Collateral::STATUS[1]]);
-      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark'));
+      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff'));
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
