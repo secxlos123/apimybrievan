@@ -30,7 +30,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number','current_address', 'kewarganegaraan','pendidikan_terakhir_name','address_domisili','mobile_phone_couple'
+        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number','current_address', 'kewarganegaraan','pendidikan_terakhir_name','address_domisili','mobile_phone_couple'
     ];
 
     /**
@@ -330,7 +330,6 @@ class CustomerDetail extends Model
                                     visit_reports.down_payment AS Bukti_Uang_Muka,
                                     visit_reports.photo_with_customer AS Foto_Debitur,
                                     visit_reports.npwp AS Kartu_Npwp,
-                                    visit_reports.legal_document AS Dokumen_legal_Agunan,
                                     visit_reports.offering_letter AS Surat_Penawaran,
                                     visit_reports.building_tax AS PBB,
                                     visit_reports.salary_slip AS Slip_Gaji,
@@ -371,16 +370,6 @@ class CustomerDetail extends Model
     public function setCoupleIdentityAttribute( $image )
     {
         $this->globalSetImageAttribute( $image, 'couple_identity' );
-    }
-
-    /**
-     * Set customer identity image.
-     *
-     * @return void
-     */
-    public function setLegalDocumentAttribute( $image )
-    {
-        $this->globalSetImageAttribute( $image, 'legal_document' );
     }
 
     /**
