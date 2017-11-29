@@ -507,20 +507,20 @@ class EForm extends Model
         }
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
-                if( $request->has( 'status' ) ) {
-                    if( $request->status == 'Submit' ) {
-                        $eform->whereIsApproved( true );
-                    } else if( $request->status == 'Initiate' ) {
-                        $eform->has( 'visit_report' )->whereIsApproved( false );
-                    } else if( $request->status == 'Dispose' ) {
-                        $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                    } else if( $request->status == 'Rekomend' ) {
-                        $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                    } elseif ($request->status == 'Rejected') {
-                        $eform->where('status_eform', 'Rejected');
-                    }
+            if( $request->has( 'status' ) ) {
+                if( $request->status == 'Submit' ) {
+                    $eform->whereIsApproved( true );
+                } else if( $request->status == 'Initiate' ) {
+                    $eform->has( 'visit_report' )->whereIsApproved( false );
+                } else if( $request->status == 'Dispose' ) {
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                } else if( $request->status == 'Rekomend' ) {
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                } elseif ($request->status == 'Rejected') {
+                    $eform->where('status_eform', 'Rejected');
                 }
-            } );
+            }
+        } );
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if ($request->has('ref_number')) {
@@ -535,24 +535,24 @@ class EForm extends Model
             }
         } );
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if ($request->has('prescreening')) {
+        if ($request->has('prescreening')) {
+            $eform = $query->where( function( $eform ) use( $request, &$user ) {
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
                     $eform->Where('eforms.prescreening_status', $prescreening);
                 }
-            }
-        } );
+            } );
+        }
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if ($request->has('start_date') || $request->has('end_date')) {
+        if ($request->has('start_date') || $request->has('end_date')) {
+            $eform = $query->where( function( $eform ) use( $request, &$user ) {
                 $start_date = date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
 
                 $eform->where('eforms.created_at', '>=', $start_date . ' 00:00:00')
                 ->where('eforms.created_at', '<=', $end_date . ' 23:59:59');
-            }
-        } );
+            } );
+        }
 
         if ( !$request->has('is_screening') ) {
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
@@ -579,6 +579,13 @@ class EForm extends Model
         if ( $request->has('is_screening') ) {
             if ( $request->input('is_screening') != 'All' ) {
                 $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
+
+            }
+        }
+
+        if ( $request->has('product') ) {
+            if ( $request->input('product') != 'All' ) {
+                $eform = $eform->where('eforms.product_type', $request->input('product'));
 
             }
         }
