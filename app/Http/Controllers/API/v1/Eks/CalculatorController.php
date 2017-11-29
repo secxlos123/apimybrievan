@@ -111,7 +111,7 @@ class CalculatorController extends Controller
             if($i == 0){
                 $returnVal[0][0] = 0;
                 $returnVal[0][1] = 0;
-                $returnVal[0][2] = $plafond;
+                $returnVal[0][2] = (int)$plafond;
             }else{
                 $angsuranBunga = (($fxrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFix - $angsuranBunga;
