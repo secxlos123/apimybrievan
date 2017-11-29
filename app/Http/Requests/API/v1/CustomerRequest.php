@@ -152,7 +152,6 @@ class CustomerRequest extends BaseRequest
                         //'other_salary' => 'required|numeric',
                         //'loan_installment' => 'required',
                         //'dependent_amount' => 'required',
-                        'legal_document' => 'required|file',
                         'salary_slip' => 'required|file',
                         'identity' => 'image|mimes:jpg,jpeg,png',
                         'image' => 'image|mimes:jpg,jpeg,png',

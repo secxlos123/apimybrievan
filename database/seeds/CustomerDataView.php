@@ -13,7 +13,7 @@ class CustomerDataView extends Seeder
     {
     	\DB::unprepared("DROP VIEW IF EXISTS customer_view_table");
     	\DB::unprepared(" CREATE VIEW customer_view_table AS
-	    		Select 
+	    		Select
 				eforms.id AS eforms_id,
 				customer_details.user_id AS user_id,
 				customer_details.nik,
@@ -21,7 +21,6 @@ class CustomerDataView extends Seeder
 				customer_details.couple_identity,
 				visit_reports.photo_with_customer,
 				visit_reports.npwp,
-				visit_reports.legal_document,
 				visit_reports.marrital_certificate,
 				visit_reports.divorce_certificate,
 				visit_reports.offering_letter,

@@ -39,8 +39,13 @@ class AuthController extends Controller
                 $role = 'pinca';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
+                if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
+                    $role = str_replace(' ', '-', strtolower($data[ 'posisi' ])); 
+                }
             } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
+            } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
+                $role = 'collateral';
             } else {
                 $request->headers->set( 'pn', $pn );
                 $this->destroy( $request );

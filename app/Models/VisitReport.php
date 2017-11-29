@@ -55,7 +55,6 @@ class VisitReport extends Model
         'source',
         'recommended',
         'recommendation',
-        'legal_document',
         'marrital_certificate',
         'divorce_certificate',
         'offering_letter',
@@ -131,16 +130,6 @@ class VisitReport extends Model
     }
 
     /**
-     * Set Report Legal Document image.
-     *
-     * @return void
-     */
-    public function setLegalDocumentAttribute( $image )
-    {
-        $this->globalSetImageAttribute( $image, 'legal_document' );
-    }
-
-    /**
      * Set Report Salary Slip image.
      *
      * @return void
@@ -149,7 +138,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'salary_slip' );
     }
-    
+
     /**
      * Set Report Family Card image.
      *
@@ -437,7 +426,7 @@ class VisitReport extends Model
                 $path = $image;
             }
         }
-        
+
         return url( $path );
     }
 

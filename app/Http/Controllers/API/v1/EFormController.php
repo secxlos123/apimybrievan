@@ -164,7 +164,7 @@ class EFormController extends Controller
         \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
-            $dhn = ['responseData' => ['warna' => 'Hijau'], 'responseCode' => '01'];
+            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
 
         }
 
@@ -185,51 +185,51 @@ class EFormController extends Controller
          \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => [['bikole' => 1]], 'responseCode' => '01'];
+            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
 
         }
 
-        $score = $data->pefindo_score;
-        $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
-            $pefindo = 'Merah';
+        // $score = $data->pefindo_score;
+        // $pefindoC = 'Kuning';
+        // if ( $score >= 250 && $score <= 573 ) {
+        //     $pefindoC = 'Merah';
 
-        } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindo = 'Hijau';
+        // } elseif ( $score >= 677 && $score <= 900 ) {
+        //     $pefindoC = 'Hijau';
 
-        }
+        // }
 
-        $dhnC = $dhn['responseData']['warna'];
+        // $dhnC = $dhn['responseData'][0]['warna'];
 
-        if ( $sicd['responseData'][0]['bikole'] == 1 ) {
-            $sicdC = 'Hijau';
+        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
+        //     $sicdC = 'Hijau';
 
-        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-            $sicdC = 'Kuning';
+        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
+        //     $sicdC = 'Kuning';
 
-        } else {
-            $sicdC = 'Merah';
+        // } else {
+        //     $sicdC = 'Merah';
 
-        }
+        // }
 
-        $calculate = array($pefindoC, $dhnC, $sicdC);
+        // $calculate = array($pefindoC, $dhnC, $sicdC);
 
-        if ( in_array('Merah', $calculate) ) {
-            $result = '3';
+        // if ( in_array('Merah', $calculate) ) {
+        //     $result = '3';
 
-        } else if ( in_array('Kuning', $calculate) ) {
-            $result = '2';
+        // } else if ( in_array('Kuning', $calculate) ) {
+        //     $result = '2';
 
-        } else {
-            $result = '1';
+        // } else {
+        //     $result = '1';
 
-        }
+        // }
 
-        $data->update([
-            'prescreening_status' => $result
-            , 'dhn_detail' => json_encode($dhn['responseData'])
-            , 'sicd_detail' => json_encode($sicd['responseData'])
-        ]);
+        // $data->update([
+        //     'prescreening_status' => $result
+        //     , 'dhn_detail' => json_encode($dhn['responseData'])
+        //     , 'sicd_detail' => json_encode($sicd['responseData'])
+        // ]);
 
         $explode = explode(',', $data->uploadscore);
         $html = '';
@@ -259,17 +259,19 @@ class EFormController extends Controller
             'contents' => [
                 'eform' => $data
                 , 'dhn'=> [
-                    'kategori'=>'-',
-                    'keterangan'=>'-',
-                    'warna'=>'Hijau',
-                    'result'=>'-'
+                    [
+                        'kategori'=>'-',
+                        'keterangan'=>'-',
+                        'warna'=>'Hijau',
+                        'result'=>'-'
+                    ]
                 ]
                 , 'sicd'=> [
                     [
                         'status'=>'-',
                         'acctno'=>'-',
                         'cbal'=>'-',
-                        'bikole'=>'1',
+                        'bikole'=>'-',
                         'result'=>'-',
                         'cif'=>'-',
                         'nama_debitur'=>'-',
@@ -334,7 +336,7 @@ class EFormController extends Controller
             return response()->success( [
                 'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
-            ], 404 );
+            ], 400 );
         }
     }
 

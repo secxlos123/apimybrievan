@@ -307,7 +307,7 @@ class Customer extends User
      */
     public function update( array $attributes = [], array $options = [] )
     {
-        $keys = array('npwp', 'identity', 'couple_identity', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
+        $keys = array('npwp', 'identity', 'couple_identity', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
 
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
