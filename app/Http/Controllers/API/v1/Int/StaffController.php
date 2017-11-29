@@ -26,6 +26,13 @@ class StaffController extends Controller
             ->post( 'form_params' );
 
        	if ($get_staff['responseCode'] == '00' ) {
+
+       		 $get_staff[ 'responseData' ] = array_map( function( $content ) {
+            return [
+                'id' => $content[ 'PN' ],
+                'name' => $content[ 'Nama' ]
+            ];
+        }, $get_staff[ 'responseData' ] );
        		
 	        $staff_list = [
 	            "current_page" => 1,
