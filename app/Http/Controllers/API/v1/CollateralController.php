@@ -98,7 +98,7 @@ class CollateralController extends Controller
           ->collateral
           ->where('status', Collateral::STATUS[0])
           ->findOrFail($id)
-          ->update($this->request->only(['status', 'approved_by', 'staff_id', 'staff_name']))
+          ->update($this->request->only(['status', 'approved_by', 'staff_id', 'staff_name','is_staff']))
           ? $this->collateral->findOrFail($id)
           : (object)[]
       );
