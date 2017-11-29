@@ -499,6 +499,8 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
+        \Log::info("===================================================");
+
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
@@ -522,16 +524,18 @@ class EForm extends Model
             }
         } );
 
+        if ($request->has('customer_name')){
+            $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id');
+        }
+
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if ($request->has('ref_number')) {
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
             }
 
-            if ($request->has('search')) {
-                $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
-
-                if ($request->has('customer_name')){
-                }
+            if ($request->has('customer_name')){
+                $eform->orWhere('users.last_name', 'ilike', '%'.$request->input('search').'%')
+                    ->orWhere('users.first_name', 'ilike', '%'.$request->input('search').'%');
             }
         } );
 
@@ -566,12 +570,18 @@ class EForm extends Model
                 }
             } );
 
-            if ( $user['role'] != 'ao' ) {
-                $eform = $eform->select([
-                        'eforms.*'
-                        , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
-                    ])
-                    ->orderBy('new_order', 'asc');
+            if ( $user['role'] != 'ao' || $request->has('customer_name')) {
+                if ( $request->has('customer_name') ) {
+                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
+
+                } else {
+                    $eform = $eform->select([
+                            'eforms.*'
+                            , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
+                        ])
+                        ->orderBy('new_order', 'asc');
+
+                }
 
             }
         }
