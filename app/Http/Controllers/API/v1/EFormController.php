@@ -13,6 +13,7 @@ use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\Mitra;
 use DB;
 
 class EFormController extends Controller
@@ -26,13 +27,23 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $eforms = EForm::filter( $request )->paginate( $limit );
+        $newForm = EForm::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $eforms
+            'contents' => $newForm
         ], 200 );
     }
 
+    public function mitra_relation( Request $request )
+    {
+        \Log::info($request->all());
+        $mitra = Mitra::filter( $request )->get();
+        return $mitra;die();
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $mitra
+        ], 200 );
+    }
     /**
      * Display the specified resource.
      *
@@ -44,27 +55,34 @@ class EFormController extends Controller
     {
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 
-        $get_user_info_service = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_user_info',
-                'requestData' => [
-                    'id_cari' => $eform->ao_id,
-                    'id_user' => request()->header( 'pn' )
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-
-        $eform = $eform->toArray();
-        if ( $get_user_info_service['responseCode'] == '00' ) {
-            $eform['branch'] = $get_user_info_service['responseData']['WERKS_TX'];
-        }
-
         return response()->success( [
             'contents' => $eform
         ] );
     }
+
+    public function uploadimage($image,$id,$atribute){
+         $path = public_path( 'uploads/briguna/' . $id . '/' );
+        if ( ! empty( $this->attributes[ $atribute ] ) ) {
+            File::delete( $path . $this->attributes[ $atribute ] );
+        }
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = '.pdf';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            // log::info('image = '.$image->getMimeType());
+            $filename = $id . '-'.$atribute.'.' . $extension;
+            $image->move( $path, $filename );
+        }
+        return $filename;
+
+     }
 
     /**
      * Store a newly created resource in storage.
@@ -76,7 +94,33 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
 
+        $branchs = \RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => $request->input('branch_id'),
+                    'distance'    => 0,
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => 0,
+                    'longitude' => 0
+                ]
+            ])
+        ])
+        ->post('form_params');
+
         $baseRequest = $request->all();
+
+        if ( $branchs['responseCode'] == '00' ) {
+            foreach ($branchs['responseData'] as $branch) {
+                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+                    $baseRequest['branch'] = $branch['unit_kerja'];
+
+                }
+            }
+
+        }
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
@@ -105,7 +149,31 @@ class EFormController extends Controller
 
 
         if ( $request->product_type == 'briguna' ) {
+            /* BRIGUNA */
+            $NPWP_nasabah = $request->NPWP_nasabah;
+            $KK = $request->KK;
+            $SLIP_GAJI = $request->SLIP_GAJI;
+            $SK_AWAL = $request->SK_AWAL;
+            $SK_AKHIR = $request->SK_AKHIR;
+            $SKPG = $request->SKPG;
+
+            $id = $request->id;
+
+            $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
+            $KK = $this->uploadimage($KK,$id,'KK');
+            $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
+            $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+            $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+            $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+
+            $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
+            $baseRequest['KK'] = $KK;
+            $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
+            $baseRequest['SK_AWAL'] = $SK_AWAL;
+            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+            $baseRequest['SKPG'] = $SKPG;
             $kpr = BRIGUNA::create( $baseRequest );
+            /*----------------------------------*/
 
         } else {
             $kpr = KPR::create( $baseRequest );
@@ -188,48 +256,6 @@ class EFormController extends Controller
             $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
 
         }
-
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
-
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
-
-        // }
-
-        // $dhnC = $dhn['responseData'][0]['warna'];
-
-        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-        //     $sicdC = 'Hijau';
-
-        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-        //     $sicdC = 'Kuning';
-
-        // } else {
-        //     $sicdC = 'Merah';
-
-        // }
-
-        // $calculate = array($pefindoC, $dhnC, $sicdC);
-
-        // if ( in_array('Merah', $calculate) ) {
-        //     $result = '3';
-
-        // } else if ( in_array('Kuning', $calculate) ) {
-        //     $result = '2';
-
-        // } else {
-        //     $result = '1';
-
-        // }
-
-        // $data->update([
-        //     'prescreening_status' => $result
-        //     , 'dhn_detail' => json_encode($dhn['responseData'])
-        //     , 'sicd_detail' => json_encode($sicd['responseData'])
-        // ]);
 
         $explode = explode(',', $data->uploadscore);
         $html = '';

@@ -30,23 +30,27 @@ class KanwilController extends Controller
                 'branch_id' => $content[ 'branch' ]
             ];
         }, $get_kanwil[ 'responseData' ] );
-        $kanwil_list = [
-            "current_page" => 1,
-            "data" => $get_kanwil[ 'responseData' ],
-            "from" => 1,
-            "last_page" => 1,
-            "next_page_url" => null,
-            "path" => "",
-            "per_page" => count( $get_kanwil[ 'responseData' ] ),
-            "prev_page_url" => null,
-            "to" => 1,
-            "total" => 1
-        ];
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $kanwil_list
-        ], 200 );
+	        $kanwil_list = [
+	            "current_page" => 1,
+	            "data" => $get_kanwil[ 'responseData' ],
+	            "from" => 1,
+	            "last_page" => 1,
+	            "next_page_url" => null,
+	            "path" => "",
+	            "per_page" => count( $get_kanwil[ 'responseData' ] ),
+	            "prev_page_url" => null,
+	            "to" => 1,
+	            "total" => 1
+	        ];
+	        return response()->success( [
+	            'message' => 'Sukses',
+	            'contents' => $kanwil_list
+	        ], 200 );
 
        	}
+       	return response()->error( [
+            'message' => $get_kanwil[ 'responseDesc' ]
+        	], 422 );
+
     }
 }

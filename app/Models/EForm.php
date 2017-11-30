@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail','status_eform','branch'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch'
     ];
 
     /**
@@ -35,7 +35,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -96,16 +96,6 @@ class EForm extends Model
             return $this->kpr->request_amount;
         }
         return 0;
-    }
-
-    /**
-     * Get Branch detail information.
-     *
-     * @return string
-     */
-    public function getBranchAttribute()
-    {
-        return 'Branch Name';
     }
 
     /**
@@ -499,6 +489,8 @@ class EForm extends Model
      */
     public function scopeFilter( $query, Request $request )
     {
+        \Log::info("===================================================");
+
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
@@ -507,52 +499,54 @@ class EForm extends Model
         }
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
-                if( $request->has( 'status' ) ) {
-                    if( $request->status == 'Submit' ) {
-                        $eform->whereIsApproved( true );
-                    } else if( $request->status == 'Initiate' ) {
-                        $eform->has( 'visit_report' )->whereIsApproved( false );
-                    } else if( $request->status == 'Dispose' ) {
-                        $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                    } else if( $request->status == 'Rekomend' ) {
-                        $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                    } elseif ($request->status == 'Rejected') {
-                        $eform->where('status_eform', 'Rejected');
-                    }
+            if( $request->has( 'status' ) ) {
+                if( $request->status == 'Submit' ) {
+                    $eform->whereIsApproved( true );
+                } else if( $request->status == 'Initiate' ) {
+                    $eform->has( 'visit_report' )->whereIsApproved( false );
+                } else if( $request->status == 'Dispose' ) {
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                } else if( $request->status == 'Rekomend' ) {
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                } elseif ($request->status == 'Rejected') {
+                    $eform->where('status_eform', 'Rejected');
                 }
-            } );
+            }
+        } );
+
+        if ($request->has('customer_name')){
+            $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id');
+        }
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if ($request->has('ref_number')) {
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
             }
 
-            if ($request->has('search')) {
-                $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
-
-                if ($request->has('customer_name')){
-                }
+            if ($request->has('customer_name')){
+                $eform->orWhere('users.last_name', 'ilike', '%'.$request->input('search').'%')
+                    ->orWhere('users.first_name', 'ilike', '%'.$request->input('search').'%');
             }
         } );
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if ($request->has('prescreening')) {
+        if ($request->has('prescreening')) {
+            $eform = $query->where( function( $eform ) use( $request, &$user ) {
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
                     $eform->Where('eforms.prescreening_status', $prescreening);
                 }
-            }
-        } );
+            } );
+        }
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if ($request->has('start_date') || $request->has('end_date')) {
+        if ($request->has('start_date') || $request->has('end_date')) {
+            $eform = $query->where( function( $eform ) use( $request, &$user ) {
                 $start_date = date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
 
                 $eform->where('eforms.created_at', '>=', $start_date . ' 00:00:00')
                 ->where('eforms.created_at', '<=', $end_date . ' 23:59:59');
-            }
-        } );
+            } );
+        }
 
         if ( !$request->has('is_screening') ) {
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
@@ -566,12 +560,18 @@ class EForm extends Model
                 }
             } );
 
-            if ( $user['role'] != 'ao' ) {
-                $eform = $eform->select([
-                        'eforms.*'
-                        , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
-                    ])
-                    ->orderBy('new_order', 'asc');
+            if ( $user['role'] != 'ao' || $request->has('customer_name')) {
+                if ( $request->has('customer_name') ) {
+                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
+
+                } else {
+                    $eform = $eform->select([
+                            'eforms.*'
+                            , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
+                        ])
+                        ->orderBy('new_order', 'asc');
+
+                }
 
             }
         }
@@ -579,6 +579,13 @@ class EForm extends Model
         if ( $request->has('is_screening') ) {
             if ( $request->input('is_screening') != 'All' ) {
                 $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
+
+            }
+        }
+
+        if ( $request->has('product') ) {
+            if ( $request->input('product') != 'All' ) {
+                $eform = $eform->where('eforms.product_type', $request->input('product'));
 
             }
         }

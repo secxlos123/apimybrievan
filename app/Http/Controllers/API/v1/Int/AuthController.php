@@ -40,7 +40,7 @@ class AuthController extends Controller
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
                 if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
-                    $role = str_replace(' ', '-', strtolower($data[ 'posisi' ])); 
+                    $role = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
                 }
             } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
@@ -76,7 +76,7 @@ class AuthController extends Controller
 
         } else {
             return response()->error( [
-                'message' => 'Gagal Terhubung Dengan Server',
+                'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
                 'contents'=> []
             ], 422 );
         }
