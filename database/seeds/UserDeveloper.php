@@ -42,6 +42,9 @@ class UserDeveloper extends Seeder
                 'first_name' => 'Non Kerja Sama',
                 'last_name' => 'BRI',
             ]);
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 'id' => 1,
@@ -90,6 +93,9 @@ class UserDeveloper extends Seeder
                 'gender' => 'L',
                 'is_actived' => '1'
             ]);
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 2,
@@ -128,6 +134,9 @@ class UserDeveloper extends Seeder
                 "gender" => "L",
                 "is_actived" => "1"
             ]);
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 3,
@@ -429,6 +438,9 @@ class UserDeveloper extends Seeder
                 "gender" => "L",
                 "is_actived" => "1",
             ]);
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 4,
@@ -561,6 +573,9 @@ class UserDeveloper extends Seeder
                 "gender" => "L",
                 "is_actived" => "1",
             ]);
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 5,
@@ -694,6 +709,9 @@ class UserDeveloper extends Seeder
                 "gender" => "L",
                 "is_actived" => "1",
             ]);
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 6,
