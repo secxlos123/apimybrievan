@@ -59,7 +59,11 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	 */
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
 	
-		Route::post('calculator', 'CalculatorController@calculate');
+		Route::get('generateFlat', 'CalculatorController@generateFlat');
+		Route::get('generateEfektif', 'CalculatorController@generateEfektif');
+		Route::get('generateEfektifFixedFloat', 'CalculatorController@generateEfektif_FixedFloat');
+		Route::get('generateEfektifFixedFloorFloat', 'CalculatorController@generateEfektif_FixedFloorFloat');
+
 		/**
 		 * Route for customer for register simple, complete and logout
 		 */

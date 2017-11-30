@@ -40,82 +40,31 @@ class CalculatorController extends Controller
     {
         $params  = $this->request->all();
         
-        $price       = $params['price'];
-        $term        = $params['term'];
-        $rate        = $params['rate'];
-        $downPayment = $params['down_payment'];
-        $total       = $price;
-        $uangMuka    = ($total * $downPayment) / 100;
+        $plafond = $params['plafond'];
+        $term    = $params['term'];
+        $rate    = $params['rate'];
 
-        $plafond   = $price - $uangMuka;
         $n         = $term + 1;
         $returnVal = [];
 
         $angsuranPokok = $plafond / $term;
         $angsuranBunga = (($rate / 12) /100) * $plafond;
-        $angsuran      = (round($angsuranPokok) + round($angsuranBunga));
 
         for($i = 0; $i < $n; $i++)
         {
             if($i == 0){
-                $returnVal[$i] = [
-                    "bulan"          => $i,
-                    "sisa_pinjaman"  => (int)$plafond,
-                    "angsuran_pokok" => 0,
-                    "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
-                    "angsuran"       => 0,
-                ];
+                $returnVal[0][0] = 0;
+                $returnVal[0][1] = 0;
+                $returnVal[0][2] = (int)$plafond;
             }else{
                 $plafond -= $angsuranPokok;
-                $returnVal[$i] = [
-                    "bulan"          => $i,
-                    "sisa_pinjaman"  => $plafond,
-                    "angsuran_pokok" => round($angsuranPokok),
-                    "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
-                    "angsuran"       => $angsuran,
-                ];
+                $returnVal[$i][0] = floor($angsuranPokok);
+                $returnVal[$i][1] = floor($angsuranBunga);
+                $returnVal[$i][2] = $plafond;
             }
         }
-
-        $rincian = [
-            "rincian" => [
-                "uang_muka"           => ($total * $downPayment) / 100,
-                "porsi_pokok"         => 0,
-                "porsi_bunga"         => 0,
-                "suku_bunga"          => 0,
-                "suku_bunga_floating" => 0,
-                "kredit_fix"          => 0,
-                "lama_pinjaman"       => $term." Bulan",
-                "pinjaman_maksimum"   => 0,
-            ],
-            "biaya_bank" => [
-                "apprasial"     => 0,
-                "administrasi"  => 0,
-                "provisi"       => 0,
-                "asuransi"      => 0,
-                "total_biaya"   => 0,
-            ],
-            "biaya_notaris" => [
-                "akte_jual_beli" => 0,
-                "bea_balik_nama" => 0,
-                "akta_skmht"     => 0,
-                "perjanjian_ht"  => 0,
-                "cek_sertifikat" => 0,
-                "total_biaya"    => 0,
-            ],
-            "angsuran_perbulan"  => $angsuran,
-            "pembayaran_pertama" => $uangMuka,
-        ];
-
         return response()->success([
-            'contents' => [
-                'rincian_pinjaman' => $rincian,
-                'detail_angsuran'  => $returnVal,
-            ]
+            'contents' => $returnVal
         ]);
     }
 
@@ -123,14 +72,10 @@ class CalculatorController extends Controller
     {
         $params  = $this->request->all();
 
-        $price       = $params['price'];
-        $term        = $params['term'];
-        $rate        = $params['rate'];
-        $downPayment = $params['down_payment'];
-        $total       = $price;
-        $uangMuka    = ($total * $downPayment) / 100;
+        $plafond = $params['plafond'];
+        $term    = $params['term'];
+        $rate    = $params['rate'];
 
-        $plafond   = $price - $uangMuka;
         $n         = $term + 1;
         $returnVal = [];
 
@@ -138,87 +83,33 @@ class CalculatorController extends Controller
 
         for($i = 0; $i < $n; $i++){
             if($i == 0){
-                $returnVal[$i] = [
-                    "bulan"          => $i,
-                    "sisa_pinjaman"  => round($plafond),
-                    "angsuran_pokok" => 0,
-                    "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
-                    "angsuran"       => 0,
-                ];                
+                $returnVal[0][0] = 0;
+                $returnVal[0][1] = 0;
+                $returnVal[0][2] = round($plafond);
             }else if($i == $n - 1){
                 $angsuranBunga = ((($rate / 12) / 100) * $plafond);
                 $angsuranPokok = $angsuranTot - $angsuranBunga;
 
                 $plafond -= $angsuranPokok;
-                $angsuranPokok += round($plafond);
+                $angsuranPokok += $plafond;
                 $angsuranBunga =  $angsuranTot - $angsuranPokok;
 
-                $returnVal[$i] = [
-                    "bulan"          => $i,
-                    "sisa_pinjaman"  => round($plafond),
-                    "angsuran_pokok" => round($angsuranPokok),
-                    "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
-                    "angsuran"       => round($angsuranPokok) + round($angsuranBunga),
-                ];
-
-                $angsuran = round($angsuranPokok) + round($angsuranBunga);
-
+                $returnVal[$i][0] = round($angsuranPokok);
+                $returnVal[$i][1] = round($angsuranBunga);
+                $returnVal[$i][2] = 0;
             }else{
                 $angsuranBunga = ((($rate / 12) / 100) * $plafond);
                 $angsuranPokok = $angsuranTot - $angsuranBunga;
-                $plafond -= $angsuranPokok;
 
-                $returnVal[$i] = [
-                    "bulan"          => $i,
-                    "sisa_pinjaman"  => round($plafond),
-                    "angsuran_pokok" => round($angsuranPokok),
-                    "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
-                    "angsuran"       => round($angsuranPokok) + round($angsuranBunga),
-                ];
+                $plafond -= $angsuranPokok;
+                $returnVal[$i][0] = round($angsuranPokok);
+                $returnVal[$i][1] = round($angsuranBunga);
+                $returnVal[$i][2] = round($plafond);
             }
         }
 
-        $rincian = [
-            "rincian" => [
-                "uang_muka"           => ($total * $downPayment) / 100,
-                "porsi_pokok"         => 0,
-                "porsi_bunga"         => 0,
-                "suku_bunga"          => 0,
-                "suku_bunga_floating" => 0,
-                "kredit_fix"          => 0,
-                "lama_pinjaman"       => $term." Bulan",
-                "pinjaman_maksimum"   => 0,
-            ],
-            "biaya_bank" => [
-                "apprasial"     => 0,
-                "administrasi"  => 0,
-                "provisi"       => 0,
-                "asuransi"      => 0,
-                "total_biaya"   => 0,
-            ],
-            "biaya_notaris" => [
-                "akte_jual_beli" => 0,
-                "bea_balik_nama" => 0,
-                "akta_skmht"     => 0,
-                "perjanjian_ht"  => 0,
-                "cek_sertifikat" => 0,
-                "total_biaya"    => 0,
-            ],
-            "angsuran_perbulan"  => $angsuran,
-            "pembayaran_pertama" => $uangMuka,
-        ];
-
         return response()->success([
-            'contents' => [
-                'rincian_pinjaman' => $rincian,
-                'detail_angsuran'  => $returnVal,
-            ]
+            'contents' => $returnVal
         ]);
     }
 
