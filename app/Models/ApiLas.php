@@ -41,15 +41,15 @@ class ApiLas extends Model
      *
      * @return void
      */
-    public function insertDataDebtPerorangan($data, $pn) {
+    public function insertDataDebtPerorangan($data) {
         \Log::info($data);
         try {
-            print_r($data['tp_produk']);
+            /*print_r($data['tp_produk']);
             $inquiryUserLAS = AsmxLas::setEndpoint('inquiryUserLAS')
                 ->setBody([
                     'PN' => $pn
                 ])->post('form_params');
-            print_r($data);exit();
+            print_r($data);exit();*/
 
             $content_las_debt = [
                 "tp_produk"             => empty($data['tp_produk']) ? "10" : $data['tp_produk'],
@@ -181,7 +181,7 @@ class ApiLas extends Model
                 "Tp_produk"                 => "1",
                 "Briguna_smart"             => "0",
                 "Briguna_profesi"           => "0",
-                "Tgl_perkiraan_pensiun"     => "31122039",
+                "Tgl_perkiraan_pensiun"     => "31122099",
                 "Payroll"                   => "1",
                 "Gaji_per_bulan"            => "10000000",
                 "Pendapatan_profesi"        => "0",
@@ -194,11 +194,11 @@ class ApiLas extends Model
                 "Suku_bunga"                => "12",
                 "Sifat_suku_bunga"          => "annuitas",
                 "Jangka_waktu"              => "24",
-                "Maksimum_plafond"          => "1577479000",
+                "Maksimum_plafond"          => "159325404",
                 "Permohonan_kredit"         => "125000000",
                 "Baki_debet"                => "0",
                 "Plafond_usulan"            => "120000000",
-                "Angsuran_usulan"           => "5648900",
+                "Angsuran_usulan"           => "5648817",
                 "Rek_simpanan_bri"          => "1",
                 "Riwayat_pinjaman"          => "0",
                 "Penguasaan_cashflow"       => "2",
@@ -208,60 +208,6 @@ class ApiLas extends Model
             $insertPrescoring = AsmxLas::setEndpoint('insertPrescoringBriguna')
                 ->setBody([
                     'JSON' => json_encode($content_las_prescoring)
-                ])->post('form_params');
-
-            return $insertPrescoring;
-        } catch (Exception $e) {
-            throw new \Exception( "Error Processing Request", 1 );
-        }
-    }
-
-    public function insertAgunanLainnya($data) {
-        \Log::info($data);
-        try {
-            $content_insertAgunanLainnya = [
-                "id_aplikasi"                       => "42067",
-                "id_kredit"                         => "0",
-                "id_agunan"                         => "0",
-                "nama_debitur"                      => "aswin",
-                "jenis_agunan"                      => "29",
-                "deskripsi"                         => "agunan lain",
-                "jenis_mata_uang"                   => "IDR",
-                "nama_barang_dagangan"              => "agunan lain",
-                "atas_nama_pemilik"                 => "aswin taopik zaenudin",
-                "nomor_bukti_kepemilikan"           => "bukti01",
-                "tanggal_bukti_kepemilikan"         => "28022015",
-                "alamat_pemilik_agunan"             => "jln menteng tenggulun",
-                "kelurahan"                         => "menteng",
-                "kecamatan"                         => "menteng",
-                "lokasi_dati_2"                     => "6110",
-                "nilai_pasar_wajar"                 => "1000000",
-                "nilai_likuidasi"                   => "1000000",
-                "proyeksi_nilai_pasar_wajar"        => "1000000",
-                "proyeksi_nilai_likuidasi"          => "1000000",
-                "paripasu"                          => "true",
-                "eligibility"                       => "Eligible",
-                "penilaian_agunan_oleh"             => "bank",
-                "tanggal_penilaian_agunan_terakhir" => "28022010",
-                "penilai_independent"               => "",
-                "jenis_pengikatan"                  => "06",
-                "no_sertifikat_pengikatan"          => "06ikat",
-                "flag_asuransi"                     => "tidak",
-                "nama_perusahaan_asuransi"          => "",
-                "nilai_asuransi"                    => "0",
-                "nilai_likuidasi_saat_realisasi"    => "1000000",
-                "nilai_pengikatan"                  => "1000000",
-                "fid_cif"                           => "11036586",
-                "nilai_agunan_bank"                 => "1000000",
-                "bukti_kepemilikan"                 => "Kwitansi/Faktur/Invoice",
-                "nilai_pengurang_ppap"              => "0",
-                "klasifikasi_agunan"                => "tambahan",
-                "porsi_agunan"                      => "100"
-            ];
-
-            $insertPrescoring = AsmxLas::setEndpoint('insertAgunanLainnya')
-                ->setBody([
-                    'JSONData' => json_encode($content_insertAgunanLainnya)
                 ])->post('form_params');
 
             return $insertPrescoring;
@@ -341,6 +287,60 @@ class ApiLas extends Model
                 ])->post('form_params');
 
             return $insertKreditBriguna;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function insertAgunanLainnya($data) {
+        \Log::info($data);
+        try {
+            $content_insertAgunanLainnya = [
+                "id_aplikasi"                       => "42067",
+                "id_kredit"                         => "0",
+                "id_agunan"                         => "0",
+                "nama_debitur"                      => "aswin",
+                "jenis_agunan"                      => "29",
+                "deskripsi"                         => "agunan lain",
+                "jenis_mata_uang"                   => "IDR",
+                "nama_barang_dagangan"              => "agunan lain",
+                "atas_nama_pemilik"                 => "aswin taopik zaenudin",
+                "nomor_bukti_kepemilikan"           => "bukti01",
+                "tanggal_bukti_kepemilikan"         => "28022015",
+                "alamat_pemilik_agunan"             => "jln menteng tenggulun",
+                "kelurahan"                         => "menteng",
+                "kecamatan"                         => "menteng",
+                "lokasi_dati_2"                     => "6110",
+                "nilai_pasar_wajar"                 => "1000000",
+                "nilai_likuidasi"                   => "1000000",
+                "proyeksi_nilai_pasar_wajar"        => "1000000",
+                "proyeksi_nilai_likuidasi"          => "1000000",
+                "paripasu"                          => "true",
+                "eligibility"                       => "Eligible",
+                "penilaian_agunan_oleh"             => "bank",
+                "tanggal_penilaian_agunan_terakhir" => "28022010",
+                "penilai_independent"               => "",
+                "jenis_pengikatan"                  => "06",
+                "no_sertifikat_pengikatan"          => "06ikat",
+                "flag_asuransi"                     => "tidak",
+                "nama_perusahaan_asuransi"          => "",
+                "nilai_asuransi"                    => "0",
+                "nilai_likuidasi_saat_realisasi"    => "1000000",
+                "nilai_pengikatan"                  => "1000000",
+                "fid_cif"                           => "11036586",
+                "nilai_agunan_bank"                 => "1000000",
+                "bukti_kepemilikan"                 => "Kwitansi/Faktur/Invoice",
+                "nilai_pengurang_ppap"              => "0",
+                "klasifikasi_agunan"                => "tambahan",
+                "porsi_agunan"                      => "100"
+            ];
+
+            $insertPrescoring = AsmxLas::setEndpoint('insertAgunanLainnya')
+                ->setBody([
+                    'JSONData' => json_encode($content_insertAgunanLainnya)
+                ])->post('form_params');
+
+            return $insertPrescoring;
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
         }
