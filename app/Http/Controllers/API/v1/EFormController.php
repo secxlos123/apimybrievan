@@ -245,48 +245,6 @@ public function uploadimage($image,$id,$atribute){
 
         }
 
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
-
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
-
-        // }
-
-        // $dhnC = $dhn['responseData'][0]['warna'];
-
-        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-        //     $sicdC = 'Hijau';
-
-        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-        //     $sicdC = 'Kuning';
-
-        // } else {
-        //     $sicdC = 'Merah';
-
-        // }
-
-        // $calculate = array($pefindoC, $dhnC, $sicdC);
-
-        // if ( in_array('Merah', $calculate) ) {
-        //     $result = '3';
-
-        // } else if ( in_array('Kuning', $calculate) ) {
-        //     $result = '2';
-
-        // } else {
-        //     $result = '1';
-
-        // }
-
-        // $data->update([
-        //     'prescreening_status' => $result
-        //     , 'dhn_detail' => json_encode($dhn['responseData'])
-        //     , 'sicd_detail' => json_encode($sicd['responseData'])
-        // ]);
-
         $explode = explode(',', $data->uploadscore);
         $html = '';
 

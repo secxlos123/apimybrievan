@@ -179,16 +179,6 @@ class ScoringController extends Controller
 
         }
 
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
-
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
-
-        // }
-
 		$score = $request->input('pefindo_score');
 		$pefindoC = 'Kuning';
 		if ( $score >= 250 && $score <= 573 ) {
@@ -201,10 +191,25 @@ class ScoringController extends Controller
 
         $dhnC = $dhn['responseData'][0]['warna'];
 
-        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
+        $target = 1;
+
+        foreach ($sicd['responseData'] as $responseData) {
+        	if ($sicd['responseCode'] == '00') {
+        		$date = explode(" ", $responseData['tgl_lahir']);
+
+	        	if ( strtoupper($responseData['nama_debitur']) == strtoupper($personal['first_name'].' '.$personal['last_name']) && $personal['birth_date'] == $date[0] && $personal['nik'] == $responseData['no_identitas'] ) {
+	        		if ( $responseData['bikole'] > $target ) {
+	        			$target = $responseData['bikole'];
+	        		}
+
+	        	}
+        	}
+        }
+
+        if ( $target == 1 ) {
             $sicdC = 'Hijau';
 
-        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
+        } elseif ( $target == 2 ) {
             $sicdC = 'Kuning';
 
         } else {
