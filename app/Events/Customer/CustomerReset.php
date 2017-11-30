@@ -12,7 +12,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 use App\Models\User;
 
-class CustomerRegistered
+class CustomerReset
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
