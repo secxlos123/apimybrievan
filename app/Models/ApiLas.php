@@ -44,12 +44,12 @@ class ApiLas extends Model
     public function insertDataDebtPerorangan($data, $pn) {
         \Log::info($data);
         try {
-            /*print_r($data['tp_produk']);
+            print_r($data['tp_produk']);
             $inquiryUserLAS = AsmxLas::setEndpoint('inquiryUserLAS')
                 ->setBody([
                     'PN' => $pn
                 ])->post('form_params');
-            print_r($data);exit();*/
+            print_r($data);exit();
 
             $content_las_debt = [
                 "tp_produk"             => empty($data['tp_produk']) ? "10" : $data['tp_produk'],

@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail','status_eform','branch'
     ];
 
     /**
@@ -35,7 +35,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -96,6 +96,16 @@ class EForm extends Model
             return $this->kpr->request_amount;
         }
         return 0;
+    }
+
+    /**
+     * Get Branch detail information.
+     *
+     * @return string
+     */
+    public function getBranchAttribute()
+    {
+        return 'Branch Name';
     }
 
     /**
