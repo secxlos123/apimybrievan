@@ -33,7 +33,8 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-public function mitra_relation( Request $request )
+
+    public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
         $mitra = Mitra::filter( $request )->get();
@@ -54,28 +55,12 @@ public function mitra_relation( Request $request )
     {
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 
-        $get_user_info_service = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_user_info',
-                'requestData' => [
-                    'id_cari' => $eform->ao_id,
-                    'id_user' => request()->header( 'pn' )
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-
-        $eform = $eform->toArray();
-        if ( $get_user_info_service['responseCode'] == '00' ) {
-            $eform['branch'] = $get_user_info_service['responseData']['WERKS_TX'];
-        }
-
         return response()->success( [
             'contents' => $eform
         ] );
     }
-public function uploadimage($image,$id,$atribute){
+
+    public function uploadimage($image,$id,$atribute){
          $path = public_path( 'uploads/briguna/' . $id . '/' );
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
@@ -98,6 +83,7 @@ public function uploadimage($image,$id,$atribute){
         return $filename;
 
      }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -108,7 +94,33 @@ public function uploadimage($image,$id,$atribute){
     {
         DB::beginTransaction();
 
+        $branchs = \RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => $request->input('branch_id'),
+                    'distance'    => 0,
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => 0,
+                    'longitude' => 0
+                ]
+            ])
+        ])
+        ->post('form_params');
+
         $baseRequest = $request->all();
+
+        if ( $branchs['responseCode'] == '00' ) {
+            foreach ($branchs['responseData'] as $branch) {
+                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+                    $baseRequest['branch'] = $branchs['responseData'][0]['unit_kerja'];
+
+                }
+            }
+
+        }
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
@@ -244,48 +256,6 @@ public function uploadimage($image,$id,$atribute){
             $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
 
         }
-
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
-
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
-
-        // }
-
-        // $dhnC = $dhn['responseData'][0]['warna'];
-
-        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-        //     $sicdC = 'Hijau';
-
-        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-        //     $sicdC = 'Kuning';
-
-        // } else {
-        //     $sicdC = 'Merah';
-
-        // }
-
-        // $calculate = array($pefindoC, $dhnC, $sicdC);
-
-        // if ( in_array('Merah', $calculate) ) {
-        //     $result = '3';
-
-        // } else if ( in_array('Kuning', $calculate) ) {
-        //     $result = '2';
-
-        // } else {
-        //     $result = '1';
-
-        // }
-
-        // $data->update([
-        //     'prescreening_status' => $result
-        //     , 'dhn_detail' => json_encode($dhn['responseData'])
-        //     , 'sicd_detail' => json_encode($sicd['responseData'])
-        // ]);
 
         $explode = explode(',', $data->uploadscore);
         $html = '';
