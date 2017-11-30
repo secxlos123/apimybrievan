@@ -22,15 +22,15 @@ class SelectController extends Controller
      */
 	public function Select()
 	{
-		$mitra = Mitra::get();
-		DB::commit();
+//		$mitra = Mitra::get();
+//		DB::commit();
 		$jpinjaman = Jenispinjaman::get();
 		DB::commit();
 		$tpenggunaan = Tujuanpenggunaan::get();
 		DB::commit();
 		$pendidikan_terakhir = Pendidikan_terakhir::get();
 		DB::commit();
-		$select = ['mitra'=>$mitra,'jpinjaman'=>$jpinjaman,'tpenggunaan'=>$tpenggunaan,'pendidikan_terakhir'=>$pendidikan_terakhir];
+		$select = ['jpinjaman'=>$jpinjaman,'tpenggunaan'=>$tpenggunaan,'pendidikan_terakhir'=>$pendidikan_terakhir];
 		return response()->success( [
 			'message' => 'Ok.',
 			'contents' => $select

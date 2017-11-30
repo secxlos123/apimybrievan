@@ -18,7 +18,7 @@ class ApiLasController extends Controller
 
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
-		        $insert = $ApiLas->insertDataDebtPerorangan($data, $pn);
+		        $insert = $ApiLas->insertDataDebtPerorangan($data);
     			return $insert;
                 break;
 
