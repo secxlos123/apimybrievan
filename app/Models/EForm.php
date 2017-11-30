@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail','status_eform','branch'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch'
     ];
 
     /**
@@ -35,7 +35,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'branch', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -96,16 +96,6 @@ class EForm extends Model
             return $this->kpr->request_amount;
         }
         return 0;
-    }
-
-    /**
-     * Get Branch detail information.
-     *
-     * @return string
-     */
-    public function getBranchAttribute()
-    {
-        return 'Branch Name';
     }
 
     /**
@@ -788,7 +778,7 @@ class EForm extends Model
         $lkn = $this->visit_report;
 
         $request = $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
@@ -829,7 +819,7 @@ class EForm extends Model
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,

@@ -103,70 +103,10 @@ class DeveloperController extends Controller
      */
     public function redirectTo($user, $method)
     {
-        // event( new CreateOrUpdate ( $user['developer'] ) );
-        \DB::beginTransaction();
-        try {
-        $insert = $this->sentDeveloperToCelas($user);
-        $developer = Developer::findOrFail($user['developer']['id']);
-        if($insert['code'] ==  '200' ){
-                $developer->update(['dev_id_bri' => $insert['contents']]);
-                 \DB::commit();
-                return response()->success([
-                'message'  => "Data developer berhasil {$method}.",
-                'contents' => array_except($user, 'developer')
-            ]);
-        }
-        else
-        {
-                \Log::info($developer->user_id);
-                User::destroy($developer->user_id);
-                \DB::commit();
-                return response()->error([
-                'message'  => "Data developer Gagal {$method}.",
-                'contents' => array_except($user, 'developer')
-            ]);
-        }
-        }catch (\Exception $e) {
-            \Log::info('====================== catch Developer =====================');
-            \Log::info($e);
-            \DB::rollBack();
-           return response()->error([
-                'message'  => "Data developer Gagal Di Tambah.",
-            ]);
-        }
-    }
-
-    /**
-     * Sent Developer Data To Celas
-     * @param  [jsonobject] $user [user in request]
-     * @return array response Celas
-     */
-    public function sentDeveloperToCelas($user)
-    {
-       $developer =  $user['developer'];
-
-        $current = [
-            'tipe_pihak_ketiga' => "DEVELOPER",
-            'nama_pihak_ketiga' => $developer->company_name,
-            'alamat_pihak_ketiga' => $developer->address,
-            'pic_pihak_ketiga' => $developer->user->fullname,
-            'pks_pihak_ketiga' => $developer->pks_number,
-            'deskripsi_pihak_ketiga' => $developer->summary,
-            'telepon_pihak_ketiga' => $developer->user->phone,
-            'hp_pihak_ketiga' => $developer->user->mobile_phone,
-            'fax_pihak_ketiga' => "", 
-            'deskripsi_pks_pihak_ketiga' => $developer->pks_description,
-            'plafon_induk_pihak_ketiga' => $developer->plafond,
-            'grup_sub_pihak_ketiga' => "null",
-            'pihak_ketiga_value' => $developer->dev_id_bri ?: '',
-        ];
-
-        $id = \Asmx::setEndpoint('InsertDataPihakKetiga')
-            ->setBody(['request' => json_encode($current)])
-            ->post('form_params');
-        \Log::info('================== response  Celas Add Developer=========');
-        \Log::info($id);
-
-        return $id;
+        event( new CreateOrUpdate ( $user['developer'] ) );
+        return response()->success([
+            'message'  => "Data developer berhasil {$method}.",
+            'contents' => array_except($user, 'developer')
+        ]);
     }
 }

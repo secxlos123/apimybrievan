@@ -18,7 +18,7 @@ class Property extends Model
      */
     protected $fillable = [
         'developer_id', 'city_id', 'name', 'address', 'category', 'latitude', 'longitude',
-        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description', 'pks_number', 'region_id', 'region_name','prop_id_bri'
+        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description', 'pks_number', 'region_id', 'region_name'
     ];
 
     /**
