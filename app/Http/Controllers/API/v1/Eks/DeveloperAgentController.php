@@ -11,8 +11,8 @@ use App\Helpers\Traits\ManageUserTrait;
 use App\Http\Requests\API\v1\DeveloperAgent\CreateRequest;
 use App\Http\Requests\API\v1\DeveloperAgent\UpdateRequest;
 use Activation;
-use App\Jobs\SendPasswordEmail;
-use Illuminate\Support\Facades\Log;
+use App\Events\Customer\CustomerRegistered;
+use Illuminate\Support\Facades\Log; 
 
 class DeveloperAgentController extends Controller
 {
@@ -74,7 +74,7 @@ class DeveloperAgentController extends Controller
         $user = User::create($request->all());
         $activation = Activation::create($user);
         Activation::complete($user, $activation->code);
-        dispatch(new SendPasswordEmail($user, $password, 'registered'));
+        event(new CustomerRegistered($user, $password));
         $token = JWTAuth::fromUser( $user );
          \Log::info($token);
         $user->roles()->sync($request->input('role_id'));

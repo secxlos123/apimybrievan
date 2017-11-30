@@ -8,6 +8,7 @@ use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 use File;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use App\Events\Customer\CustomerRegistered;
 
 class User extends Authenticatable
 {
@@ -274,7 +275,7 @@ class User extends Authenticatable
             $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
-            dispatch(new SendPasswordEmail($user, $password, 'registered'));
+            event(new CustomerRegistered($user, $password));
         } else {
             $user->update($request->all());
         }

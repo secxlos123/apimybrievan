@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\v1\Eks;
 
 use App\Models\User;
-use App\Jobs\SendPasswordEmail;
+use App\Events\Customer\CustomerReset;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Password\ResetRequest;
 
@@ -20,7 +20,7 @@ class PasswordController extends Controller
         $user = User::findEmail($request->input('email'));
         $password = str_random(8);
         $user->update(['password' => bcrypt($password)]);
-        dispatch(new SendPasswordEmail($user, $password, 'reset'));
+        event(new CustomerReset($user, $password));
 
         return response()->success([
             'message' => 'Password berhasil direset, silahkan cek email anda untuk mendapatkan password baru'
