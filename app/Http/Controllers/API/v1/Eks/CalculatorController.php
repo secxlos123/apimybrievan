@@ -28,7 +28,7 @@ class CalculatorController extends Controller
         }else if($type == "generateEfektifFixedFloat"){
             return $this->generateEfektif_FixedFloat();
         }else if($type == "generateEfektifFixedFloorFloat"){
-            return $this->generateEfektif_FixedFloorFloatt();
+            return $this->generateEfektif_FixedFloorFloat();
         }else{
             return response()->error([
                 'message' => "Invalid Type"
@@ -226,7 +226,7 @@ class CalculatorController extends Controller
     {
         $params  = $this->request->all();
 
-        $plafond  = $params['plafond'];
+        $plafond  = $params['price'];
         $fxflterm = $params['fxflterm'];
         $fxterm   = $params['fxterm'];
         $fxrate   = $params['fxrate'];
@@ -286,7 +286,7 @@ class CalculatorController extends Controller
     {
         $params  = $this->request->all();
 
-        $plafond     = $params['plafond'];
+        $plafond     = $params['price'];
         $fxflflterm  = $params['fxflflterm'];
         $ffxterm     = $params['ffxterm'];
         $fflterm     = $params['fflterm'];
