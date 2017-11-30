@@ -104,15 +104,22 @@ class PropertyController extends Controller
                 $property->update($request->all());
                 $code = 200; $method = 'dirubah';
             }
-
+            \Log::info($property);
             // this logic for saving data to internal bri
-            $this->service($property);
-            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-            \DB::commit();
+            $data = $this->service($property);
+            if ($data['code']== '200') {
+                $property->update(['prop_id_bri' => $data['contents']]);
+                $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+                \DB::commit();
+            }else{
+                 \DB::rollBack();
+                $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}. ". $data['contents'];
+                $code = 422;
+            }
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = $e->getMessage();
-            $code = $e->getCode();
+            $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}.";
+            $code = 422;
         }
 
         return response()->{$status}(compact('message'), $code);
@@ -144,13 +151,9 @@ class PropertyController extends Controller
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-
-        if ($id['code'] == 200) {
-            $property->update(['prop_id_bri' => $id['contents']]);
-            return true;
-        }
-
-        throw new \Exception($id['contents'], 422);
+            \Log::info('==============REsponse Celas Add Property=================');
+            \Log::info($id);
+            return $id;
     }
 
     /**
