@@ -247,7 +247,7 @@ class BRIGUNA extends Model
                 "kode_cabang"            => $eform->branch_id,
                 "cif_las"                => "11039307",
                 "no_ktp"                 => $eform->nik,
-                "expired_ktp"            => "31122099",
+                "expired_ktp"            => "31122899",
                 "nama_debitur_1"   => $customer->first_name.' '. $customer->last_name,
                 "nama_tanpa_gelar" => $customer->first_name.' '. $customer->last_name,
                 "nama_debitur_2"         => "",
@@ -277,13 +277,13 @@ class BRIGUNA extends Model
                 "email"                  => $customer->email,
                 "tgl_mulai_usaha"        => date('d-m-Y'),
                 "kewarganegaraan"        => $customer_detail->citizenship_id,
-                "negara_domisili"        => "ID",
+                "negara_domisili"        => $customer_detail->citizenship_id,
                 "kepemilikan_tempat_tinggal" => $customer_detail->address_status,
                 "kategori_portofolio"    => $portofolio,
                 "golongan_debitur_sid"   => "907", //hardcode dari las
                 "golongan_debitur_lbu"   => "886", //hardcode dari las
-                "nama_kelg"              => "",
-                "telp_kelg"              => "",
+                "nama_kelg"              => "squad consumer",
+                "telp_kelg"              => "02198349480",
                 "tgl_mulai_debitur"      => date('d-m-Y'),
                 "jenis_rekening"         => "3",
                 "nama_bank_lain"         => "",
@@ -323,7 +323,7 @@ class BRIGUNA extends Model
                 "id_instansi"            => "1"
             ];
 
-            $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt,'66777');
+            $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
             \Log::info($eforms);
             \Log::info($insertDebitur);
             return $briguna;
