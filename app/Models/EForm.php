@@ -778,7 +778,7 @@ class EForm extends Model
         $lkn = $this->visit_report;
 
         $request = $data + [
-            "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
@@ -819,7 +819,7 @@ class EForm extends Model
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,

@@ -45,6 +45,8 @@ class CreateRequest extends FormRequest
             // 'latitude'   => 'required',
             // 'longitude'  => 'required',
             'pks_number' => 'required',
+            'region_id' => 'required',
+            'region_name' => 'required',
             'facilities' => 'required',
             'pic_name'   => 'required|alpha_spaces',
             'pic_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
