@@ -184,6 +184,8 @@ return [
         App\Providers\AsmxServiceProvider::class,
         App\Providers\RestwsHcServiceProvider::class,
         App\Providers\BRIMailServiceProvider::class,
+        App\Providers\AsmxLasServiceProvider::class,
+        App\Providers\DbwsRestServiceProvider::class,
 
     ],
 
@@ -244,6 +246,8 @@ return [
         'Sentinel'     => Cartalyst\Sentinel\Laravel\Facades\Sentinel::class,
         'Asmx'         => App\Classes\Client\Facades\Asmx::class,
         'RestwsHc'     => App\Classes\Client\Facades\RestwsHc::class,
+        'AsmxLas'      => App\Classes\Client\Facades\AsmxLas::class,
+        'DbwsRest'     => App\Classes\Client\Facades\DbwsRest::class,
 
     ],
 
@@ -252,7 +256,7 @@ return [
     | Register Observers Models
     |--------------------------------------------------------------------------
     |
-    */    
+    */
 
     'observers' => [
         App\Models\Property::class => App\Observers\PropertyObserver::class,
