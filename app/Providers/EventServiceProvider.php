@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Customer\CustomerRegister' => [
             'App\Listeners\Customer\Register\SendMailNotification',
         ],
+        'App\Events\Customer\CustomerReset' => [
+            'App\Listeners\Customer\CustomerResetNotification',
+        ],
         'App\Events\Customer\CustomerRegistered' => [
             'App\Listeners\Customer\SendMailNotification',
         ],
