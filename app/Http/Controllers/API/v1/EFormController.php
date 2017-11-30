@@ -115,7 +115,7 @@ class EFormController extends Controller
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
                 if ( $branch['kode_uker'] == $request->input('branch_id') ) {
-                    $baseRequest['branch'] = $branchs['responseData'][0]['unit_kerja'];
+                    $baseRequest['branch'] = $branch['unit_kerja'];
 
                 }
             }
