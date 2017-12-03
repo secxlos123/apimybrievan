@@ -47,6 +47,16 @@ class ApiLasController extends Controller
                 return $hitung;
                 break;
 
+            case 'kirimPemutus':
+                $kirim = $ApiLas->kirimPemutus($data);
+                return $kirim;
+                break;
+
+            case 'inquiryListPutusan':
+                $inquiry = $ApiLas->inquiryListPutusan($data);
+                return $inquiry;
+                break;
+
     		default:
     			return array('status' => 400, 'message' => 'Uknown request method');
     			break;

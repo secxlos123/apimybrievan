@@ -353,10 +353,42 @@ class ApiLas extends Model
 
             $hitungPrescoring = AsmxLas::setEndpoint('hitungCRSBrigunaKarya')
                 ->setBody([
-                    'id_Aplikasi' => $Id_aplikasi
+                    'id_Aplikasi' => empty($Id_aplikasi) ? "10" : $Id_aplikasi
                 ])->post('form_params');
 
             return $hitungPrescoring;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function kirimPemutus($data) {
+        \Log::info($data);
+        try {
+            $kirim = AsmxLas::setEndpoint('kirimPemutus')
+                ->setBody([
+                    'id_aplikasi'   => empty($data['id_aplikasi']) ? "45016" : $data['id_aplikasi'],
+                    'uid'           => empty($data['uid']) ? "45016" : $data['uid'],
+                    'flag_override' => empty($data['flag_override']) ? "N" : $data['flag_override']
+                ])->post('form_params');
+
+            return $kirim;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryListPutusan($data) {
+        \Log::info($data);
+        try {
+            $uid = $data;
+
+            $inquiryListPutusan = AsmxLas::setEndpoint('inquiryListPutusan')
+                ->setBody([
+                    'uid' => empty($uid) ? "10" : $uid
+                ])->post('form_params');
+
+            return $inquiryListPutusan;
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
         }
