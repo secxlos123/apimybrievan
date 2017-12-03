@@ -19,13 +19,13 @@ Route::post( 'urgent-function', 'RemovableController@run' );
  */
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
+	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
 		Route::post('select', 'SelectController@select');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
 		Route::post('Download_Rekomendasi', 'Download_RekomendasiController@Download');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		/* ------------*/
 
-	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );

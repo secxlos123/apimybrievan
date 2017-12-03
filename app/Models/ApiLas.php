@@ -346,6 +346,82 @@ class ApiLas extends Model
         }
     }
 
+    public function insertDataKreditBriguna($data) {
+        \Log::info($data);
+        try {
+            $content_insertKreditBriguna = [
+                "Fid_aplikasi"                     => empty($data['Fid_aplikasi']) ? "45016" : $data['Fid_aplikasi'],
+                "Cif_las"                          => empty($data['Cif_las']) ? "11039374" : $data['Cif_las'],
+                "Tp_produk"                        => empty($data['Tp_produk']) ? "1" : $data['Tp_produk'],
+                "Id_kredit"                        => empty($data['Id_kredit']) ? "0" : $data['Id_kredit'],
+                "Baru_perpanjangan"                => empty($data['Baru_perpanjangan']) ? "0" : $data['Baru_perpanjangan'],
+                "Jenis_fasilitas"                  => empty($data['Jenis_fasilitas']) ? "0605" : $data['Jenis_fasilitas'],
+                "Tujuan_membuka_rek"               => empty($data['Tujuan_membuka_rek']) ? "3" : $data['Tujuan_membuka_rek'],
+                "Segmen_owner"                     => empty($data['Segmen_owner']) ? "RITEL" : $data['Segmen_owner'],
+                "Sub_segmen_owner"                 => empty($data['Sub_segmen_owner']) ? "RITEL" : $data['Sub_segmen_owner'],
+                "Kode_jangka_waktu"                => empty($data['Kode_jangka_waktu']) ? "M" : $data['Kode_jangka_waktu'],
+                "Jangka_waktu"                     => empty($data['Jangka_waktu']) ? "24" : $data['Jangka_waktu'],
+                "Sisa_jangka_waktu_sd_penyesuaian" => empty($data['Sisa_jangka_waktu_sd_penyesuaian']) ? "0" : $data['Sisa_jangka_waktu_sd_penyesuaian'],
+                "Penggunaan_kredit"                => empty($data['Penggunaan_kredit']) ? "14" : $data['Penggunaan_kredit'],
+                "Tujuan_penggunaan_kredit"         => empty($data['Tujuan_penggunaan_kredit']) ? "text" : $data['Tujuan_penggunaan_kredit'],
+                "Valuta"                           => empty($data['Valuta']) ? "idr" : $data['Valuta'],
+                "Maksimum_plafond"                 => empty($data['Maksimum_plafond']) ? "10000000" : $data['Maksimum_plafond'],
+                "Plafon_induk"                     => empty($data['Plafon_induk']) ? "0" : $data['Plafon_induk'],
+                "Provisi_kredit"                   => empty($data['Provisi_kredit']) ? "0.1" : $data['Provisi_kredit'],
+                "Biaya_administrasi"               => empty($data['Biaya_administrasi']) ? "500000" : $data['Biaya_administrasi'],
+                "Penalty"                          => empty($data['Penalty']) ? "50" : $data['Penalty'],
+                "Interest_payment_frequency"       => empty($data['Interest_payment_frequency']) ? "1" : $data['Interest_payment_frequency'],
+                "Pemrakarsa1"                      => empty($data['Pemrakarsa1']) ? "123" : $data['Pemrakarsa1'],
+                "Uker_pemrakarsa"                  => empty($data['Uker_pemrakarsa']) ? "00206" : $data['Uker_pemrakarsa'],
+                "Sifat_suku_bunga"                 => empty($data['Sifat_suku_bunga']) ? "FIXED" : $data['Sifat_suku_bunga'],
+                "Discount"                         => empty($data['Discount']) ? "0" : $data['Discount'],
+                "Pengadilan_terdekat"              => empty($data['Pengadilan_terdekat']) ? "text" : $data['Pengadilan_terdekat'],
+                "Bupln"                            => empty($data['Bupln']) ? "text" : $data['Bupln'],
+                "Agribisnis"                       => empty($data['Agribisnis']) ? "N" : $data['Agribisnis'],
+                "Sifat_kredit"                     => empty($data['Sifat_kredit']) ? "40" : $data['Sifat_kredit'],
+                "Golongan_kredit"                  => empty($data['Golongan_kredit']) ? "20" : $data['Golongan_kredit'],
+                "Kode_fasilitas"                   => empty($data['Kode_fasilitas']) ? "FWL" : $data['Kode_fasilitas'],
+                "Sandi_stp"                        => empty($data['Sandi_stp']) ? "A801" : $data['Sandi_stp'],
+                "Jenis_penggunaan"                 => empty($data['Jenis_penggunaan']) ? "10" : $data['Jenis_penggunaan'],
+                "Orientasi_penggunaan"             => empty($data['Orientasi_penggunaan']) ? "9" : $data['Orientasi_penggunaan'],
+                "Sektor_ekonomi_sid"               => empty($data['Sektor_ekonomi_sid']) ? "1101" : $data['Sektor_ekonomi_sid'],
+                "Sektor_ekonomi_lbu"               => empty($data['Sektor_ekonomi_lbu']) ? "11126" : $data['Sektor_ekonomi_lbu'],
+                "Jenis_kredit_lbu"                 => empty($data['Jenis_kredit_lbu']) ? "5" : $data['Jenis_kredit_lbu'],
+                "Sifat_kredit_lbu"                 => empty($data['Sifat_kredit_lbu']) ? "1" : $data['Sifat_kredit_lbu'],
+                "Kategori_kredit_lbu"              => empty($data['Kategori_kredit_lbu']) ? "3" : $data['Kategori_kredit_lbu'],
+                "Jenis_penggunaan_lbu"             => empty($data['Jenis_penggunaan_lbu']) ? "10" : $data['Jenis_penggunaan_lbu'],
+                "Lokasi_proyek"                    => empty($data['Lokasi_proyek']) ? "0591" : $data['Lokasi_proyek'],
+                "Nilai_proyek"                     => empty($data['Nilai_proyek']) ? "0" : $data['Nilai_proyek'],
+                "Fasilitas_penyedia_dana"          => empty($data['Fasilitas_penyedia_dana']) ? "1999" : $data['Fasilitas_penyedia_dana'],
+                "Baki_debet"                       => empty($data['Baki_debet']) ? "0" : $data['Baki_debet'],
+                "Original_amount"                  => empty($data['Original_amount']) ? "0" : $data['Original_amount'],
+                "Kelonggaran_tarik"                => empty($data['Kelonggaran_tarik']) ? "0" : $data['Kelonggaran_tarik'],
+                "Denda"                            => empty($data['Denda']) ? "0" : $data['Denda'],
+                "Sumber_aplikasi"                  => empty($data['Sumber_aplikasi']) ? "Pengajuan Sendiri" : $data['Sumber_aplikasi'],
+                "Premi_asuransi_jiwa"              => empty($data['Premi_asuransi_jiwa']) ? "0.75" : $data['Premi_asuransi_jiwa'],
+                "Perusahaan_asuransi"              => empty($data['Perusahaan_asuransi']) ? "BJS" : $data['Perusahaan_asuransi'],
+                "Premi_beban_bri"                  => empty($data['Premi_beban_bri']) ? "0" : $data['Premi_beban_bri'],
+                "Premi_beban_debitur"              => empty($data['Premi_beban_bri']) ? "0.75" : $data['Premi_beban_bri'],
+                "Tanggal_jatuh_tempo"              => empty($data['Tanggal_jatuh_tempo']) ? "29112019" : $data['Tanggal_jatuh_tempo'],
+                "Grace_period"                     => empty($data['Grace_period']) ? "0" : $data['Grace_period'],
+                "Flag_promo"                       => empty($data['Flag_promo']) ? "1" : $data['Flag_promo'],
+                "Fid_promo"                        => empty($data['Fid_promo']) ? "4" : $data['Fid_promo'],
+                "Status_takeover"                  => empty($data['Status_takeover']) ? "0" : $data['Status_takeover'],
+                "Bank_asal_takeover"               => empty($data['Bank_asal_takeover']) ? "" : $data['Bank_asal_takeover'],
+                "Data2"                            => empty($data['Data2']) ? "" : $data['Data2']
+            ];
+
+            $insertKreditBriguna = AsmxLas::setEndpoint('insertDataKreditBriguna')
+                ->setBody([
+                    'JSON' => json_encode($content_insertKreditBriguna)
+                ])->post('form_params');
+
+            return $insertKreditBriguna;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
     public function hitungCRSBrigunaKarya($data) {
         \Log::info($data);
         try {
