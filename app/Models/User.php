@@ -55,7 +55,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected static $image_path = 'uploads/avatars/';
+    protected static $image_path = 'uploads/';
 
     /**
      * The directories belongs to broadcasts.
@@ -184,8 +184,9 @@ class User extends Authenticatable
      */
     public function getIdentityAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
+        if( File::exists( 'uploads/' . $base . '/' . $value ) ) {
+            $image = url( 'uploads/' . $base . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -199,8 +200,9 @@ class User extends Authenticatable
      */
     public function getCoupleIdentityAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
+        if( File::exists( 'uploads/' . $base . '/' . $value ) ) {
+            $image = url( 'uploads/' . $base . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -214,10 +216,11 @@ class User extends Authenticatable
      */
     public function getImageAttribute( $value )
     {
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
         $image = url( 'img/avatar.jpg' );
         if(  ! empty( $value ) ) {
-            if( File::exists( static::$image_path . $value ) ) {
-                $image = url( static::$image_path . $value );
+            if( File::exists( static::$image_path . $base . '/' . $value ) ) {
+                $image = url( static::$image_path . $base . '/' . $value );
             }
         }
         return $image;
@@ -230,9 +233,10 @@ class User extends Authenticatable
      */
     public function setImageAttribute( $image )
     {
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
         if ( !empty( $image ) ) {
             if ( gettype($image) != 'string' ) {
-                $path = public_path( static::$image_path );
+                $path = public_path( static::$image_path . $base . '/' );
                 if ( ! empty( $this->attributes[ 'image' ] ) ) {
                     File::delete( $path . $this->attributes[ 'image' ] );
                 }

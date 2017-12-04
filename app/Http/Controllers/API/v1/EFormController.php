@@ -33,6 +33,7 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
+
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -75,12 +76,39 @@ class EFormController extends Controller
         ] );
     }
 
-    public function uploadimage($image,$id,$atribute){
-        $path = public_path( 'uploads/briguna/' . $id . '/' );
+    public function uploadimage($image,$id,$atribute) {
+        $eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $eform->nik . '/' );
+
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
         }
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = '.pdf';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            // log::info('image = '.$image->getMimeType());
+            $filename = $id . '-'.$atribute.'.' . $extension;
+            $image->move( $path, $filename );
+        }
+        return $filename;
+    }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store( EFormRequest $request )
+    {
         DB::beginTransaction();
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
@@ -108,39 +136,6 @@ class EFormController extends Controller
                 }
             }
         }
-
-        if ( $request->product_type == 'kpr' ) {
-            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
-                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
-        }
-        $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = '.pdf';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
-            // log::info('image = '.$image->getMimeType());
-            $filename = $id . '-'.$atribute.'.' . $extension;
-            $image->move( $path, $filename );
-        }
-        return $filename;
-    }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store( EFormRequest $request )
-    {
-        DB::beginTransaction();
-
-        $baseRequest = $request->all();
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
@@ -324,7 +319,7 @@ class EFormController extends Controller
 
         foreach ($explode as $value) {
             if ($value != '') {
-                $html .= asset('uploads/prescreening/'.$data->id.'/'.$value) . ',';
+                $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
             }
         }
 

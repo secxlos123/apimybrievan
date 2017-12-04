@@ -22,7 +22,7 @@ class ServiceDbwsRest extends Client
         \Log::info($base_url);
         return $base_url;
     }
-    
+
     /**
      * The headers that will be sent when call the API.
      *

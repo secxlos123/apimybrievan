@@ -58,7 +58,7 @@ class Screening extends Model
     public function saveImages( $images )
     {
         foreach ( $images as $key => $image ) {
-            $path = public_path( 'uploads/eforms/' . $this->id . '/' );
+            $path = public_path( 'uploads/' . $this->nik . '/' );
             $filename = $key . '.' . $image->getClientOriginalExtension();
             $image->move( $path, $filename );
         }
@@ -112,7 +112,7 @@ class Screening extends Model
 
     /**
      * Get AO detail information.
-     *      
+     *
      * @return string
      */
     public function getAoNameAttribute()

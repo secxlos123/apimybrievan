@@ -170,6 +170,7 @@ return [
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Cartalyst\Sentinel\Laravel\SentinelServiceProvider::class,
         Cviebrock\EloquentSluggable\ServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -248,6 +249,7 @@ return [
         'RestwsHc'     => App\Classes\Client\Facades\RestwsHc::class,
         'AsmxLas'      => App\Classes\Client\Facades\AsmxLas::class,
         'DbwsRest'     => App\Classes\Client\Facades\DbwsRest::class,
+        'PDF'          => Barryvdh\DomPDF\Facade::class,
 
     ],
 

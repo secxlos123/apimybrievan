@@ -59,7 +59,7 @@ class EForm extends Model
     public function saveImages( $images )
     {
         foreach ( $images as $key => $image ) {
-            $path = public_path( 'uploads/eforms/' . $this->id . '/' );
+            $path = public_path( 'uploads/' . $this->nik . '/' );
             $filename = $key . '.' . $image->getClientOriginalExtension();
             $image->move( $path, $filename );
         }
@@ -515,22 +515,21 @@ class EForm extends Model
         } );
 
         if ($request->has('customer_name')){
-            $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id');
+            $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
+                ->where( function( $eform ) use( $request, &$user ) {
+                    $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
+                        ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%');
+                } );
         }
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if ($request->has('ref_number')) {
+        if ($request->has('ref_number')) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
-            }
-
-            if ($request->has('customer_name')){
-                $eform->orWhere('users.last_name', 'ilike', '%'.$request->input('search').'%')
-                    ->orWhere('users.first_name', 'ilike', '%'.$request->input('search').'%');
-            }
-        } );
+            } );
+        }
 
         if ($request->has('prescreening')) {
-            $eform = $query->where( function( $eform ) use( $request, &$user ) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
                     $eform->Where('eforms.prescreening_status', $prescreening);
@@ -539,7 +538,7 @@ class EForm extends Model
         }
 
         if ($request->has('start_date') || $request->has('end_date')) {
-            $eform = $query->where( function( $eform ) use( $request, &$user ) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 $start_date = date('Y-m-d',strtotime($request->input('start_date')));
                 $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
 
@@ -593,6 +592,7 @@ class EForm extends Model
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
 
         \Log::info($eform->toSql());
+        \Log::info($eform->getBindings());
 
         return $eform;
     }
