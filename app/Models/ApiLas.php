@@ -401,5 +401,170 @@ class ApiLas extends Model
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
         }
-    }    
+    }
+
+    public function inquiryGelar() {
+        try {
+            $inquiryGelar = AsmxLas::setEndpoint('inquiryGelar')
+                ->post('form_params');
+
+            return $inquiryGelar;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryLoantype() {
+        try {
+            $inquiryLoantype = AsmxLas::setEndpoint('inquiryLoantype')
+                ->post('form_params');
+
+            return $inquiryLoantype;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryJenisPenggunaan() {
+        try {
+            $inquiryLoantype = AsmxLas::setEndpoint('inquiryJenisPenggunaan')
+                ->post('form_params');
+
+            return $inquiryLoantype;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryJenisPenggunaanLBU() {
+        try {
+            $inquiryLoantype = AsmxLas::setEndpoint('inquiryJenisPenggunaanLBU')
+                ->post('form_params');
+
+            return $inquiryLoantype;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquirySektorEkonomiLBU() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquirySektorEkonomiLBU')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquirySifatKreditLBU() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquirySifatKreditLBU')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryJenisKreditLBU() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryJenisKreditLBU')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryPromoBriguna() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryPromoBriguna')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryTujuanPenggunaan() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryTujuanPenggunaan')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryBidangUsaha() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryBidangUsaha')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryBank() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryBank')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryHubunganBank() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryHubunganBank')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryPekerjaan() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryPekerjaan')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryJabatan() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryJabatan')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryJenisPekerjaan() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryJenisPekerjaan')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
 }

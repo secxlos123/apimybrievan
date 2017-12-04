@@ -420,9 +420,10 @@ class VisitReport extends Model
      */
     public function globalImageCheck( $filename )
     {
+        $eformData = EForm::findOrFail($this->eform_id);
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $image = 'uploads/' . $this->eform->nik . '/' . $filename;
+            $image = 'uploads/' . $eformData->nik . '/' . $filename;
             if( \File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -456,8 +457,9 @@ class VisitReport extends Model
      */
     public function globalSetImage( $image, $attribute )
     {
+        $eformData = EForm::findOrFail($this->eform_id);
         if ( gettype($image) == 'object' ) {
-            $path = public_path( 'uploads/' . $this->eform->nik . '/' );
+            $path = public_path( 'uploads/' . $eformData->nik . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 \File::delete( $path . $this->attributes[ $attribute ] );
             }
@@ -490,15 +492,5 @@ class VisitReport extends Model
     public function mutation()
     {
         return $this->hasMany( Mutation::class );
-    }
-
-    /**
-     * The relation to eform.
-     *
-     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function eform()
-    {
-        return $this->belongsTo( EForm::class, 'eform_id' );
     }
 }
