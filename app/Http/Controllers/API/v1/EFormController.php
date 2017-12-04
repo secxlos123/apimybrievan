@@ -38,9 +38,9 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
         $mitra = Mitra::filter( $request )->get();
-        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+    //    $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
-            'contents' => $eform
+            'contents' => $mitra
         ], 200 );
     }
     /**
