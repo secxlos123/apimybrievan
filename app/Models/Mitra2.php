@@ -24,10 +24,11 @@ class Mitra2 extends Model
 			
       $kode = $request->input('key');
                     $mitra->Where('mitra.NAMA_INSTANSI','like', $kode.'%');
+					$mitra->orWhere('mitra.idMitrakerja','like', $kode.'%');
         } );
 
 				$mitra = $mitra->select([
-                    'mitra.BRANCH_CODE','mitra.NAMA_INSTANSI','mitra.idMitrakerja','mitra.segmen','mitra.UNIT_KERJA',
+                    '*',
          		 \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
                 ]);
 
