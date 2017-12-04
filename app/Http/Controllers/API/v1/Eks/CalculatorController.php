@@ -146,7 +146,7 @@ class CalculatorController extends Controller
                     "porsi_pokok"    => 0,
                     "porsi_bunga"    => 0,
                     "angsuran"       => 0,
-                ];                
+                ];
             }else if($i == $n - 1){
                 $angsuranBunga = ((($rate / 12) / 100) * $plafond);
                 $angsuranPokok = $angsuranTot - $angsuranBunga;
@@ -226,29 +226,55 @@ class CalculatorController extends Controller
     {
         $params  = $this->request->all();
 
-        $plafond  = $params['price'];
-        $fxflterm = $params['fxflterm'];
-        $fxterm   = $params['fxterm'];
-        $fxrate   = $params['fxrate'];
-        $flrate   = $params['flrate'];
+        $price       = $params['price'];
+        $fxflterm    = $params['fxflterm'];
+        $fxterm      = $params['fxterm'];
+        $fxrate      = $params['fxrate'];
+        $flrate      = $params['flrate'];
+        $downPayment = $params['downPayment'];
+        $total       = $price;
+        $uangMuka    = ($total * $downPayment) / 100;
 
-        $n = $fxflterm + 1;
-        $returnVal = [];
+
+        $plafond     = $price - $uangMuka;
+        $n           = $fxflterm + 1;
+        $returnVal   = [];
 
         $angsuranTotFix = ((($fxrate / 12) / 100) * $plafond) / (1 - (1 / pow((1.00 + ($fxrate / 100) / 12.00), $fxflterm)));
         for($i = 0; $i < $fxterm + 1; $i++){
             if($i == 0){
-                $returnVal[0][0] = 0;
-                $returnVal[0][1] = 0;
-                $returnVal[0][2] = (int)$plafond;
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => round($plafond),
+                    "angsuran_pokok" => 0,
+                    "angsuran_bunga" => 0,
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => 0,
+                ];
+                // $returnVal[0][0] = 0;
+                // $returnVal[0][1] = 0;
+                // $returnVal[0][2] = (int)$plafond;
             }else{
                 $angsuranBunga = (($fxrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFix - $angsuranBunga;
+                $angsuran      = round($angsuranBunga + $angsuranPokok);
 
                 $plafond -= (int)$angsuranPokok;
-                $returnVal[$i][0] = round($angsuranPokok);
-                $returnVal[$i][1] = round($angsuranBunga);
-                $returnVal[$i][2] = round($plafond);
+                
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => $plafond,
+                    "angsuran_pokok" => round($angsuranPokok),
+                    "angsuran_bunga" => round($angsuranBunga),
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => $angsuran,
+                ];
+                
+                // $returnVal[$i][0] = round($angsuranPokok);
+                // $returnVal[$i][1] = round($angsuranBunga);
+                // $returnVal[$i][2] = round($plafond);
             }
         }
 
@@ -262,10 +288,21 @@ class CalculatorController extends Controller
                 $plafond -= $angsuranPokok;
                 $angsuranPokok += $plafond;
                 $angsuranBunga =  $angsuranTotFloat - $angsuranBunga;
-                
-                $returnVal[$i][0] = round($angsuranPokok);
-                $returnVal[$i][1] = round($angsuranBunga);
-                $returnVal[$i][2] = 0;
+                $angsuran      = round($angsuranBunga + $angsuranPokok);
+                                
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => $plafond,
+                    "angsuran_pokok" => round($angsuranPokok),
+                    "angsuran_bunga" => round($angsuranBunga),
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => $angsuran,
+                ];
+
+                // $returnVal[$i][0] = round($angsuranPokok);
+                // $returnVal[$i][1] = round($angsuranBunga);
+                // $returnVal[$i][2] = 0;
             }else{
                 $angsuranBunga = (($flrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFloat - $angsuranBunga;

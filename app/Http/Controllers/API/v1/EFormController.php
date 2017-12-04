@@ -41,9 +41,8 @@ class EFormController extends Controller
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
             'contents' => $eform
-        ] );
+        ], 200 );
     }
-
     /**
      * Display the specified resource.
      *
@@ -111,7 +110,6 @@ class EFormController extends Controller
 
                 }
             }
-
         }
 
         if ( $request->product_type == 'kpr' ) {
@@ -119,7 +117,6 @@ class EFormController extends Controller
                 $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
             }
         }
-
         $filename = null;
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
@@ -136,7 +133,6 @@ class EFormController extends Controller
             $image->move( $path, $filename );
         }
         return $filename;
-
     }
 
     /**

@@ -273,6 +273,11 @@ class CustomerDetail extends Model
     public function globalSetImage( $image, $attribute, $callbackPosition = null )
     {
         $doFunction = true;
+        if (!empty($this->user)) {
+            $user = $this->user;
+        }else{
+            $user = user_info('id');
+        }
 
         if ($callbackPosition) {
             $doFunction = isset($this->attributes[ $attribute ]);
@@ -297,7 +302,7 @@ class CustomerDetail extends Model
                 $extension = $image->getClientOriginalExtension();
             }
 
-            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $filename = $user . '-' . $attribute . '.' . $extension;
             $image->move( $path, $filename );
             return $filename;
         } else {
