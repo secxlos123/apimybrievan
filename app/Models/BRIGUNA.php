@@ -92,7 +92,7 @@ class BRIGUNA extends Model
         
         // Start Code Insert to API LAS and Dropbox
         $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
-        $ApiLas  = new ApiLas();
+        // $ApiLas  = new ApiLas();
         $Dropbox = new Dropbox();
         $customer        = $eform->customer;
         $customer_detail = $customer->detail;
@@ -167,7 +167,7 @@ class BRIGUNA extends Model
             ];
             $eforms = EForm::findOrFail($eform->id);
             $eforms->update($update_data);
-            $kecamatan_domisili = '';
+            /*$kecamatan_domisili = '';
             $kabupaten_domisili = '';
             $kodepos_domisili   = '';
             $kelurahan_domisili = '';
@@ -288,7 +288,7 @@ class BRIGUNA extends Model
 
             $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
             \Log::info($eforms);
-            \Log::info($insertDebitur);
+            \Log::info($insertDebitur);*/
             return $briguna;
         } else {
             throw new \Exception( "Error Processing Request", 1 );

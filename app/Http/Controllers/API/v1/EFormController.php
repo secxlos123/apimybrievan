@@ -33,7 +33,6 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-    
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -41,9 +40,8 @@ class EFormController extends Controller
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
             'contents' => $eform
-        ] );
+        ], 200 );
     }
-
     /**
      * Display the specified resource.
      *
@@ -76,6 +74,7 @@ class EFormController extends Controller
             'contents' => $eform
         ] );
     }
+
     public function uploadimage($image,$id,$atribute){
         $path = public_path( 'uploads/briguna/' . $id . '/' );
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
@@ -108,14 +107,12 @@ class EFormController extends Controller
 
                 }
             }
-
         }
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
                 $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
         }
-
         $filename = null;
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
@@ -132,8 +129,7 @@ class EFormController extends Controller
             $image->move( $path, $filename );
         }
         return $filename;
-
-     }
+    }
     /**
      * Store a newly created resource in storage.
      *
