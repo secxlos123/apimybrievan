@@ -235,7 +235,6 @@ class CalculatorController extends Controller
         $total       = $price;
         $uangMuka    = ($total * $downPayment) / 100;
 
-
         $plafond     = $price - $uangMuka;
         $n           = $fxflterm + 1;
         $returnVal   = [];
@@ -252,9 +251,6 @@ class CalculatorController extends Controller
                     "porsi_bunga"    => 0,
                     "angsuran"       => 0,
                 ];
-                // $returnVal[0][0] = 0;
-                // $returnVal[0][1] = 0;
-                // $returnVal[0][2] = (int)$plafond;
             }else{
                 $angsuranBunga = (($fxrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFix - $angsuranBunga;
@@ -271,10 +267,6 @@ class CalculatorController extends Controller
                     "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
                 ];
-                
-                // $returnVal[$i][0] = round($angsuranPokok);
-                // $returnVal[$i][1] = round($angsuranBunga);
-                // $returnVal[$i][2] = round($plafond);
             }
         }
 
@@ -287,12 +279,12 @@ class CalculatorController extends Controller
 
                 $plafond -= $angsuranPokok;
                 $angsuranPokok += $plafond;
-                $angsuranBunga =  $angsuranTotFloat - $angsuranBunga;
+                $angsuranBunga =  $angsuranTotFloat - $angsuranPokok;
                 $angsuran      = round($angsuranBunga + $angsuranPokok);
-                                
+
                 $returnVal[$i] = [
                     "bulan"          => $i,
-                    "sisa_pinjaman"  => $plafond,
+                    "sisa_pinjaman"  => 0,
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
                     "porsi_pokok"    => 0,
@@ -300,22 +292,60 @@ class CalculatorController extends Controller
                     "angsuran"       => $angsuran,
                 ];
 
-                // $returnVal[$i][0] = round($angsuranPokok);
-                // $returnVal[$i][1] = round($angsuranBunga);
-                // $returnVal[$i][2] = 0;
             }else{
-                $angsuranBunga = (($flrate / 12) / 100) * $plafond;
-                $angsuranPokok = $angsuranTotFloat - $angsuranBunga;
+                $angsuranBunga =  (($flrate / 12) / 100) * $plafond;
+                $angsuranPokok =  $angsuranTotFloat - $angsuranBunga;
 
-                $plafond -= $angsuranPokok;
-                $returnVal[$i][0] = round($angsuranPokok);
-                $returnVal[$i][1] = round($angsuranBunga);
-                $returnVal[$i][2] = round($plafond);
+                $plafond       -= $angsuranPokok;
+                $angsuran      =  round($angsuranBunga + $angsuranPokok);
+
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => round($plafond),
+                    "angsuran_pokok" => round($angsuranPokok),
+                    "angsuran_bunga" => round($angsuranBunga),
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => $angsuran,
+                ];
             }
         }
 
+        $rincian = [
+            "rincian" => [
+                "uang_muka"           => ($total * $downPayment) / 100,
+                "porsi_pokok"         => 0,
+                "porsi_bunga"         => 0,
+                "suku_bunga"          => 0,
+                "suku_bunga_floating" => 0,
+                "kredit_fix"          => 0,
+                "lama_pinjaman"       => $fxterm." Bulan",
+                "pinjaman_maksimum"   => 0,
+            ],
+            "biaya_bank" => [
+                "apprasial"     => 0,
+                "administrasi"  => 0,
+                "provisi"       => 0,
+                "asuransi"      => 0,
+                "total_biaya"   => 0,
+            ],
+            "biaya_notaris" => [
+                "akte_jual_beli" => 0,
+                "bea_balik_nama" => 0,
+                "akta_skmht"     => 0,
+                "perjanjian_ht"  => 0,
+                "cek_sertifikat" => 0,
+                "total_biaya"    => 0,
+            ],
+            "angsuran_perbulan"  => $angsuran,
+            "pembayaran_pertama" => $uangMuka,
+        ];
+
         return response()->success([
-            'contents' => $returnVal
+            'contents' => [
+                'rincian_pinjaman' => $rincian,
+                'detail_angsuran'  => $returnVal,
+            ]
         ]);
     }
 
@@ -323,31 +353,48 @@ class CalculatorController extends Controller
     {
         $params  = $this->request->all();
 
-        $plafond     = $params['price'];
+        $price       = $params['price'];
         $fxflflterm  = $params['fxflflterm'];
         $ffxterm     = $params['ffxterm'];
         $fflterm     = $params['fflterm'];
         $ffxrate     = $params['ffxrate'];
         $ffloorrate  = $params['ffloorrate'];
         $ffloatlrate = $params['ffloatlrate'];
+        $downPayment = $params['downPayment'];
+        $total       = $price;
+        $uangMuka    = ($total * $downPayment) / 100;
 
-        $n = $fxflflterm + 1;
-        $returnVal = [];
+        $plafond     = $price - $uangMuka;
+        $n           = $fxflflterm + 1;
+        $returnVal   = [];
 
         $angsuranTotFix = ((($ffxrate / 12) / 100) * $plafond) / (1 - (1 / pow(1.00 + (($ffxrate / 100) / 12.00), $fxflflterm)));
         for($i = 0; $i < $ffxterm + 1; $i++){
             if($i == 0){
-                $returnVal[0][0] = 0;
-                $returnVal[0][1] = 0;
-                $returnVal[0][2] = (int)$plafond;
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => round($plafond),
+                    "angsuran_pokok" => 0,
+                    "angsuran_bunga" => 0,
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => 0,
+                ];
             }else{
                 $angsuranBunga = (($ffxrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFix - $angsuranBunga;
+                $angsuran      = round($angsuranBunga + $angsuranPokok);
+                $plafond      -= $angsuranPokok;
 
-                $plafond -= $angsuranPokok;
-                $returnVal[$i][0] = round($angsuranPokok);
-                $returnVal[$i][1] = round($angsuranBunga);
-                $returnVal[$i][2] = round($plafond);
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => round($plafond),
+                    "angsuran_pokok" => round($angsuranPokok),
+                    "angsuran_bunga" => round($angsuranBunga),
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => $angsuran,
+                ];
             }
         }
 
@@ -358,9 +405,17 @@ class CalculatorController extends Controller
             $angsuranPokok = $angsuranTotFloor - $angsuranBunga;
 
             $plafond -= $angsuranPokok;
-            $returnVal[$i][0] = round($angsuranPokok);
-            $returnVal[$i][1] = round($angsuranBunga);
-            $returnVal[$i][2] = round($plafond);
+            $angsuran      = round($angsuranBunga + $angsuranPokok);
+
+            $returnVal[$i] = [
+                "bulan"          => $i,
+                "sisa_pinjaman"  => round($plafond),
+                "angsuran_pokok" => 0,
+                "angsuran_bunga" => 0,
+                "porsi_pokok"    => 0,
+                "porsi_bunga"    => 0,
+                "angsuran"       => $angsuran,
+            ];
         }
 
         $angsuranTotFloat = ((($ffloatlrate / 12) / 100) * $plafond) / (1 - (1 / pow(1.00 + (($ffloatlrate / 100) / 12.00), ($fxflflterm - $fflterm))));
@@ -374,20 +429,70 @@ class CalculatorController extends Controller
                 $plafond -= $angsuranPokok;
                 $angsuranPokok += $plafond;
                 $angsuranBunga = $angsuranTotFloat - $angsuranPokok;
-                $returnVal[$i][0] = round($angsuranPokok);
-                $returnVal[$i][1] = round($angsuranBunga);
-                $returnVal[$i][2] = 0;
+                $angsuran      = round($angsuranBunga + $angsuranPokok);
+
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => round($plafond),
+                    "angsuran_pokok" => 0,
+                    "angsuran_bunga" => 0,
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => $angsuran,
+                ];
             }else{
                 $angsuranBunga = (($ffloatlrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFloat - $angsuranBunga;
                 $plafond -= $angsuranPokok;
-                $returnVal[$i][0] = round($angsuranPokok);
-                $returnVal[$i][1] = round($angsuranBunga);
-                $returnVal[$i][2] = round($plafond);
+                $angsuran      = round($angsuranBunga + $angsuranPokok);
+          
+                $returnVal[$i] = [
+                    "bulan"          => $i,
+                    "sisa_pinjaman"  => round($plafond),
+                    "angsuran_pokok" => round($angsuranPokok),
+                    "angsuran_bunga" => round($angsuranBunga),
+                    "porsi_pokok"    => 0,
+                    "porsi_bunga"    => 0,
+                    "angsuran"       => $angsuran,
+                ];
             }
         }
+        
+        $rincian = [
+            "rincian" => [
+                "uang_muka"           => ($total * $downPayment) / 100,
+                "porsi_pokok"         => 0,
+                "porsi_bunga"         => 0,
+                "suku_bunga"          => 0,
+                "suku_bunga_floating" => 0,
+                "kredit_fix"          => 0,
+                "lama_pinjaman"       => $fxflflterm." Bulan",
+                "pinjaman_maksimum"   => 0,
+            ],
+            "biaya_bank" => [
+                "apprasial"     => 0,
+                "administrasi"  => 0,
+                "provisi"       => 0,
+                "asuransi"      => 0,
+                "total_biaya"   => 0,
+            ],
+            "biaya_notaris" => [
+                "akte_jual_beli" => 0,
+                "bea_balik_nama" => 0,
+                "akta_skmht"     => 0,
+                "perjanjian_ht"  => 0,
+                "cek_sertifikat" => 0,
+                "total_biaya"    => 0,
+            ],
+            "angsuran_perbulan"  => $angsuran,
+            "pembayaran_pertama" => $uangMuka,
+        ];
+
         return response()->success([
-            'contents' => $returnVal
-        ]);        
+            'contents' => [
+                'rincian_pinjaman' => $rincian,
+                'detail_angsuran'  => $returnVal,
+            ]
+        ]);
     }
 }
