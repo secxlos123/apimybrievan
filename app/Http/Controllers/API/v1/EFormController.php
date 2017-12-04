@@ -75,8 +75,9 @@ public function mitra_relation( Request $request )
             'contents' => $eform
         ] );
     }
-public function uploadimage($image,$id,$atribute){
-         $path = public_path( 'uploads/briguna/' . $id . '/' );
+
+    public function uploadimage($image,$id,$atribute){
+        $path = public_path( 'uploads/briguna/' . $id . '/' );
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
         }
@@ -96,8 +97,7 @@ public function uploadimage($image,$id,$atribute){
             $image->move( $path, $filename );
         }
         return $filename;
-
-     }
+    }
     /**
      * Store a newly created resource in storage.
      *

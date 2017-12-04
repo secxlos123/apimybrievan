@@ -28,8 +28,8 @@ class Mitra extends Authenticatable  {
         } );
 
 				$mitra = $mitra->select([
-                    'mitra.BRANCH_CODE','mitra.NAMA_INSTANSI','mitra.idMitrakerja','mitra.segmen','mitra.UNIT_KERJA',
-         		 \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
+                    'mitra.BRANCH_CODE','mitra.NAMA_INSTANSI','mitra.idMitrakerja','mitra.segmen','mitra.nama_uker','mitra.alamat',
+                    , \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
                 ]);
 
         \Log::info($mitra->toSql());
