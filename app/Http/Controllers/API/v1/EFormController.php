@@ -33,7 +33,7 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-    
+
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -76,8 +76,11 @@ class EFormController extends Controller
             'contents' => $eform
         ] );
     }
-    public function uploadimage($image,$id,$atribute){
-        $path = public_path( 'uploads/briguna/' . $id . '/' );
+
+    public function uploadimage($image,$id,$atribute) {
+        $eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $eform->nik . '/' );
+
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
         }
@@ -114,6 +117,7 @@ class EFormController extends Controller
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
                 $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+            }
         }
 
         $filename = null;
@@ -133,7 +137,8 @@ class EFormController extends Controller
         }
         return $filename;
 
-     }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -328,7 +333,7 @@ class EFormController extends Controller
 
         foreach ($explode as $value) {
             if ($value != '') {
-                $html .= asset('uploads/prescreening/'.$data->id.'/'.$value) . ',';
+                $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
             }
         }
 

@@ -173,3 +173,35 @@ if (! function_exists('user_info')) {
         return null;
     }
 }
+
+if (! function_exists('generate_pdf')) {
+
+    /**
+     * Generate pdf file.
+     *
+     * @param  string $folder
+     * @param  string $filename
+     * @param  string $html
+     *
+     * @return array
+     */
+    function generate_pdf($folder, $filename, $html)
+    {
+        // return generate_pdf("uploads/327702020394", "myfile.pdf", '<h1>init data</h1>');
+        try {
+            $path = public_path().'/'.$folder;
+            File::makeDirectory($path, $mode = 0777, true, true);
+
+            PDF::loadHTML($html)
+                ->setPaper('a4')
+                ->setWarnings(false)
+                ->save(public_path($folder.'/'.$filename));
+
+        } catch (Exception $e) {
+            return $e;
+
+        }
+
+        return $filename;
+    }
+}
