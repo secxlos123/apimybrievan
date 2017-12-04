@@ -371,6 +371,62 @@ class ApiLas extends Model
         }
     }
 
+    public function getStatusInterface($data) {
+        \Log::info($data);
+        try {
+            $get = AsmxLas::setEndpoint('getStatusInterface')
+                ->setBody([
+                    'id_aplikasi'   => empty($data) ? "45016" : $data
+                ])->post('form_params');
+
+            return $get;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function putusSepakat($data) {
+        \Log::info($data);
+        try {
+            $get = AsmxLas::setEndpoint('putusSepakat')
+                ->setBody([
+                    'JSONData'   => empty($data) ? "45016" : $data
+                ])->post('form_params');
+
+            return $get;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryInstansiBriguna($data) {
+        \Log::info($data);
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryInstansiBriguna')
+                ->setBody([
+                    'branch'   => empty($data) ? "45016" : $data
+                ])->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquirySifatKredit($data) {
+        \Log::info($data);
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquirySifatKredit')
+                ->setBody([
+                    'param'   => empty($data) ? "45016" : $data
+                ])->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
     public function inquiryListPutusan($data) {
         \Log::info($data);
         try {

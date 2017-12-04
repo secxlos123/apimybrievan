@@ -57,6 +57,26 @@ class ApiLasController extends Controller
                 return $kirim;
                 break;
 
+            case 'getStatusInterface':
+                $getData = $ApiLas->getStatusInterface($data);
+                return $getData;
+                break;
+
+            case 'putusSepakat':
+                $putus = $ApiLas->putusSepakat($data);
+                return $putus;
+                break;
+
+            case 'inquiryInstansiBriguna':
+                $kirim = $ApiLas->inquiryInstansiBriguna($data);
+                return $kirim;
+                break;
+
+            case 'inquirySifatKredit':
+                $kirim = $ApiLas->inquirySifatKredit($data);
+                return $kirim;
+                break;
+
             case 'inquiryListPutusan':
                 $inquiry = $ApiLas->inquiryListPutusan($data);
                 $conten  = $this->return_conten($inquiry);
