@@ -51,7 +51,6 @@ function array_combine2($arr1, $arr2) {
 			
             $file = __DIR__. '\..\csv\kode_pos6.csv';	
 			$data = $this->csv_to_array($file);
-print_r($data);die();
         $city = DB::table('tbl_kodepos')->where('postal_code', $data[0]['postal_code'])->first();
 		        if ( !$city ) {
 
