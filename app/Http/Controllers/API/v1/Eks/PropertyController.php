@@ -105,9 +105,16 @@ class PropertyController extends Controller
                 $code = 200; $method = 'dirubah';
             }
             // this logic for saving data to internal bri
-            $this->service($property);
-            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-            \DB::commit();            
+            $data = $this->service($property);
+            if ($data['code']== '200') {
+                $property->update(['prop_id_bri' => $data['contents']]);
+                $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+                \DB::commit();
+            }else{
+                 \DB::rollBack();
+                $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}. ". $data['contents'];
+                $code = 422;
+            }
         } catch (\Exception $e) {
             \DB::rollBack();
             $status = 'error'; $message = $e->getMessage();
