@@ -51,6 +51,20 @@ class CustomerDetail extends Model
         'id'
     ];
 
+    public static $folder = '';
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        self::$folder = \Request::input('nik');
+
+        parent::boot();
+    }
+
     /**
      * Global function for check file.
      *
@@ -60,7 +74,7 @@ class CustomerDetail extends Model
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $image = 'uploads/users/' . $this->user_id . '/' . $filename;
+            $image = 'uploads/' . $this->nik . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -259,13 +273,19 @@ class CustomerDetail extends Model
     public function globalSetImage( $image, $attribute, $callbackPosition = null )
     {
         $doFunction = true;
+        if (!empty($this->user)) {
+            $user = $this->user;
+        }else{
+            $user = user_info('id');
+        }
 
         if ($callbackPosition) {
             $doFunction = isset($this->attributes[ $attribute ]);
         }
-
+        \Log::info("========================handling upload=============================");
+        $base = $this->nik ? $this->nik : self::$folder;
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
-            $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+            $path = public_path( 'uploads/' . $base . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 File::delete( $path . $this->attributes[ $attribute ] );
             }
@@ -282,7 +302,7 @@ class CustomerDetail extends Model
                 $extension = $image->getClientOriginalExtension();
             }
 
-            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $filename = $user . '-' . $attribute . '.' . $extension;
             $image->move( $path, $filename );
             return $filename;
         } else {

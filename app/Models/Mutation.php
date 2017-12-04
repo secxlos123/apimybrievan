@@ -45,12 +45,12 @@ class Mutation extends Model
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $value ) ) {
-            $image = 'uploads/eforms/' . $this->visit_report->eform_id . '/visit_report/' . $value;
+            $image = 'uploads/' . $this->nik . '/' . $value;
             if( File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
         }
-        
+
         return url( $path );
     }
 
@@ -61,7 +61,7 @@ class Mutation extends Model
      */
     public function setFileAttribute( $file )
     {
-        $path = public_path( 'uploads/eforms/' . $this->visit_report->eform_id . '/visit_report/' );
+        $path = public_path( 'uploads/' . $this->nik . '/' );
         if ( ! empty( $this->attributes[ 'file' ] ) ) {
             File::delete( $path . $this->attributes[ 'file' ] );
         }
@@ -80,7 +80,7 @@ class Mutation extends Model
 
         $filename = $this->visit_report->eform_id. '-' .$this->id . '-' . 'file' . '.' . $extension;
         $file->move( $path, $filename );
-        $this->attributes[ 'file' ] = $filename;        
+        $this->attributes[ 'file' ] = $filename;
     }
 
     /**
