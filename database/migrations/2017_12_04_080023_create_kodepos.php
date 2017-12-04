@@ -14,7 +14,6 @@ class CreateKodepos extends Migration
     public function up()
     {
          Schema::create( 'tbl_kodepos', function ( Blueprint $table ) {
-            $table->increments( 'id' );
             $table->text( 'postal_code' )->nullable();
             $table->text( 'Kelurahan' )->nullable();
             $table->text( 'Kecamatan' )->nullable();
