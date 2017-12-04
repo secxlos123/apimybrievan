@@ -80,7 +80,31 @@ class EFormController extends Controller
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
         }
-
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = '.pdf';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            // log::info('image = '.$image->getMimeType());
+            $filename = $id . '-'.$atribute.'.' . $extension;
+            $image->move( $path, $filename );
+        }
+        return $filename;
+    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store( EFormRequest $request )
+    {
         DB::beginTransaction();
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
@@ -108,39 +132,6 @@ class EFormController extends Controller
                 }
             }
         }
-
-        if ( $request->product_type == 'kpr' ) {
-            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
-                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
-        }
-        $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = '.pdf';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
-            // log::info('image = '.$image->getMimeType());
-            $filename = $id . '-'.$atribute.'.' . $extension;
-            $image->move( $path, $filename );
-        }
-        return $filename;
-    }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store( EFormRequest $request )
-    {
-        DB::beginTransaction();
-
-        $baseRequest = $request->all();
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
