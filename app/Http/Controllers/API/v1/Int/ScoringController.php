@@ -66,7 +66,8 @@ class ScoringController extends Controller
 	}
 
 	 public function uploadimage($image,$id){
-		 $path = public_path( 'uploads/prescreening/' . $id . '/' );
+	 	$eform = EForm::findOrFail($id);
+		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore' ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore' ] );
         }
@@ -90,7 +91,8 @@ class ScoringController extends Controller
 	 }
 
 	 public function uploadimagemulti($image,$id,$i){
-		 $path = public_path( 'uploads/prescreening/' . $id . '/' );
+	 	$eform = EForm::findOrFail($id);
+		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore'.$i ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore'.$i ] );
         }

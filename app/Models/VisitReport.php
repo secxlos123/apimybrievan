@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\BankStatement;
 use App\Models\Mutation;
+use App\Models\EForm;
 
 class VisitReport extends Model
 {
@@ -421,7 +422,7 @@ class VisitReport extends Model
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $image = 'uploads/eforms/' . $this->eform_id . '/visit_report/' . $filename;
+            $image = 'uploads/' . $this->eform->nik . '/' . $filename;
             if( \File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -456,7 +457,7 @@ class VisitReport extends Model
     public function globalSetImage( $image, $attribute )
     {
         if ( gettype($image) == 'object' ) {
-            $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
+            $path = public_path( 'uploads/' . $this->eform->nik . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 \File::delete( $path . $this->attributes[ $attribute ] );
             }
@@ -489,5 +490,15 @@ class VisitReport extends Model
     public function mutation()
     {
         return $this->hasMany( Mutation::class );
+    }
+
+    /**
+     * The relation to eform.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function eform()
+    {
+        return $this->belongsTo( EForm::class, 'eform_id' );
     }
 }

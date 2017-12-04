@@ -54,8 +54,8 @@ class ScoringDetail extends Model
      */
     public function getScoringAttribute( $value )
     {
-        if( File::exists( 'uploads/prescreening/' . $this->user_id . '/' . $value ) ) {
-            $image = url( 'uploads/prescreening/' . $this->user_id . '/' . $value );
+        if( File::exists( 'uploads/' . $this->nik . '/' . $value ) ) {
+            $image = url( 'uploads/' . $this->nik . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -65,12 +65,12 @@ class ScoringDetail extends Model
 
     public function setScoringAttribute( $image )
     {
-        $path = public_path( 'uploads/prescreening/' . $this->user_id . '/' );
+        $path = public_path( 'uploads/' . $this->nik . '/' );
         if ( ! empty( $this->attributes[ 'uploadscore' ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore' ] );
         }
-		
-		
+
+
 
 	   if (!$image->getClientOriginalExtension()) {
             if ($image->getMimeType() == '.pdf') {
@@ -85,8 +85,8 @@ class ScoringDetail extends Model
         $filename = $this->user_id . '-uploadscore.' . $extension;
         $image->move( $path, $filename );
         $this->attributes[ 'uploadscore' ] = $filename;
-		
+
     }
 
- 
+
 }
