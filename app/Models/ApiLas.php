@@ -170,7 +170,7 @@ class ApiLas extends Model
         try {
             $content_las_prescoring = [
                 "Fid_aplikasi"              => empty($data['Fid_aplikasi']) ? "45045" : $data['Fid_aplikasi'],
-                "Fid_cif_las"               => empty($data['Fid_cif_las']) ? "11039402" : $data['Fid_cif_las'],
+                "Fid_cif_las"               => empty($data['Fid_cif_las']) ? "0" : $data['Fid_cif_las'],
                 "Tp_produk"                 => empty($data['Tp_produk']) ? "1" : $data['Tp_produk'],
                 "Briguna_smart"             => empty($data['Briguna_smart']) ? "0" : $data['Briguna_smart'],
                 "Briguna_profesi"           => empty($data['Briguna_profesi']) ? "0" : $data['Briguna_profesi'],
@@ -328,12 +328,12 @@ class ApiLas extends Model
                 "porsi_agunan"                      => "100"
             ];
 
-            $insertPrescoring = AsmxLas::setEndpoint('insertAgunanLainnya')
+            $insertAgunanLainnya = AsmxLas::setEndpoint('insertAgunanLainnya')
                 ->setBody([
                     'JSONData' => json_encode($content_insertAgunanLainnya)
                 ])->post('form_params');
 
-            return $insertPrescoring;
+            return $insertAgunanLainnya;
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
         }
@@ -361,7 +361,7 @@ class ApiLas extends Model
             $kirim = AsmxLas::setEndpoint('kirimPemutus')
                 ->setBody([
                     'id_aplikasi'   => empty($data['id_aplikasi']) ? "45016" : $data['id_aplikasi'],
-                    'uid'           => empty($data['uid']) ? "45016" : $data['uid'],
+                    'uid'           => empty($data['uid']) ? "10740" : $data['uid'],
                     'flag_override' => empty($data['flag_override']) ? "N" : $data['flag_override']
                 ])->post('form_params');
 
@@ -378,7 +378,7 @@ class ApiLas extends Model
 
             $inquiryListPutusan = AsmxLas::setEndpoint('inquiryListPutusan')
                 ->setBody([
-                    'uid' => empty($uid) ? "10" : $uid
+                    'uid' => empty($uid) ? "10740" : $uid
                 ])->post('form_params');
 
             return $inquiryListPutusan;

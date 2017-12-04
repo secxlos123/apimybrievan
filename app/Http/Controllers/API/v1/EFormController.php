@@ -33,14 +33,13 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-public function mitra_relation( Request $request )
+    public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
         $mitra = Mitra::filter( $request )->get();
-        return $mitra;die();
+        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $mitra
+            'contents' => $eform
         ], 200 );
     }
     /**
@@ -80,6 +79,39 @@ public function mitra_relation( Request $request )
         $path = public_path( 'uploads/briguna/' . $id . '/' );
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
+        }
+
+        DB::beginTransaction();
+        $branchs = \RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => $request->input('branch_id'),
+                    'distance'    => 0,
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => 0,
+                    'longitude' => 0
+                ]
+            ])
+        ])
+        ->post('form_params');
+
+        $baseRequest = $request->all();
+
+        if ( $branchs['responseCode'] == '00' ) {
+            foreach ($branchs['responseData'] as $branch) {
+                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+                    $baseRequest['branch'] = $branch['unit_kerja'];
+
+                }
+            }
+        }
+
+        if ( $request->product_type == 'kpr' ) {
+            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
         }
         $filename = null;
         if ($image) {
