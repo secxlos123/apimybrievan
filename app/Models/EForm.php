@@ -514,19 +514,30 @@ class EForm extends Model
             }
         } );
 
-        if ($request->has('customer_name')){
+        if ($request->has('search')) {
             $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
                 ->where( function( $eform ) use( $request, &$user ) {
-                    $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
-                        ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%');
+                    $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
+                        ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
+                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
                 } );
+
+        } else {
+            if ($request->has('customer_name')){
+                $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
+                    ->where( function( $eform ) use( $request, &$user ) {
+                        $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
+                            ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%');
+                    } );
+            }
+
+            if ($request->has('ref_number')) {
+                $eform = $eform->where( function( $eform ) use( $request, &$user ) {
+                    $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
+                } );
+            }
         }
 
-        if ($request->has('ref_number')) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
-            } );
-        }
 
         if ($request->has('prescreening')) {
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
@@ -559,8 +570,8 @@ class EForm extends Model
                 }
             } );
 
-            if ( $user['role'] != 'ao' || $request->has('customer_name')) {
-                if ( $request->has('customer_name') ) {
+            if ( $user['role'] != 'ao' || $request->has('customer_name') || $request->has('search')) {
+                if ( $request->has('customer_name') || $request->has('search') ) {
                     $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
 
                 } else {
@@ -734,10 +745,17 @@ class EForm extends Model
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
 
+        $birth_place = '';
+        if ($customer_detail->birth_place) {
+            $birth_place = str_replace('.', '', $customer_detail->birth_place);
+            $birth_place = str_replace(',', '', $birth_place);
+
+        }
+
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
-            "tempat_lahir_pemohon" => $customer_detail->birth_place ? $customer_detail->birth_place : '',
+            "tempat_lahir_pemohon" => $birth_place,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
             "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
@@ -777,12 +795,19 @@ class EForm extends Model
         $customer_work = (object) $customer->work;
         $lkn = $this->visit_report;
 
+        $birth_place = '';
+        if ($customer_detail->birth_place) {
+            $birth_place = str_replace('.', '', $customer_detail->birth_place);
+            $birth_place = str_replace(',', '', $birth_place);
+
+        }
+
         $request = $data + [
             "kode_cabang" => '206',//!( $this->branch_id ) ? '' : $this->branch_id,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
-            "tempat_lahir_pemohon" => $customer_detail->birth_place ? $customer_detail->birth_place : '',
+            "tempat_lahir_pemohon" => $birth_place,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
