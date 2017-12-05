@@ -35,7 +35,7 @@ class suratrekomendasi extends Mailable
         'as' => 'Surat Kuasa Potong Gaji',
         'mime' => 'application/pdf',
     ])->attach($file2, [
-        'as' => 'Surat Kuasa Potong Gaji',
+        'as' => 'Surat Rekomendasi',
         'mime' => 'application/pdf',
     ]);
  //       if (env('APP_ENV') == 'production') {
