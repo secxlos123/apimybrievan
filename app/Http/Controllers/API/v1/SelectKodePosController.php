@@ -34,7 +34,7 @@ class SelectKodePosController extends Controller
 	}
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $kodepost
+            'contents' => ['data'=>$kodepost]
         ], 200 );
 
 	}
