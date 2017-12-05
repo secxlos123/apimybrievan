@@ -127,9 +127,18 @@ class CustomerController extends Controller
 	{
 		DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
+
+		$baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name');
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
 		if ($request->has('eform_id')) {
-		KPR::updateOrCreate(['eform_id' => $request->eform_id],$request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name'));
+			KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
 		}
+
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'eform_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
 

@@ -236,6 +236,11 @@ class ScoringController extends Controller
         $dats['dhn_detail'] = json_encode($dhn);
         $dats['sicd_detail'] = json_encode($sicd);
 
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $dats['prescreening_name'] = $user_login['name'];
+        $dats['prescreening_position'] = $user_login['position'];
+
 		DB::beginTransaction();
         $data->update($dats);
         $detail = $data;

@@ -438,7 +438,7 @@
                     </div>
                 </div>
 
-                <br/><br/><br/>
+                <br/>
 
                 <div class="full-width">
                     <div class="half-width">
@@ -452,7 +452,7 @@
                         <div class="barcode">
                             <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
                             <img src="{{ asset('img/qr-code.png') }}">
-                            <p>-</p>
+                            <p>{{ $detail->pinca_name ? $detail->pinca_name : '-' }}</p>
                         </div>
                     </div>
 

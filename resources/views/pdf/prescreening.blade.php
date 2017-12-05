@@ -283,19 +283,19 @@
                             <tbody>
                                 <tr>
                                     <td>Nama Nasabah</td>
-                                    <td>: {{ $sicd->nama_debitur }}</td>
+                                    <td>: {{ isset($sicd->nama_debitur) ? $sicd->nama_debitur : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>NIK</td>
-                                    <td>: {{ $sicd->no_identitas }}</td>
+                                    <td>: {{ isset($sicd->no_identitas) ? $sicd->no_identitas : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Tanggal Lahir</td>
-                                    <td>: {{ date('d M Y', strtotime($sicd->tgl_lahir)) }}</td>
+                                    <td>: {{ isset($sicd->tgl_lahir) ? date('d M Y', strtotime( $sicd->tgl_lahir ) ) : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Kolektibilitas</td>
-                                    <td>: {{ $sicd->bikole }}</td>
+                                    <td>: {{ isset($sicd->bikole) ? $sicd->bikole : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Hasil SICD</td>
@@ -308,12 +308,12 @@
                     @endforeach
                 @endif
 
-                <br/><br/><br/>
+                <br/>
 
                 <div class="barcode">
                     <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
                     <img src="{{ asset('img/qr-code.png') }}">
-                    <p>-</p>
+                    <p>{{ $detail->prescreening_name ? $detail->prescreening_name : '-' }}</p>
                 </div>
             </div>
         </page>

@@ -113,6 +113,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
                 if ( $branch['kode_uker'] == $request->input('branch_id') ) {
@@ -381,7 +386,15 @@ class EFormController extends Controller
     public function approve( EFormRequest $request, $eform_id )
     {
         DB::beginTransaction();
-        $eform = EForm::approve( $eform_id, $request );
+
+        $baseRequest = $request;
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['pinca_name'] = $user_login['name'];
+        $baseRequest['pinca_position'] = $user_login['position'];
+
+        $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
             $data =  EForm::findOrFail($eform_id);
