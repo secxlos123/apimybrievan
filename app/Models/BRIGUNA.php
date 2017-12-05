@@ -36,7 +36,8 @@ class BRIGUNA extends Model
 		'NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
         'SK_AKHIR,REKOMENDASI','SKPG',
 		//'SK_PERTAMA', 'SK_TERAKHIR','NPWP','REKOMENDASI_ATASAN',
-        'eform_id', 'tujuan_penggunaan_id', 'idMitrakerja', 
+        'eform_id', 'tujuan_penggunaan_id', 
+        'mitra_id', 
         'jenis_pinjaman_id',  'year',
 		'request_amount', 'angsuran_usulan', 'maksimum_plafond'
 	];
@@ -64,6 +65,7 @@ class BRIGUNA extends Model
      * @return void
      */
     public static function create( $data ) {
+    try {        
         \Log::info($data);
         $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
 		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
@@ -102,16 +104,20 @@ class BRIGUNA extends Model
         $kabupaten = '';
         $kodepos   = '';
         $kelurahan = '';
+
+
         if (!empty($customer_detail->address)) {
+            if(!isset(explode('=', $customer_detail->address))){
             $address = explode('=', $customer_detail->address);
             // print_r($address);
-            if (count($address) > 1) {
-                $kel     = explode(' ', $address[1]);
-                $kec     = explode(',', $address[2]);
-                $kecamatan = $kec[0];
-                $kabupaten = $kec[1];
-                $kodepos   = $kec[2];
-                $kelurahan = $kel[0];
+                if (count($address) > 1) {
+                    $kel     = explode(' ', $address[1]);
+                    $kec     = explode(',', $address[2]);
+                    $kecamatan = $kec[0];
+                    $kabupaten = $kec[1];
+                    $kodepos   = $kec[2];
+                    $kelurahan = $kel[0];
+                }
             }
         }
 
@@ -293,6 +299,10 @@ class BRIGUNA extends Model
         } else {
             throw new \Exception( "Error Processing Request", 1 );
         }
+     } catch (Exception $e) {
+            return $e;    
+    }
+
         // End insert
         
         // $customer = $eform->customer;
