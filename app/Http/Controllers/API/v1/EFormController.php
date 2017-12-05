@@ -158,7 +158,7 @@ class EFormController extends Controller
             $SKPG = $request->SKPG;
 
             $id = $request->id;
-
+print_r($id);die();
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
