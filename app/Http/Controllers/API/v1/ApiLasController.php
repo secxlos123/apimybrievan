@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\v1\EFormController;
 use App\Models\ApiLas;
 use App\Models\EForm;
 use Illuminate\Http\Request;
@@ -10,13 +11,14 @@ use Auth;
 
 class ApiLasController extends Controller
 {
-    public function index(Request $request) {
-    	// print_r($request->header('pn'));exit();
+    public function index(Request $request) {        
+    	// print_r($request);exit();
     	$ApiLas  = new ApiLas();
-        $pn      = $request->header('pn');
     	$respons = $request->all();
     	$method  = $respons['requestMethod'];
-    	$data	 = $respons['requestData'];
+        if (!empty($respons['requestData'])) {
+            $data = $respons['requestData'];
+        }
 
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
@@ -55,26 +57,155 @@ class ApiLasController extends Controller
                 return $kirim;
                 break;
 
+            case 'getStatusInterface':
+                $getData = $ApiLas->getStatusInterface($data);
+                return $getData;
+                break;
+
+            case 'putusSepakat':
+                $putus = $ApiLas->putusSepakat($data);
+                return $putus;
+                break;
+
+            case 'inquiryInstansiBriguna':
+                $kirim = $ApiLas->inquiryInstansiBriguna($data);
+                return $kirim;
+                break;
+
+            case 'inquirySifatKredit':
+                $kirim = $ApiLas->inquirySifatKredit($data);
+                return $kirim;
+                break;
+
             case 'inquiryListPutusan':
                 $inquiry = $ApiLas->inquiryListPutusan($data);
-                return $inquiry;
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryGelar':
+                $inquiry = $ApiLas->inquiryGelar();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+                
+            case 'inquiryLoantype':
+                $inquiry = $ApiLas->inquiryLoantype();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryJenisPenggunaan':
+                $inquiry = $ApiLas->inquiryJenisPenggunaan();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryJenisPenggunaanLBU':
+                $inquiry = $ApiLas->inquiryJenisPenggunaanLBU();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquirySektorEkonomiLBU':
+                $inquiry = $ApiLas->inquirySektorEkonomiLBU();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquirySifatKreditLBU':
+                $inquiry = $ApiLas->inquirySifatKreditLBU();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryJenisKreditLBU':
+                $inquiry = $ApiLas->inquiryJenisKreditLBU();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryPromoBriguna':
+                $inquiry = $ApiLas->inquiryPromoBriguna();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryTujuanPenggunaan':
+                $inquiry = $ApiLas->inquiryTujuanPenggunaan();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryBidangUsaha':
+                $inquiry = $ApiLas->inquiryBidangUsaha();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryBank':
+                $inquiry = $ApiLas->inquiryBank();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryHubunganBank':
+                $inquiry = $ApiLas->inquiryHubunganBank();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryPekerjaan':
+                $inquiry = $ApiLas->inquiryPekerjaan();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryJabatan':
+                $inquiry = $ApiLas->inquiryJabatan();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
+            case 'inquiryJenisPekerjaan':
+                $inquiry = $ApiLas->inquiryJenisPekerjaan();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
     		default:
-    			return array('status' => 400, 'message' => 'Uknown request method');
+    			return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request method',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
     			break;
     	}
     }
 
+    public function return_conten($respons){
+        $conten = [
+            'code'         => $respons['statusCode'],
+            'descriptions' => $respons['statusDesc'],
+            'contents' => [
+                'data' => $respons['items']
+            ]
+        ];
+        return $conten;
+    }
+
     public function insertAllAnalisa($request) {
         $ApiLas  = new ApiLas();
+        $EForm   = new EFormController();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
         print_r($inquiryUserLAS);
         $uid   = $inquiryUserLAS['items'][0]['uid'];
-        $uker  = $inquiryUserLAS['items'][0]['uker'];
-        $eform = EForm::findOrFail('1');
+        $uker  = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        $eform = $EForm->show('int','1');
         $customer        = $eform->customer;
         $customer_detail = $customer->detail;
         print_r($eform);exit();
@@ -138,8 +269,8 @@ class ApiLasController extends Controller
 
         $content_las_debt = [
             "tp_produk"              => "1",
-            "cif_las"                => "0",
-            "expired_ktp"            => "31122899",
+            "cif_las"                => "0", // hardcode ketika data baru
+            "expired_ktp"            => "31122899", // hardcode
             "uid"                    => empty($uid) ? "10740" : $uid,
             "kode_cabang"            => $eform->branch_id,
             "no_ktp"                 => $eform->nik,            
@@ -257,25 +388,30 @@ class ApiLasController extends Controller
                     "Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
                     "Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
                     "Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
-                    "Angsuran_lainnya"          => $data,
-                    "Gaji_per_bulan"            => $data,
-                    "Gaji_bersih_per_bulan"     => $data,
-                    "Maksimum_angsuran"         => $data,
-                    "Maksimum_plafond"          => $data,
-                    "Permohonan_kredit"         => $data,
-                    "Baki_debet"                => $data,
-                    "Plafond_usulan"            => $data,
-                    "Angsuran_usulan"           => $data,
+                    "Angsuran_lainnya"          => $customer,
+                    "Gaji_per_bulan"            => $customer,
+                    "Gaji_bersih_per_bulan"     => $customer,
+                    "Maksimum_angsuran"         => $customer,
+                    "Maksimum_plafond"          => $customer,
+                    "Permohonan_kredit"         => $customer,
+                    "Baki_debet"                => $customer,
+                    "Plafond_usulan"            => $customer,
+                    "Angsuran_usulan"           => $customer,
                     "Kelengkapan_dokumen"       => "1"
                 ];
 
                 $insertPrescoring = $ApiLas->insertPrescoringBriguna($content_las_prescoring);
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
+                    $jangka = '24';
+                    $tgl_jatuh_tempo = date('d-m-Y',strtotime('+'.$jangka.' months'));
                     // insert dataKredit
                     $content_insertKreditBriguna = [
                         "Fid_aplikasi"                 => $insertDebitur['items']['ID_APLIKASI'],
                         "Cif_las"                      => $insertDebitur['items']['CIF_LAS'],
+                        "Pemrakarsa1"                  => $uid,
+                        "Uker_pemrakarsa"              => $uker,
+                        "Tanggal_jatuh_tempo"          => $tgl_jatuh_tempo,
                         "Kode_fasilitas"               => $request['Kode_fasilitas'],
                         "Sandi_stp"                    => $request['Sandi_stp'],
                         "Provisi_kredit"               => $request['Provisi'],
@@ -291,48 +427,45 @@ class ApiLasController extends Controller
                         "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
                         "Sifat_kredit"                 => $request['Sifat_kredit'],
                         "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi'],
+                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi_lbu'],
                         "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
                         "Jenis_kredit_lbu"             => $request['Jenis_kredit_lbu'],
                         "Kategori_kredit_lbu"          => $request['Kategori_kredit_lbu'],
                         "Jenis_penggunaan_lbu"         => $request['Jenis_penggunaan_lbu'],
+                        "Maksimum_plafond"             => $eform['Maksimum_plafond'],
+                        "Plafon_induk"                 => $eform['Plafon_induk'],
+                        "Tujuan_membuka_rek"           => "3",
+                        "Jangka_waktu"                 => "24",
                         "Tp_produk"                    => "1",
-                        "Id_kredit"                    => $data['Id_kredit'],
-                        "Baru_perpanjangan"            => $data['Baru_perpanjangan'],
-                        "Jenis_fasilitas"              => $data['Jenis_fasilitas'],
-                        "Tujuan_membuka_rek"           => $data['Tujuan_membuka_rek'],
-                        "Segmen_owner"                 => $data['Segmen_owner'],
-                        "Sub_segmen_owner"             => $data['Sub_segmen_owner'],
-                        "Kode_jangka_waktu"            => $data['Kode_jangka_waktu'],
-                        "Jangka_waktu"                 => $data['Jangka_waktu'],
-                        "Sisa_jangka_waktu_sd_penyesuaian"=> $data['Sisa_jangka_waktu_sd_penyesuaian'],
-                        "Valuta"                       => $data['Valuta'],
-                        "Maksimum_plafond"             => $data['Maksimum_plafond'],
-                        "Plafon_induk"                 => $data['Plafon_induk'],
-                        "Interest_payment_frequency"   => $data['Interest_payment_frequency'],
-                        "Pemrakarsa1"                  => $uid,
-                        "Uker_pemrakarsa"              => $data['Uker_pemrakarsa'],
-                        "Sifat_suku_bunga"             => $data['Sifat_suku_bunga'],
-                        "Discount"                     => $data['Discount'],
-                        "Golongan_kredit"              => $data['Golongan_kredit'],
-                        "Orientasi_penggunaan"         => "9",
-                        "Sektor_ekonomi_lbu"           => "11126",
+                        "Id_kredit"                    => "0",
+                        "Baru_perpanjangan"            => "0",
+                        "Jenis_fasilitas"              => "0605",
+                        "Sisa_jangka_waktu_sd_penyesuaian"=> "0", // hardcode
+                        "Valuta"                       => "idr", // hardcode
+                        "Segmen_owner"                 => "RITEL", // hardcode
+                        "Sub_segmen_owner"             => "RITEL", // hardcode
+                        "Kode_jangka_waktu"            => "M", // hardcode las
+                        "Interest_payment_frequency"   => "1", // hardcode las
+                        "Sifat_suku_bunga"             => "FIXED", // hardcode
+                        "Discount"                     => "0", // hardcode las
+                        "Golongan_kredit"              => "20", // hardcode las
+                        "Orientasi_penggunaan"         => "9", // hardcode las
                         "Lokasi_proyek"                => "0591",
-                        "Nilai_proyek"                 => "0",
-                        "Fasilitas_penyedia_dana"      => "1999",
+                        "Nilai_proyek"                 => "0", // hardcode las
+                        "Fasilitas_penyedia_dana"      => "1999", // hardcode
                         "Baki_debet"                   => "0",
                         "Original_amount"              => "0",
                         "Kelonggaran_tarik"            => "0",
-                        "Denda"                        => "0",
+                        "Denda"                        => "0", // hardcode las
                         "Premi_asuransi_jiwa"          => "0.75",
                         "Premi_beban_bri"              => "0",
                         "Premi_beban_debitur"          => "0.75",
-                        "Tanggal_jatuh_tempo"          => "29112099",
-                        "Grace_period"                 => "0",
+                        "Grace_period"                 => "0", // hardcode las
                         "Flag_promo"                   => "1",
                         "Fid_promo"                    => "4",
                         "Status_takeover"              => "0",
                         "Bank_asal_takeover"           => "",
-                        "Data2"                        => ""
+                        "Data2"                        => "" // kosongin aja
                     ];
 
                     $insertKredit = $ApiLas->insertDataKreditBriguna($content_insertKreditBriguna);

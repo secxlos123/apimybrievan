@@ -38,9 +38,11 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
         $mitra = Mitra::filter( $request )->get();
-    //    $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+        // $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
-            'contents' => $mitra
+            'contents' => [
+                'data' => $mitra
+            ]
         ], 200 );
     }
     /**
@@ -255,47 +257,44 @@ class EFormController extends Controller
 
         }
 
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
+        $score = $data->pefindo_score;
+        $pefindoC = 'Kuning';
+        if ( $score >= 250 && $score <= 573 ) {
+            $pefindoC = 'Merah';
 
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
+        } elseif ( $score >= 677 && $score <= 900 ) {
+            $pefindoC = 'Hijau';
 
-        // }
+        }
 
-        // $dhnC = $dhn['responseData'][0]['warna'];
+        $dhnC = $dhn['responseData'][0]['warna'];
 
-        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-        //     $sicdC = 'Hijau';
+        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
+            $sicdC = 'Hijau';
 
-        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-        //     $sicdC = 'Kuning';
+        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
+            $sicdC = 'Kuning';
 
-        // } else {
-        //     $sicdC = 'Merah';
+        } else {
+            $sicdC = 'Merah';
 
-        // }
+        }
 
-        // $calculate = array($pefindoC, $dhnC, $sicdC);
+        $calculate = array($pefindoC, $dhnC, $sicdC);
 
-        // if ( in_array('Merah', $calculate) ) {
-        //     $result = '3';
+        \Log::info('========== result =============');
+        \Log::info($calculate);
+        if ( in_array('Merah', $calculate) ) {
+            $result = '3';
 
-        // } else if ( in_array('Kuning', $calculate) ) {
-        //     $result = '2';
+        } else if ( in_array('Kuning', $calculate) ) {
+            $result = '2';
 
-        // } else {
-        //     $result = '1';
+        } else {
+            $result = '1';
 
-        // }
-
-        // $data->update([
-        //     'prescreening_status' => $result
-        //     , 'dhn_detail' => json_encode($dhn['responseData'])
-        //     , 'sicd_detail' => json_encode($sicd['responseData'])
-        // ]);
+        }
+        $data->prescreening_status =  $result;
 
         $explode = explode(',', $data->uploadscore);
         $html = '';
@@ -312,7 +311,7 @@ class EFormController extends Controller
             return response()->success( [
                 'message' => 'Data Screening e-form',
                 'contents' => [
-                    'eform' => $data,
+                    'eform' => $data,//json_encode($datafinal),
                     'dhn'=>$dhn['responseData'],
                     'sicd' => $sicd['responseData']
                 ]
