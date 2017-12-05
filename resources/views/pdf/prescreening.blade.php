@@ -23,25 +23,25 @@
                                         <div class="form-group">
                                             <label class="col-md-5 control-label">NIK :</label>
                                             <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['nik'] }}</p>
+                                                <p class="form-control-static">{{ $data['nik'] }}</p>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-5 control-label">Nama Calon Nasabah :</label>
                                             <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['address'] }}</p>
+                                                <p class="form-control-static">{{ $data['address'] }}</p>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-5 control-label">Hasil Prescreening :</label>
                                             <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['prescreening_status'] }}</p>
+                                                <p class="form-control-static">{{ $data['prescreening_status'] }}</p>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-5 control-label">Keterangan Terkait Risiko :</label>
                                             <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['ket_risk'] }}</p>
+                                                <p class="form-control-static">{{ $data['ket_risk'] }}</p>
                                             </div>
                                         </div>
                                     </form>
