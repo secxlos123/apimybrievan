@@ -78,7 +78,10 @@ class BRIGUNA extends Model
         }
         $data[ 'Status_Pekerjaan' ] = $data[ 'job_type' ];
 
-$data[ 'maksimum_plafond' ] = '0';
+        $data[ 'maksimum_plafond' ] = '0';
+        $data[ 'NIP' ] = $data[ 'nip' ];
+        $data[ 'Nama_atasan_Langsung' ] = '';
+        $data[ 'Jabatan_atasan' ] = '';
 	/*    if(isset($data[ 'maksimum_plafond' ])){
             $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
 	    }else{

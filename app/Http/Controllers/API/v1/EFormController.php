@@ -155,6 +155,7 @@ class EFormController extends Controller
             $SLIP_GAJI = $request->SLIP_GAJI;
             $SK_AWAL = $request->SK_AWAL;
             $SK_AKHIR = $request->SK_AKHIR;
+            $REKOMENDASI = $request->REKOMENDASI;
             $SKPG = $request->SKPG;
 
             $id = $request->id;
@@ -163,6 +164,7 @@ class EFormController extends Controller
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
             $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
             $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+            $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
             $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
@@ -170,6 +172,7 @@ class EFormController extends Controller
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+            $baseRequest['REKOMENDASI'] = $REKOMENDASI;
             $baseRequest['SKPG'] = $SKPG;
             $kpr = BRIGUNA::create( $baseRequest );
             /*----------------------------------*/
