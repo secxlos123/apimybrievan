@@ -63,8 +63,9 @@ class ApiLasController extends Controller
                 break;
 
             case 'putusSepakat':
-                $putus = $ApiLas->putusSepakat($data);
-                return $putus;
+                $this->putusan($data);
+                // $putus = $ApiLas->putusSepakat($data);
+                // return $putus;
                 break;
 
             case 'inquiryInstansiBriguna':
@@ -79,8 +80,8 @@ class ApiLasController extends Controller
 
             case 'inquiryListPutusan':
                 $inquiry = $ApiLas->inquiryListPutusan($data);
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $conten = $this->return_conten($inquiry);
+                return $inquiry;
                 break;
 
             case 'inquiryGelar':
@@ -194,6 +195,23 @@ class ApiLasController extends Controller
             ]
         ];
         return $conten;
+    }
+
+    public function putusan($data) {
+        $user_pn = request()->header('pn');
+        $pn      = substr('00000000'. $user_pn, -8 );
+        $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+        $uid   = $inquiryUserLAS['items'][0]['uid'];
+        print_r($inquiryUserLAS);exit();
+        $conten_putusan = [
+            "id_aplikasi" => $data['id_aplikasi'],
+            "uid"         => $uid,
+            "flag_putusan"=> "6",
+            "catatan"     => "testis"
+        ];
+
+        $putus = $ApiLas->putusSepakat($conten_putusan);
+        return $putus;
     }
 
     public function insertAllAnalisa($request) {
@@ -345,6 +363,7 @@ class ApiLasController extends Controller
         ];
 
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
+        print_r("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // prescreening
@@ -362,6 +381,7 @@ class ApiLasController extends Controller
             ];
 
             $insertPrescreening = $ApiLas->insertPrescreeningBriguna($content_prescreening);
+            print_r("-------- masuk insert prescreening ---------");
             \Log::info($insertPrescreening);
             if ($insertPrescreening['statusCode'] == '01') {
                 // prescoring
@@ -396,6 +416,7 @@ class ApiLasController extends Controller
                 ];
 
                 $insertPrescoring = $ApiLas->insertPrescoringBriguna($content_las_prescoring);
+                print_r("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
                     $jangka = '24';
@@ -464,10 +485,12 @@ class ApiLasController extends Controller
                     ];
 
                     $insertKredit = $ApiLas->insertDataKreditBriguna($content_insertKreditBriguna);
+                    print_r("-------- masuk insert kredit ---------");
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
                         $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items']['ID_APLIKASI']);
+                        print_r("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
                             $override = 'Y';
@@ -481,6 +504,7 @@ class ApiLasController extends Controller
                                 'flag_override' => $override
                             ];
                             $kirim = $ApiLas->kirimPemutus($conten);
+                            print_r("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                         } else {
                             return $kirim;

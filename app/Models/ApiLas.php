@@ -388,12 +388,19 @@ class ApiLas extends Model
     public function putusSepakat($data) {
         \Log::info($data);
         try {
-            $get = AsmxLas::setEndpoint('putusSepakat')
+            $conten_putusan = [
+                "id_aplikasi" => empty($data['id_aplikasi']) ? "45055" : $data['id_aplikasi'],
+                "uid"         => empty($data['uid']) ? "199874" : $data['uid'],
+                "flag_putusan"=> empty($data['flag_putusan']) ? "6" : $data['flag_putusan'],
+                "catatan"     => empty($data['catatan']) ? "testis" : $data['catatan']
+            ];
+
+            $putusan = AsmxLas::setEndpoint('putusSepakat')
                 ->setBody([
-                    'JSONData'   => empty($data) ? "45016" : $data
+                    'JSONData'   => $conten_putusan
                 ])->post('form_params');
 
-            return $get;
+            return $putusan;
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
         }
