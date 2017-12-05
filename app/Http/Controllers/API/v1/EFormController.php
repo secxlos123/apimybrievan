@@ -390,7 +390,7 @@ class EFormController extends Controller
             }
 
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-            generate_pdf('uploads/'. $detail->nik, 'LKN.pdf', view('pdf.approval', compact('detail')));
+            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
             DB::commit();
             return response()->success( [
@@ -440,7 +440,7 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 if ($status == 'approve') {
-                    $detail = EForm::findOrFail( $verify['contents']->id );
+                    $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
                 }
 

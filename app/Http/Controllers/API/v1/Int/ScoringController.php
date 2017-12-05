@@ -238,7 +238,8 @@ class ScoringController extends Controller
 
 		DB::beginTransaction();
         $data->update($dats);
-        generate_pdf('uploads/'. $data->nik, 'prescreening.pdf', view('pdf.prescreening', compact('data')));
+        $detail = $data;
+        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 		DB::commit();
 		return response()->success( [
 			'message' => 'Data nasabah berhasil dirubah.',
