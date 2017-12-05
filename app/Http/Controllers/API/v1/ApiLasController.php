@@ -262,11 +262,6 @@ class ApiLasController extends Controller
             }
         }
 
-        $portofolio = 175;
-        if ($data['product_type'] == 'kpr') {
-            $portofolio = 172;
-        }
-
         $content_las_debt = [
             "uid"                   => $uid,
             "kode_cabang"           => $eform->branch_id,
@@ -290,7 +285,6 @@ class ApiLasController extends Controller
             "kecamatan"             => $kecamatan,
             "kabupaten"             => $kabupaten,
             "kode_pos"              => $kodepos,
-            "kategori_portofolio"   => $portofolio,
             "jenis_kelamin"         => $customer->gender,
             "fixed_line"            => $customer->phone,
             "no_hp"                 => $customer->mobile_phone,
@@ -323,6 +317,7 @@ class ApiLasController extends Controller
             "tp_produk"              => "1", // hardcode dari las
             "cif_las"                => "0", // hardcode debitur baru
             "expired_ktp"            => "31122899", // hardcode
+            "kategori_portofolio"    => "175", // hardcode las
             "kewarganegaraan"        => "ID", // hardcode dari las
             "negara_domisili"        => "ID", // hardcode dari las
             "golongan_debitur_sid"   => "907", // hardcode dari las
@@ -373,8 +368,6 @@ class ApiLasController extends Controller
                 $content_las_prescoring = [
                     "Fid_aplikasi"              => $insertDebitur['items']['ID_APLIKASI'],
                     "Fid_cif_las"               => $insertDebitur['items']['CIF_LAS'],
-                    "Tp_produk"                 => "1",
-                    "Briguna_smart"             => "0",
                     "Briguna_profesi"           => $request['Briguna_profesi'],
                     "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                     "Payroll"                   => $request['Payroll'],
@@ -397,6 +390,8 @@ class ApiLasController extends Controller
                     "Baki_debet"                => $customer,
                     "Plafond_usulan"            => $customer,
                     "Angsuran_usulan"           => $customer,
+                    "Tp_produk"                 => "1",
+                    "Briguna_smart"             => "0",
                     "Kelengkapan_dokumen"       => "1"
                 ];
 
