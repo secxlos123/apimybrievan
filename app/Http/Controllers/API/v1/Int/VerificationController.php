@@ -22,7 +22,6 @@ class VerificationController extends Controller
     {
         $eform = EForm::findOrFail( $eform_id );
         $customer = $eform->customer;
-
         return response()->success( [
             'message' => 'Sukses',
             'contents' => [
@@ -82,7 +81,8 @@ class VerificationController extends Controller
 
                 ],
                 'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) ),
-                'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
+                'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) ),
+                'kpr' => $eform->kpr
             ]
         ], 200 );
     }
