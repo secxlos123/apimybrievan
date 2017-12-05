@@ -30,7 +30,7 @@ class SelectKodePosController extends Controller
 			}
 		}
 		if($kodepost==''){
-			$kodepost = 'Data tidak ditemukan';
+			$kodepost = [];
 		}
 			 return response()->success( [
             'message' => 'Sukses',
