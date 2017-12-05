@@ -66,7 +66,7 @@ class ScoringController extends Controller
 	}
 
 	 public function uploadimage($image,$id){
-	 	$eform = EForm::findOrFail($id);
+	 	$eform = EForm::where('id', $id)->first();
 		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore' ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore' ] );
@@ -91,7 +91,7 @@ class ScoringController extends Controller
 	 }
 
 	 public function uploadimagemulti($image,$id,$i){
-	 	$eform = EForm::findOrFail($id);
+	 	$eform = EForm::where('id', $id)->first();
 		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore'.$i ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore'.$i ] );
@@ -238,7 +238,7 @@ class ScoringController extends Controller
 
 		DB::beginTransaction();
         $data->update($dats);
-        generate_pdf('uploads/'. $data->nik, 'permohonan.pdf', view('pdf.prescreening', compact('data')));
+        generate_pdf('uploads/'. $data->nik, 'prescreening.pdf', view('pdf.prescreening', compact('data')));
 		DB::commit();
 		return response()->success( [
 			'message' => 'Data nasabah berhasil dirubah.',

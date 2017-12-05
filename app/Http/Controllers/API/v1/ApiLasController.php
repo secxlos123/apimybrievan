@@ -63,8 +63,9 @@ class ApiLasController extends Controller
                 break;
 
             case 'putusSepakat':
-                $putus = $ApiLas->putusSepakat($data);
-                return $putus;
+                $this->putusan($data);
+                // $putus = $ApiLas->putusSepakat($data);
+                // return $putus;
                 break;
 
             case 'inquiryInstansiBriguna':
@@ -79,8 +80,8 @@ class ApiLasController extends Controller
 
             case 'inquiryListPutusan':
                 $inquiry = $ApiLas->inquiryListPutusan($data);
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $conten = $this->return_conten($inquiry);
+                return $inquiry;
                 break;
 
             case 'inquiryGelar':
@@ -196,6 +197,23 @@ class ApiLasController extends Controller
         return $conten;
     }
 
+    public function putusan($data) {
+        $user_pn = request()->header('pn');
+        $pn      = substr('00000000'. $user_pn, -8 );
+        $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+        $uid   = $inquiryUserLAS['items'][0]['uid'];
+        print_r($inquiryUserLAS);exit();
+        $conten_putusan = [
+            "id_aplikasi" => $data['id_aplikasi'],
+            "uid"         => $uid,
+            "flag_putusan"=> "6",
+            "catatan"     => "testis"
+        ];
+
+        $putus = $ApiLas->putusSepakat($conten_putusan);
+        return $putus;
+    }
+
     public function insertAllAnalisa($request) {
         $ApiLas  = new ApiLas();
         $EForm   = new EFormController();
@@ -262,51 +280,45 @@ class ApiLasController extends Controller
             }
         }
 
-        $portofolio = 175;
-        if ($data['product_type'] == 'kpr') {
-            $portofolio = 172;
-        }
-
         $content_las_debt = [
-            "uid"                    => $uid,
-            "kode_cabang"            => $eform->branch_id,
-            "no_ktp"                 => $eform->nik,            
-            "nama_debitur_1"   => $customer->first_name.' '. $customer->last_name,
-            "nama_tanpa_gelar" => $customer->first_name.' '. $customer->last_name,
-            "nama_debitur_2"         => "",
-            "nama_debitur_3"         => "",
-            "nama_debitur_4"         => "",
-            "tgl_lahir"              => $customer_detail->birth_date,
-            "tempat_lahir"           => $customer_detail->birth_place_id,
-            "status_perkawinan"      => $customer_detail->status,
-            "nama_pasangan"          => $customer_detail->couple_name,
-            "tgl_lahir_pasangan"     => $customer_detail->couple_birth_date,
-            "no_ktp_pasangan"        => $customer_detail->couple_nik,
-            "jumlah_tanggungan"      => $customer_detail->dependent_amount,
-            "bidang_usaha"           => $customer_detail->job_field_id,
-            "nama_ibu"               => $customer_detail->mother_name,
-            "alamat"                 => $customer_detail->address,
-            "kelurahan"              => $kelurahan,
-            "kecamatan"              => $kecamatan,
-            "kabupaten"              => $kabupaten,
-            "kode_pos"               => $kodepos,
-            "kategori_portofolio"    => $portofolio,
-            "jenis_kelamin"          => $customer->gender,
-            "fixed_line"             => $customer->phone,
-            "no_hp"                  => $customer->mobile_phone,
-            "email"                  => $customer->email,
+            "uid"                   => $uid,
+            "kode_cabang"           => $eform->branch_id,
+            "no_ktp"                => $eform->nik,            
+            "nama_debitur_1"        => $customer->first_name.' '. $customer->last_name,
+            "nama_tanpa_gelar"      => $customer->first_name.' '. $customer->last_name,
+            "nama_debitur_2"        => "",
+            "nama_debitur_3"        => "",
+            "nama_debitur_4"        => "",
+            "tgl_lahir"             => $customer_detail->birth_date,
+            "tempat_lahir"          => $customer_detail->birth_place_id,
+            "status_perkawinan"     => $customer_detail->status,
+            "nama_pasangan"         => $customer_detail->couple_name,
+            "tgl_lahir_pasangan"    => $customer_detail->couple_birth_date,
+            "no_ktp_pasangan"       => $customer_detail->couple_nik,
+            "jumlah_tanggungan"     => $customer_detail->dependent_amount,
+            "bidang_usaha"          => $customer_detail->job_field_id,
+            "nama_ibu"              => $customer_detail->mother_name,
+            "alamat"                => $customer_detail->address,
+            "kelurahan"             => $kelurahan,
+            "kecamatan"             => $kecamatan,
+            "kabupaten"             => $kabupaten,
+            "kode_pos"              => $kodepos,
+            "jenis_kelamin"         => $customer->gender,
+            "fixed_line"            => $customer->phone,
+            "no_hp"                 => $customer->mobile_phone,
+            "email"                 => $customer->email,
             "kepemilikan_tempat_tinggal" => $customer_detail->address_status,
-            "pekerjaan_debitur"      => $customer_detail->job_id,
-            "alamat_usaha"           => $customer_detail->office_address,
-            "nama_perusahaan"        => $customer_detail->company_name,
-            "alamat_domisili"        => $customer_detail->address_domisili,
-            "kodepos_domisili"       => $kodepos_domisili,
-            "kelurahan_domisili"     => $kelurahan_domisili,
-            "kecamatan_domisili"     => $kecamatan_domisili,
-            "kota_domisili"          => $kabupaten_domisili,
-            "propinsi_domisili"      => $kabupaten_domisili,
-            "jenis_pekerjaan"        => $customer_detail->job_type_id,
-            "ket_pekerjaan"          => $customer_detail->job_field_id,
+            "pekerjaan_debitur"     => $customer_detail->job_id,
+            "alamat_usaha"          => $customer_detail->office_address,
+            "nama_perusahaan"       => $customer_detail->company_name,
+            "alamat_domisili"       => $customer_detail->address_domisili,
+            "kodepos_domisili"      => $kodepos_domisili,
+            "kelurahan_domisili"    => $kelurahan_domisili,
+            "kecamatan_domisili"    => $kecamatan_domisili,
+            "kota_domisili"         => $kabupaten_domisili,
+            "propinsi_domisili"     => $kabupaten_domisili,
+            "jenis_pekerjaan"       => $customer_detail->job_type_id,
+            "ket_pekerjaan"         => $customer_detail->job_field_id,
             "jabatan"                => $customer_detail->position,
             "kelurahan_usaha"        => $kelurahan_usaha,
             "kecamatan_usaha"        => $kecamatan_usaha,
@@ -323,6 +335,7 @@ class ApiLasController extends Controller
             "tp_produk"              => "1", // hardcode dari las
             "cif_las"                => "0", // hardcode debitur baru
             "expired_ktp"            => "31122899", // hardcode
+            "kategori_portofolio"    => "175", // hardcode las
             "kewarganegaraan"        => "ID", // hardcode dari las
             "negara_domisili"        => "ID", // hardcode dari las
             "golongan_debitur_sid"   => "907", // hardcode dari las
@@ -350,31 +363,31 @@ class ApiLasController extends Controller
         ];
 
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
+        print_r("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // prescreening
             $content_prescreening = [
                 "Fid_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
-                "Ps_krd"                 => $request['Ps_krd'],
-                "Pks"                    => $request['Pks'],
-                "Daftar_hitam_bi"        => $request['Daftar_hitam_bi'],
-                "Daftar_kredit_macet_bi" => $request['Daftar_kredit_macet_bi'],
-                "Daftar_hitam_bri"       => $request['Daftar_hitam_bri'],
-                "Tunggakan_di_bri"       => $request['Tunggakan_di_bri'],
-                "Npl_instansi"           => $request['Npl_instansi'],
-                "Sicd"                   => $request['Sicd'],
-                "Hasil_prescreening"     => $request['Hasil_prescreening']
+                "Ps_krd"                 => "0",
+                "Pks"                    => "0",
+                "Daftar_hitam_bi"        => "0",
+                "Daftar_kredit_macet_bi" => "0",
+                "Daftar_hitam_bri"       => "0",
+                "Tunggakan_di_bri"       => "0",
+                "Npl_instansi"           => "0",
+                "Sicd"                   => "0",
+                "Hasil_prescreening"     => "Diproses lebih lanjut"
             ];
 
             $insertPrescreening = $ApiLas->insertPrescreeningBriguna($content_prescreening);
+            print_r("-------- masuk insert prescreening ---------");
             \Log::info($insertPrescreening);
             if ($insertPrescreening['statusCode'] == '01') {
                 // prescoring
                 $content_las_prescoring = [
                     "Fid_aplikasi"              => $insertDebitur['items']['ID_APLIKASI'],
                     "Fid_cif_las"               => $insertDebitur['items']['CIF_LAS'],
-                    "Tp_produk"                 => "1",
-                    "Briguna_smart"             => "0",
                     "Briguna_profesi"           => $request['Briguna_profesi'],
                     "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                     "Payroll"                   => $request['Payroll'],
@@ -397,10 +410,13 @@ class ApiLasController extends Controller
                     "Baki_debet"                => $customer,
                     "Plafond_usulan"            => $customer,
                     "Angsuran_usulan"           => $customer,
+                    "Tp_produk"                 => "1",
+                    "Briguna_smart"             => "0",
                     "Kelengkapan_dokumen"       => "1"
                 ];
 
                 $insertPrescoring = $ApiLas->insertPrescoringBriguna($content_las_prescoring);
+                print_r("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
                     $jangka = '24';
@@ -469,10 +485,12 @@ class ApiLasController extends Controller
                     ];
 
                     $insertKredit = $ApiLas->insertDataKreditBriguna($content_insertKreditBriguna);
+                    print_r("-------- masuk insert kredit ---------");
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
                         $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items']['ID_APLIKASI']);
+                        print_r("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
                             $override = 'Y';
@@ -486,6 +504,7 @@ class ApiLasController extends Controller
                                 'flag_override' => $override
                             ];
                             $kirim = $ApiLas->kirimPemutus($conten);
+                            print_r("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                         } else {
                             return $kirim;
