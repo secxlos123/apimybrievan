@@ -21,15 +21,17 @@ class SelectKodePosController extends Controller
 	{
         \Log::info($request->all());
         $kodepos = KodePos::filter( $request )->get();
-		$kodedrkode = '';			
-	
+		$kodedrkode = '';		
+	if(isset($kodepos['postal_code'])){
 		foreach($kodepos as $key){
 			if($kodedrkode!=$key['postal_code']){
 			$kodepost[]['postal_code'] = $key['postal_code'];
 			$kodedrkode = $key['postal_code'];
 			}
 		}
-
+	}else{
+		$kodepost = 'Data tidak ditemukan';
+	}
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $kodepost
