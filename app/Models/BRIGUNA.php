@@ -108,7 +108,6 @@ class BRIGUNA extends Model
         \Log::info($briguna);
 
         if (!empty($customer_detail->address)) {
-            if(!isset(explode('=', $customer_detail->address))){
             $address = explode('=', $customer_detail->address);
             // print_r($address);
                 if (count($address) > 1) {
@@ -120,7 +119,6 @@ class BRIGUNA extends Model
                     $kelurahan = $kel[0];
                 }
             }
-        }
 
         $content_insert_dropbox = [
             "cif"       => "",
