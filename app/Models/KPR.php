@@ -30,6 +30,8 @@ class KPR extends Model
      */
     protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name' ];
 
+    protected $appends = ['status_property_name','kpr_type_property_name','down_payment'];
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -161,5 +163,69 @@ class KPR extends Model
         // } else {
             // throw new \Exception( "Error Processing Request", 1 );
         // }
+    }
+
+    public function getStatusPropertyNameAttribute()
+    {
+        $property_name = $this->status_property;
+
+        switch ($property_name) {
+            case '1':
+                return 'Baru';
+                break;
+            case '2':
+                return 'Secondary';
+                break;
+            case '3':
+                return 'Refinancing';
+                break;
+            case '4':
+                return 'Renovasi';
+                break;
+            case '5':
+                return 'Top Up';
+                break;
+            case '6':
+                return 'Take Over';
+                break;
+            case '7':
+                return 'Take Over Top Up';
+                break;             
+            default:
+                return '';
+                break;
+        }
+    }
+
+    public function getKprTypePropertyNameAttribute()
+    {
+        $kpr_property = $this->kpr_type_property;
+
+        switch ($kpr_property) {
+            case '1':
+                return 'Rumah Tapak';
+                break;
+            case '2':
+                return 'Rumah Susun/Apartment';
+                break;
+            case '3':
+                return 'Rumah Toko';
+                break;
+            
+            default:
+                return '';
+                break;
+        }
+
+    }
+
+    public function getDownPaymentAttribute()
+    {
+        $down_payment = 0;
+        $dp = $this->dp ? $this->dp : 0;
+        $price = $this->price ? $this->price : 0;
+        $down_payment =  ($dp / 100) * $price ;
+
+        return $down_payment; 
     }
 }
