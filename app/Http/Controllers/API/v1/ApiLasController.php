@@ -268,10 +268,7 @@ class ApiLasController extends Controller
         }
 
         $content_las_debt = [
-            "tp_produk"              => "1",
-            "cif_las"                => "0", // hardcode ketika data baru
-            "expired_ktp"            => "31122899", // hardcode
-            "uid"                    => empty($uid) ? "10740" : $uid,
+            "uid"                    => $uid,
             "kode_cabang"            => $eform->branch_id,
             "no_ktp"                 => $eform->nik,            
             "nama_debitur_1"   => $customer->first_name.' '. $customer->last_name,
@@ -316,17 +313,23 @@ class ApiLasController extends Controller
             "kota_usaha"             => $kabupaten_usaha,
             "propinsi_usaha"         => $kabupaten_usaha,
             "kodepos_usaha"          => $kodepos_usaha,
-            "hub_bank"               => empty($request['hub_bank'])? "9900" : $request['hub_bank'],
+            "hub_bank"               => $request['hub_bank'],
             "tgl_mulai_usaha"        => $request['tgl_mulai_usaha'],
             "pernah_pinjam"          => $request['pernah_pinjam'],
             "sumber_utama"           => $request['sumber_utama'],
             "usia_mpp"               => $request['usia_mpp'],
             "transaksi_normal_harian"=> $request['transaksi_normal_harian'],
             "keterangan_status_gelar"=> $request['keterangan_status_gelar'],
-            "kewarganegaraan"        => "ID", //hardcode dari las
-            "negara_domisili"        => "ID", //hardcode dari las
-            "golongan_debitur_sid"   => "907", //hardcode dari las
-            "golongan_debitur_lbu"   => "886", //hardcode dari las
+            "tp_produk"              => "1", // hardcode dari las
+            "cif_las"                => "0", // hardcode debitur baru
+            "expired_ktp"            => "31122899", // hardcode
+            "kewarganegaraan"        => "ID", // hardcode dari las
+            "negara_domisili"        => "ID", // hardcode dari las
+            "golongan_debitur_sid"   => "907", // hardcode dari las
+            "golongan_debitur_lbu"   => "886", // hardcode dari las
+            "customer_type"          => "I", // hardcode dari las
+            "sub_customer_type"      => "I", // hardcode dari las
+            "segmen_bisnis_bri"      => "RITEL", // hardcode dari las
             "nama_kelg"              => "squad consumer",
             "telp_kelg"              => "02198349480",
             "tgl_mulai_debitur"      => date('d-m-Y'),
@@ -337,9 +340,6 @@ class ApiLasController extends Controller
             "status_gelar"           => "0100",
             "federal_wh_code"        => "1",
             "resident_flag"          => "Y",
-            "customer_type"          => "I", //hardcode dari las
-            "sub_customer_type"      => "I", //hardcode dari las
-            "segmen_bisnis_bri"      => "RITEL", //hardcode dari las
             "alias"                  => "Squad enam",
             "agama"                  => "ISL",
             "ket_agama"              => "",
