@@ -167,6 +167,7 @@ class EForm extends Model
      */
     public function getPefindoColorAttribute( $value )
     {
+        $value = $this->pefindo_score;
         if ( $value >= 250 && $value <= 573 ) {
             return 'Merah';
 
