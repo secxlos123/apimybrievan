@@ -69,26 +69,28 @@ class BRIGUNA extends Model
         \Log::info($data);
         $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
 		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
-        $data[ 'mitra' ] = $data[ 'NAMA_INSTANSI' ];
+        $data[ 'mitra' ] = $data[ 'mitra_name' ];
         $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
         if(isset($data[ 'angsuran_usulan' ])){
-            $data[ 'angsuran_usulan' ] =  $data[ 'angsuran_usulan' ];
+            $data[ 'angsuran_usulan' ] =  $data[ 'request_amount' ];
         }else{
             $data[ 'angsuran_usulan' ] = "0";
         }
+        $data[ 'Status_Pekerjaan' ] = $data[ 'job_type' ];
 
-	    if(isset($data[ 'maksimum_plafond' ])){
+
+	/*    if(isset($data[ 'maksimum_plafond' ])){
             $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
 	    }else{
 	       $data[ 'maksimum_plafond' ] = "0";
-	    }
-	    if(isset($data['jenis_pinjaman_id'])){
+	    }*/
+	    /*if(isset($data['jenis_pinjaman_id'])){
             $data[ 'jenis_pinjaman_id' ] = $data[ 'jenis_pinjaman' ];
 	        $data[ 'jenis_pinjaman' ] = $data[ 'jenis_pinjaman_name' ];
 	    }else{
 	        $data[ 'jenis_pinjaman_id' ] = "0";
             $data[ 'jenis_pinjaman' ] = "";
-	    }
+	    }*/
 
         $eform = EForm::create( $data );
         \Log::info($eform);
@@ -146,9 +148,9 @@ class BRIGUNA extends Model
             "jangka"    => ($briguna->year * 12),
             "email_atasan" => "aswin.taopik@gmail.com",
             "npwp"      => $customer_detail->npwp,
-            "mitra"     => $data['NAMA_INSTANSI'],
-            "nip"       => $data['NIP'],
-            "status_pekerjaan" => $data['Status_Pekerjaan']
+            "mitra"     => $data['mitra_name'],
+            "nip"       => $data['nip'],
+           "status_pekerjaan" => $data['job_type']
         ];
 
         $postData = [
