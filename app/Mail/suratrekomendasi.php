@@ -19,8 +19,7 @@ class suratrekomendasi extends Mailable
 //	public $mail;
     public function __construct()
     {
-//		   $this->order = $order;
- //          $this->mail = $mail;
+
     }
 
     /**

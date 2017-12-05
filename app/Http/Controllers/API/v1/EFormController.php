@@ -56,23 +56,6 @@ class EFormController extends Controller
     {
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 
-        $get_user_info_service = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_user_info',
-                'requestData' => [
-                    'id_cari' => $eform->ao_id,
-                    'id_user' => request()->header( 'pn' )
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-
-        $eform = $eform->toArray();
-        if ( $get_user_info_service['responseCode'] == '00' ) {
-            $eform['branch'] = $get_user_info_service['responseData']['WERKS_TX'];
-        }
-
         return response()->success( [
             'contents' => $eform
         ] );
@@ -274,47 +257,44 @@ class EFormController extends Controller
 
         }
 
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
+        $score = $data->pefindo_score;
+        $pefindoC = 'Kuning';
+        if ( $score >= 250 && $score <= 573 ) {
+            $pefindoC = 'Merah';
 
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
+        } elseif ( $score >= 677 && $score <= 900 ) {
+            $pefindoC = 'Hijau';
 
-        // }
+        }
 
-        // $dhnC = $dhn['responseData'][0]['warna'];
+        $dhnC = $dhn['responseData'][0]['warna'];
 
-        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-        //     $sicdC = 'Hijau';
+        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
+            $sicdC = 'Hijau';
 
-        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-        //     $sicdC = 'Kuning';
+        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
+            $sicdC = 'Kuning';
 
-        // } else {
-        //     $sicdC = 'Merah';
+        } else {
+            $sicdC = 'Merah';
 
-        // }
+        }
 
-        // $calculate = array($pefindoC, $dhnC, $sicdC);
+        $calculate = array($pefindoC, $dhnC, $sicdC);
 
-        // if ( in_array('Merah', $calculate) ) {
-        //     $result = '3';
+        \Log::info('========== result =============');
+        \Log::info($calculate);
+        if ( in_array('Merah', $calculate) ) {
+            $result = '3';
 
-        // } else if ( in_array('Kuning', $calculate) ) {
-        //     $result = '2';
+        } else if ( in_array('Kuning', $calculate) ) {
+            $result = '2';
 
-        // } else {
-        //     $result = '1';
+        } else {
+            $result = '1';
 
-        // }
-
-        // $data->update([
-        //     'prescreening_status' => $result
-        //     , 'dhn_detail' => json_encode($dhn['responseData'])
-        //     , 'sicd_detail' => json_encode($sicd['responseData'])
-        // ]);
+        }
+        $data->prescreening_status =  $result;
 
         $explode = explode(',', $data->uploadscore);
         $html = '';
@@ -331,7 +311,7 @@ class EFormController extends Controller
             return response()->success( [
                 'message' => 'Data Screening e-form',
                 'contents' => [
-                    'eform' => $data,
+                    'eform' => $data,//json_encode($datafinal),
                     'dhn'=>$dhn['responseData'],
                     'sicd' => $sicd['responseData']
                 ]
@@ -402,16 +382,18 @@ class EFormController extends Controller
         $eform = EForm::approve( $eform_id, $request );
         if( $eform['status'] ) {
 
-                $data =  EForm::findOrFail($eform_id);
-                if ($request->is_approved) {
-                    event( new Approved( $data ) );
-                }
-                else
-                {
-                    event( new RejectedEform( $data ) );
-                }
-                DB::commit();
-                return response()->success( [
+            $data =  EForm::findOrFail($eform_id);
+            if ($request->is_approved) {
+                event( new Approved( $data ) );
+            } else {
+                event( new RejectedEform( $data ) );
+            }
+
+            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+            generate_pdf('uploads/'. $detail->nik, 'LKN.pdf', view('pdf.approval.index', compact('detail')));
+
+            DB::commit();
+            return response()->success( [
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
@@ -457,6 +439,11 @@ class EFormController extends Controller
 
         if( $verify['message'] ) {
             if ($verify['contents']) {
+                if ($status == 'approve') {
+                    $detail = EForm::findOrFail( $eform_id );
+                    generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+                }
+
                 event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
