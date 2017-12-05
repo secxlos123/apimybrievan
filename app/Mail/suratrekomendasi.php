@@ -37,7 +37,7 @@ class suratrekomendasi extends Mailable
     ])->attach($file2, [
         'as' => 'Surat Rekomendasi',
         'mime' => 'application/pdf',
-    ]);;
+    ]);
  //       if (env('APP_ENV') == 'production') {
  //           return $this->view( 'mails.example', $this->mail );
  //       }
