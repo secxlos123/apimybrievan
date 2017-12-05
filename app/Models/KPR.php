@@ -56,7 +56,7 @@ class KPR extends Model
         \Log::info($data);
         $eform = EForm::create( $data );
         $data[ 'developer_id' ] = $data[ 'developer' ];
-        $data[ 'property_id' ] = isset($data[ 'property' ]) ? ($data[ 'property' ] == 0 ? $data[ 'property' ] : null) : null;
+        $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
         $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
 
         // $customer = $eform->customer;
