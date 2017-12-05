@@ -310,23 +310,10 @@
 
                 <br/><br/><br/>
 
-                <div class="full-width">
-                    <div class="half-width">
-                        <div class="barcode">
-                            <p>&nbsp;</p>
-                            <img src="{{ asset('img/qr-code.png') }}">
-                            <p>{{ $detail->ao_name ? $detail->ao_name : '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="half-width">
-                        <div class="barcode">
-                            <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
-                            <img src="{{ asset('img/qr-code.png') }}">
-                            <p>-</p>
-                        </div>
-                    </div>
-
-                    <div class="clear"></div>
+                <div class="barcode">
+                    <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
+                    <img src="{{ asset('img/qr-code.png') }}">
+                    <p>-</p>
                 </div>
             </div>
         </page>
