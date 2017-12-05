@@ -62,8 +62,8 @@ class EFormController extends Controller
     }
 
     public function uploadimage($image,$id,$atribute) {
-        $eform = EForm::findOrFail($id);
-        $path = public_path( 'uploads/' . $eform->nik . '/' );
+        //$eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $id . '/' );
 
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
@@ -158,7 +158,6 @@ class EFormController extends Controller
             $SKPG = $request->SKPG;
 
             $id = $request->id;
-print_r($id);die();
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
