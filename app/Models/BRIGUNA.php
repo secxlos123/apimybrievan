@@ -171,7 +171,7 @@ class BRIGUNA extends Model
             $update_data  = [
                 'ref_number' => $data_dropbox['refno']
             ];
-            $eforms = EForm::findOrFail($eform->id);
+            $eforms = EForm::findOrFail($this->eform_id);
             $eforms->update($update_data);
             /*$kecamatan_domisili = '';
             $kabupaten_domisili = '';
