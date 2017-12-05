@@ -56,23 +56,6 @@ class EFormController extends Controller
     {
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 
-        $get_user_info_service = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_user_info',
-                'requestData' => [
-                    'id_cari' => $eform->ao_id,
-                    'id_user' => request()->header( 'pn' )
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-
-        $eform = $eform->toArray();
-        if ( $get_user_info_service['responseCode'] == '00' ) {
-            $eform['branch'] = $get_user_info_service['responseData']['WERKS_TX'];
-        }
-
         return response()->success( [
             'contents' => $eform
         ] );
@@ -399,16 +382,18 @@ class EFormController extends Controller
         $eform = EForm::approve( $eform_id, $request );
         if( $eform['status'] ) {
 
-                $data =  EForm::findOrFail($eform_id);
-                if ($request->is_approved) {
-                    event( new Approved( $data ) );
-                }
-                else
-                {
-                    event( new RejectedEform( $data ) );
-                }
-                DB::commit();
-                return response()->success( [
+            $data =  EForm::findOrFail($eform_id);
+            if ($request->is_approved) {
+                event( new Approved( $data ) );
+            } else {
+                event( new RejectedEform( $data ) );
+            }
+
+            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+            generate_pdf('uploads/'. $detail->nik, 'LKN.pdf', view('pdf.approval.index', compact('detail')));
+
+            DB::commit();
+            return response()->success( [
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
@@ -454,6 +439,11 @@ class EFormController extends Controller
 
         if( $verify['message'] ) {
             if ($verify['contents']) {
+                if ($status == 'approve') {
+                    $detail = EForm::findOrFail( $eform_id );
+                    generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+                }
+
                 event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
