@@ -208,7 +208,7 @@
                                 <td>Jenis KPR : </td>
                                 <td>{!! $mail['kpr']['status_property_name'] !!}</td>
                             </tr>
-                            @if ($mail['kpr']['status_property'] != '1' )
+                            @if ($mail['kpr']['status_property'] == '1' )
                             <tr>
                                 <td>Developer : </td>
                                 <td>{!! $mail['kpr']['developer_name'] !!}</td>
