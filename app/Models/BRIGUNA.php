@@ -82,6 +82,8 @@ class BRIGUNA extends Model
         $data[ 'NIP' ] = $data[ 'nip' ];
         $data[ 'Nama_atasan_Langsung' ] = '';
         $data[ 'Jabatan_atasan' ] = '';
+        $data[ 'SK_AKHIR' ] = '';
+        $data[ 'REKOMENDASI' ] = '';
 	/*    if(isset($data[ 'maksimum_plafond' ])){
             $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
 	    }else{
