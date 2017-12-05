@@ -91,7 +91,7 @@ class BRIGUNA extends Model
 	    }
 
         $eform = EForm::create( $data );
-        
+        \Log::info($eform);
         // Start Code Insert to API LAS and Dropbox
         $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
         // $ApiLas  = new ApiLas();
@@ -105,6 +105,7 @@ class BRIGUNA extends Model
         $kodepos   = '';
         $kelurahan = '';
 
+        \Log::info($briguna);
 
         if (!empty($customer_detail->address)) {
             if(!isset(explode('=', $customer_detail->address))){
