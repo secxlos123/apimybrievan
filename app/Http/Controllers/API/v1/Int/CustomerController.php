@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\EForm;
 use App\Models\User;
+use App\Models\KPR;
 use Sentinel;
 use DB;
 
@@ -126,7 +127,10 @@ class CustomerController extends Controller
 	{
 		DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
-		$customer->verify( $request->except('join_income') );
+		if ($request->has('eform_id')) {
+		KPR::updateOrCreate(['eform_id' => $request->eform_id],$request->only('status_property','developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name'));
+		}
+		$customer->verify( $request->except('join_income','status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name') );
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
 
 		DB::commit();
