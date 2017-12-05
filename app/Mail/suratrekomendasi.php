@@ -30,7 +30,6 @@ class suratrekomendasi extends Mailable
     public function build()
     {
 		$file = storage_path('app/PDF/Surat_Kuasa_Potong_Upah.pdf');
-		print_r($file);die();
 		$file2 = storage_path('app/PDF/Surat_Rekomendasi_Atasan.pdf');
 		   $this->view('mails.suratrekomendasi')->attach($file, [
         'as' => 'Surat Kuasa Potong Gaji',
