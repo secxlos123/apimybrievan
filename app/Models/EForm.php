@@ -568,8 +568,8 @@ class EForm extends Model
                 }
             } );
 
-            if ( $user['role'] != 'ao' || $request->has('customer_name') || $request->has('search')) {
-                if ( $request->has('customer_name') || $request->has('search') ) {
+            if ( $user['role'] != 'ao' || $request->has('customer_name')) {
+                if ( $request->has('customer_name') ) {
                     $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
 
                 } else {
@@ -588,6 +588,14 @@ class EForm extends Model
             if ( $request->input('is_screening') != 'All' ) {
                 $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
 
+            }
+            \Log::info("===========================role===================================");
+            \Log::info($user['role']);
+            if ( $user['role'] != 'ao' || $request->has('search')) {
+                if ( $request->has('search') ) {
+                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
+
+                }
             }
         }
 
