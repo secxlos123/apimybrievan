@@ -66,6 +66,8 @@
             }
             td {
                 padding: 5px 5px 5px 0px;
+            }
+            td.label {
                 width: 170px;
             }
             .full-width {
@@ -153,6 +155,7 @@
                 color: yellow;
             }
             .break-word {
+                max-width: 300px;
                 word-wrap: break-word;
             }
             .underline {
@@ -203,19 +206,19 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>NIK</td>
+                        <td class="label">NIK</td>
                         <td class="break-word">: {{ $detail->customer->personal['nik'] }}</td>
                     </tr>
                     <tr>
-                        <td>Nama Calon Nasabah</td>
+                        <td class="label">Nama Calon Nasabah</td>
                         <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Hasil Prescreening</td>
+                        <td class="label">Hasil Prescreening</td>
                         <td class="break-word">: <span class="{{ $detail->prescreening_status }}">{{ $detail->prescreening_status }}</span></td>
                     </tr>
                     <tr>
-                        <td>Keterangan Terkait Risiko</td>
+                        <td class="label">Keterangan Terkait Risiko</td>
                         <td class="break-word">: {{ $detail->ket_risk }}</td>
                     </tr>
                 </tbody>
@@ -232,11 +235,11 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Score</td>
+                        <td class="label">Score</td>
                         <td class="break-word">: {{ $detail->pefindo_score }}</td>
                     </tr>
                     <tr>
-                        <td>Hasil Pefindo</td>
+                        <td class="label">Hasil Pefindo</td>
                         <td class="break-word">: <span class="{{ $detail->pefindo_color }}">{{ $detail->pefindo_color }}</span></td>
                     </tr>
                 </tbody>
@@ -258,7 +261,7 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td>Hasil DHN</td>
+                                <td class="label">Hasil DHN</td>
                                 <td class="break-word">: <span class="{{ $dhn->warna }}">{{ $dhn->warna }}</span></td>
                             </tr>
                         </tbody>
@@ -279,7 +282,7 @@
                         </tbody>
                     </table>
 
-                    @foreach( $sicdData as $sicd )
+                    @foreach( $sicdData as $key => $sicd )
                         @if( $sicd->bikole == '1' || $sicd->bikole == '-' || $sicd->bikole == '' || $sicd->bikole == null )
                             @php( $warna = 'Hijau' )
 
@@ -294,24 +297,24 @@
                         <table>
                             <tbody>
                                 <tr>
-                                    <td>Nama Nasabah</td>
+                                    <td class="label">Nama Nasabah</td>
                                     <td class="break-word">: {{ isset($sicd->nama_debitur) ? $sicd->nama_debitur : '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <td>NIK</td>
+                                    <td class="label">NIK</td>
                                     <td class="break-word">: {{ isset($sicd->no_identitas) ? $sicd->no_identitas : '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Tanggal Lahir</td>
+                                    <td class="label">Tanggal Lahir</td>
                                     <td class="break-word">: {{ isset($sicd->tgl_lahir) ? date('d M Y', strtotime( $sicd->tgl_lahir ) ) : '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Kolektibilitas</td>
+                                    <td class="label">Kolektibilitas</td>
                                     <td class="break-word">: {{ isset($sicd->bikole) ? $sicd->bikole : '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <td>Hasil SICD</td>
-                                    <td class="break-word">: <span class="{{ $warna }}">{{ $warna }}</span></td>
+                                    <td class="label">Hasil SICD</td>
+                                    <td class="break-word">: <span class="{{ $warna }}">{{ $warna }}</span> {!! $detail->selected_sicd == $key ? '<strong>(Dipilih)</strong>' : '' !!}</td>
                                 </tr>
                             </tbody>
                         </table>
