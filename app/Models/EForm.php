@@ -242,10 +242,12 @@ class EForm extends Model
         if ( $request->is_approved ) {
              $result = $eform->insertCoreBRI();
 
-             if ($result['status']) {
+            if ($result['status']) {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
+                'pinca_position' => $request->pinca_position,
+                'pinca_name' => $request->pinca_name,
                 'recommendation' => $request->recommendation,
                 'recommended' => $request->recommended == "yes" ? true : false,
                 'is_approved' => $request->is_approved,
@@ -253,12 +255,12 @@ class EForm extends Model
                 ] );
             }
 
-        }
-        else
-        {
+        } else {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
+                'pinca_position' => $request->pinca_position,
+                'pinca_name' => $request->pinca_name,
                 'recommendation' => $request->recommendation,
                 'recommended' => $request->recommended == "yes" ? true : false,
                 'is_approved' => $request->is_approved,

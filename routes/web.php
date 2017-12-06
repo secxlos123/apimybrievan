@@ -19,10 +19,25 @@ Route::get('/routes', function () {
 	return view('routes', compact('routeCollection'));
 });
 
-Route::get('email', function () {
-	// $detail = \App\Models\EForm::where('ref_number', 'MAY171101')->first();
-	// return generate_pdf('uploads/111111111', 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+Route::get('/generate_pdf/{nik}', function ($nik) {
+	$path = public_path('uploads/'.$nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
 
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( 16 );
+    echo "Generate " . generate_pdf('uploads/'. $nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+    echo "<br/>";
+
+    $detail = \App\Models\EForm::with( 'customer', 'kpr' )->where('id', 16 )->first();
+    echo "Generate " . generate_pdf('uploads/'. $nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+    echo "<br/>";
+
+   	$detail = \App\Models\EForm::with( 'customer', 'kpr' )->where('id', 16 )->first();
+   	echo "Generate " . generate_pdf('uploads/'. $nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+    echo "<br/>";
+	return $nik;
+});
+
+Route::get('email', function () {
 	 $mail = [ 'url' => 'aktivasi akun 3', 'email' => 'rahmatramadhan13@gmail.com'];
 	 $send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
 
