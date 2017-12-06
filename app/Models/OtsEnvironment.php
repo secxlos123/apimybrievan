@@ -18,7 +18,11 @@ class OtsEnvironment extends Model
     'nearest_location',
     'other_guide',
     'transportation',
-    'distance_from_transportation'
+    'distance_from_transportation',
+    'designated_pln',
+    'designated_phone',
+    'designated_pam',
+    'designated_telex'
   ];
 
   /**
