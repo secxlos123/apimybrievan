@@ -31,7 +31,14 @@ class suratrekomendasi extends Mailable
     {
 		$file = storage_path('app/PDF/Surat_Kuasa_Potong_Upah.pdf');
 		$file2 = storage_path('app/PDF/Surat_Rekomendasi_Atasan.pdf');
-		 $k = $this->view('mails.suratrekomendasi');
+		 $k = $this->view('mails.suratrekomendasi')->attach($file, [
+        'as' => 'Surat Kuasa Potong Gaji',
+        'mime' => 'application/.pdf',
+    ])->attach($file2, [
+        'as' => 'Surat Rekomendasi',
+        'mime' => 'application/.pdf',
+    ]);
+return $k;
  //       if (env('APP_ENV') == 'production') {
  //           return $this->view( 'mails.example', $this->mail );
  //       }
