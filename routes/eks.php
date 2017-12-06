@@ -60,7 +60,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
 	
 		Route::post('calculator', 'CalculatorController@calculate');
-		
+		Route::get('get-data-dashboard-developer', 'DashboardController@dashboard');
 		/**
 		 * Route for customer for register simple, complete and logout
 		 */

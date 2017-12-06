@@ -194,14 +194,16 @@ class ScoringController extends Controller
         $dhnC = $dhn['responseData'][0]['warna'];
 
         $target = 1;
+        $selected = 0;
 
-        foreach ($sicd['responseData'] as $responseData) {
+        foreach ($sicd['responseData'] as $index => $responseData) {
         	if ($sicd['responseCode'] == '00') {
         		$date = explode(" ", $responseData['tgl_lahir']);
 
 	        	if ( strtoupper($responseData['nama_debitur']) == strtoupper($personal['first_name'].' '.$personal['last_name']) && $personal['birth_date'] == $date[0] && $personal['nik'] == $responseData['no_identitas'] ) {
 	        		if ( $responseData['bikole'] > $target ) {
 	        			$target = $responseData['bikole'];
+	        			$selected = $index;
 	        		}
 
 	        	}
@@ -235,6 +237,7 @@ class ScoringController extends Controller
         $dats['prescreening_status'] = $result;
         $dats['dhn_detail'] = json_encode($dhn);
         $dats['sicd_detail'] = json_encode($sicd);
+        $dats['selected_sicd'] = $selected;
 
         // Get User Login
         $user_login = \RestwsHc::getUser();

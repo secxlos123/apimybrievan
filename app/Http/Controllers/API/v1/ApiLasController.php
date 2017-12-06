@@ -79,9 +79,12 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryListPutusan':
-                $inquiry = $ApiLas->inquiryListPutusan($data);
-                // $conten = $this->return_conten($inquiry);
-                return $inquiry;
+                $pn      = substr('00000000'. $data, -8 );
+                $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+                $uid   = $inquiryUserLAS['items'][0]['uid'];
+                $inquiry = $ApiLas->inquiryListPutusan($uid);
+                $conten = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquiryGelar':
@@ -242,52 +245,23 @@ class ApiLasController extends Controller
         $kodepos            = '';
         $kelurahan          = '';
 
-        if (!empty($customer_detail->address)) {
-            $address = explode('=', $customer_detail->address);
-            // print_r($address);
-            if (count($address) > 1) {
-                $kel     = explode(' ', $address[1]);
-                $kec     = explode(',', $address[2]);
-                $kecamatan = $kec[0];
-                $kabupaten = $kec[1];
-                $kodepos   = $kec[2];
-                $kelurahan = $kel[0];
-            }
+        
+        if ($request['transaksi_normal_harian'] == '1') {
+            $gaji = "G1";
+        } else if ($request['transaksi_normal_harian'] == '2') {
+            $gaji = "G3";
+        } else if ($request['transaksi_normal_harian'] == '3') {
+            $gaji = "G4";
+        } else if ($request['transaksi_normal_harian'] == '4' || $request['transaksi_normal_harian'] == '5') {
+            $gaji = "G5";
+        } else {
+            $gaji = "G2";
         }
-
-        if (!empty($customer_detail->address_domisili)) {
-            $address_domisili   = explode('=', $customer_detail->address_domisili);
-            if (count($address_domisili) > 1) {
-                $kel                = explode(' ', $address_domisili[1]);
-                $kec                = explode(',', $address_domisili[2]);
-                $kecamatan_domisili = $kec[0];
-                $kabupaten_domisili = $kec[1];
-                $kodepos_domisili   = $kec[2];
-                $kelurahan_domisili = $kel[0];
-            }
-        } 
-
-        if (!empty($customer_detail->office_address)) {
-            $address_usaha   = explode('=', $customer_detail->office_address);
-            // print_r($address_usaha);exit();
-            if (count($address_usaha) > 1) {
-                $kel             = explode(' ', $address_usaha[1]);
-                $kec             = explode(',', $address_usaha[2]);
-                $kecamatan_usaha = $kec[0];
-                $kabupaten_usaha = $kec[1];
-                $kodepos_usaha   = $kec[2];
-                $kelurahan_usaha = $kel[0];
-            }
-        }
-
-        // $gaji = "G1";
-        // if ($request['transaksi_normal_harian'] == '2') {
-        //     # code...
-        // }
 
         $content_las_debt = [
             "uid"                   => $uid,
             "kode_cabang"           => $uker,// inquiry user las
+            "penghasilan_per_bulan" => $gaji,
             "nama_debitur_1"        => $request['nama_debitur'],
             "nama_tanpa_gelar"      => $request['nama_debitur'],
             "alias"                 => $request['nama_debitur'],
@@ -324,13 +298,11 @@ class ApiLasController extends Controller
             "transaksi_normal_harian"=> $request['transaksi_normal_harian'],
             "agama"                 => $request['agama'],
             "ket_agama"             => $request['ket_agama'],
-
             "nama_perusahaan"       => $request['company_name'],
             "bidang_usaha"          => $request['job_field_id'],   
             "jenis_pekerjaan"       => $request['job_type_id'],
             "ket_pekerjaan"         => $request['job_field_id'],
             "jabatan"               => $request['position'],
-
             "kode_pos"              => $kodepos,//?
             "kodepos_usaha"         => $kodepos_usaha,
             "kodepos_domisili"      => $kodepos_domisili,
@@ -365,8 +337,7 @@ class ApiLasController extends Controller
             "federal_wh_code"       => "1", // hardcode dari las
             "resident_flag"         => "Y", // hardcode dari las
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
-            "ket_buka_rekening"     => "Pinjaman", // hardcode
-            "penghasilan_per_bulan" => "G1"
+            "ket_buka_rekening"     => "Pinjaman" // hardcode
         ];
 
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
