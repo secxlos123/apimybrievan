@@ -19,22 +19,21 @@ Route::get('/routes', function () {
 	return view('routes', compact('routeCollection'));
 });
 
-Route::get('/generate_pdf/{nik}', function ($nik) {
-	$path = public_path('uploads/'.$nik);
+Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr' )
+		->where('ref_number', $ref_number)->first();
+	$path = public_path('uploads/'.$detail->nik);
 	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
 
-	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( 16 );
-    echo "Generate " . generate_pdf('uploads/'. $nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+    echo "Generate " .generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail'))->render());
     echo "<br/>";
 
-    $detail = \App\Models\EForm::with( 'customer', 'kpr' )->where('id', 16 )->first();
-    echo "Generate " . generate_pdf('uploads/'. $nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
     echo "<br/>";
 
-   	$detail = \App\Models\EForm::with( 'customer', 'kpr' )->where('id', 16 )->first();
-   	echo "Generate " . generate_pdf('uploads/'. $nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
     echo "<br/>";
-	return $nik;
+	return $detail->nik;
 });
 
 Route::get('email', function () {

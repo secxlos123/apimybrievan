@@ -170,8 +170,8 @@
                     <tr>
                         <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
-                            <span class="color-orange">e-Prescreening</span>
-                            <span class="color-blue">BRI</span>
+                            <div class="color-orange">e-Prescreening</div>
+                            <div class="color-blue">BRI</div>
                             <br/>
                             <img src="{{ asset('img/logo-mybri.png') }}">
                         </td>

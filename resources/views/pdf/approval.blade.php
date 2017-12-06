@@ -162,8 +162,8 @@
                     <tr>
                         <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
-                            <span class="color-orange">e-LKN</span>
-                            <span class="color-blue">BRI</span>
+                            <div class="color-orange">e-LKN</div>
+                            <div class="color-blue">BRI</div>
                             <br/>
                             <img src="{{ asset('img/logo-mybri.png') }}">
                         </td>
@@ -396,76 +396,75 @@
             </table>
 
             <div class="term">
-                <br/>Dengan ini saya meyakini kebenaran data nasabah dan merekomendasikan permohonan kredit untuk dapat diproses lebih lanjut :
+                <br/>Dengan ini saya meyakini kebenaran data nasabah dan merekomendasikan permohonan kredit untuk dapat diproses lebih lanjut :<br/>
 
-                <div class="full-width">
-                    <div class="half-width">
-                        <table class="full-width">
-                            <tbody>
-                                <tr>
-                                    <td class="title" colspan="2">RM</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="term">
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="title" colspan="2">RM</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Rekomendasi</td>
-                                    <td class="break-word">: {{ $detail->visit_report['recommended'] == 'yes' ? 'Ya' : 'Tidak' }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Rekomendasi</td>
+                                <td class="break-word">: {{ $detail->visit_report['recommended'] == 'yes' ? 'Ya' : 'Tidak' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tanggal</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($detail->created_at)) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                    <div class="half-width">
-                        <table class="full-width">
-                            <tbody>
-                                <tr>
-                                    <td class="title" colspan="2">Pinca</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Rekomendasi</td>
-                                    <td class="break-word">: {{ $detail->recommended ? 'Ya' : 'Tidak' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Catatan</td>
-                                    <td class="break-word">: {{ $detail->recommendation }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="clear"></div>
-                </div>
-            </div>
-
-            <br/><br/>
-
-            <div class="full-width">
-                <div class="half-width">
-                    <div class="barcode">
-                        <p>&nbsp;</p>
-                        <img src="{{ asset('img/qr-code.png') }}">
-                        <p class="underline">{{ $detail->ao_name ? $detail->ao_name : '-' }}</p>
-                        <p>{{ $detail->ao_position ? $detail->ao_position : '-' }}</p>
-                    </div>
-                </div>
-                <div class="half-width">
-                    <div class="barcode">
-                        <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
-                        <img src="{{ asset('img/qr-code.png') }}">
-                        <p class="underline">{{ $detail->pinca_name ? $detail->pinca_name : '-' }}</p>
-                        <p>{{ $detail->pinca_position ? $detail->pinca_position : '-' }}</p>
+                    <div class="full-width">
+                        <div class="barcode">
+                            <img src="{{ asset('img/qr-code.png') }}">
+                            <p class="underline">{{ $detail->ao_name ? $detail->ao_name : '-' }}</p>
+                            <p>{{ $detail->ao_position ? $detail->ao_position : '-' }}</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="clear"></div>
+                <div class="term">
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="title" colspan="2">Pinca</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Rekomendasi</td>
+                                <td class="break-word">: {{ $detail->recommended ? 'Ya' : 'Tidak' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Catatan</td>
+                                <td class="break-word">: {{ $detail->recommendation }}</td>
+                            </tr>
+                            <tr>
+                                <td>Tanggal</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($detail->created_at)) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="full-width">
+                        <div class="barcode">
+                            <img src="{{ asset('img/qr-code.png') }}">
+                            <p class="underline">{{ $detail->pinca_name ? $detail->pinca_name : '-' }}</p>
+                            <p>{{ $detail->pinca_position ? $detail->pinca_position : '-' }}</p>
+                        </div>
+                    </div>
+
+                </div>
+                <br/>
             </div>
         </div>
 
