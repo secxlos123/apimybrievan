@@ -163,7 +163,10 @@ class CreateOts extends FormRequest
     {
       return [
         'environment.designated_land' => 'required',
-        'environment.designated' => 'required',
+        'environment.designated_pln' => 'required',
+        'environment.designated_phone' => 'required',
+        'environment.designated_pam' => 'required',
+        'environment.designated_telex' => 'required',
         'environment.other_designated' => 'required',
         'environment.nearest_location' => 'required',
         'environment.other_guide' => 'required',
