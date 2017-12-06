@@ -15,14 +15,13 @@
                 margin: 0px;
             }
             body {
-                background: rgb(204,204,204);
+                background: white;
                 margin: 0px;
             }
             @page {
                 margin: 0px;
             }
             page[size="A4"] {
-              background: white;
               width: 21cm;
               height: 29.7cm;
               display: block;
@@ -137,43 +136,111 @@
                 position: absolute;
                 bottom: 0;
             }
+            .break-word {
+                word-wrap: break-word;
+            }
         </style>
     </head>
     <body>
-        <page size="A4">
-            <div class="page-content">
+        <div class="page-content">
 
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <!-- Gambar logo cuma dummy, pake external link -->
+                        <td class="logo-mybri full-width">
+                            <span class="color-orange">e-Form</span>
+                            <span class="color-blue">BRI</span>
+                            <br/>
+                            <img src="{{ asset('img/logo-mybri.png') }}">
+                        </td>
+                        <td class="logo-bri full-width">
+                            <img src="{{ asset('img/logo-bri.png') }}">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Calon Debitur</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td>NIK</td>
+                        <td class="break-word">: {{ $detail->nik }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama</td>
+                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat</td>
+                        <td class="break-word">: {{ $detail->customer->personal['address'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status tempat tinggal</td>
+                        <td class="break-word">: {{ $detail->customer->personal['address_status'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tempat, Tanggal lahir</td>
+                        <td class="break-word">: {{ $detail->customer->personal['birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['birth_date'])) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Kelamin</td>
+                        <td class="break-word">: {{ $detail->customer->personal['gender'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status Pernikahan</td>
+                        <td class="break-word">: {{ $detail->customer->personal['status'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Kewarganegaraan</td>
+                        <td class="break-word">: {{ $detail->customer->personal['citizenship'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>No. Telepon</td>
+                        <td class="break-word">: {{ $detail->customer->personal['phone'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>No. Handphone</td>
+                        <td class="break-word">: {{ $detail->customer->personal['mobile_phone'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td class="break-word">: {{ $detail->customer->personal['email'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Ibu Kandung</td>
+                        <td class="break-word">: {{ $detail->customer->personal['mother_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jumlah Tanggungan</td>
+                        <td class="break-word">: {{ $detail->customer->financial['dependent_amount'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @if( $detail->customer->personal['status_id'] == 2 )
                 <table class="full-width">
                     <tbody>
                         <tr>
-                            <!-- Gambar logo cuma dummy, pake external link -->
-                            <td class="logo-mybri full-width">
-                                <span class="color-orange">e-Form</span>
-                                <span class="color-blue">BRI</span>
-                                <br/>
-                                <img src="{{ asset('img/logo-mybri.png') }}">
-                            </td>
-                            <td class="logo-bri full-width">
-                                <img src="{{ asset('img/logo-bri.png') }}">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <hr>
-
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Calon Debitur</td>
+                            <td class="title" colspan="2">Data Pasangan</td>
                         </tr>
                     </tbody>
                 </table>
@@ -182,90 +249,91 @@
                     <tbody>
                         <tr>
                             <td>NIK</td>
-                            <td>: {{ $detail->nik }}</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_nik'] }}</td>
                         </tr>
                         <tr>
                             <td>Nama</td>
-                            <td>: {{ $detail->customer->personal['name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat</td>
-                            <td>: {{ $detail->customer->personal['address'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Status tempat tinggal</td>
-                            <td>: {{ $detail->customer->personal['address_status'] }}</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_name'] }}</td>
                         </tr>
                         <tr>
                             <td>Tempat, Tanggal lahir</td>
-                            <td>: {{ $detail->customer->personal['birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['birth_date'])) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Kelamin</td>
-                            <td>: {{ $detail->customer->personal['gender'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Status Pernikahan</td>
-                            <td>: {{ $detail->customer->personal['status'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kewarganegaraan</td>
-                            <td>: {{ $detail->customer->personal['citizenship'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>No. Telepon</td>
-                            <td>: {{ $detail->customer->personal['phone'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>No. Handphone</td>
-                            <td>: {{ $detail->customer->personal['mobile_phone'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>: {{ $detail->customer->personal['email'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama Ibu Kandung</td>
-                            <td>: {{ $detail->customer->personal['mother_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jumlah Tanggungan</td>
-                            <td>: {{ $detail->customer->financial['dependent_amount'] }}</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['couple_birth_date'])) }}</td>
                         </tr>
                     </tbody>
                 </table>
+            @endif
 
-                @if( $detail->customer->personal['status_id'] == 2 )
-                    <table class="full-width">
-                        <tbody>
-                            <tr>
-                                <td class="title" colspan="2">Data Pasangan</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Pekerjaan</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>NIK</td>
-                                <td>: {{ $detail->customer->personal['couple_nik'] }}</td>
-                            </tr>
-                            <tr>
-                                <td>Nama</td>
-                                <td>: {{ $detail->customer->personal['couple_name'] }}</td>
-                            </tr>
-                            <tr>
-                                <td>Tempat, Tanggal lahir</td>
-                                <td>: {{ $detail->customer->personal['couple_birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['couple_birth_date'])) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                @endif
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Bidang Pekerjaan</td>
+                        <td class="break-word">: {{ $detail->customer->work['work_field'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Pekerjaan</td>
+                        <td class="break-word">: {{ $detail->customer->work['type'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Pekerjaan</td>
+                        <td class="break-word">: {{ $detail->customer->work['work'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Perusahaan</td>
+                        <td class="break-word">: {{ $detail->customer->work['company_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jabatan</td>
+                        <td class="break-word">: {{ $detail->customer->work['position'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Lama Bekerja/Usaha</td>
+                        <td class="break-word">: {{ $detail->customer->work['work_duration'] ? $detail->customer->work['work_duration'] : '0' }} Tahun,  {{ $detail->customer->work['work_duration_month'] ? $detail->customer->work['work_duration_month'] : '0' }} Bulan</td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Kantor/Usaha</td>
+                        <td class="break-word">: {{ $detail->customer->work['office_address'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Keuangan</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Gaji/Pendapatan</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td>Pendapatan Lain</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td>Angsuran Pinjaman</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @if( $detail->customer->financial['status_finance'] == "Joint Income" )
                 <table class="full-width">
                     <tbody>
                         <tr>
-                            <td class="title" colspan="2">Data Pekerjaan</td>
+                            <td class="title" colspan="2">Data Keuangan pasangan</td>
                         </tr>
                     </tbody>
                 </table>
@@ -273,179 +341,111 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td>Bidang Pekerjaan</td>
-                            <td>: {{ $detail->customer->work['work_field'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Pekerjaan</td>
-                            <td>: {{ $detail->customer->work['type'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pekerjaan</td>
-                            <td>: {{ $detail->customer->work['work'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama Perusahaan</td>
-                            <td>: {{ $detail->customer->work['company_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jabatan</td>
-                            <td>: {{ $detail->customer->work['position'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Lama Bekerja/Usaha</td>
-                            <td>: {{ $detail->customer->work['work_duration'] ? $detail->customer->work['work_duration'] : '0' }} Tahun,  {{ $detail->customer->work['work_duration_month'] ? $detail->customer->work['work_duration_month'] : '0' }} Bulan</td>
-                        </tr>
-                        <tr>
-                            <td>Alamat Kantor/Usaha</td>
-                            <td>: {{ $detail->customer->work['office_address'] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Keuangan</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Gaji/Pendapatan</td>
-                            <td>: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
+                            <td>Gaji/ Pendapatan</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary_couple']), 0, ",", ".") }}</td>
                         </tr>
                         <tr>
                             <td>Pendapatan Lain</td>
-                            <td>: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary_couple']), 0, ",", ".") }}</td>
                         </tr>
                         <tr>
                             <td>Angsuran Pinjaman</td>
-                            <td>: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment_couple']), 0, ",", ".") }}</td>
                         </tr>
                     </tbody>
                 </table>
+            @endif
 
-                @if( $detail->customer->financial['status_finance'] == "Joint Income" )
-                    <table class="full-width">
-                        <tbody>
-                            <tr>
-                                <td class="title" colspan="2">Data Keuangan pasangan</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Keluarga Terdekat</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Gaji/ Pendapatan</td>
-                                <td>: Rp. {{ number_format(round($detail->customer->financial['salary_couple']), 0, ",", ".") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Pendapatan Lain</td>
-                                <td>: Rp. {{ number_format(round($detail->customer->financial['other_salary_couple']), 0, ",", ".") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Angsuran Pinjaman</td>
-                                <td>: Rp. {{ number_format(round($detail->customer->financial['loan_installment_couple']), 0, ",", ".") }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                @endif
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Nama</td>
+                        <td class="break-word">: {{ $detail->customer->contact['emergency_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>No. Handphone</td>
+                        <td class="break-word">: {{ $detail->customer->contact['emergency_contact'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Hubungan</td>
+                        <td class="break-word">: {{ $detail->customer->contact['emergency_relation'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Keluarga Terdekat</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Permohonan Kredit</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Nama</td>
-                            <td>: {{ $detail->customer->contact['emergency_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>No. Handphone</td>
-                            <td>: {{ $detail->customer->contact['emergency_contact'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Hubungan</td>
-                            <td>: {{ $detail->customer->contact['emergency_relation'] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Jenis KPP</td>
+                        <td class="break-word">: {{ $detail->visit_report['kpp_type_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Properti</td>
+                        <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Harga Rumah</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td>Luas Bangunan</td>
+                        <td class="break-word">: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
+                    </tr>
+                    <tr>
+                        <td>Lokasi Rumah</td>
+                        <td class="break-word">: {{ $detail->kpr['home_location'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jangka Waktu</td>
+                        <td class="break-word">: {{ $detail->kpr['year'] }} Bulan</td>
+                    </tr>
+                    <tr>
+                        <td>KPR Aktif ke</td>
+                        <td class="break-word">: {{ $detail->kpr['active_kpr'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Uang Muka</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jumlah Permohonan</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Permohonan Kredit</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Jenis KPP</td>
-                            <td>: {{ $detail->visit_report['kpp_type_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Properti</td>
-                            <td>: {{ $detail->kpr['kpr_type_property_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Harga Rumah</td>
-                            <td>: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Luas Bangunan</td>
-                            <td>: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
-                        </tr>
-                        <tr>
-                            <td>Lokasi Rumah</td>
-                            <td>: {{ $detail->kpr['home_location'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jangka Waktu</td>
-                            <td>: {{ $detail->kpr['year'] }} Bulan</td>
-                        </tr>
-                        <tr>
-                            <td>KPR Aktif ke</td>
-                            <td>: {{ $detail->kpr['active_kpr'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Uang Muka</td>
-                            <td>: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jumlah Permohonan</td>
-                            <td>: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="term">
-                    <ol>
-                        <li>Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit.</li>
-                        <li>Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya.</li>
-                        <li>Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.</li>
-                        <li>Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.</li>
-                        <li>Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI.</li>
-                    </ol>
-                </div>
-
-                <div class="barcode">
-                    <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
-                    <img src="{{ asset('img/qr-code.png') }}">
-                    <p>{{ $detail->customer_name }}</p>
-                </div>
+            <div class="term">
+                <ol>
+                    <li>Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit.</li>
+                    <li>Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya.</li>
+                    <li>Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.</li>
+                    <li>Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.</li>
+                    <li>Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI.</li>
+                </ol>
             </div>
-        </page>
+
+            <div class="barcode">
+                <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
+                <img src="{{ asset('img/qr-code.png') }}">
+                <p>{{ $detail->customer_name }}</p>
+            </div>
+        </div>
 
     </body>
 
