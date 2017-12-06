@@ -5,10 +5,7 @@ namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use App\Models\KodePos;
-use Sentinel;
-use DB;
 
 class SelectKodePosController extends Controller
 {
@@ -25,14 +22,16 @@ class SelectKodePosController extends Controller
 		$kodepost = '';
 		foreach($kodepos as $key){
 			if($kodedrkode!=$key['postal_code']){
-			$kodepost[]['postal_code'] = $key['postal_code'];
-			$kodedrkode = $key['postal_code'];
+				$kodepost[]['postal_code'] = $key['postal_code'];
+				$kodedrkode = $key['postal_code'];
 			}
 		}
+		
 		if($kodepost==''){
 			$kodepost = [];
 		}
-			 return response()->success( [
+
+		return response()->success( [
             'message' => 'Sukses',
             'contents' => ['data'=>$kodepost]
         ], 200 );

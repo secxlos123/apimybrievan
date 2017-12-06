@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\v1\EFormController;
+use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
-use Illuminate\Http\Request;
-use Auth;
 
 class ApiLasController extends Controller
 {
@@ -18,8 +17,28 @@ class ApiLasController extends Controller
     	$method  = $respons['requestMethod'];
         if (!empty($respons['requestData'])) {
             $data = $respons['requestData'];
+            // print_r($data);exit();
+            if (!empty($data['kodepos'])) {
+                $kode_pos = ['key' => $data['kodepos']];
+                $kodepos = KodePos::filter($kode_pos)->get();
+                print_r($kodepos->toArray());
+                $kodedrkode = '';   
+                $kodepost = '';
+                foreach($kodepos as $key){
+                    if($kodedrkode!=$key['postal_code']){
+                    $kodepost[]['postal_code'] = $key['postal_code'];
+                    $kodedrkode = $key['postal_code'];
+                    }
+                }
+            }
+            
+            if (!empty($data['kodepos_domisili'])) {
+                $kode_pos_dom = ['key' => $data['kodepos_domisili']];
+                $kodepos_dom = KodePos::filter($kode_pos_dom)->get();
+                print_r($kodepos_dom->toArray());exit();
+            }
         }
-
+        
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
                 $this->insertAllAnalisa($data);
@@ -81,9 +100,9 @@ class ApiLasController extends Controller
             case 'inquiryListPutusan':
                 $pn      = substr('00000000'. $data, -8 );
                 $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-                $uid   = $inquiryUserLAS['items'][0]['uid'];
+                $uid     = $inquiryUserLAS['items'][0]['uid'];
                 $inquiry = $ApiLas->inquiryListPutusan($uid);
-                $conten = $this->return_conten($inquiry);
+                $conten  = $this->return_conten($inquiry);
                 return $conten;
                 break;
 
@@ -218,19 +237,13 @@ class ApiLasController extends Controller
     }
 
     public function insertAllAnalisa($request) {
-        $ApiLas  = new ApiLas();
-        // $EForm = new EFormController();
-        // $eform = $EForm->show('int','1');
-        // $customer        = $eform->customer;
-        // $customer_detail = $customer->detail;
-        // print_r($eform);exit();
+        $ApiLas = new ApiLas();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        $uid   = $inquiryUserLAS['items'][0]['uid'];
-        $uker  = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
-        print_r($uker);
-        print_r($inquiryUserLAS);exit();
+        $uid     = $inquiryUserLAS['items'][0]['uid'];
+        $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+
         // insert data debitur
         $kecamatan_domisili = '';
         $kabupaten_domisili = '';
