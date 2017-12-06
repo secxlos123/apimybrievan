@@ -34,9 +34,10 @@ class BRIGUNA extends Model
     protected $fillable = [  
         'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan',
 		'NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
-        'SK_AKHIR,REKOMENDASI','SKPG',
+        'SK_AKHIR','REKOMENDASI','SKPG',
 		//'SK_PERTAMA', 'SK_TERAKHIR','NPWP','REKOMENDASI_ATASAN',
-        'eform_id', 'tujuan_penggunaan_id', 'idMitrakerja', 
+        'eform_id', 'tujuan_penggunaan_id', 
+        'mitra_id', 
         'jenis_pinjaman_id',  'year',
 		'request_amount', 'angsuran_usulan', 'maksimum_plafond'
 	];
@@ -63,94 +64,68 @@ class BRIGUNA extends Model
      *
      * @return void
      */
-	 
-	public static function uploadimage($image,$id,$atribute){
-		$path = public_path( 'uploads/eforms/' . $id . '/' );
-		if ( ! empty( $this->attributes[ $atribute ] ) ) {
-            File::delete( $path . $this->attributes[ $atribute ] );
-        }
-        if (!$image->getClientOriginalExtension()) {
-            if ($image->getMimeType() == '.pdf') {
-                $extension = '.pdf';
-            }elseif($image->getMimeType() == '.png'){
-                $extension = 'png';
-            }elseif($image->getMimeType() == '.jpg'){
-                $extension = 'jpg';
-            }elseif($image->getMimeType() == '.jpeg'){
-                $extension = 'jpeg';
-            }
-        }else{
-            $extension = $image->getClientOriginalExtension();
-        }
-        // log::info('image = '.$image->getMimeType());
-        $filename = $id . '-' .$attributes.'.'. $extension;
-        $image->move( $path, $filename );
-		return $filename;
-	}
-
     public static function create( $data ) {
+    try {        
         \Log::info($data);
         $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
-		$id = $data['user_id'];
-		// $image['1'] = $data['KK'];
-		// $image['2'] = $data['SLIP_GAJI'];
-		// $image['3'] = $data['SK_AWAL'];
-		// $image['4'] = $data['SK_AKHIR'];
-		// $image['5'] = $data['REKOMENDASI'];
-		// $image['6'] = $data['SKPG'];
-		for($i=0;$i<=7;$i++){
-		    $this->uploadimage($image[$i],$id);
-		}
-		
-		$dats = $request->all();
+		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
+        $data[ 'mitra' ] = $data[ 'mitra_name' ];
+        $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
         if(isset($data[ 'angsuran_usulan' ])){
-            $data[ 'angsuran_usulan' ] =  $data[ 'angsuran_usulan' ];
+            $data[ 'angsuran_usulan' ] =  $data[ 'request_amount' ];
         }else{
             $data[ 'angsuran_usulan' ] = "0";
         }
+        $data[ 'Status_Pekerjaan' ] = $data[ 'job_type' ];
 
-	    if(isset($data[ 'maksimum_plafond' ])){
+        $data[ 'maksimum_plafond' ] = '0';
+        $data[ 'NIP' ] = $data[ 'nip' ];
+        $data[ 'Nama_atasan_Langsung' ] = '';
+        $data[ 'Jabatan_atasan' ] = '';
+        $data[ 'SK_AKHIR' ] = '';
+        $data[ 'REKOMENDASI' ] = '';
+	/*    if(isset($data[ 'maksimum_plafond' ])){
             $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
 	    }else{
 	       $data[ 'maksimum_plafond' ] = "0";
-	    }
-	    if(isset($data['jenis_pinjaman_id'])){
+	    }*/
+	    /*if(isset($data['jenis_pinjaman_id'])){
             $data[ 'jenis_pinjaman_id' ] = $data[ 'jenis_pinjaman' ];
 	        $data[ 'jenis_pinjaman' ] = $data[ 'jenis_pinjaman_name' ];
 	    }else{
 	        $data[ 'jenis_pinjaman_id' ] = "0";
             $data[ 'jenis_pinjaman' ] = "";
-	    }
+	    }*/
 
-        $data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
-        $data[ 'mitra' ] = $data[ 'NAMA_INSTANSI' ];
-        $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
         $eform = EForm::create( $data );
-        
+        \Log::info($eform);
         // Start Code Insert to API LAS and Dropbox
         $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
-        $ApiLas  = new ApiLas();
+        // $ApiLas  = new ApiLas();
         $Dropbox = new Dropbox();
         $customer        = $eform->customer;
         $customer_detail = $customer->detail;
         // print_r($customer);
-        // print_r($customer_detail);
+        // print_r($customer_detail);exit();
         $kecamatan = '';
         $kabupaten = '';
         $kodepos   = '';
         $kelurahan = '';
+
+        \Log::info($briguna);
+
         if (!empty($customer_detail->address)) {
             $address = explode('=', $customer_detail->address);
             // print_r($address);
-            if (count($address) > 1) {
-                $kel     = explode(' ', $address[1]);
-                $kec     = explode(',', $address[2]);
-                $kecamatan = $kec[0];
-                $kabupaten = $kec[1];
-                $kodepos   = $kec[2];
-                $kelurahan = $kel[0];
+                if (count($address) > 1) {
+                    $kel     = explode(' ', $address[1]);
+                    $kec     = explode(',', $address[2]);
+                    $kecamatan = $kec[0];
+                    $kabupaten = $kec[1];
+                    $kodepos   = $kec[2];
+                    $kelurahan = $kel[0];
+                }
             }
-        }
 
         $content_insert_dropbox = [
             "cif"       => "",
@@ -178,9 +153,9 @@ class BRIGUNA extends Model
             "jangka"    => ($briguna->year * 12),
             "email_atasan" => "aswin.taopik@gmail.com",
             "npwp"      => $customer_detail->npwp,
-            "mitra"     => $data['NAMA_INSTANSI'];,
-            "nip"       => $data['NIP'],
-            "status_pekerjaan" => $data['Status_Pekerjaan']
+            "mitra"     => $data['mitra_name'],
+            "nip"       => $data['nip'],
+           "status_pekerjaan" => $data['job_type']
         ];
 
         $postData = [
@@ -204,7 +179,7 @@ class BRIGUNA extends Model
             ];
             $eforms = EForm::findOrFail($eform->id);
             $eforms->update($update_data);
-            $kecamatan_domisili = '';
+            /*$kecamatan_domisili = '';
             $kabupaten_domisili = '';
             $kodepos_domisili   = '';
             $kelurahan_domisili = '';
@@ -247,7 +222,7 @@ class BRIGUNA extends Model
                 "kode_cabang"            => $eform->branch_id,
                 "cif_las"                => "11039307",
                 "no_ktp"                 => $eform->nik,
-                "expired_ktp"            => "31122099",
+                "expired_ktp"            => "31122899",
                 "nama_debitur_1"   => $customer->first_name.' '. $customer->last_name,
                 "nama_tanpa_gelar" => $customer->first_name.' '. $customer->last_name,
                 "nama_debitur_2"         => "",
@@ -277,13 +252,13 @@ class BRIGUNA extends Model
                 "email"                  => $customer->email,
                 "tgl_mulai_usaha"        => date('d-m-Y'),
                 "kewarganegaraan"        => $customer_detail->citizenship_id,
-                "negara_domisili"        => "ID",
+                "negara_domisili"        => $customer_detail->citizenship_id,
                 "kepemilikan_tempat_tinggal" => $customer_detail->address_status,
                 "kategori_portofolio"    => $portofolio,
                 "golongan_debitur_sid"   => "907", //hardcode dari las
                 "golongan_debitur_lbu"   => "886", //hardcode dari las
-                "nama_kelg"              => "",
-                "telp_kelg"              => "",
+                "nama_kelg"              => "squad consumer",
+                "telp_kelg"              => "02198349480",
                 "tgl_mulai_debitur"      => date('d-m-Y'),
                 "jenis_rekening"         => "3",
                 "nama_bank_lain"         => "",
@@ -323,17 +298,19 @@ class BRIGUNA extends Model
                 "id_instansi"            => "1"
             ];
 
-            $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt,'66777');
+            $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
             \Log::info($eforms);
-            \Log::info($insertDebitur);
+            \Log::info($insertDebitur);*/
             return $briguna;
         } else {
             throw new \Exception( "Error Processing Request", 1 );
         }
+     } catch (Exception $e) {
+            return $e;    
+    }
+
         // End insert
         
-
-
         // $customer = $eform->customer;
         // $customer_detail = $customer->detail;
         // // Contoh

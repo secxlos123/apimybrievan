@@ -33,14 +33,16 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-public function mitra_relation( Request $request )
+
+    public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
         $mitra = Mitra::filter( $request )->get();
-        return $mitra;die();
+        // $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
         return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $mitra
+            'contents' => [
+                'data' => $mitra
+            ]
         ], 200 );
     }
     /**
@@ -54,29 +56,15 @@ public function mitra_relation( Request $request )
     {
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 
-        $get_user_info_service = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_user_info',
-                'requestData' => [
-                    'id_cari' => $eform->ao_id,
-                    'id_user' => request()->header( 'pn' )
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-
-        $eform = $eform->toArray();
-        if ( $get_user_info_service['responseCode'] == '00' ) {
-            $eform['branch'] = $get_user_info_service['responseData']['WERKS_TX'];
-        }
-
         return response()->success( [
             'contents' => $eform
         ] );
     }
-public function uploadimage($image,$id,$atribute){
-         $path = public_path( 'uploads/briguna/' . $id . '/' );
+
+    public function uploadimage($image,$id,$atribute) {
+        //$eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $id . '/' );
+
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
         }
@@ -96,8 +84,8 @@ public function uploadimage($image,$id,$atribute){
             $image->move( $path, $filename );
         }
         return $filename;
+    }
 
-     }
     /**
      * Store a newly created resource in storage.
      *
@@ -107,8 +95,37 @@ public function uploadimage($image,$id,$atribute){
     public function store( EFormRequest $request )
     {
         DB::beginTransaction();
+        $branchs = \RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => $request->input('branch_id'),
+                    'distance'    => 0,
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => 0,
+                    'longitude' => 0
+                ]
+            ])
+        ])
+        ->post('form_params');
 
         $baseRequest = $request->all();
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
+        if ( $branchs['responseCode'] == '00' ) {
+            foreach ($branchs['responseData'] as $branch) {
+                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+                    $baseRequest['branch'] = $branch['unit_kerja'];
+
+                }
+            }
+        }
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
@@ -143,27 +160,31 @@ public function uploadimage($image,$id,$atribute){
             $SLIP_GAJI = $request->SLIP_GAJI;
             $SK_AWAL = $request->SK_AWAL;
             $SK_AKHIR = $request->SK_AKHIR;
-            $SKPG = $request->SKPG;
+            $REKOMENDASI = $request->REKOMENDASI;
 
             $id = $request->id;
-
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
             $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
             $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
-            $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+            $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
             $baseRequest['KK'] = $KK;
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
-            $baseRequest['SKPG'] = $SKPG;
-            $kpr = BRIGUNA::create( $baseRequest );
-            /*----------------------------------*/
-
-        } else {
+            $baseRequest['REKOMENDASI'] = $REKOMENDASI;
+			$SKPG = '';
+			if(!empty($request->SKPG)){
+				$SKPG = $request->SKPG;
+				$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+				$baseRequest['SKPG'] = $SKPG;
+				$kpr = BRIGUNA::create( $baseRequest );
+				/*----------------------------------*/
+			}
+		} else {
             $kpr = KPR::create( $baseRequest );
 
         }
@@ -204,138 +225,32 @@ public function uploadimage($image,$id,$atribute){
         $data = EForm::findOrFail($request->eform);
         $personal = $data->customer->personal;
 
-        $dhn = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_dhn_consumer',
-                'requestData' => [
-                    'id_user' => request()->header( 'pn' ),
-                    'nik'=> $data->nik,
-                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
-                    'tgl_lahir'=> $personal['birth_date']
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-        \Log::info($dhn);
-
-        if ($dhn['responseCode'] != '00') {
-            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
-
+        $dhn = json_decode((string) $data->dhn_detail);
+        if ( !isset($dhn->responseData) ) {
+            $dhn = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"kategori":null,"keterangan":"","warna":"Hijau","result":""}]}');
         }
 
-        $sicd = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_sicd_consumer',
-                'requestData' => [
-                    'id_user' => request()->header( 'pn' ),
-                    'nik'=> $data->nik,
-                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
-                    'tgl_lahir'=> $personal['birth_date'],
-                    'kode_branch'=> $data->branch_id
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-         \Log::info($sicd);
-
-        if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
-
+        $sicd = json_decode((string) $data->sicd_detail);
+        if ( !isset($sicd->responseData) ) {
+            $sicd = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"status":null,"acctno":null,"cbal":null,"bikole":null,"result":null,"cif":null,"nama_debitur":null,"tgl_lahir":null,"alamat":null,"no_identitas":null}]}');
         }
 
-        // $score = $data->pefindo_score;
-        // $pefindoC = 'Kuning';
-        // if ( $score >= 250 && $score <= 573 ) {
-        //     $pefindoC = 'Merah';
-
-        // } elseif ( $score >= 677 && $score <= 900 ) {
-        //     $pefindoC = 'Hijau';
-
-        // }
-
-        // $dhnC = $dhn['responseData'][0]['warna'];
-
-        // if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-        //     $sicdC = 'Hijau';
-
-        // } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-        //     $sicdC = 'Kuning';
-
-        // } else {
-        //     $sicdC = 'Merah';
-
-        // }
-
-        // $calculate = array($pefindoC, $dhnC, $sicdC);
-
-        // if ( in_array('Merah', $calculate) ) {
-        //     $result = '3';
-
-        // } else if ( in_array('Kuning', $calculate) ) {
-        //     $result = '2';
-
-        // } else {
-        //     $result = '1';
-
-        // }
-
-        // $data->update([
-        //     'prescreening_status' => $result
-        //     , 'dhn_detail' => json_encode($dhn['responseData'])
-        //     , 'sicd_detail' => json_encode($sicd['responseData'])
-        // ]);
-
-        $explode = explode(',', $data->uploadscore);
         $html = '';
 
-        foreach ($explode as $value) {
+        foreach (explode(',', $data->uploadscore) as $value) {
             if ($value != '') {
-                $html .= asset('uploads/prescreening/'.$data->id.'/'.$value) . ',';
+                $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
             }
         }
 
         $data['uploadscore'] = $html;
 
-        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
-            return response()->success( [
-                'message' => 'Data Screening e-form',
-                'contents' => [
-                    'eform' => $data,
-                    'dhn'=>$dhn['responseData'],
-                    'sicd' => $sicd['responseData']
-                ]
-            ], 200 );
-
-        }
-
-        return response()->error( [
-            'message' => 'Data Screening Tidak Ditemukan',
+        return response()->success( [
+            'message' => 'Data Screening e-form',
             'contents' => [
                 'eform' => $data
-                , 'dhn'=> [
-                    [
-                        'kategori'=>'-',
-                        'keterangan'=>'-',
-                        'warna'=>'Hijau',
-                        'result'=>'-'
-                    ]
-                ]
-                , 'sicd'=> [
-                    [
-                        'status'=>'-',
-                        'acctno'=>'-',
-                        'cbal'=>'-',
-                        'bikole'=>'-',
-                        'result'=>'-',
-                        'cif'=>'-',
-                        'nama_debitur'=>'-',
-                        'tgl_lahir'=>'-',
-                        'alamat'=>'-',
-                        'no_identitas'=>'-'
-                    ]
-                ]
+                , 'dhn' => $dhn->responseData
+                , 'sicd' => $sicd->responseData
             ]
         ], 200 );
     }
@@ -370,19 +285,29 @@ public function uploadimage($image,$id,$atribute){
     public function approve( EFormRequest $request, $eform_id )
     {
         DB::beginTransaction();
-        $eform = EForm::approve( $eform_id, $request );
+
+        $baseRequest = $request;
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['pinca_name'] = $user_login['name'];
+        $baseRequest['pinca_position'] = $user_login['position'];
+
+        $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
-                $data =  EForm::findOrFail($eform_id);
-                if ($request->is_approved) {
-                    event( new Approved( $data ) );
-                }
-                else
-                {
-                    event( new RejectedEform( $data ) );
-                }
-                DB::commit();
-                return response()->success( [
+            $data =  EForm::findOrFail($eform_id);
+            if ($request->is_approved) {
+                event( new Approved( $data ) );
+            } else {
+                event( new RejectedEform( $data ) );
+            }
+
+            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+
+            DB::commit();
+            return response()->success( [
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
             ], 201 );
@@ -428,6 +353,11 @@ public function uploadimage($image,$id,$atribute){
 
         if( $verify['message'] ) {
             if ($verify['contents']) {
+                if ($status == 'approve') {
+                    $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
+                    generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+                }
+
                 event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();

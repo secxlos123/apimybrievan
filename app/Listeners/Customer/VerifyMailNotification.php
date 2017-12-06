@@ -75,7 +75,8 @@ class VerifyMailNotification
                 'couple_loan_installment'=>$customer->couple_loan_installment,
                 'emergency_name'=>$customer->emergency_name,
                 'emergency_contact'=>$customer->emergency_contact,
-                'emergency_relation'=>$customer->emergency_relation
+                'emergency_relation'=>$customer->emergency_relation,
+                'kpr'=>$eform->kpr
             ];
 
         Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );

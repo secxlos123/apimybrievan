@@ -168,5 +168,6 @@ class DeveloperController extends Controller
         \Log::info($id);
 
         return $id;
+
     }
 }

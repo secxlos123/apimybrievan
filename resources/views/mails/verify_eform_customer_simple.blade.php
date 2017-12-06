@@ -200,6 +200,71 @@
                                 <td>Hubungan : </td>
                                 <td>{!! $mail['emergency_relation'] !!}</td>
                             </tr>
+
+                             <tr>
+                                <td align="center">DATA PENGAJUAN</td>
+                            </tr>
+                            <tr>
+                                <td>Jenis KPR : </td>
+                                <td>{!! $mail['kpr']['status_property_name'] !!}</td>
+                            </tr>
+                            @if ($mail['kpr']['status_property'] == '1' )
+                            <tr>
+                                <td>Developer : </td>
+                                <td>{!! $mail['kpr']['developer_name'] !!}</td>
+                            </tr>
+                                @if ($mail['kpr']['developer_name'] != 'Non Kerja Sama')
+                                <tr>
+                                    <td>Nama Proyek : </td>
+                                    <td>{!! $mail['kpr']['property_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tipe Properti : </td>
+                                    <td>{!! $mail['kpr']['property_type_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Unit Properti : </td>
+                                    <td>{!! $mail['kpr']['property_item_name'] !!}</td>
+                                </tr>
+                                @endif
+                            @else
+                            
+                            <tr>
+                                <td>Jenis Properti : </td>
+                                <td>{!! $mail['kpr']['kpr_type_property_name'] !!}</td>
+                            </tr>
+
+                            @endif
+                            <tr>
+                                <td>Harga Rumah : </td>
+                                <td>{!! number_format($mail['kpr']['price'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Luas Bangunan : </td>
+                                <td>{!! $mail['kpr']['building_area'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Lokasi Rumah : </td>
+                                <td>{!! $mail['kpr']['home_location'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jangka Waktu : </td>
+                                <td>{!! $mail['kpr']['year'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>KPR Aktif ke : </td>
+                                <td>{!! $mail['kpr']['active_kpr'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Uang Muka : </td>
+                                <td>{!! number_format($mail['kpr']['down_payment'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jumlah Permohonan : </td>
+                                <td>{!! number_format($mail['kpr']['request_amount'],2) !!}</td>
+                            </tr>
+
+
                             <tr>
                                 <td height="20px"></td>
                             </tr>

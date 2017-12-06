@@ -60,13 +60,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		} );
 		Route::get( 'staff-list', 'StaffController@index' );
 
-
-
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
-		] );
-
-		Route::post('select', 'SelectController@select');
+		] );		
 	} );
 } );
 

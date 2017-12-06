@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\BankStatement;
 use App\Models\Mutation;
+use App\Models\EForm;
 
 class VisitReport extends Model
 {
@@ -419,9 +420,10 @@ class VisitReport extends Model
      */
     public function globalImageCheck( $filename )
     {
+        $eformData = EForm::findOrFail($this->eform_id);
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $image = 'uploads/eforms/' . $this->eform_id . '/visit_report/' . $filename;
+            $image = 'uploads/' . $eformData->nik . '/' . $filename;
             if( \File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -455,8 +457,9 @@ class VisitReport extends Model
      */
     public function globalSetImage( $image, $attribute )
     {
+        $eformData = EForm::findOrFail($this->eform_id);
         if ( gettype($image) == 'object' ) {
-            $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
+            $path = public_path( 'uploads/' . $eformData->nik . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 \File::delete( $path . $this->attributes[ $attribute ] );
             }

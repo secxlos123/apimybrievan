@@ -54,7 +54,7 @@ return [
             'url' => env('APP_URL').'/uploads',
             'visibility' => 'public',
         ],
-        
+
         'properties' => [
             'driver' => 'local',
             'root' => public_path('uploads/properties'),

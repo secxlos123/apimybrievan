@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Property\CreateRequest;
 use App\Models\Property;
+use App\Models\Collateral;
 
 class PropertyController extends Controller
 {
@@ -99,27 +100,33 @@ class PropertyController extends Controller
         try {
             if ( ! $property instanceof Property ) {
                 $property = Property::create($request->all());
+                \Log::info($property);
+                $data = [
+                    'developer_id' => $request->user()->id,
+                    'property_id' => $property->id,
+                    'status' => Collateral::STATUS[0]
+                ];
+                $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
                 $code = 201; $method = 'disimpan';
             } else {
                 $property->update($request->all());
                 $code = 200; $method = 'dirubah';
             }
-            \Log::info($property);
             // this logic for saving data to internal bri
             $data = $this->service($property);
             if ($data['code']== '200') {
                 $property->update(['prop_id_bri' => $data['contents']]);
                 $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
                 \DB::commit();
-            }else{
+            } else {
                  \DB::rollBack();
                 $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}. ". $data['contents'];
                 $code = 422;
             }
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}.";
-            $code = 422;
+            $status = 'error'; $message = "Gagal Terhubung Server."; 
+            $code = 422; 
         }
 
         return response()->{$status}(compact('message'), $code);
@@ -151,9 +158,7 @@ class PropertyController extends Controller
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-            \Log::info('==============REsponse Celas Add Property=================');
-            \Log::info($id);
-            return $id;
+        return $id;
     }
 
     /**

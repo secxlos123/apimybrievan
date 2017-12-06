@@ -43,6 +43,11 @@ class UserDeveloper extends Seeder
                 'last_name' => 'BRI',
             ]);
 
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
+
+
             $developer = $user->developer()->create([
                 'id' => 1,
                 'dev_id_bri' => 1,
@@ -65,7 +70,8 @@ class UserDeveloper extends Seeder
                 'category'  => 3,
                 'latitude'  => '0',
                 'longitude' => '0',
-                'pic_name'  => 'BRI'
+                'pic_name'  => 'BRI',
+                'is_approved' => true
             ]);
         }
     }
@@ -90,6 +96,10 @@ class UserDeveloper extends Seeder
                 'gender' => 'L',
                 'is_actived' => '1'
             ]);
+
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);            
 
             $developer = $user->developer()->create([
                 "id" => 2,
@@ -129,6 +139,10 @@ class UserDeveloper extends Seeder
                 "is_actived" => "1"
             ]);
 
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
+
             $developer = $user->developer()->create([
                 "id" => 3,
                 "user_id" => 3,
@@ -158,7 +172,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>CCTV, Playground</p>',
                 'slug' => 'pt-artha-putra-prima-akasia-terrace',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '123456789',
                 'status' => 'new',
             ]);
@@ -227,7 +241,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>CCTV, Playground</p>',
                 'slug' => 'pt-artha-putra-prima-akasia-serenity',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '1234456777',
                 'status' => 'new'
             ]);
@@ -430,6 +444,10 @@ class UserDeveloper extends Seeder
                 "is_actived" => "1",
             ]);
 
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
+
             $developer = $user->developer()->create([
                 "id" => 4,
                 "user_id" => 4,
@@ -458,7 +476,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>CCTV, Playground</p>',
                 'slug' => 'pt-jaya-garden-polis-jaya-imperial',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '12345678',
                 'status' => 'new',
             ]);
@@ -562,6 +580,10 @@ class UserDeveloper extends Seeder
                 "is_actived" => "1",
             ]);
 
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
+
             $developer = $user->developer()->create([
                 "id" => 5,
                 "user_id" => 5,
@@ -591,7 +613,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>Playground</p>',
                 'slug' => 'pt-sinar-puspapersada-talaga-bestari-ruko',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '12345678',
                 'status' => 'new',
             ]);
@@ -694,6 +716,10 @@ class UserDeveloper extends Seeder
                 "gender" => "L",
                 "is_actived" => "1",
             ]);
+
+            $user->roles()->attach(4);
+            $activation = Activation::create($user);
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 6,
