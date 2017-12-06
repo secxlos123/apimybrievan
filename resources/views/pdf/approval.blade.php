@@ -10,12 +10,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style type="text/css">
+        <style type="text/css" media="all">
             html {
                 margin: 0px;
             }
             body {
-                background: rgb(204,204,204);
+                background: white;
                 margin: 0px;
             }
             @page {
@@ -67,6 +67,8 @@
             }
             td {
                 padding: 5px 5px 5px 0px;
+            }
+            td.label {
                 width: 170px;
             }
             .full-width {
@@ -115,6 +117,13 @@
                 border: solid 1px #cecece;
                 padding: 0px 10px;
                 margin-top: 20px;
+                page-break-before: always;
+            }
+            .term-02 {
+                display: block;
+                border: solid 1px #cecece;
+                padding: 0px 10px;
+                margin-top: 20px;
             }
             .term>ol {
                 padding-left: 30px;
@@ -144,322 +153,326 @@
             .clear {
                 clear: both;
             }
+            .break-word {
+                max-width: 300px;
+                word-wrap: break-word;
+            }
+            .underline {
+                width: 200px;
+                margin: 0 auto;
+                border-bottom: solid 1px black;
+            }
         </style>
     </head>
     <body>
-        <page size="A4">
-            <div class="page-content">
+        <div class="page-content">
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <!-- Gambar logo cuma dummy, pake external link -->
-                            <td class="logo-mybri full-width">
-                                <span class="color-orange">e-LKN</span>
-                                <span class="color-blue">BRI</span>
-                                <br/>
-                                <img src="{{ asset('img/logo-mybri.png') }}">
-                            </td>
-                            <td class="logo-bri full-width">
-                                <img src="{{ asset('img/logo-bri.png') }}">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <!-- Gambar logo cuma dummy, pake external link -->
+                        <td class="logo-mybri full-width">
+                            <div class="color-orange">e-LKN</div>
+                            <div class="color-blue">BRI</div>
+                            <br/>
+                            <img src="{{ asset('img/logo-mybri.png') }}">
+                        </td>
+                        <td class="logo-bri full-width">
+                            <img src="{{ asset('img/logo-bri.png') }}">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <hr>
+            <hr>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Kunjungan</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Kunjungan</td>
+                    </tr>
+                </tbody>
+            </table>
 
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Nama RM</td>
+                        <td class="break-word">: {{ $detail->ao_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tempat Kunjungan</td>
+                        <td class="break-word">: {{ $detail->address }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tanggal Kunjungan</td>
+                        <td class="break-word">: {{ date('d M Y', strtotime($detail->appointment_date)) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Nama Calon Debitur</td>
+                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tujuan Kunjungan</td>
+                        <td class="break-word">: {{ $detail->visit_report['purpose_of_visit'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jumlah Permohonan</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->nominal), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jenis Permohonan</td>
+                        <td class="break-word">: {{ strtoupper($detail->product_type) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Nomor NPWP</td>
+                        <td class="break-word">: {{ $detail->visit_report['npwp_number_masking'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Hasil Kunjungan</td>
+                        <td class="break-word">: {{ $detail->visit_report['visit_result'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Permohonan Kredit</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Jenis KPP</td>
+                        <td class="break-word">: {{ $detail->visit_report['kpp_type_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jenis Properti</td>
+                        <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Harga Rumah</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Luas Bangunan</td>
+                        <td class="break-word">: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
+                    </tr>
+                    <tr>
+                        <td class="label">Lokasi Rumah</td>
+                        <td class="break-word">: {{ $detail->kpr['home_location'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jangka Waktu</td>
+                        <td class="break-word">: {{ $detail->kpr['year'] }} Bulan</td>
+                    </tr>
+                    <tr>
+                        <td class="label">KPR Aktif ke</td>
+                        <td class="break-word">: {{ $detail->kpr['active_kpr'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Uang Muka</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jumlah Permohonan</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jenis Dibiayai</td>
+                        <td class="break-word">: {{ $detail->visit_report['type_financed_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Sektor Ekonomi</td>
+                        <td class="break-word">: {{ $detail->visit_report['economy_sector_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Project</td>
+                        <td class="break-word">: {{ $detail->visit_report['project_list_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Program</td>
+                        <td class="break-word">: {{ $detail->visit_report['program_list_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tujuan Penggunaan</td>
+                        <td class="break-word">: {{ $detail->visit_report['use_reason_name'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Keuangan</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Gaji/Pendapatan</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Pendapatan Lain</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Angsuran Pinjaman</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Mutasi Rekening</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @foreach( $detail->visit_report['mutation'] as $mutation )
                 <table>
                     <tbody>
                         <tr>
-                            <td>Nama RM</td>
-                            <td>: {{ $detail->ao_name }}</td>
+                            <td class="label">Nama Bank</td>
+                            <td class="break-word">: {{ $mutation['bank'] }}</td>
                         </tr>
                         <tr>
-                            <td>Tempat Kunjungan</td>
-                            <td>: {{ $detail->address }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tanggal Kunjungan</td>
-                            <td>: {{ date('d M Y', strtotime($detail->appointment_date)) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama Calon Debitur</td>
-                            <td>: {{ $detail->customer->personal['name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tujuan Kunjungan</td>
-                            <td>: {{ $detail->visit_report['purpose_of_visit'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jumlah Permohonan</td>
-                            <td>: Rp. {{ number_format(round($detail->nominal), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Permohonan</td>
-                            <td>: {{ strtoupper($detail->product_type) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Nomor NPWP</td>
-                            <td>: {{ $detail->visit_report['npwp_number_masking'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Hasil Kunjungan</td>
-                            <td>: {{ $detail->visit_report['visit_result'] }}</td>
+                            <td class="label">No. Rekening</td>
+                            <td class="break-word">: {{ $mutation['number'] }}</td>
                         </tr>
                     </tbody>
                 </table>
-
                 <table class="full-width">
-                    <tbody>
+                    <thead>
                         <tr>
-                            <td class="title" colspan="2">Data Permohonan Kredit</td>
+                            <th>Tanggal</th>
+                            <th>Nominal</th>
+                            <th>Jenis Transaksi</th>
+                            <th>Keterangan</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        @foreach( $mutation['bankstatement'] as $bank )
+                            <tr>
+                                <td>{{ $bank['date'] }}</td>
+                                <td>Rp. {{ $bank['amount'] > 0 ? number_format(round($bank['amount']), 0, ",", ".") : '' }}</td>
+                                <td class="break-word">{{ $bank['type'] }}</td>
+                                <td class="break-word">{{ $bank['note'] }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
+            @endforeach
 
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Jenis KPP</td>
-                            <td>: {{ $detail->visit_report['kpp_type_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Properti</td>
-                            <td>: {{ $detail->kpr['kpr_type_property_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Harga Rumah</td>
-                            <td>: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Luas Bangunan</td>
-                            <td>: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
-                        </tr>
-                        <tr>
-                            <td>Lokasi Rumah</td>
-                            <td>: {{ $detail->kpr['home_location'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jangka Waktu</td>
-                            <td>: {{ $detail->kpr['year'] }} Bulan</td>
-                        </tr>
-                        <tr>
-                            <td>KPR Aktif ke</td>
-                            <td>: {{ $detail->kpr['active_kpr'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Uang Muka</td>
-                            <td>: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jumlah Permohonan</td>
-                            <td>: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Dibiayai</td>
-                            <td>: {{ $detail->visit_report['type_financed_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Sektor Ekonomi</td>
-                            <td>: {{ $detail->visit_report['economy_sector_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Project</td>
-                            <td>: {{ $detail->visit_report['project_list_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Program</td>
-                            <td>: {{ $detail->visit_report['program_list_name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tujuan Penggunaan</td>
-                            <td>: {{ $detail->visit_report['use_reason_name'] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Analisa RM</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Keuangan</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Pros (Hal yang mendukung analisa)</td>
+                        <td class="break-word">: {{ $detail->visit_report['pros'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Con (Hal yang tidak mendukung analisa)</td>
+                        <td class="break-word">: {{ $detail->visit_report['cons'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Gaji/Pendapatan</td>
-                            <td>: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pendapatan Lain</td>
-                            <td>: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
-                        </tr>
-                        <tr>
-                            <td>Angsuran Pinjaman</td>
-                            <td>: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="term">
+                <br/>Dengan ini saya meyakini kebenaran data nasabah dan merekomendasikan permohonan kredit untuk dapat diproses lebih lanjut :<br/>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Data Mutasi Rekening</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                @foreach( $detail->visit_report['mutation'] as $mutation )
-                    <table>
+                <div class="term-02">
+                    <table class="full-width">
                         <tbody>
                             <tr>
-                                <td>Nama Bank</td>
-                                <td>: {{ $mutation['bank'] }}</td>
-                            </tr>
-                            <tr>
-                                <td>No. Rekening</td>
-                                <td>: {{ $mutation['number'] }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <table class="full-width">
-                                        <thead>
-                                            <tr>
-                                                <th>Tanggal</th>
-                                                <th>Nominal</th>
-                                                <th>Jenis Transaksi</th>
-                                                <th>Keterangan</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach( $mutation['bankstatement'] as $bank )
-                                                <tr>
-                                                    <td>{{ $bank['date'] }}</td>
-                                                    <td>{{ $bank['amount'] > 0 ? $bank['amount'] : '' }}</td>
-                                                    <td>{{ $bank['type'] }}</td>
-                                                    <td>{{ $bank['note'] }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </td>
+                                <td class="title" colspan="2">RM</td>
                             </tr>
                         </tbody>
                     </table>
-                @endforeach
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Analisa RM</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Pros (Hal yang mendukung analisa)</td>
-                            <td>: {{ $detail->pros }}</td>
-                        </tr>
-                        <tr>
-                            <td>Con (Hal yang tidak mendukung analisa)</td>
-                            <td>: {{ $detail->cons }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="term">
-                    <br/>Dengan ini saya meyakini kebenaran data nasabah dan merekomendasikan permohonan kredit untuk dapat diproses lebih lanjut :
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="label">Rekomendasi</td>
+                                <td class="break-word">: {{ $detail->visit_report['recommended'] == 'yes' ? 'Ya' : 'Tidak' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Tanggal</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($detail->created_at)) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <div class="full-width">
-                        <div class="half-width">
-                            <table class="full-width">
-                                <tbody>
-                                    <tr>
-                                        <td class="title" colspan="2">RM</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>Rekomendasi</td>
-                                        <td>: {{ $detail->visit_report['recommended'] == 'yes' ? 'Ya' : 'Tidak' }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="barcode">
+                            <img src="{{ asset('img/qr-code.png') }}">
+                            <p class="underline">{{ $detail->ao_name ? $detail->ao_name : '-' }}</p>
+                            <p>{{ $detail->ao_position ? $detail->ao_position : '-' }}</p>
                         </div>
-
-                        <div class="half-width">
-                            <table class="full-width">
-                                <tbody>
-                                    <tr>
-                                        <td class="title" colspan="2">Pinca</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>Rekomendasi</td>
-                                        <td>: {{ $detail->recommended ? 'Ya' : 'Tidak' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Catatan</td>
-                                        <td>: {{ $detail->recommendation }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="clear"></div>
                     </div>
                 </div>
 
+                <div class="term-02">
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="title" colspan="2">Pinca</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="label">Rekomendasi</td>
+                                <td class="break-word">: {{ $detail->recommended ? 'Ya' : 'Tidak' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Catatan</td>
+                                <td class="break-word">: {{ $detail->recommendation }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Tanggal</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($detail->created_at)) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="full-width">
+                        <div class="barcode">
+                            <img src="{{ asset('img/qr-code.png') }}">
+                            <p class="underline">{{ $detail->pinca_name ? $detail->pinca_name : '-' }}</p>
+                            <p>{{ $detail->pinca_position ? $detail->pinca_position : '-' }}</p>
+                        </div>
+                    </div>
+
+                </div>
                 <br/>
-
-                <div class="full-width">
-                    <div class="half-width">
-                        <div class="barcode">
-                            <p>&nbsp;</p>
-                            <img src="{{ asset('img/qr-code.png') }}">
-                            <p>{{ $detail->ao_name ? $detail->ao_name : '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="half-width">
-                        <div class="barcode">
-                            <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
-                            <img src="{{ asset('img/qr-code.png') }}">
-                            <p>{{ $detail->pinca_name ? $detail->pinca_name : '-' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="clear"></div>
-                </div>
             </div>
-        </page>
+        </div>
 
     </body>
 

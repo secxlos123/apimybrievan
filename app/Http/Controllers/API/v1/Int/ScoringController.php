@@ -83,7 +83,7 @@ class ScoringController extends Controller
 	            $extension = $image->getClientOriginalExtension();
 	        }
 	        // log::info('image = '.$image->getMimeType());
-	        $filename = $id . '-prescreening.' . $extension;
+	        $filename = $id . '-pefindo-report.' . $extension;
 	        $image->move( $path, $filename );
         }
 		return $filename;
@@ -106,7 +106,7 @@ class ScoringController extends Controller
             $extension = $image->getClientOriginalExtension();
         }
         // log::info('image = '.$image->getMimeType());
-        $filename = $id.'-'.$i.'-prescreening.' . $extension;
+        $filename = $id.'-'.$i.'-pefindo-report.' . $extension;
         $image->move( $path, $filename );
 		return $filename;
 
