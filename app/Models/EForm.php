@@ -260,6 +260,8 @@ class EForm extends Model
                 $eform->update( [
                     'pros' => $request->pros,
                     'cons' => $request->cons,
+                    'pinca_position' => $request->pinca_position,
+                    'pinca_name' => $request->pinca_name,
                     'recommendation' => $request->recommendation,
                     'recommended' => $request->recommended == "yes" ? true : false,
                     'is_approved' => $request->is_approved,
