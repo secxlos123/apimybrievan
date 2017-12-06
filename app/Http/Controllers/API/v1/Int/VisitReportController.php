@@ -22,15 +22,23 @@ class VisitReportController extends Controller
     public function store( $eform_id, VisitReportRequest $request )
     {
         DB::beginTransaction();
-\Log::info($request->all());
-	$data = $request->all();
-	if (!isset($data['mutations'])){
-$data['mutations'] = array();
-}
+
+        \Log::info($request->all());
+
+        $data = $request->all();
+    	if (!isset($data['mutations'])){
+            $data['mutations'] = array();
+        }
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+
         $eform = EForm::find($eform_id);
         $eform->update([
             'address' => $request->input('address')
             , 'appointment_date' => $request->input('date')
+            , 'ao_name' => $user_login['name']
+            , 'ao_position' => $user_login['position']
         ]);
 
         $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $data );

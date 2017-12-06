@@ -34,9 +34,10 @@ class BRIGUNA extends Model
     protected $fillable = [  
         'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan',
 		'NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
-        'SK_AKHIR,REKOMENDASI','SKPG',
+        'SK_AKHIR','REKOMENDASI','SKPG',
 		//'SK_PERTAMA', 'SK_TERAKHIR','NPWP','REKOMENDASI_ATASAN',
-        'eform_id', 'tujuan_penggunaan_id', 'idMitrakerja', 
+        'eform_id', 'tujuan_penggunaan_id', 
+        'mitra_id', 
         'jenis_pinjaman_id',  'year',
 		'request_amount', 'angsuran_usulan', 'maksimum_plafond'
 	];
@@ -64,32 +65,40 @@ class BRIGUNA extends Model
      * @return void
      */
     public static function create( $data ) {
+    try {        
         \Log::info($data);
         $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
 		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
-        $data[ 'mitra' ] = $data[ 'NAMA_INSTANSI' ];
+        $data[ 'mitra' ] = $data[ 'mitra_name' ];
         $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
         if(isset($data[ 'angsuran_usulan' ])){
-            $data[ 'angsuran_usulan' ] =  $data[ 'angsuran_usulan' ];
+            $data[ 'angsuran_usulan' ] =  $data[ 'request_amount' ];
         }else{
             $data[ 'angsuran_usulan' ] = "0";
         }
+        $data[ 'Status_Pekerjaan' ] = $data[ 'job_type' ];
 
-	    if(isset($data[ 'maksimum_plafond' ])){
+        $data[ 'maksimum_plafond' ] = '0';
+        $data[ 'NIP' ] = $data[ 'nip' ];
+        $data[ 'Nama_atasan_Langsung' ] = '';
+        $data[ 'Jabatan_atasan' ] = '';
+        $data[ 'SK_AKHIR' ] = '';
+        $data[ 'REKOMENDASI' ] = '';
+	/*    if(isset($data[ 'maksimum_plafond' ])){
             $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
 	    }else{
 	       $data[ 'maksimum_plafond' ] = "0";
-	    }
-	    if(isset($data['jenis_pinjaman_id'])){
+	    }*/
+	    /*if(isset($data['jenis_pinjaman_id'])){
             $data[ 'jenis_pinjaman_id' ] = $data[ 'jenis_pinjaman' ];
 	        $data[ 'jenis_pinjaman' ] = $data[ 'jenis_pinjaman_name' ];
 	    }else{
 	        $data[ 'jenis_pinjaman_id' ] = "0";
             $data[ 'jenis_pinjaman' ] = "";
-	    }
+	    }*/
 
         $eform = EForm::create( $data );
-        
+        \Log::info($eform);
         // Start Code Insert to API LAS and Dropbox
         $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
         // $ApiLas  = new ApiLas();
@@ -102,18 +111,21 @@ class BRIGUNA extends Model
         $kabupaten = '';
         $kodepos   = '';
         $kelurahan = '';
+
+        \Log::info($briguna);
+
         if (!empty($customer_detail->address)) {
             $address = explode('=', $customer_detail->address);
             // print_r($address);
-            if (count($address) > 1) {
-                $kel     = explode(' ', $address[1]);
-                $kec     = explode(',', $address[2]);
-                $kecamatan = $kec[0];
-                $kabupaten = $kec[1];
-                $kodepos   = $kec[2];
-                $kelurahan = $kel[0];
+                if (count($address) > 1) {
+                    $kel     = explode(' ', $address[1]);
+                    $kec     = explode(',', $address[2]);
+                    $kecamatan = $kec[0];
+                    $kabupaten = $kec[1];
+                    $kodepos   = $kec[2];
+                    $kelurahan = $kel[0];
+                }
             }
-        }
 
         $content_insert_dropbox = [
             "cif"       => "",
@@ -141,9 +153,9 @@ class BRIGUNA extends Model
             "jangka"    => ($briguna->year * 12),
             "email_atasan" => "aswin.taopik@gmail.com",
             "npwp"      => $customer_detail->npwp,
-            "mitra"     => $data['NAMA_INSTANSI'],
-            "nip"       => $data['NIP'],
-            "status_pekerjaan" => $data['Status_Pekerjaan']
+            "mitra"     => $data['mitra_name'],
+            "nip"       => $data['nip'],
+           "status_pekerjaan" => $data['job_type']
         ];
 
         $postData = [
@@ -293,6 +305,10 @@ class BRIGUNA extends Model
         } else {
             throw new \Exception( "Error Processing Request", 1 );
         }
+     } catch (Exception $e) {
+            return $e;    
+    }
+
         // End insert
         
         // $customer = $eform->customer;

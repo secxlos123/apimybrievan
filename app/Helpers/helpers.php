@@ -193,11 +193,12 @@ if (! function_exists('generate_pdf')) {
             File::makeDirectory($path, $mode = 0777, true, true);
 
             PDF::loadHTML($html)
-                ->setPaper('a4')
+                ->setPaper('a4', 'portrait')
                 ->setWarnings(false)
                 ->save(public_path($folder.'/'.$filename));
 
         } catch (Exception $e) {
+            \Log::info($e);
             return $e;
 
         }

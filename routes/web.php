@@ -20,6 +20,9 @@ Route::get('/routes', function () {
 });
 
 Route::get('email', function () {
+	// $detail = \App\Models\EForm::where('ref_number', 'MAY171101')->first();
+	// return generate_pdf('uploads/111111111', 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+
 	 $mail = [ 'url' => 'aktivasi akun 3', 'email' => 'rahmatramadhan13@gmail.com'];
 	 $send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
 
