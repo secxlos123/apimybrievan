@@ -63,9 +63,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => (int)$plafond,
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => 0,
+                    "bunga"          => 0,
                 ];
             }else{
                 $plafond -= $angsuranPokok;
@@ -74,9 +73,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => $plafond,
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $rate."%",
                 ];
             }
         }
@@ -84,8 +82,6 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "porsi_pokok"         => 0,
-                "porsi_bunga"         => 0,
                 "suku_bunga"          => 0,
                 "suku_bunga_floating" => 0,
                 "kredit_fix"          => 0,
@@ -143,9 +139,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => 0,
+                    "bunga"          => 0,
                 ];
             }else if($i == $n - 1){
                 $angsuranBunga = ((($rate / 12) / 100) * $plafond);
@@ -160,9 +155,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => round($angsuranPokok) + round($angsuranBunga),
+                    "bunga"          => $rate."%",
                 ];
 
                 $angsuran = round($angsuranPokok) + round($angsuranBunga);
@@ -177,9 +171,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => round($angsuranPokok) + round($angsuranBunga),
+                    "bunga"          => $rate."%",
                 ];
             }
         }
@@ -187,8 +180,6 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "porsi_pokok"         => 0,
-                "porsi_bunga"         => 0,
                 "suku_bunga"          => 0,
                 "suku_bunga_floating" => 0,
                 "kredit_fix"          => 0,
@@ -247,9 +238,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => 0,
+                    "bunga"          => 0,
                 ];
             }else{
                 $angsuranBunga = (($fxrate / 12) / 100) * $plafond;
@@ -263,9 +253,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => $plafond,
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $fxrate."%",
                 ];
             }
         }
@@ -287,9 +276,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => 0,
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $flrate."%",
                 ];
 
             }else{
@@ -304,9 +292,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $flrate."%",
                 ];
             }
         }
@@ -314,12 +301,10 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "porsi_pokok"         => 0,
-                "porsi_bunga"         => 0,
                 "suku_bunga"          => 0,
                 "suku_bunga_floating" => 0,
                 "kredit_fix"          => 0,
-                "lama_pinjaman"       => $fxterm." Bulan",
+                "lama_pinjaman"       => $fxflterm." Bulan",
                 "pinjaman_maksimum"   => 0,
             ],
             // "biaya_bank" => [
@@ -376,9 +361,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => 0,
+                    "bunga"          => 0,
                 ];
             }else{
                 $angsuranBunga = (($ffxrate / 12) / 100) * $plafond;
@@ -391,9 +375,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $ffxrate."%",
                 ];
             }
         }
@@ -412,9 +395,8 @@ class CalculatorController extends Controller
                 "sisa_pinjaman"  => round($plafond),
                 "angsuran_pokok" => 0,
                 "angsuran_bunga" => 0,
-                "porsi_pokok"    => 0,
-                "porsi_bunga"    => 0,
                 "angsuran"       => $angsuran,
+                "bunga"          => $ffloorrate."%",
             ];
         }
 
@@ -436,9 +418,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $ffloatlrate."%",
                 ];
             }else{
                 $angsuranBunga = (($ffloatlrate / 12) / 100) * $plafond;
@@ -451,9 +432,8 @@ class CalculatorController extends Controller
                     "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
-                    "porsi_pokok"    => 0,
-                    "porsi_bunga"    => 0,
                     "angsuran"       => $angsuran,
+                    "bunga"          => $ffloatlrate."%",
                 ];
             }
         }
@@ -461,8 +441,6 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "porsi_pokok"         => 0,
-                "porsi_bunga"         => 0,
                 "suku_bunga"          => 0,
                 "suku_bunga_floating" => 0,
                 "kredit_fix"          => 0,
