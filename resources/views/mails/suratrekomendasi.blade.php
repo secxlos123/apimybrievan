@@ -1,10 +1,10 @@
- <table align="center" bgcolor="#fafafa" width="100%" border="0" cellspacing="0" cellpadding="0">
+ <table align="left" bgcolor="#fafafa" width="200%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td height="20px"></td>
     </tr>
     <tr>
         <td align="center">
-            <table align="center" class="table-inner" width="500px" border="0" cellspacing="0" cellpadding="0">
+            <table align="left" class="table-inner" width="1000px" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td align="center">
                         <img align="center" width="200px" src="https://mybri.stagingapps.net/assets/images/logo/Logo-Website.png">
@@ -14,7 +14,7 @@
                     <td height="20px"></td>
                 </tr>
                 <tr>
-                    <td align="center"><u><b>SURAT KUASA POTONG GAJI</b></u></td>
+                    <td align="center"><u><b>SURAT KUASA POTONG UPAH DAN LAINNYA</b></u></td>
                 </tr>
                 <tr>
                     <td bgcolor="#F7941E" height="5" align="center"></td>
@@ -24,13 +24,16 @@
                 </tr>
                 <tr>
                     <td align="left">
-                        <span>Silahkan download,cetak dan lengkapi formulir yang diperlukan untuk proses pengajuan pinjaman BRIGUNA ANDA.</span>
+						<span>Kepada Bapak/Ibu Yth,,
+						<br>
+						<br>
+						<span>Berikut file-file dokumen yang dibutuhkan untuk melengkapi data pengajuan pinjaman Briguna Anda.</span>
+                        <span>Silahkan download, cetak, dan lengkapi formulir yang diperlukan untuk proses pengajuan pinjaman BRIGUNA ANDA, kemudian upload melalui aplikasi MyBRI.</span>
                         <br>
 						<br>
 						<br>
 						<br>
-						<span>Note : Formulir surat Kuasa Potong Gaji ( SKPG ) wajib dilengkapi bagi yang gajinya Tidak disalurkan di BRI</span>
-					<span>Bagi yang gajinya Tidak disalurkan di BRI.</span>
+						<span>Note : Formulir surat Kuasa Potong Upah (SKPU) wajib dilengkapi bagi yang gajinya tidak disalurkan di BRI.</span>
 				
                     </td>
                 </tr>
