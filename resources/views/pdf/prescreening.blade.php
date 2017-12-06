@@ -15,14 +15,13 @@
                 margin: 0px;
             }
             body {
-                background: rgb(204,204,204);
+                background: white;
                 margin: 0px;
             }
             @page {
                 margin: 0px;
             }
             page[size="A4"] {
-              background: white;
               width: 21cm;
               height: 29.7cm;
               display: block;
@@ -153,92 +152,101 @@
             .Kuning {
                 color: yellow;
             }
+            .break-word {
+                word-wrap: break-word;
+            }
+            .underline {
+                width: 200px;
+                margin: 0 auto;
+                border-bottom: solid 1px black;
+            }
         </style>
     </head>
     <body>
-        <page size="A4">
-            <div class="page-content">
+        <div class="page-content">
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <!-- Gambar logo cuma dummy, pake external link -->
-                            <td class="logo-mybri full-width">
-                                <span class="color-orange">e-Prescreening</span>
-                                <span class="color-blue">BRI</span>
-                                <br/>
-                                <img src="{{ asset('img/logo-mybri.png') }}">
-                            </td>
-                            <td class="logo-bri full-width">
-                                <img src="{{ asset('img/logo-bri.png') }}">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <!-- Gambar logo cuma dummy, pake external link -->
+                        <td class="logo-mybri full-width">
+                            <span class="color-orange">e-Prescreening</span>
+                            <span class="color-blue">BRI</span>
+                            <br/>
+                            <img src="{{ asset('img/logo-mybri.png') }}">
+                        </td>
+                        <td class="logo-bri full-width">
+                            <img src="{{ asset('img/logo-bri.png') }}">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <hr>
+            <hr>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Hasil Prescreening</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Hasil Prescreening</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>NIK</td>
-                            <td>: {{ $detail->customer->personal['nik'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama Calon Nasabah</td>
-                            <td>: {{ $detail->customer->personal['name'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Hasil Prescreening</td>
-                            <td>: <span class="{{ $detail->prescreening_status }}">{{ $detail->prescreening_status }}</span></td>
-                        </tr>
-                        <tr>
-                            <td>Keterangan Terkait Risiko</td>
-                            <td>: {{ $detail->ket_risk }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>NIK</td>
+                        <td class="break-word">: {{ $detail->customer->personal['nik'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Calon Nasabah</td>
+                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Hasil Prescreening</td>
+                        <td class="break-word">: <span class="{{ $detail->prescreening_status }}">{{ $detail->prescreening_status }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Keterangan Terkait Risiko</td>
+                        <td class="break-word">: {{ $detail->ket_risk }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table class="full-width">
-                    <tbody>
-                        <tr>
-                            <td class="title" colspan="2">Pefindo</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Pefindo</td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Score</td>
-                            <td>: {{ $detail->pefindo_score }}</td>
-                        </tr>
-                        <tr>
-                            <td>Hasil Pefindo</td>
-                            <td>: <span class="{{ $detail->pefindo_color }}">{{ $detail->pefindo_color }}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Score</td>
+                        <td class="break-word">: {{ $detail->pefindo_score }}</td>
+                    </tr>
+                    <tr>
+                        <td>Hasil Pefindo</td>
+                        <td class="break-word">: <span class="{{ $detail->pefindo_color }}">{{ $detail->pefindo_color }}</span></td>
+                    </tr>
+                </tbody>
+            </table>
 
-                @if( $detail->dhn_detail )
-                    @php( $dhn = json_decode((string) $detail->dhn_detail)->responseData[0] )
+            @if( $detail->dhn_detail )
+                @php( $dhn = json_decode((string) $detail->dhn_detail) )
 
+                @if( isset($dhn->responseData) )
+                    @php( $dhn = $dhn->responseData[0] )
                     <table class="full-width">
                         <tbody>
                             <tr>
@@ -251,14 +259,18 @@
                         <tbody>
                             <tr>
                                 <td>Hasil DHN</td>
-                                <td>: <span class="{{ $dhn->warna }}">{{ $dhn->warna }}</span></td>
+                                <td class="break-word">: <span class="{{ $dhn->warna }}">{{ $dhn->warna }}</span></td>
                             </tr>
                         </tbody>
                     </table>
                 @endif
+            @endif
 
-                @if( $detail->sicd_detail )
-                    @php( $sicdData = json_decode((string) $detail->sicd_detail)->responseData )
+            @if( $detail->sicd_detail )
+                @php( $sicdData = json_decode((string) $detail->sicd_detail) )
+
+                @if( isset($sicdData->responseData) )
+                    @php( $sicdData = $sicdData->responseData )
                     <table class="full-width">
                         <tbody>
                             <tr>
@@ -283,23 +295,23 @@
                             <tbody>
                                 <tr>
                                     <td>Nama Nasabah</td>
-                                    <td>: {{ isset($sicd->nama_debitur) ? $sicd->nama_debitur : '-' }}</td>
+                                    <td class="break-word">: {{ isset($sicd->nama_debitur) ? $sicd->nama_debitur : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>NIK</td>
-                                    <td>: {{ isset($sicd->no_identitas) ? $sicd->no_identitas : '-' }}</td>
+                                    <td class="break-word">: {{ isset($sicd->no_identitas) ? $sicd->no_identitas : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Tanggal Lahir</td>
-                                    <td>: {{ isset($sicd->tgl_lahir) ? date('d M Y', strtotime( $sicd->tgl_lahir ) ) : '-' }}</td>
+                                    <td class="break-word">: {{ isset($sicd->tgl_lahir) ? date('d M Y', strtotime( $sicd->tgl_lahir ) ) : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Kolektibilitas</td>
-                                    <td>: {{ isset($sicd->bikole) ? $sicd->bikole : '-' }}</td>
+                                    <td class="break-word">: {{ isset($sicd->bikole) ? $sicd->bikole : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td>Hasil SICD</td>
-                                    <td>: <span class="{{ $warna }}">{{ $warna }}</span></td>
+                                    <td class="break-word">: <span class="{{ $warna }}">{{ $warna }}</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -307,16 +319,17 @@
                         <br/>
                     @endforeach
                 @endif
+            @endif
 
-                <br/>
+            <br/>
 
-                <div class="barcode">
-                    <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
-                    <img src="{{ asset('img/qr-code.png') }}">
-                    <p>{{ $detail->prescreening_name ? $detail->prescreening_name : '-' }}</p>
-                </div>
+            <div class="barcode">
+                <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
+                <img src="{{ asset('img/qr-code.png') }}">
+                <p class="underline">{{ $detail->prescreening_name ? $detail->prescreening_name : '-' }}</p>
+                <p>{{ $detail->prescreening_position ? $detail->prescreening_position : '-' }}</p>
             </div>
-        </page>
+        </div>
 
     </body>
 
