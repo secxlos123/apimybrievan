@@ -84,6 +84,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
+		Route::post( 'eforms/submit-screening', 'EFormController@submitScreening' );
 
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
@@ -113,8 +114,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 	} );
 
-
-	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 	Route::group( [ 'prefix' => '{type}' ], function () {
 		Route::get( 'cities', 'CityController' );
 		Route::get('city', 'CityController@getAll');
