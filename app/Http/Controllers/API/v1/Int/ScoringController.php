@@ -66,7 +66,7 @@ class ScoringController extends Controller
 	}
 
 	 public function uploadimage($image,$id){
-	 	$eform = EForm::findOrFail($id);
+	 	$eform = EForm::where('id', $id)->first();
 		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore' ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore' ] );
@@ -91,7 +91,7 @@ class ScoringController extends Controller
 	 }
 
 	 public function uploadimagemulti($image,$id,$i){
-	 	$eform = EForm::findOrFail($id);
+	 	$eform = EForm::where('id', $id)->first();
 		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore'.$i ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore'.$i ] );
@@ -236,9 +236,15 @@ class ScoringController extends Controller
         $dats['dhn_detail'] = json_encode($dhn);
         $dats['sicd_detail'] = json_encode($sicd);
 
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $dats['prescreening_name'] = $user_login['name'];
+        $dats['prescreening_position'] = $user_login['position'];
+
 		DB::beginTransaction();
         $data->update($dats);
-        generate_pdf('uploads/'. $data->nik, 'permohonan.pdf', view('pdf.prescreening', compact('data')));
+        $detail = $data;
+        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 		DB::commit();
 		return response()->success( [
 			'message' => 'Data nasabah berhasil dirubah.',

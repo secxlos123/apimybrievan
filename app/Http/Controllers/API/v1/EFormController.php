@@ -62,8 +62,8 @@ class EFormController extends Controller
     }
 
     public function uploadimage($image,$id,$atribute) {
-        $eform = EForm::findOrFail($id);
-        $path = public_path( 'uploads/' . $eform->nik . '/' );
+        //$eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $id . '/' );
 
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
@@ -113,6 +113,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
                 if ( $branch['kode_uker'] == $request->input('branch_id') ) {
@@ -155,15 +160,16 @@ class EFormController extends Controller
             $SLIP_GAJI = $request->SLIP_GAJI;
             $SK_AWAL = $request->SK_AWAL;
             $SK_AKHIR = $request->SK_AKHIR;
+            $REKOMENDASI = $request->REKOMENDASI;
             $SKPG = $request->SKPG;
 
             $id = $request->id;
-
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
             $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
             $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+            $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
             $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
@@ -171,6 +177,7 @@ class EFormController extends Controller
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+            $baseRequest['REKOMENDASI'] = $REKOMENDASI;
             $baseRequest['SKPG'] = $SKPG;
             $kpr = BRIGUNA::create( $baseRequest );
             /*----------------------------------*/
@@ -216,90 +223,19 @@ class EFormController extends Controller
         $data = EForm::findOrFail($request->eform);
         $personal = $data->customer->personal;
 
-        $dhn = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_dhn_consumer',
-                'requestData' => [
-                    'id_user' => request()->header( 'pn' ),
-                    'nik'=> $data->nik,
-                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
-                    'tgl_lahir'=> $personal['birth_date']
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-        \Log::info($dhn);
-
-        if ($dhn['responseCode'] != '00') {
-            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
-
+        $dhn = json_decode((string) $data->dhn_detail);
+        if ( !isset($dhn->responseData) ) {
+            $dhn = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"kategori":null,"keterangan":"","warna":"Hijau","result":""}]}');
         }
 
-        $sicd = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_sicd_consumer',
-                'requestData' => [
-                    'id_user' => request()->header( 'pn' ),
-                    'nik'=> $data->nik,
-                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
-                    'tgl_lahir'=> $personal['birth_date'],
-                    'kode_branch'=> $data->branch_id
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-         \Log::info($sicd);
-
-        if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
-
+        $sicd = json_decode((string) $data->sicd_detail);
+        if ( !isset($sicd->responseData) ) {
+            $sicd = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"status":null,"acctno":null,"cbal":null,"bikole":null,"result":null,"cif":null,"nama_debitur":null,"tgl_lahir":null,"alamat":null,"no_identitas":null}]}');
         }
 
-        $score = $data->pefindo_score;
-        $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
-            $pefindoC = 'Merah';
-
-        } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindoC = 'Hijau';
-
-        }
-
-        $dhnC = $dhn['responseData'][0]['warna'];
-
-        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-            $sicdC = 'Hijau';
-
-        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-            $sicdC = 'Kuning';
-
-        } else {
-            $sicdC = 'Merah';
-
-        }
-
-        $calculate = array($pefindoC, $dhnC, $sicdC);
-
-        \Log::info('========== result =============');
-        \Log::info($calculate);
-        if ( in_array('Merah', $calculate) ) {
-            $result = '3';
-
-        } else if ( in_array('Kuning', $calculate) ) {
-            $result = '2';
-
-        } else {
-            $result = '1';
-
-        }
-        $data->prescreening_status =  $result;
-
-        $explode = explode(',', $data->uploadscore);
         $html = '';
 
-        foreach ($explode as $value) {
+        foreach (explode(',', $data->uploadscore) as $value) {
             if ($value != '') {
                 $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
             }
@@ -307,44 +243,12 @@ class EFormController extends Controller
 
         $data['uploadscore'] = $html;
 
-        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
-            return response()->success( [
-                'message' => 'Data Screening e-form',
-                'contents' => [
-                    'eform' => $data,//json_encode($datafinal),
-                    'dhn'=>$dhn['responseData'],
-                    'sicd' => $sicd['responseData']
-                ]
-            ], 200 );
-
-        }
-
-        return response()->error( [
-            'message' => 'Data Screening Tidak Ditemukan',
+        return response()->success( [
+            'message' => 'Data Screening e-form',
             'contents' => [
                 'eform' => $data
-                , 'dhn'=> [
-                    [
-                        'kategori'=>'-',
-                        'keterangan'=>'-',
-                        'warna'=>'Hijau',
-                        'result'=>'-'
-                    ]
-                ]
-                , 'sicd'=> [
-                    [
-                        'status'=>'-',
-                        'acctno'=>'-',
-                        'cbal'=>'-',
-                        'bikole'=>'-',
-                        'result'=>'-',
-                        'cif'=>'-',
-                        'nama_debitur'=>'-',
-                        'tgl_lahir'=>'-',
-                        'alamat'=>'-',
-                        'no_identitas'=>'-'
-                    ]
-                ]
+                , 'dhn' => $dhn->responseData
+                , 'sicd' => $sicd->responseData
             ]
         ], 200 );
     }
@@ -379,7 +283,15 @@ class EFormController extends Controller
     public function approve( EFormRequest $request, $eform_id )
     {
         DB::beginTransaction();
-        $eform = EForm::approve( $eform_id, $request );
+
+        $baseRequest = $request;
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['pinca_name'] = $user_login['name'];
+        $baseRequest['pinca_position'] = $user_login['position'];
+
+        $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
             $data =  EForm::findOrFail($eform_id);
@@ -390,7 +302,7 @@ class EFormController extends Controller
             }
 
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-            generate_pdf('uploads/'. $detail->nik, 'LKN.pdf', view('pdf.approval.index', compact('detail')));
+            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
             DB::commit();
             return response()->success( [
@@ -440,7 +352,7 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 if ($status == 'approve') {
-                    $detail = EForm::findOrFail( $eform_id );
+                    $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
                 }
 

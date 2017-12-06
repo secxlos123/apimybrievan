@@ -316,7 +316,13 @@ class Property extends Model
                 /**
                  * Query for filter by developer or user login.
                  */
-                if ($developerId) $property->where('prop_dev_id', $developerId);
+                if ($developerId)
+                    {
+                        $property->where('prop_dev_id', $developerId);
+                    }
+                else{
+                        $property->where('is_approved',true);
+                    }
                 if ($request->has('dev_id')) $property->where('prop_dev_id', $request->input('dev_id'));
             })
             ->where(function ($property) use (&$request, &$query) {
