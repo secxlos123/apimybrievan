@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-
+use DB;
 class UserDeveloper extends Model
 {
 	/**
@@ -29,6 +29,26 @@ class UserDeveloper extends Model
      * @var array
      */
     protected $hidden = [ 'user' ];
+
+    /**
+     * Mutator for building_area 
+     *
+     * @var array
+     */
+
+    public function getBuildingAreaAttribute($value) {
+        return "Tipe ".$value;
+    }
+    
+    /**
+     * Mutator for status is_approved 
+     *
+     * @var array
+     */
+
+    public function getIsApprovedAttribute($value) {
+        return ($value) ? 'Approved' : 'Rejected';
+    }
 
     /**
      * Get parent user of user detail.
@@ -89,6 +109,46 @@ class UserDeveloper extends Model
             $userdeveloperfill[] = "user_developers.{$fillable}";
         }
         return $userdeveloperfill;
+
+    }
+
+    public function getListUserDeveloper()
+    {
+        // $data = DB::table('user_developers')
+        //                      ->select(
+        //                               'users.id',
+        //                               'users.first_name', 
+        //                               'users.last_name',
+        //                               'properties.name',    
+        //                               'property_types.price',
+        //                               'property_types.building_area',
+        //                               'property_items.address',
+        //                               'properties.is_approved'
+        //                              )
+                             // ->join('users', 'user_developers.user_id', '=', 'users.id')
+                             // ->join('properties', 'properties.developer_id', '=', 'user_developers.id')
+                             // ->join('property_types', 'property_types.property_id', '=', 'properties.id')
+                             // ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')
+        //                      ->OrderBy('user_developers.created_at')
+        //                      ->groupBy('users.id','users.first_name', 
+        //                               'users.last_name',
+        //                               'properties.name',    
+        //                               'property_types.price',
+        //                               'property_types.building_area',
+        //                               'property_items.address',
+        //                               'properties.is_approved')
+        //                      ->limit(5)
+        //                      ->get()->toArray();
+        $data = DB::table('user_developers')->select('users.id')
+                             ->join('users', 'user_developers.user_id', '=', 'users.id')
+                             ->join('properties', 'properties.developer_id', '=', 'user_developers.id')
+                             ->join('property_types', 'property_types.property_id', '=', 'properties.id')
+                             ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')->groupBy('users.id')->limit(5)->get()->toArray();
+        return $data;
+    }
+
+    public function getDataChart()
+    {
 
     }
 }

@@ -161,7 +161,6 @@ class EFormController extends Controller
             $SK_AWAL = $request->SK_AWAL;
             $SK_AKHIR = $request->SK_AKHIR;
             $REKOMENDASI = $request->REKOMENDASI;
-            $SKPG = $request->SKPG;
 
             $id = $request->id;
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
@@ -170,7 +169,6 @@ class EFormController extends Controller
             $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
             $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
             $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
-            $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
             $baseRequest['KK'] = $KK;
@@ -178,11 +176,15 @@ class EFormController extends Controller
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
-            $baseRequest['SKPG'] = $SKPG;
-            $kpr = BRIGUNA::create( $baseRequest );
-            /*----------------------------------*/
-
-        } else {
+			$SKPG = '';
+			if(!empty($request->SKPG)){
+				$SKPG = $request->SKPG;
+				$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+				$baseRequest['SKPG'] = $SKPG;
+				$kpr = BRIGUNA::create( $baseRequest );
+				/*----------------------------------*/
+			}
+		} else {
             $kpr = KPR::create( $baseRequest );
 
         }
@@ -197,14 +199,44 @@ class EFormController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function submitScreening( EFormRequest $request )
+    public function submitScreening( Request $request )
     {
         DB::beginTransaction();
-        $eform = EForm::findOrFail( $request->id );
-        $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        if ( $request->has('selected_sicd') ) {
+            $eform = EForm::find( $request->input('eform_id') );
+
+            $calculate = array(
+                $request->input('pefindo', 'Hijau')
+                , $request->input('dhn', 'Hijau')
+                , $request->input('sicd', 'Hijau')
+            );
+
+            if ( in_array('Merah', $calculate) ) {
+                $result = '3';
+
+            } else if ( in_array('Kuning', $calculate) ) {
+                $result = '2';
+
+            } else {
+                $result = '1';
+
+            }
+
+            $eform->update( [
+                'selected_sicd' => $request->input('selected_sicd')
+                , 'prescreening_status' => $result
+            ] );
+
+            $eform = array();
+
+        } else {
+            $eform = EForm::findOrFail( $request->id );
+            $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        }
 
         DB::commit();
         return response()->success( [
