@@ -62,8 +62,8 @@ class EFormController extends Controller
     }
 
     public function uploadimage($image,$id,$atribute) {
-        $eform = EForm::findOrFail($id);
-        $path = public_path( 'uploads/' . $eform->nik . '/' );
+        //$eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $id . '/' );
 
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
@@ -113,6 +113,11 @@ class EFormController extends Controller
 
         $baseRequest = $request->all();
 
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
                 if ( $branch['kode_uker'] == $request->input('branch_id') ) {
@@ -155,15 +160,16 @@ class EFormController extends Controller
             $SLIP_GAJI = $request->SLIP_GAJI;
             $SK_AWAL = $request->SK_AWAL;
             $SK_AKHIR = $request->SK_AKHIR;
+            $REKOMENDASI = $request->REKOMENDASI;
             $SKPG = $request->SKPG;
 
             $id = $request->id;
-
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
             $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
             $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+            $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
             $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
@@ -171,6 +177,7 @@ class EFormController extends Controller
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+            $baseRequest['REKOMENDASI'] = $REKOMENDASI;
             $baseRequest['SKPG'] = $SKPG;
             $kpr = BRIGUNA::create( $baseRequest );
             /*----------------------------------*/
@@ -379,7 +386,15 @@ class EFormController extends Controller
     public function approve( EFormRequest $request, $eform_id )
     {
         DB::beginTransaction();
-        $eform = EForm::approve( $eform_id, $request );
+
+        $baseRequest = $request;
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $baseRequest['pinca_name'] = $user_login['name'];
+        $baseRequest['pinca_position'] = $user_login['position'];
+
+        $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
             $data =  EForm::findOrFail($eform_id);
@@ -390,7 +405,7 @@ class EFormController extends Controller
             }
 
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-            generate_pdf('uploads/'. $detail->nik, 'LKN.pdf', view('pdf.approval.index', compact('detail')));
+            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
             DB::commit();
             return response()->success( [
@@ -440,7 +455,7 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 if ($status == 'approve') {
-                    $detail = EForm::findOrFail( $eform_id );
+                    $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
                 }
 

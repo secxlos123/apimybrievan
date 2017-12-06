@@ -27,7 +27,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position'
     ];
 
     /**
@@ -35,7 +35,7 @@ class EForm extends Model
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'ao_name', 'status', 'aging', 'is_visited', 'pefindo_color' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -103,15 +103,15 @@ class EForm extends Model
      *
      * @return string
      */
-    public function getAoNameAttribute()
-    {
-        if ( $this->ao_id ) {
-            $AO = \RestwsHc::getUser( $this->ao_id );
-            return $AO[ 'name' ];
-        }
+    // public function getAoNameAttribute()
+    // {
+    //     if ( $this->ao_id ) {
+    //         $AO = \RestwsHc::getUser( $this->ao_id );
+    //         return $AO[ 'name' ];
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 
     /**
      * Get AO detail information.
@@ -167,6 +167,7 @@ class EForm extends Model
      */
     public function getPefindoColorAttribute( $value )
     {
+        $value = $this->pefindo_score;
         if ( $value >= 250 && $value <= 573 ) {
             return 'Merah';
 

@@ -73,6 +73,7 @@ class ServiceRestwsHc extends Client
                     'role' => $role,
                     'branch_id' => $branch,
                     'pn' => $get_user_info_service[ 'responseData' ][ 'PERNR' ],
+                    'position' => $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ],
                     // 'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
                 ];
             }
