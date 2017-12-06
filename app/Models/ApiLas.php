@@ -97,7 +97,7 @@ class ApiLas extends Model
                 "customer_type"         => empty($data['customer_type']) ? "I" : $data['customer_type'],
                 "hub_bank"              => empty($data['hub_bank']) ? "9900" : $data['hub_bank'],
                 "pernah_pinjam"         => empty($data['pernah_pinjam']) ? "Ya" : $data['pernah_pinjam'],
-                "sumber_utama"          => empty($data['sumber_utama']) ? "2" : $data['sumber_utama'],
+                "sumber_utama"          => empty($data['sumber_utama']) ? "1" : $data['sumber_utama'],
                 "federal_wh_code"       => empty($data['federal_wh_code']) ? "1" : $data['federal_wh_code'],
                 "sub_customer_type"     => empty($data['sub_customer_type']) ? "I" : $data['sub_customer_type'],
                 "segmen_bisnis_bri"     => empty($data['segmen_bisnis_bri']) ? "RITEL" : $data['segmen_bisnis_bri'],
