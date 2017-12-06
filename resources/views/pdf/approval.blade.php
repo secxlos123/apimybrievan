@@ -1,382 +1,466 @@
-<style type="text/css">
-.card-box > img {
-    height: 350px;
-    width: 100%;
-}
-</style>
-<div class="content-page">
-    <div class="content">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Form LKN</h3>
-                        </div>
-                        <!-- data lkn -->
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Kunjungan</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Nama AO :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['ao_name'] }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Tempat Kunjungan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['address'] }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Tanggal Kunjungan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['appointment_date'] }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Nama Calon Debitur :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['customer_name'] }}</p>
-                                            </div>
-                                        </div>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>E-LKN PDF</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta content="" name="description" />
+        <meta content="" name="author" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style type="text/css">
+            html {
+                margin: 0px;
+            }
+            body {
+                background: rgb(204,204,204);
+                margin: 0px;
+            }
+            @page {
+                margin: 0px;
+            }
+            page[size="A4"] {
+              background: white;
+              width: 21cm;
+              height: 29.7cm;
+              display: block;
+              margin: 0 auto;
+              margin-bottom: 0.5cm;
+              box-shadow: 0 0 0.2cm rgba(0,0,0,0.5);
+            }
+            @media print {
+              body, page[size="A4"] {
+                margin: 0px;
+                box-shadow: 0;
+              }
+            }
+            body {
+                font-size: 14px;
+            }
+            body, h1, h2, h3, h4, h5, h6 {
+                font-family: "Open Sans",sans-serif;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-weight: 600;
+                margin-top: 0px;
+            }
+            .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+                line-height: 1.1;
+                color: inherit;
+            }
+            h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+                font-size: 10px;
+                letter-spacing: 0;
+                font-weight: 300;
+                font-style: italic;
+            }
+            p {
+                margin: 0px;
+            }
+            .page-content {
+                padding-top: 0.5cm;
+                padding-left: 1cm;
+                padding-right: 1cm;
+                padding-bottom: 1cm;
+            }
+            td {
+                padding: 5px 5px 5px 0px;
+                width: 170px;
+            }
+            .full-width {
+                width: 100%;
+            }
+            .half-width {
+                width: 50%;
+                float: left;
+            }
+            .logo-mybri>img {
+                width: 130px;
+                height: auto;
+            }
+            .logo-bri {
+                text-align: right;
+            }
+            .logo-bri>img {
+                width: 80px;
+                height: auto;
+            }
+            .no-ref {
+                display: block;
+                border: solid 1px #F7941E;
+                text-align: center;
+                padding: 10px 10px;
+                margin: 20px 200px 10px 200px;
+            }
+            .title {
+                background-color: #eee;
+                font-weight: bold;
+                text-align: center;
+                text-transform: uppercase;
+            }
+            .title {
+                background-color: #eee;
+                font-weight: bold;
+                text-align: center;
+                text-transform: uppercase;
+                display: block;
+                width: auto;
+                margin-top: 20px;
+                margin-bottom: 5px;
+            }
+            .term {
+                display: block;
+                border: solid 1px #cecece;
+                padding: 0px 10px;
+                margin-top: 20px;
+            }
+            .term>ol {
+                padding-left: 30px;
+            }
+            .barcode {
+                text-align: center;
+                margin-top: 15px;
+            }
+            .barcode>img {
+                height: 120px;
+                width: auto;
+            }
+            .color-orange {
+                color: #f7941e;
+                margin-bottom: 10px;
+                display: inline-block;
+            }
+            .color-blue {
+                color: #00529C;
+                margin-bottom: 10px;
+                display: inline-block;
+            }
+            .position-bottom {
+                position: absolute;
+                bottom: 0;
+            }
+            .clear {
+                clear: both;
+            }
+        </style>
+    </head>
+    <body>
+        <page size="A4">
+            <div class="page-content">
 
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Tujuan Kunjungan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['visit_report']['purpose_of_visit'] }}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">No. Referensi Permohonan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['ref_number'] }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Jumlah Permohonan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">Rp {{ number_format($detail['nominal'],2,',','.') }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Jenis Permohonan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ strtoupper($detail['product_type']) }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Nomor NPWP :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['visit_report']['npwp_number_masking'] }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Hasil Kunjungan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{ $detail['visit_report']['visit_result'] }}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Sumber Penghasilan</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Gaji/Penghasilan :</label>
-                                            <div class="col-md-7">
-                                                @if ($detail['visit_report']['source'] == 'fixed')
-                                                <p class="form-control-static">Rp. {{ number_format($detail['visit_report']['income_salary'], 2, ",", ".") }}</p>
-                                                @else
-                                                <p class="form-control-static">Rp. {{ number_format($detail['visit_report']['income'], 2, ",", ".") }}</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Penghasilan Lain :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">Rp. {{ number_format($detail['visit_report']['income_allowance'], 2, ",", ".") }}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                @if($detail['customer']['personal']['status_id'] == 2)
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Penghasilan Pasangan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">Rp. {{ number_format($detail['visit_report']['couple_salary'], 2, ",", ".") }}</p>
-                                            </div>
-                                        </div>
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <!-- Gambar logo cuma dummy, pake external link -->
+                            <td class="logo-mybri full-width">
+                                <span class="color-orange">e-LKN</span>
+                                <span class="color-blue">BRI</span>
+                                <br/>
+                                <img src="{{ asset('img/logo-mybri.png') }}">
+                            </td>
+                            <td class="logo-bri full-width">
+                                <img src="{{ asset('img/logo-bri.png') }}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Penghasilan Lain Pasangan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">Rp. {{ number_format($detail['visit_report']['couple_other_salary'], 2, ",", ".") }}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">KPP</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">KPP :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['kpp_type_name']}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Jenis Dibiayai :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['type_financed_name']}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Sektor Ekonomi :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['economy_sector_name']}}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Project :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['project_list_name']}}</p>
-                                            </div>
-                                        </div>
+                <hr>
 
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Program :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['program_list_name']}}</p>
-                                            </div>
-                                        </div>
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="no-ref full-width">No. Reff Aplikasi : {{ $detail->ref_number }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Tujuan Penggunaan :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['use_reason_name']}}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Mutasi</h4>
-                                </div>
-                            </div>
-                            @foreach($detail['visit_report']['mutation'] as $mutation)
-                            <div id="mutations" class="mutations">
-                                <div class="panel-body" style="border-style:solid;border-width:0.5px;border-color:#f3f3f3">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-horizontal" role="form">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Nama Bank *:</label>
-                                                    <div class="col-md-6">
-                                                        <p class="form-control-static">{{$mutation['bank']}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="form-horizontal" role="form">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">No. Rekening *:</label>
-                                                    <div class="col-md-6">
-                                                        <p class="form-control-static">{{$mutation['number']}}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 pull-right">
-                                            <div class="form-horizontal" role="form">
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Kunjungan</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <table class="table table-bordered accountTable" id="accountTable0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Tanggal *</th>
-                                                        <th>Nominal *</th>
-                                                        <th>Jenis Transaksi *</th>
-                                                        <th>Keterangan *</th>
-                                                    </tr>
-                                                </thead>
-                                                @foreach($mutation['bankstatement'] as $bank)
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="input-group">
-                                                                <p class="form-control-static">{{$bank['date']}}</p>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group">
-                                                                <p class="form-control-static">Rp. {{ number_format($bank['amount'], 2, ",", ".") }}</p>
-                                                                <!-- <span class="input-group-addon">,00</span> -->
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <p class="form-control-static">{{$bank['type']}}</p>
-                                                        </td>
-                                                        <td>
-                                                            <p class="form-control-static">{{$bank['note']}}</p>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                                @endforeach
-                                            </table>
-                                            <div class="col-md-6">
-                                                <div class="form-group ">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Nama RM</td>
+                            <td>: {{ $detail->ao_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tempat Kunjungan</td>
+                            <td>: {{ $detail->address }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tanggal Kunjungan</td>
+                            <td>: {{ date('d M Y', strtotime($detail->appointment_date)) }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nama Calon Debitur</td>
+                            <td>: {{ $detail->customer->personal['name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tujuan Kunjungan</td>
+                            <td>: {{ $detail->visit_report['purpose_of_visit'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Permohonan</td>
+                            <td>: Rp. {{ number_format(round($detail->nominal), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jenis Permohonan</td>
+                            <td>: {{ strtoupper($detail->product_type) }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nomor NPWP</td>
+                            <td>: {{ $detail->visit_report['npwp_number_masking'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Hasil Kunjungan</td>
+                            <td>: {{ $detail->visit_report['visit_result'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        @if(($detail['visit_report']['use_reason'] == 2)||($detail['visit_report']['use_reason'] == 18))
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Investigasi Jual Beli</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Nama Penjual :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['seller_name']}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Alamat Penjual :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['seller_address']}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">No. Handphone Penjual :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['seller_phone']}}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Harga Jual :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">Rp{{$detail['visit_report']['selling_price']}}</p>
-                                            </div>
-                                        </div>
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Permohonan Kredit</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Alasan Dijual :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['reason_for_sale']}}</p>
-                                            </div>
-                                        </div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Jenis KPP</td>
+                            <td>: {{ $detail->visit_report['kpp_type_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jenis Properti</td>
+                            <td>: {{ $detail->kpr['kpr_type_property_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Harga Rumah</td>
+                            <td>: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td>Luas Bangunan</td>
+                            <td>: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
+                        </tr>
+                        <tr>
+                            <td>Lokasi Rumah</td>
+                            <td>: {{ $detail->kpr['home_location'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jangka Waktu</td>
+                            <td>: {{ $detail->kpr['year'] }} Bulan</td>
+                        </tr>
+                        <tr>
+                            <td>KPR Aktif ke</td>
+                            <td>: {{ $detail->kpr['active_kpr'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Uang Muka</td>
+                            <td>: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Permohonan</td>
+                            <td>: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jenis Dibiayai</td>
+                            <td>: {{ $detail->visit_report['type_financed_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Sektor Ekonomi</td>
+                            <td>: {{ $detail->visit_report['economy_sector_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Project</td>
+                            <td>: {{ $detail->visit_report['project_list_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Program</td>
+                            <td>: {{ $detail->visit_report['program_list_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tujuan Penggunaan</td>
+                            <td>: {{ $detail->visit_report['use_reason_name'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Hubungan dengan Pembeli :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['relation_with_seller']}}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Keuangan</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Gaji/Pendapatan</td>
+                            <td>: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td>Pendapatan Lain</td>
+                            <td>: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td>Angsuran Pinjaman</td>
+                            <td>: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Mutasi Rekening</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                @foreach( $detail->visit_report['mutation'] as $mutation )
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Nama Bank</td>
+                                <td>: {{ $mutation['bank'] }}</td>
+                            </tr>
+                            <tr>
+                                <td>No. Rekening</td>
+                                <td>: {{ $mutation['number'] }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <table class="full-width">
+                                        <thead>
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>Nominal</th>
+                                                <th>Jenis Transaksi</th>
+                                                <th>Keterangan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach( $mutation['bankstatement'] as $bank )
+                                                <tr>
+                                                    <td>{{ $bank['date'] }}</td>
+                                                    <td>{{ $bank['amount'] > 0 ? $bank['amount'] : '' }}</td>
+                                                    <td>{{ $bank['type'] }}</td>
+                                                    <td>{{ $bank['note'] }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                @endforeach
+
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Analisa RM</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Pros (Hal yang mendukung analisa)</td>
+                            <td>: {{ $detail->pros }}</td>
+                        </tr>
+                        <tr>
+                            <td>Con (Hal yang tidak mendukung analisa)</td>
+                            <td>: {{ $detail->cons }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="term">
+                    <br/>Dengan ini saya meyakini kebenaran data nasabah dan merekomendasikan permohonan kredit untuk dapat diproses lebih lanjut :
+
+                    <div class="full-width">
+                        <div class="half-width">
+                            <table class="full-width">
+                                <tbody>
+                                    <tr>
+                                        <td class="title" colspan="2">RM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Rekomendasi</td>
+                                        <td>: {{ $detail->visit_report['recommended'] == 'yes' ? 'Ya' : 'Tidak' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        @endif
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Analisa</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Pros :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static" style="word-wrap: break-word;">{{ $detail['visit_report']['pros'] }}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Cons :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static" style="word-wrap: break-word;">{{ $detail['visit_report']['cons'] }}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+
+                        <div class="half-width">
+                            <table class="full-width">
+                                <tbody>
+                                    <tr>
+                                        <td class="title" colspan="2">Pinca</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Rekomendasi</td>
+                                        <td>: {{ $detail->recommended ? 'Ya' : 'Tidak' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Catatan</td>
+                                        <td>: {{ $detail->recommendation }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">Rekomedasi</h4>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label class="col-md-5 control-label">Rekomendasi AO :</label>
-                                            <div class="col-md-7">
-                                                <p class="form-control-static">{{$detail['visit_report']['recommended'] == 'yes' ? 'Ya' : 'Tidak'}}</p>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="col-md-6">
-                                    <form class="form-horizontal" role="form">
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+
+                        <div class="clear"></div>
                     </div>
                 </div>
+
+                <br/>
+
+                <div class="full-width">
+                    <div class="half-width">
+                        <div class="barcode">
+                            <p>&nbsp;</p>
+                            <img src="{{ asset('img/qr-code.png') }}">
+                            <p>{{ $detail->ao_name ? $detail->ao_name : '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="half-width">
+                        <div class="barcode">
+                            <p>{{ date('d M Y', strtotime($detail->created_at)) }}</p>
+                            <img src="{{ asset('img/qr-code.png') }}">
+                            <p>{{ $detail->pinca_name ? $detail->pinca_name : '-' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="clear"></div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+        </page>
+
+    </body>
+
+</html>

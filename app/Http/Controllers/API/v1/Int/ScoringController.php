@@ -236,9 +236,15 @@ class ScoringController extends Controller
         $dats['dhn_detail'] = json_encode($dhn);
         $dats['sicd_detail'] = json_encode($sicd);
 
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $dats['prescreening_name'] = $user_login['name'];
+        $dats['prescreening_position'] = $user_login['position'];
+
 		DB::beginTransaction();
         $data->update($dats);
-        generate_pdf('uploads/'. $data->nik, 'prescreening.pdf', view('pdf.prescreening', compact('data')));
+        $detail = $data;
+        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 		DB::commit();
 		return response()->success( [
 			'message' => 'Data nasabah berhasil dirubah.',
