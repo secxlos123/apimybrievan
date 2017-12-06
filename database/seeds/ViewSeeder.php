@@ -50,6 +50,7 @@ class ViewSeeder extends Seeder
                 properties.staff_id AS staff_id,
                 properties.staff_name AS staff_name,
                 properties.status AS status,
+                properties.is_approved,
                 ( SELECT max(property_types.price) FROM property_types WHERE properties.id = property_types.property_id ) AS prop_price,
                 ( SELECT developers.user_id FROM developers WHERE properties.developer_id = developers.id ) AS prop_dev_id,
                 ( SELECT developers.dev_id_bri FROM developers WHERE properties.developer_id = developers.id ) AS dev_id_bri,

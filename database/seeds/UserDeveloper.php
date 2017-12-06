@@ -70,7 +70,8 @@ class UserDeveloper extends Seeder
                 'category'  => 3,
                 'latitude'  => '0',
                 'longitude' => '0',
-                'pic_name'  => 'BRI'
+                'pic_name'  => 'BRI',
+                'is_approved' => true
             ]);
         }
     }
@@ -171,7 +172,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>CCTV, Playground</p>',
                 'slug' => 'pt-artha-putra-prima-akasia-terrace',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '123456789',
                 'status' => 'new',
             ]);
@@ -240,7 +241,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>CCTV, Playground</p>',
                 'slug' => 'pt-artha-putra-prima-akasia-serenity',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '1234456777',
                 'status' => 'new'
             ]);
@@ -475,7 +476,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>CCTV, Playground</p>',
                 'slug' => 'pt-jaya-garden-polis-jaya-imperial',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '12345678',
                 'status' => 'new',
             ]);
@@ -612,7 +613,7 @@ class UserDeveloper extends Seeder
                 'description' => '<p>Deskripsi Property</p>',
                 'facilities' => '<p>Playground</p>',
                 'slug' => 'pt-sinar-puspapersada-talaga-bestari-ruko',
-                'is_approved' => false,
+                'is_approved' => true,
                 'pks_number' => '12345678',
                 'status' => 'new',
             ]);

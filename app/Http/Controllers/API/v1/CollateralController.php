@@ -15,6 +15,7 @@ use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
 use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
+use App\Models\Property;
 
 class CollateralController extends Controller
 {
@@ -153,7 +154,9 @@ class CollateralController extends Controller
      */
     public function changeStatus(ChangeStatusRequest $request, $eks, $action, $collateralId)
     {
+      \DB::beginTransaction();
       $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
+      $property = Property::findOrFail($collateral->property_id);
       $prevStatus = $collateral->status;
       $handleReject = function($prevStatus) {
         return $prevStatus === Collateral::STATUS[1] ? Collateral::STATUS[0] : Collateral::STATUS[4];
@@ -161,11 +164,15 @@ class CollateralController extends Controller
       $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : $handleReject($prevStatus);
       if ($action === 'approve') {
         $collateral->approved_by = $this->request->header('pn');
+        $property->is_approved = true;
+
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
       }
+      $property->save();
       $collateral->save();
+      \DB::commit();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );

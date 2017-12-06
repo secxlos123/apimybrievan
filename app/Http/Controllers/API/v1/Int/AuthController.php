@@ -70,6 +70,7 @@ class AuthController extends Controller
                     'name' => $data[ 'nama' ],
                     'branch' => $branch,
                     'role' => $role,
+                    'position' => $data['posisi'],
                     'uker' => $data['tipe_uker']
                 ]
             ], 200 );
