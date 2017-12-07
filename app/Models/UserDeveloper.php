@@ -139,11 +139,16 @@ class UserDeveloper extends Model
         //                               'properties.is_approved')
         //                      ->limit(5)
         //                      ->get()->toArray();
-        $data = DB::table('user_developers')->select('users.id')
+        $data = UserDeveloper::select('users.first_name', 'users.last_name', 'properties.name', 
+                                      'property_items.price', 'property_types.building_area', 
+                                      'property_items.address','properties.is_approved')
+                             ->join('developers', 'developers.id', '=', 'user_developers.admin_developer_id')
                              ->join('users', 'user_developers.user_id', '=', 'users.id')
                              ->join('properties', 'properties.developer_id', '=', 'user_developers.id')
                              ->join('property_types', 'property_types.property_id', '=', 'properties.id')
-                             ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')->groupBy('users.id')->limit(5)->get()->toArray();
+                             ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')
+                             ->groupBy('users.id', 'properties.id', 'property_types.id', 'property_items.id')
+                             ->get();
         return $data;
     }
 
