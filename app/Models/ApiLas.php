@@ -213,7 +213,7 @@ class ApiLas extends Model
         \Log::info($data);
         try {
             $content_insertKreditBriguna = [
-                "Fid_aplikasi"                     => empty($data['Fid_aplikasi']) ? "45016" : $data['Fid_aplikasi'],
+                "Fid_aplikasi"                     => empty($data['Fid_aplikasi']) ? "45045" : $data['Fid_aplikasi'],
                 "Cif_las"                          => empty($data['Cif_las']) ? "0" : $data['Cif_las'],
                 "Tp_produk"                        => empty($data['Tp_produk']) ? "1" : $data['Tp_produk'],
                 "Id_kredit"                        => empty($data['Id_kredit']) ? "0" : $data['Id_kredit'],
@@ -389,17 +389,17 @@ class ApiLas extends Model
         \Log::info($data);
         try {
             $conten_putusan = [
-                "id_aplikasi" => empty($data['id_aplikasi']) ? "45055" : $data['id_aplikasi'],
-                "uid"         => empty($data['uid']) ? "199874" : $data['uid'],
+                "id_aplikasi" => empty($data['id_aplikasi']) ? "45045" : $data['id_aplikasi'],
+                "uid"         => empty($data['uid']) ? "8887" : $data['uid'],
                 "flag_putusan"=> empty($data['flag_putusan']) ? "6" : $data['flag_putusan'],
                 "catatan"     => empty($data['catatan']) ? "testis" : $data['catatan']
             ];
 
             $putusan = AsmxLas::setEndpoint('putusSepakat')
                 ->setBody([
-                    'JSONData'   => $conten_putusan
+                    'JSONData'   => json_encode($conten_putusan)
                 ])->post('form_params');
-
+                print_r($putusan);exit();
             return $putusan;
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
