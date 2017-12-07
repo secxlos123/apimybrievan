@@ -17,6 +17,7 @@ use App\Models\Mitra;
 use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Collateral;
+use App\Models\User;
 use DB;
 
 class EFormController extends Controller
@@ -452,5 +453,31 @@ class EFormController extends Controller
 
 
         return response()->success( $verify, $code );
+    }
+
+   /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @author erwan.akse@wgs.co.id
+     */
+    public function delete(Request $request)
+    {
+        DB::beginTransaction();
+        $eform = EForm::findOrFail($request->eform_id);
+        if ($eform->kpr->is_sent == false ) {
+          User::destroy($eform->user_id);
+          DB::commit();
+        return response()->success( [
+            'message' => 'Hapus User Berhasil',
+        ], 200 );
+      }else
+      {
+        DB::rollback();
+        return response()->error( [
+            'message' => 'User Tidak Dapat Dihapus',
+        ], 422 );
+      }
     }
 }
