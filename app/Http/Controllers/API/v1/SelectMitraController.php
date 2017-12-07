@@ -21,7 +21,7 @@ class SelectMitraController extends Controller
 	{
         \Log::info($request->all());
         $mitra = Mitra2::filter( $request )->get();
-        return response()->success( [
+		return response()->success( [
             'message' => 'Sukses',
             'contents' => [
                 'data' => $mitra
