@@ -21,7 +21,7 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	public function SelectUker( Request $request )
+	public function index( Request $request )
 	{
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
@@ -42,7 +42,7 @@ class SelectCabangController extends Controller
                 if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
 						$mitra = Mitra::filter( $request )->get();
 						foreach($mitra as $key){
-							if($key['BRANCH_CODE']== $branch['unit_kerja']){										
+							if($key['BRANCH_CODE']== $branch['kode_uker']){										
 								$offices[] = $branch;
 							}
 						}
@@ -84,7 +84,7 @@ class SelectCabangController extends Controller
                 'requestData'   => [
                     'app_id' => 'mybriapi',
                     'kode_branch' => $request->get('BRANCH_CODE', 0),
-                    'distance'    => '20',
+                    'distance'    => $request->get('distance', 10),
 
                     // if request latitude and longitude not present default latitude and longitude cimahi
                     'latitude'  => $lat,

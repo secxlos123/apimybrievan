@@ -26,7 +26,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('Download2', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
-		Route::post('SelectCabang', 'SelectCabangController@SelectUker');
 		/* ------------*/
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
 		Route::get( 'positions', 'PositionController@index' );
@@ -49,6 +48,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		] );
 
 		Route::get( 'offices', 'OfficeController@index' );
+		Route::get('SelectCabang', 'SelectCabangController@index');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');
