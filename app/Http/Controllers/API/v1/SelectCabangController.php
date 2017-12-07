@@ -21,7 +21,7 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	public function SelectUker( Request $request )
+	public function index( Request $request )
 	{
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
@@ -30,6 +30,8 @@ class SelectCabangController extends Controller
         $offset  = ($page * $perPage) - $perPage;
         $offices = [];
 
+		$mitra = Mitra::filter( $request )->get();
+		$mitra = $mitra->toArray();
         if ($branchs['responseData'] != '') {
             foreach ($branchs['responseData'] as $branch) {
                 $search = true;
@@ -40,9 +42,22 @@ class SelectCabangController extends Controller
                 }
 
                 if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
-						$mitra = Mitra::filter( $request )->get();
+					$countkey = strlen($branch['kode_uker']);
+					$kode_uker = '';
+					if($countkey=='1'){
+						$kode_uker = '0000'.$branch['kode_uker'];
+					}elseif($countkey=='2'){
+						$kode_uker = '000'.$branch['kode_uker'];
+					}elseif($countkey=='3'){
+						$kode_uker = '00'.$branch['kode_uker'];
+					}elseif($countkey=='1'){
+						$kode_uker = '0'.$branch['kode_uker'];
+					}else{
+						$kode_uker = $branch['kode_uker'];
+					}
 						foreach($mitra as $key){
-							if($key['BRANCH_CODE']== $branch['unit_kerja']){										
+					print_r($kode_uker);print_r($key['BRANCH_CODE']);
+							if($key['BRANCH_CODE']== $kode_uker){										
 								$offices[] = $branch;
 							}
 						}
@@ -84,7 +99,7 @@ class SelectCabangController extends Controller
                 'requestData'   => [
                     'app_id' => 'mybriapi',
                     'kode_branch' => $request->get('BRANCH_CODE', 0),
-                    'distance'    => '20',
+                    'distance'    => $request->get('distance', 10),
 
                     // if request latitude and longitude not present default latitude and longitude cimahi
                     'latitude'  => $lat,
