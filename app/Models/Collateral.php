@@ -18,7 +18,7 @@ class Collateral extends Model
      * The hidden columns
      * @var [type]
      */
-    protected $hidden = ['developer_id'];
+    protected $hidden = [];
 
     CONST STATUS = [
       'baru',

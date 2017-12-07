@@ -69,7 +69,8 @@ class VisitReport extends Model
         'work_letter',
         'family_card',
         'couple_salary',
-        'couple_other_salary'
+        'couple_other_salary',
+        'source_income'
     ];
 
     /**
