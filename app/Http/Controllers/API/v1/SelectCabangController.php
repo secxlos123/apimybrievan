@@ -25,6 +25,7 @@ class SelectCabangController extends Controller
 	{
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
+		print_r($branchs);
         $page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
@@ -41,6 +42,7 @@ class SelectCabangController extends Controller
 
                 if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
 						$mitra = Mitra::filter( $request )->get();
+						print_r($mitra);
 						foreach($mitra as $key){
 							if($key['BRANCH_CODE']== $branch['kode_uker']){										
 								$offices[] = $branch;
