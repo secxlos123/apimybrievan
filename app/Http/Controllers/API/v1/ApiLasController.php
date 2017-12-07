@@ -535,9 +535,59 @@ class ApiLasController extends Controller
             } else {
                 return $insertPrescreening;
             }
+
+            $params = [
+                "uid"                   => $uid, // inquiry user las
+                "kode_cabang"           => $uker, // inquiry user las
+                "penghasilan_per_bulan" => $gaji,
+                "id_aplikasi"           => $insertDebitur['items']['ID_APLIKASI']),
+                "cif_las"               => $insertDebitur['items']['CIF_LAS']),
+                "nama_tanpa_gelar"      => $request['nama_debitur'],
+                "sumber_utama"          => "1", // hardcode gaji dari mybri
+                "tp_produk"             => "1", // hardcode dari las
+                "expired_ktp"           => "31122899", // hardcode
+                "kategori_portofolio"   => "175", // hardcode las
+                "kewarganegaraan"       => "ID", // hardcode dari las
+                "negara_domisili"       => "ID", // hardcode dari las
+                "golongan_debitur_sid"  => "907", // hardcode dari las
+                "golongan_debitur_lbu"  => "886", // hardcode dari las
+                "customer_type"         => "I", // hardcode dari las
+                "sub_customer_type"     => "I", // hardcode dari las
+                "hub_bank"              => "9900", // hardcode dari las
+                "segmen_bisnis_bri"     => "RITEL", // hardcode dari las
+                "tgl_mulai_debitur"     => date('d-m-Y'), // hardcode tgl prakarsa
+                "federal_wh_code"       => "1", // hardcode dari las
+                "resident_flag"         => "Y", // hardcode dari las
+                "tujuan_membuka_rekening"=> "ZZ", // hardcode
+                "ket_buka_rekening"     => "Pinjaman" // hardcode
+            ];
+
             return $insertDebitur;
         } else {
             return $insertDebitur;
         }
+    }
+
+    public function updateBriguna($request) {
+        $params = [
+            "sumber_utama"          => "1", // hardcode gaji dari mybri
+            "tp_produk"             => "1", // hardcode dari las
+            "cif_las"               => "0", // hardcode debitur baru
+            "expired_ktp"           => "31122899", // hardcode
+            "kategori_portofolio"   => "175", // hardcode las
+            "kewarganegaraan"       => "ID", // hardcode dari las
+            "negara_domisili"       => "ID", // hardcode dari las
+            "golongan_debitur_sid"  => "907", // hardcode dari las
+            "golongan_debitur_lbu"  => "886", // hardcode dari las
+            "customer_type"         => "I", // hardcode dari las
+            "sub_customer_type"     => "I", // hardcode dari las
+            "hub_bank"              => "9900", // hardcode dari las
+            "segmen_bisnis_bri"     => "RITEL", // hardcode dari las
+            "tgl_mulai_debitur"     => date('d-m-Y'), // hardcode tgl prakarsa
+            "federal_wh_code"       => "1", // hardcode dari las
+            "resident_flag"         => "Y", // hardcode dari las
+            "tujuan_membuka_rekening"=> "ZZ", // hardcode
+            "ket_buka_rekening"     => "Pinjaman" // hardcode
+        ]
     }
 }
