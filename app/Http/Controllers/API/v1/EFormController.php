@@ -14,6 +14,9 @@ use App\Models\Customer;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
 use App\Models\Mitra;
+use App\Models\Property;
+use App\Models\PropertyType;
+use App\Models\Collateral;
 use DB;
 
 class EFormController extends Controller
@@ -134,8 +137,6 @@ class EFormController extends Controller
             }
         }
 
-        \Log::info($baseRequest);
-
         $baseArray = array (
             'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
             , 'job_id' => 'work', 'job_name' => 'work_name'
@@ -151,7 +152,6 @@ class EFormController extends Controller
         }
         \Log::info("=======================================================");
         \Log::info($baseRequest);
-
 
         if ( $request->product_type == 'briguna' ) {
             /* BRIGUNA */
@@ -185,6 +185,57 @@ class EFormController extends Controller
 				/*----------------------------------*/
 			}
 		} else {
+            
+            $developer_id = env('DEVELOPER_KEY',1);
+            $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+        
+            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
+                $property =  Property::create([
+                    'developer_id'=>$baseRequest['developer'],
+                    'prop_id_bri'=>'1',
+                    'name'=>$developer_name,
+                    'pic_name'=>'BRI',
+                    'pic_phone'=>'-',
+                    'address'=>$baseRequest['home_location'],
+                    'category'=>'3',
+                    'latitude'=>'0',
+                    'longitude'=>'0',
+                    'description'=>'-',
+                    'facilities'=>'-'
+                ]);
+                $baseRequest['property'] = $property->id;
+                $baseRequest['property_name'] = $developer_name;
+                \Log::info('=================== Insert Property===========');
+                \Log::info($property);
+                if ($property) {
+                    $propertyType = PropertyType::create([
+                        'property_id'=>$property->id,
+                        'name'=>$developer_name,
+                        'building_area'=>$baseRequest['building_area'],
+                        'price'=>$baseRequest['price'],
+                        'surface_area'=>$baseRequest['building_area'],
+                        'electrical_power'=>'-',
+                        'bathroom'=>0,
+                        'bedroom'=>0,
+                        'floors'=>0,
+                        'carport'=>0
+                    ]);
+                    \Log::info('=================== Insert Property type===========');
+                    \Log::info($propertyType);
+                    $baseRequest['property_type']= $propertyType->id;
+                    $baseRequest['property_type_name']= $developer_name;
+                    if ($propertyType) {
+                        $data = [
+                        'developer_id' => $developer_id,
+                        'property_id' => $property->id,
+                        'status' => Collateral::STATUS[0]
+                    ];
+                    $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
+                    \Log::info('=================== Insert Collateral===========');
+                    \Log::info($collateral);
+                    }
+                }
+            }
             $kpr = KPR::create( $baseRequest );
 
         }
