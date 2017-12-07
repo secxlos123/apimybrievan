@@ -612,6 +612,6 @@ class ApiLasController extends Controller
             "resident_flag"         => "Y", // hardcode dari las
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
-        ]
+        ];
     }
 }
