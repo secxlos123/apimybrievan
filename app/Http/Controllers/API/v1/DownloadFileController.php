@@ -21,6 +21,7 @@ class DownloadFileController extends Controller
 	public function Download(Request $request)
 	{ 
 	$file = storage_path('/app/PDF/Surat_Kuasa_Potong_Upah.pdf');
+	print_r(Response::download($file, "Surat_Kuasa_Potong_Upah.pdf"));die();
         return Response::download($file, "Surat_Kuasa_Potong_Upah.pdf");
 	}
 	public function Download2(Request $request)
