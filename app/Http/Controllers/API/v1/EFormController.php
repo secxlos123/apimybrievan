@@ -199,14 +199,44 @@ class EFormController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function submitScreening( EFormRequest $request )
+    public function submitScreening( Request $request )
     {
         DB::beginTransaction();
-        $eform = EForm::findOrFail( $request->id );
-        $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        if ( $request->has('selected_sicd') ) {
+            $eform = EForm::find( $request->input('eform_id') );
+
+            $calculate = array(
+                $request->input('pefindo', 'Hijau')
+                , $request->input('dhn', 'Hijau')
+                , $request->input('sicd', 'Hijau')
+            );
+
+            if ( in_array('Merah', $calculate) ) {
+                $result = '3';
+
+            } else if ( in_array('Kuning', $calculate) ) {
+                $result = '2';
+
+            } else {
+                $result = '1';
+
+            }
+
+            $eform->update( [
+                'selected_sicd' => $request->input('selected_sicd')
+                , 'prescreening_status' => $result
+            ] );
+
+            $eform = array();
+
+        } else {
+            $eform = EForm::findOrFail( $request->id );
+            $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        }
 
         DB::commit();
         return response()->success( [

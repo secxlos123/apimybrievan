@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\v1\EFormController;
+use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
-use Illuminate\Http\Request;
-use Auth;
 
 class ApiLasController extends Controller
 {
@@ -16,12 +15,69 @@ class ApiLasController extends Controller
     	$ApiLas  = new ApiLas();
     	$respons = $request->all();
     	$method  = $respons['requestMethod'];
+        $data    = '';
         if (!empty($respons['requestData'])) {
             $data = $respons['requestData'];
+            // print_r($data);exit();
         }
-
+        
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
+                $data['kodepos']            = '';
+                $data['kelurahan']          = '';
+                $data['kecamatan']          = '';
+                $data['kabupaten']          = '';
+                $data['kodepos_domisili']   = '';
+                $data['kelurahan_domisili'] = '';
+                $data['kecamatan_domisili'] = '';
+                $data['kabupaten_domisili'] = '';
+                $data['kota_domisili']      = '';
+                $data['propinsi_domisili']  = '';
+                $data['kodepos_usaha']      = '';
+                $data['kelurahan_usaha']    = '';
+                $data['kecamatan_usaha']    = '';
+                $data['kabupaten_usaha']    = '';
+                $data['kota_usaha']         = '';
+                $data['propinsi_usaha']     = '';                
+
+                if (!empty($data['kode_pos'])) {
+                    $kode_pos = ['key' => $data['kode_pos']];
+                    $kodepos  = KodePos::filter($kode_pos)->get();
+                    $pos      = $kodepos->toArray();
+                    if (!empty($pos)) {
+                        foreach ($pos as $index => $value) {
+                            // print_r($value);
+                            $data['kodepos']   = $value['postal_code'];
+                            $data['kelurahan'] = $value['Kelurahan'];
+                            $data['kecamatan'] = $value['Kecamatan'];
+                            $data['kabupaten'] = $value['Kota'];
+                        }
+                    }
+                }
+                
+                if (!empty($data['kode_pos_domisili'])) {
+                    $kode_pos_dom = ['key' => $data['kode_pos_domisili']];
+                    $kodepos_dom  = KodePos::filter($kode_pos_dom)->get();
+                    $pos_dom      = $kodepos_dom->toArray();
+                    if (!empty($pos_dom)) {
+                        foreach ($pos_dom as $index => $value) {
+                            // print_r($value);exit();
+                            $data['kodepos_domisili']   = $value['postal_code'];
+                            $data['kelurahan_domisili'] = $value['Kelurahan'];
+                            $data['kecamatan_domisili'] = $value['Kecamatan'];
+                            $data['kabupaten_domisili'] = $value['Kota'];
+                            $data['kota_domisili']      = $value['Kota'];
+                            $data['propinsi_domisili']  = $value['Propinsi'];
+                            $data['kodepos_usaha']      = $value['postal_code'];
+                            $data['kelurahan_usaha']    = $value['Kelurahan'];
+                            $data['kecamatan_usaha']    = $value['Kecamatan'];
+                            $data['kabupaten_usaha']    = $value['Kota'];
+                            $data['kota_usaha']         = $value['Kota'];
+                            $data['propinsi_usaha']     = $value['Propinsi'];
+                        }
+                    }
+                }
+                // print_r($data);exit();
                 $this->insertAllAnalisa($data);
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
     			// return $insert;
@@ -81,9 +137,9 @@ class ApiLasController extends Controller
             case 'inquiryListPutusan':
                 $pn      = substr('00000000'. $data, -8 );
                 $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-                $uid   = $inquiryUserLAS['items'][0]['uid'];
+                $uid     = $inquiryUserLAS['items'][0]['uid'];
                 $inquiry = $ApiLas->inquiryListPutusan($uid);
-                $conten = $this->return_conten($inquiry);
+                $conten  = $this->return_conten($inquiry);
                 return $conten;
                 break;
 
@@ -219,33 +275,15 @@ class ApiLasController extends Controller
 
     public function insertAllAnalisa($request) {
         $ApiLas  = new ApiLas();
-        // $EForm = new EFormController();
-        // $eform = $EForm->show('int','1');
-        // $customer        = $eform->customer;
-        // $customer_detail = $customer->detail;
-        // print_r($eform);exit();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        $uid   = $inquiryUserLAS['items'][0]['uid'];
-        $uker  = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
-        print_r($uker);
-        print_r($inquiryUserLAS);exit();
-        // insert data debitur
-        $kecamatan_domisili = '';
-        $kabupaten_domisili = '';
-        $kodepos_domisili   = '';
-        $kelurahan_domisili = '';
-        $kecamatan_usaha    = '';
-        $kabupaten_usaha    = '';
-        $kodepos_usaha      = '';
-        $kelurahan_usaha    = '';
-        $kecamatan          = '';
-        $kabupaten          = '';
-        $kodepos            = '';
-        $kelurahan          = '';
+        $uid     = $inquiryUserLAS['items'][0]['uid'];
+        $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        // print_r($uker);
+        // print_r($request);exit();
 
-        
+        // insert data debitur
         if ($request['transaksi_normal_harian'] == '1') {
             $gaji = "G1";
         } else if ($request['transaksi_normal_harian'] == '2') {
@@ -259,8 +297,8 @@ class ApiLasController extends Controller
         }
 
         $content_las_debt = [
-            "uid"                   => $uid,
-            "kode_cabang"           => $uker,// inquiry user las
+            "uid"                   => $uid, // inquiry user las
+            "kode_cabang"           => $uker, // inquiry user las
             "penghasilan_per_bulan" => $gaji,
             "nama_debitur_1"        => $request['nama_debitur'],
             "nama_tanpa_gelar"      => $request['nama_debitur'],
@@ -303,20 +341,20 @@ class ApiLasController extends Controller
             "jenis_pekerjaan"       => $request['job_type_id'],
             "ket_pekerjaan"         => $request['job_field_id'],
             "jabatan"               => $request['position'],
-            "kode_pos"              => $kodepos,//?
-            "kodepos_usaha"         => $kodepos_usaha,
-            "kodepos_domisili"      => $kodepos_domisili,
-            "kelurahan"             => $kelurahan,//?
-            "kelurahan_domisili"    => $kelurahan_domisili,
-            "kelurahan_usaha"       => $kelurahan_usaha,
-            "kecamatan"             => $kecamatan,//?
-            "kecamatan_domisili"    => $kecamatan_domisili,
-            "kecamatan_usaha"       => $kecamatan_usaha,
-            "kabupaten"             => $kabupaten,//?
-            "kota_domisili"         => $kabupaten_domisili,
-            "propinsi_domisili"     => $kabupaten_domisili,            
-            "kota_usaha"            => $kabupaten_usaha,
-            "propinsi_usaha"        => $kabupaten_usaha,
+            "kode_pos"              => $request['kodepos'],
+            "kodepos_usaha"         => $request['kodepos_usaha'],
+            "kodepos_domisili"      => $request['kodepos_domisili'],
+            "kelurahan"             => $request['kelurahan'],
+            "kelurahan_domisili"    => $request['kelurahan_domisili'],
+            "kelurahan_usaha"       => $request['kelurahan_usaha'],
+            "kecamatan"             => $request['kecamatan'],
+            "kecamatan_domisili"    => $request['kecamatan_domisili'],
+            "kecamatan_usaha"       => $request['kecamatan_usaha'],
+            "kabupaten"             => $request['kabupaten'],
+            "kota_domisili"         => $request['kota_domisili'],
+            "propinsi_domisili"     => $request['propinsi_domisili'],
+            "kota_usaha"            => $request['kota_usaha'],
+            "propinsi_usaha"        => $request['propinsi_usaha'],
             "nama_debitur_2"        => "",
             "nama_debitur_3"        => "",
             "nama_debitur_4"        => "",
@@ -366,28 +404,28 @@ class ApiLasController extends Controller
                 $content_las_prescoring = [
                     "Fid_aplikasi"              => $insertDebitur['items']['ID_APLIKASI'],
                     "Fid_cif_las"               => $insertDebitur['items']['CIF_LAS'],
-                    "Briguna_profesi"           => $request['Briguna_profesi'],
                     "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
-                    "Payroll"                   => $request['Payroll'],
+                    "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
+                    "Briguna_profesi"           => $request['Briguna_profesi'],
+                    "Gaji_per_bulan"            => $request['Gaji_per_bulan'],
                     "Pendapatan_profesi"        => $request['Pendapatan_profesi'],
                     "Potongan_per_bulan"        => $request['Potongan_per_bulan'],
                     "Plafond_briguna_existing"  => $request['Plafond_briguna_existing'],
                     "Angsuran_briguna_existing" => $request['Angsuran_briguna_existing'],
                     "Suku_bunga"                => $request['Suku_bunga'],
-                    "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
                     "Jangka_waktu"              => $request['Jangka_waktu'],
+                    "Maksimum_plafond"          => $request['Maksimum_plafond'],
+                    "Permohonan_kredit"         => $request['Permohonan_kredit'],
+                    "Baki_debet"                => $request['Baki_debet'],
+                    "Plafond_usulan"            => $request['Plafond_usulan'],
+                    "Angsuran_usulan"           => $request['Angsuran_usulan'],
                     "Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
                     "Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
                     "Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
-                    "Angsuran_lainnya"          => $customer,
-                    "Gaji_per_bulan"            => $customer,
-                    "Gaji_bersih_per_bulan"     => $customer,
-                    "Maksimum_angsuran"         => $customer,
-                    "Maksimum_plafond"          => $customer,
-                    "Permohonan_kredit"         => $customer,
-                    "Baki_debet"                => $customer,
-                    "Plafond_usulan"            => $customer,
-                    "Angsuran_usulan"           => $customer,
+                    "Payroll"                   => $request['Payroll'],
+                    "Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
+                    "Maksimum_angsuran"         => $request['Maksimum_angsuran'],
+                    "Angsuran_lainnya"          => "0",                    
                     "Tp_produk"                 => "1",
                     "Briguna_smart"             => "0",
                     "Kelengkapan_dokumen"       => "1"
@@ -397,7 +435,7 @@ class ApiLasController extends Controller
                 print_r("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
-                    $jangka = '24';
+                    $jangka = $request['Jangka_waktu'];
                     $tgl_jatuh_tempo = date('d-m-Y',strtotime('+'.$jangka.' months'));
                     // insert dataKredit
                     $content_insertKreditBriguna = [
@@ -406,34 +444,40 @@ class ApiLasController extends Controller
                         "Pemrakarsa1"                  => $uid,
                         "Uker_pemrakarsa"              => $uker,
                         "Tanggal_jatuh_tempo"          => $tgl_jatuh_tempo,
+                        "Tujuan_membuka_rek"           => $request['Tujuan_membuka_rek'],
+                        "Jangka_waktu"                 => $request['Jangka_waktu'],
+                        "Briguna_smart"                => $request['Briguna_smart'],
                         "Kode_fasilitas"               => $request['Kode_fasilitas'],
-                        "Sandi_stp"                    => $request['Sandi_stp'],
-                        "Provisi_kredit"               => $request['Provisi'],
-                        "Penalty"                      => $request['Penalty'],
-                        "Bupln"                        => $request['Bupln'],
-                        "Agribisnis"                   => $request['Agribisnis'],
-                        "Sumber_aplikasi"              => $request['Sumber_aplikasi'],
-                        "Pengadilan_terdekat"          => $request['Pengadilan_terdekat'],
-                        "Biaya_administrasi"           => $request['Biaya_administrasi'],
-                        "Perusahaan_asuransi"          => $request['Program_asuransi'],
                         "Tujuan_penggunaan_kredit"     => $request['Tujuan_penggunaan_kredit'],
                         "Penggunaan_kredit"            => $request['Penggunaan_kredit'],
-                        "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
+                        "Provisi_kredit"               => $request['Provisi_kredit'],
+                        "Biaya_administrasi"           => $request['Biaya_administrasi'],                        
+                        "Penalty"                      => $request['Penalty'],
+                        "Perusahaan_asuransi"          => $request['Nama_perusahaan_asuransi'],
+                        "Premi_asuransi_jiwa"          => $request['Premi_asuransi_jiwa'],
+                        "Premi_beban_bri"              => $request['Premi_beban_bri'],
+                        "Premi_beban_debitur"          => $request['Premi_beban_debitur'],
+                        "Flag_promo"                   => $request['promo'],
+                        "Fid_promo"                    => $request['nama_program_promo'],
+                        "Pengadilan_terdekat"          => $request['Pengadilan_terdekat'],
+                        "Bupln"                        => $request['Bupln'],
+                        "Agribisnis"                   => $request['Agribisnis'],
+                        "Sandi_stp"                    => $request['Sandi_stp'],
                         "Sifat_kredit"                 => $request['Sifat_kredit'],
+                        "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
                         "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi'],
-                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi_lbu'],
-                        "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
                         "Jenis_kredit_lbu"             => $request['Jenis_kredit_lbu'],
+                        "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
                         "Kategori_kredit_lbu"          => $request['Kategori_kredit_lbu'],
                         "Jenis_penggunaan_lbu"         => $request['Jenis_penggunaan_lbu'],
-                        "Maksimum_plafond"             => $eform['Maksimum_plafond'],
-                        "Plafon_induk"                 => $eform['Plafon_induk'],
-                        "Tujuan_membuka_rek"           => "3",
-                        "Jangka_waktu"                 => "24",
-                        "Tp_produk"                    => "1",
-                        "Id_kredit"                    => "0",
-                        "Baru_perpanjangan"            => "0",
-                        "Jenis_fasilitas"              => "0605",
+                        "Sumber_aplikasi"              => $request['Sumber_aplikasi'],                        
+                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi'],
+                        "Maksimum_plafond"             => $request['Maksimum_plafond'],
+                        "Plafon_induk"                 => "0", // hardcode las
+                        "Tp_produk"                    => "1", // hardcode las
+                        "Id_kredit"                    => "0", // hardcode las
+                        "Baru_perpanjangan"            => "0", // hardcode las
+                        "Jenis_fasilitas"              => "0605", // hardcode las
                         "Sisa_jangka_waktu_sd_penyesuaian"=> "0", // hardcode
                         "Valuta"                       => "idr", // hardcode
                         "Segmen_owner"                 => "RITEL", // hardcode
@@ -444,21 +488,16 @@ class ApiLasController extends Controller
                         "Discount"                     => "0", // hardcode las
                         "Golongan_kredit"              => "20", // hardcode las
                         "Orientasi_penggunaan"         => "9", // hardcode las
-                        "Lokasi_proyek"                => "0591",
+                        "Lokasi_proyek"                => "0591", // hardcode las
                         "Nilai_proyek"                 => "0", // hardcode las
-                        "Fasilitas_penyedia_dana"      => "1999", // hardcode
-                        "Baki_debet"                   => "0",
-                        "Original_amount"              => "0",
-                        "Kelonggaran_tarik"            => "0",
+                        "Fasilitas_penyedia_dana"      => "1999", // hardcode las
+                        "Baki_debet"                   => "0", // hardcode las
+                        "Original_amount"              => "0", // hardcode las
+                        "Kelonggaran_tarik"            => "0", // hardcode las
                         "Denda"                        => "0", // hardcode las
-                        "Premi_asuransi_jiwa"          => "0.75",
-                        "Premi_beban_bri"              => "0",
-                        "Premi_beban_debitur"          => "0.75",
                         "Grace_period"                 => "0", // hardcode las
-                        "Flag_promo"                   => "1",
-                        "Fid_promo"                    => "4",
-                        "Status_takeover"              => "0",
-                        "Bank_asal_takeover"           => "",
+                        "Status_takeover"              => "0", // hardcode las
+                        "Bank_asal_takeover"           => "", // hardcode las
                         "Data2"                        => "" // kosongin aja
                     ];
 
