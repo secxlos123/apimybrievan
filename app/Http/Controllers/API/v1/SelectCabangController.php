@@ -31,6 +31,7 @@ class SelectCabangController extends Controller
         $offices = [];
 
 		$mitra = Mitra::filter( $request )->get();
+		$mitra = $mitra->toArray();
 		print_r($mitra);print_r($branchs);die();
         if ($branchs['responseData'] != '') {
             foreach ($branchs['responseData'] as $branch) {
