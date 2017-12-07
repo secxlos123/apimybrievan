@@ -75,7 +75,13 @@ class VisitReportRequest extends BaseRequest
             'recommendation'=> '',
             'legal_bussiness_document'=>'required_if:source,non-fixed|file',
             'license_of_practice'=>'file',
-            'work_letter'=>'required_if:source,fixed|file'
+            'work_letter'=>'required_if:source,fixed|file',
+            'title' => 'required|number',
+            'employment_status' => 'required|number',
+            'age_of_mpp' => 'required|number',
+            'loan_history_accounts' => 'required|number',
+            'religion' => 'required|number',
+            'office_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12'
         ];
     }
 
