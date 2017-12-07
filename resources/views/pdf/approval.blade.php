@@ -10,7 +10,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <style type="text/css">
+        <style type="text/css" media="all">
             html {
                 margin: 0px;
             }
@@ -67,6 +67,8 @@
             }
             td {
                 padding: 5px 5px 5px 0px;
+            }
+            td.label {
                 width: 170px;
             }
             .full-width {
@@ -115,6 +117,13 @@
                 border: solid 1px #cecece;
                 padding: 0px 10px;
                 margin-top: 20px;
+                page-break-before: always;
+            }
+            .term-02 {
+                display: block;
+                border: solid 1px #cecece;
+                padding: 0px 10px;
+                margin-top: 20px;
             }
             .term>ol {
                 padding-left: 30px;
@@ -145,6 +154,7 @@
                 clear: both;
             }
             .break-word {
+                max-width: 300px;
                 word-wrap: break-word;
             }
             .underline {
@@ -195,39 +205,39 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Nama RM</td>
+                        <td class="label">Nama RM</td>
                         <td class="break-word">: {{ $detail->ao_name }}</td>
                     </tr>
                     <tr>
-                        <td>Tempat Kunjungan</td>
+                        <td class="label">Tempat Kunjungan</td>
                         <td class="break-word">: {{ $detail->address }}</td>
                     </tr>
                     <tr>
-                        <td>Tanggal Kunjungan</td>
+                        <td class="label">Tanggal Kunjungan</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($detail->appointment_date)) }}</td>
                     </tr>
                     <tr>
-                        <td>Nama Calon Debitur</td>
+                        <td class="label">Nama Calon Debitur</td>
                         <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Tujuan Kunjungan</td>
+                        <td class="label">Tujuan Kunjungan</td>
                         <td class="break-word">: {{ $detail->visit_report['purpose_of_visit'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jumlah Permohonan</td>
+                        <td class="label">Jumlah Permohonan</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->nominal), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Jenis Permohonan</td>
+                        <td class="label">Jenis Permohonan</td>
                         <td class="break-word">: {{ strtoupper($detail->product_type) }}</td>
                     </tr>
                     <tr>
-                        <td>Nomor NPWP</td>
+                        <td class="label">Nomor NPWP</td>
                         <td class="break-word">: {{ $detail->visit_report['npwp_number_masking'] }}</td>
                     </tr>
                     <tr>
-                        <td>Hasil Kunjungan</td>
+                        <td class="label">Hasil Kunjungan</td>
                         <td class="break-word">: {{ $detail->visit_report['visit_result'] }}</td>
                     </tr>
                 </tbody>
@@ -244,59 +254,59 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Jenis KPP</td>
+                        <td class="label">Jenis KPP</td>
                         <td class="break-word">: {{ $detail->visit_report['kpp_type_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jenis Properti</td>
+                        <td class="label">Jenis Properti</td>
                         <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Harga Rumah</td>
+                        <td class="label">Harga Rumah</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Luas Bangunan</td>
+                        <td class="label">Luas Bangunan</td>
                         <td class="break-word">: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
                     </tr>
                     <tr>
-                        <td>Lokasi Rumah</td>
+                        <td class="label">Lokasi Rumah</td>
                         <td class="break-word">: {{ $detail->kpr['home_location'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jangka Waktu</td>
+                        <td class="label">Jangka Waktu</td>
                         <td class="break-word">: {{ $detail->kpr['year'] }} Bulan</td>
                     </tr>
                     <tr>
-                        <td>KPR Aktif ke</td>
+                        <td class="label">KPR Aktif ke</td>
                         <td class="break-word">: {{ $detail->kpr['active_kpr'] }}</td>
                     </tr>
                     <tr>
-                        <td>Uang Muka</td>
+                        <td class="label">Uang Muka</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Jumlah Permohonan</td>
+                        <td class="label">Jumlah Permohonan</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Jenis Dibiayai</td>
+                        <td class="label">Jenis Dibiayai</td>
                         <td class="break-word">: {{ $detail->visit_report['type_financed_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Sektor Ekonomi</td>
+                        <td class="label">Sektor Ekonomi</td>
                         <td class="break-word">: {{ $detail->visit_report['economy_sector_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Project</td>
+                        <td class="label">Project</td>
                         <td class="break-word">: {{ $detail->visit_report['project_list_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Program</td>
+                        <td class="label">Program</td>
                         <td class="break-word">: {{ $detail->visit_report['program_list_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Tujuan Penggunaan</td>
+                        <td class="label">Tujuan Penggunaan</td>
                         <td class="break-word">: {{ $detail->visit_report['use_reason_name'] }}</td>
                     </tr>
                 </tbody>
@@ -313,15 +323,15 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Gaji/Pendapatan</td>
+                        <td class="label">Gaji/Pendapatan</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Pendapatan Lain</td>
+                        <td class="label">Pendapatan Lain</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Angsuran Pinjaman</td>
+                        <td class="label">Angsuran Pinjaman</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
                     </tr>
                 </tbody>
@@ -335,44 +345,42 @@
                 </tbody>
             </table>
 
-            @foreach( $detail->visit_report['mutation'] as $mutation )
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Nama Bank</td>
-                            <td class="break-word">: {{ $mutation['bank'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>No. Rekening</td>
-                            <td class="break-word">: {{ $mutation['number'] }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <table class="full-width">
-                                    <thead>
-                                        <tr>
-                                            <th>Tanggal</th>
-                                            <th>Nominal</th>
-                                            <th>Jenis Transaksi</th>
-                                            <th>Keterangan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach( $mutation['bankstatement'] as $bank )
-                                            <tr>
-                                                <td>{{ $bank['date'] }}</td>
-                                                <td>Rp. {{ $bank['amount'] > 0 ? number_format(round($bank['amount']), 0, ",", ".") : '' }}</td>
-                                                <td class="break-word">{{ $bank['type'] }}</td>
-                                                <td class="break-word">{{ $bank['note'] }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            @endforeach
+            @if( isset($detail->visit_report['mutation']) )
+                @foreach( $detail->visit_report['mutation'] as $mutation )
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="label">Nama Bank</td>
+                                <td class="break-word">: {{ $mutation['bank'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">No. Rekening</td>
+                                <td class="break-word">: {{ $mutation['number'] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="full-width">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nominal</th>
+                                <th>Jenis Transaksi</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach( $mutation['bankstatement'] as $bank )
+                                <tr>
+                                    <td>{{ $bank['date'] }}</td>
+                                    <td>Rp. {{ $bank['amount'] > 0 ? number_format(round($bank['amount']), 0, ",", ".") : '' }}</td>
+                                    <td class="break-word">{{ $bank['type'] }}</td>
+                                    <td class="break-word">{{ $bank['note'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endforeach
+            @endif
 
             <table class="full-width">
                 <tbody>
@@ -385,11 +393,11 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Pros (Hal yang mendukung analisa)</td>
+                        <td class="label">Pros (Hal yang mendukung analisa)</td>
                         <td class="break-word">: {{ $detail->visit_report['pros'] }}</td>
                     </tr>
                     <tr>
-                        <td>Con (Hal yang tidak mendukung analisa)</td>
+                        <td class="label">Con (Hal yang tidak mendukung analisa)</td>
                         <td class="break-word">: {{ $detail->visit_report['cons'] }}</td>
                     </tr>
                 </tbody>
@@ -398,7 +406,7 @@
             <div class="term">
                 <br/>Dengan ini saya meyakini kebenaran data nasabah dan merekomendasikan permohonan kredit untuk dapat diproses lebih lanjut :<br/>
 
-                <div class="term">
+                <div class="term-02">
                     <table class="full-width">
                         <tbody>
                             <tr>
@@ -410,11 +418,11 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td>Rekomendasi</td>
+                                <td class="label">Rekomendasi</td>
                                 <td class="break-word">: {{ $detail->visit_report['recommended'] == 'yes' ? 'Ya' : 'Tidak' }}</td>
                             </tr>
                             <tr>
-                                <td>Tanggal</td>
+                                <td class="label">Tanggal</td>
                                 <td class="break-word">: {{ date('d M Y', strtotime($detail->created_at)) }}</td>
                             </tr>
                         </tbody>
@@ -429,7 +437,7 @@
                     </div>
                 </div>
 
-                <div class="term">
+                <div class="term-02">
                     <table class="full-width">
                         <tbody>
                             <tr>
@@ -441,15 +449,15 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td>Rekomendasi</td>
+                                <td class="label">Rekomendasi</td>
                                 <td class="break-word">: {{ $detail->recommended ? 'Ya' : 'Tidak' }}</td>
                             </tr>
                             <tr>
-                                <td>Catatan</td>
+                                <td class="label">Catatan</td>
                                 <td class="break-word">: {{ $detail->recommendation }}</td>
                             </tr>
                             <tr>
-                                <td>Tanggal</td>
+                                <td class="label">Tanggal</td>
                                 <td class="break-word">: {{ date('d M Y', strtotime($detail->created_at)) }}</td>
                             </tr>
                         </tbody>

@@ -66,6 +66,8 @@
             }
             td {
                 padding: 5px 5px 5px 0px;
+            }
+            td.label {
                 width: 170px;
             }
             .full-width {
@@ -137,6 +139,7 @@
                 bottom: 0;
             }
             .break-word {
+                max-width: 300px;
                 word-wrap: break-word;
             }
         </style>
@@ -182,55 +185,55 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>NIK</td>
+                        <td class="label">NIK</td>
                         <td class="break-word">: {{ $detail->nik }}</td>
                     </tr>
                     <tr>
-                        <td>Nama</td>
+                        <td class="label">Nama</td>
                         <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Alamat</td>
+                        <td class="label">Alamat</td>
                         <td class="break-word">: {{ $detail->customer->personal['address'] }}</td>
                     </tr>
                     <tr>
-                        <td>Status tempat tinggal</td>
+                        <td class="label">Status tempat tinggal</td>
                         <td class="break-word">: {{ $detail->customer->personal['address_status'] }}</td>
                     </tr>
                     <tr>
-                        <td>Tempat, Tanggal lahir</td>
+                        <td class="label">Tempat, Tanggal lahir</td>
                         <td class="break-word">: {{ $detail->customer->personal['birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['birth_date'])) }}</td>
                     </tr>
                     <tr>
-                        <td>Jenis Kelamin</td>
+                        <td class="label">Jenis Kelamin</td>
                         <td class="break-word">: {{ $detail->customer->personal['gender'] }}</td>
                     </tr>
                     <tr>
-                        <td>Status Pernikahan</td>
+                        <td class="label">Status Pernikahan</td>
                         <td class="break-word">: {{ $detail->customer->personal['status'] }}</td>
                     </tr>
                     <tr>
-                        <td>Kewarganegaraan</td>
+                        <td class="label">Kewarganegaraan</td>
                         <td class="break-word">: {{ $detail->customer->personal['citizenship'] }}</td>
                     </tr>
                     <tr>
-                        <td>No. Telepon</td>
+                        <td class="label">No. Telepon</td>
                         <td class="break-word">: {{ $detail->customer->personal['phone'] }}</td>
                     </tr>
                     <tr>
-                        <td>No. Handphone</td>
+                        <td class="label">No. Handphone</td>
                         <td class="break-word">: {{ $detail->customer->personal['mobile_phone'] }}</td>
                     </tr>
                     <tr>
-                        <td>Email</td>
+                        <td class="label">Email</td>
                         <td class="break-word">: {{ $detail->customer->personal['email'] }}</td>
                     </tr>
                     <tr>
-                        <td>Nama Ibu Kandung</td>
+                        <td class="label">Nama Ibu Kandung</td>
                         <td class="break-word">: {{ $detail->customer->personal['mother_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jumlah Tanggungan</td>
+                        <td class="label">Jumlah Tanggungan</td>
                         <td class="break-word">: {{ $detail->customer->financial['dependent_amount'] }}</td>
                     </tr>
                 </tbody>
@@ -248,15 +251,15 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td>NIK</td>
+                            <td class="label">NIK</td>
                             <td class="break-word">: {{ $detail->customer->personal['couple_nik'] }}</td>
                         </tr>
                         <tr>
-                            <td>Nama</td>
+                            <td class="label">Nama</td>
                             <td class="break-word">: {{ $detail->customer->personal['couple_name'] }}</td>
                         </tr>
                         <tr>
-                            <td>Tempat, Tanggal lahir</td>
+                            <td class="label">Tempat, Tanggal lahir</td>
                             <td class="break-word">: {{ $detail->customer->personal['couple_birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['couple_birth_date'])) }}</td>
                         </tr>
                     </tbody>
@@ -274,31 +277,31 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Bidang Pekerjaan</td>
+                        <td class="label">Bidang Pekerjaan</td>
                         <td class="break-word">: {{ $detail->customer->work['work_field'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jenis Pekerjaan</td>
+                        <td class="label">Jenis Pekerjaan</td>
                         <td class="break-word">: {{ $detail->customer->work['type'] }}</td>
                     </tr>
                     <tr>
-                        <td>Pekerjaan</td>
+                        <td class="label">Pekerjaan</td>
                         <td class="break-word">: {{ $detail->customer->work['work'] }}</td>
                     </tr>
                     <tr>
-                        <td>Nama Perusahaan</td>
+                        <td class="label">Nama Perusahaan</td>
                         <td class="break-word">: {{ $detail->customer->work['company_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jabatan</td>
+                        <td class="label">Jabatan</td>
                         <td class="break-word">: {{ $detail->customer->work['position'] }}</td>
                     </tr>
                     <tr>
-                        <td>Lama Bekerja/Usaha</td>
+                        <td class="label">Lama Bekerja/Usaha</td>
                         <td class="break-word">: {{ $detail->customer->work['work_duration'] ? $detail->customer->work['work_duration'] : '0' }} Tahun,  {{ $detail->customer->work['work_duration_month'] ? $detail->customer->work['work_duration_month'] : '0' }} Bulan</td>
                     </tr>
                     <tr>
-                        <td>Alamat Kantor/Usaha</td>
+                        <td class="label">Alamat Kantor/Usaha</td>
                         <td class="break-word">: {{ $detail->customer->work['office_address'] }}</td>
                     </tr>
                 </tbody>
@@ -315,15 +318,15 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Gaji/Pendapatan</td>
+                        <td class="label">Gaji/Pendapatan</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Pendapatan Lain</td>
+                        <td class="label">Pendapatan Lain</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Angsuran Pinjaman</td>
+                        <td class="label">Angsuran Pinjaman</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
                     </tr>
                 </tbody>
@@ -341,15 +344,15 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td>Gaji/ Pendapatan</td>
+                            <td class="label">Gaji/ Pendapatan</td>
                             <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary_couple']), 0, ",", ".") }}</td>
                         </tr>
                         <tr>
-                            <td>Pendapatan Lain</td>
+                            <td class="label">Pendapatan Lain</td>
                             <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary_couple']), 0, ",", ".") }}</td>
                         </tr>
                         <tr>
-                            <td>Angsuran Pinjaman</td>
+                            <td class="label">Angsuran Pinjaman</td>
                             <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment_couple']), 0, ",", ".") }}</td>
                         </tr>
                     </tbody>
@@ -367,15 +370,15 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Nama</td>
+                        <td class="label">Nama</td>
                         <td class="break-word">: {{ $detail->customer->contact['emergency_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>No. Handphone</td>
+                        <td class="label">No. Handphone</td>
                         <td class="break-word">: {{ $detail->customer->contact['emergency_contact'] }}</td>
                     </tr>
                     <tr>
-                        <td>Hubungan</td>
+                        <td class="label">Hubungan</td>
                         <td class="break-word">: {{ $detail->customer->contact['emergency_relation'] }}</td>
                     </tr>
                 </tbody>
@@ -392,39 +395,39 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Jenis KPP</td>
+                        <td class="label">Jenis KPP</td>
                         <td class="break-word">: {{ $detail->visit_report['kpp_type_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jenis Properti</td>
+                        <td class="label">Jenis Properti</td>
                         <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
                     </tr>
                     <tr>
-                        <td>Harga Rumah</td>
+                        <td class="label">Harga Rumah</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Luas Bangunan</td>
+                        <td class="label">Luas Bangunan</td>
                         <td class="break-word">: {{ $detail->kpr['building_area'] }} m<sup>2</sup></td>
                     </tr>
                     <tr>
-                        <td>Lokasi Rumah</td>
+                        <td class="label">Lokasi Rumah</td>
                         <td class="break-word">: {{ $detail->kpr['home_location'] }}</td>
                     </tr>
                     <tr>
-                        <td>Jangka Waktu</td>
+                        <td class="label">Jangka Waktu</td>
                         <td class="break-word">: {{ $detail->kpr['year'] }} Bulan</td>
                     </tr>
                     <tr>
-                        <td>KPR Aktif ke</td>
+                        <td class="label">KPR Aktif ke</td>
                         <td class="break-word">: {{ $detail->kpr['active_kpr'] }}</td>
                     </tr>
                     <tr>
-                        <td>Uang Muka</td>
+                        <td class="label">Uang Muka</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['down_payment']), 0, ",", ".") }}</td>
                     </tr>
                     <tr>
-                        <td>Jumlah Permohonan</td>
+                        <td class="label">Jumlah Permohonan</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['request_amount']), 0, ",", ".") }}</td>
                     </tr>
                 </tbody>

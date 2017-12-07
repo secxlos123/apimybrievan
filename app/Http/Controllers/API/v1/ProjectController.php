@@ -23,13 +23,16 @@ class ProjectController extends Controller
             'page' => $request->page,
             'sort' => $request->sort,
         ] )->post();
+        $project_list = array();
+        if ($project_list_service['code'] == '200' ) {
         $project_list = $project_list_service[ 'contents' ];
         $project_list[ 'data' ] = array_map( function( $content ) {
             return [
                 'id' => $content[ 'id_project' ],
                 'name' => $content[ 'nama' ]
             ];
-        }, $project_list[ 'data' ] );
+            }, $project_list[ 'data' ] );
+        }
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $project_list
