@@ -315,6 +315,8 @@ class Customer extends User
         $separate_array_keys = array_flip( $this->fillable );
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
+        unset( $customer_data[ 'product_type' ] );
+        unset( $customer_data[ 'ao_id' ] );
         if (count($customer_data) > 0) {
           $this->detail()->update( $customer_data );
         }
