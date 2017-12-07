@@ -30,6 +30,8 @@ class SelectCabangController extends Controller
         $offset  = ($page * $perPage) - $perPage;
         $offices = [];
 
+		$mitra = Mitra::filter( $request )->get();
+		print_r($mitra);print_r($branchs);die();
         if ($branchs['responseData'] != '') {
             foreach ($branchs['responseData'] as $branch) {
                 $search = true;
@@ -53,7 +55,6 @@ class SelectCabangController extends Controller
 					}else{
 						$kode_uker = $branch['kode_uker'];
 					}
-						$mitra = Mitra::filter( $request )->get();
 						foreach($mitra as $key){
 							if($key['BRANCH_CODE']== $kode_uker){										
 								$offices[] = $branch;
