@@ -376,6 +376,7 @@ class ApiLasController extends Controller
             "resident_flag"         => "Y", // hardcode dari las
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
+
         ];
 
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
@@ -538,11 +539,13 @@ class ApiLasController extends Controller
 
             $params = [
                 "uid"                   => $uid, // inquiry user las
-                "kode_cabang"           => $uker, // inquiry user las
-                "penghasilan_per_bulan" => $gaji,
+                "uid_pemrakarsa"        => $uker, // inquiry user las
+                "tp_produk"             => "1", // hardcode dari las
                 "id_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
-                "cif_las"               => $insertDebitur['items']['CIF_LAS'],
-                "nama_tanpa_gelar"      => $request['nama_debitur'],
+                "cif_las"               => $insertDebitur['items']['CIF_LAS']
+
+
+                /*"nama_tanpa_gelar"      => $request['nama_debitur'],
                 "status_gelar"          => $request['status_gelar'],
                 "keterangan_status_gelar"=> $request['keterangan_status_gelar'],
                 "jenis_kelamin"         => $request['jenis_kelamin'],
@@ -554,23 +557,20 @@ class ApiLasController extends Controller
                 "kode_pos"              => $request['kodepos'],
                 "lama_menetap"          => $request['lama_menetap'],
                 "kepemilikan_tempat_tinggal" => $request['kepemilikan_tempat_tinggal'],
-                
+                "penghasilan_per_bulan" => $gaji,
                 "nama_pasangan"         => $request['nama_pasangan'],
                 "tgl_lahir_pasangan"    => $request['tgl_lahir_pasangan'],
                 "no_ktp_pasangan"       => $request['no_ktp_pasangan'],
                 "nama_ibu"              => $request['nama_ibu'],
-                
                 "email"                 => $request['email'],
                 "tgl_mulai_usaha"       => $request['tgl_mulai_bekerja'],
                 "kelurahan"             => $request['kelurahan'],
                 "kecamatan"             => $request['kecamatan'],
                 "fixed_line"            => $request['no_tlp'],
                 "no_hp"                 => $request['no_hp'],
-
                 "kewarganegaraan"       => "ID", // hardcode dari las
                 "expired_ktp"           => "31122899", // hardcode
                 "sumber_utama"          => "1", // hardcode gaji dari mybri
-                "tp_produk"             => "1", // hardcode dari las
                 "kategori_portofolio"   => "175", // hardcode las   
                 "negara_domisili"       => "ID", // hardcode dari las
                 "golongan_debitur_sid"  => "907", // hardcode dari las
@@ -583,7 +583,7 @@ class ApiLasController extends Controller
                 "federal_wh_code"       => "1", // hardcode dari las
                 "resident_flag"         => "Y", // hardcode dari las
                 "tujuan_membuka_rekening"=> "ZZ", // hardcode
-                "ket_buka_rekening"     => "Pinjaman" // hardcode
+                "ket_buka_rekening"     => "Pinjaman" // hardcode*/
             ];
 
             return $insertDebitur;
