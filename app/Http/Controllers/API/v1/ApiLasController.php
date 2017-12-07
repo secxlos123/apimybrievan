@@ -540,14 +540,38 @@ class ApiLasController extends Controller
                 "uid"                   => $uid, // inquiry user las
                 "kode_cabang"           => $uker, // inquiry user las
                 "penghasilan_per_bulan" => $gaji,
-                "id_aplikasi"           => $insertDebitur['items']['ID_APLIKASI']),
-                "cif_las"               => $insertDebitur['items']['CIF_LAS']),
+                "id_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
+                "cif_las"               => $insertDebitur['items']['CIF_LAS'],
                 "nama_tanpa_gelar"      => $request['nama_debitur'],
+                "status_gelar"          => $request['status_gelar'],
+                "keterangan_status_gelar"=> $request['keterangan_status_gelar'],
+                "jenis_kelamin"         => $request['jenis_kelamin'],
+                "no_ktp"                => $request['no_ktp'],
+                "tgl_lahir"             => $request['tgl_lahir'],
+                "tempat_lahir"          => $request['tempat_lahir'],
+                "usia_mpp"              => $request['usia_mpp'],
+                "alamat"                => $request['alamat'],
+                "kode_pos"              => $request['kodepos'],
+                "lama_menetap"          => $request['lama_menetap'],
+                "kepemilikan_tempat_tinggal" => $request['kepemilikan_tempat_tinggal'],
+                
+                "nama_pasangan"         => $request['nama_pasangan'],
+                "tgl_lahir_pasangan"    => $request['tgl_lahir_pasangan'],
+                "no_ktp_pasangan"       => $request['no_ktp_pasangan'],
+                "nama_ibu"              => $request['nama_ibu'],
+                
+                "email"                 => $request['email'],
+                "tgl_mulai_usaha"       => $request['tgl_mulai_bekerja'],
+                "kelurahan"             => $request['kelurahan'],
+                "kecamatan"             => $request['kecamatan'],
+                "fixed_line"            => $request['no_tlp'],
+                "no_hp"                 => $request['no_hp'],
+
+                "kewarganegaraan"       => "ID", // hardcode dari las
+                "expired_ktp"           => "31122899", // hardcode
                 "sumber_utama"          => "1", // hardcode gaji dari mybri
                 "tp_produk"             => "1", // hardcode dari las
-                "expired_ktp"           => "31122899", // hardcode
-                "kategori_portofolio"   => "175", // hardcode las
-                "kewarganegaraan"       => "ID", // hardcode dari las
+                "kategori_portofolio"   => "175", // hardcode las   
                 "negara_domisili"       => "ID", // hardcode dari las
                 "golongan_debitur_sid"  => "907", // hardcode dari las
                 "golongan_debitur_lbu"  => "886", // hardcode dari las
