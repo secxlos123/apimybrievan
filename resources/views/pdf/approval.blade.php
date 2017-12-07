@@ -345,40 +345,42 @@
                 </tbody>
             </table>
 
-            @foreach( $detail->visit_report['mutation'] as $mutation )
-                <table>
-                    <tbody>
-                        <tr>
-                            <td class="label">Nama Bank</td>
-                            <td class="break-word">: {{ $mutation['bank'] }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">No. Rekening</td>
-                            <td class="break-word">: {{ $mutation['number'] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table class="full-width">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Nominal</th>
-                            <th>Jenis Transaksi</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach( $mutation['bankstatement'] as $bank )
+            @if( isset($detail->visit_report['mutation']) )
+                @foreach( $detail->visit_report['mutation'] as $mutation )
+                    <table>
+                        <tbody>
                             <tr>
-                                <td>{{ $bank['date'] }}</td>
-                                <td>Rp. {{ $bank['amount'] > 0 ? number_format(round($bank['amount']), 0, ",", ".") : '' }}</td>
-                                <td class="break-word">{{ $bank['type'] }}</td>
-                                <td class="break-word">{{ $bank['note'] }}</td>
+                                <td class="label">Nama Bank</td>
+                                <td class="break-word">: {{ $mutation['bank'] }}</td>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endforeach
+                            <tr>
+                                <td class="label">No. Rekening</td>
+                                <td class="break-word">: {{ $mutation['number'] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="full-width">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nominal</th>
+                                <th>Jenis Transaksi</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach( $mutation['bankstatement'] as $bank )
+                                <tr>
+                                    <td>{{ $bank['date'] }}</td>
+                                    <td>Rp. {{ $bank['amount'] > 0 ? number_format(round($bank['amount']), 0, ",", ".") : '' }}</td>
+                                    <td class="break-word">{{ $bank['type'] }}</td>
+                                    <td class="break-word">{{ $bank['note'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endforeach
+            @endif
 
             <table class="full-width">
                 <tbody>
