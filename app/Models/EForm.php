@@ -239,23 +239,38 @@ class EForm extends Model
     {
         $eform = static::findOrFail( $eform_id );
         $result['status'] = false;
+        $developer_id = env('DEVELOPER_KEY',1);
+        $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
-             $result = $eform->insertCoreBRI();
 
-            if ($result['status']) {
-            $eform->update( [
-                'pros' => $request->pros,
-                'cons' => $request->cons,
-                'pinca_position' => $request->pinca_position,
-                'pinca_name' => $request->pinca_name,
-                'recommendation' => $request->recommendation,
-                'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved,
-                'status_eform' => 'approved'
-                ] );
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) 
+            {
+                    $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]); 
+                }
+            }
+            else
+            {
+                $eform->kpr()->update(['is_sent'=> false]);
+                $result['status'] = true;
             }
 
-        } else {
+            if ($result['status']) {
+                $eform->update( [
+                    'pros' => $request->pros,
+                    'cons' => $request->cons,
+                    'pinca_position' => $request->pinca_position,
+                    'pinca_name' => $request->pinca_name,
+                    'recommendation' => $request->recommendation,
+                    'recommended' => $request->recommended == "yes" ? true : false,
+                    'is_approved' => $request->is_approved,
+                    'status_eform' => 'approved'
+                    ] );
+            }
+        }
+        else
+        {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,

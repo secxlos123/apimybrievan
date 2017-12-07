@@ -48,6 +48,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		] );
 
 		Route::get( 'offices', 'OfficeController@index' );
+		Route::get('SelectCabang', 'SelectCabangController@index');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');

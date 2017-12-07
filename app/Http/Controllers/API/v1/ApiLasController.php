@@ -266,7 +266,7 @@ class ApiLasController extends Controller
             "id_aplikasi" => $data['id_aplikasi'],
             "uid"         => $uid,
             "flag_putusan"=> "6",
-            "catatan"     => "testis"
+            "catatan"     => "lanjut pencairan"
         ];
 
         $putus = $ApiLas->putusSepakat($conten_putusan);
@@ -281,7 +281,7 @@ class ApiLasController extends Controller
         $uid     = $inquiryUserLAS['items'][0]['uid'];
         $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
         // print_r($uker);
-        // print_r($request);exit();
+        print_r($request);exit();
 
         // insert data debitur
         if ($request['transaksi_normal_harian'] == '1') {
@@ -376,6 +376,7 @@ class ApiLasController extends Controller
             "resident_flag"         => "Y", // hardcode dari las
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
+
         ];
 
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
@@ -535,9 +536,82 @@ class ApiLasController extends Controller
             } else {
                 return $insertPrescreening;
             }
+
+            $params = [
+                "uid"                   => $uid, // inquiry user las
+                "uid_pemrakarsa"        => $uker, // inquiry user las
+                "tp_produk"             => "1", // hardcode dari las
+                "id_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
+                "cif_las"               => $insertDebitur['items']['CIF_LAS']
+
+
+                /*"nama_tanpa_gelar"      => $request['nama_debitur'],
+                "status_gelar"          => $request['status_gelar'],
+                "keterangan_status_gelar"=> $request['keterangan_status_gelar'],
+                "jenis_kelamin"         => $request['jenis_kelamin'],
+                "no_ktp"                => $request['no_ktp'],
+                "tgl_lahir"             => $request['tgl_lahir'],
+                "tempat_lahir"          => $request['tempat_lahir'],
+                "usia_mpp"              => $request['usia_mpp'],
+                "alamat"                => $request['alamat'],
+                "kode_pos"              => $request['kodepos'],
+                "lama_menetap"          => $request['lama_menetap'],
+                "kepemilikan_tempat_tinggal" => $request['kepemilikan_tempat_tinggal'],
+                "penghasilan_per_bulan" => $gaji,
+                "nama_pasangan"         => $request['nama_pasangan'],
+                "tgl_lahir_pasangan"    => $request['tgl_lahir_pasangan'],
+                "no_ktp_pasangan"       => $request['no_ktp_pasangan'],
+                "nama_ibu"              => $request['nama_ibu'],
+                "email"                 => $request['email'],
+                "tgl_mulai_usaha"       => $request['tgl_mulai_bekerja'],
+                "kelurahan"             => $request['kelurahan'],
+                "kecamatan"             => $request['kecamatan'],
+                "fixed_line"            => $request['no_tlp'],
+                "no_hp"                 => $request['no_hp'],
+                "kewarganegaraan"       => "ID", // hardcode dari las
+                "expired_ktp"           => "31122899", // hardcode
+                "sumber_utama"          => "1", // hardcode gaji dari mybri
+                "kategori_portofolio"   => "175", // hardcode las   
+                "negara_domisili"       => "ID", // hardcode dari las
+                "golongan_debitur_sid"  => "907", // hardcode dari las
+                "golongan_debitur_lbu"  => "886", // hardcode dari las
+                "customer_type"         => "I", // hardcode dari las
+                "sub_customer_type"     => "I", // hardcode dari las
+                "hub_bank"              => "9900", // hardcode dari las
+                "segmen_bisnis_bri"     => "RITEL", // hardcode dari las
+                "tgl_mulai_debitur"     => date('d-m-Y'), // hardcode tgl prakarsa
+                "federal_wh_code"       => "1", // hardcode dari las
+                "resident_flag"         => "Y", // hardcode dari las
+                "tujuan_membuka_rekening"=> "ZZ", // hardcode
+                "ket_buka_rekening"     => "Pinjaman" // hardcode*/
+            ];
+
             return $insertDebitur;
         } else {
             return $insertDebitur;
         }
+    }
+
+    public function updateBriguna($request) {
+        $params = [
+            "sumber_utama"          => "1", // hardcode gaji dari mybri
+            "tp_produk"             => "1", // hardcode dari las
+            "cif_las"               => "0", // hardcode debitur baru
+            "expired_ktp"           => "31122899", // hardcode
+            "kategori_portofolio"   => "175", // hardcode las
+            "kewarganegaraan"       => "ID", // hardcode dari las
+            "negara_domisili"       => "ID", // hardcode dari las
+            "golongan_debitur_sid"  => "907", // hardcode dari las
+            "golongan_debitur_lbu"  => "886", // hardcode dari las
+            "customer_type"         => "I", // hardcode dari las
+            "sub_customer_type"     => "I", // hardcode dari las
+            "hub_bank"              => "9900", // hardcode dari las
+            "segmen_bisnis_bri"     => "RITEL", // hardcode dari las
+            "tgl_mulai_debitur"     => date('d-m-Y'), // hardcode tgl prakarsa
+            "federal_wh_code"       => "1", // hardcode dari las
+            "resident_flag"         => "Y", // hardcode dari las
+            "tujuan_membuka_rekening"=> "ZZ", // hardcode
+            "ket_buka_rekening"     => "Pinjaman" // hardcode
+        ];
     }
 }
