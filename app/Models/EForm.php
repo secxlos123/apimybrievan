@@ -289,7 +289,7 @@ class EForm extends Model
         \Log::info("console 4");
         $customer_work =  $customer->work;
         \Log::info("console 5");
-        $customer_finance =  $customer->Financial;
+        $customer_finance =  $customer->financial;
         \Log::info("console 6");
         $customer_contact =  $customer->contact;
         \Log::info("console 7");
@@ -889,7 +889,7 @@ class EForm extends Model
         \Log::info("step5");
         $kpr = $this->kpr;
         $customer = clone $this->customer;
-        $customer_finance = (object) $customer->Financial;
+        $customer_finance = (object) $customer->financial;
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
@@ -931,9 +931,17 @@ class EForm extends Model
     public function step7($data)
     {
         \Log::info("step7");
+        $lkn = $this->visit_report;
+
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id
+            // 'title' => !( $lkn->title ) ? '' : $lkn->title,
+            // 'employment_status' => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
+            // 'age_of_mpp' => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
+            // 'loan_history_accounts' => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
+            // 'religion' => !( $lkn->religion ) ? '' : $lkn->religion,
+            // 'office_phone' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
         return $request;
     }
