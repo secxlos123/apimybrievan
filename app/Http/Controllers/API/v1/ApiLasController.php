@@ -266,7 +266,7 @@ class ApiLasController extends Controller
             "id_aplikasi" => $data['id_aplikasi'],
             "uid"         => $uid,
             "flag_putusan"=> "6",
-            "catatan"     => "testis"
+            "catatan"     => "lanjut pencairan"
         ];
 
         $putus = $ApiLas->putusSepakat($conten_putusan);
@@ -281,7 +281,7 @@ class ApiLasController extends Controller
         $uid     = $inquiryUserLAS['items'][0]['uid'];
         $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
         // print_r($uker);
-        // print_r($request);exit();
+        print_r($request);exit();
 
         // insert data debitur
         if ($request['transaksi_normal_harian'] == '1') {
