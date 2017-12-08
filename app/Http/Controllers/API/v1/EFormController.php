@@ -155,7 +155,7 @@ class EFormController extends Controller
         \Log::info($baseRequest);
 
         if ( $request->product_type == 'briguna' ) {
-			
+
 			        \Log::info("=======================================================");
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
@@ -189,10 +189,10 @@ class EFormController extends Controller
 				$kpr = BRIGUNA::create( $baseRequest );
 			        \Log::info($kpr);
 		} else {
-            
+
             $developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        
+
             if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
                 $property =  Property::create([
                     'developer_id'=>$baseRequest['developer'],
@@ -351,7 +351,14 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
         $ao_id = substr( '00000000' . $request->ao_id, -8 );
-        $eform->update( [ 'ao_id' => $ao_id ] );
+
+        $baseRequest = [ 'ao_id' => $ao_id ];
+        // Get User Login
+        $user_login = \RestwsHc::getUser($ao_id);
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
+        $eform->update( $baseRequest );
 
         DB::commit();
         return response()->success( [
