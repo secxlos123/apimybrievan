@@ -16,6 +16,7 @@ use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
 use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
 use App\Models\Property;
+use App\Models\EForm;
 
 class CollateralController extends Controller
 {
@@ -48,9 +49,24 @@ class CollateralController extends Controller
      */
     public function index()
     {
+      $developer_id = env('DEVELOPER_KEY',1);
       return $this->makeResponse(
-        $this->collateral->withAll()->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
+        $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
       );
+    }
+
+    /**
+     * Show Collateral Non Kerjasama
+     * @return \Illuminate\Http\Response
+     */
+    public function indexNon()
+    {
+      $data = EForm::whereHas('kpr',function($query) {
+        $developer_id = env('DEVELOPER_KEY',1);
+        $query->where('developer_id', '=', $developer_id);
+      })->paginate($this->request->has('limit') ? $this->request->limit : 10);
+      
+      return $this->makeResponse($data);
     }
 
     /**

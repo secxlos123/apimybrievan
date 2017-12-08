@@ -105,7 +105,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			->where('collateralId', '[0-9]+');
 		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
 			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
-
+		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		/**
 		 * Collateral ots routes
 		 */
