@@ -155,6 +155,8 @@ class EFormController extends Controller
         \Log::info($baseRequest);
 
         if ( $request->product_type == 'briguna' ) {
+			
+			        \Log::info("=======================================================");
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
@@ -185,6 +187,7 @@ class EFormController extends Controller
 				/*----------------------------------*/
 			}
 				$kpr = BRIGUNA::create( $baseRequest );
+			        \Log::info($kpr);
 		} else {
             
             $developer_id = env('DEVELOPER_KEY',1);
