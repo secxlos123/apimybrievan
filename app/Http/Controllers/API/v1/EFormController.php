@@ -42,7 +42,7 @@ class EFormController extends Controller
     public function show_briguna( Request $request )
     {
         \Log::info($request->all());
-          $eform = EFormBriguna::findOrFail( $request->id );
+          $eform = EFormBriguna::filter( $request )->get();
 
         return response()->success( [
             'contents' => $eform
