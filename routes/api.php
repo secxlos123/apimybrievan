@@ -25,7 +25,32 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		/* ------------*/
+
+
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
+		 /**
+         * User Notification
+         */
+		Route::get('users/notification', [
+            'as'    => 'api.user.notification',
+            'uses'  => 'NotificationController@index'
+        ]);
+
+        Route::get('users/notification/unread', [
+            'as'    => 'api.user.unread_notification',
+            'uses'  => 'NotificationController@unread'
+        ]);
+
+        Route::get('users/notification/summary', [
+            'as'    => 'api.user.summary_notification',
+            'uses'  => 'NotificationController@summary'
+        ]);
+
+        Route::get('users/notification/read/{id}', [
+            'as'    => 'api.user.read_notification',
+            'uses'  => 'NotificationController@read'
+        ]);
+
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );

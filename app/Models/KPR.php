@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\EForm;
+use App\Models\User;
+use App\Notifications\PengajuanKprNotification;
 use Asmx;
 
 class KPR extends Model
@@ -60,7 +62,10 @@ class KPR extends Model
         $data[ 'developer_id' ] = $data[ 'developer' ];
         $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
         $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
-
+        
+        $usersModel = User::FindOrFail($eform->user_id);
+        $testnotifWeb = $usersModel->notify(new PengajuanKprNotification($eform));
+        \Log::info($testnotifWeb);
         // $customer = $eform->customer;
         // $customer_detail = $customer->detail;
         // // Contoh
