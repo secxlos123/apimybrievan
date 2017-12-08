@@ -23,7 +23,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
 		Route::post('Download_Rekomendasi', 'Download_RekomendasiController@Download');
 		Route::post('Download', 'DownloadFileController@Download');
-		Route::post('Download2', 'DownloadFileController@Download2');
+		Route::get	('Download2', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		/* ------------*/
