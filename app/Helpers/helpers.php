@@ -198,6 +198,7 @@ if (! function_exists('generate_pdf')) {
                 ->save(public_path($folder.'/'.$filename));
 
         } catch (Exception $e) {
+            \Log::info("=============================exception-==========================");
             \Log::info($e);
             return $e;
 

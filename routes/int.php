@@ -162,6 +162,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 	 * Manage e-form from internal BRI
 	 */
 	Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+		Route::post( 'delete', 'EFormController@delete' )->name( 'eforms.delete' );
 		Route::post( 'disposition', 'EFormController@disposition' )->name( 'eforms.disposition' );
 		Route::post( 'approve', 'EFormController@approve' );
 		Route::post( 'step-{step_id}', 'EFormController@insertCoreBRI' ); // step id must between 1 - 7

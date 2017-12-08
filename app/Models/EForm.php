@@ -28,7 +28,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd'
     ];
 
     /**
@@ -240,26 +240,43 @@ class EForm extends Model
     {
         $eform = static::findOrFail( $eform_id );
         $result['status'] = false;
+        $developer_id = env('DEVELOPER_KEY',1);
+        $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
-             $result = $eform->insertCoreBRI();
 
-             if ($result['status']) {
-            $eform->update( [
-                'pros' => $request->pros,
-                'cons' => $request->cons,
-                'recommendation' => $request->recommendation,
-                'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved,
-                'status_eform' => 'approved'
-                ] );
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) 
+            {
+                    $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]); 
+                }
+            }
+            else
+            {
+                $eform->kpr()->update(['is_sent'=> false]);
+                $result['status'] = true;
             }
 
+            if ($result['status']) {
+                $eform->update( [
+                    'pros' => $request->pros,
+                    'cons' => $request->cons,
+                    'pinca_position' => $request->pinca_position,
+                    'pinca_name' => $request->pinca_name,
+                    'recommendation' => $request->recommendation,
+                    'recommended' => $request->recommended == "yes" ? true : false,
+                    'is_approved' => $request->is_approved,
+                    'status_eform' => 'approved'
+                    ] );
+            }
         }
         else
         {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
+                'pinca_position' => $request->pinca_position,
+                'pinca_name' => $request->pinca_name,
                 'recommendation' => $request->recommendation,
                 'recommended' => $request->recommended == "yes" ? true : false,
                 'is_approved' => $request->is_approved,
@@ -288,7 +305,7 @@ class EForm extends Model
         \Log::info("console 4");
         $customer_work =  $customer->work;
         \Log::info("console 5");
-        $customer_finance =  $customer->Financial;
+        $customer_finance =  $customer->financial;
         \Log::info("console 6");
         $customer_contact =  $customer->contact;
         \Log::info("console 7");
@@ -821,7 +838,7 @@ class EForm extends Model
         }
 
         $request = $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
@@ -862,7 +879,7 @@ class EForm extends Model
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
@@ -898,7 +915,7 @@ class EForm extends Model
         \Log::info("step5");
         $kpr = $this->kpr;
         $customer = clone $this->customer;
-        $customer_finance = (object) $customer->Financial;
+        $customer_finance = (object) $customer->financial;
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
@@ -940,9 +957,17 @@ class EForm extends Model
     public function step7($data)
     {
         \Log::info("step7");
+        $lkn = $this->visit_report;
+
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id
+            // 'title' => !( $lkn->title ) ? '' : $lkn->title,
+            // 'employment_status' => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
+            // 'age_of_mpp' => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
+            // 'loan_history_accounts' => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
+            // 'religion' => !( $lkn->religion ) ? '' : $lkn->religion,
+            // 'office_phone' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
         return $request;
     }

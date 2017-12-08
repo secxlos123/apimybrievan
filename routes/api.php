@@ -22,6 +22,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('select', 'SelectController@select');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
 		Route::post('Download_Rekomendasi', 'Download_RekomendasiController@Download');
+		Route::post('Download', 'DownloadFileController@Download');
+		Route::post('Download2', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		/* ------------*/
@@ -71,6 +73,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		] );
 
 		Route::get( 'offices', 'OfficeController@index' );
+		Route::post('SelectCabang', 'SelectCabangController@index');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');
@@ -109,6 +112,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
+		Route::post( 'eforms/submit-screening', 'EFormController@submitScreening' );
 
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
@@ -126,7 +130,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			->where('collateralId', '[0-9]+');
 		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
 			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
-
+		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		/**
 		 * Collateral ots routes
 		 */
@@ -138,8 +142,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 	} );
 
-
-	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 	Route::group( [ 'prefix' => '{type}' ], function () {
 		Route::get( 'cities', 'CityController' );
 		Route::get('city', 'CityController@getAll');

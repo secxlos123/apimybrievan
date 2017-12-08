@@ -14,6 +14,10 @@ use App\Models\Customer;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
 use App\Models\Mitra;
+use App\Models\Property;
+use App\Models\PropertyType;
+use App\Models\Collateral;
+use App\Models\User;
 use DB;
 
 class EFormController extends Controller
@@ -134,8 +138,6 @@ class EFormController extends Controller
             }
         }
 
-        \Log::info($baseRequest);
-
         $baseArray = array (
             'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
             , 'job_id' => 'work', 'job_name' => 'work_name'
@@ -152,7 +154,6 @@ class EFormController extends Controller
         \Log::info("=======================================================");
         \Log::info($baseRequest);
 
-
         if ( $request->product_type == 'briguna' ) {
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
@@ -161,7 +162,6 @@ class EFormController extends Controller
             $SK_AWAL = $request->SK_AWAL;
             $SK_AKHIR = $request->SK_AKHIR;
             $REKOMENDASI = $request->REKOMENDASI;
-            $SKPG = $request->SKPG;
 
             $id = $request->id;
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
@@ -170,7 +170,6 @@ class EFormController extends Controller
             $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
             $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
             $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
-            $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
             $baseRequest['KK'] = $KK;
@@ -178,11 +177,66 @@ class EFormController extends Controller
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
-            $baseRequest['SKPG'] = $SKPG;
-            $kpr = BRIGUNA::create( $baseRequest );
-            /*----------------------------------*/
-
-        } else {
+			$SKPG = '';
+			if(!empty($request->SKPG)){
+				$SKPG = $request->SKPG;
+				$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+				$baseRequest['SKPG'] = $SKPG;
+				$kpr = BRIGUNA::create( $baseRequest );
+				/*----------------------------------*/
+			}
+		} else {
+            
+            $developer_id = env('DEVELOPER_KEY',1);
+            $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+        
+            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
+                $property =  Property::create([
+                    'developer_id'=>$baseRequest['developer'],
+                    'prop_id_bri'=>'1',
+                    'name'=>$developer_name,
+                    'pic_name'=>'BRI',
+                    'pic_phone'=>'-',
+                    'address'=>$baseRequest['home_location'],
+                    'category'=>'3',
+                    'latitude'=>'0',
+                    'longitude'=>'0',
+                    'description'=>'-',
+                    'facilities'=>'-'
+                ]);
+                $baseRequest['property'] = $property->id;
+                $baseRequest['property_name'] = $developer_name;
+                \Log::info('=================== Insert Property===========');
+                \Log::info($property);
+                if ($property) {
+                    $propertyType = PropertyType::create([
+                        'property_id'=>$property->id,
+                        'name'=>$developer_name,
+                        'building_area'=>$baseRequest['building_area'],
+                        'price'=>$baseRequest['price'],
+                        'surface_area'=>$baseRequest['building_area'],
+                        'electrical_power'=>'-',
+                        'bathroom'=>0,
+                        'bedroom'=>0,
+                        'floors'=>0,
+                        'carport'=>0
+                    ]);
+                    \Log::info('=================== Insert Property type===========');
+                    \Log::info($propertyType);
+                    $baseRequest['property_type']= $propertyType->id;
+                    $baseRequest['property_type_name']= $developer_name;
+                    if ($propertyType) {
+                        $data = [
+                        'developer_id' => $developer_id,
+                        'property_id' => $property->id,
+                        'status' => Collateral::STATUS[0]
+                    ];
+                    $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
+                    \Log::info('=================== Insert Collateral===========');
+                    \Log::info($collateral);
+                    }
+                }
+            }
             $kpr = KPR::create( $baseRequest );
 
         }
@@ -197,14 +251,44 @@ class EFormController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function submitScreening( EFormRequest $request )
+    public function submitScreening( Request $request )
     {
         DB::beginTransaction();
-        $eform = EForm::findOrFail( $request->id );
-        $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        if ( $request->has('selected_sicd') ) {
+            $eform = EForm::find( $request->input('eform_id') );
+
+            $calculate = array(
+                $request->input('pefindo', 'Hijau')
+                , $request->input('dhn', 'Hijau')
+                , $request->input('sicd', 'Hijau')
+            );
+
+            if ( in_array('Merah', $calculate) ) {
+                $result = '3';
+
+            } else if ( in_array('Kuning', $calculate) ) {
+                $result = '2';
+
+            } else {
+                $result = '1';
+
+            }
+
+            $eform->update( [
+                'selected_sicd' => $request->input('selected_sicd')
+                , 'prescreening_status' => $result
+            ] );
+
+            $eform = array();
+
+        } else {
+            $eform = EForm::findOrFail( $request->id );
+            $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        }
 
         DB::commit();
         return response()->success( [
@@ -223,90 +307,19 @@ class EFormController extends Controller
         $data = EForm::findOrFail($request->eform);
         $personal = $data->customer->personal;
 
-        $dhn = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_dhn_consumer',
-                'requestData' => [
-                    'id_user' => request()->header( 'pn' ),
-                    'nik'=> $data->nik,
-                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
-                    'tgl_lahir'=> $personal['birth_date']
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-        \Log::info($dhn);
-
-        if ($dhn['responseCode'] != '00') {
-            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
-
+        $dhn = json_decode((string) $data->dhn_detail);
+        if ( !isset($dhn->responseData) ) {
+            $dhn = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"kategori":null,"keterangan":"","warna":"Hijau","result":""}]}');
         }
 
-        $sicd = \RestwsHc::setBody( [
-            'request' => json_encode( [
-                'requestMethod' => 'get_sicd_consumer',
-                'requestData' => [
-                    'id_user' => request()->header( 'pn' ),
-                    'nik'=> $data->nik,
-                    'nama_nasabah'=> strtolower($personal['first_name'].' '.$personal['last_name']),
-                    'tgl_lahir'=> $personal['birth_date'],
-                    'kode_branch'=> $data->branch_id
-                ]
-            ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
-        ] )->post( 'form_params' );
-         \Log::info($sicd);
-
-        if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
-
+        $sicd = json_decode((string) $data->sicd_detail);
+        if ( !isset($sicd->responseData) ) {
+            $sicd = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"status":null,"acctno":null,"cbal":null,"bikole":null,"result":null,"cif":null,"nama_debitur":null,"tgl_lahir":null,"alamat":null,"no_identitas":null}]}');
         }
 
-        $score = $data->pefindo_score;
-        $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
-            $pefindoC = 'Merah';
-
-        } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindoC = 'Hijau';
-
-        }
-
-        $dhnC = $dhn['responseData'][0]['warna'];
-
-        if ( $sicd['responseData'][0]['bikole'] == 1 || $sicd['responseData'][0]['bikole'] == '-' || $sicd['responseData'][0]['bikole'] == null) {
-            $sicdC = 'Hijau';
-
-        } elseif ( $sicd['responseData'][0]['bikole'] == 2 ) {
-            $sicdC = 'Kuning';
-
-        } else {
-            $sicdC = 'Merah';
-
-        }
-
-        $calculate = array($pefindoC, $dhnC, $sicdC);
-
-        \Log::info('========== result =============');
-        \Log::info($calculate);
-        if ( in_array('Merah', $calculate) ) {
-            $result = '3';
-
-        } else if ( in_array('Kuning', $calculate) ) {
-            $result = '2';
-
-        } else {
-            $result = '1';
-
-        }
-        $data->prescreening_status =  $result;
-
-        $explode = explode(',', $data->uploadscore);
         $html = '';
 
-        foreach ($explode as $value) {
+        foreach (explode(',', $data->uploadscore) as $value) {
             if ($value != '') {
                 $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
             }
@@ -314,44 +327,12 @@ class EFormController extends Controller
 
         $data['uploadscore'] = $html;
 
-        if ($dhn['responseCode'] == '00' && $sicd['responseCode']== '00') {
-            return response()->success( [
-                'message' => 'Data Screening e-form',
-                'contents' => [
-                    'eform' => $data,//json_encode($datafinal),
-                    'dhn'=>$dhn['responseData'],
-                    'sicd' => $sicd['responseData']
-                ]
-            ], 200 );
-
-        }
-
-        return response()->error( [
-            'message' => 'Data Screening Tidak Ditemukan',
+        return response()->success( [
+            'message' => 'Data Screening e-form',
             'contents' => [
                 'eform' => $data
-                , 'dhn'=> [
-                    [
-                        'kategori'=>'-',
-                        'keterangan'=>'-',
-                        'warna'=>'Hijau',
-                        'result'=>'-'
-                    ]
-                ]
-                , 'sicd'=> [
-                    [
-                        'status'=>'-',
-                        'acctno'=>'-',
-                        'cbal'=>'-',
-                        'bikole'=>'-',
-                        'result'=>'-',
-                        'cif'=>'-',
-                        'nama_debitur'=>'-',
-                        'tgl_lahir'=>'-',
-                        'alamat'=>'-',
-                        'no_identitas'=>'-'
-                    ]
-                ]
+                , 'dhn' => $dhn->responseData
+                , 'sicd' => $sicd->responseData
             ]
         ], 200 );
     }
@@ -472,5 +453,31 @@ class EFormController extends Controller
 
 
         return response()->success( $verify, $code );
+    }
+
+   /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @author erwan.akse@wgs.co.id
+     */
+    public function delete(Request $request)
+    {
+        DB::beginTransaction();
+        $eform = EForm::findOrFail($request->eform_id);
+        if ($eform->kpr->is_sent == false ) {
+          User::destroy($eform->user_id);
+          DB::commit();
+        return response()->success( [
+            'message' => 'Hapus User Berhasil',
+        ], 200 );
+      }else
+      {
+        DB::rollback();
+        return response()->error( [
+            'message' => 'User Tidak Dapat Dihapus',
+        ], 422 );
+      }
     }
 }
