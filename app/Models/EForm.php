@@ -244,11 +244,11 @@ class EForm extends Model
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
 
-            //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) 
+            //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
             //{
                     $result = $eform->insertCoreBRI();
                 if ($result['status']) {
-                    $eform->kpr()->update(['is_sent'=> true]); 
+                    $eform->kpr()->update(['is_sent'=> true]);
                 }
             // }
             // else
@@ -981,7 +981,7 @@ class EForm extends Model
     {
         return $this->morphTo();
     }
-    
+
     /**
      * Get Data Notification.
      *
