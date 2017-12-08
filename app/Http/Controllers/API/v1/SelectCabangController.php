@@ -37,12 +37,15 @@ class SelectCabangController extends Controller
             foreach ($branchs['responseData'] as $branch) {
                 $search = true;
 
+								print_r('heres1');exit();
                 if ( $request->has('name') ) {
                     $search = strtoupper($request->input('name'));
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
+								print_r('heres2');exit();
                 if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
+								print_r('heres3');exit();
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
 					if($countkey=='1'){
@@ -57,14 +60,16 @@ class SelectCabangController extends Controller
 						$kode_uker = $branch['kode_uker'];
 					}
 						foreach($mitra as $key){
+								print_r('heres4');exit();
 							if($key['BRANCH_CODE']== $kode_uker){										
 								$offices[] = $branch;
-								print_r('heres');exit();
 							}
 						}
                 }
             }
 		}
+		
+								print_r('heres5');exit();
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
