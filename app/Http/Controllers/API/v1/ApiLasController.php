@@ -598,7 +598,8 @@ class ApiLasController extends Controller
 								"definisi"                  => $hitung['items'][0]['definisi']
 							];
 								
-							$BRIGUNA = BRIGUNA::update($eform_id, $params);
+							$BRIGUNA = new BRIGUNA();
+							$BRIGUNA->update($eform_id, $params);
                             return $kirim;
                         } else {
                             $hitung = [

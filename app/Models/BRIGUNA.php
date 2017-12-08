@@ -430,7 +430,7 @@ class BRIGUNA extends Model
         // }
     }
 
-	  public static function update( $eform_id, $request )
+	  public function update( $eform_id, $request )
     {
         $eform = static::findOrFail( $eform_id );
 		 \Log::info($eform);
