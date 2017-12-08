@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
+use App\Models\BRIGUNA;
 
 class ApiLasController extends Controller
 {
@@ -381,16 +382,15 @@ class ApiLasController extends Controller
             "resident_flag"         => "Y", // hardcode dari las
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
-
         ];
         // print_r($content_las_debt);exit();
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
-        print_r("-------- masuk insert debitur ---------");
+        \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // prescreening
             $content_prescreening = [
-                "Fid_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
+                "Fid_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
                 "Ps_krd"                 => "0",
                 "Pks"                    => "0",
                 "Daftar_hitam_bi"        => "0",
@@ -403,13 +403,13 @@ class ApiLasController extends Controller
             ];
 
             $insertPrescreening = $ApiLas->insertPrescreeningBriguna($content_prescreening);
-            print_r("-------- masuk insert prescreening ---------");
+            \Log::info("-------- masuk insert prescreening ---------");
             \Log::info($insertPrescreening);
             if ($insertPrescreening['statusCode'] == '01') {
                 // prescoring
                 $content_las_prescoring = [
-                    "Fid_aplikasi"              => $insertDebitur['items']['ID_APLIKASI'],
-                    "Fid_cif_las"               => $insertDebitur['items']['CIF_LAS'],
+                    "Fid_aplikasi"              => $insertDebitur['items'][0]['ID_APLIKASI'],
+                    "Fid_cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
                     "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                     "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
                     "Briguna_profesi"           => $request['Briguna_profesi'],
@@ -438,15 +438,16 @@ class ApiLasController extends Controller
                 ];
 
                 $insertPrescoring = $ApiLas->insertPrescoringBriguna($content_las_prescoring);
-                print_r("-------- masuk insert prescoring ---------");
+                \Log::info("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
                     $jangka = $request['Jangka_waktu'];
                     $tgl_jatuh_tempo = date('dmY',strtotime('+'.$jangka.' months'));
+                    // print_r($tgl_jatuh_tempo);exit();
                     // insert dataKredit
                     $content_insertKreditBriguna = [
-                        "Fid_aplikasi"                 => $insertDebitur['items']['ID_APLIKASI'],
-                        "Cif_las"                      => $insertDebitur['items']['CIF_LAS'],
+                        "Fid_aplikasi"                 => $insertDebitur['items'][0]['ID_APLIKASI'],
+                        "Cif_las"                      => $insertDebitur['items'][0]['CIF_LAS'],
                         "Pemrakarsa1"                  => $uid,
                         "Uker_pemrakarsa"              => $uker,
                         "Tanggal_jatuh_tempo"          => $tgl_jatuh_tempo,
@@ -471,13 +472,13 @@ class ApiLasController extends Controller
                         "Sandi_stp"                    => $request['Sandi_stp'],
                         "Sifat_kredit"                 => $request['Sifat_kredit'],
                         "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
-                        "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi'],
+                        "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi_sid'],
                         "Jenis_kredit_lbu"             => $request['Jenis_kredit_lbu'],
                         "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
                         "Kategori_kredit_lbu"          => $request['Kategori_kredit_lbu'],
                         "Jenis_penggunaan_lbu"         => $request['Jenis_penggunaan_lbu'],
                         "Sumber_aplikasi"              => $request['Sumber_aplikasi'],                        
-                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi'],
+                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi_lbu'],
                         "Maksimum_plafond"             => $request['Maksimum_plafond'],
                         "Plafon_induk"                 => "0", // hardcode las
                         "Tp_produk"                    => "1", // hardcode las
@@ -508,123 +509,203 @@ class ApiLasController extends Controller
                     ];
 
                     $insertKredit = $ApiLas->insertDataKreditBriguna($content_insertKreditBriguna);
-                    print_r("-------- masuk insert kredit ---------");
+                    \Log::info("-------- masuk insert kredit ---------");
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
-                        $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items']['ID_APLIKASI']);
-                        print_r("-------- masuk hitungCRS ---------");
+                        $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items'][0]['ID_APLIKASI']);
+                        \Log::info("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
                             $override = 'Y';
-                            if ($hitung['items']['cutoff'] == 'Y') {
+                            if ($hitung['items'][0]['cutoff'] == 'Y') {
                                 $override = 'N';
                             }
                             // Kirim Pemutus
                             $conten = [
-                                'id_aplikasi'   => $insertDebitur['items']['ID_APLIKASI'],
+                                'id_aplikasi'   => $insertDebitur['items'][0]['ID_APLIKASI'],
                                 'uid'           => $uid,
                                 'flag_override' => $override
                             ];
                             $kirim = $ApiLas->kirimPemutus($conten);
-                            print_r("-------- masuk kirimPemutus ---------");
+                            \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
+                            if ($kirim['statusCode'] != '01') {
+                                $kirim = [
+                                    'code' => '05', 
+                                    'descriptions' => 'kirim Pemutus gagal, silahkan periksa kembali inputannya',
+                                    'contents' => [
+                                        'data' => ''
+                                    ]
+                                ];
+                                return $kirim;
+                            }
                         } else {
-                            return $kirim;
+                            $hitung = [
+                                'code' => '05', 
+                                'descriptions' => 'hitung CRS gagal, silahkan periksa kembali inputannya',
+                                'contents' => [
+                                    'data' => ''
+                                ]
+                            ];
+                            return $hitung;
                         }
                     } else {
-                        return $hitung;
+                        $insertKredit = [
+                            'code' => '05', 
+                            'descriptions' => 'insert data kredit gagal, silahkan periksa kembali inputannya',
+                            'contents' => [
+                                'data' => ''
+                            ]
+                        ];
+                        return $insertKredit;
                     }
                 } else {
-                    return $insertKredit;
+                    $insertPrescoring = [
+                        'code' => '05', 
+                        'descriptions' => 'insert data prescoring gagal, silahkan periksa kembali inputannya',
+                        'contents' => [
+                            'data' => ''
+                        ]
+                    ];
+                    return $insertPrescoring;
                 }
             } else {
+                $insertPrescreening = [
+                    'code' => '05', 
+                    'descriptions' => 'insert data preescreening gagal, silahkan periksa kembali inputannya',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
                 return $insertPrescreening;
             }
-
-            /*$params = [
-                "uid"                   => $uid, // inquiry user las
-                "uid_pemrakarsa"        => $uker, // inquiry user las
-                "tp_produk"             => "1", // hardcode dari las
-                "id_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
-                "cif_las"               => $insertDebitur['items']['CIF_LAS']
-                "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
-                "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
-                "Briguna_profesi"           => $request['Briguna_profesi'],
-                "Gaji_per_bulan"            => $request['Gaji_per_bulan'],
-                "Pendapatan_profesi"        => $request['Pendapatan_profesi'],
-                "Potongan_per_bulan"        => $request['Potongan_per_bulan'],
-                "Plafond_briguna_existing"  => $request['Plafond_briguna_existing'],
-                "Angsuran_briguna_existing" => $request['Angsuran_briguna_existing'],
-                "Suku_bunga"                => $request['Suku_bunga'],
-                "Jangka_waktu"              => $request['Jangka_waktu'],
-                "Maksimum_plafond"          => $request['Maksimum_plafond'],
-                "Permohonan_kredit"         => $request['Permohonan_kredit'],
-                "Baki_debet"                => $request['Baki_debet'],
-                "Plafond_usulan"            => $request['Plafond_usulan'],
-                "Angsuran_usulan"           => $request['Angsuran_usulan'],
-                "Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
-                "Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
-                "Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
-                "Payroll"                   => $request['Payroll'],
-                "Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
-                "Maksimum_angsuran"         => $request['Maksimum_angsuran'],
-                "Tujuan_membuka_rek"           => $request['Tujuan_membuka_rek'],
-                "Jangka_waktu"                 => $request['Jangka_waktu'],
-                "Briguna_smart"                => $request['Briguna_smart'],
-                "Kode_fasilitas"               => $request['Kode_fasilitas'],
-                "Tujuan_penggunaan_kredit"     => $request['Tujuan_penggunaan_kredit'],
-                "Penggunaan_kredit"            => $request['Penggunaan_kredit'],
-                "Provisi_kredit"               => $request['Provisi_kredit'],
-                "Biaya_administrasi"           => $request['Biaya_administrasi'],                        
-                "Penalty"                      => $request['Penalty'],
-                "Perusahaan_asuransi"          => $request['Nama_perusahaan_asuransi'],
-                "Premi_asuransi_jiwa"          => $request['Premi_asuransi_jiwa'],
-                "Premi_beban_bri"              => $request['Premi_beban_bri'],
-                "Premi_beban_debitur"          => $request['Premi_beban_debitur'],
-                "Flag_promo"                   => $request['promo'],
-                "Fid_promo"                    => $request['nama_program_promo'],
-                "Pengadilan_terdekat"          => $request['Pengadilan_terdekat'],
-                "Bupln"                        => $request['Bupln'],
-                "Agribisnis"                   => $request['Agribisnis'],
-                "Sandi_stp"                    => $request['Sandi_stp'],
-                "Sifat_kredit"                 => $request['Sifat_kredit'],
-                "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
-                "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi'],
-                "Jenis_kredit_lbu"             => $request['Jenis_kredit_lbu'],
-                "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
-                "Kategori_kredit_lbu"          => $request['Kategori_kredit_lbu'],
-                "Jenis_penggunaan_lbu"         => $request['Jenis_penggunaan_lbu'],
-                "Sumber_aplikasi"              => $request['Sumber_aplikasi'],                        
-                "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi']
-            ];*/
-
-            return $insertDebitur;
         } else {
-            return $insertDebitur;
+            $insertDebitur = [
+                'code' => '05', 
+                'descriptions' => 'insert data debitur gagal, silahkan periksa kembali inputannya',
+                'contents' => [
+                    'data' => ''
+                ]
+            ]; 
         }
+
+        $params = [
+            "uid"                   => $uid, // inquiry user las
+            "uid_pemrakarsa"        => $uker, // inquiry user las
+            "tp_produk"             => "1", // hardcode dari las
+            "id_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
+            "cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
+            "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
+            "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
+            "Briguna_profesi"           => $request['Briguna_profesi'],
+            "Pendapatan_profesi"        => $request['Pendapatan_profesi'],
+            "Potongan_per_bulan"        => $request['Potongan_per_bulan'],
+            "Plafond_briguna_existing"  => $request['Plafond_briguna_existing'],
+            "Angsuran_briguna_existing" => $request['Angsuran_briguna_existing'],
+            "Suku_bunga"                => $request['Suku_bunga'],
+            "Jangka_waktu"              => $request['Jangka_waktu'],
+            "Baki_debet"                => $request['Baki_debet'],
+            "Plafond_usulan"            => $request['Plafond_usulan'],
+            "Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
+            "Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
+            "Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
+            "Payroll"                   => $request['Payroll'],
+            "Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
+            "Maksimum_angsuran"         => $request['Maksimum_angsuran'],
+            "Tujuan_membuka_rek"        => $request['Tujuan_membuka_rek'],
+            "Briguna_smart"             => $request['Briguna_smart'],
+            "Kode_fasilitas"            => $request['Kode_fasilitas'],
+            "Tujuan_penggunaan_kredit"  => $request['Tujuan_penggunaan_kredit'],
+            "Penggunaan_kredit"         => $request['Penggunaan_kredit'],
+            "Provisi_kredit"            => $request['Provisi_kredit'],
+            "Biaya_administrasi"        => $request['Biaya_administrasi'],
+            "Penalty"                   => $request['Penalty'],
+            "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+            "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
+            "Premi_beban_bri"           => $request['Premi_beban_bri'],
+            "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+            "Flag_promo"                => $request['promo'],
+            "Fid_promo"                 => $request['nama_program_promo'],
+            "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
+            "Bupln"                     => $request['Bupln'],
+            "Agribisnis"                => $request['Agribisnis'],
+            "Sandi_stp"                 => $request['Sandi_stp'],
+            "Sifat_kredit"              => $request['Sifat_kredit'],
+            "Jenis_penggunaan"          => $request['Jenis_penggunaan'],
+            "Sektor_ekonomi_sid"        => $request['Sektor_ekonomi'],
+            "Jenis_kredit_lbu"          => $request['Jenis_kredit_lbu'],
+            "Sifat_kredit_lbu"          => $request['Sifat_kredit_lbu'],
+            "Kategori_kredit_lbu"       => $request['Kategori_kredit_lbu'],
+            "Jenis_penggunaan_lbu"      => $request['Jenis_penggunaan_lbu'],
+            "Sumber_aplikasi"           => $request['Sumber_aplikasi'],
+            "Sektor_ekonomi_lbu"        => $request['Sektor_ekonomi']
+        ];
+			
+			$BRIGUNA = BRIGUNA::update( $params );
+			
+        return $insertDebitur;
     }
 
     public function updateBriguna($request) {
         /*$params = [
-            "sumber_utama"          => "1", // hardcode gaji dari mybri
+            "eform_id"              => $request['eform_id'],
+            "uid"                   => $uid, // inquiry user las
+            "uid_pemrakarsa"        => $uker, // inquiry user las
             "tp_produk"             => "1", // hardcode dari las
-            "cif_las"               => "0", // hardcode debitur baru
-            "expired_ktp"           => "31122899", // hardcode
-            "kategori_portofolio"   => "175", // hardcode las
-            "kewarganegaraan"       => "ID", // hardcode dari las
-            "negara_domisili"       => "ID", // hardcode dari las
-            "golongan_debitur_sid"  => "907", // hardcode dari las
-            "golongan_debitur_lbu"  => "886", // hardcode dari las
-            "customer_type"         => "I", // hardcode dari las
-            "sub_customer_type"     => "I", // hardcode dari las
-            "hub_bank"              => "9900", // hardcode dari las
-            "segmen_bisnis_bri"     => "RITEL", // hardcode dari las
-            "tgl_mulai_debitur"     => date('dmY'), // hardcode tgl prakarsa
-            "federal_wh_code"       => "1", // hardcode dari las
-            "resident_flag"         => "Y", // hardcode dari las
-            "tujuan_membuka_rekening"=> "ZZ", // hardcode
-            "ket_buka_rekening"     => "Pinjaman" // hardcode
+            "id_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
+            "cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
+
+            "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
+            "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
+            "Briguna_profesi"           => $request['Briguna_profesi'],
+            "Gaji_per_bulan"            => $request['Gaji_per_bulan'],
+            "Pendapatan_profesi"        => $request['Pendapatan_profesi'],
+            "Potongan_per_bulan"        => $request['Potongan_per_bulan'],
+            "Plafond_briguna_existing"  => $request['Plafond_briguna_existing'],
+            "Angsuran_briguna_existing" => $request['Angsuran_briguna_existing'],
+            "Suku_bunga"                => $request['Suku_bunga'],
+            "Jangka_waktu"              => $request['Jangka_waktu'],
+            "Maksimum_plafond"          => $request['Maksimum_plafond'],
+            "Permohonan_kredit"         => $request['Permohonan_kredit'],
+            "Baki_debet"                => $request['Baki_debet'],
+            "Plafond_usulan"            => $request['Plafond_usulan'],
+            "Angsuran_usulan"           => $request['Angsuran_usulan'],
+            "Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
+            "Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
+            "Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
+            "Payroll"                   => $request['Payroll'],
+            "Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
+            "Maksimum_angsuran"         => $request['Maksimum_angsuran'],
+
+            "Tujuan_membuka_rek"           => $request['Tujuan_membuka_rek'],
+            "Jangka_waktu"                 => $request['Jangka_waktu'],
+            "Briguna_smart"                => $request['Briguna_smart'],
+            "Kode_fasilitas"               => $request['Kode_fasilitas'],
+            "Tujuan_penggunaan_kredit"     => $request['Tujuan_penggunaan_kredit'],
+            "Penggunaan_kredit"            => $request['Penggunaan_kredit'],
+            "Provisi_kredit"               => $request['Provisi_kredit'],
+            "Biaya_administrasi"           => $request['Biaya_administrasi'],                        
+            "Penalty"                      => $request['Penalty'],
+            "Perusahaan_asuransi"          => $request['Nama_perusahaan_asuransi'],
+            "Premi_asuransi_jiwa"          => $request['Premi_asuransi_jiwa'],
+            "Premi_beban_bri"              => $request['Premi_beban_bri'],
+            "Premi_beban_debitur"          => $request['Premi_beban_debitur'],
+            "Flag_promo"                   => $request['promo'],
+            "Fid_promo"                    => $request['nama_program_promo'],
+            "Pengadilan_terdekat"          => $request['Pengadilan_terdekat'],
+            "Bupln"                        => $request['Bupln'],
+            "Agribisnis"                   => $request['Agribisnis'],
+            "Sandi_stp"                    => $request['Sandi_stp'],
+            "Sifat_kredit"                 => $request['Sifat_kredit'],
+            "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
+            "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi'],
+            "Jenis_kredit_lbu"             => $request['Jenis_kredit_lbu'],
+            "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
+            "Kategori_kredit_lbu"          => $request['Kategori_kredit_lbu'],
+            "Jenis_penggunaan_lbu"         => $request['Jenis_penggunaan_lbu'],
+            "Sumber_aplikasi"              => $request['Sumber_aplikasi'],                        
+            "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi']
         ];*/
     }
 }
