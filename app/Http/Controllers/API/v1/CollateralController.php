@@ -59,12 +59,10 @@ class CollateralController extends Controller
      * Show Collateral Non Kerjasama
      * @return \Illuminate\Http\Response
      */
-    public function indexNon()
+    public function indexNon(Request $request)
     {
-      $data = EForm::whereHas('kpr',function($query) {
-        $developer_id = env('DEVELOPER_KEY',1);
-        $query->where('developer_id', '=', $developer_id);
-      })->paginate($this->request->has('limit') ? $this->request->limit : 10);
+      $limit = $request->input( 'limit' ) ?: 10;
+      $data = $this->collateral->GetLists($request)->paginate($limit);
       
       return $this->makeResponse($data);
     }
