@@ -1,15 +1,18 @@
-<?php namespace App\Models;
+<?php 
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
-
+use App\Models\CustomerDetail;
 use Illuminate\Http\Request;
+use App\Models\Customer;
+use App\Models\UserNotification;
 use Sentinel;
 use Asmx;
 use RestwsHc;
-use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 
-class EFormBriguna extends Authenticatable  
+class EForm extends Model
 {
     /**
      * The table name.
@@ -236,23 +239,38 @@ class EFormBriguna extends Authenticatable
     {
         $eform = static::findOrFail( $eform_id );
         $result['status'] = false;
+        $developer_id = env('DEVELOPER_KEY',1);
+        $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
-             $result = $eform->insertCoreBRI();
+
+            //if ($eform->BRIGUNA->developer_id != $developer_id && $eform->BRIGUNA->developer_name != $developer_name) 
+            //{
+                    $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->BRIGUNA()->update(['is_sent'=> true]); 
+                }
+            // }
+            // else
+            // {
+            //     $eform->BRIGUNA()->update(['is_sent'=> false]);
+            //     $result['status'] = true;
+            // }
 
             if ($result['status']) {
-            $eform->update( [
-                'pros' => $request->pros,
-                'cons' => $request->cons,
-                'pinca_position' => $request->pinca_position,
-                'pinca_name' => $request->pinca_name,
-                'recommendation' => $request->recommendation,
-                'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved,
-                'status_eform' => 'approved'
-                ] );
+                $eform->update( [
+                    'pros' => $request->pros,
+                    'cons' => $request->cons,
+                    'pinca_position' => $request->pinca_position,
+                    'pinca_name' => $request->pinca_name,
+                    'recommendation' => $request->recommendation,
+                    'recommended' => $request->recommended == "yes" ? true : false,
+                    'is_approved' => $request->is_approved,
+                    'status_eform' => 'approved'
+                    ] );
             }
-
-        } else {
+        }
+        else
+        {
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
@@ -286,7 +304,7 @@ class EFormBriguna extends Authenticatable
         \Log::info("console 4");
         $customer_work =  $customer->work;
         \Log::info("console 5");
-        $customer_finance =  $customer->Financial;
+        $customer_finance =  $customer->financial;
         \Log::info("console 6");
         $customer_contact =  $customer->contact;
         \Log::info("console 7");
@@ -625,6 +643,16 @@ class EFormBriguna extends Authenticatable
     }
 
     /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function users()
+    {
+        return $this->belongsTo( User::class, 'user_id' );
+    }
+
+    /**
      * The relation to visit report.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\HasOne
@@ -809,7 +837,7 @@ class EFormBriguna extends Authenticatable
         }
 
         $request = $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
@@ -850,13 +878,13 @@ class EFormBriguna extends Authenticatable
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "kode_cabang" => !( $this->branch_id ) ? '' : $this->branch_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "program_value" => !( $lkn->program_list ) ? '' : $lkn->program_list,
-            "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list,
+            "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list
             "sub_pihak_ketiga_value" => "1"
         ];
         return $request;
@@ -885,16 +913,13 @@ class EFormBriguna extends Authenticatable
         \Log::info("step5");
         $BRIGUNA = $this->BRIGUNA;
         $customer = clone $this->customer;
-        $customer_finance = (object) $customer->Financial;
+        $customer_finance = (object) $customer->financial;
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
-            "pendapatan_lain_pemohon" => !( $BRIGUNA->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $BRIGUNA->income_salary)),
             "jangka_waktu" => $BRIGUNA->year,
-            "permohonan_pinjaman" => !( $BRIGUNA->request_amount ) ? '' : $BRIGUNA->request_amount,
-            "uang_muka" => ( ( $BRIGUNA->request_amount * $BRIGUNA->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $BRIGUNA->income ) ? '' : str_replace(',', '.', str_replace('.', '', $BRIGUNA->income))
+            "permohonan_pinjaman" => !( $BRIGUNA->request_amount ) ? '' : $BRIGUNA->request_amount
         ];
 
         return $request;
@@ -927,11 +952,35 @@ class EFormBriguna extends Authenticatable
     public function step7($data)
     {
         \Log::info("step7");
+        $lkn = $this->visit_report;
+
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id
+            // 'title' => !( $lkn->title ) ? '' : $lkn->title,
+            // 'employment_status' => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
+            // 'age_of_mpp' => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
+            // 'loan_history_accounts' => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
+            // 'religion' => !( $lkn->religion ) ? '' : $lkn->religion,
+            // 'office_phone' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
         return $request;
     }
-}
 
+    public function user_notifications()
+    {
+        return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
+    }
+
+    public function related()
+    {
+        return $this->morphTo();
+    }
+    
+    /**
+     * Get Data Notification.
+     *
+     * @param array $data
+     * @return array $request
+     */
+}
