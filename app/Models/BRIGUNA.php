@@ -433,6 +433,7 @@ class BRIGUNA extends Model
 	  public static function update( $eform_id, $request )
     {
         $eform = static::findOrFail( $eform_id );
+		 \Log::info($eform);
         if ( !empty($eform) ) {
                 $eform->update( $request );
             }
