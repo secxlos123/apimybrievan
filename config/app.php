@@ -187,6 +187,7 @@ return [
         App\Providers\BRIMailServiceProvider::class,
         App\Providers\AsmxLasServiceProvider::class,
         App\Providers\DbwsRestServiceProvider::class,
+        LaravelFCM\FCMServiceProvider::class,
 
     ],
 
@@ -250,6 +251,8 @@ return [
         'AsmxLas'      => App\Classes\Client\Facades\AsmxLas::class,
         'DbwsRest'     => App\Classes\Client\Facades\DbwsRest::class,
         'PDF'          => Barryvdh\DomPDF\Facade::class,
+        'FCM'          => LaravelFCM\Facades\FCM::class,
+        'FCMGroup'     => LaravelFCM\Facades\FCMGroup::class, // Optional
 
     ],
 

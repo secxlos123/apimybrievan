@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\UserNotification;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -643,6 +644,16 @@ class EForm extends Model
     }
 
     /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function users()
+    {
+        return $this->belongsTo( User::class, 'user_id' );
+    }
+
+    /**
      * The relation to visit report.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\HasOne
@@ -960,4 +971,21 @@ class EForm extends Model
         ];
         return $request;
     }
+
+    public function user_notifications()
+    {
+        return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
+    }
+
+    public function related()
+    {
+        return $this->morphTo();
+    }
+    
+    /**
+     * Get Data Notification.
+     *
+     * @param array $data
+     * @return array $request
+     */
 }
