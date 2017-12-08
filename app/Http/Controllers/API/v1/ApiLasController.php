@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
@@ -599,8 +601,8 @@ class ApiLasController extends Controller
 								"cutoff"                    => $hitung['items'][0]['cutoff'],
 								"definisi"                  => $hitung['items'][0]['definisi']
 							];
-							 $eform = EformBriguna::findOrFail( $eform_id );
-									 
+
+							$eform = BRIGUNA::where("eform_id","=",$eform_id );    
 							$eform->update( $params );
 	
                             return $kirim;
