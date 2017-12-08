@@ -49,7 +49,7 @@ class BRIGUNA extends Model
 		'Tujuan_penggunaan_kredit','Penggunaan_kredit','Provisi_kredit',
 		'Biaya_administrasi','Penalty','Perusahaan_asuransi','Premi_asuransi_jiwa',
 		'Premi_beban_bri','Premi_beban_debitur','Flag_promo','Fid_promo',
-		'Pengadilan_terdekat','Bupln','Agribisnis','Agribisnis','Sandi_stp',
+		'Pengadilan_terdekat','Bupln','Agribisnis','Sandi_stp',
 		'Sifat_kredit','Jenis_penggunaan','Sektor_ekonomi_sid','Jenis_kredit_lbu',
 		'Sifat_kredit_lbu','Kategori_kredit_lbu','Jenis_penggunaan_lbu','Sumber_aplikasi','Sektor_ekonomi_lbu',
 		'id_Status_gelar','Status_gelar','score','grade','cutoff','definisi'
