@@ -207,3 +207,39 @@ if (! function_exists('generate_pdf')) {
         return $filename;
     }
 }
+
+if (! function_exists('checkRolesInternal')) {
+
+    /**
+     * Generate pdf file.
+     *
+     * @param  string $folder
+     * @param  string $filename
+     * @param  string $html
+     *
+     * @return array
+     */
+    function checkRolesInternal($branch_id)
+    {
+        if( in_array( intval($branch_id), [ 37, 38, 39, 41, 42, 43 ] ) ) {
+            $ArrRole = ['role' =>'ao','branch_id' => $branch_id ];
+        } else if( in_array( intval($branch_id), [ 21, 49, 50, 51 ] ) ) {
+            $ArrRole = ['role' =>'mp','branch_id' => $branch_id ];
+        } else if( in_array( intval($branch_id), [ 5, 11, 12, 14, 19 ] ) ) {
+            $ArrRole = ['role' =>'pinca','branch_id' => $branch_id ];
+        } else if( in_array( intval($branch_id), [ 59 ] ) ) {
+            $ArrRole = ['role' =>'prescreening','branch_id' => $branch_id ];
+            if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
+                $role = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
+            }
+        } else if( in_array( intval($branch_id), [26] ) ) {
+            $ArrRole = ['role' =>'staff','branch_id' => $branch_id ];
+        } else if( in_array( intval($branch_id), [18] ) ) {
+            $ArrRole = ['role' =>'collateral','branch_id' => $branch_id ];
+        } else {
+            $ArrRole = ['role' =>'null','branch_id' => $branch_id ];
+        }
+
+        return $ArrRole;
+    }
+}

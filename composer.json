@@ -7,7 +7,9 @@
     "require": {
         "php": ">=5.6.4",
         "barryvdh/laravel-dompdf": "^0.8.1",
+        "brozot/laravel-fcm": "^1.2",
         "cartalyst/sentinel": "2.0.*",
+        "coreproc/laravel-notification-channel-fcm": "dev-master",
         "cviebrock/eloquent-sluggable": "^4.2",
         "doctrine/dbal": "^2.5",
         "guzzlehttp/guzzle": "^6.2",

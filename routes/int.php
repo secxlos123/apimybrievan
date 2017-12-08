@@ -13,6 +13,7 @@
 
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 	Route::post( 'auth/login', 'AuthController@store' );
+	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
