@@ -12,7 +12,7 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 
-class EForm extends Model
+class EFormBriguna extends Model
 {
     /**
      * The table name.
