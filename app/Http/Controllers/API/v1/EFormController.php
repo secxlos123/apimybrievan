@@ -13,6 +13,7 @@ use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\EFormBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
 use App\Models\PropertyType;
@@ -38,6 +39,17 @@ class EFormController extends Controller
         ], 200 );
     }
 
+    public function show_briguna( Request $request )
+    {
+        \Log::info($request->all());
+          $eform = EFormBriguna::findOrFail( $request->id );
+
+        return response()->success( [
+            'contents' => $eform
+        ],200 );
+    }
+	
+	
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
