@@ -59,7 +59,7 @@ class SelectCabangController extends Controller
 						foreach($mitra as $key){
 							if($key['BRANCH_CODE']== $kode_uker){										
 								$offices[] = $branch;
-								print_r($key['BRANCH_CODE'].'===='.$kode_uker.'/n');die();
+								print_r('heres');exit();
 							}
 						}
                 }
