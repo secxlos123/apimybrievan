@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
+use App\Models\EformBriguna;
 use App\Models\BRIGUNA;
+use DB;
 
 class ApiLasController extends Controller
 {
@@ -597,9 +599,10 @@ class ApiLasController extends Controller
 								"cutoff"                    => $hitung['items'][0]['cutoff'],
 								"definisi"                  => $hitung['items'][0]['definisi']
 							];
-								
-							$BRIGUNA = new BRIGUNA();
-							$BRIGUNA->update($eform_id, $params);
+							 $eform = EformBriguna::findOrFail( $eform_id );
+									 
+							$eform->update( $params );
+	
                             return $kirim;
                         } else {
                             $hitung = [
