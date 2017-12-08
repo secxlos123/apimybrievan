@@ -13,7 +13,7 @@ use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
-use App\Models\EFormBriguna;
+use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
 use App\Models\PropertyType;
@@ -42,7 +42,7 @@ class EFormController extends Controller
     public function show_briguna( Request $request )
     {
         \Log::info($request->all());
-          $eform = EFormBriguna::filter( $request )->get();
+          $eform = EformBriguna::filter( $request )->get();
 
         return response()->success( [
             'contents' => $eform
