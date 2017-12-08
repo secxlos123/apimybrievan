@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
+use App\Models\BRIGUNA;
 
 class ApiLasController extends Controller
 {
@@ -589,7 +590,7 @@ class ApiLasController extends Controller
             ]; 
         }
 
-        /*$params = [
+        $params = [
             "uid"                   => $uid, // inquiry user las
             "uid_pemrakarsa"        => $uker, // inquiry user las
             "tp_produk"             => "1", // hardcode dari las
@@ -639,8 +640,10 @@ class ApiLasController extends Controller
             "Jenis_penggunaan_lbu"      => $request['Jenis_penggunaan_lbu'],
             "Sumber_aplikasi"           => $request['Sumber_aplikasi'],
             "Sektor_ekonomi_lbu"        => $request['Sektor_ekonomi']
-        ];*/
-
+        ];
+			
+			$BRIGUNA = BRIGUNA::update( $params );
+			
         return $insertDebitur;
     }
 

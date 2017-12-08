@@ -22,8 +22,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('select', 'SelectController@select');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
 		Route::post('Download_Rekomendasi', 'Download_RekomendasiController@Download');
-		Route::get('Download', 'DownloadFileController@Download');
-		Route::get	('Download2', 'DownloadFileController@Download2');
+		Route::get('Surat_Kuasa_Potong_Upah', 'DownloadFileController@Download');
+		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		/* ------------*/
