@@ -182,9 +182,9 @@ class EFormController extends Controller
 				$SKPG = $request->SKPG;
 				$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 				$baseRequest['SKPG'] = $SKPG;
-				$kpr = BRIGUNA::create( $baseRequest );
 				/*----------------------------------*/
 			}
+				$kpr = BRIGUNA::create( $baseRequest );
 		} else {
             
             $developer_id = env('DEVELOPER_KEY',1);
