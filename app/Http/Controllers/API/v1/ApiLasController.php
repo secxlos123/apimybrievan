@@ -140,13 +140,13 @@ class ApiLasController extends Controller
 
             case 'inquiryHistoryDebiturPerorangan':
                 $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
-                // print_r($result);exit();
+                
                 if ($inquiry['statusCode'] == '01') {
-                    $result  = $inquiry['data'][0]['items'][0];
-                    $result['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
-                    $result['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
-                    $result['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
-                    $result['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
+                    $result  = $inquiry['data'][0]['items'];
+                    $result[0]['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
+                    $result[0]['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
+                    $result[0]['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
+                    $result[0]['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
                     $conten = [
                         'code'         => $inquiry['statusCode'],
                         'descriptions' => $inquiry['statusDesc'],
@@ -154,6 +154,7 @@ class ApiLasController extends Controller
                             'data' => $result
                         ]
                     ];
+                    // print_r($conten);exit();
                     return $conten;
                 }
                 return $inquiry;
@@ -286,9 +287,10 @@ class ApiLasController extends Controller
         $ApiLas  = new ApiLas();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
-        // $pn = '00009300';
+        // $pn = '00062498';
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
         $uid   = $inquiryUserLAS['items'][0]['uid'];
+        // $uid = "56124";
         // print_r($data);
         // print_r($inquiryUserLAS);exit();
         $conten_putusan = [

@@ -394,8 +394,8 @@ class ApiLas extends Model
                 "flag_putusan"=> !isset($data['flag_putusan']) ? "6" : $data['flag_putusan'],
                 "catatan"     => !isset($data['catatan']) ? "testis" : $data['catatan']
             ];
-            print_r($data);
-            print_r($conten_putusan);exit();
+            // print_r($data);
+            // print_r($conten_putusan);exit();
             $putusan = AsmxLas::setEndpoint('putusSepakat')
                 ->setBody([
                     'JSONData'   => json_encode($conten_putusan)
