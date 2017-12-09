@@ -556,14 +556,14 @@ class ApiLasController extends Controller
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
-                                $kirim = [
-                                    'code' => '05', 
-                                    'descriptions' => 'kirim Pemutus gagal, silahkan periksa kembali inputannya',
+                                $pemutus = [
+                                    'code' => $kirim['statusCode'], 
+                                    'descriptions' => 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'],
                                     'contents' => [
                                         'data' => ''
                                     ]
                                 ];
-                                return $kirim;
+                                return $pemutus;
                             }
 
 							$eform_id = $request['eform_id'];
@@ -643,54 +643,55 @@ class ApiLasController extends Controller
                             ];
                             return $result;
                         } else {
-                            $hitung = [
-                                'code' => '05', 
-                                'descriptions' => 'hitung CRS gagal, silahkan periksa kembali inputannya',
+                            $crs = [
+                                'code' => $hitung['statusCode'], 
+                                'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
                                 'contents' => [
                                     'data' => ''
                                 ]
                             ];
-                            return $hitung;
+                            return $crs;
                         }
                     } else {
-                        $insertKredit = [
-                            'code' => '05', 
-                            'descriptions' => 'insert data kredit gagal, silahkan periksa kembali inputannya',
+                        $insertKre = [
+                            'code' => $insertKredit['statusCode'], 
+                            'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
                             'contents' => [
                                 'data' => ''
                             ]
                         ];
-                        return $insertKredit;
+                        return $insertKre;
                     }
                 } else {
-                    $insertPrescoring = [
-                        'code' => '05', 
-                        'descriptions' => 'insert data prescoring gagal, silahkan periksa kembali inputannya',
+                    $insertPres = [
+                        'code' => $insertPrescoring['statusCode'], 
+                        'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
                         'contents' => [
                             'data' => ''
                         ]
                     ];
-                    return $insertPrescoring;
+
+                    return $insertPres;
                 }
             } else {
-                $insertPrescreening = [
-                    'code' => '05', 
-                    'descriptions' => 'insert data preescreening gagal, silahkan periksa kembali inputannya',
+                $insertPre = [
+                    'code' => $insertPrescreening['statusCode'], 
+                    'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
                     'contents' => [
                         'data' => ''
                     ]
                 ];
-                return $insertPrescreening;
+                return $insertPre;
             }
         } else {
-            $insertDebitur = [
-                'code' => '05', 
-                'descriptions' => 'insert data debitur gagal, silahkan periksa kembali inputannya',
+            $insertDebt = [
+                'code' => $insertDebitur['statusCode'], 
+                'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
                 'contents' => [
                     'data' => ''
                 ]
             ];
-            return $insertDebitur;
+            return $insertDebt;
         }
     }
 }

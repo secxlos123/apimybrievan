@@ -101,7 +101,7 @@ class ApiLas extends Model
                 "federal_wh_code"       => $data['federal_wh_code'],
                 "sub_customer_type"     => $data['sub_customer_type'],
                 "segmen_bisnis_bri"     => $data['segmen_bisnis_bri'],
-                "transaksi_normal_harian" => "2",
+                "transaksi_normal_harian" => $data['transaksi_normal_harian'],
                 "alias"                 => $data['alias'],
                 "agama"                 => $data['agama'],
                 "ket_agama"             => $data['ket_agama'],
