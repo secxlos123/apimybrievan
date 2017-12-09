@@ -9,9 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
-use App\Models\EformBriguna;
 use App\Models\BRIGUNA;
-use DB;
 
 class ApiLasController extends Controller
 {
@@ -142,15 +140,20 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryHistoryDebiturPerorangan':
-                $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan();
-                $conten = [
-                    'code'         => $inquiry['statusCode'],
-                    'descriptions' => $inquiry['statusDesc'],
-                    'contents' => [
-                        'data' => $inquiry['data']['items']
-                    ]
-                ];
-                return $conten;
+                $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
+                // print_r($inquiry);exit();
+                if ($inquiry['statusCode'] == '01') {
+                    $conten = [
+                        'code'         => $inquiry['statusCode'],
+                        'descriptions' => $inquiry['statusDesc'],
+                        'contents' => [
+                            'data' => $inquiry['data'][0]['items'][0]
+                        ]
+                    ];
+                    return $conten;
+                }
+                return $inquiry;
+                
                 break;
 
             case 'inquiryListPutusan':
@@ -615,9 +618,9 @@ class ApiLasController extends Controller
 							];
 
 							$eform = BRIGUNA::where("eform_id","=",$eform_id );    
-							$eform->update( $params );
+							$eform->update($params);
 	
-                            return $kirim;
+                            return $insertDebitur;
                         } else {
                             $hitung = [
                                 'code' => '05', 
