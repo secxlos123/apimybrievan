@@ -141,13 +141,13 @@ class ApiLasController extends Controller
 
             case 'inquiryHistoryDebiturPerorangan':
                 $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
-                $result  = $inquiry['data'][0]['items'][0];
-                $result['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
-                $result['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
-                $result['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
-                $result['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
                 // print_r($result);exit();
                 if ($inquiry['statusCode'] == '01') {
+                    $result  = $inquiry['data'][0]['items'][0];
+                    $result['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
+                    $result['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
+                    $result['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
+                    $result['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
                     $conten = [
                         'code'         => $inquiry['statusCode'],
                         'descriptions' => $inquiry['statusDesc'],
