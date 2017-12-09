@@ -28,9 +28,7 @@ class EformBriguna extends Model
                     'eforms.*','briguna.*',
          		 \DB::Raw(" case when eforms.id is not null then 2 else 1 end as new_order ")
                 ]);
-
         \Log::info($eforms->toSql());
-
         return $eforms;
 
     }
