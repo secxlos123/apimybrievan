@@ -141,6 +141,18 @@ class ApiLasController extends Controller
                 return $kirim;
                 break;
 
+            case 'inquiryHistoryDebiturPerorangan':
+                $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan();
+                $conten = [
+                    'code'         => $inquiry['statusCode'],
+                    'descriptions' => $inquiry['statusDesc'],
+                    'contents' => [
+                        'data' => $inquiry['data']['items']
+                    ]
+                ];
+                return $conten;
+                break;
+
             case 'inquiryListPutusan':
                 $pn      = substr('00000000'. $data, -8 );
                 $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
