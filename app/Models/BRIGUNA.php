@@ -187,12 +187,13 @@ class BRIGUNA extends Model
         $data_dropbox = $Dropbox->insertDropbox($postData);
         \Log::info($data_dropbox);
         // dd($data_dropbox);
+        $data_dropbox['eform_id'] = $eform->id;
         if( $data_dropbox['responseCode'] == "01" ) {
             $briguna['ref_number_new'] = $data_dropbox['refno'];
             $update_data  = [
                 'ref_number' => $data_dropbox['refno']
             ];
-            $eforms = EForm::findOrFail($eform->id);
+            $eforms = EForm::where('id','=',$data_dropbox['eform_id']);
             $eforms->update($update_data);
             /*$kecamatan_domisili = '';
             $kabupaten_domisili = '';
