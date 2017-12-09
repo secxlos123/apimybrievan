@@ -83,14 +83,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		// Dropbox
-		Route::group(['prefix' => 'dropbox'], function () {
-			Route::post('index', 'DropboxController@index');
-		});
-
+		Route::post('dropbox/index', 'DropboxController@index');
+		
 		// API LAS
-		Route::group(['prefix' => 'api_las'], function () {
-			Route::post('index', 'ApiLasController@index');
-		});
+		Route::post('api_las/index', 'ApiLasController@index');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
