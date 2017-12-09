@@ -44,7 +44,7 @@ class EFormController extends Controller
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-		  $eform[0]['Url'] = public_path().'/uploads/';
+		  $eform[0]['Url'] = $_SERVER['REQUEST_URI'].'../uploads/';
         return response()->success( [
             'contents' => $eform
         ],200 );
