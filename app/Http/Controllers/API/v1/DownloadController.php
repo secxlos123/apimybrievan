@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers\API\v1;
@@ -19,12 +18,6 @@ class DownloadFileController extends Controller
      */
 	public function Download(Request $request)
 	{ 
-	$file = storage_path('/app/PDF/Surat_Kuasa_Potong_Upah.pdf');
-	print_r($file);die();
-
-	
-		
+		$file = storage_path('/app/PDF/Surat_Kuasa_Potong_Upah.pdf');
 	}
-   
 }
-

@@ -435,6 +435,23 @@ class ApiLas extends Model
         }
     }
 
+    public function inquiryHistoryDebiturPerorangan($data) {
+        \Log::info($data);
+        try {
+            
+            $inquiry = AsmxLas::setEndpoint('inquiryHistoryDebiturPerorangan')
+                ->setBody([
+                    'nik'           => !isset($data['nik']) ? "3171060601960001" : $data['nik'],
+                    'tp_produk'     => !isset($data['tp_produk']) ? "1" : $data['tp_produk'],
+                    'uid_pemrakarsa'=> !isset($data['uid_pemrakarsa']) ? "8887" : $data['uid_pemrakarsa']
+                ])->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
     public function inquiryListPutusan($data) {
         \Log::info($data);
         try {
