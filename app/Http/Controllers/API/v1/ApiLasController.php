@@ -83,9 +83,9 @@ class ApiLasController extends Controller
                     }
                 }
                 // print_r($data);exit();
-                $this->insertAllAnalisa($data);
+                $insert = $this->insertAllAnalisa($data);
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
-    			// return $insert;
+    			return $insert;
                 break;
 
             case 'insertPrescreeningBriguna':
@@ -611,16 +611,31 @@ class ApiLasController extends Controller
 								"Jenis_penggunaan_lbu"      => $request['Jenis_penggunaan_lbu'],
 								"Sumber_aplikasi"           => $request['Sumber_aplikasi'],
 								"Sektor_ekonomi_lbu"        => $request['Sektor_ekonomi_lbu'],
+                                "id_Status_gelar"           => $request['status_gelar'],
+                                "Status_gelar"              => $request['keterangan_status_gelar'],
 								"score"                     => $hitung['items'][0]['score'],
 								"grade"                     => $hitung['items'][0]['grade'],
 								"cutoff"                    => $hitung['items'][0]['cutoff'],
 								"definisi"                  => $hitung['items'][0]['definisi']
 							];
 
-							$eform = BRIGUNA::where("eform_id","=",$eform_id );    
+							$eform = BRIGUNA::where("eform_id","=",$eform_id);    
 							$eform->update($params);
-	
-                            return $insertDebitur;
+	                        \Log::info("-------- update table briguna ---------");
+                            \Log::info($eform);
+                            $result = [
+                                'code'         => $kirim['statusCode'], 
+                                'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
+                                'contents'     => [
+                                    'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
+                                    'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
+                                    'score'       => $hitung['items'][0]['score'],
+                                    'grade'       => $hitung['items'][0]['grade'],
+                                    'cutoff'      => $hitung['items'][0]['cutoff'],
+                                    'definisi'    => $hitung['items'][0]['definisi']
+                                ]
+                            ];
+                            return $result;
                         } else {
                             $hitung = [
                                 'code' => '05', 
