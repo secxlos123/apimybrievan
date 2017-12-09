@@ -1,3 +1,4 @@
+	 
 <?php
 
 namespace App\Http\Controllers\API\v1;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 
-class DownloadFileController extends Controller
+class DownloadController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,6 +19,12 @@ class DownloadFileController extends Controller
      */
 	public function Download(Request $request)
 	{ 
-		$file = storage_path('/app/PDF/Surat_Kuasa_Potong_Upah.pdf');
+	$file = storage_path('/app/PDF/Surat_Kuasa_Potong_Upah.pdf');
+	print_r($file);die();
+
+	
+		
 	}
+   
 }
+
