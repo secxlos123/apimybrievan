@@ -26,66 +26,90 @@ class ApiLasController extends Controller
         
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
-                $data['kodepos']            = '';
-                $data['kelurahan']          = '';
-                $data['kecamatan']          = '';
-                $data['kabupaten']          = '';
-                $data['kodepos_domisili']   = '';
-                $data['kelurahan_domisili'] = '';
-                $data['kecamatan_domisili'] = '';
-                $data['kabupaten_domisili'] = '';
-                $data['kota_domisili']      = '';
-                $data['propinsi_domisili']  = '';
-                $data['kodepos_usaha']      = '';
-                $data['kelurahan_usaha']    = '';
-                $data['kecamatan_usaha']    = '';
-                $data['kabupaten_usaha']    = '';
-                $data['kota_usaha']         = '';
-                $data['propinsi_usaha']     = '';                
+                if (!empty($data)) {
+                    $data['kodepos']            = '';
+                    $data['kelurahan']          = '';
+                    $data['kecamatan']          = '';
+                    $data['kabupaten']          = '';
+                    $data['kodepos_domisili']   = '';
+                    $data['kelurahan_domisili'] = '';
+                    $data['kecamatan_domisili'] = '';
+                    $data['kabupaten_domisili'] = '';
+                    $data['kota_domisili']      = '';
+                    $data['propinsi_domisili']  = '';
+                    $data['kodepos_usaha']      = '';
+                    $data['kelurahan_usaha']    = '';
+                    $data['kecamatan_usaha']    = '';
+                    $data['kabupaten_usaha']    = '';
+                    $data['kota_usaha']         = '';
+                    $data['propinsi_usaha']     = '';                
 
-                if (!empty($data['kode_pos'])) {
-                    $kode_pos = ['key' => $data['kode_pos']];
-                    $kodepos  = KodePos::filter($kode_pos)->get();
-                    $pos      = $kodepos->toArray();
-                    if (!empty($pos)) {
-                        foreach ($pos as $index => $value) {
-                            $kota = explode(" ", $value['Kota']);
-                            // print_r($kota);exit();
-                            $data['kodepos']   = $value['postal_code'];
-                            $data['kelurahan'] = $value['Kelurahan'];
-                            $data['kecamatan'] = $value['Kecamatan'];
-                            $data['kabupaten'] = $kota[1];
+                    if (!empty($data['kode_pos'])) {
+                        $kode_pos = ['key' => $data['kode_pos']];
+                        $kodepos  = KodePos::filter($kode_pos)->get();
+                        $pos      = $kodepos->toArray();
+                        if (!empty($pos)) {
+                            foreach ($pos as $index => $value) {
+                                $kota = explode(" ", $value['Kota']);
+                                // print_r($kota);exit();
+                                $data['kodepos']   = $value['postal_code'];
+                                $data['kelurahan'] = $value['Kelurahan'];
+                                $data['kecamatan'] = $value['Kecamatan'];
+                                $data['kabupaten'] = $kota[1];
+                            }
                         }
                     }
-                }
-                
-                if (!empty($data['kode_pos_domisili'])) {
-                    $kode_pos_dom = ['key' => $data['kode_pos_domisili']];
-                    $kodepos_dom  = KodePos::filter($kode_pos_dom)->get();
-                    $pos_dom      = $kodepos_dom->toArray();
-                    if (!empty($pos_dom)) {
-                        foreach ($pos_dom as $index => $value) {
-                            $kota = explode(" ", $value['Kota']);
-                            // print_r($value);exit();
-                            $data['kodepos_domisili']   = $value['postal_code'];
-                            $data['kelurahan_domisili'] = $value['Kelurahan'];
-                            $data['kecamatan_domisili'] = $value['Kecamatan'];
-                            $data['kabupaten_domisili'] = $kota[1];
-                            $data['kota_domisili']      = $kota[1];
-                            $data['propinsi_domisili']  = $value['Propinsi'];
-                            $data['kodepos_usaha']      = $value['postal_code'];
-                            $data['kelurahan_usaha']    = $value['Kelurahan'];
-                            $data['kecamatan_usaha']    = $value['Kecamatan'];
-                            $data['kabupaten_usaha']    = $kota[1];
-                            $data['kota_usaha']         = $kota[1];
-                            $data['propinsi_usaha']     = $value['Propinsi'];
+                    
+                    if (!empty($data['kode_pos_domisili'])) {
+                        $kode_pos_dom = ['key' => $data['kode_pos_domisili']];
+                        $kodepos_dom  = KodePos::filter($kode_pos_dom)->get();
+                        $pos_dom      = $kodepos_dom->toArray();
+                        if (!empty($pos_dom)) {
+                            foreach ($pos_dom as $index => $value) {
+                                $kota = explode(" ", $value['Kota']);
+                                // print_r($value);exit();
+                                $data['kodepos_domisili']   = $value['postal_code'];
+                                $data['kelurahan_domisili'] = $value['Kelurahan'];
+                                $data['kecamatan_domisili'] = $value['Kecamatan'];
+                                $data['kabupaten_domisili'] = $kota[1];
+                                $data['kota_domisili']      = $kota[1];
+                                $data['propinsi_domisili']  = $value['Propinsi'];
+                                $data['kodepos_usaha']      = $value['postal_code'];
+                                $data['kelurahan_usaha']    = $value['Kelurahan'];
+                                $data['kecamatan_usaha']    = $value['Kecamatan'];
+                                $data['kabupaten_usaha']    = $kota[1];
+                                $data['kota_usaha']         = $kota[1];
+                                $data['propinsi_usaha']     = $value['Propinsi'];
+                            }
                         }
                     }
-                }
+
+                    if ($request['transaksi_normal_harian'] == '1') {
+                        $gaji = "G1";
+                    } else if ($request['transaksi_normal_harian'] == '2') {
+                        $gaji = "G3";
+                    } else if ($request['transaksi_normal_harian'] == '3') {
+                        $gaji = "G4";
+                    } else if ($request['transaksi_normal_harian'] == '4' || $request['transaksi_normal_harian'] == '5') {
+                        $gaji = "G5";
+                    } else {
+                        $gaji = "G2";
+                    }
+
+                    $data['gaji'] = $gaji;
+                    $insert = $this->insertAllAnalisa($data);
+                    return $insert;
+                } 
+
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
                 // print_r($data);exit();
-                $insert = $this->insertAllAnalisa($data);
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
-    			return $insert;
                 break;
 
             case 'insertPrescreeningBriguna':
@@ -315,22 +339,10 @@ class ApiLasController extends Controller
         // print_r($request);exit();
 
         // insert data debitur
-        if ($request['transaksi_normal_harian'] == '1') {
-            $gaji = "G1";
-        } else if ($request['transaksi_normal_harian'] == '2') {
-            $gaji = "G3";
-        } else if ($request['transaksi_normal_harian'] == '3') {
-            $gaji = "G4";
-        } else if ($request['transaksi_normal_harian'] == '4' || $request['transaksi_normal_harian'] == '5') {
-            $gaji = "G5";
-        } else {
-            $gaji = "G2";
-        }
-
         $content_las_debt = [
             "uid"                   => $uid, // inquiry user las
             "kode_cabang"           => $uker, // inquiry user las
-            "penghasilan_per_bulan" => $gaji,
+            "penghasilan_per_bulan" => $request['gaji'],
             "nama_debitur_1"        => $request['nama_debitur'],
             "nama_tanpa_gelar"      => $request['nama_debitur'],
             "alias"                 => $request['nama_debitur'],
