@@ -28,6 +28,7 @@ class AuthController extends Controller
             ] )
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
+
         \Log::info($data);
         if( $login[ 'responseCode' ] == '00' ) {
 

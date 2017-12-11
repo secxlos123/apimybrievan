@@ -168,4 +168,28 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::post( 'step-{step_id}', 'EFormController@insertCoreBRI' ); // step id must between 1 - 7
 	} );
 
+	Route::get( 'eforms/{ids}/{ref_number}', 'EFormController@showIdsAndRefNumber' );
+	 /**
+     * User Notification
+     */
+	Route::get('users/notification', [
+        'as'    => 'api.user.notification',
+        'uses'  => 'NotificationController@index'
+    ]);
+
+    Route::get('users/notification/unread', [
+        'as'    => 'api.user.unread_notification',
+        'uses'  => 'NotificationController@unread'
+    ]);
+
+    Route::get('users/notification/summary', [
+        'as'    => 'api.user.summary_notification',
+        'uses'  => 'NotificationController@summary'
+    ]);
+
+    Route::get('users/notification/read/{eform_id}', [
+        'as'    => 'api.user.read_notification',
+        'uses'  => 'NotificationController@read'
+    ]);
+
 });
