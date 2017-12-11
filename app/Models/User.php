@@ -361,6 +361,7 @@ class User extends Authenticatable
     {
         return [
             'name'            => $this->first_name,
+            'slug'            => $this->slug,
             'property_name'   => $this->name,
             'unit_price'      => "Rp. ".$this->price,
             'unit_type'       => "Type ".$this->building_area,
@@ -400,7 +401,7 @@ class User extends Authenticatable
             $filter = false;
         }
 
-        $data = User::select('users.first_name', 'properties.name', 'property_items.price',
+        $data = User::select('users.first_name', 'properties.name', 'property_items.price', 'properties.slug',
                              'property_types.building_area','property_items.address','properties.is_approved')
                 ->join('developers', 'developers.user_id', '=', 'users.id')
                 ->join('properties', 'properties.developer_id', '=', 'developers.id')

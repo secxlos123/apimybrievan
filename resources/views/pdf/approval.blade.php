@@ -222,17 +222,17 @@
                     </tr>
                     <tr>
                         <td class="label">Pendidikan Terakhir</td>
-                        <td class="break-word">: {{ $detail->visit_report['title'] }}</td>
+                        <td class="break-word">: {{ get_title($detail->visit_report['title']) }}</td>
                     </tr>
 
                     <tr>
                         <td class="label">Agama</td>
-                        <td class="break-word">: {{ $detail->visit_report['religion'] }}</td>
+                        <td class="break-word">: {{ get_religion($detail->visit_report['religion']) }}</td>
                     </tr>
 
                     <tr>
                         <td class="label">Riwayat Kepemilikan Rekening Pinjaman</td>
-                        <td class="break-word">: {{ $detail->visit_report['loan_history_accounts'] }}</td>
+                        <td class="break-word">: {{ get_loan_history($detail->visit_report['loan_history_accounts']) }}</td>
                     </tr>
 
                     <tr>
@@ -242,7 +242,7 @@
 
                     <tr>
                         <td class="label">Status Kepegawaian</td>
-                        <td class="break-word">: {{ $detail->visit_report['employment_status'] }}</td>
+                        <td class="break-word">: {{ get_employment($detail->visit_report['employment_status']) }}</td>
                     </tr>
 
                     <tr>
