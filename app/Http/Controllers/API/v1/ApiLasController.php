@@ -715,13 +715,17 @@ class ApiLasController extends Controller
                                 "angsuran_usulan"           => $request['Angsuran_usulan'],
                                 "maksimum_plafond"          => $request['Maksimum_plafond']
 							];
+
 							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
-                            $eform = EForm::where("id","=",$eform_id);
-                            $branch_id = ["branch_id" => $request['kantor_cabang_id']];
-                            $eform->update($branch_id);
+                            $eform   = EForm::findOrFail($eform_id);
+                            $base_request["branch_id"] = $request['kantor_cabang_id'];
+                            $eform->update($base_request);
+                            \Log::info("-------- update table eforms ---------");
+                            \Log::info($eform);
 							$briguna->update($params);
-	                        \Log::info("-------- update table briguna ---------");
-                            $result = [
+                            \Log::info("-------- update table briguna ---------");
+                            \Log::info($briguna);
+	                        $result = [
                                 'code'         => $kirim['statusCode'], 
                                 'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
                                 'contents'     => [
