@@ -114,7 +114,7 @@ class User extends Authenticatable
 
     public function eforms()
     {
-        return $this->hasMany( EForm::class, 'user_id' );
+        return $this->hasOne( EForm::class, 'user_id' );
     }
 
     /**
@@ -493,6 +493,10 @@ class User extends Authenticatable
             ->leftJoin( 'visit_reports as v', 'e.id', '=', 'v.eform_id' )
             ->where( function( $user ) use( $request ) {
 
+                if( $request->has( 'eform' )) {
+                    if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
+                    
+                }
                 if ($request->has('name')) {
                     $user->whereRaw(
                     "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ]

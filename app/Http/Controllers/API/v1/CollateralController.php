@@ -179,12 +179,11 @@ class CollateralController extends Controller
       if ($action === 'approve') {
         $collateral->approved_by = $this->request->header('pn');
         $property->is_approved = true;
-
+        $property->save();
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
       }
-      $property->save();
       $collateral->save();
       \DB::commit();
       return $this->makeResponse(
