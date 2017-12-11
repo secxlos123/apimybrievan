@@ -703,7 +703,6 @@ class ApiLasController extends Controller
                                 "SKPG"                      => $request['SKPG'],
                                 "mitra_id"                  => $request['mitra_id'],
                                 "mitra"                     => $request['mitra_name'],
-                                "branch_id"                 => $request['kantor_cabang_id'],
                                 "NIP"                       => $request['nip'],
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
                                 "tujuan_penggunaan_id"      => $request['tujuan_penggunaan_id'],
@@ -716,9 +715,11 @@ class ApiLasController extends Controller
                                 "angsuran_usulan"           => $request['Angsuran_usulan'],
                                 "maksimum_plafond"          => $request['Maksimum_plafond']
 							];
-
-							$eform = BRIGUNA::where("eform_id","=",$eform_id);
-							$eform->update($params);
+							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
+                            $eform = EForm::where("eform_id","=",$eform_id);
+                            $branch_id = ["branch_id" => $request['kantor_cabang_id']];
+                            $eform->update($branch_id)
+							$briguna->update($params);
 	                        \Log::info("-------- update table briguna ---------");
                             \Log::info($eform);
                             $result = [
