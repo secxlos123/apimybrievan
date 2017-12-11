@@ -32,7 +32,7 @@ class VisitReport extends Model
      * @var array
      */
     protected $appends = [
-        'npwp_number_masking'
+        'npwp_number_masking', 'title_name', 'employment_status_name', 'loan_history_accounts_name', 'religion_name'
     ];
 
     /**
@@ -444,7 +444,11 @@ class VisitReport extends Model
      */
     public function getTitleNameAttribute(  )
     {
-        return get_title($this->title);
+        if (null !== $this->title) {
+            return get_title($this->title);
+        }
+
+        return '-';
     }
 
     /**
@@ -454,7 +458,11 @@ class VisitReport extends Model
      */
     public function getEmploymentStatusNameAttribute(  )
     {
-        return get_employment($this->employment_status);
+        if (null !== $this->employment_status) {
+            return get_employment($this->employment_status);
+        }
+
+        return '-';
     }
 
     /**
@@ -464,7 +472,11 @@ class VisitReport extends Model
      */
     public function getLoanHistoryAccountsNameAttribute(  )
     {
-        return get_loan_history($this->loan_history_accounts);
+        if (null !== $this->loan_history_accounts) {
+            return get_loan_history($this->loan_history_accounts);
+        }
+
+        return '-';
     }
 
     /**
@@ -474,7 +486,11 @@ class VisitReport extends Model
      */
     public function getReligionNameAttribute(  )
     {
-        return get_religion($this->religion);
+        if (null !== $this->religion) {
+            return get_religion($this->religion);
+        }
+
+        return '-';
     }
 
     /**
