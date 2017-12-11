@@ -153,13 +153,15 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryInstansiBriguna':
-                $kirim = $ApiLas->inquiryInstansiBriguna($data);
-                return $kirim;
+                $inquiry = $ApiLas->inquiryInstansiBriguna();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquirySifatKredit':
-                $kirim = $ApiLas->inquirySifatKredit($data);
-                return $kirim;
+                $inquiry = $ApiLas->inquirySifatKredit();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquiryHistoryDebiturPerorangan':
