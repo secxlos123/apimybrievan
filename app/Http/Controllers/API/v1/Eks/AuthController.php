@@ -103,7 +103,7 @@ class AuthController extends Controller
              if ($check) {
                 if (!$activation = Activation::completed($check)){
                  return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
-                } else if ($check->user->is_banned) {
+                } else if ($check->is_banned) {
                     return response()->error(['message' => 'Maaf akun anda sedang di banned'], 401);
                 }
              }

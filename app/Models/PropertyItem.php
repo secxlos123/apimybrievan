@@ -13,7 +13,7 @@ class PropertyItem extends Model
      * @var array
      */
     protected $fillable = [
-        'property_type_id', 'address', 'price', 'is_available', 'status',
+        'property_type_id', 'address', 'price', 'is_available', 'status', 'available_status'
     ];
 
     /**
@@ -140,5 +140,19 @@ class PropertyItem extends Model
             ->orWhereHas('propertyType', function ($type) use (&$request) {
                 $type->where('property_types.name', 'ilike', "%{$request->input('search')}%");
             });
+    }
+
+    /**
+     * Update availibility status
+     *
+     * @param \Illuminate\Http\Request $request
+     */
+    public static function setAvailibility( $id, $status )
+    {
+        static::find( $eform_id )
+            ->update([
+                'is_available' => ( $status == "available" ? true : false )
+                , 'available_status' => $status
+            ]);
     }
 }

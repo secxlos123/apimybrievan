@@ -264,7 +264,7 @@ class EFormController extends Controller
                 return response()->error( [
                     'message' => 'User sedang dalam pengajuan',
                     'contents' => $dataEform
-                ], 201 );
+                ], 422 );
             }
 
         }
