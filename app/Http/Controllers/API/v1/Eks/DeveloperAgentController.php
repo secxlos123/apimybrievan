@@ -12,7 +12,7 @@ use App\Http\Requests\API\v1\DeveloperAgent\CreateRequest;
 use App\Http\Requests\API\v1\DeveloperAgent\UpdateRequest;
 use Activation;
 use App\Events\Customer\CustomerRegistered;
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
 
 class DeveloperAgentController extends Controller
 {
@@ -181,18 +181,22 @@ class DeveloperAgentController extends Controller
         \Log::info("---------------------------------------------------");
         $user = User::findOrFail($id);
         \Log::info($user);
-        if($user->is_actived == true)
-        {
-            $user->update($request->all());
-            Activation::remove($user);
+        if ($user->is_banned) {
+            $user->update( ['is_banned' => false] );
+
+        } else {
+            $user->update( ['is_banned' => true] );
+
         }
-        elseif($user->is_actived == false)
-        {
-            $user = User::findOrFail($id);
-            $user->update($request->all());
-            $activation = Activation::create($user);
-            Activation::complete($user, $activation->code);
-        }
+        // if($user->is_actived == true) {
+        //     $user->update($request->all());
+        //     Activation::remove($user);
+        // } elseif($user->is_actived == false) {
+        //     $user = User::findOrFail($id);
+        //     $user->update($request->all());
+        //     $activation = Activation::create($user);
+        //     Activation::complete($user, $activation->code);
+        // }
 
         // $user->update($request->all());
         return response()->success([
@@ -247,7 +251,7 @@ class DeveloperAgentController extends Controller
                 $pass .= $used_symbols[$n]; // add the character to the password string
             }
         foreach ($pass as $key2 => $value2) {
-            
+
         }
         return $pass; // return the generated password
     }

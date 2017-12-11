@@ -36,6 +36,7 @@
 						<span>Note : Formulir surat Kuasa Potong Upah (SKPU) wajib dilengkapi bagi yang gajinya tidak disalurkan di BRI.</span>
 						<span> Klik Disini untuk mendownload dokumen </span>
 						<a href="<?php echo 'http://api.dev.net/api/v1/Surat_Rekomendasi_Atasan';?>">Surat Rekomendasi Atasan</a>
+						<br/>
 						<a href="<?php echo 'http://api.dev.net/api/v1/Surat_Kuasa_Potong_Upah';?>">Surat Kuasa Potong Upah</a>
                     </td>
                 </tr>
@@ -59,8 +60,8 @@
         </td>
     </tr>
     <tr>
-        <td align="center" bgcolor="#fafafa">
-            <img align="center" width="500" src="https://mybri.stagingapps.net/assets/images/logo/footer.png">
+        <td align="center" width="100%" bgcolor="#fafafa">
+            <img align="center" width="100%" src="https://mybri.stagingapps.net/assets/images/logo/footer.png">
         </td>
     </tr>
 </table>
