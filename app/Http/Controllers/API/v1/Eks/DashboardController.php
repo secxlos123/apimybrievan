@@ -5,24 +5,30 @@ namespace App\Http\Controllers\API\v1\Eks;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Property;
 class DashboardController extends Controller
 {
     protected $request;
     protected $modelUser;
+    protected $modelProperties;
 
     public function __construct(Request $request)
     {
-        $this->request   = $request;
-        $this->modelUser = new User;
+        $this->request 		   = $request;
+        $this->modelUser 	   = new User;
+        $this->modelProperties = new Property;
     }
 
     public function dashboard()
     {
-    	$params    = $this->request->all();
-    	$start 	   = (isset($params['start'])) ? $params['start'] : '';
-    	$end 	   = (isset($params['end'])) ? $params['end'] : '';
-    	$userList  = $this->modelUser->getListUserProperties($start, $end);
-    	$chartData = "";
+    	$params       = $this->request->all();
+    	$startList    = (isset($params['startList'])) ? $params['startList'] : '';
+    	$endList      = (isset($params['endList'])) ? $params['endList'] : '';
+    	$startChart   = (isset($params['startChart'])) ? $params['startChart'] : '';
+    	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
+
+    	$userList  	  = $this->modelUser->getListUserProperties($startList, $endList);
+    	$chartData	  = $this->modelProperties->getChartProperties($startChart, $endChart);
         return response()->success([
             'contents' => [
                 'user_list' => $userList,

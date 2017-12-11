@@ -6,6 +6,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use DB;
 
 class Property extends Model
 {
@@ -178,6 +179,19 @@ class Property extends Model
     {
         return $this->morphOne( Photo::class, 'photoable', null, null, 'prop_id' );
     }
+
+    /**
+     * Get chart attribute
+     */
+
+    public function getChartAttribute()
+    {
+        return [
+            'month' => $this->month,
+            'value' => $this->value,
+        ];
+    }
+
 
     /**
      * Scope a query to get lists of roles.
@@ -457,5 +471,57 @@ class Property extends Model
             * sin( deg2rad( $data->latitude ) ) ) );
 
         return round($distance, 2);
+    }
+
+    /**
+        * Get list count for chart
+        *
+        * @param  string $startChart
+        * @param  string $endChart
+        * @return array
+    */
+    public function getChartProperties($startChart, $endChart)
+    {
+        if(!empty($startChart) && !empty($endChart)){
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startChart) && !empty($endChart)){
+            $now        = new \DateTime();
+            $startChart = $now->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endChart) && !empty($startChart)){
+            $now      = new \DateTime();
+            $endChart = $now->format('Y-m-d h:i:s');
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = Property::select(
+                    DB::raw("count(properties.id) as value"),
+                    DB::raw("to_char(properties.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(properties.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('properties.created_at', [$startChart, $endChart]);
+                })
+                ->groupBy('month', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
+        return $data;
     }
 }

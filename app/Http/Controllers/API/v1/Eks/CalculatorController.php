@@ -64,7 +64,7 @@ class CalculatorController extends Controller
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
                     "angsuran"       => 0,
-                    "bunga"          => 0,
+                    "bunga"          => "0%",
                 ];
             }else{
                 $plafond -= $angsuranPokok;
@@ -83,26 +83,11 @@ class CalculatorController extends Controller
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
                 "suku_bunga"          => 0,
-                "suku_bunga_floating" => 0,
-                "kredit_fix"          => 0,
+                "suku_bunga_floating" => "0%",
+                "kredit_fix"          => $term." Bulan",
                 "lama_pinjaman"       => $term." Bulan",
                 "pinjaman_maksimum"   => 0,
             ],
-            // "biaya_bank" => [
-            //     "apprasial"     => 0,
-            //     "administrasi"  => 0,
-            //     "provisi"       => 0,
-            //     "asuransi"      => 0,
-            //     "total_biaya"   => 0,
-            // ],
-            // "biaya_notaris" => [
-            //     "akte_jual_beli" => 0,
-            //     "bea_balik_nama" => 0,
-            //     "akta_skmht"     => 0,
-            //     "perjanjian_ht"  => 0,
-            //     "cek_sertifikat" => 0,
-            //     "total_biaya"    => 0,
-            // ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
         ];
@@ -140,7 +125,7 @@ class CalculatorController extends Controller
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
                     "angsuran"       => 0,
-                    "bunga"          => 0,
+                    "bunga"          => "0%",
                 ];
             }else if($i == $n - 1){
                 $angsuranBunga = ((($rate / 12) / 100) * $plafond);
@@ -181,26 +166,11 @@ class CalculatorController extends Controller
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
                 "suku_bunga"          => 0,
-                "suku_bunga_floating" => 0,
-                "kredit_fix"          => 0,
+                "suku_bunga_floating" => "0%",
+                "kredit_fix"          => $term." Bulan",
                 "lama_pinjaman"       => $term." Bulan",
                 "pinjaman_maksimum"   => 0,
             ],
-            // "biaya_bank" => [
-            //     "apprasial"     => 0,
-            //     "administrasi"  => 0,
-            //     "provisi"       => 0,
-            //     "asuransi"      => 0,
-            //     "total_biaya"   => 0,
-            // ],
-            // "biaya_notaris" => [
-            //     "akte_jual_beli" => 0,
-            //     "bea_balik_nama" => 0,
-            //     "akta_skmht"     => 0,
-            //     "perjanjian_ht"  => 0,
-            //     "cek_sertifikat" => 0,
-            //     "total_biaya"    => 0,
-            // ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
         ];
@@ -239,7 +209,7 @@ class CalculatorController extends Controller
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
                     "angsuran"       => 0,
-                    "bunga"          => 0,
+                    "bunga"          => "0%",
                 ];
             }else{
                 $angsuranBunga = (($fxrate / 12) / 100) * $plafond;
@@ -302,26 +272,11 @@ class CalculatorController extends Controller
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
                 "suku_bunga"          => 0,
-                "suku_bunga_floating" => 0,
-                "kredit_fix"          => 0,
+                "suku_bunga_floating" => $flrate."%",
+                "kredit_fix"          => $fxterm." Bulan",
                 "lama_pinjaman"       => $fxflterm." Bulan",
                 "pinjaman_maksimum"   => 0,
             ],
-            // "biaya_bank" => [
-            //     "apprasial"     => 0,
-            //     "administrasi"  => 0,
-            //     "provisi"       => 0,
-            //     "asuransi"      => 0,
-            //     "total_biaya"   => 0,
-            // ],
-            // "biaya_notaris" => [
-            //     "akte_jual_beli" => 0,
-            //     "bea_balik_nama" => 0,
-            //     "akta_skmht"     => 0,
-            //     "perjanjian_ht"  => 0,
-            //     "cek_sertifikat" => 0,
-            //     "total_biaya"    => 0,
-            // ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
         ];
@@ -362,7 +317,7 @@ class CalculatorController extends Controller
                     "angsuran_pokok" => 0,
                     "angsuran_bunga" => 0,
                     "angsuran"       => 0,
-                    "bunga"          => 0,
+                    "bunga"          => "0%",
                 ];
             }else{
                 $angsuranBunga = (($ffxrate / 12) / 100) * $plafond;
@@ -442,26 +397,11 @@ class CalculatorController extends Controller
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
                 "suku_bunga"          => 0,
-                "suku_bunga_floating" => 0,
-                "kredit_fix"          => 0,
+                "suku_bunga_floating" => $ffloatlrate."%",
+                "kredit_fix"          => $ffxterm." Bulan",
                 "lama_pinjaman"       => $fxflflterm." Bulan",
                 "pinjaman_maksimum"   => 0,
             ],
-            // "biaya_bank" => [
-            //     "apprasial"     => 0,
-            //     "administrasi"  => 0,
-            //     "provisi"       => 0,
-            //     "asuransi"      => 0,
-            //     "total_biaya"   => 0,
-            // ],
-            // "biaya_notaris" => [
-            //     "akte_jual_beli" => 0,
-            //     "bea_balik_nama" => 0,
-            //     "akta_skmht"     => 0,
-            //     "perjanjian_ht"  => 0,
-            //     "cek_sertifikat" => 0,
-            //     "total_biaya"    => 0,
-            // ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
         ];

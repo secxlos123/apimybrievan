@@ -153,13 +153,15 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryInstansiBriguna':
-                $kirim = $ApiLas->inquiryInstansiBriguna($data);
-                return $kirim;
+                $inquiry = $ApiLas->inquiryInstansiBriguna();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquirySifatKredit':
-                $kirim = $ApiLas->inquirySifatKredit($data);
-                return $kirim;
+                $inquiry = $ApiLas->inquirySifatKredit($data);
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquiryHistoryDebiturPerorangan':
@@ -426,11 +428,11 @@ class ApiLasController extends Controller
             "tgl_mulai_usaha"       => $request['tgl_mulai_bekerja'],
             "kepemilikan_tempat_tinggal" => $request['kepemilikan_tempat_tinggal'],
             "jumlah_tanggungan"     => $request['jumlah_tanggungan'],
-            "nama_kelg"             => $request['nama_keluarga'],
+            "nama_kelg"             => empty($request['nama_keluarga'])?"":$request['nama_keluarga'],
             "telp_kelg"             => $request['no_tlp_keluarga'],
             "status_perkawinan"     => $request['status_perkawinan'],
             "jenis_rekening"        => $request['jenis_rekening'],
-            "nama_bank_lain"        => $request['nama_bank_lain'],
+            "nama_bank_lain"        => empty($request['nama_bank_lain'])?"":$request['nama_bank_lain'],
             "pekerjaan_debitur"     => $request['pekerjaan_debitur'],
             "pernah_pinjam"         => $request['pernah_pinjam'],
             "transaksi_normal_harian"=> $request['transaksi_normal_harian'],
