@@ -721,17 +721,18 @@ class ApiLasController extends Controller
                             $eform->update($branch_id);
 							$briguna->update($params);
 	                        \Log::info("-------- update table briguna ---------");
-                            \Log::info($eform);
                             $result = [
                                 'code'         => $kirim['statusCode'], 
                                 'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
                                 'contents'     => [
-                                    'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
-                                    'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
-                                    'score'       => $hitung['items'][0]['score'],
-                                    'grade'       => $hitung['items'][0]['grade'],
-                                    'cutoff'      => $hitung['items'][0]['cutoff'],
-                                    'definisi'    => $hitung['items'][0]['definisi']
+                                    'data' => [
+                                        'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
+                                        'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
+                                        'score'       => $hitung['items'][0]['score'],
+                                        'grade'       => $hitung['items'][0]['grade'],
+                                        'cutoff'      => $hitung['items'][0]['cutoff'],
+                                        'definisi'    => $hitung['items'][0]['definisi']
+                                    ]
                                 ]
                             ];
                             return $result;
