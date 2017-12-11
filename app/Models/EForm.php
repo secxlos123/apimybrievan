@@ -822,16 +822,16 @@ class EForm extends Model
             "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
             "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
             "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
-            "Status_gelar_cif" => !( $lkn->title ) ? '' : $lkn->title
-            "Kecamatan_cif" => 'kecamatan'
-            "Kelurahan_cif" => 'kelurahan'
-            "Kode_pos_cif" => '40000'
-            "Lokasi_dati_cif" => 'provinsi'
-            "kota" => $city
-            "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp
-            "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector
-            "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status
-            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,,
+            "Status_gelar_cif" => !( $lkn->title ) ? '' : $lkn->title,
+            "Kecamatan_cif" => 'kecamatan',
+            "Kelurahan_cif" => 'kelurahan',
+            "Kode_pos_cif" => '40000',
+            "Lokasi_dati_cif" => 'provinsi',
+            "kota" => $city,
+            "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
+            "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
+            "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
+            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama' => !( $lkn->religion ) ? '' : $lkn->religion,
             'telepon_usaha' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
