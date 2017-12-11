@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\EForm;
+use App\Models\User;
+use App\Notifications\PengajuanKprNotification;
+use App\Models\Collateral;
 use Asmx;
 
 class KPR extends Model
@@ -28,9 +31,9 @@ class KPR extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name' ];
+    protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','is_sent' ];
 
-    protected $appends = ['status_property_name','kpr_type_property_name','down_payment'];
+    protected $appends = ['status_property_name','kpr_type_property_name','down_payment','collateral'];
     
     /**
      * The attributes that should be hidden for arrays.
@@ -60,7 +63,10 @@ class KPR extends Model
         $data[ 'developer_id' ] = $data[ 'developer' ];
         $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
         $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
-
+        
+        $usersModel = User::FindOrFail($eform->user_id);
+        // $testnotifWeb = $usersModel->notify(new PengajuanKprNotification($eform));
+        // \Log::info($testnotifWeb);
         // $customer = $eform->customer;
         // $customer_detail = $customer->detail;
         // // Contoh
@@ -227,5 +233,15 @@ class KPR extends Model
         $down_payment =  ($dp / 100) * $price ;
 
         return $down_payment; 
+    }
+
+     /**
+     * Relation with collateral
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function getCollateralAttribute()
+    {
+        $data = Collateral::where(['property_id' => $this->property_id])->get();
+        return $data; 
     }
 }

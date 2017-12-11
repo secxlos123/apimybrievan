@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\UserNotification;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -243,18 +244,18 @@ class EForm extends Model
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
 
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) 
-            {
+            //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+            //{
                     $result = $eform->insertCoreBRI();
                 if ($result['status']) {
-                    $eform->kpr()->update(['is_sent'=> true]); 
+                    $eform->kpr()->update(['is_sent'=> true]);
                 }
-            }
-            else
-            {
-                $eform->kpr()->update(['is_sent'=> false]);
-                $result['status'] = true;
-            }
+            // }
+            // else
+            // {
+            //     $eform->kpr()->update(['is_sent'=> false]);
+            //     $result['status'] = true;
+            // }
 
             if ($result['status']) {
                 $eform->update( [
@@ -304,7 +305,7 @@ class EForm extends Model
         \Log::info("console 4");
         $customer_work =  $customer->work;
         \Log::info("console 5");
-        $customer_finance =  $customer->Financial;
+        $customer_finance =  $customer->financial;
         \Log::info("console 6");
         $customer_contact =  $customer->contact;
         \Log::info("console 7");
@@ -643,6 +644,16 @@ class EForm extends Model
     }
 
     /**
+     * The relation to user details.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function users()
+    {
+        return $this->belongsTo( User::class, 'user_id' );
+    }
+
+    /**
      * The relation to visit report.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\HasOne
@@ -904,7 +915,7 @@ class EForm extends Model
         \Log::info("step5");
         $kpr = $this->kpr;
         $customer = clone $this->customer;
-        $customer_finance = (object) $customer->Financial;
+        $customer_finance = (object) $customer->financial;
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
@@ -946,10 +957,35 @@ class EForm extends Model
     public function step7($data)
     {
         \Log::info("step7");
+        $lkn = $this->visit_report;
+
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id
+            // 'title' => !( $lkn->title ) ? '' : $lkn->title,
+            // 'employment_status' => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
+            // 'age_of_mpp' => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
+            // 'loan_history_accounts' => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
+            // 'religion' => !( $lkn->religion ) ? '' : $lkn->religion,
+            // 'office_phone' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
         return $request;
     }
+
+    public function user_notifications()
+    {
+        return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
+    }
+
+    public function related()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Get Data Notification.
+     *
+     * @param array $data
+     * @return array $request
+     */
 }

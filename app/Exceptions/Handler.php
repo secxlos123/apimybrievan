@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        DB::rollback();
+        \DB::rollback();
         if( $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ) {
             return response()->error( [
                 'message' => 'Data tidak ditemukan',

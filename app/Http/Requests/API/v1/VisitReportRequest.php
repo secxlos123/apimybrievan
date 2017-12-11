@@ -36,6 +36,7 @@ class VisitReportRequest extends BaseRequest
             'npwp_number' => 'required',
             'purpose_of_visit' => 'required',
             'visit_result' => 'required',
+            //'source_income'=>'required',
             'source' => 'required|in:fixed,nonfixed',
             'income' => 'required_if:source,nonfixed',
             'income_salary' => 'required_if:source,fixed',
@@ -74,7 +75,13 @@ class VisitReportRequest extends BaseRequest
             'recommendation'=> '',
             'legal_bussiness_document'=>'required_if:source,non-fixed|file',
             'license_of_practice'=>'file',
-            'work_letter'=>'required_if:source,fixed|file'
+            'work_letter'=>'required_if:source,fixed|file',
+            'title' => 'required',
+            'employment_status' => 'required',
+            'age_of_mpp' => 'required',
+            'loan_history_accounts' => 'required',
+            'religion' => 'required',
+            'office_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12'
         ];
     }
 

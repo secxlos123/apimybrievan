@@ -111,6 +111,11 @@ class User extends Authenticatable
       return $this->hasOne( Favourite::class );
     }
 
+    public function eforms()
+    {
+        return $this->hasMany( EForm::class, 'user_id' );
+    }
+
     /**
      * Get fullname for the user.
      *
@@ -735,5 +740,10 @@ class User extends Authenticatable
                 $pass .= $used_symbols[$n]; // add the character to the password string
             }
         return $pass; // return the generated password
+    }
+
+    public function user_notifications()
+    {
+        return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
     }
 }

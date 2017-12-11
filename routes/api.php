@@ -21,13 +21,39 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
 		Route::post('select', 'SelectController@select');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
-		Route::post('Download_Rekomendasi', 'Download_RekomendasiController@Download');
-		Route::post('Download', 'DownloadFileController@Download');
-		Route::post('Download2', 'DownloadFileController@Download2');
+		Route::post('eforms_briguna', 'EFormController@show_briguna');
+		Route::get('Download_Rekomendasi', 'Download_RekomendasiController@Download');
+		Route::get('Surat_Kuasa_Potong_Upah', 'DownloadFileController@Download');
+		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		/* ------------*/
+
+
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
+		 /**
+         * User Notification
+         */
+		Route::get('users/notification', [
+            'as'    => 'api.user.notification',
+            'uses'  => 'NotificationController@index'
+        ]);
+
+        Route::get('users/notification/unread', [
+            'as'    => 'api.user.unread_notification',
+            'uses'  => 'NotificationController@unread'
+        ]);
+
+        Route::get('users/notification/summary', [
+            'as'    => 'api.user.summary_notification',
+            'uses'  => 'NotificationController@summary'
+        ]);
+
+        Route::get('users/notification/read/{id}', [
+            'as'    => 'api.user.read_notification',
+            'uses'  => 'NotificationController@read'
+        ]);
+
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );
@@ -48,6 +74,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		] );
 
 		Route::get( 'offices', 'OfficeController@index' );
+		Route::post('SelectCabang', 'SelectCabangController@index');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');
@@ -56,14 +83,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		// Dropbox
-		Route::group(['prefix' => 'dropbox'], function () {
-			Route::post('index', 'DropboxController@index');
-		});
-
+		Route::post('dropbox/index', 'DropboxController@index');
+		
 		// API LAS
-		Route::group(['prefix' => 'api_las'], function () {
-			Route::post('index', 'ApiLasController@index');
-		});
+		Route::post('api_las/index', 'ApiLasController@index');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
@@ -104,7 +127,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			->where('collateralId', '[0-9]+');
 		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
 			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
-
+		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		/**
 		 * Collateral ots routes
 		 */

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
+use App\Models\BRIGUNA;
 
 class ApiLasController extends Controller
 {
@@ -23,64 +26,90 @@ class ApiLasController extends Controller
         
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
-                $data['kodepos']            = '';
-                $data['kelurahan']          = '';
-                $data['kecamatan']          = '';
-                $data['kabupaten']          = '';
-                $data['kodepos_domisili']   = '';
-                $data['kelurahan_domisili'] = '';
-                $data['kecamatan_domisili'] = '';
-                $data['kabupaten_domisili'] = '';
-                $data['kota_domisili']      = '';
-                $data['propinsi_domisili']  = '';
-                $data['kodepos_usaha']      = '';
-                $data['kelurahan_usaha']    = '';
-                $data['kecamatan_usaha']    = '';
-                $data['kabupaten_usaha']    = '';
-                $data['kota_usaha']         = '';
-                $data['propinsi_usaha']     = '';                
+                if (!empty($data)) {
+                    $data['kodepos']            = '';
+                    $data['kelurahan']          = '';
+                    $data['kecamatan']          = '';
+                    $data['kabupaten']          = '';
+                    $data['kodepos_domisili']   = '';
+                    $data['kelurahan_domisili'] = '';
+                    $data['kecamatan_domisili'] = '';
+                    $data['kabupaten_domisili'] = '';
+                    $data['kota_domisili']      = '';
+                    $data['propinsi_domisili']  = '';
+                    $data['kodepos_usaha']      = '';
+                    $data['kelurahan_usaha']    = '';
+                    $data['kecamatan_usaha']    = '';
+                    $data['kabupaten_usaha']    = '';
+                    $data['kota_usaha']         = '';
+                    $data['propinsi_usaha']     = '';                
 
-                if (!empty($data['kode_pos'])) {
-                    $kode_pos = ['key' => $data['kode_pos']];
-                    $kodepos  = KodePos::filter($kode_pos)->get();
-                    $pos      = $kodepos->toArray();
-                    if (!empty($pos)) {
-                        foreach ($pos as $index => $value) {
-                            // print_r($value);
-                            $data['kodepos']   = $value['postal_code'];
-                            $data['kelurahan'] = $value['Kelurahan'];
-                            $data['kecamatan'] = $value['Kecamatan'];
-                            $data['kabupaten'] = $value['Kota'];
+                    if (!empty($data['kode_pos'])) {
+                        $kode_pos = ['key' => $data['kode_pos']];
+                        $kodepos  = KodePos::filter($kode_pos)->get();
+                        $pos      = $kodepos->toArray();
+                        if (!empty($pos)) {
+                            foreach ($pos as $index => $value) {
+                                $kota = explode(" ", $value['Kota']);
+                                // print_r($kota);exit();
+                                $data['kodepos']   = $value['postal_code'];
+                                $data['kelurahan'] = $value['Kelurahan'];
+                                $data['kecamatan'] = $value['Kecamatan'];
+                                $data['kabupaten'] = $kota[1];
+                            }
                         }
                     }
-                }
-                
-                if (!empty($data['kode_pos_domisili'])) {
-                    $kode_pos_dom = ['key' => $data['kode_pos_domisili']];
-                    $kodepos_dom  = KodePos::filter($kode_pos_dom)->get();
-                    $pos_dom      = $kodepos_dom->toArray();
-                    if (!empty($pos_dom)) {
-                        foreach ($pos_dom as $index => $value) {
-                            // print_r($value);exit();
-                            $data['kodepos_domisili']   = $value['postal_code'];
-                            $data['kelurahan_domisili'] = $value['Kelurahan'];
-                            $data['kecamatan_domisili'] = $value['Kecamatan'];
-                            $data['kabupaten_domisili'] = $value['Kota'];
-                            $data['kota_domisili']      = $value['Kota'];
-                            $data['propinsi_domisili']  = $value['Propinsi'];
-                            $data['kodepos_usaha']      = $value['postal_code'];
-                            $data['kelurahan_usaha']    = $value['Kelurahan'];
-                            $data['kecamatan_usaha']    = $value['Kecamatan'];
-                            $data['kabupaten_usaha']    = $value['Kota'];
-                            $data['kota_usaha']         = $value['Kota'];
-                            $data['propinsi_usaha']     = $value['Propinsi'];
+                    
+                    if (!empty($data['kode_pos_domisili'])) {
+                        $kode_pos_dom = ['key' => $data['kode_pos_domisili']];
+                        $kodepos_dom  = KodePos::filter($kode_pos_dom)->get();
+                        $pos_dom      = $kodepos_dom->toArray();
+                        if (!empty($pos_dom)) {
+                            foreach ($pos_dom as $index => $value) {
+                                $kota = explode(" ", $value['Kota']);
+                                // print_r($value);exit();
+                                $data['kodepos_domisili']   = $value['postal_code'];
+                                $data['kelurahan_domisili'] = $value['Kelurahan'];
+                                $data['kecamatan_domisili'] = $value['Kecamatan'];
+                                $data['kabupaten_domisili'] = $kota[1];
+                                $data['kota_domisili']      = $kota[1];
+                                $data['propinsi_domisili']  = $value['Propinsi'];
+                                $data['kodepos_usaha']      = $value['postal_code'];
+                                $data['kelurahan_usaha']    = $value['Kelurahan'];
+                                $data['kecamatan_usaha']    = $value['Kecamatan'];
+                                $data['kabupaten_usaha']    = $kota[1];
+                                $data['kota_usaha']         = $kota[1];
+                                $data['propinsi_usaha']     = $value['Propinsi'];
+                            }
                         }
                     }
-                }
+
+                    if ($request['transaksi_normal_harian'] == '1') {
+                        $gaji = "G1";
+                    } else if ($request['transaksi_normal_harian'] == '2') {
+                        $gaji = "G3";
+                    } else if ($request['transaksi_normal_harian'] == '3') {
+                        $gaji = "G4";
+                    } else if ($request['transaksi_normal_harian'] == '4' || $request['transaksi_normal_harian'] == '5') {
+                        $gaji = "G5";
+                    } else {
+                        $gaji = "G2";
+                    }
+
+                    $data['gaji'] = $gaji;
+                    $insert = $this->insertAllAnalisa($data);
+                    return $insert;
+                } 
+
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
                 // print_r($data);exit();
-                $this->insertAllAnalisa($data);
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
-    			// return $insert;
                 break;
 
             case 'insertPrescreeningBriguna':
@@ -119,9 +148,8 @@ class ApiLasController extends Controller
                 break;
 
             case 'putusSepakat':
-                $this->putusan($data);
-                // $putus = $ApiLas->putusSepakat($data);
-                // return $putus;
+                $putus = $this->putusan($data);
+                return $putus;
                 break;
 
             case 'inquiryInstansiBriguna':
@@ -132,6 +160,29 @@ class ApiLasController extends Controller
             case 'inquirySifatKredit':
                 $kirim = $ApiLas->inquirySifatKredit($data);
                 return $kirim;
+                break;
+
+            case 'inquiryHistoryDebiturPerorangan':
+                $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
+                
+                if ($inquiry['statusCode'] == '01') {
+                    $result  = $inquiry['data'][0]['items'];
+                    $result[0]['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
+                    $result[0]['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
+                    $result[0]['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
+                    $result[0]['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
+                    $conten = [
+                        'code'         => $inquiry['statusCode'],
+                        'descriptions' => $inquiry['statusDesc'],
+                        'contents' => [
+                            'data' => $result
+                        ]
+                    ];
+                    // print_r($conten);exit();
+                    return $conten;
+                }
+                return $inquiry;
+                
                 break;
 
             case 'inquiryListPutusan':
@@ -257,16 +308,20 @@ class ApiLasController extends Controller
     }
 
     public function putusan($data) {
+        $ApiLas  = new ApiLas();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
+        // $pn = '00062498';
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
         $uid   = $inquiryUserLAS['items'][0]['uid'];
-        print_r($inquiryUserLAS);exit();
+        // $uid = "56124";
+        // print_r($data);
+        // print_r($inquiryUserLAS);exit();
         $conten_putusan = [
             "id_aplikasi" => $data['id_aplikasi'],
             "uid"         => $uid,
-            "flag_putusan"=> "6",
-            "catatan"     => "testis"
+            "flag_putusan"=> $data['flag_putusan'],
+            "catatan"     => $data['catatan']
         ];
 
         $putus = $ApiLas->putusSepakat($conten_putusan);
@@ -284,22 +339,10 @@ class ApiLasController extends Controller
         // print_r($request);exit();
 
         // insert data debitur
-        if ($request['transaksi_normal_harian'] == '1') {
-            $gaji = "G1";
-        } else if ($request['transaksi_normal_harian'] == '2') {
-            $gaji = "G3";
-        } else if ($request['transaksi_normal_harian'] == '3') {
-            $gaji = "G4";
-        } else if ($request['transaksi_normal_harian'] == '4' || $request['transaksi_normal_harian'] == '5') {
-            $gaji = "G5";
-        } else {
-            $gaji = "G2";
-        }
-
         $content_las_debt = [
             "uid"                   => $uid, // inquiry user las
             "kode_cabang"           => $uker, // inquiry user las
-            "penghasilan_per_bulan" => $gaji,
+            "penghasilan_per_bulan" => $request['gaji'],
             "nama_debitur_1"        => $request['nama_debitur'],
             "nama_tanpa_gelar"      => $request['nama_debitur'],
             "alias"                 => $request['nama_debitur'],
@@ -350,7 +393,7 @@ class ApiLasController extends Controller
             "kecamatan"             => $request['kecamatan'],
             "kecamatan_domisili"    => $request['kecamatan_domisili'],
             "kecamatan_usaha"       => $request['kecamatan_usaha'],
-            "kabupaten"             => $request['kabupaten'],
+            "kabupaten"             => "0394",
             "kota_domisili"         => $request['kota_domisili'],
             "propinsi_domisili"     => $request['propinsi_domisili'],
             "kota_usaha"            => $request['kota_usaha'],
@@ -371,20 +414,20 @@ class ApiLasController extends Controller
             "sub_customer_type"     => "I", // hardcode dari las
             "hub_bank"              => "9900", // hardcode dari las
             "segmen_bisnis_bri"     => "RITEL", // hardcode dari las
-            "tgl_mulai_debitur"     => date('d-m-Y'), // hardcode tgl prakarsa
+            "tgl_mulai_debitur"     => date('dmY'), // hardcode tgl prakarsa
             "federal_wh_code"       => "1", // hardcode dari las
             "resident_flag"         => "Y", // hardcode dari las
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
         ];
-
+        // print_r($content_las_debt);exit();
         $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
-        print_r("-------- masuk insert debitur ---------");
+        \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // prescreening
             $content_prescreening = [
-                "Fid_aplikasi"           => $insertDebitur['items']['ID_APLIKASI'],
+                "Fid_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
                 "Ps_krd"                 => "0",
                 "Pks"                    => "0",
                 "Daftar_hitam_bi"        => "0",
@@ -397,13 +440,13 @@ class ApiLasController extends Controller
             ];
 
             $insertPrescreening = $ApiLas->insertPrescreeningBriguna($content_prescreening);
-            print_r("-------- masuk insert prescreening ---------");
+            \Log::info("-------- masuk insert prescreening ---------");
             \Log::info($insertPrescreening);
             if ($insertPrescreening['statusCode'] == '01') {
                 // prescoring
                 $content_las_prescoring = [
-                    "Fid_aplikasi"              => $insertDebitur['items']['ID_APLIKASI'],
-                    "Fid_cif_las"               => $insertDebitur['items']['CIF_LAS'],
+                    "Fid_aplikasi"              => $insertDebitur['items'][0]['ID_APLIKASI'],
+                    "Fid_cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
                     "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                     "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
                     "Briguna_profesi"           => $request['Briguna_profesi'],
@@ -432,15 +475,16 @@ class ApiLasController extends Controller
                 ];
 
                 $insertPrescoring = $ApiLas->insertPrescoringBriguna($content_las_prescoring);
-                print_r("-------- masuk insert prescoring ---------");
+                \Log::info("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
                     $jangka = $request['Jangka_waktu'];
-                    $tgl_jatuh_tempo = date('d-m-Y',strtotime('+'.$jangka.' months'));
+                    $tgl_jatuh_tempo = date('dmY',strtotime('+'.$jangka.' months'));
+                    // print_r($tgl_jatuh_tempo);exit();
                     // insert dataKredit
                     $content_insertKreditBriguna = [
-                        "Fid_aplikasi"                 => $insertDebitur['items']['ID_APLIKASI'],
-                        "Cif_las"                      => $insertDebitur['items']['CIF_LAS'],
+                        "Fid_aplikasi"                 => $insertDebitur['items'][0]['ID_APLIKASI'],
+                        "Cif_las"                      => $insertDebitur['items'][0]['CIF_LAS'],
                         "Pemrakarsa1"                  => $uid,
                         "Uker_pemrakarsa"              => $uker,
                         "Tanggal_jatuh_tempo"          => $tgl_jatuh_tempo,
@@ -465,13 +509,13 @@ class ApiLasController extends Controller
                         "Sandi_stp"                    => $request['Sandi_stp'],
                         "Sifat_kredit"                 => $request['Sifat_kredit'],
                         "Jenis_penggunaan"             => $request['Jenis_penggunaan'],
-                        "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi'],
+                        "Sektor_ekonomi_sid"           => $request['Sektor_ekonomi_sid'],
                         "Jenis_kredit_lbu"             => $request['Jenis_kredit_lbu'],
                         "Sifat_kredit_lbu"             => $request['Sifat_kredit_lbu'],
                         "Kategori_kredit_lbu"          => $request['Kategori_kredit_lbu'],
                         "Jenis_penggunaan_lbu"         => $request['Jenis_penggunaan_lbu'],
                         "Sumber_aplikasi"              => $request['Sumber_aplikasi'],                        
-                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi'],
+                        "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi_lbu'],
                         "Maksimum_plafond"             => $request['Maksimum_plafond'],
                         "Plafon_induk"                 => "0", // hardcode las
                         "Tp_produk"                    => "1", // hardcode las
@@ -502,42 +546,164 @@ class ApiLasController extends Controller
                     ];
 
                     $insertKredit = $ApiLas->insertDataKreditBriguna($content_insertKreditBriguna);
-                    print_r("-------- masuk insert kredit ---------");
+                    \Log::info("-------- masuk insert kredit ---------");
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
-                        $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items']['ID_APLIKASI']);
-                        print_r("-------- masuk hitungCRS ---------");
+                        $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items'][0]['ID_APLIKASI']);
+                        \Log::info("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
                             $override = 'Y';
-                            if ($hitung['items']['cutoff'] == 'Y') {
+                            if ($hitung['items'][0]['cutoff'] == 'Y') {
                                 $override = 'N';
                             }
                             // Kirim Pemutus
                             $conten = [
-                                'id_aplikasi'   => $insertDebitur['items']['ID_APLIKASI'],
+                                'id_aplikasi'   => $insertDebitur['items'][0]['ID_APLIKASI'],
                                 'uid'           => $uid,
                                 'flag_override' => $override
                             ];
                             $kirim = $ApiLas->kirimPemutus($conten);
-                            print_r("-------- masuk kirimPemutus ---------");
+                            \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
+                            if ($kirim['statusCode'] != '01') {
+                                $pemutus = [
+                                    'code' => $kirim['statusCode'], 
+                                    'descriptions' => 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'],
+                                    'contents' => [
+                                        'data' => ''
+                                    ]
+                                ];
+                                return $pemutus;
+                            }
+
+							$eform_id = $request['eform_id'];
+							$params = [
+								"uid"                   => $uid, // inquiry user las
+								"uid_pemrakarsa"        => $uker, // inquiry user las
+								"tp_produk"             => "1", // hardcode dari las
+								"id_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
+								"cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
+								"Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
+								"Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
+								"Briguna_profesi"           => $request['Briguna_profesi'],
+								"Pendapatan_profesi"        => $request['Pendapatan_profesi'],
+								"Potongan_per_bulan"        => $request['Potongan_per_bulan'],
+								"Plafond_briguna_existing"  => $request['Plafond_briguna_existing'],
+								"Angsuran_briguna_existing" => $request['Angsuran_briguna_existing'],
+								"Suku_bunga"                => $request['Suku_bunga'],
+								"Jangka_waktu"              => $request['Jangka_waktu'],
+								"Baki_debet"                => $request['Baki_debet'],
+								"Plafond_usulan"            => $request['Plafond_usulan'],
+								"Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
+								"Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
+								"Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
+								"Payroll"                   => $request['Payroll'],
+								"Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
+								"Maksimum_angsuran"         => $request['Maksimum_angsuran'],
+								"Tujuan_membuka_rek"        => $request['Tujuan_membuka_rek'],
+								"Briguna_smart"             => $request['Briguna_smart'],
+								"Kode_fasilitas"            => $request['Kode_fasilitas'],
+								"Tujuan_penggunaan_kredit"  => $request['Tujuan_penggunaan_kredit'],
+								"Penggunaan_kredit"         => $request['Penggunaan_kredit'],
+								"Provisi_kredit"            => $request['Provisi_kredit'],
+								"Biaya_administrasi"        => $request['Biaya_administrasi'],
+								"Penalty"                   => $request['Penalty'],
+								"Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+								"Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
+								"Premi_beban_bri"           => $request['Premi_beban_bri'],
+								"Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+								"Flag_promo"                => $request['promo'],
+								"Fid_promo"                 => $request['nama_program_promo'],
+								"Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
+								"Bupln"                     => $request['Bupln'],
+								"Agribisnis"                => $request['Agribisnis'],
+								"Sandi_stp"                 => $request['Sandi_stp'],
+								"Sifat_kredit"              => $request['Sifat_kredit'],
+								"Jenis_penggunaan"          => $request['Jenis_penggunaan'],
+								"Sektor_ekonomi_sid"        => $request['Sektor_ekonomi_sid'],
+								"Jenis_kredit_lbu"          => $request['Jenis_kredit_lbu'],
+								"Sifat_kredit_lbu"          => $request['Sifat_kredit_lbu'],
+								"Kategori_kredit_lbu"       => $request['Kategori_kredit_lbu'],
+								"Jenis_penggunaan_lbu"      => $request['Jenis_penggunaan_lbu'],
+								"Sumber_aplikasi"           => $request['Sumber_aplikasi'],
+								"Sektor_ekonomi_lbu"        => $request['Sektor_ekonomi_lbu'],
+                                "id_Status_gelar"           => $request['status_gelar'],
+                                "Status_gelar"              => $request['keterangan_status_gelar'],
+								"score"                     => $hitung['items'][0]['score'],
+								"grade"                     => $hitung['items'][0]['grade'],
+								"cutoff"                    => $hitung['items'][0]['cutoff'],
+								"definisi"                  => $hitung['items'][0]['definisi']
+							];
+
+							$eform = BRIGUNA::where("eform_id","=",$eform_id);    
+							$eform->update($params);
+	                        \Log::info("-------- update table briguna ---------");
+                            \Log::info($eform);
+                            $result = [
+                                'code'         => $kirim['statusCode'], 
+                                'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
+                                'contents'     => [
+                                    'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
+                                    'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
+                                    'score'       => $hitung['items'][0]['score'],
+                                    'grade'       => $hitung['items'][0]['grade'],
+                                    'cutoff'      => $hitung['items'][0]['cutoff'],
+                                    'definisi'    => $hitung['items'][0]['definisi']
+                                ]
+                            ];
+                            return $result;
                         } else {
-                            return $kirim;
+                            $crs = [
+                                'code' => $hitung['statusCode'], 
+                                'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
+                                'contents' => [
+                                    'data' => ''
+                                ]
+                            ];
+                            return $crs;
                         }
                     } else {
-                        return $hitung;
+                        $insertKre = [
+                            'code' => $insertKredit['statusCode'], 
+                            'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
+                            'contents' => [
+                                'data' => ''
+                            ]
+                        ];
+                        return $insertKre;
                     }
                 } else {
-                    return $insertKredit;
+                    $insertPres = [
+                        'code' => $insertPrescoring['statusCode'], 
+                        'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
+                        'contents' => [
+                            'data' => ''
+                        ]
+                    ];
+
+                    return $insertPres;
                 }
             } else {
-                return $insertPrescreening;
+                $insertPre = [
+                    'code' => $insertPrescreening['statusCode'], 
+                    'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
+                return $insertPre;
             }
-            return $insertDebitur;
         } else {
-            return $insertDebitur;
+            $insertDebt = [
+                'code' => $insertDebitur['statusCode'], 
+                'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
+                'contents' => [
+                    'data' => ''
+                ]
+            ];
+            return $insertDebt;
         }
     }
 }
