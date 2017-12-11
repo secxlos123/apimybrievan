@@ -34,7 +34,7 @@ class BRIGUNA extends Model
      */
 	 
     protected $fillable = [  
-        'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan',
+        'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan','mitra','tujuan_penggunaan',
 		'NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
         'SK_AKHIR','REKOMENDASI','SKPG',
 		//'SK_PERTAMA', 'SK_TERAKHIR','NPWP','REKOMENDASI_ATASAN',
