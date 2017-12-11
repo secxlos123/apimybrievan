@@ -283,7 +283,7 @@ class User extends Authenticatable
             $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
-            event(new CustomerRegistered($user, $password));
+            event(new CustomerRegistered($user, $password, $request->input('role_id')));
         } else {
             $user->update($request->all());
         }

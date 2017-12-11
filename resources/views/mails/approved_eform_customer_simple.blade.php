@@ -14,7 +14,7 @@
                     <td height="20px"></td>
                 </tr>
                 <tr>
-                    <td align="center">Pengajuan E-Form Telah Disetujui</td>
+                    <td align="center">Pengajuan E-Form</td>
                 </tr>
                 <tr>
                     <td height="20px"></td>
@@ -27,9 +27,9 @@
                 </tr>
                 <tr>
                     <td align="center">
-                        <span>Hai, {!! $mail['email'] !!}!</span>
+                        <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        E-form yang anda ajukan dengan nomor referensi <b>{!! $mail[ 'ref_number' ] !!}</b> telah di setujui.
+                        Pengajuan e-Form Anda dengan No. Reff. Aplikasi: <b>{!! $mail[ 'ref_number' ] !!}</b> diproses lebih lanjut. Untuk memonitor status pengajuan kredit Anda silahkan log in dengan akun MyBRI Anda di aplikasi MyBRI.
                         <br>
                         Terima kasih.
                     </td>

@@ -14,7 +14,7 @@
                     <td height="20px"></td>
                 </tr>
                 <tr>
-                    <td align="center">Pengajuan E-Form Tidak Disetujui</td>
+                    <td align="center">Pengajuan E-Form</td>
                 </tr>
                 <tr>
                     <td height="20px"></td>
@@ -27,11 +27,11 @@
                 </tr>
                 <tr>
                     <td align="center">
-                        <span>Hai, {!! $mail['email'] !!}!</span>
+                        <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        E-form yang anda ajukan dengan nomor referensi <b>{!! $mail[ 'ref_number' ] !!}</b> tidak disetujui.
+                        E-form yang anda ajukan dengan nomor referensi <b>{!! $mail[ 'ref_number' ] !!}</b> saat ini belum bisa diproses lebih lanjut. Untuk informasi terkait pinjaman Konsumtif BRI lainnya, silahkan log in dengan akun MyBRI Anda di aplikasi MyBRI.
                         <br>
-                        Terima kasih.
+                        Terima kasih atas kepercayaan Anda kepada kami.
                     </td>
                 </tr>
             </table>

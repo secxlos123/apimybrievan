@@ -74,7 +74,7 @@ class DeveloperAgentController extends Controller
         $user = User::create($request->all());
         $activation = Activation::create($user);
         Activation::complete($user, $activation->code);
-        event(new CustomerRegistered($user, $password));
+        event(new CustomerRegistered($user, $password,$request->input('role_id')));
         $token = JWTAuth::fromUser( $user );
          \Log::info($token);
         $user->roles()->sync($request->input('role_id'));
