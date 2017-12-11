@@ -65,8 +65,7 @@ class KPR extends Model
         $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
         
         $usersModel = User::FindOrFail($eform->user_id);
-        // $testnotifWeb = $usersModel->notify(new PengajuanKprNotification($eform));
-        // \Log::info($testnotifWeb);
+        //$usersModel->notify(new PengajuanKprNotification($eform));
         // $customer = $eform->customer;
         // $customer_detail = $customer->detail;
         // // Contoh

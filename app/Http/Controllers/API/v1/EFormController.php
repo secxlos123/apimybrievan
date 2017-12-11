@@ -65,6 +65,15 @@ class EFormController extends Controller
         ] );
     }
 
+    public function showIdsAndRefNumber( $ids, $ref_number )
+    {
+        $eform = EForm::Where('id',(int)$ids)->OrWhere('ref_number', 'ilike','%"'. $ref_number.'"%')->first();
+        
+        return response()->success( [
+            'contents' => $eform
+        ] );
+    }
+
     public function uploadimage($image,$id,$atribute) {
         //$eform = EForm::findOrFail($id);
         $path = public_path( 'uploads/' . $id . '/' );
