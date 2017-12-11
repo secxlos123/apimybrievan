@@ -143,8 +143,9 @@ class CustomerController extends Controller
 			$developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         
-            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
-                $property =  Property::create([
+            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  
+            {
+                $property =  Property::updateOrCreate(['id' => $baseRequest['property']],[
                     'developer_id'=>$baseRequest['developer'],
                     'prop_id_bri'=>'1',
                     'name'=>$developer_name,
@@ -159,11 +160,8 @@ class CustomerController extends Controller
                 ]);
                 $baseRequest['property'] = $property->id;
                 $baseRequest['property_name'] = $developer_name;
-                \Log::info('=================== Insert Property===========');
-                \Log::info($property);
                 if ($property) {
-                    $propertyType = PropertyType::create([
-                        'property_id'=>$property->id,
+                   $property->propertyTypes()->updateOrCreate(['property_id'=>$baseRequest['property']],[
                         'name'=>$developer_name,
                         'building_area'=>$baseRequest['building_area'],
                         'price'=>$baseRequest['price'],
@@ -174,25 +172,18 @@ class CustomerController extends Controller
                         'floors'=>0,
                         'carport'=>0
                     ]);
-                    \Log::info('=================== Insert Property type===========');
-                    \Log::info($propertyType);
-                    $baseRequest['property_type']= $propertyType->id;
+                    $property_type= $property->propertyTypes;
+                    $baseRequest['property_type']= $property_type[0]->id;
                     $baseRequest['property_type_name']= $developer_name;
-                    if ($propertyType) {
-                        $data = [
+                    $data = [
                         'developer_id' => $developer_id,
                         'property_id' => $property->id,
                         'status' => Collateral::STATUS[0]
                     ];
-                    $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
-                    \Log::info('=================== Insert Collateral===========');
-                    \Log::info($collateral);
-                    }
+                    $collateral = Collateral::updateOrCreate(['property_id' => $baseRequest['property']],$data);
                 }
             }
-            \Log::info($baseRequest);
 				KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
-
 		}
 
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'eform_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );

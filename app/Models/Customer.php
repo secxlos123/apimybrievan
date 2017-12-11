@@ -402,6 +402,6 @@ class Customer extends User
      */
     public function eforms()
     {
-        return $this->hasMany( EForm::class, 'user_id' );
+        return $this->hasOne( EForm::class, 'user_id' );
     }
 }

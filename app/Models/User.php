@@ -9,7 +9,6 @@ use File;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use App\Events\Customer\CustomerRegistered;
-
 class User extends Authenticatable
 {
     use Notifiable;
@@ -114,7 +113,7 @@ class User extends Authenticatable
 
     public function eforms()
     {
-        return $this->hasMany( EForm::class, 'user_id' );
+        return $this->hasOne( EForm::class, 'user_id' );
     }
 
     /**
@@ -284,7 +283,7 @@ class User extends Authenticatable
             $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
-            event(new CustomerRegistered($user, $password));
+            event(new CustomerRegistered($user, $password, $request->input('role_id')));
         } else {
             $user->update($request->all());
         }
@@ -356,6 +355,68 @@ class User extends Authenticatable
             'role_name'     => $user->roles->first()->name,
             'role_slug'     => $user->roles->first()->slug,
         ];
+    }
+
+    public function getListAttribute($value)
+    {
+        return [
+            'name'            => $this->first_name,
+            'property_name'   => $this->name,
+            'unit_price'      => "Rp. ".$this->price,
+            'unit_type'       => "Type ".$this->building_area,
+            'address'         => $this->address,
+            'approved_status' => ($this->is_aproved) ? 'Approved' : 'Rejected'
+        ];
+    }
+
+
+    public function getListUserProperties($startList = null, $endList = null)
+    {
+        if(!empty($startList) && !empty($endList)){
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList  = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList  = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startList) && !empty($endList)){
+            $now        = new \DateTime();
+            $startList  = $now->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList  = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endList) && !empty($startList)){
+            $now      = new \DateTime();
+            $endList  = $now->format('Y-m-d h:i:s');
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList  = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = User::select('users.first_name', 'properties.name', 'property_items.price',
+                             'property_types.building_area','property_items.address','properties.is_approved')
+                ->join('developers', 'developers.user_id', '=', 'users.id')
+                ->join('properties', 'properties.developer_id', '=', 'developers.id')
+                ->join('property_types', 'property_types.property_id', '=', 'properties.id')
+                ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')
+                ->when($filter, function ($query) use ($startList, $endList){
+                    return $query->whereBetween('properties.created_at', [$startList, $endList])->orderBy('properties.created_at', 'desc');
+                 }, function($query){
+                    return $query->orderBy('properties.created_at', 'desc');
+                 })
+                ->groupBy('users.id', 'properties.id', 'property_types.id', 'property_items.id')
+                ->limit(5)
+                ->get()
+                ->pluck('list');
+
+        return $data;
     }
 
     /**
@@ -493,6 +554,10 @@ class User extends Authenticatable
             ->leftJoin( 'visit_reports as v', 'e.id', '=', 'v.eform_id' )
             ->where( function( $user ) use( $request ) {
 
+                if( $request->has( 'eform' )) {
+                    if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
+                    
+                }
                 if ($request->has('name')) {
                     $user->whereRaw(
                     "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ]
