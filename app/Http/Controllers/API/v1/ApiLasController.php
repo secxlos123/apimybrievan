@@ -159,7 +159,7 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquirySifatKredit':
-                $inquiry = $ApiLas->inquirySifatKredit();
+                $inquiry = $ApiLas->inquirySifatKredit($data);
                 $conten  = $this->return_conten($inquiry);
                 return $conten;
                 break;
