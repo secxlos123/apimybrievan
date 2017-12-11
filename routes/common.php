@@ -22,6 +22,11 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
 	Route::group(['namespace' => 'Eks'], function () {
 
 		/**
+		 * Route for Calculator
+		 **/
+		Route::post('calculator', 'CalculatorController@calculate');
+		
+		/**
 		 * Route for get nearby properties
 		 */
 		Route::get('nearby-properties', 'PropertyController@nearby');

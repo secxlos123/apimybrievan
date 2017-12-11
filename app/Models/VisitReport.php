@@ -352,7 +352,6 @@ class VisitReport extends Model
         return $this->globalImageCheck( $image );
     }
 
-
     /**
      * Get Report NPWP Number Masking.
      *
@@ -436,6 +435,46 @@ class VisitReport extends Model
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get .
+     *
+     * @return string
+     */
+    public function getTitleNameAttribute(  )
+    {
+        return get_title($this->title);
+    }
+
+    /**
+     * Get .
+     *
+     * @return string
+     */
+    public function getEmploymentStatusNameAttribute(  )
+    {
+        return get_employment($this->employment_status);
+    }
+
+    /**
+     * Get .
+     *
+     * @return string
+     */
+    public function getLoanHistoryAccountsNameAttribute(  )
+    {
+        return get_loan_history($this->loan_history_accounts);
+    }
+
+    /**
+     * Get .
+     *
+     * @return string
+     */
+    public function getReligionNameAttribute(  )
+    {
+        return get_religion($this->religion);
     }
 
     /**

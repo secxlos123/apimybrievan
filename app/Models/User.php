@@ -361,6 +361,7 @@ class User extends Authenticatable
     {
         return [
             'name'            => $this->first_name,
+            'slug'            => $this->slug,
             'property_name'   => $this->name,
             'unit_price'      => "Rp. ".$this->price,
             'unit_type'       => "Type ".$this->building_area,
@@ -370,44 +371,44 @@ class User extends Authenticatable
     }
 
 
-    public function getListUserProperties($start = null, $end = null)
+    public function getListUserProperties($startList = null, $endList = null)
     {
-        if(!empty($start) && !empty($end)){
-            $dateStart  = \DateTime::createFromFormat('d-m-Y', $start);
-            $start      = $dateStart->format('Y-m-d h:i:s');
+        if(!empty($startList) && !empty($endList)){
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList  = $dateStart->format('Y-m-d h:i:s');
 
-            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $end);
-            $end      = $dateEnd->format('Y-m-d h:i:s');
-
-            $filter = true;
-        }else if(empty($start) && !empty($end)){
-            $now    = new \DateTime();
-            $start  = $now->format('Y-m-d h:i:s');
-
-            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $end);
-            $end      = $dateEnd->format('Y-m-d h:i:s');
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList  = $dateEnd->format('Y-m-d h:i:s');
 
             $filter = true;
-        }else if(empty($end) && !empty($start)){
-            $now  = new \DateTime();
-            $end  = $now->format('Y-m-d h:i:s');
+        }else if(empty($startList) && !empty($endList)){
+            $now        = new \DateTime();
+            $startList  = $now->format('Y-m-d h:i:s');
 
-            $dateStart  = \DateTime::createFromFormat('d-m-Y', $start);
-            $start      = $dateStart->format('Y-m-d h:i:s');
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList  = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endList) && !empty($startList)){
+            $now      = new \DateTime();
+            $endList  = $now->format('Y-m-d h:i:s');
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList  = $dateStart->format('Y-m-d h:i:s');
 
             $filter = true;
         }else{
             $filter = false;
         }
 
-        $data = User::select('users.first_name', 'properties.name', 'property_items.price',
+        $data = User::select('users.first_name', 'properties.name', 'property_items.price', 'properties.slug',
                              'property_types.building_area','property_items.address','properties.is_approved')
                 ->join('developers', 'developers.user_id', '=', 'users.id')
                 ->join('properties', 'properties.developer_id', '=', 'developers.id')
                 ->join('property_types', 'property_types.property_id', '=', 'properties.id')
                 ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')
-                ->when($filter, function ($query) use ($start, $end){
-                    return $query->whereBetween('properties.created_at', [$start, $end])->orderBy('properties.created_at', 'desc');
+                ->when($filter, function ($query) use ($startList, $endList){
+                    return $query->whereBetween('properties.created_at', [$startList, $endList])->orderBy('properties.created_at', 'desc');
                  }, function($query){
                     return $query->orderBy('properties.created_at', 'desc');
                  })
