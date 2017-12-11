@@ -35,6 +35,7 @@ class VerifyEFormCustomer
         $mail = [
             'email' => $customer->email,
             'name' => $customer->fullname,
+            'ref_number' => $eform->ref_number,
             'status' => $eform->response_status == 'approve' ? 'Setuju' : 'Tidak Setuju'
         ];
         
