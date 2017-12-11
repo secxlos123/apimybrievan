@@ -12,6 +12,9 @@ use App\Models\CustomerDetail;
 use App\Models\EForm;
 use App\Models\User;
 use App\Models\KPR;
+use App\Models\Property;
+use App\Models\PropertyType;
+use App\Models\Collateral;
 use Sentinel;
 use DB;
 
@@ -136,7 +139,51 @@ class CustomerController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
 		if ($request->has('eform_id')) {
-			KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
+
+			$developer_id = env('DEVELOPER_KEY',1);
+            $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+        
+            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  
+            {
+                $property =  Property::updateOrCreate(['id' => $baseRequest['property']],[
+                    'developer_id'=>$baseRequest['developer'],
+                    'prop_id_bri'=>'1',
+                    'name'=>$developer_name,
+                    'pic_name'=>'BRI',
+                    'pic_phone'=>'-',
+                    'address'=>$baseRequest['home_location'],
+                    'category'=>'3',
+                    'latitude'=>'0',
+                    'longitude'=>'0',
+                    'description'=>'-',
+                    'facilities'=>'-'
+                ]);
+                $baseRequest['property'] = $property->id;
+                $baseRequest['property_name'] = $developer_name;
+                if ($property) {
+                   $property->propertyTypes()->updateOrCreate(['property_id'=>$baseRequest['property']],[
+                        'name'=>$developer_name,
+                        'building_area'=>$baseRequest['building_area'],
+                        'price'=>$baseRequest['price'],
+                        'surface_area'=>$baseRequest['building_area'],
+                        'electrical_power'=>'-',
+                        'bathroom'=>0,
+                        'bedroom'=>0,
+                        'floors'=>0,
+                        'carport'=>0
+                    ]);
+                    $property_type= $property->propertyTypes;
+                    $baseRequest['property_type']= $property_type[0]->id;
+                    $baseRequest['property_type_name']= $developer_name;
+                    $data = [
+                        'developer_id' => $developer_id,
+                        'property_id' => $property->id,
+                        'status' => Collateral::STATUS[0]
+                    ];
+                    $collateral = Collateral::updateOrCreate(['property_id' => $baseRequest['property']],$data);
+                }
+            }
+				KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
 		}
 
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'eform_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );

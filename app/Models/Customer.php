@@ -293,7 +293,7 @@ class Customer extends User
         CustomerDetail::create( $customer_data );
         // send mail notification
         $customer = static::find( $user->id );
-        event( new CustomerRegistered( $customer, $password ) );
+        event( new CustomerRegistered( $customer, $password ,'5') );
 
         return $customer;
     }
@@ -402,6 +402,6 @@ class Customer extends User
      */
     public function eforms()
     {
-        return $this->hasMany( EForm::class, 'user_id' );
+        return $this->hasOne( EForm::class, 'user_id' );
     }
 }

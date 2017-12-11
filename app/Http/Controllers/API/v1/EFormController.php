@@ -13,6 +13,7 @@ use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
 use App\Models\PropertyType;
@@ -38,6 +39,18 @@ class EFormController extends Controller
         ], 200 );
     }
 
+    public function show_briguna( Request $request )
+    {
+        \Log::info($request->all());
+          $eform = EformBriguna::filter( $request )->get();
+		  $eform = $eform->toArray();
+		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+        return response()->success( [
+            'contents' => $eform
+        ],200 );
+    }
+	
+	
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -107,6 +120,7 @@ class EFormController extends Controller
      */
     public function store( EFormRequest $request )
     {
+        
         DB::beginTransaction();
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
@@ -164,8 +178,8 @@ class EFormController extends Controller
         \Log::info($baseRequest);
 
         if ( $request->product_type == 'briguna' ) {
-			
-			        \Log::info("=======================================================");
+
+                    \Log::info("=======================================================");
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
@@ -188,20 +202,22 @@ class EFormController extends Controller
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
-			$SKPG = '';
-			if(!empty($request->SKPG)){
-				$SKPG = $request->SKPG;
-				$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
-				$baseRequest['SKPG'] = $SKPG;
-				/*----------------------------------*/
-			}
-				$kpr = BRIGUNA::create( $baseRequest );
-			        \Log::info($kpr);
-		} else {
-            
+            $SKPG = '';
+            if(!empty($request->SKPG)){
+                $SKPG = $request->SKPG;
+                $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+                $baseRequest['SKPG'] = $SKPG;
+                /*----------------------------------*/
+            }
+                $kpr = BRIGUNA::create( $baseRequest );
+                    \Log::info($kpr);
+        } else {
+
+        $dataEform =  EForm::where('nik', $request->nik)->get();
+        if (count($dataEform) == 0) {
             $developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        
+
             if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
                 $property =  Property::create([
                     'developer_id'=>$baseRequest['developer'],
@@ -251,13 +267,22 @@ class EFormController extends Controller
             }
             $kpr = KPR::create( $baseRequest );
 
-        }
+            }
+            else
+            {
+                return response()->error( [
+                    'message' => 'User sedang dalam pengajuan',
+                    'contents' => $dataEform
+                ], 422 );
+            }
 
-        DB::commit();
-        return response()->success( [
-            'message' => 'Data e-form berhasil ditambahkan.',
-            'contents' => $kpr
-        ], 201 );
+        }
+                DB::commit();
+                return response()->success( [
+                    'message' => 'Data e-form berhasil ditambahkan.',
+                    'contents' => $kpr
+                ], 201 );
+
     }
 
     /**
@@ -360,7 +385,14 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
         $ao_id = substr( '00000000' . $request->ao_id, -8 );
-        $eform->update( [ 'ao_id' => $ao_id ] );
+
+        $baseRequest = [ 'ao_id' => $ao_id ];
+        // Get User Login
+        $user_login = \RestwsHc::getUser($ao_id);
+        $baseRequest['ao_name'] = $user_login['name'];
+        $baseRequest['ao_position'] = $user_login['position'];
+
+        $eform->update( $baseRequest );
 
         DB::commit();
         return response()->success( [

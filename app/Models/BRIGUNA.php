@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 use App\Models\EForm;
 use App\Models\ApiLas;
@@ -32,16 +34,29 @@ class BRIGUNA extends Model
      */
 	 
     protected $fillable = [  
-        'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan',
+        'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan','mitra','tujuan_penggunaan',
 		'NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
         'SK_AKHIR','REKOMENDASI','SKPG',
 		//'SK_PERTAMA', 'SK_TERAKHIR','NPWP','REKOMENDASI_ATASAN',
         'eform_id', 'tujuan_penggunaan_id', 
         'mitra_id', 
         'jenis_pinjaman_id',  'year',
-		'request_amount', 'angsuran_usulan', 'maksimum_plafond'
+		'request_amount', 'angsuran_usulan', 'maksimum_plafond',
+		'uid','uid_pemrakarsa','tp_produk','id_aplikasi','cif_las',
+		'Tgl_perkiraan_pensiun','Sifat_suku_bunga','Briguna_profesi',
+		'Pendapatan_profesi'.'Potongan_per_bulan,Plafond_briguna_existing',
+		'Angsuran_briguna_existing','Suku_bunga','Jangka_waktu','Baki_debet','Plafond_usulan',
+		'Rek_simpanan_bri','Riwayat_pinjaman','Penguasaan_cashflow','Payroll','Gaji_bersih_per_bulan',
+		'Maksimum_angsuran','Tujuan_membuka_rek','Briguna_smart','Kode_fasilitas',
+		'Tujuan_penggunaan_kredit','Penggunaan_kredit','Provisi_kredit',
+		'Biaya_administrasi','Penalty','Perusahaan_asuransi','Premi_asuransi_jiwa',
+		'Premi_beban_bri','Premi_beban_debitur','Flag_promo','Fid_promo',
+		'Pengadilan_terdekat','Bupln','Agribisnis','Sandi_stp',
+		'Sifat_kredit','Jenis_penggunaan','Sektor_ekonomi_sid','Jenis_kredit_lbu',
+		'Sifat_kredit_lbu','Kategori_kredit_lbu','Jenis_penggunaan_lbu','Sumber_aplikasi','Sektor_ekonomi_lbu',
+		'id_Status_gelar','Status_gelar','score','grade','cutoff','definisi'
 	];
-
+	
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -172,13 +187,16 @@ class BRIGUNA extends Model
         $data_dropbox = $Dropbox->insertDropbox($postData);
         \Log::info($data_dropbox);
         // dd($data_dropbox);
+        $data_dropbox['eform_id'] = $eform->id;
         if( $data_dropbox['responseCode'] == "01" ) {
             $briguna['ref_number_new'] = $data_dropbox['refno'];
-            $update_data  = [
-                'ref_number' => $data_dropbox['refno']
-            ];
-            $eforms = EForm::findOrFail($eform->id);
-            $eforms->update($update_data);
+            // $update_data  = [
+            //     'ref_number' => $data_dropbox['refno']
+            // ];
+            $eform = EForm::findOrFail($data_dropbox['eform_id']);
+            $base_request["ref_number"] = $data_dropbox['refno'];
+            // $eforms = EForm::where('id','=',$data_dropbox['eform_id']);
+            $eforms->update($base_request);
             /*$kecamatan_domisili = '';
             $kabupaten_domisili = '';
             $kodepos_domisili   = '';
@@ -415,57 +433,5 @@ class BRIGUNA extends Model
         // }
     }
 
-	  public static function update( $eform_id, $request )
-    {
-        $eform = static::findOrFail( $eform_id );
-        $result['status'] = false;
-        $developer_id = env('DEVELOPER_KEY',1);
-        $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        if ( $request->is_approved ) {
-
-            //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) 
-            //{
-                    $result = $eform->insertCoreBRI();
-                if ($result['status']) {
-                    $eform->kpr()->update(['is_sent'=> true]); 
-                }
-            // }
-            // else
-            // {
-            //     $eform->kpr()->update(['is_sent'=> false]);
-            //     $result['status'] = true;
-            // }
-
-            if ($result['status']) {
-                $eform->update( [
-                    'pros' => $request->pros,
-                    'cons' => $request->cons,
-                    'pinca_position' => $request->pinca_position,
-                    'pinca_name' => $request->pinca_name,
-                    'recommendation' => $request->recommendation,
-                    'recommended' => $request->recommended == "yes" ? true : false,
-                    'is_approved' => $request->is_approved,
-                    'status_eform' => 'approved'
-                    ] );
-            }
-        }
-        else
-        {
-            $eform->update( [
-                'pros' => $request->pros,
-                'cons' => $request->cons,
-                'pinca_position' => $request->pinca_position,
-                'pinca_name' => $request->pinca_name,
-                'recommendation' => $request->recommendation,
-                'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved,
-                'status_eform' => 'Rejected'
-                ] );
-            $result['status'] = true;
-
-        }
-
-        return $result;
-    }
 
 }

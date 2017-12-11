@@ -140,16 +140,15 @@ class Collateral extends Model
      */
     public function scopeGetLists($query, Request $request)
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['prop_id', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['eform_id', 'asc'];
 
-        return $query->from('developer_properties_view_table')
-            ->where(function ($property) use ($request) {
+        return $query->from('collateral_view_table')
+            ->where(function ($collaterals) use ($request) {
 
-                if ($request->has('city_id')) $developer->where('prop_city_id', $request->input('city_id'));
+                if ($request->has('status')) $collaterals->where('status', $request->input('status'));
 
             })
             ->select('*')
-            ->where('prop_id', '!=', '1')
             ->orderBy($sort[0], $sort[1]);
     }
 

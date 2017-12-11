@@ -93,7 +93,11 @@ class Developer extends Model
                 /**
                  * Query for filter by range project.
                  */
-                if ($request->has('project')) $developer->whereBetween('project', explode('|', $request->input('project')));
+                if ($request->has('without_independent')) {
+                    if ($request->without_independent) {
+                        $developer->where('bri', '=', NULL);
+                    }
+                }
 
                 /**
                  * Query for without independent

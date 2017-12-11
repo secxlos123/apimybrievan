@@ -10,8 +10,8 @@ return [
 
     'asmx'      => env('CLIENT_ASMX', 'http://10.35.65.167:6969/service.asmx/'),
 
-    // 'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.165:1104/service.asmx/'),
-    'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.167:1104/service.asmx/'),
+    'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.165:1104/service.asmx/'),
+    // 'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.167:1104/service.asmx/'),
 
     /*
     |--------------------------------------------------------------------------

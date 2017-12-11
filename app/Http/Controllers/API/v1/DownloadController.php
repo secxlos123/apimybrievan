@@ -1,4 +1,4 @@
-
+	 
 <?php
 
 namespace App\Http\Controllers\API\v1;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 
-class DownloadFileController extends Controller
+class DownloadController extends Controller
 {
     /**
      * Display a listing of the resource.

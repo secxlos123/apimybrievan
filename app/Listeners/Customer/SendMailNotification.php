@@ -32,9 +32,10 @@ class SendMailNotification
         $mail = [
             'name' => $event->customer->fullname,
             'email' => $event->customer->email,
-            'password' => $event->password
+            'password' => $event->password,
+            'created_at' => $event->customer->created_at,
+            'role'=> $event->role
         ];
-        
         Mail::to( $mail[ 'email' ] )->send( new Registered( $mail ) );
     }
 }

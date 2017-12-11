@@ -38,9 +38,9 @@ class SendMailNotification
         $mail = [
             'url' => $url,
             'email' => $user->email,
-            'name' => $user->full_name
+            'name' => $user->full_name,
+            'created_at' => $user->created_at
         ];
-
         Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
     }
 }

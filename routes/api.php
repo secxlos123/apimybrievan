@@ -21,11 +21,16 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
 		Route::post('select', 'SelectController@select');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
-		Route::post('Download_Rekomendasi', 'Download_RekomendasiController@Download');
+		Route::post('eforms_briguna', 'EFormController@show_briguna');
+		Route::get('Download_Rekomendasi', 'Download_RekomendasiController@Download');
 		Route::get('Surat_Kuasa_Potong_Upah', 'DownloadFileController@Download');
 		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
+		
+		Route::resource( 'gimmick', 'GimmickController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		/* ------------*/
 
 
@@ -60,14 +65,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		// Dropbox
-		Route::group(['prefix' => 'dropbox'], function () {
-			Route::post('index', 'DropboxController@index');
-		});
-
+		Route::post('dropbox/index', 'DropboxController@index');
+		
 		// API LAS
-		Route::group(['prefix' => 'api_las'], function () {
-			Route::post('index', 'ApiLasController@index');
-		});
+		Route::post('api_las/index', 'ApiLasController@index');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]

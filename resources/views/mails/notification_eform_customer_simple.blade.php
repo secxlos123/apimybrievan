@@ -27,13 +27,13 @@
                 </tr>
                 <tr>
                     <td align="center">
-                        <span>Hai, {!! $mail['email'] !!}!</span>
+                        <span>Hai, {!! $mail['name'] !!}!</span>
+                        <br>
+                        Terima kasih telah melakukan persetujuan atas e-Form Anda dengan No. Reff. Aplikasi :
                         <br/>
-                        Terima Kasih telah melakukan konfirmasi E-Form.
-                        <br/>
-                        Anda dengan memilih <b>{!! $mail[ 'status' ] !!}</b>.
-                        <br/>
-                        Terima kasih.
+                        <b>{!! $mail[ 'ref_number' ] !!}</b> .
+                        <br>
+                        Selanjutnya petugas kami akan memproses lebih lanjut permohonan kredit Anda.
                     </td>
                 </tr>
             </table>

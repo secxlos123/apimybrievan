@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateNewBriguna1 extends Migration
+class AddBannedUser extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class UpdateNewBriguna1 extends Migration
      */
     public function up()
     {
-
-         Schema::table( 'briguna', function ( Blueprint $table ) {
-           $table->dropColumn( 'status_property' );
-            $table->dropColumn( 'price' );
-            $table->dropColumn( 'request_amount' );
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_banned')->default(false);
         });
     }
 
@@ -28,6 +25,8 @@ class UpdateNewBriguna1 extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['is_banned']);
+        });
     }
 }

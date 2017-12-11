@@ -1,253 +1,327 @@
-@extends( 'mails.template' )
-@section( 'title', 'VERIFIKASI PERMOHONAN KREDIT KPR-BRI' )
-@section( 'content' )
-    <table align="center" bgcolor="#FFFFFF" style="box-shadow: 0px 3px 0px #bdc3c7; border-radius:4px;" width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-            <td align="center">
-                <table align="center" class="table-inner" width="500" border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td height="50"></td>
-                    </tr>
-                    <tr>
-                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:30px; color:#3b3b3b; font-weight: bold; ">@yield( 'title' )</td>
-                    </tr>
+ <table align="center" bgcolor="#fafafa" width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td height="20px"></td>
+    </tr>
+    <tr>
+        <td align="center">
+            <table align="center" class="table-inner" width="500px" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="center">
+                        <img align="center" width="200px" src="https://mybri.stagingapps.net/assets/images/logo/Logo-Website.png">
+                    </td>
+                </tr>
+                <tr>
+                    <td height="20px"></td>
+                </tr>
+                <tr>
+                    <td align="center">Verifikasi Permohonan Kredit KPR-BRI</td>
+                </tr>
+                <tr>
+                    <td height="20px"></td>
+                </tr>
+                <tr>
+                    <td bgcolor="#F7941E" height="5" align="center"></td>
+                </tr>
+                <tr>
+                    <td height="20px"></td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <span>Hai, {!! $mail['name'] !!}!</span>
+                        <br>
+                        Berikut, data permohonan anda:
+                        <br>
+                        <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>No. Ref Aplikasi : </td>
+                                <td>{!! $mail['no_ref'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>NIK : </td>
+                                <td>{!! $mail['nik'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Nama Lengkap : </td>
+                                <td>{!! $mail['name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Alamat : </td>
+                                <td>{!! $mail['address'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Kota : </td>
+                                <td>{!! $mail['city_id'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>No. Telepon : </td>
+                                <td>{!! $mail['phone'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>No. Handphone : </td>
+                                <td>{!! $mail['mobile_phone'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Nama Gadis Ibu Kandung : </td>
+                                <td>{!! $mail['mother_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Tempat Tanggal Lahir : </td>
+                                <td>{!! $mail['birth_place_id'].",".$mail['birth_date'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Kartu Tanda Penduduk : </td>
+                                <td>
+                                    <img src="{!! $mail['identity'] !!}" width="200" height="100" alt="ktp" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jenis Kelamin : </td>
+                                <td>{!! $mail['gender'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Status Pernikahan : </td>
+                                <td>{!! $mail['status'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Status Tempat Tinggal : </td>
+                                <td>{!! $mail['address_status'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Kewarganegaraan : </td>
+                                <td>{!! $mail['citizenship_name']!!}</td>
+                            </tr>
+
+                            @if ( $mail['status_id'] == '2' )
+                                <tr>
+                                    <td align="center">DATA PASANGAN</td>
+                                </tr>
+                                <tr>
+                                    <td>NIK Pasangan : </td>
+                                    <td>{!! $mail['couple_nik'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Nama Lengkap : </td>
+                                    <td>{!! $mail['couple_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>KTP Pasangan : </td>
+                                    <td>
+                                        <img src="{!! $mail['couple_identity'] !!}" width="200" height="100" alt="ktp_pasangan" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Tempat Tanggal Lahir : </td>
+                                    <td>{!! $mail['couple_birth_place_id'].",".$mail['couple_birth_date']  !!}</td>
+                                </tr>
+                            @endif
+
+                            <tr>
+                                <td align="center">DATA PEKERJAAN</td>
+                            </tr>
+                            <tr>
+                                <td>Bidang Pekerjaan : </td>
+                                <td>{!! $mail['job_field_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jenis Pekerjaan : </td>
+                                <td>{!! $mail['job_type_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Pekerjaan : </td>
+                                <td>{!! $mail['job_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Nama Perusahaan : </td>
+                                <td>{!! $mail['company_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jabatan : </td>
+                                <td>{!! $mail['position_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Lama Kerja : </td>
+                                <td>{!! $mail['work_duration'] !!} Tahun {!! $mail['work_duration_month'] !!} Bulan</td>
+                            </tr>
+                            <tr>
+                                <td>Alamat Kantor : </td>
+                                <td>{!! $mail['office_address'] !!}</td>
+                            </tr>
+
+                            <tr>
+                                <td align="center">DATA KEUANGAN</td>
+                            </tr>
+                            <tr>
+                                <td>Gaji/Pendapatan : </td>
+                                <td>Rp. {!! number_format($mail['salary'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Pendapatan Lain : </td>
+                                <td>Rp. {!! number_format($mail['other_salary'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Angsuran Pinjaman : </td>
+                                <td>Rp. {!! number_format($mail['loan_installment'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jumlah Tanggungan : </td>
+                                <td>{!! $mail['dependent_amount'] !!}</td>
+                            </tr>
+
+                            @if ($mail['status_id'] == '2' )
+                                <tr>
+                                    <td align="center">DATA KEUANGAN PASANGAN</td>
+                                </tr>
+                                <tr>
+                                    <td>Gaji/Pendapatan : </td>
+                                    <td>Rp. {!! number_format($mail['couple_salary'],2) !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pendapatan Lain : </td>
+                                    <td>Rp. {!! number_format($mail['couple_other_salary'],2) !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Angsuran Pinjaman : </td>
+                                    <td>Rp. {!! number_format($mail['couple_loan_installment'],2) !!}</td>
+                                </tr>
+                            @endif
+
+                            <tr>
+                                <td align="center">DATA KELUARGA/KERABAT TERDEKAT</td>
+                            </tr>
+                            <tr>
+                                <td>Nama : </td>
+                                <td>{!! $mail['emergency_name'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>No. Handphone : </td>
+                                <td>{!! $mail['emergency_contact'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Hubungan : </td>
+                                <td>{!! $mail['emergency_relation'] !!}</td>
+                            </tr>
+
+                             <tr>
+                                <td align="center">DATA PENGAJUAN</td>
+                            </tr>
+                            <tr>
+                                <td>Jenis KPR : </td>
+                                <td>{!! $mail['kpr']['status_property_name'] !!}</td>
+                            </tr>
+                            @if ($mail['kpr']['status_property'] == '1' )
+                            <tr>
+                                <td>Developer : </td>
+                                <td>{!! $mail['kpr']['developer_name'] !!}</td>
+                            </tr>
+                                @if ($mail['kpr']['developer_name'] != 'Non Kerja Sama')
+                                <tr>
+                                    <td>Nama Proyek : </td>
+                                    <td>{!! $mail['kpr']['property_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tipe Properti : </td>
+                                    <td>{!! $mail['kpr']['property_type_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Unit Properti : </td>
+                                    <td>{!! $mail['kpr']['property_item_name'] !!}</td>
+                                </tr>
+                                @endif
+                            @else
+
+                            <tr>
+                                <td>Jenis Properti : </td>
+                                <td>{!! $mail['kpr']['kpr_type_property_name'] !!}</td>
+                            </tr>
+
+                            @endif
+                            <tr>
+                                <td>Harga Rumah : </td>
+                                <td>Rp. {!! number_format($mail['kpr']['price'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Luas Bangunan : </td>
+                                <td>{!! $mail['kpr']['building_area'] !!} m<sup>2</sup></td>
+                            </tr>
+                            <tr>
+                                <td>Lokasi Rumah : </td>
+                                <td>{!! $mail['kpr']['home_location'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jangka Waktu : </td>
+                                <td>{!! $mail['kpr']['year'] !!} Bulan</td>
+                            </tr>
+                            <tr>
+                                <td>KPR Aktif ke : </td>
+                                <td>{!! $mail['kpr']['active_kpr'] == 3 ? '> 2' : $mail['kpr']['active_kpr'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Uang Muka : </td>
+                                <td>Rp. {!! number_format($mail['kpr']['down_payment'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jumlah Permohonan : </td>
+                                <td>Rp. {!! number_format($mail['kpr']['request_amount'],2) !!}</td>
+                            </tr>
+
+
+                            <tr>
+                                <td height="20px"></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>
+                                    <ol>
+                                        <li>
+                                            Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit.
+                                        </li>
+                                        <li>
+                                            Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya.
+                                        </li>
+                                        <li>
+                                            Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.
+                                        </li>
+                                        <li>
+                                            Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.
+                                        </li>
+                                        <li>
+                                            Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI.
+                                        </li>
+                                    </ol>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td height="20px"></td>
+    </tr>
+    <tr>
+        <td align="center" bgcolor="#fafafa">
+            <table class="textbutton" align="center" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
                     <tr>
                         <td align="center">
-                            <table width="25" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td height="20" style="border-bottom:2px solid #00529c;"></td>
-                                </tr>
-                            </table>
+                            <a href="{!! $mail[ 'url' ] !!}/approve">Setuju</a>
+                        </td>
+                        <td width="40"></td>
+                        <td align="center">
+                            <a href="{!! $mail[ 'url' ] !!}/reject">Tidak Setuju</a>
                         </td>
                     </tr>
-                    <tr>
-                        <td height="20"></td>
-                    </tr>
-                    <tr>
-                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">
-                            <span style="font-weight: bold;">Hai, {!! $mail[ 'name' ] !!}!</span>
-                            <br>
-                            Berikut, data permohonan anda:
-                            <br>
-                            @if (ENV('APP_ENV') == 'local') 
-                                <table align="left" class="table-inner" width="550" border="1" cellspacing="0" cellpadding="0" style="font-family: 'Open Sans', Arial, sans-serif;">
-                                	
-                                    <tr>
-                                        <td style="padding:5px; ">NIK : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['nik'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Nama Lengkap : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Alamat : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['address'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Kota : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['city_id'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">No. Telepon : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['phone'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">No. Handphone : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['mobile_phone'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Nama Gadis Ibu Kandung : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['mother_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Tempat Tanggal Lahir : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['birth_place_id'].",".$mail['birth_date']  !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Kartu Tanda Penduduk : </td>
-                                        <td style="padding:5px; font-weight: bold;"><img style="display:block; line-height:0px; font-size:0px; border:0px;" src="{!! $message->embed( $mail['identity'] ) !!}" width="200" height="100" alt="ktp" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Jenis Kelamin : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['gender'] !!}</td>
-                                    </tr>
-                                    
-                                    <tr>
-                                        <td style="padding:5px; ">Status Pernikahan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['status'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Status Tempat Tinggal : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['address_status'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Kewarganegaraan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['citizenship_name']!!}</td>
-                                    </tr>
-
-                                    @if ($mail['status_id'] == '2' )
-
-                                    <tr>
-                                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA PASANGAN</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">NIK Pasangan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['couple_nik'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Nama Lengkap : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['couple_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">KTP Pasangan : </td>
-                                        <td style="padding:5px; font-weight: bold;"><img style="display:block; line-height:0px; font-size:0px; border:0px;" src="{!! $message->embed( $mail['couple_identity'] ) !!}" width="200" height="100" alt="ktp_pasangan" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Tempat Tanggal Lahir : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['couple_birth_place_id'].",".$mail['couple_birth_date']  !!}</td>
-                                    </tr>
-
-                                    @endif
-
-                                    
-
-                                    <tr>
-                                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA PEKERJAAN</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td style="padding:5px; ">Bidang Pekerjaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_field_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Jenis Pekerjaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_type_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Pekerjaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['job_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Nama Perusahaan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['company_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Jabatan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['position_name']!!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Lama Kerja : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['work_duration'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Alamat Kantor : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['office_address'] !!}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA KEUANGAN</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Gaji/Pendapatan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['salary'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Pendapatan Lain : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['other_salary'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Angsuran Pinjaman : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['loan_installment'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Jumlah Tanggungan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['dependent_amount'] !!}</td>
-                                    </tr>
-
-                                    @if ($mail['status_id'] == '2' )
-                                    
-                                    <tr>
-                                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA KEUANGAN PASANGAN</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Gaji/Pendapatan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['couple_salary'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Pendapatan Lain : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['couple_other_salary'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Angsuran Pinjaman : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['couple_loan_installment'] !!}</td>
-                                    </tr>
-
-                                    @endif
-
-                                    <tr>
-                                        <td align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:13px; color:#7f8c8d; line-height:30px;">DATA KELUARGA/KERABAT TERDEKAT</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Nama : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['emergency_name'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">No. Handphone : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['emergency_contact'] !!}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:5px; ">Hubungan : </td>
-                                        <td style="padding:5px; font-weight: bold;">{!! $mail['emergency_relation'] !!}</td>
-                                    </tr>
-
-                                </table>
-
-                                <br>
-                            @endif
-                                <ol>
-                                    <li>Dengan ini Saya/ Kami mengajukan KPR BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit. </li>
-                                    <li>Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya</li>
-                                    <li>Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.</li>
-                                    <li>Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.</li>
-                                    <li>Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI</li>
-                                </ol>
-                            <br>
-                            <table align="center" class="table-inner" width="550" border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td height="30" colspan="2"></td>
-                                </tr>
-                                <tr>
-                                    <td align="center">
-                                        <table class="textbutton" align="center" bgcolor="#F7941E" border="0" cellspacing="0" cellpadding="0" style=" border-radius:30px; box-shadow: 0px 2px 0px #dedfdf;">
-                                            <tr>
-                                                <td height="55" align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:16px; color:#7f8c8d; line-height:30px; font-weight: bold;padding-left: 25px;padding-right: 25px;">
-                                                    <a href="{!! $mail[ 'url' ] !!}/approve">Setuju</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td align="center">
-                                        <table class="textbutton" align="center" bgcolor="#00529C" border="0" cellspacing="0" cellpadding="0" style=" border-radius:30px; box-shadow: 0px 2px 0px #dedfdf;">
-                                            <tr>
-                                                <td height="55" align="center" style="font-family: 'Open Sans', Arial, sans-serif; font-size:16px; color:#7f8c8d; line-height:30px; font-weight: bold;padding-left: 25px;padding-right: 25px;">
-                                                    <a href="{!! $mail[ 'url' ] !!}/reject">Tidak Setuju</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td height="30" colspan="2"></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td height="40"></td>
-        </tr>
-    </table>
-@endsection()
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" bgcolor="#fafafa">
+            <img align="center" width="500" src="https://mybri.stagingapps.net/assets/images/logo/footer.png">
+        </td>
+    </tr>
+</table>

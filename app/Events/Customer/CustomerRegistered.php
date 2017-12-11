@@ -24,10 +24,11 @@ class CustomerRegistered
      *
      * @return void
      */
-    public function __construct( User $customer, $password )
+    public function __construct( User $customer, $password , $role)
     {
         $this->customer = $customer;
         $this->password = $password;
+        $this->role = $role;
     }
 
     /**
