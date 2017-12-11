@@ -718,7 +718,7 @@ class ApiLasController extends Controller
 							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
                             $eform = EForm::where("eform_id","=",$eform_id);
                             $branch_id = ["branch_id" => $request['kantor_cabang_id']];
-                            $eform->update($branch_id)
+                            $eform->update($branch_id);
 							$briguna->update($params);
 	                        \Log::info("-------- update table briguna ---------");
                             \Log::info($eform);
