@@ -20,7 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image',
-        'phone', 'mobile_phone', 'gender', 'is_actived',
+        'phone', 'mobile_phone', 'gender', 'is_actived', 'is_banned'
     ];
 
     /**
@@ -557,7 +557,7 @@ class User extends Authenticatable
 
                 if( $request->has( 'eform' )) {
                     if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
-                    
+
                 }
                 if ($request->has('name')) {
                     $user->whereRaw(
