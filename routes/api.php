@@ -27,6 +27,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
+		
+		Route::resource( 'gimmick', 'GimmickController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		/* ------------*/
 
 
@@ -72,6 +76,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource( 'eforms', 'EFormController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+		
 
 		Route::get( 'offices', 'OfficeController@index' );
 		Route::post('SelectCabang', 'SelectCabangController@index');
