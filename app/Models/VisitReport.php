@@ -494,20 +494,6 @@ class VisitReport extends Model
     }
 
     /**
-     * Get mutator age of MPP.
-     *
-     * @return string
-     */
-    public function getAgeOfMppAttribute(  )
-    {
-        if (null !== $this->age_of_mpp) {
-            return $this->age_of_mpp;
-        }
-
-        return '-';
-    }
-
-    /**
      * The relation to visit report.
      *
      * @return     \Illuminate\Database\Eloquent\Relations\HasOne
