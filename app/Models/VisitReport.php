@@ -438,7 +438,7 @@ class VisitReport extends Model
     }
 
     /**
-     * Get .
+     * Get mutator age of title name.
      *
      * @return string
      */
@@ -452,7 +452,7 @@ class VisitReport extends Model
     }
 
     /**
-     * Get .
+     * Get mutator age of employment status name.
      *
      * @return string
      */
@@ -466,7 +466,7 @@ class VisitReport extends Model
     }
 
     /**
-     * Get .
+     * Get mutator age of history account name.
      *
      * @return string
      */
@@ -480,7 +480,7 @@ class VisitReport extends Model
     }
 
     /**
-     * Get .
+     * Get mutator age of religion name.
      *
      * @return string
      */
@@ -488,6 +488,20 @@ class VisitReport extends Model
     {
         if (null !== $this->religion) {
             return get_religion($this->religion);
+        }
+
+        return '-';
+    }
+
+    /**
+     * Get mutator age of MPP.
+     *
+     * @return string
+     */
+    public function getAgeOfMppAttribute(  )
+    {
+        if (null !== $this->age_of_mpp) {
+            return $this->age_of_mpp;
         }
 
         return '-';
