@@ -163,35 +163,92 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryHistoryDebiturPerorangan':
-                $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
-                
-                if ($inquiry['statusCode'] == '01') {
-                    $result  = $inquiry['data'][0]['items'];
-                    $result[0]['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
-                    $result[0]['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
-                    $result[0]['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
-                    $result[0]['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
-                    $conten = [
-                        'code'         => $inquiry['statusCode'],
-                        'descriptions' => $inquiry['statusDesc'],
-                        'contents' => [
-                            'data' => $result
-                        ]
-                    ];
-                    // print_r($conten);exit();
-                    return $conten;
+                if (!empty($data)) {
+                    $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
+                    
+                    if ($inquiry['statusCode'] == '01') {
+                        $result  = $inquiry['data'][0]['items'];
+                        $result[0]['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
+                        $result[0]['NO_REKENING']= $inquiry['data'][1]['items'][0]['no_rekening'];
+                        $result[0]['BAKI_DEBET'] = $inquiry['data'][1]['items'][0]['baki_debet'];
+                        $result[0]['BISA_SP']    = $inquiry['data'][1]['items'][0]['bisa_SP'];
+                        $conten = [
+                            'code'         => $inquiry['statusCode'],
+                            'descriptions' => $inquiry['statusDesc'],
+                            'contents' => [
+                                'data' => $result
+                            ]
+                        ];
+                        // print_r($conten);exit();
+                        return $conten;
+                    }
+                    return $inquiry;
                 }
-                return $inquiry;
-                
+
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
                 break;
 
             case 'inquiryListPutusan':
-                $pn      = substr('00000000'. $data, -8 );
-                $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-                $uid     = $inquiryUserLAS['items'][0]['uid'];
-                $inquiry = $ApiLas->inquiryListPutusan($uid);
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                if (!empty($data)) {
+                    $pn      = substr('00000000'. $data, -8 );
+                    $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+                    // print_r($inquiryUserLAS);exit();
+                    $uid = '0';
+                    if ($inquiryUserLAS['statusCode'] == '01') {
+                        $uid = $inquiryUserLAS['items'][0]['uid'];  
+                    }
+
+                    $inquiry = $ApiLas->inquiryListPutusan($uid);
+                    // if ($inquiry['statusCode'] == '01') {
+                        $conten  = $this->return_conten($inquiry);
+                        return $conten;
+                    // }
+                    // return $inquiry;
+                }
+
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
+                // print_r($data);exit();
+                break;
+
+            case 'inquiryPremiAJKO':
+                if (!empty($data)) {
+                    $params = [
+                        "loantype" => $data['loantype'],
+                        "jup"      => $data['jup'], 
+                        "tgl_lahir"=> $data['tgl_lahir'],
+                        "term"     => $data['term'], 
+                        "rate"     => $data['rate']
+                    ];
+
+                    $inquiry = $ApiLas->inquiryPremiAJKO($params);
+                    // print_r($inquiry);exit();
+                    if ($inquiry['statusCode'] == '01') {
+                        $conten  = $this->return_conten($inquiry);
+                        return $conten;
+                    }
+                    return $inquiry;
+                }
+
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => ''
+                    ]
+                ];
+                // print_r($data);exit();
                 break;
 
             case 'inquiryGelar':
@@ -579,12 +636,12 @@ class ApiLasController extends Controller
                             }
 
 							$eform_id = $request['eform_id'];
-							$params = [
-								"uid"                   => $uid, // inquiry user las
-								"uid_pemrakarsa"        => $uker, // inquiry user las
-								"tp_produk"             => "1", // hardcode dari las
-								"id_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
-								"cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
+							$params   = [
+								"uid"                       => $uid, // inquiry user las
+								"uid_pemrakarsa"            => $uker, // inquiry user las
+								"tp_produk"                 => "1", // hardcode dari las
+								"id_aplikasi"             => $insertDebitur['items'][0]['ID_APLIKASI'],
+								"cif_las"                   => $insertDebitur['items'][0]['CIF_LAS'],
 								"Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
 								"Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
 								"Briguna_profesi"           => $request['Briguna_profesi'],
@@ -634,10 +691,29 @@ class ApiLasController extends Controller
 								"score"                     => $hitung['items'][0]['score'],
 								"grade"                     => $hitung['items'][0]['grade'],
 								"cutoff"                    => $hitung['items'][0]['cutoff'],
-								"definisi"                  => $hitung['items'][0]['definisi']
+								"definisi"                  => $hitung['items'][0]['definisi'],
+                                "NPWP_nasabah"              => $request['NPWP_nasabah'],
+                                "KK"                        => $request['KK'],
+                                "SLIP_GAJI"                 => $request['SLIP_GAJI'],
+                                "SK_AWAL"                   => $request['SK_AWAL'],
+                                "SK_AKHIR"                  => $request['SK_AKHIR'],
+                                "REKOMENDASI"               => $request['REKOMENDASI'],
+                                "SKPG"                      => $request['SKPG'],
+
+                                "NIP"                       => $request['NIP'],
+                                "Status_Pekerjaan"          => $request['Status_Pekerjaan'],
+                                "Nama_atasan_Langsung"      => $request['Nama_atasan_Langsung'],
+                                "Jabatan_atasan"            => $request['Jabatan_atasan'],
+                                "mitra_id"                  => $request['mitra_id'], 
+                                "jenis_pinjaman_id"         => $request['jenis_pinjaman_id'],
+                                "tujuan_penggunaan_id"      => $request['tujuan_penggunaan_id'],
+                                "year"                      => $request['year'],
+                                "angsuran_usulan"           => $request['angsuran_usulan'],
+                                "maksimum_plafond"          => $request['maksimum_plafond'],
+                                "request_amount"            => $request['request_amount']
 							];
 
-							$eform = BRIGUNA::where("eform_id","=",$eform_id);    
+							$eform = BRIGUNA::where("eform_id","=",$eform_id);
 							$eform->update($params);
 	                        \Log::info("-------- update table briguna ---------");
                             \Log::info($eform);

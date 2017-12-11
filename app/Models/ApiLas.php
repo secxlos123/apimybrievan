@@ -471,6 +471,20 @@ class ApiLas extends Model
         }
     }
 
+    public function inquiryPremiAJKO($data) {
+        \Log::info($data);
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryPremiAJKO')
+                ->setBody([
+                    'JSONData' => json_encode($data)
+                ])->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
     public function inquiryUserLAS($data) {
         \Log::info($data);
         try {
