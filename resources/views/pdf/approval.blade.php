@@ -221,6 +221,36 @@
                         <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
                     </tr>
                     <tr>
+                        <td class="label">Pendidikan Terakhir</td>
+                        <td class="break-word">: {{ $detail->visit_report['title'] }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Agama</td>
+                        <td class="break-word">: {{ $detail->visit_report['religion'] }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Riwayat Kepemilikan Rekening Pinjaman</td>
+                        <td class="break-word">: {{ $detail->visit_report['loan_history_accounts'] }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">No Telp Kantor / Tempat Usaha</td>
+                        <td class="break-word">: {{ $detail->visit_report['office_phone'] }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Status Kepegawaian</td>
+                        <td class="break-word">: {{ $detail->visit_report['employment_status'] }}</td>
+                    </tr>
+
+                    <tr>
+                        <td class="label">Usia MPP</td>
+                        <td class="break-word">: {{ $detail->visit_report['age_of_mpp'] }}</td>
+                    </tr>
+
+                    <tr>
                         <td class="label">Tujuan Kunjungan</td>
                         <td class="break-word">: {{ $detail->visit_report['purpose_of_visit'] }}</td>
                     </tr>
