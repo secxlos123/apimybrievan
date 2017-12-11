@@ -9,6 +9,7 @@ use App\Models\CustomerDetail;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\UserNotification;
+use App\Models\Developer;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -787,6 +788,13 @@ class EForm extends Model
 
         }
 
+        $city = '';
+        if ($customer_detail->city) {
+            $city = str_replace('.', '', $customer_detail->city);
+            $city = str_replace(',', '', $city);
+
+        }
+
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
@@ -794,7 +802,7 @@ class EForm extends Model
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
             "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
-            "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : $customer->gender_sim,
+            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : strtolower($customer->gender),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
@@ -807,10 +815,25 @@ class EForm extends Model
             "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
             "lama_usaha" => $lama_usaha,
             "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
+            "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
             "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
-            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number
+            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
+            "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
+            "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
+            "Status_gelar_cif" => !( $lkn->title ) ? '' : $lkn->title
+            "Kecamatan_cif" => 'kecamatan'
+            "Kelurahan_cif" => 'kelurahan'
+            "Kode_pos_cif" => '40000'
+            "Lokasi_dati_cif" => 'provinsi'
+            "kota" => $city
+            "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp
+            "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector
+            "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status
+            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,,
+            'agama' => !( $lkn->religion ) ? '' : $lkn->religion,
+            'telepon_usaha' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
 
         return $request;
@@ -840,7 +863,7 @@ class EForm extends Model
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
-            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : $customer->gender,
+            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : strtolower($customer->gender),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "tempat_lahir_pemohon" => $birth_place,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
@@ -876,6 +899,8 @@ class EForm extends Model
         $customer_detail = (object) $customer->personal;
         $lkn = $this->visit_report;
 
+        $developer = Developer::find($kpr->developer_id);
+
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
@@ -886,8 +911,8 @@ class EForm extends Model
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "program_value" => !( $lkn->program_list ) ? '' : $lkn->program_list,
             "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list,
-            "pihak_ketiga_value" => !( $kpr->developer_id ) ? '' : $kpr->developer_id,
-            "sub_pihak_ketiga_value" => "1"
+            "pihak_ketiga_value" => !( $developer ) ? '' : ( $developer->dev_id_bri ? $developer->dev_id_bri : '1' ),
+            "sub_pihak_ketiga_value" => '1'
         ];
         return $request;
     }
@@ -914,6 +939,7 @@ class EForm extends Model
     {
         \Log::info("step5");
         $kpr = $this->kpr;
+        $lkn = $this->visit_report;
         $customer = clone $this->customer;
         $customer_finance = (object) $customer->financial;
 
@@ -922,9 +948,13 @@ class EForm extends Model
             "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
             "pendapatan_lain_pemohon" => !( $kpr->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income_salary)),
             "jangka_waktu" => $kpr->year,
+            "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '' : $lkn->type_financed,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
             "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income))
+            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income)),
+            "jenis_penghasilan" =>  !( $lkn->source_income ) ? '' : $lkn->source_income,
+            "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)),
+            "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)),
         ];
 
         return $request;
@@ -962,12 +992,6 @@ class EForm extends Model
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id
-            // 'title' => !( $lkn->title ) ? '' : $lkn->title,
-            // 'employment_status' => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
-            // 'age_of_mpp' => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
-            // 'loan_history_accounts' => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
-            // 'religion' => !( $lkn->religion ) ? '' : $lkn->religion,
-            // 'office_phone' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
         return $request;
     }
