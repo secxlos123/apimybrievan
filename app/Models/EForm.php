@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\UserNotification;
 use App\Models\Developer;
+use App\Models\PropertyItem;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -244,10 +245,10 @@ class EForm extends Model
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
-
+            // di update kalo collateral udah jalan
             //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
             //{
-                    $result = $eform->insertCoreBRI();
+                $result = $eform->insertCoreBRI();
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
@@ -269,10 +270,11 @@ class EForm extends Model
                     'is_approved' => $request->is_approved,
                     'status_eform' => 'approved'
                     ] );
+                // PropertyItem::setAvailibility( $data[ 'property_item' ], "sold" );
             }
-        }
-        else
-        {
+
+        } else {
+
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
@@ -283,6 +285,7 @@ class EForm extends Model
                 'is_approved' => $request->is_approved,
                 'status_eform' => 'Rejected'
                 ] );
+            PropertyItem::setAvailibility( $data[ 'property_item' ], "available" );
             $result['status'] = true;
 
         }
