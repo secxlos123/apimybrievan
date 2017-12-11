@@ -186,6 +186,11 @@ class CustomerRequest extends BaseRequest
             if (count($detail) != 0) {
                 $user = User::find($detail->user_id);
                 $email = $user->email;
+                if (count($user->eforms) > 0) {
+                    return [
+                        'nik.unique' => 'Nomor Induk Kartu Penduduk Sedang Melakukan Pengajuan Dengan No Ref '.$user->eforms->ref_number,
+                    ];
+                }
             }
 
         }

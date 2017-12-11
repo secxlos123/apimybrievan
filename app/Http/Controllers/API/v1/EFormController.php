@@ -111,6 +111,7 @@ class EFormController extends Controller
      */
     public function store( EFormRequest $request )
     {
+        
         DB::beginTransaction();
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
@@ -169,7 +170,7 @@ class EFormController extends Controller
 
         if ( $request->product_type == 'briguna' ) {
 
-			        \Log::info("=======================================================");
+                    \Log::info("=======================================================");
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
@@ -192,17 +193,19 @@ class EFormController extends Controller
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
-			$SKPG = '';
-			if(!empty($request->SKPG)){
-				$SKPG = $request->SKPG;
-				$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
-				$baseRequest['SKPG'] = $SKPG;
-				/*----------------------------------*/
-			}
-				$kpr = BRIGUNA::create( $baseRequest );
-			        \Log::info($kpr);
-		} else {
+            $SKPG = '';
+            if(!empty($request->SKPG)){
+                $SKPG = $request->SKPG;
+                $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+                $baseRequest['SKPG'] = $SKPG;
+                /*----------------------------------*/
+            }
+                $kpr = BRIGUNA::create( $baseRequest );
+                    \Log::info($kpr);
+        } else {
 
+        $dataEform =  EForm::where('nik', $request->nik)->get();
+        if (count($dataEform) == 0) {
             $developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
 
@@ -255,13 +258,22 @@ class EFormController extends Controller
             }
             $kpr = KPR::create( $baseRequest );
 
-        }
+            }
+            else
+            {
+                return response()->error( [
+                    'message' => 'User sedang dalam pengajuan',
+                    'contents' => $dataEform
+                ], 201 );
+            }
 
-        DB::commit();
-        return response()->success( [
-            'message' => 'Data e-form berhasil ditambahkan.',
-            'contents' => $kpr
-        ], 201 );
+        }
+                DB::commit();
+                return response()->success( [
+                    'message' => 'Data e-form berhasil ditambahkan.',
+                    'contents' => $kpr
+                ], 201 );
+
     }
 
     /**
