@@ -136,7 +136,7 @@ class PropertyItem extends Model
      */
     public static function setAvailibility( $id, $status )
     {
-        static::find( $eform_id )
+        static::find( $id )
             ->update([
                 'is_available' => ( $status == "available" ? true : false )
                 , 'available_status' => $status
