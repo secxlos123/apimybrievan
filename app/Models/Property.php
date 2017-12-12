@@ -187,8 +187,9 @@ class Property extends Model
     public function getChartAttribute()
     {
         return [
-            'month' => $this->month,
-            'value' => $this->value,
+            'month'  => $this->month,
+            'month2' => $this->month2,
+            'value'  => $this->value,
         ];
     }
 
@@ -513,12 +514,13 @@ class Property extends Model
         $data = Property::select(
                     DB::raw("count(properties.id) as value"),
                     DB::raw("to_char(properties.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(properties.created_at, 'MM YYYY') as month2"),
                     DB::raw("to_char(properties.created_at, 'YYYY MM') as order")
                 )
                 ->when($filter, function ($query) use ($startChart, $endChart){
                     return $query->whereBetween('properties.created_at', [$startChart, $endChart]);
                 })
-                ->groupBy('month', 'order')
+                ->groupBy('month', 'month2', 'order')
                 ->orderBy("order", "asc")
                 ->get()
                 ->pluck("chart");

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,6 +10,7 @@ use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\User;
+use App\Models\GIMMICK;
 use DB;
 
 class GimmickController extends Controller
@@ -102,9 +103,9 @@ class GimmickController extends Controller
      */
     public function store( GimmickRequest $request )
     {
-		return $request->all();die();
         $baseRequest = $request->all();
-        $gimmick = GIMMICK::create( $baseRequest );
+        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
+		return $gimmick;
     }
 
     /**

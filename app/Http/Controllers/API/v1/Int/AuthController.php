@@ -50,12 +50,14 @@ class AuthController extends Controller
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
             } else {
-                $request->headers->set( 'pn', $pn );
-                $this->destroy( $request );
-                return response()->success( [
-                    'message' => 'Unauthorized',
-                    'contents'=> []
-                ], 401 );
+                // $request->headers->set( 'pn', $pn );
+                // $this->destroy( $request );
+                // return response()->success( [
+                //     'message' => 'Unauthorized',
+                //     'contents'=> []
+                // ], 401 );
+                // Ini Buat Handle Semua User Bisa Masuk Role Staff
+                $role = 'staff';
             }
 
             if (ENV('APP_ENV') == 'local') {

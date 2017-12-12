@@ -203,4 +203,14 @@ class CustomerController extends Controller
 			] );
 		}
 	}
+
+	public function listDebitur(Request $req)
+	{
+		$params   = $req->all();
+		$customer = new CustomerDetail;
+		$data 	  = $customer->getListDebitur($params);
+		return response()->success([
+			'contents' => $data
+		]);
+	}
 }
