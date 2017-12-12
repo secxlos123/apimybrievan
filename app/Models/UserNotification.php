@@ -63,10 +63,13 @@ class UserNotification extends Model
 
     public function scopedataNotifications($query, $branch_id){
         
-        if($query->where('notifications.type','App\Notifications\PengajuanKprNotification')) {
+        if($query->where('notifications.type','App\Notifications\PengajuanKprNotification')) {      /* data for roles pinca new form from nasabah eksternal*/
             $query->where('eforms.branch_id',$branch_id );
-            $query->where('eforms.recommended',false);
-            $query->where('eforms.is_approved',false);
+            // $query->where('eforms.recommended',false);
+            // $query->where('eforms.is_approved',false);
+            $query->whereNull('ao_id');
+            $query->whereNull('ao_name');
+            $query->whereNull('ao_position');
         }
         
         return $query;

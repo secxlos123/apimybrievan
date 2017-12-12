@@ -19,10 +19,19 @@ use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Collateral;
 use App\Models\User;
+use App\Models\UserServices;
+use App\Notifications\EFormPenugasanDisposisi;
+
 use DB;
 
 class EFormController extends Controller
 {
+    public function __construct(User $user, UserServices $userservices)
+    {
+      $this->user = $user;
+      $this->userservices = $userservices;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -393,6 +402,9 @@ class EFormController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         $eform->update( $baseRequest );
+        
+        $usersService = $this->userservices->getByBranchId($eform->branch_id);  /*send notification*/
+        $usersService->notify(new EFormPenugasanDisposisi($eform));
 
         DB::commit();
         return response()->success( [
