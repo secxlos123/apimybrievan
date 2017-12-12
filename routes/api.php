@@ -28,9 +28,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		
-		Route::resource( 'gimmick', 'GimmickController', [
-			'except' => [ 'edit', 'create', 'destroy' ]
-		] );
+	
 		/* ------------*/
 
 
