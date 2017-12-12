@@ -25,6 +25,7 @@ class NotificationsDbChannel
         //customize here
         'branch_id'=> $data['branch_id'],
         'role_name'=> $role_name['role'],
+        'eform_id'=> $data['eform_id'],
         //field existing
         'type' => get_class($notification),
         'data' => $data,

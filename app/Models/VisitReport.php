@@ -32,7 +32,7 @@ class VisitReport extends Model
      * @var array
      */
     protected $appends = [
-        'npwp_number_masking'
+        'npwp_number_masking', 'title_name', 'employment_status_name', 'loan_history_accounts_name', 'religion_name'
     ];
 
     /**
@@ -438,43 +438,59 @@ class VisitReport extends Model
     }
 
     /**
-     * Get .
+     * Get mutator age of title name.
      *
      * @return string
      */
     public function getTitleNameAttribute(  )
     {
-        return get_title($this->title);
+        if (null !== $this->title) {
+            return get_title($this->title);
+        }
+
+        return '-';
     }
 
     /**
-     * Get .
+     * Get mutator age of employment status name.
      *
      * @return string
      */
     public function getEmploymentStatusNameAttribute(  )
     {
-        return get_employment($this->employment_status);
+        if (null !== $this->employment_status) {
+            return get_employment($this->employment_status);
+        }
+
+        return '-';
     }
 
     /**
-     * Get .
+     * Get mutator age of history account name.
      *
      * @return string
      */
     public function getLoanHistoryAccountsNameAttribute(  )
     {
-        return get_loan_history($this->loan_history_accounts);
+        if (null !== $this->loan_history_accounts) {
+            return get_loan_history($this->loan_history_accounts);
+        }
+
+        return '-';
     }
 
     /**
-     * Get .
+     * Get mutator age of religion name.
      *
      * @return string
      */
     public function getReligionNameAttribute(  )
     {
-        return get_religion($this->religion);
+        if (null !== $this->religion) {
+            return get_religion($this->religion);
+        }
+
+        return '-';
     }
 
     /**

@@ -54,37 +54,57 @@ class NotificationController extends Controller
     }
 
    
-    public function unread()
+    public function unread(Request $request)
     {
-    	$notifications = $this->_user
-    		->user_notifications()
-            ->orderBy('created_at', 'DESC')
-    		->unreads()
-    		->get();
+        $branch_id = request()->header( 'branch_id' );
+    	$role = request()->header( 'role' );
+        $ArrGetDataNotification = [];
+        if($branch_id !=  ''){
+            $checkRoles = checkRolesInternal($branch_id);
+            if( strtolower($role) == 'pinca' || $checkRoles['role'] == 'pinca'){
 
-    	return $this->response->withCollection($notifications, new NotificationTransformer);
+                $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3) )->get();
+                if($getDataNotification){
+                    foreach ($getDataNotification as $value) {
+                        $ArrGetDataNotification[] = [
+                                                'id' => $value->id,
+                                                'subject' => 'Pengajuan KPR Baru',
+                                                'type' => $value->type,
+                                                'notifiable_id' => $value->notifiable_id,
+                                                'notifiable_type' => $value->notifiable_type,
+                                                'role_name' => $value->role_name,
+                                                'branch_id' => $value->branch_id,
+                                                'data' => $value->data,
+                                                'created_at' => $value->created_at->diffForHumans(),
+                                                'is_read' => (bool) $value->is_read,
+                                                'read_at' => Carbon::parse($value->read_at)->format('Y-m-d H:i:s'),
+                                            ];
+                    }
+                }
+
+            }            
+        }
+
+    	return  response()->success( [
+            'message' => 'Sukses',
+            'contents' => $ArrGetDataNotification
+        ], 200 );
     }
 
     
-    public function summary()
+    public function read($eform_id)
     {
-        $notifications = $this->_user
-            ->getSummary();
-
-        return $this->response->withCollection($notifications, new SummaryNotificationTransformer);
-    }
-
-    
-    public function read($id)
-    {
-
-        $notification = $this->_user
-            ->user_notifications()
-            ->whereId($id)
+        $notification = $this->userNotification
+            ->where('eform_id',$eform_id)
             ->first();
-
+        
         $notification->markAsRead();
+        
+        \Log::info($notification->markAsRead());
+        return  response()->success( [
+            'message' => 'Sukses',
+            'contents' => $notification
+        ], 200 );
 
-        return $this->response->withItem($notification, new NotificationTransformer);
     }
 }

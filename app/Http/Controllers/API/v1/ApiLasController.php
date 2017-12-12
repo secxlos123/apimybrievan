@@ -703,7 +703,6 @@ class ApiLasController extends Controller
                                 "SKPG"                      => $request['SKPG'],
                                 "mitra_id"                  => $request['mitra_id'],
                                 "mitra"                     => $request['mitra_name'],
-                                "branch_id"                 => $request['kantor_cabang_id'],
                                 "NIP"                       => $request['nip'],
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
                                 "tujuan_penggunaan_id"      => $request['tujuan_penggunaan_id'],
@@ -717,20 +716,27 @@ class ApiLasController extends Controller
                                 "maksimum_plafond"          => $request['Maksimum_plafond']
 							];
 
-							$eform = BRIGUNA::where("eform_id","=",$eform_id);
-							$eform->update($params);
-	                        \Log::info("-------- update table briguna ---------");
+							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
+                            $eform   = EForm::findOrFail($eform_id);
+                            $base_request["branch_id"] = $request['kantor_cabang_id'];
+                            $eform->update($base_request);
+                            \Log::info("-------- update table eforms ---------");
                             \Log::info($eform);
-                            $result = [
+							$briguna->update($params);
+                            \Log::info("-------- update table briguna ---------");
+                            \Log::info($briguna);
+	                        $result = [
                                 'code'         => $kirim['statusCode'], 
                                 'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
                                 'contents'     => [
-                                    'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
-                                    'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
-                                    'score'       => $hitung['items'][0]['score'],
-                                    'grade'       => $hitung['items'][0]['grade'],
-                                    'cutoff'      => $hitung['items'][0]['cutoff'],
-                                    'definisi'    => $hitung['items'][0]['definisi']
+                                    'data' => [
+                                        'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
+                                        'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
+                                        'score'       => $hitung['items'][0]['score'],
+                                        'grade'       => $hitung['items'][0]['grade'],
+                                        'cutoff'      => $hitung['items'][0]['cutoff'],
+                                        'definisi'    => $hitung['items'][0]['definisi']
+                                    ]
                                 ]
                             ];
                             return $result;

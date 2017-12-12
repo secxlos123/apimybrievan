@@ -103,6 +103,8 @@ class AuthController extends Controller
              if ($check) {
                 if (!$activation = Activation::completed($check)){
                  return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
+                } else if ($check->is_banned) {
+                    return response()->error(['message' => 'Maaf akun anda sedang di banned'], 401);
                 }
              }
 
@@ -115,7 +117,8 @@ class AuthController extends Controller
             return response()->error(['message' => 'could_not_create_token'], 500);
         }
 
-        $code = 401; $status = 'error';
+        $code = 401;
+        $status = 'error';
         $response = ['message' => 'Login Gagal'];
 
         if ($this->verify($request, $token)) {
@@ -143,7 +146,7 @@ class AuthController extends Controller
                     'is_register_completed' => $user->is_register_completed
                 ] + $additional,
             ];
-        }else{
+        } else {
             $user = JWTAuth::toUser($token);
             $additional = [ 'nik' => null ];
             if( $customer = $user->customer_detail ) {

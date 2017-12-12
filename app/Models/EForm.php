@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\UserNotification;
 use App\Models\Developer;
+use App\Models\PropertyItem;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -29,7 +30,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number'
     ];
 
     /**
@@ -244,10 +245,10 @@ class EForm extends Model
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
-
+            // di update kalo collateral udah jalan
             //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
             //{
-                    $result = $eform->insertCoreBRI();
+                $result = $eform->insertCoreBRI();
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
@@ -269,10 +270,11 @@ class EForm extends Model
                     'is_approved' => $request->is_approved,
                     'status_eform' => 'approved'
                     ] );
+                // PropertyItem::setAvailibility( $data[ 'property_item' ], "sold" );
             }
-        }
-        else
-        {
+
+        } else {
+
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
@@ -283,6 +285,7 @@ class EForm extends Model
                 'is_approved' => $request->is_approved,
                 'status_eform' => 'Rejected'
                 ] );
+            PropertyItem::setAvailibility( $data[ 'property_item' ], "available" );
             $result['status'] = true;
 
         }
@@ -374,7 +377,7 @@ class EForm extends Model
             "tanggal_lahir_pemohon" => $customer_detail['birth_date'] ? $customer_detail['birth_date'] : '',
             "alamat_pemohon" => $customer_detail['address'] ? $customer_detail['address'] : '',
             // "jenis_kelamin_pemohon" => "l",
-            "jenis_kelamin_pemohon" => $customer->gender ? $customer->gender : '', // L harusnya 0 atau 1 atau 2 atau 3
+            "jenis_kelamin_pemohon" => $customer->gender_sim ? $customer->gender_sim : '', // L harusnya 0 atau 1 atau 2 atau 3
             "kewarganegaraan_pemohon" => $customer_detail['citizenship_id'] ? $customer_detail['citizenship_id'] : '',
             "pekerjaan_pemohon_value" => $customer_work['work_id'] ? $customer_work['work_id'] : '',
             // "status_pernikahan_pemohon_value" => "2",
@@ -802,7 +805,7 @@ class EForm extends Model
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
             "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
-            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : strtolower($customer->gender),
+            "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
@@ -826,8 +829,7 @@ class EForm extends Model
             "Kecamatan_cif" => 'kecamatan',
             "Kelurahan_cif" => 'kelurahan',
             "Kode_pos_cif" => '40000',
-            "Lokasi_dati_cif" => 'provinsi',
-            "kota" => $city,
+            "Lokasi_dati_cif" => $city,
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
@@ -863,7 +865,7 @@ class EForm extends Model
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
-            "jenis_kelamin_pemohon" => !( $customer->gender ) ? '' : strtolower($customer->gender),
+            "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "tempat_lahir_pemohon" => $birth_place,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
