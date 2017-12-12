@@ -81,6 +81,19 @@ class CollateralController extends Controller
     }
 
     /**
+     * Show detail collateral Non Kerja
+     * @param  string $type
+     * @param  integer $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showNon($type, $developerId, $propertyId)
+    {
+      return $this->makeResponse(
+        $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()
+      );
+    }
+
+    /**
      * Store new collateral
      * @return \Illuminate\Http\Response
      */
