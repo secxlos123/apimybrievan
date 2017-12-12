@@ -193,7 +193,7 @@ class BRIGUNA extends Model
             // $update_data  = [
             //     'ref_number' => $data_dropbox['refno']
             // ];
-            $eform = EForm::findOrFail($data_dropbox['eform_id']);
+            $eforms = EForm::findOrFail($data_dropbox['eform_id']);
             $base_request["ref_number"] = $data_dropbox['refno'];
             // $eforms = EForm::where('id','=',$data_dropbox['eform_id']);
             $eforms->update($base_request);
