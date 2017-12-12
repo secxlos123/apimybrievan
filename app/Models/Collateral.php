@@ -159,10 +159,10 @@ class Collateral extends Model
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeGetDetails($query, $id)
+    public function scopeGetDetails($query, $developerId,$propertyId)
     {
 
-        return $query->from('developer_properties_view_table')
-            ->where('prop_id', '=', $id)->get();
+        return $query->from('collateral_view_table')
+            ->where('developer_id',$developerId)->where('property_id',$propertyId);
     }
 }
