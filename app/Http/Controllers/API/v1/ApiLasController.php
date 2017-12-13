@@ -253,6 +253,12 @@ class ApiLasController extends Controller
                 // print_r($data);exit();
                 break;
 
+            case 'inquiryUserLAS':
+                $inquiry = $ApiLas->inquiryUserLAS($data);
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
             case 'inquiryGelar':
                 $inquiry = $ApiLas->inquiryGelar();
                 $conten  = $this->return_conten($inquiry);
