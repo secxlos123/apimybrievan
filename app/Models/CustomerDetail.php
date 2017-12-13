@@ -39,7 +39,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $appends = [
-        'status_id'
+        'status_id','address_status_id'
     ];
 
     /**
@@ -363,6 +363,41 @@ class CustomerDetail extends Model
     }
 
     /**
+     * Get list debitur.
+     *
+     * @return array
+     */
+    public function getListDebitur($params)
+    {
+        $data = CustomerDetail::with('user', 'city')
+                ->whereHas('user', function($query) use ($params){
+                    return $query->where('first_name', 'like', '%'.$params['name'].'%')
+                                 ->orWhere('last_name', 'like', '%'.$params['name'].'%');
+                })
+                ->where('nik', 'like', '%'.$params['nik'].'%')
+                ->where('city_id', $params['city_id'])
+                ->get()
+                ->pluck('listDebitur');
+        return $data;
+    }
+
+    /**
+     * Mutator for list debitur.
+     *
+     * @return void
+     */
+    public function getListDebiturAttribute()
+    {
+        return [
+            "nik"    => $this->nik,
+            "nama"   => $this->user->first_name." ".$this->user->last_name,
+            "email"  => $this->user->email,
+            "kota"   => $this->city ? $this->city->name : '',
+            "phone"  => $this->user->mobile_phone,
+            "gender" => $this->user->gender,
+        ];
+    }
+    /**
      * Set customer npwp image.
      *
      * @return void
@@ -470,5 +505,15 @@ class CustomerDetail extends Model
     public function couple_birth_place_city()
     {
         return $this->belongsTo( City::class, 'couple_birth_place_id' );
+    }
+
+    /**
+     * The user_id belongs to user
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
