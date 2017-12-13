@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Int;
+namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use PDF;
 
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Events\EForm\Approved;
@@ -41,7 +42,12 @@ class GimmickController extends Controller
             'contents' => $eform
         ],200 );
     }
-	
+
+    public function pdf( Request $request )
+    {
+       $pdf = PDF::loadView('gimmick',compact($request->all()));
+      return $pdf->download('invoice.pdf');
+    }	
 	
     public function mitra_relation( Request $request )
     {
