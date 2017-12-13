@@ -125,7 +125,7 @@ class MarketingController extends Controller
 
       // return $request->only($postTaken);die();
       if($data) {
-        $data->update($update));
+        $data->update($update);
 
         return response()->success([
           'message' => 'Data Marketing berhasil diupdate.',
