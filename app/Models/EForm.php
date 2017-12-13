@@ -801,8 +801,8 @@ class EForm extends Model
 
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
-            "tempat_lahir_pemohon" => $this->reformatBirthPlace( $customer_detail->birth_place ),
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
+            "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
             "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
@@ -858,10 +858,10 @@ class EForm extends Model
 
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
             "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
-            "tempat_lahir_pemohon" => $this->reformatBirthPlace( $customer_detail->birth_place ),
+            "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
@@ -906,7 +906,7 @@ class EForm extends Model
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
@@ -1179,12 +1179,12 @@ class EForm extends Model
 
 
      /**
-     * Reformat Birth place.
+     * Remove comma and dot.
      *
      * @param string $place
      * @return string $return
      */
-    public function reformatBirthPlace( $place )
+    public function reformatString( $place )
     {
         return $place ? str_replace(',', '', str_replace('.', '', $place)) : '';
     }
