@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call( UserDeveloper::class );
        // $this->call( DeveloperTableSeeder::class );
         $this->call( ViewSeeder::class );
+        $this->call( CrmTableSeeder::class );
 
     }
 }
