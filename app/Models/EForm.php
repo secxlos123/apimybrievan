@@ -76,8 +76,11 @@ class EForm extends Model
      */
     public function getCustomerNameAttribute()
     {
-        $fullname = ($this->customer) ? $this->customer->fullname : '';
-        return str_replace('"', '', str_replace("'", '', $fullname));
+        if ($this->customer) {
+            return str_replace('"', '', str_replace("'", '', $fullname));
+        }
+
+        return '';
     }
 
     /**
@@ -87,7 +90,11 @@ class EForm extends Model
      */
     public function getMobilePhoneAttribute()
     {
-        return $this->customer->mobile_phone;
+        if ($this->customer) {
+            return $this->customer->mobile_phone;
+        }
+
+        return '';
     }
 
     /**
