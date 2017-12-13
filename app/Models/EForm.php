@@ -77,7 +77,7 @@ class EForm extends Model
     public function getCustomerNameAttribute()
     {
         if ($this->customer) {
-            return str_replace('"', '', str_replace("'", '', $fullname));
+            return str_replace('"', '', str_replace("'", '', $this->customer->fullname));
         }
 
         return '';
