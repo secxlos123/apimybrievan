@@ -39,7 +39,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $appends = [
-        'status_id'
+        'status_id','address_status_id'
     ];
 
     /**

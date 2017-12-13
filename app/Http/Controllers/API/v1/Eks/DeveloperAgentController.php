@@ -250,9 +250,7 @@ class DeveloperAgentController extends Controller
                 $n = rand(0, $symbols_length); // get a random character from the string with all characters
                 $pass .= $used_symbols[$n]; // add the character to the password string
             }
-        foreach ($pass as $key2 => $value2) {
 
-        }
         return $pass; // return the generated password
     }
 }
