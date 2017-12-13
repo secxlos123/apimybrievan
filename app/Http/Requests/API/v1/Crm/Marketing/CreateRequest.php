@@ -27,8 +27,8 @@ class CreateRequest extends FormRequest
             'pn' => 'required',
             'product_type' => 'required',
             'activity_type' => 'required',
-            'target' => 'required',
-            'account' => 'required',
+            'target' => 'required|numeric',
+            'account_id' => 'required',
             'status' => 'required',
             'target_closing_date' => 'required'
         ];

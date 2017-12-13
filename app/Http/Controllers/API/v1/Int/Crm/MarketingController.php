@@ -11,7 +11,7 @@ use App\Models\Crm\Marketing;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
-// use App\Models\User;
+use App\Models\User;
 
 class MarketingController extends Controller
 {
@@ -37,16 +37,18 @@ class MarketingController extends Controller
      */
     public function create(Request $request)
     {
+        $customers = User::getCustomers( $request )->get();
         $data['np'] = $request->header('pn');
         $data['product_type'] = ProductType::all();
         $data['activity_type'] = ActivityType::all();
         $data['status'] = Status::all();
+        $data['accounts'] = $customers;
 
-        for ($i=1; $i < 50 ; $i++) {
-          $data['account'][] = [
-            $i => 'Nasabah - '.$i
-          ];
-        }
+        // for ($i=1; $i < 50 ; $i++) {
+        //   $data['account'][] = [
+        //     $i => 'Nasabah - '.$i
+        //   ];
+        // }
         return response()->success( [
     			'message' => 'Sukses',
     			'contents' => $data
@@ -128,7 +130,7 @@ class MarketingController extends Controller
         'product_type',
         'activity_type',
         'target',
-        'account',
+        'account_id',
         'status',
         'target_closing_date'
       ];
