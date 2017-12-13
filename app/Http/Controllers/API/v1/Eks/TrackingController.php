@@ -20,24 +20,22 @@ class TrackingController extends Controller
         $eforms = array();
 
         if( $user->inRole( 'customer' ) ) {
-            $eforms = EForm::selectRaw([
-                'eforms.id'
-                , 'eforms.ao_name as ao'
-                , "concat(users.first_name, ' ', users.last_name) as nama_pemohon"
-                , 'developers.company_name as developer_name'
-                , 'kpr.property_item_name as property_name'
-                , "case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+            $eforms = EForm::selectRaw("eforms.id
+                , eforms.ao_name as ao
+                , concat(users.first_name, ' ', users.last_name) as nama_pemohon
+                , developers.company_name as developer_name
+                , kpr.property_item_name as property_name
+                , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                     when eforms.is_approved = true then 'Proses CLF'
                     when visit_reports.id is not null then 'Prakarsa'
                     when eforms.ao_id is not null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as status
-                "
-                ])
-                ->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-                ->leftJoin('kpr', 'kpr.eform_id', '=', 'eforms.id')
-                ->leftJoin('developers', 'developers.id', '=', 'kpr.developer_id')
-                ->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
-                ->where( 'eforms.user_id', $user->id )
+                ")
+                ->leftJoin("users", "users.id", "=", "eforms.user_id")
+                ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
+                ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
+                ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+                ->where( "eforms.user_id", $user->id )
                 ->paginate( $request->input( 'limit' ) ?: 10 );
 
         }
