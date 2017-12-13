@@ -88,8 +88,12 @@ class CollateralController extends Controller
      */
     public function showNon($type, $developerId, $propertyId)
     {
+      $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()->toArray();
+      $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
+
+      $data = array_merge($ots,$nonkerjasama);
       return $this->makeResponse(
-        $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()
+        $data
       );
     }
 
