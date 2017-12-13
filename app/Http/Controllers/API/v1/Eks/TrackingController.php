@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\v1\Eks;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\EForm;
 
 class TrackingController extends Controller
 {
@@ -16,10 +16,19 @@ class TrackingController extends Controller
     public function index(Request $request)
     {
         $limit = $request->input( 'limit' ) ?: 10;
-        $customers = User::getCustomers( $request )->paginate( $limit );
+
+        $user = $request->user();
+
+        $eforms = array();
+
+        if( $user->inRole( 'customer' ) ) {
+            $eforms = EForm::where( 'user_id', $user->id )->paginate( $limit );
+
+        }
+
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $customers
+            'contents' => $eforms
         ], 200 );
     }
 
