@@ -39,7 +39,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $appends = [
-        'status_id'
+        'status_id','address_status_id'
     ];
 
     /**
@@ -274,7 +274,7 @@ class CustomerDetail extends Model
     {
         $doFunction = true;
         if (!empty($this->user)) {
-            $user = $this->user;
+            $user = $this->user->id;
         }else{
             $user = user_info('id');
         }

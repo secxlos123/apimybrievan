@@ -11,7 +11,7 @@ use App\Models\Crm\Marketing;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
-// use App\Models\User;
+use App\Models\User;
 
 class MarketingController extends Controller
 {
@@ -37,16 +37,12 @@ class MarketingController extends Controller
      */
     public function create(Request $request)
     {
-        $data['np'] = $request->header('pn');
+        $customers = User::getCustomers( $request )->get();
         $data['product_type'] = ProductType::all();
         $data['activity_type'] = ActivityType::all();
         $data['status'] = Status::all();
+        $data['accounts'] = $customers;
 
-        for ($i=1; $i < 50 ; $i++) {
-          $data['account'][] = [
-            $i => 'Nasabah - '.$i
-          ];
-        }
         return response()->success( [
     			'message' => 'Sukses',
     			'contents' => $data
@@ -61,19 +57,15 @@ class MarketingController extends Controller
      */
     public function store(Request $request)
     {
-      $postTaken = [
-        'pn',
-        'product_type',
-        'activity_type',
-        'target',
-        'account_id',
-        'status',
-        'target_closing_date'
-      ];
+      $data['pn'] = $request->header('pn');
+      $data['product_type'] = $request['product_type'];
+      $data['activity_type'] = $request['activity_type'];
+      $data['target'] = $request['target'];
+      $data['account_id'] = $request['account_id'];
+      $data['status'] = $request['status'];
+      $data['target_closing_date'] = $request['target_closing_date'];
 
-      // return $request->only($postTaken);die();
-
-      $save = Marketing::create($request->only($postTaken));
+      $save = Marketing::create($data);
       if ($save) {
           return response()->success([
               'message' => 'Data Marketing berhasil ditambah.',
@@ -123,19 +115,17 @@ class MarketingController extends Controller
     {
       $data = Marketing::find($id);
 
-      $postTaken = [
-        'pn',
-        'product_type',
-        'activity_type',
-        'target',
-        'account',
-        'status',
-        'target_closing_date'
-      ];
+      $update['pn'] = $request->header('pn');
+      $update['product_type'] = $request['product_type'];
+      $update['activity_type'] = $request['activity_type'];
+      $update['target'] = $request['target'];
+      $update['account_id'] = $request['account_id'];
+      $update['status'] = $request['status'];
+      $update['target_closing_date'] = $request['target_closing_date'];
 
-      return $request->only($postTaken);die();
+      // return $request->only($postTaken);die();
       if($data) {
-        $data->update($request->only($postTaken));
+        $data->update($update);
 
         return response()->success([
           'message' => 'Data Marketing berhasil diupdate.',
