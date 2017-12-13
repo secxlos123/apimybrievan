@@ -49,8 +49,8 @@ class EFormController extends Controller
             'contents' => $eform
         ],200 );
     }
-	
-	
+
+
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -81,7 +81,7 @@ class EFormController extends Controller
     public function showIdsAndRefNumber( $ids, $ref_number )
     {
         $eform = EForm::Where('id',(int)$ids)->OrWhere('ref_number', 'ilike','%"'. $ref_number.'"%')->first();
-        
+
         return response()->success( [
             'contents' => $eform
         ] );
@@ -120,7 +120,7 @@ class EFormController extends Controller
      */
     public function store( EFormRequest $request )
     {
-        
+
         DB::beginTransaction();
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
