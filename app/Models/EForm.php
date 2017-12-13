@@ -198,7 +198,12 @@ class EForm extends Model
      */
     public function getAgingAttribute()
     {
-        $days = $this->created_at->diffInDays();
+        $days = 0;
+
+        if ($this->created_at) {
+            $days = $this->created_at->diffInDays();
+
+        }
         return $days . ' hari ';
     }
 
