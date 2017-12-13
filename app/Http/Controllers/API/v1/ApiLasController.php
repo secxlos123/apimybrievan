@@ -10,6 +10,7 @@ use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
 use App\Models\BRIGUNA;
+use App\Models\EformBriguna;
 
 class ApiLasController extends Controller
 {
@@ -222,6 +223,21 @@ class ApiLasController extends Controller
                     ]
                 ];
                 // print_r($data);exit();
+                break;
+
+            case 'inquiryListVerputADK':
+                $user_pn = request()->header('pn');
+                $pn      = substr('00000000'. $user_pn, -8 );
+                $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+                // print_r($inquiryUserLAS);exit();
+                $kode_cabang = '0';
+                if ($inquiryUserLAS['statusCode'] == '01') {
+                    $kode_cabang = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+                }
+
+                $inquiry = $ApiLas->inquiryListVerputADK($kode_cabang);
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquiryPremiAJKO':
@@ -797,5 +813,21 @@ class ApiLasController extends Controller
             ];
             return $insertDebt;
         }
+    }
+
+    public function show_briguna (Request $request) {
+        $eform = EformBriguna::filter($request)->get();
+        $eform = $eform->toArray();
+        if (!empty($eform)) {
+            $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+    
+            return response()->success( [
+                'contents' => $eform[0]
+            ],200);
+        }
+
+        return response()->error( [
+            'contents' => 'data tidak ditemukan'
+        ],400);
     }
 }
