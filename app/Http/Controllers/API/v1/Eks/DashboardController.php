@@ -19,15 +19,17 @@ class DashboardController extends Controller
         $this->modelProperties = new Property;
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        $user_id = $request->user()->id;
+
     	$params       = $this->request->all();
     	$startList    = (isset($params['startList'])) ? $params['startList'] : '';
     	$endList      = (isset($params['endList'])) ? $params['endList'] : '';
     	$startChart   = (isset($params['startChart'])) ? $params['startChart'] : '';
     	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
 
-    	$userList  	  = $this->modelUser->getListUserProperties($startList, $endList);
+    	$userList  	  = $this->modelUser->getListUserProperties($startList, $endList, $user_id);
     	$chartData	  = $this->modelProperties->getChartProperties($startChart, $endChart);
         return response()->success([
             'contents' => [
