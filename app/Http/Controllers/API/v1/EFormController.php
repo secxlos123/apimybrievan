@@ -144,32 +144,18 @@ class EFormController extends Controller
 
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
 		  
-		  $kpr = [
-		     "id"=> $eform[0]['id'],
-            "status_property"=> "",
-            "developer_id"=> "",
-            "property_id"=> "",
-            "price"=> $eform[0]['request_amount'],
-            "building_area"=> "",
-            "home_location"=> "Lokasi",
-            "year"=> $eform[0]['year'],
-            "active_kpr"=> "",
-            "dp"=> "",
-            "request_amount"=> $eform[0]['request_amount'],
-            "developer_name"=> "Non Kerja Sama",
-            "property_name"=> "",
-            "kpr_type_property"=> "",
-            "property_type"=> "",
-            "property_type_name"=> "",
-            "property_item"=> "",
-            "property_item_name"=> "",
-            "is_sent"=> false,
-            "status_property_name"=> "Baru",
-            "kpr_type_property_name"=> "Rumah Toko",
-            "down_payment"=> $eform[0]['request_amount']
-		  ];
+		  $eform[0]['nominal'] = $eform[0]['request_amount'];
+		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
+		  $eform[0]['kpr']['year'] = $eform[0]['year'];
 		  
-		  $eform[0]['kpr'] = $kpr;
+		  $birth_place = DB::table('cities')
+						 ->select('name')
+						 ->where('cities.id', $customer[0]['birth_place_id'])
+						 ->get();
+				$birth_place = $birth_place->toArray();
+				$birth_place = json_decode(json_encode($birth_place), True);
+		  $eform[0]['birth_place'] = $birth_place;
+		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
         ],200 );
