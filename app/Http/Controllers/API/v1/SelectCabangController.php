@@ -94,8 +94,8 @@ class SelectCabangController extends Controller
     private function fetch(Request $request)
     {
         \Log::info($request->all());
-        $long = number_format($request->get('long', 106.813880), 5);
-        $lat = number_format($request->get('lat', -6.217458), 5);
+        $long = number_format($request->get('long', 106.8223912), 5);
+        $lat = number_format($request->get('lat', -6.302579), 5);
         $return = RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
