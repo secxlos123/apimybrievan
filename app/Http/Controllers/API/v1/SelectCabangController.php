@@ -26,7 +26,6 @@ class SelectCabangController extends Controller
 		
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
-		print_r($branchs);die();
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
@@ -41,7 +40,7 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-                if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
+                if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
 					if($countkey=='1'){
