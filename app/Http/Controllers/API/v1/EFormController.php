@@ -143,6 +143,33 @@ class EFormController extends Controller
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+		  
+		  $kpr = [
+		     "id"=> $eform[0]['id'],
+            "status_property"=> "",
+            "developer_id"=> "",
+            "property_id"=> "",
+            "price"=> $eform[0]['request_amount'],
+            "building_area"=> "",
+            "home_location"=> "Lokasi",
+            "year"=> $eform[0]['year'],
+            "active_kpr"=> "",
+            "dp"=> "",
+            "request_amount"=> $eform[0]['request_amount'],
+            "developer_name"=> "Non Kerja Sama",
+            "property_name"=> "",
+            "kpr_type_property"=> "",
+            "property_type"=> "",
+            "property_type_name"=> "",
+            "property_item"=> "",
+            "property_item_name"=> "",
+            "is_sent"=> false,
+            "status_property_name"=> "Baru",
+            "kpr_type_property_name"=> "Rumah Toko",
+            "down_payment"=> $eform[0]['request_amount']
+		  ];
+		  
+		  $eform[0]['kpr'] = $kpr;
         return response()->success( [
             'contents' => $eform[0]
         ],200 );
