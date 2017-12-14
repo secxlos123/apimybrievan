@@ -31,12 +31,14 @@ class ApiLas extends Model
     }
 
     public function eform_briguna() {
-        $eforms = DB::select([
-            'eforms.*','briguna.*',
-            \DB::Raw("case when eforms.id is not null then 2 else 1 end as new_order")
-        ]);
-        $eforms->join('briguna', 'eform_id', '=', 'eforms.id');
-        \Log::info($eforms->toSql());
+        $eforms = DB::table('eforms')
+                 ->select('eforms.id','briguna.*')
+                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->get();
+        $eforms = $eforms->toArray();
+        $eforms = json_decode(json_encode($eforms), True);
+        
+        \Log::info($eforms);
         return $eforms;
     }
 
