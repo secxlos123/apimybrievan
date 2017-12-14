@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\v1\Eks;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Developer;
-use App\Models\Property;
+use App\Models\EForm;
 class DashboardController extends Controller
 {
     protected $request;
@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         $this->request 		   = $request;
         $this->modelDeveloper  = new Developer;
-        // $this->modelProperties = new Property;
+        $this->modelEforms     = new EForm;
     }
 
     public function dashboard(Request $request)
@@ -30,7 +30,7 @@ class DashboardController extends Controller
     	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
 
     	$userList  	  = $this->modelDeveloper->getListUserProperties($startList, $endList, $user_id);
-    	$chartData	  = $this->modelDeveloper->getChartProperties($startChart, $endChart, $user_id);
+    	$chartData	  = $this->modelEforms->getChartSubmission($startChart, $endChart, $user_id);
         return response()->success([
             'contents' => [
                 'user_list' => $userList,

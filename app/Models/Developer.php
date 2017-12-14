@@ -233,44 +233,4 @@ class Developer extends Model
 
         return $data;
     }
-
-    /**
-        * Get list count for chart
-        *
-        * @param  string $startChart
-        * @param  string $endChart
-        * @return array
-    */
-    public function getChartProperties($startChart, $endChart, $user_id)
-    {
-        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
-
-        if(empty($startList) && !empty($endList)){
-            $startList = Date('d-m-Y');
-            $filter = true;
-        }else if(empty($endList) && !empty($startList)){
-            $endList = Date('d-M-Y');
-            $filter = true;
-            $filter = true;
-        }else{
-            $filter = false;
-        }
-
-        // $data = EForm::
-
-        $data = Property::select(
-                    DB::raw("count(properties.id) as value"),
-                    DB::raw("to_char(properties.created_at, 'TMMonth YYYY') as month"),
-                    DB::raw("to_char(properties.created_at, 'MM YYYY') as month2"),
-                    DB::raw("to_char(properties.created_at, 'YYYY MM') as order")
-                )
-                ->when($filter, function ($query) use ($startChart, $endChart){
-                    return $query->whereBetween('properties.created_at', [$startChart, $endChart]);
-                })
-                ->groupBy('month', 'month2', 'order')
-                ->orderBy("order", "asc")
-                ->get()
-                ->pluck("chart");
-        return $data;
-    }
 }

@@ -181,20 +181,6 @@ class Property extends Model
     }
 
     /**
-     * Get chart attribute
-     */
-
-    public function getChartAttribute()
-    {
-        return [
-            'month'  => $this->month,
-            'month2' => $this->month2,
-            'value'  => $this->value,
-        ];
-    }
-
-
-    /**
      * Scope a query to get lists of roles.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
