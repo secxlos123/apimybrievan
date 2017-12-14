@@ -28,6 +28,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
+		Route::post('SelectCabang', 'SelectCabangController@getCabang');
 		
 	
 		/* ------------*/
