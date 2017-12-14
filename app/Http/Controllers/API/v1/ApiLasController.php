@@ -275,9 +275,7 @@ class ApiLasController extends Controller
 
             case 'eformBriguna':
                 $inquiry = $ApiLas->eform_briguna();
-                print_r($inquiry->toArray());exit();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                return $inquiry;
                 break;
 
             case 'inquiryUserLAS':
@@ -402,17 +400,17 @@ class ApiLasController extends Controller
 
     public function putusan($data) {
         $ApiLas  = new ApiLas();
-        $user_pn = request()->header('pn');
-        $pn      = substr('00000000'. $user_pn, -8 );
+        // $user_pn = request()->header('pn');
+        // $pn      = substr('00000000'. $user_pn, -8 );
         // $pn = '00062498';
-        $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        $uid   = $inquiryUserLAS['items'][0]['uid'];
+        // $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+        // $uid   = $inquiryUserLAS['items'][0]['uid'];
         // $uid = "56124";
         // print_r($data);
         // print_r($inquiryUserLAS);exit();
         $conten_putusan = [
             "id_aplikasi" => $data['id_aplikasi'],
-            "uid"         => $uid,
+            "uid"         => $data['uid'],
             "flag_putusan"=> $data['flag_putusan'],
             "catatan"     => $data['catatan']
         ];
