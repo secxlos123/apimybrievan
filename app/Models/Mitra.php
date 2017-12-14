@@ -26,12 +26,12 @@ class Mitra extends Authenticatable  {
       $kode = $request->input('key');
                     $mitra->Where('mitra.BRANCH_CODE', $kode);
         } );
-
+				$mitra>orderByRaw('NAMA_INSTANSI ASC');
 				$mitra = $mitra->select([
                     '*',
                      \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
                 ]);
-
+		
         \Log::info($mitra->toSql());
 
         return $mitra;
