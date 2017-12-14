@@ -107,7 +107,6 @@ class SelectCabangController extends Controller
    
 	public function index( Request $request )
 	{
-		
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
