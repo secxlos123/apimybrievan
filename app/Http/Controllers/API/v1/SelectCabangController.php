@@ -60,7 +60,6 @@ class SelectCabangController extends Controller
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
 						$countmitra = count($mitra);
-						
 						for($i=0;$i<$countmitra;$i++){
 							
 						$mitra[$i]['kanwil'] = $branch['kanwil'];
