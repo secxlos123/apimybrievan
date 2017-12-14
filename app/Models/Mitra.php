@@ -25,7 +25,7 @@ class Mitra extends Authenticatable  {
       $kode = $request->input('kode');
         $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
 			
-      $key = $request->input('key');
+      $key = '00001';
                     $mitra->Where('mitra.BRANCH_CODE', $key);
         } );
 		
