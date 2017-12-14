@@ -70,6 +70,7 @@ class ViewSeeder extends Seeder
               eforms.id AS eform_id,
               eforms.ref_number,
               eforms.product_type,
+              eforms.is_approved,
               kpr.status_property,
               kpr.developer_id,
               kpr.property_id,

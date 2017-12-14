@@ -66,9 +66,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
 		] );		
-		Route::resource( 'gimmick', 'GimmickController', [
+		/* Route::resource( 'gimmick', 'GimmickController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
-		] );
+		] ); */
 	} );
 } );
 
