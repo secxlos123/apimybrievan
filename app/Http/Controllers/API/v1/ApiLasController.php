@@ -742,11 +742,25 @@ class ApiLasController extends Controller
                                 "tujuan_penggunaan"         => $request['tujuan_penggunaan_kredit'],
                                 "request_amount"            => $request['Permohonan_kredit'],
                                 "year"                      => $request['Jangka_waktu'],
-                                "Nama_atasan_Langsung"      => empty($request['Nama_atasan_Langsung'])?"":$request['Nama_atasan_Langsung'],
-                                "Jabatan_atasan"            => empty($request['Jabatan_atasan'])?"":$request['Jabatan_atasan'],
+                                "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
+                                "Jabatan_atasan"            => empty($request['jabatan_atasan'])?"":$request['jabatan_atasan'],
                                 "jenis_pinjaman_id"         => $request['jenis_pinjaman_id'],
                                 "angsuran_usulan"           => $request['Angsuran_usulan'],
-                                "maksimum_plafond"          => $request['Maksimum_plafond']
+                                "maksimum_plafond"          => $request['Maksimum_plafond'],
+                                // baru
+                                "no_npwp"                   => $request['no_npwp'],
+                                "no_dan_tanggal_sk_awal"    => $request['no_dan_tanggal_sk_awal'],
+                                "no_dan_tanggal_sk_akhir"   => $request['no_dan_tanggal_sk_akhir'],
+                                "kantor_cabang_id"          => $request['kantor_cabang_id'],
+                                "kantor_cabang_name"        => $request['kantor_cabang_name'],
+                                "baru_atau_perpanjangan"    => $request['baru_atau_perpanjangan'],
+                                "total_exposure"            => $request['total_exposure'],
+                                "program_asuransi"          => $request['program_asuransi'],
+                                "kredit_take_over"          => $request['kredit_take_over'],
+                                "pemrakarsa_name"           => $request['pemrakarsa'],
+                                "agama"                     => $request['ket_agama'],
+                                "npl_instansi"              => $request['npl_instansi'],
+                                "npl_unit_kerja"            => $request['npl_unit_kerja']
 							];
 
 							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
