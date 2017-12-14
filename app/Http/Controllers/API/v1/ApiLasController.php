@@ -752,15 +752,16 @@ class ApiLasController extends Controller
                                 "no_dan_tanggal_sk_awal"    => $request['no_dan_tanggal_sk_awal'],
                                 "no_dan_tanggal_sk_akhir"   => $request['no_dan_tanggal_sk_akhir'],
                                 "kantor_cabang_id"          => $request['kantor_cabang_id'],
-                                "kantor_cabang_name"        => $request['kantor_cabang_name'],
-                                "baru_atau_perpanjangan"    => $request['baru_atau_perpanjangan'],
+                                "branch_name"               => $request['kantor_cabang_name'],
+                                "baru_atau_perpanjang"    => $request['baru_atau_perpanjang'],
                                 "total_exposure"            => $request['total_exposure'],
                                 "program_asuransi"          => $request['program_asuransi'],
                                 "kredit_take_over"          => $request['kredit_take_over'],
                                 "pemrakarsa_name"           => $request['pemrakarsa'],
                                 "agama"                     => $request['ket_agama'],
                                 "npl_instansi"              => $request['npl_instansi'],
-                                "npl_unit_kerja"            => $request['npl_unit_kerja']
+                                "npl_unitkerja"             => $request['npl_unitkerja'],
+                                "gimmick"                   => $request['nama_program_promo']
 							];
 
 							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
