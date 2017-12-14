@@ -273,6 +273,13 @@ class ApiLasController extends Controller
                 // print_r($data);exit();
                 break;
 
+            case 'eformBriguna':
+                $inquiry = $ApiLas->eform_briguna();
+                print_r($inquiry->toArray());exit();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
             case 'inquiryUserLAS':
                 $inquiry = $ApiLas->inquiryUserLAS($data);
                 $conten  = $this->return_conten($inquiry);

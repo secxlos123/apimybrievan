@@ -34,9 +34,10 @@ class marketingActivityController extends Controller
      */
     public function create(Request $request)
     {
+      $pn = $request->header('pn');
       $data['object_activity'] = ObjectActivity::all();
       $data['action_activity'] = ActionActivity::all();
-      $data['marketings'] = Marketing::all();
+      $data['marketings'] = Marketing::where('pn',$pn)->get();
 
       for($x=1;$x < 50; $x++){
         $pn = 66777 + $x;

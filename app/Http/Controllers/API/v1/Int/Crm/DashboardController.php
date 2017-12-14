@@ -5,6 +5,13 @@ namespace App\Http\Controllers\API\v1\Int\Crm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+
+use App\Models\Crm\ProductType;
+use App\Models\Crm\ActivityType;
+use App\Models\Crm\Status;
+use App\Models\Crm\ObjectActivity;
+use App\Models\Crm\ActionActivity;
+
 class DashboardController extends Controller
 {
     /**
@@ -14,25 +21,12 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $data ['product'] = [
-          'Giro',
-          'Tabungan',
-          'Deposito',
-          'CMS',
-          'e-Banking',
-          'Prioritas'
-        ];
+      $data['product_type'] = ProductType::all();
+      $data['activity_type'] = ActivityType::all();
+      $data['status'] = Status::all();
 
-        $data ['status']= [
-          'Prospek',
-          'Negoisasi',
-          'Done',
-          'Batal'
-        ];
-
-        $data ['kegiatan']=[
-
-        ];
+      $data['object_activity'] = ObjectActivity::all();
+      $data['action_activity'] = ActionActivity::all();
 
         return response()->success( [
             'message' => 'Sukses',
