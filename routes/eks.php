@@ -52,7 +52,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	 * Route for customer or developer require authentication
 	 */
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
-	
+
 		/**
 			Route for dashboard developer [Top 5 User List and Chart]
 		**/
@@ -83,6 +83,8 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		 * Route property
 		 */
 		Route::resource('property', 'PropertyController', [ 'except' => [ 'create', 'edit' ] ]);
+
+		Route::resource('tracking', 'TrackingController');
 
 		/**
 		 * Route property type get by property

@@ -37,5 +37,25 @@ class CrmTableSeeder extends Seeder
         array('id' => 7, 'activity_name' => 'Retensi'),
         array('id' => 8, 'activity_name' => 'Penagihan'),
       ));
+
+      DB::table('crm_object_activities')->insert(array(
+        array('id' => 1, 'name' => 'prospek', 'display_name' => 'Prospek Penawaran'),
+        array('id' => 2, 'name' => 'follow_up', 'display_name' => 'Follow Up / Negosiasi'),
+        array('id' => 3, 'name' => 'closing', 'display_name' => 'Closing (Akuisisi/ Aktivasi / Upgrade)'),
+        array('id' => 4, 'name' => 'pick_up', 'display_name' => 'Pick Up Dana Baru / Top Up'),
+        array('id' => 5, 'name' => 'collection_document', 'display_name' => 'Collection Dokumen'),
+        array('id' => 6, 'name' => 'maintenance', 'display_name' => 'Maintenance'),
+        array('id' => 7, 'name' => 'sosialisai', 'display_name' => 'Sosialisai'),
+        array('id' => 8, 'name' => 'implementasi', 'display_name' => 'Implementasi'),
+        array('id' => 9, 'name' => 'complain_handling', 'display_name' => 'Complain Handling'),
+      ));
+
+      DB::table('crm_action_activities')->insert(array(
+        array('id' => 1, 'name' => 'kunjungan', 'display_name' => 'Kunjungan'),
+        array('id' => 2, 'name' => 'telepon', 'display_name' => 'Telepon'),
+        array('id' => 3, 'name' => 'event', 'display_name' => 'Event'),
+        array('id' => 4, 'name' => 'rapat', 'display_name' => 'Rapat'),
+        array('id' => 5, 'name' => 'email', 'display_name' => 'Email'),
+      ));
     }
 }

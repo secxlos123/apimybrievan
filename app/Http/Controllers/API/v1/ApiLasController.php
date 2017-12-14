@@ -10,6 +10,7 @@ use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
 use App\Models\BRIGUNA;
+use App\Models\EformBriguna;
 
 class ApiLasController extends Controller
 {
@@ -222,6 +223,21 @@ class ApiLasController extends Controller
                     ]
                 ];
                 // print_r($data);exit();
+                break;
+
+            case 'inquiryListVerputADK':
+                $user_pn = request()->header('pn');
+                $pn      = substr('00000000'. $user_pn, -8 );
+                $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
+                // print_r($inquiryUserLAS);exit();
+                $kode_cabang = '0';
+                if ($inquiryUserLAS['statusCode'] == '01') {
+                    $kode_cabang = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+                }
+
+                $inquiry = $ApiLas->inquiryListVerputADK($kode_cabang);
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquiryPremiAJKO':
@@ -633,11 +649,12 @@ class ApiLasController extends Controller
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
+                                $error[0] = 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'];
                                 $pemutus = [
                                     'code' => $kirim['statusCode'], 
                                     'descriptions' => 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'],
                                     'contents' => [
-                                        'data' => ''
+                                        'data' => $error
                                     ]
                                 ];
                                 return $pemutus;
@@ -747,55 +764,76 @@ class ApiLasController extends Controller
                             ];
                             return $result;
                         } else {
+                            $error = 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'];
                             $crs = [
                                 'code' => $hitung['statusCode'], 
                                 'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
                                 'contents' => [
-                                    'data' => ''
+                                    'data' => $error
                                 ]
                             ];
                             return $crs;
                         }
                     } else {
+                        $error[0]  = 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'];
                         $insertKre = [
                             'code' => $insertKredit['statusCode'], 
                             'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
                             'contents' => [
-                                'data' => ''
+                                'data' => $error
                             ]
                         ];
                         return $insertKre;
                     }
                 } else {
+                    $error[0] = 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'];
                     $insertPres = [
                         'code' => $insertPrescoring['statusCode'], 
                         'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
                         'contents' => [
-                            'data' => ''
+                            'data' => $error
                         ]
                     ];
 
                     return $insertPres;
                 }
             } else {
+                $error[0] = 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'];
                 $insertPre = [
                     'code' => $insertPrescreening['statusCode'], 
                     'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
                     'contents' => [
-                        'data' => ''
+                        'data' => $error
                     ]
                 ];
                 return $insertPre;
             }
         } else {
+            $error[0] = 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'];
             $insertDebt = [
                 'code' => $insertDebitur['statusCode'], 
                 'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
                 'contents' => [
-                    'data' => ''
+                    'data' => $error
                 ]
             ];
             return $insertDebt;
         }
+    }
+
+    public function show_briguna (Request $request) {
+        $eform = EformBriguna::filter($request)->get();
+        $eform = $eform->toArray();
+        if (!empty($eform)) {
+            $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+    
+            return response()->success( [
+                'contents' => $eform[0]
+            ],200);
+        }
+
+        return response()->error( [
+            'contents' => 'data tidak ditemukan'
+        ],400);
     }
 }

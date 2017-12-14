@@ -11,9 +11,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
  // ] );
 
  //route activity
- // Route::resource( 'activity', 'ActivityController', [
- //   'only' => ['index','store', 'update']
- // ] );
+ Route::resource( 'activity', 'marketingActivityController', [
+   'only' => ['index', 'create', 'store', 'update']
+ ] );
 
  // Route::get('/activity/reSchedule', 'ActivityController@reSchedule')->name('activity.reschedule');
 
