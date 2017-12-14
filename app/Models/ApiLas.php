@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use AsmxLas;
+use DB;
 
 class ApiLas extends Model
 {
@@ -27,7 +28,16 @@ class ApiLas extends Model
         ]);
         \Log::info($eforms->toSql());
         return $eforms;
+    }
 
+    public function eform_briguna() {
+        $eforms = DB::select([
+            'eforms.*','briguna.*',
+            \DB::Raw("case when eforms.id is not null then 2 else 1 end as new_order")
+        ]);
+        $eforms->join('briguna', 'eform_id', '=', 'eforms.id');
+        \Log::info($eforms->toSql());
+        return $eforms;
     }
 
     public function insertDataDebtPerorangan($data) {

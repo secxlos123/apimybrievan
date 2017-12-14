@@ -101,12 +101,12 @@ class ApiLasController extends Controller
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
                 } 
-
+                $error[0] = 'Uknown request data';
                 return [
                     'code' => 05, 
                     'descriptions' => 'Uknown request data',
                     'contents' => [
-                        'data' => ''
+                        'data' => $error
                     ]
                 ];
                 // print_r($data);exit();
@@ -187,12 +187,12 @@ class ApiLasController extends Controller
                     }
                     return $inquiry;
                 }
-
+                $error[0] = 'Uknown request data';
                 return [
                     'code' => 05, 
                     'descriptions' => 'Uknown request data',
                     'contents' => [
-                        'data' => ''
+                        'data' => $error
                     ]
                 ];
                 break;
@@ -214,30 +214,34 @@ class ApiLasController extends Controller
                     // }
                     // return $inquiry;
                 }
-
+                $error[0] = 'Uknown request data';
                 return [
                     'code' => 05, 
                     'descriptions' => 'Uknown request data',
                     'contents' => [
-                        'data' => ''
+                        'data' => $error
                     ]
                 ];
                 // print_r($data);exit();
                 break;
 
             case 'inquiryListVerputADK':
-                $user_pn = request()->header('pn');
-                $pn      = substr('00000000'. $user_pn, -8 );
-                $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-                // print_r($inquiryUserLAS);exit();
-                $kode_cabang = '0';
-                if ($inquiryUserLAS['statusCode'] == '01') {
-                    $kode_cabang = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+                if (!empty($data)) {
+                    $kode_cabang = substr('00000',$data, -5);
+                    $inquiry = $ApiLas->inquiryListVerputADK($data);
+                    $conten  = $this->return_conten($inquiry);
+                    return $conten;
                 }
 
-                $inquiry = $ApiLas->inquiryListVerputADK($kode_cabang);
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                $error[0] = 'Uknown request data';
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => $error
+                    ]
+                ];
+                // print_r($data);exit();
                 break;
 
             case 'inquiryPremiAJKO':
@@ -258,15 +262,22 @@ class ApiLasController extends Controller
                     }
                     return $inquiry;
                 }
-
+                $error[0] = 'Uknown request data';
                 return [
                     'code' => 05, 
                     'descriptions' => 'Uknown request data',
                     'contents' => [
-                        'data' => ''
+                        'data' => $error
                     ]
                 ];
                 // print_r($data);exit();
+                break;
+
+            case 'eformBriguna':
+                $inquiry = $ApiLas->eform_briguna();
+                print_r($inquiry->toArray());exit();
+                $conten  = $this->return_conten($inquiry);
+                return $conten;
                 break;
 
             case 'inquiryUserLAS':
@@ -366,11 +377,12 @@ class ApiLasController extends Controller
                 break;
 
     		default:
+                $error[0] = 'Uknown request data';
     			return [
                     'code' => 05, 
                     'descriptions' => 'Uknown request method',
                     'contents' => [
-                        'data' => ''
+                        'data' => $error
                     ]
                 ];
     			break;
