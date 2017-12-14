@@ -22,9 +22,8 @@ class Mitra2 extends Model
     {
       $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
 			
-      $kode = $request->input('key');
-                    $mitra->Where('mitra.NAMA_INSTANSI','like', $kode.'%');
-					$mitra->orWhere('mitra.idMitrakerja','like', $kode.'%');
+      $kode = $request->input('idMitrakerja');
+                    $mitra->Where('mitra.idMitrakerja',$kode);
         } );
 
 				$mitra = $mitra->select([
