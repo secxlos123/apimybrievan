@@ -15,7 +15,7 @@ use App\Models\Collateral;
 use Sentinel;
 use Asmx;
 use RestwsHc;
-
+use DB;
 class EForm extends Model
 {
     /**
@@ -1229,5 +1229,74 @@ class EForm extends Model
         $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
 
         return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
+    }
+
+    /**
+     * Get chart attribute
+     */
+
+    public function getChartAttribute()
+    {
+        return [
+            'month'  => $this->month,
+            'month2' => $this->month2,
+            'value'  => $this->value,
+        ];
+    }
+
+
+    /**
+        * Get list count for chart
+        *
+        * @param  string $startChart
+        * @param  string $endChart
+        * @return array
+    */
+    public function getChartSubmission($startChart, $endChart, $user_id)
+    {
+        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
+
+        if(!empty($startChart) && !empty($endChart)){
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startChart) && !empty($endChart)){
+            $now        = new \DateTime();
+            $startChart = $now->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endChart) && !empty($startChart)){
+            $now      = new \DateTime();
+            $endChart = $now->format('Y-m-d h:i:s');
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = Eform::select(
+                    DB::raw("count(eforms.id) as value"),
+                    DB::raw("to_char(eforms.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
+                    DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
+                })
+                ->groupBy('month', 'month2', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
+        return $data;
     }
 }

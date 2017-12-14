@@ -32,7 +32,7 @@ class NotificationController extends Controller
                     foreach ($getDataNotification as $value) {
                         $ArrGetDataNotification[] = [
                                                 'id' => $value->id,
-                                                'subject' => 'Penfajuan KPR Baru',
+                                                'subject' => $value->getSubject(),
                                                 'type' => $value->type,
                                                 'notifiable_id' => $value->notifiable_id,
                                                 'notifiable_type' => $value->notifiable_type,
@@ -57,33 +57,33 @@ class NotificationController extends Controller
     public function unread(Request $request)
     {
         $branch_id = request()->header( 'branch_id' );
-    	$role = request()->header( 'role' );
+        $role = request()->header( 'role' );
+    	$pn = request()->header( 'pn' );
         $ArrGetDataNotification = [];
         if($branch_id !=  ''){
-            $checkRoles = checkRolesInternal($branch_id);
-            if( strtolower($role) == 'pinca' || $checkRoles['role'] == 'pinca'){
-
-                $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3) )->get();
-                if($getDataNotification){
-                    foreach ($getDataNotification as $value) {
-                        $ArrGetDataNotification[] = [
-                                                'id' => $value->id,
-                                                'subject' => 'Pengajuan KPR Baru',
-                                                'type' => $value->type,
-                                                'notifiable_id' => $value->notifiable_id,
-                                                'notifiable_type' => $value->notifiable_type,
-                                                'role_name' => $value->role_name,
-                                                'branch_id' => $value->branch_id,
-                                                'data' => $value->data,
-                                                'created_at' => $value->created_at->diffForHumans(),
-                                                'is_read' => (bool) $value->is_read,
-                                                'read_at' => Carbon::parse($value->read_at)->format('Y-m-d H:i:s'),
-                                            ];
-                    }
+            \Log::info($role);
+            $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, $pn )->get();
+            if($getDataNotification){
+                foreach ($getDataNotification as $value) {
+                    $ArrGetDataNotification[] = [
+                                            'id' => $value->id,
+                                            'subject' => $value->getSubject(),
+                                            'type' => $value->type,
+                                            'notifiable_id' => $value->notifiable_id,
+                                            'notifiable_type' => $value->notifiable_type,
+                                            'role_name' => $value->role_name,
+                                            'branch_id' => $value->branch_id,
+                                            'data' => $value->data,
+                                            'created_at' => $value->created_at->diffForHumans(),
+                                            'is_read' => (bool) $value->is_read,
+                                            'read_at' => Carbon::parse($value->read_at)->format('Y-m-d H:i:s'),
+                                        ];
                 }
-
-            }            
+            }
+            
+                 
         }
+        \Log::info($getDataNotification);
 
     	return  response()->success( [
             'message' => 'Sukses',
@@ -96,6 +96,7 @@ class NotificationController extends Controller
     {
         $notification = $this->userNotification
             ->where('eform_id',$eform_id)
+            ->whereNull('read_at')
             ->first();
         
         $notification->markAsRead();

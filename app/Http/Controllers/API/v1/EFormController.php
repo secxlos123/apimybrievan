@@ -19,10 +19,21 @@ use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Collateral;
 use App\Models\User;
+use App\Models\UserServices;
+use App\Notifications\EFormPenugasanDisposisi;
+use App\Models\UserNotification;
+
 use DB;
 
 class EFormController extends Controller
 {
+    public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
+    {
+        $this->user = $user;
+        $this->userservices = $userservices;
+        $this->userNotification = $userNotification;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,9 +52,17 @@ class EFormController extends Controller
 
     public function show_briguna( Request $request )
     {
+		$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.user_id', $request->user_id)
+						 ->get();
+				$customer = $customer->toArray();
+				
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
+		  $eform[0]['customer'] = $customer[0];
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
         return response()->success( [
             'contents' => $eform
@@ -76,6 +95,8 @@ class EFormController extends Controller
 		if($eform['product_type']=='briguna'){
 			$another_array = [];
 			$another_array['id'] = $eform_id;
+			$another_array['user_id'] = $eform['user_id'];
+				
 			$request = new Request($another_array);
 			$eform = $this->show_briguna($request);
 	        return response()->success( [
@@ -395,6 +416,11 @@ class EFormController extends Controller
      */
     public function disposition( EFormRequest $request, $id )
     {
+        $role = request()->header( 'role' );
+        $pn = request()->header( 'pn' );
+        $branch_id = request()->header( 'branch_id' );
+        //$getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, $pn )->first();
+
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
         $ao_id = substr( '00000000' . $request->ao_id, -8 );
@@ -406,6 +432,14 @@ class EFormController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         $eform->update( $baseRequest );
+        
+        $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
+        $usersModel->notify(new EFormPenugasanDisposisi($eform));
+
+        /*if($getDataNotification){
+            $getDataNotification->update(['read_at'=>$this->freshTimestamp(),'updated_at'=>'']);
+        }*/
+
 
         DB::commit();
         return response()->success( [
