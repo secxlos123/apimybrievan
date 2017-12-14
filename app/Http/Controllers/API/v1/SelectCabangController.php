@@ -40,7 +40,7 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-                if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
+                if ( ( $search ) ) {
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
 					if($countkey=='1'){
