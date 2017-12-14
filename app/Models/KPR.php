@@ -69,8 +69,9 @@ class KPR extends Model
             PropertyItem::setAvailibility( $data[ 'property_item' ], "book" );
         }
 
-        $usersModel = User::FindOrFail($eform->user_id);
-        //$usersModel->notify(new PengajuanKprNotification($eform));
+        // $usersModel = User::FindOrFail($eform->user_id);
+        // $usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
+        
         return $kpr;
     }
 

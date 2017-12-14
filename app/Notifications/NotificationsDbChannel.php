@@ -18,13 +18,12 @@ class NotificationsDbChannel
   public function send($notifiable, Notification $notification)
   {
     $data = $notification->toDatabase($notifiable);
-    $role_name = checkRolesInternal($data['branch_id']);
+    
     return $notifiable->routeNotificationFor('database')->create([
         'id' => $notification->id,
-
         //customize here
         'branch_id'=> $data['branch_id'],
-        'role_name'=> $role_name['role'],
+        //'role_name'=> $data['role'],
         'eform_id'=> $data['eform_id'],
         //field existing
         'type' => get_class($notification),

@@ -6,9 +6,17 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\InternalController as Controller;
 
 use App\Http\Requests\API\v1\Int\AuthRequest;
+use App\Models\User;
+use App\Models\UserServices;
 
 class AuthController extends Controller
 {
+    
+    public function __construct(User $user, UserServices $userservices)
+    {
+      $this->user = $user;
+      $this->userservices = $userservices;
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -73,8 +81,23 @@ class AuthController extends Controller
             } else {
                 $branch = $data[ 'branch' ];
             }
+            
+            $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
+            if(!$checkedRolePn){
+                UserServices::create([  'pn'=>$data['pn'],
+                                        'hilfm'=>$data['hilfm'],
+                                        'role'=> $role,
+                                        'name'=> $data['nama'],
+                                        'tipe_uker'=> $data['tipe_uker'],
+                                        'htext'=> $data['htext'],
+                                        'posisi'=> $data['posisi'],
+                                        'last_activity'=> $data['last_activity'],                                        
+                                        'mobile_phone'=> 0,
+                                        'is_actived'=> true,
+                                        'branch_id'=>$data['branch'],
+                                    ]);
+            }
 
-            \Log::info($role);
             return response()->success( [
                 'message' => 'Login Sukses',
                 'contents'=> [
