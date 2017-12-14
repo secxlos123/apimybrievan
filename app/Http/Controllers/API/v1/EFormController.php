@@ -41,9 +41,17 @@ class EFormController extends Controller
 
     public function show_briguna( Request $request )
     {
+		$customer = DB::table('customer_details')
+						 ->select('*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.user_id', $request->user_id)
+						 ->get();
+				$customer = $customer->toArray();
+				
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
+		  $eform[0]['customer'] = $customer[0];
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
         return response()->success( [
             'contents' => $eform
@@ -76,6 +84,8 @@ class EFormController extends Controller
 		if($eform['product_type']=='briguna'){
 			$another_array = [];
 			$another_array['id'] = $eform_id;
+			$another_array['user_id'] = $eform['user_id'];
+				
 			$request = new Request($another_array);
 			$eform = $this->show_briguna($request);
 	        return response()->success( [
