@@ -70,7 +70,8 @@ class KPR extends Model
         }
 
         $usersModel = User::FindOrFail($eform->user_id);
-        //$usersModel->notify(new PengajuanKprNotification($eform));
+        //$usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
+        
         return $kpr;
     }
 
