@@ -274,7 +274,7 @@ class CustomerDetail extends Model
     {
         $doFunction = true;
         if (!empty($this->user)) {
-            $user = $this->user;
+            $user = $this->user->id;
         }else{
             $user = user_info('id');
         }

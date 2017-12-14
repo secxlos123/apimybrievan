@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Builder;
 use AsmxLas;
 
 class ApiLas extends Model
@@ -13,34 +13,23 @@ class ApiLas extends Model
      *
      * @var string
      */
-    protected $table = '';
+    protected $table = 'eforms';
+    public function scopeFilter($query, $id) {
+        $eforms = $query->where( function( $eforms ) use( $request, &$user ) {  
+            $kode = $id;
+            $eforms->Where('eforms.id', $kode);
+        });
 
-    /**
-     * Disabling timestamp feature.
-     *
-     * @var boolean
-     */
-    public $timestamps = false;
+        $eforms->join('briguna', 'eform_id', '=', 'eforms.id');
+        $eforms = $eforms->select([
+            'eforms.*','briguna.*',
+            \DB::Raw("case when eforms.id is not null then 2 else 1 end as new_order")
+        ]);
+        \Log::info($eforms->toSql());
+        return $eforms;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [];
+    }
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [];
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function insertDataDebtPerorangan($data) {
         \Log::info($data);
         try {
@@ -466,6 +455,20 @@ class ApiLas extends Model
                 ])->post('form_params');
 
             return $inquiryListPutusan;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
+
+    public function inquiryListVerputADK($data) {
+        \Log::info($data);
+        try {
+            $inquiryListADK = AsmxLas::setEndpoint('inquiryListVerputADK')
+                ->setBody([
+                    'branch' => !isset($data) ? "" : $data
+                ])->post('form_params');
+
+            return $inquiryListADK;
         } catch (Exception $e) {
             throw new \Exception( "Error Processing Request", 1 );
         }
