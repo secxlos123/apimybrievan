@@ -42,7 +42,7 @@ class EFormController extends Controller
     public function show_briguna( Request $request )
     {
 		$customer = DB::table('customer_details')
-						 ->select('*')
+						 ->select('users.*','customer_details.*')
 						 ->join('users', 'users.id', '=', 'customer_details.user_id')
 						 ->where('customer_details.user_id', $request->user_id)
 						 ->get();
