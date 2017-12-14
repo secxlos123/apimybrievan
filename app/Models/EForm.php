@@ -260,18 +260,18 @@ class EForm extends Model
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
             //di update kalo collateral udah jalan
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
-            {
+            // if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+            // {
                 $result = $eform->insertCoreBRI();
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            }
-            else
-            {
-                $eform->kpr()->update(['is_sent'=> false]);
-                $result['status'] = true;
-            }
+            // }
+            // else
+            // {
+            //     $eform->kpr()->update(['is_sent'=> false]);
+            //     $result['status'] = true;
+            // }
 
             if ($result['status']) {
                 $eform->update( [
@@ -455,8 +455,8 @@ class EForm extends Model
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71',null]
-            , ['InsertIntoReviewer',null]
+            //, ['InsertDataAgunanModel71',null]
+            //, ['InsertIntoReviewer',null]
             //, ['InsertDataAgunanTanahRumahTinggal',null]
 
         ];
@@ -494,7 +494,7 @@ class EForm extends Model
             $step++;
         }
 
-        if ($step == 9) {
+        if ($step == 7) {
             $this->update( [ 'is_approved' => true ] );
         }
         return $return;
@@ -1163,7 +1163,7 @@ class EForm extends Model
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
             "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : $otsLetter->date,
             "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : $otsLetter->duration_land_authorization,
-            "Alamat_agunan_rt" => !($kpr->home_location) ? '0': $kpr->home_location,
+            "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
             "Lokasi_agunan_rt" =>!($otsInArea->location) ? '0' : $otsInArea->location,
@@ -1171,6 +1171,7 @@ class EForm extends Model
             "Nilai_likuidasi_agunan_rt"=>!($otsValuation->nl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_all))),
             "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsValuation->pnpw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_all))),
             "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsValuation->pnl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_all))),
+            "Nilai_likuidasi_saat_realisasi_agunan_rt"=>'0',
             "Nilai_jual_obyek_pajak_agunan_rt" =>'0',// no pokok wajib pajak
             "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'bank',// bank and independent
             "Penilai_independent_agunan_rt"=>'0',
