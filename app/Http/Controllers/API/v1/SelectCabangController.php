@@ -26,10 +26,10 @@ class SelectCabangController extends Controller
 		
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
-		print_r($branchs);die();
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
+		$nilaisampai = 0;
         $offices = [];
 		        if ($branchs['responseData'] != '') {
             foreach ($branchs['responseData'] as $branch) {
@@ -40,7 +40,7 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-                if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
+                if ( ( $search ) ) {
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
 					if($countkey=='1'){
@@ -54,22 +54,29 @@ class SelectCabangController extends Controller
 					}else{
 						$kode_uker = $branch['kode_uker'];
 					}
+						$nilaicount =0;
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
-						$mitra =$mitra->toArray(); 
-						$mitra[0]['kanwil'] = $branch['kanwil'];
-						$mitra[0]['unit_induk'] = $branch['unit_induk'];
-						$mitra[0]['kanca_induk'] = $branch['kanca_induk'];
-						$mitra[0]['jenis_uker'] = $branch['jenis_uker'];
-						$mitra[0]['dati2'] = $branch['dati2'];
-						$mitra[0]['dati1'] = $branch['dati1'];
-						$mitra[0]['alamat'] = $branch['alamat'];
-						$mitra[0]['no_telp'] = $branch['no_telp'];
-						$mitra[0]['no_fax'] = $branch['no_fax'];
-						$mitra[0]['koordinat'] = $branch['koordinat'];
-						$mitra[0]['latitude'] = $branch['latitude'];
-						$mitra[0]['longitude'] = $branch['longitude'];
-						$offices[] = $mitra[0];					
+						$mitra = $mitra->toArray();
+						$countmitra = count($mitra);
+						
+						for($i=0;$i<$countmitra;$i++){
+							
+						$mitra[$i]['kanwil'] = $branch['kanwil'];
+						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
+						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
+						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
+						$mitra[$i]['dati2'] = $branch['dati2'];
+						$mitra[$i]['dati1'] = $branch['dati1'];
+						$mitra[$i]['alamat'] = $branch['alamat'];
+						$mitra[$i]['no_telp'] = $branch['no_telp'];
+						$mitra[$i]['no_fax'] = $branch['no_fax'];
+						$mitra[$i]['koordinat'] = $branch['koordinat'];
+						$mitra[$i]['latitude'] = $branch['latitude'];
+						$mitra[$i]['longitude'] = $branch['longitude'];
+						$offices[] = $mitra[$i];
+						
+						}
                 }
             }
 		}

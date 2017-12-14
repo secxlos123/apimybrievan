@@ -153,6 +153,10 @@ class CollateralController extends Controller
         $collateral->otsBuilding()->create($this->request->building);
         $collateral->otsEnvironment()->create($this->request->environment);
         $collateral->otsValuation()->create($this->request->valuation);
+        $collateral->otsSeven()->create($this->request->seven);
+        $collateral->otsEight()->create($this->request->eight);
+        $collateral->otsNine()->create($this->request->nine);
+        $collateral->otsTen()->create($this->request->ten);
         $otsOther = $collateral->otsOther()->create($this->request->other);
         $otsOther->image_condition_area = $this->uploadAndGetFileNameImage($otsOther);
         $otsOther->save();
