@@ -144,7 +144,7 @@ class EFormController extends Controller
 
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
         return response()->success( [
-            'contents' => $eform
+            'contents' => $eform[0]
         ],200 );
     }
 
