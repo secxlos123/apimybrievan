@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Models\UserNotification;
 use App\Models\Developer;
 use App\Models\PropertyItem;
+use App\Models\Collateral;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -75,7 +76,11 @@ class EForm extends Model
      */
     public function getCustomerNameAttribute()
     {
-        return str_replace('"', '', str_replace("'", '', $this->customer->fullname));
+        if ($this->customer) {
+            return str_replace('"', '', str_replace("'", '', $this->customer->fullname));
+        }
+
+        return '';
     }
 
     /**
@@ -85,7 +90,11 @@ class EForm extends Model
      */
     public function getMobilePhoneAttribute()
     {
-        return $this->customer->mobile_phone;
+        if ($this->customer) {
+            return $this->customer->mobile_phone;
+        }
+
+        return '';
     }
 
     /**
@@ -189,7 +198,12 @@ class EForm extends Model
      */
     public function getAgingAttribute()
     {
-        $days = $this->created_at->diffInDays();
+        $days = 0;
+
+        if ($this->created_at) {
+            $days = $this->created_at->diffInDays();
+
+        }
         return $days . ' hari ';
     }
 
@@ -441,6 +455,7 @@ class EForm extends Model
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
+            , ['InsertDataAgunanModel71',null]
         ];
 
         $step = 1;
@@ -476,7 +491,7 @@ class EForm extends Model
             $step++;
         }
 
-        if ($step == 7) {
+        if ($step == 8) {
             $this->update( [ 'is_approved' => true ] );
         }
         return $return;
@@ -784,27 +799,13 @@ class EForm extends Model
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
 
-        $birth_place = '';
-        if ($customer_detail->birth_place) {
-            $birth_place = str_replace('.', '', $customer_detail->birth_place);
-            $birth_place = str_replace(',', '', $birth_place);
-
-        }
-
-        $city = '';
-        if ($customer_detail->city) {
-            $city = str_replace('.', '', $customer_detail->city);
-            $city = str_replace(',', '', $city);
-
-        }
-
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
-            "tempat_lahir_pemohon" => $birth_place,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
+            "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
-            // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
-            "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
+            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
             "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
@@ -829,13 +830,13 @@ class EForm extends Model
             "Kecamatan_cif" => 'kecamatan',
             "Kelurahan_cif" => 'kelurahan',
             "Kode_pos_cif" => '40000',
-            "Lokasi_dati_cif" => $city,
+            "Lokasi_dati_cif" => $this->reformatCity( $customer_detail->city ),
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
-            'agama' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_usaha' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
+            'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
         ];
 
         return $request;
@@ -855,25 +856,19 @@ class EForm extends Model
         $customer_work = (object) $customer->work;
         $lkn = $this->visit_report;
 
-        $birth_place = '';
-        if ($customer_detail->birth_place) {
-            $birth_place = str_replace('.', '', $customer_detail->birth_place);
-            $birth_place = str_replace(',', '', $birth_place);
-
-        }
-
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
             "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
-            "tempat_lahir_pemohon" => $birth_place,
+            "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
-            // "alamat_pemohon" => !( $customer_detail->address ) ? '' : $customer_detail->address,
-            "alamat_pemohon" => !( $customer_detail->current_address ) ? '' : $customer_detail->current_address,
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
+            "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
+            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
             "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
@@ -882,7 +877,11 @@ class EForm extends Model
             "bidang_usaha_value" => !( $customer_work->work_field_id ) ? '' : $customer_work->work_field_id,
             "jabatan_value" => !( $customer_work->position_id ) ? '' : $customer_work->position_id,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
-            "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address
+            'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
+            "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
+            'tujuan_membuka_rekening_value' => 'T2',
+            'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012')
         ];
         return $request;
     }
@@ -907,7 +906,7 @@ class EForm extends Model
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "jenis_kredit" => strtoupper( $this->product_type ),
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->customer_name,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
@@ -947,16 +946,16 @@ class EForm extends Model
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "angsuran" => !( $customer_finance->loan_installment ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)),
-            "pendapatan_lain_pemohon" => !( $kpr->income_salary ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income_salary)),
+            "angsuran" => !( $customer_finance->loan_installment ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)) ),
+            "pendapatan_lain_pemohon" => !( $lkn->income_salary ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary)) ),
             "jangka_waktu" => $kpr->year,
-            "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '' : $lkn->type_financed,
-            "permohonan_pinjaman" => !( $kpr->request_amount ) ? '' : $kpr->request_amount,
-            "uang_muka" => ( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $kpr->income ) ? '' : str_replace(',', '.', str_replace('.', '', $kpr->income)),
-            "jenis_penghasilan" =>  !( $lkn->source_income ) ? '' : $lkn->source_income,
-            "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)),
-            "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '' : str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)),
+            "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '0' : $lkn->type_financed,
+            "permohonan_pinjaman" => !( $kpr->request_amount ) ? '0' : $kpr->request_amount,
+            "uang_muka" => round( ( $kpr->request_amount * $kpr->dp ) / 100 ),
+            "gaji_bulanan_pemohon" => !( $lkn->income ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $lkn->income)) ),
+            "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : $lkn->source_income,
+            "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
+            "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
         ];
 
         return $request;
@@ -998,6 +997,169 @@ class EForm extends Model
         return $request;
     }
 
+    /**
+     * Generate Parameters for step 8.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step8($data)
+    {
+        \Log::info("step8");
+        $kpr = $this->kpr;
+        $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
+        $otsInArea = $collateral->otsInArea;
+        $otsLetter = $collateral->otsLetter;
+        $otsBuilding = $collateral->otsBuilding;
+        $otsEnvironment = $collateral->otsEnvironment;
+        $otsValuation = $collateral->otsValuation;
+        $otsOther = $collateral->otsOther;
+        $customer = clone $this->customer;
+        $customer_detail = (object) $customer->personal;
+
+        $request = $data + [
+            //ots Area
+            "Lokasi_tanah_agunan" => !($otsInArea->location) ? '0' : $otsInArea->location,
+            "Rt_agunan" => !($otsInArea->rt) ? '0' : $otsInArea->rt,
+            "Rw_agunan" => !($otsInArea->rw) ? '0' : $otsInArea->rw,
+            "Kelurahan_agunan"=> !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
+            "Kecamatan_agunan"=> !($otsInArea->district) ? '0' : $otsInArea->district,
+            "Kabupaten_kotamadya_agunan" => !($otsInArea->city_id) ? '0' : $otsInArea->city_id,
+            "Jarak_agunan" => !($otsInArea->distance) ? '0' : $otsInArea->distance,
+            "Jarak_satuan_agunan" => 'Kilometer',
+            "Jarak_dari_agunan" => 'Pusat Kota',
+            "Kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '0' : $customer_detail->citizenship_id,
+            "Posisi_terhadap_jalan_agunan_value"=> !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
+            "Posisi_terhadap_jalan_agunan" => !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
+            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' : $otsInArea->north_limit,
+            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' : $otsInArea->east_limit,
+            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : $otsInArea->south_limit,
+            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' : $otsInArea->west_limit,
+            "Keterangan_lain_agunan" => !($otsInArea->another_information) ? '0' : $otsInArea->another_information,
+            "Bentuk_tanah_value" => !($otsInArea->ground_type) ? '0' : $otsInArea->ground_type,
+            "Permukaan_tanah_agunan_value" => !($otsInArea->ground_level) ? '0' : $otsInArea->ground_level,
+            "Luas_tanah_sesuai_identifikasi_lapangan_agunan" => !($otsInArea->surface_area) ? '0' : $otsInArea->surface_area,
+            //ots Letter
+            "Jenis_surat_tanah_agunan_value" => !($otsLetter->type) ? '0' : $otsLetter->type,
+            "No_surat_tanah" => !($otsLetter->number) ? '0' : $otsLetter->number,
+            "Tanggal_surat_tanah_agunan" => !($otsLetter->date) ? '0' : $otsLetter->date,
+            "Atas_nama_agunan" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
+            "Hak_atas_tanah_agunan_value" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
+            "Masa_hak_atas_tanah_agunan" => !($otsLetter->duration_land_authorization) ? '0' : $otsLetter->duration_land_authorization,
+            "Kemampuan_perpanjangan_hak_atas_tanah_agunan_value" => '0',//tidak ada di table
+            "Kecocokan_data_kantor_agraniabpn_agunan" => !($otsLetter->match_bpn) ? '0' : $otsLetter->match_bpn,
+            "Kecocokan_data_kantor_agraniabpn_agunan_value" => !($otsLetter->match_bpn) ? '0' : $otsLetter->match_bpn,
+            "Kecocokan_pemeriksaan_lokasi_tanah_lapangan_agunan_value" => !($otsLetter->match_area) ? '0' : $otsLetter->match_area,
+            "Kecocokan_batas_tanah_lapangan_agunan_value" => !($otsLetter->match_limit_in_area) ? '0' : $otsLetter->match_limit_in_area,
+            "Luas_tanah_berdasarkan_surat_tanah_agunan" => !($otsLetter->surface_area_by_letter) ? '0' : $otsLetter->surface_area_by_letter,
+            //otsBuilding
+            "No_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_number) ? '0' : $otsBuilding->permit_number,
+            "Tanggal_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_date) ? '0' : $otsBuilding->permit_date,
+            "Atas_nama_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->on_behalf_of) ? '0' : $otsBuilding->on_behalf_of,
+            "Jenis_bangunan_agunan_value" => !($otsBuilding->type) ? '0' : $otsBuilding->type,
+            "Jumlah_bangunan_agunan" => !($otsBuilding->count) ? '0' : $otsBuilding->count,
+            "Luas_bangunan_agunan" => !($otsBuilding->spacious) ? '0' : $otsBuilding->spacious,
+            "Tahun_bangunan_agunan" => !($otsBuilding->year) ? '0' : $otsBuilding->year,
+            "Uraian_bangunan_agunan" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
+            "Batas_utara_bangunan_agunan" => !($otsBuilding->north_limit) ? '0' : $otsBuilding->north_limit,
+            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' : $otsBuilding->north_limit_from,
+            "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : $otsBuilding->east_limit,
+            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' : $otsBuilding->east_limit_from,
+            "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : $otsBuilding->south_limit,
+            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' : $otsBuilding->south_limit_form,
+            "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : $otsBuilding->west_limit,
+            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' : $otsBuilding->west_limit_froms,
+            //otsEnvironment
+            "Peruntukan_bangunan_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
+            "Fasilitas_umum_yang_ada_agunan_pln" => !($otsEnvironment->designated_pln) ? '0' : $otsEnvironment->designated_pln,
+            "Fasilitas_umum_yang_ada_agunan_pam" => !($otsEnvironment->designated_pam) ? '0' : $otsEnvironment->designated_pam,
+            "Fasilitas_umum_yang_ada_agunan_telepon" => !($otsEnvironment->designated_phone) ? '0' : $otsEnvironment->designated_phone,
+            "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
+            "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
+            "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
+            "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : $otsEnvironment->distance_from_transportation,
+            "Lain_lain_agunan_value" => '0',
+            "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
+            //valuation
+            "Tanggal_penilaian_npw_tanah_agunan" => !($otsValuation->scoring_land_date) ? '0' : $otsValuation->scoring_land_date,
+            "Npw_tanah_agunan" => !($otsValuation->npw_land) ? '0' : $otsValuation->npw_land,
+            "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : $otsValuation->nl_land,
+            "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : $otsValuation->pnpw_land,
+            "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : $otsValuation->pnl_land,
+            "Tanggal_penilaian_npw_bangunan_agunan" => !($otsValuation->scoring_building_date) ? '0' : $otsValuation->scoring_building_date,
+            "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : $otsValuation->npw_building,
+            "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : $otsValuation->nl_building,
+            "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : $otsValuation->pnpw_building,
+            "Pnl_bangunan_agunan" => !($otsValuation->pnl_building) ? '0' : $otsValuation->pnl_building,
+            "Tanggal_penilaian_npw_tanah_bangunan_agunan"=> !($otsValuation->scoring_all_date) ? '0' : $otsValuation->scoring_all_date,
+            "Npw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : $otsValuation->npw_all,
+            "Nl_tanah_bangunan_agunan" => !($otsValuation->nl_all) ? '0' : $otsValuation->nl_all,
+            "Pnpw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : $otsValuation->npw_all,
+            "Pnl_tanah_bangunan_agunan" => !($otsValuation->pnl_all) ? '0' : $otsValuation->pnl_all,
+            //otsOther
+            "Jenis_ikatan_agunan_value" => !($otsOther->bond_type) ? '0' : $otsOther->bond_type,
+            "Penggunaan_bangunan_sesuai_fungsinya_agunan_value" => !($otsOther->use_of_building_function) ? '0' : $otsOther->use_of_building_function,
+            "Penggunaan_bangunan_sesuai_optimal_agunan_value" => !($otsOther->optimal_building_use) ? '0' : $otsOther->optimal_building_use,
+            "Peruntukan_bangunan_agunan_value" => '0',//tidak ada di table
+            "Biaya_sewa_agunan" => '0',//tidak ada di table
+            "Hal_perludiketahui_bank_agunan" => !($otsOther->things_bank_must_know) ? '0' : $otsOther->things_bank_must_know,
+            //"fid_aplikasi" => '0',
+            "uid_ao"=>!($collateral->staff_id) ? '0' : $collateral->staff_id
+
+        ];
+        return $request;
+    }
+
+     /**
+     * Generate Parameters for step 8.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step9($data)
+    {
+        \Log::info("step9");
+        $datacollateral = $this->visit_report;
+
+        $request = $data + [
+            "Fid_agunan" => '0',
+            //"Fid_cif_las" => '',
+            "Nama_debitur_agunan_rt" => '',
+            "Jenis_agunan_value_rt" => 'Rumah Tinggal',
+            "Status_agunan_value_agunan_rt" => 'Ditempati Sendiri',
+            "Deskripsi_agunan_rt" => '',
+            "Jenis_mata_uang_agunan_rt" => 'IDR',
+            "Nama_pemilik_agunan_rt" => '',
+            "Status_bukti_kepemilikan_value_agunan_rt" =>'Sertifikat Hak Milik',
+            "Nomor_bukti_kepemilikan_agunan_rt" => '',
+            "Tanggal_bukti_kepemilikan_agunan_rt" =>'',
+            "Tanggal_jatuh_tempo_agunan_rt"=>'',
+            "Alamat_agunan_rt" => '',
+            "Kelurahan_agunan_rt" => '',
+            "Kecamatan_agunan_rt" => '',
+            "Lokasi_agunan_rt" =>'',
+            "Nilai_pasar_wajar_agunan_rt"=>'',
+            "Nilai_likuidasi_agunan_rt"=>'',
+            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>'',
+            "Proyeksi_nilai_likuidasi_agunan_rt" => '',
+            "Nilai_jual_obyek_pajak_agunan_rt" =>'',
+            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'',
+            "Penilai_independent_agunan_rt"=>'',
+            "Tanggal_penilaian_terakhir_agunan_rt"=>'',
+            "Jenis_pengikatan_value_agunan_rt" => '',
+            "No_bukti_pengikatan_agunan_rt" => '',
+            "Nilai_pengikatan_agunan_rt" => '',
+            "Paripasu_value_agunan_rt" => '',
+            "Nilai_paripasu_agunan_bank_rt" => '',
+            "Flag_asuransi_value_agunan_rt" => '',
+            "Nama_perusahaan_asuransi_agunan_rt" =>'',
+            "Nilai_asuransi_agunan_rt" => '',
+            "Eligibility_value_agunan_rt" => '',
+            "Proyeksi_nilai_likuidasi_agunan_rt" => ''
+        ];
+        return $request;
+    }
+
     public function user_notifications()
     {
         return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
@@ -1014,4 +1176,29 @@ class EForm extends Model
      * @param array $data
      * @return array $request
      */
+
+
+     /**
+     * Remove comma and dot.
+     *
+     * @param string $place
+     * @return string $return
+     */
+    public function reformatString( $place )
+    {
+        return $place ? str_replace(',', '', str_replace('.', '', $place)) : '';
+    }
+
+     /**
+     * Reformat City.
+     *
+     * @param string $place
+     * @return string $return
+     */
+    public function reformatCity( $city )
+    {
+        $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
+
+        return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
+    }
 }

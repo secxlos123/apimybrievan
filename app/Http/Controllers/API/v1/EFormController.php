@@ -60,8 +60,8 @@ class EFormController extends Controller
             'contents' => $eform
         ],200 );
     }
-	
-	
+
+
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -82,17 +82,30 @@ class EFormController extends Controller
      */
     public function show( $type, $eform_id )
     {
-        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+		$eform = EForm::findOrFail($eform_id);
+		$data = $eform;
+		if($eform['product_type']=='briguna'){
+			$another_array = [];
+			$another_array['id'] = $eform_id;
+			$request = new Request($another_array);
+			$eform = $this->show_briguna($request);
+	        return response()->success( [
+				'contents' => $eform
+			] );
 
-        return response()->success( [
-            'contents' => $eform
-        ] );
+		}elseif($eform['product_type']=='kpr'){
+			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+
+			return response()->success( [
+				'contents' => $eform
+			] );
+			}
     }
 
     public function showIdsAndRefNumber( $ids, $ref_number )
     {
         $eform = EForm::Where('id',(int)$ids)->OrWhere('ref_number', 'ilike','%"'. $ref_number.'"%')->first();
-        
+
         return response()->success( [
             'contents' => $eform
         ] );
@@ -131,7 +144,7 @@ class EFormController extends Controller
      */
     public function store( EFormRequest $request )
     {
-        
+
         DB::beginTransaction();
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([

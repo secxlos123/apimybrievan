@@ -18,7 +18,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::get( 'check-token', 'TokenController@index' );
+		Route::get('debitur-list', 'CustomerController@listDebitur');
 
+		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::delete( 'logout', 'AuthController@destroy' );
 		} );
@@ -64,9 +66,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
 		] );		
-		Route::resource( 'gimmick', 'GimmickController', [
+		/* Route::resource( 'gimmick', 'GimmickController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
-		] );
+		] ); */
 	} );
 } );
 

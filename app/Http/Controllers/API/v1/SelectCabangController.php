@@ -23,17 +23,14 @@ class SelectCabangController extends Controller
      */
 	public function index( Request $request )
 	{
+		
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
-		 $page = $request->get('page', 1); // Get the ?page=1 from the url
+		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
         $offices = [];
-
-		$mitra = Mitra::filter( $request )->get();
-		$mitra = $mitra->toArray();
-       
-        if ($branchs['responseData'] != '') {
+		        if ($branchs['responseData'] != '') {
             foreach ($branchs['responseData'] as $branch) {
                 $search = true;
 
@@ -56,14 +53,26 @@ class SelectCabangController extends Controller
 					}else{
 						$kode_uker = $branch['kode_uker'];
 					}
-						foreach($mitra as $key){
-								if($key['BRANCH_CODE']== $kode_uker){										
-								$offices[] = $branch;
-							}
-						}
+						$request['key'] = $kode_uker;
+						$mitra = Mitra::filter( $request )->get();
+						$mitra =$mitra->toArray(); 
+						$mitra[0]['kanwil'] = $branch['kanwil'];
+						$mitra[0]['unit_induk'] = $branch['unit_induk'];
+						$mitra[0]['kanca_induk'] = $branch['kanca_induk'];
+						$mitra[0]['jenis_uker'] = $branch['jenis_uker'];
+						$mitra[0]['dati2'] = $branch['dati2'];
+						$mitra[0]['dati1'] = $branch['dati1'];
+						$mitra[0]['alamat'] = $branch['alamat'];
+						$mitra[0]['no_telp'] = $branch['no_telp'];
+						$mitra[0]['no_fax'] = $branch['no_fax'];
+						$mitra[0]['koordinat'] = $branch['koordinat'];
+						$mitra[0]['latitude'] = $branch['latitude'];
+						$mitra[0]['longitude'] = $branch['longitude'];
+						$offices[] = $mitra[0];					
                 }
             }
 		}
+			
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
@@ -71,15 +80,9 @@ class SelectCabangController extends Controller
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
         );
-
         $histories->transform(function ($history) {
-            return [
-                'branch' => $history['kode_uker'],
-                'unit' => $history['unit_kerja'],
-                'address' => $history['alamat'],
-                'lat' => $history['latitude'],
-                'long' => $history['longitude'],
-            ];
+
+            return $history;
         });
 
         return response()->success([
@@ -99,7 +102,7 @@ class SelectCabangController extends Controller
                 'requestData'   => [
                     'app_id' => 'mybriapi',
                     'kode_branch' => $request->get('BRANCH_CODE', 0),
-                    'distance'    => $request->get('distance', 10),
+                    'distance'    => $request->get('distance', 30),
 
                     // if request latitude and longitude not present default latitude and longitude cimahi
                     'latitude'  => $lat,

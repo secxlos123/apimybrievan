@@ -36,7 +36,7 @@ class AuthController extends Controller
             ] )
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
-
+        // print_r($data);exit();
         \Log::info($data);
         if( $login[ 'responseCode' ] == '00' ) {
 
@@ -57,6 +57,14 @@ class AuthController extends Controller
                 $role = 'staff';
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
+            // hilfm adk tambah filter posisi
+            } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
+                $adk = explode(' ', $data['posisi']);
+                // print_r($adk);
+                // print_r($data);exit();
+                if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    $role = 'adk';
+                }
             } else {
                 // $request->headers->set( 'pn', $pn );
                 // $this->destroy( $request );
