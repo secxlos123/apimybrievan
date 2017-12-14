@@ -41,17 +41,96 @@ class EFormController extends Controller
 
     public function show_briguna( Request $request )
     {
+        \Log::info($request->all());
+          $eform = EformBriguna::filter( $request )->get();
+		  $eform = $eform->toArray();
+		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+        return response()->success( [
+            'contents' => $eform
+        ],200 );
+    }
+	public function show_bri( Request $request )
+    {
 		$customer = DB::table('customer_details')
 						 ->select('users.*','customer_details.*')
 						 ->join('users', 'users.id', '=', 'customer_details.user_id')
 						 ->where('customer_details.user_id', $request->user_id)
 						 ->get();
 				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
 				
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-		  $eform[0]['customer'] = $customer[0];
+			//-----------customer------------------
+     	  $eform[0]['customer']['is_simple'] = true;
+		  $eform[0]['customer']['is_completed'] = false;
+		  $eform[0]['customer']['is_verified'] = $customer[0]['is_verified'];
+		  //----------personal------------------------
+		  $eform[0]['customer']['personal'] = $customer[0];
+		  //-----------work---------------------------
+		  $work = [
+					"type_id"=> $customer[0]['job_type_id'],
+                "type"=> $customer[0]['job_type_name'],
+                "work_id"=> $customer[0]['job_id'],
+                "work"=> $customer[0]['job_name'],
+                "company_name"=> $customer[0]['company_name'],
+                "work_field_id"=> $customer[0]['job_field_id'],
+                "work_field"=> $customer[0]['job_field_name'],
+                "position_id"=> $customer[0]['position'],
+                "position"=> $customer[0]['position_name'],
+                "work_duration"=> $customer[0]['work_duration'],
+                "work_duration_month"=> $customer[0]['work_duration_month'],
+                "office_address"=> $customer[0]['office_address'],
+					];
+     	  $eform[0]['customer']['work'] = $work;
+
+		  $status_income = '';
+		  $status_finance = '';
+		  if($customer[0]['couple_salary']==NULL){
+			  $status_income = 'Pisah Harta';
+		  }else{
+			   $status_income = 'Gabung Harta';
+		  }
+		  if($customer[0]['couple_salary']==NULL){
+			  $status_finance = 'Single Income';
+		  }else{ 
+			  $status_finance = 'Join Income';
+		  }
+		  $financial = [
+				 "salary"=> $customer[0]['salary'],
+                "other_salary"=> $customer[0]['other_salary'],
+                "loan_installment"=> $customer[0]['loan_installment'],
+                "dependent_amount"=> $customer[0]['dependent_amount'],
+				"status_income"=> $status_income,
+                "status_finance"=> $status_finance,
+                "salary_couple"=> $customer[0]['couple_salary'],
+                "other_salary_couple"=> $customer[0]['couple_other_salary'],
+                "loan_installment_couple"=> $customer[0]['couple_loan_installment']
+					];
+		  $eform[0]['customer']['financial'] = $financial;
+
+		  $contact = [
+				 "emergency_contact"=> $customer[0]['emergency_contact'],
+                "emergency_relation"=> $customer[0]['emergency_relation'],
+                "emergency_name"=> $customer[0]['emergency_name']
+					];
+		  $eform[0]['customer']['contact'] = $contact;
+
+		  $other = [                
+				"image"=> $customer[0]['image'],
+                "identity"=> $customer[0]['identity'],
+                "npwp"=> $customer[0]['npwp'],
+                "family_card"=> $customer[0]['family_card'],
+                "marrital_certificate"=> $customer[0]['marrital_certificate'],
+                "diforce_certificate"=> $customer[0]['diforce_certificate']
+
+					];
+		  $eform[0]['customer']['other'] = $other;
+
+		  $eform[0]['customer']['schedule'] = [];
+		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
+
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
         return response()->success( [
             'contents' => $eform
@@ -87,10 +166,8 @@ class EFormController extends Controller
 			$another_array['user_id'] = $eform['user_id'];
 				
 			$request = new Request($another_array);
-			$eform = $this->show_briguna($request);
-	        return response()->success( [
-				'contents' => $eform
-			] );
+			$eform = $this->show_bri($request);
+	        return $eform;
 
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
