@@ -8,11 +8,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\CustomDbChannel;
 
-class EFormPenugasanDisposisi extends Notification
+class VerificationDataNasabah extends Notification
 {
     use Queueable;
 
-    public $eForm;
+     public $eForm;
     /**
      * Create a new notification instance.
      *
@@ -35,7 +35,7 @@ class EFormPenugasanDisposisi extends Notification
     }
 
     /**
-     * Get the database representation of the notification.
+     * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage

@@ -751,9 +751,4 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
     }
-
-    public function checkroleAndpn($role, $pn){
-        return \DB::table('users')->where('role',$role)->where('pn',$pn)->first();
-
-    }    
 }

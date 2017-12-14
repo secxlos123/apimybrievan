@@ -51,6 +51,23 @@ class UserNotification extends Model
         return (bool) $this->read_at;
     }
 
+    public function getSubject()
+    {
+        switch ($this->type) {
+            case 'App\Notifications\PengajuanKprNotification':                
+                $subjectNotif = 'Pengajuan KPR Baru';
+                break;
+            case 'App\Notifications\EFormPenugasanDisposisi':                
+                $subjectNotif = 'Penugasan KPR Baru';
+                break;
+            default:
+                $subjectNotif = 'Type undefined';
+                break;
+        }
+
+        return $subjectNotif;
+    }
+
     /**
     * Get the notification all.
     *
@@ -61,25 +78,52 @@ class UserNotification extends Model
     
     }
 
-    public function scopedataNotifications($query, $branch_id){
+    public function scopedataNotifications($query){
         
-        if($query->where('notifications.type','App\Notifications\PengajuanKprNotification')) {      /* data for roles pinca new form from nasabah eksternal*/
-            $query->where('eforms.branch_id',$branch_id );
-            // $query->where('eforms.recommended',false);
-            // $query->where('eforms.is_approved',false);
+        if($query->where('notifications.type','App\Notifications\PengajuanKprNotification') ) {      /* data for roles pinca new form from nasabah eksternal*/
+            $query->where('eforms.recommended',false);
+            $query->where('eforms.is_approved',false);
             $query->whereNull('ao_id');
             $query->whereNull('ao_name');
             $query->whereNull('ao_position');
         }
+        elseif($query->where('notifications.type','App\Notifications\EFormPenugasanDisposisi') ) {      /* data for roles pinca new form from nasabah internal AO*/
+            $query->where('eforms.recommended',false);
+            $query->where('eforms.is_approved',false);
+            $query->whereNotNull('ao_id');
+            $query->whereNotNull('ao_name');
+            $query->whereNotNull('ao_position');
+            
+        }
         
-        return $query;
-  
+        return $query;  
     }
     
-    public function getUnreads($branch_id){
-        return $this->unreads()
+    public function getUnreads($branch_id, $role, $pn){
+        $query = $this->unreads()
                     ->leftJoin('eforms','notifications.eform_id','=','eforms.id')
-                    ->dataNotifications($branch_id)
+                    ->where('eforms.branch_id',$branch_id)
                     ->orderBy('notifications.created_at', 'DESC');
+        
+        if($role == 'pinca'){
+            $query->where('notifications.type','App\Notifications\PengajuanKprNotification'); 
+            $query->whereNull('ao_id');
+            $query->whereNull('ao_name');
+            $query->whereNull('ao_position');
+        }  
+
+        if($role == 'ao'){
+            $query->where('notifications.type','App\Notifications\EFormPenugasanDisposisi'); 
+            $query->Where('eforms.ao_id', $pn);
+            $query->whereNotNull('ao_id');
+            $query->whereNotNull('ao_name');
+            $query->whereNotNull('ao_position');
+            // $query->Where('eforms.ao_id', 'ilike', "%{$pn}%");
+           /* $query->where('eforms.recommended',false);
+            $query->where('eforms.is_approved',false);*/
+            
+        }
+
+        return $query;
     }
 }

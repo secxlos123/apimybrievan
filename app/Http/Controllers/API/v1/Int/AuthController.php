@@ -37,7 +37,7 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
 
-        // \Log::info($data);
+        \Log::info($data);
         if( $login[ 'responseCode' ] == '00' ) {
 
             if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {

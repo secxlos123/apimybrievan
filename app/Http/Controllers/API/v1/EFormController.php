@@ -21,15 +21,17 @@ use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
 use App\Notifications\EFormPenugasanDisposisi;
+use App\Models\UserNotification;
 
 use DB;
 
 class EFormController extends Controller
 {
-    public function __construct(User $user, UserServices $userservices)
+    public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
     {
-      $this->user = $user;
-      $this->userservices = $userservices;
+        $this->user = $user;
+        $this->userservices = $userservices;
+        $this->userNotification = $userNotification;
     }
 
     /**
@@ -391,6 +393,11 @@ class EFormController extends Controller
      */
     public function disposition( EFormRequest $request, $id )
     {
+        $role = request()->header( 'role' );
+        $pn = request()->header( 'pn' );
+        $branch_id = request()->header( 'branch_id' );
+        //$getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, $pn )->first();
+
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
         $ao_id = substr( '00000000' . $request->ao_id, -8 );
@@ -403,8 +410,13 @@ class EFormController extends Controller
 
         $eform->update( $baseRequest );
         
-        $usersService = $this->userservices->getByBranchId($eform->branch_id);  /*send notification*/
-        $usersService->notify(new EFormPenugasanDisposisi($eform));
+        $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
+        $usersModel->notify(new EFormPenugasanDisposisi($eform));
+
+        /*if($getDataNotification){
+            $getDataNotification->update(['read_at'=>$this->freshTimestamp(),'updated_at'=>'']);
+        }*/
+
 
         DB::commit();
         return response()->success( [
