@@ -25,8 +25,8 @@ class Mitra extends Authenticatable  {
 			
       $kode = $request->input('kode');
 	  $key = $request->input('key');
-                    $mitra->Where('mitra.BRANCH_CODE', $key);
-					$mitra->Where('mitra.NAMA_INSTANSI','like',$kode.'%');
+                    $mitra->Where([
+									['mitra.BRANCH_CODE','=', $key],['mitra.NAMA_INSTANSI','like',$kode.'%']]);
         } );
 				$mitra->orderBy('mitra.NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([
