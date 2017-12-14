@@ -91,7 +91,7 @@ class Developer extends Model
                 if ($request->has('city_id')) $developer->where('city_id', $request->input('city_id'));
 
                 /**
-                 * Query for filter by range project.
+                 * Query for for without independent
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
@@ -99,10 +99,6 @@ class Developer extends Model
                     }
                 }
 
-                /**
-                 * Query for without independent
-                 */
-                if ($request->has('without_independent')) $developer->where('bri', '!=', '1');
             })
             ->select('*')
             ->selectRaw('(select users.image from users where users.id = developers_view_table.dev_id) as image')
