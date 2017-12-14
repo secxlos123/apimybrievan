@@ -25,7 +25,7 @@ class EformBriguna extends Model
         } );
 				$eforms->join('briguna', 'eform_id', '=', 'eforms.id');
 				$eforms = $eforms->select([
-                    'eforms.*','briguna.*',
+                    'briguna.*','eforms.*',
          		 \DB::Raw(" case when eforms.id is not null then 2 else 1 end as new_order ")
                 ]);
         \Log::info($eforms->toSql());

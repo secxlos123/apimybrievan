@@ -143,6 +143,19 @@ class EFormController extends Controller
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+		  
+		  $eform[0]['nominal'] = $eform[0]['request_amount'];
+		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
+		  $eform[0]['kpr']['year'] = $eform[0]['year'];
+		  
+		  $birth_place = DB::table('cities')
+						 ->select('name')
+						 ->where('cities.id', $customer[0]['birth_place_id'])
+						 ->get();
+				$birth_place = $birth_place->toArray();
+				$birth_place = json_decode(json_encode($birth_place), True);
+		  $eform[0]['birth_place'] = $birth_place;
+		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
         ],200 );
