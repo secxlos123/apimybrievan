@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-
+use DB;
+use Carbon\Carbon;
 class Developer extends Model
 {
 	/**
@@ -124,5 +125,156 @@ class Developer extends Model
             ->orWhere('email', 'ilike', "%{$request->input('search')}%")
             ->orWhere('phone_number', 'ilike', "%{$request->input('search')}%")
             ->orWhere('city_name', 'ilike', "%{$request->input('search')}%");
+    }
+
+    public function getListUserProperties($startList = null, $endList = null, $user_id)
+    {
+        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
+
+        if(empty($startList) && !empty($endList)){
+            $startList = Date('d-m-Y');
+            $filter = true;
+        }else if(empty($endList) && !empty($startList)){
+            $endList = Date('d-M-Y');
+            $filter = true;
+        }else if(!empty($startList) && !(empty($endList))){
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        if($filter){
+            $query = DB::select("
+                        SELECT DISTINCT ON (developers.id)
+                               users.first_name as name, properties.slug as slug, properties.name as property_name,
+                               property_types.building_area as building_area, property_types.price as price, property_items.address as address,
+                               eforms.is_approved as is_approved, properties.created_at as created_at
+                        FROM developers developers
+                        JOIN properties properties USING (id)
+                        JOIN users users USING (id)
+                        JOIN eforms eforms USING (id)
+                        JOIN property_types property_types USING (id)
+                        JOIN property_items property_items USING (id)
+                        WHERE properties.developer_id = ".$developer['id']."
+                        AND properties.created_at >= '".$startList."' AND properties.created_at <= '".$endList."'
+                        ORDER  BY developers.id, properties.name, users.id, users.first_name
+            ");
+
+            $data = collect($query)->map(function($item, $key){
+                return [
+                    'name'            => $item->name,
+                    'slug'            => $item->slug,
+                    'property_name'   => $item->name,
+                    'unit_price'      => "Rp. ".$item->price,
+                    'unit_type'       => "Type ".$item->building_area,
+                    'address'         => $item->address,
+                    'approved_status' => ($item->is_approved) ? 'Approved' : 'Rejected',
+                    'created_at'         => $item->created_at,
+                    'created'         => strtotime($item->created_at),
+                ];
+            })->toArray();
+
+            usort($data, function($a, $b) {
+                return $b['created'] - $a['created'];
+            });
+            $data = collect($data)->map(function($item, $key){
+                return [
+                    'name'            => $item['name'],
+                    'slug'            => $item['slug'],
+                    'property_name'   => $item['property_name'],
+                    'unit_price'      => $item['unit_price'],
+                    'unit_type'       => $item['unit_type'],
+                    'address'         => $item['address'],
+                    'approved_status' => $item['approved_status'],
+                ];
+            })->slice(0, 5);
+        }else{
+            $query = DB::select("
+                        SELECT DISTINCT ON (developers.id)
+                               users.first_name as name, properties.slug as slug, properties.name as property_name,
+                               property_types.building_area as building_area, property_types.price as price, property_items.address as address,
+                               eforms.is_approved as is_approved, properties.created_at as created_at
+                        FROM developers developers
+                        JOIN properties properties USING (id)
+                        JOIN users users USING (id)
+                        JOIN eforms eforms USING (id)
+                        JOIN property_types property_types USING (id)
+                        JOIN property_items property_items USING (id)
+                        WHERE properties.developer_id = ".$developer['id']."
+                        ORDER  BY developers.id, properties.name, users.id, users.first_name
+                        LIMIT 5
+            ");
+
+            $data = collect($query)->map(function($item, $key){
+                return [
+                    'name'            => $item->name,
+                    'slug'            => $item->slug,
+                    'property_name'   => $item->name,
+                    'unit_price'      => "Rp. ".$item->price,
+                    'unit_type'       => "Type ".$item->building_area,
+                    'address'         => $item->address,
+                    'approved_status' => ($item->is_approved) ? 'Approved' : 'Rejected',
+                    'created'         => strtotime($item->created_at),
+                ];
+            })->toArray();
+
+            usort($data, function($a, $b) {
+                return $b['created'] - $a['created'];
+            });
+
+            $data = collect($data)->map(function($item, $key){
+                return [
+                    'name'            => $item['name'],
+                    'slug'            => $item['slug'],
+                    'property_name'   => $item['property_name'],
+                    'unit_price'      => $item['unit_price'],
+                    'unit_type'       => $item['unit_type'],
+                    'address'         => $item['address'],
+                    'approved_status' => $item['approved_status'],
+                ];
+            })->slice(0, 5);
+        }
+
+        return $data;
+    }
+
+    /**
+        * Get list count for chart
+        *
+        * @param  string $startChart
+        * @param  string $endChart
+        * @return array
+    */
+    public function getChartProperties($startChart, $endChart, $user_id)
+    {
+        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
+
+        if(empty($startList) && !empty($endList)){
+            $startList = Date('d-m-Y');
+            $filter = true;
+        }else if(empty($endList) && !empty($startList)){
+            $endList = Date('d-M-Y');
+            $filter = true;
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        // $data = EForm::
+
+        $data = Property::select(
+                    DB::raw("count(properties.id) as value"),
+                    DB::raw("to_char(properties.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(properties.created_at, 'MM YYYY') as month2"),
+                    DB::raw("to_char(properties.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('properties.created_at', [$startChart, $endChart]);
+                })
+                ->groupBy('month', 'month2', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
+        return $data;
     }
 }
