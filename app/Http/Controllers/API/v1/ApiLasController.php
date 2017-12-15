@@ -27,7 +27,8 @@ class ApiLasController extends Controller
         
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
-                if (!empty($data)) {
+                // if (!empty($data)) {
+                    $data = $respons;
                     $data['kodepos']            = '';
                     $data['kelurahan']          = '';
                     $data['kecamatan']          = '';
@@ -100,15 +101,15 @@ class ApiLasController extends Controller
                     $data['gaji'] = $gaji;
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
-                } 
-                $error[0] = 'Uknown request data';
-                return [
-                    'code' => 05, 
-                    'descriptions' => 'Uknown request data',
-                    'contents' => [
-                        'data' => $error
-                    ]
-                ];
+                // } 
+                // $error[0] = 'Uknown request data';
+                // return [
+                //     'code' => 05, 
+                //     'descriptions' => 'Uknown request data',
+                //     'contents' => [
+                //         'data' => $error
+                //     ]
+                // ];
                 // print_r($data);exit();
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
                 break;
