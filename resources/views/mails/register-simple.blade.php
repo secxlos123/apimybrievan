@@ -29,7 +29,7 @@
                     <td align="center">
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        Terima kasih telah melakukan registrasi akun Anda di MyBRI. Untuk langkah selanjutnya, silahkan meng-klik tautan di bawah ini untuk mengaktivasi akun Anda.
+                        <p align="justify">Terima kasih telah melakukan registrasi akun Anda di MyBRI. Untuk langkah selanjutnya, silahkan meng-klik tautan di bawah ini untuk mengaktivasi akun Anda.</p>
                 </tr>
             </table>
         </td>

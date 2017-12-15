@@ -125,8 +125,8 @@ class PropertyController extends Controller
             }
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = "Gagal Terhubung Server."; 
-            $code = 422; 
+            $status = 'error'; $message = "Gagal Terhubung Server.";
+            $code = 422;
         }
 
         return response()->{$status}(compact('message'), $code);
@@ -147,7 +147,7 @@ class PropertyController extends Controller
             // 'alamat_project' => $property->address,
             'pic_project' => $property->pic_name ?: '',
             'pks_project' => $property->developer->pks_number ?: '-',
-            'deskripsi_project' => $property->description,
+            'deskripsi_project' => substr($property->description, 255),
             'telepon_project' => $property->pic_phone ?: '',
             'hp_project' => $property->pic_project ?: '',
             'fax_project' => '',
