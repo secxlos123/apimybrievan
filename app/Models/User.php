@@ -493,7 +493,7 @@ class User extends Authenticatable
             ->where( function( $user ) use( $request ) {
 
                 if( $request->has( 'eform' )) {
-                    if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
+                    if ($request->input('eform') == 'false') $user->whereRaw( "e.id is null OR e.status_eform = 'Approval1' ");
 
                 }
                 if ($request->has('name')) {
