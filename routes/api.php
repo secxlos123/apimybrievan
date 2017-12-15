@@ -28,13 +28,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
-		
-	
+
+
 		/* ------------*/
 
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
-		
+
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );
@@ -53,7 +53,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource( 'eforms', 'EFormController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
-		
+
 		Route::get( 'offices', 'OfficeController@index' );
 		Route::post('SelectCabang', 'SelectCabangController@index');
 
@@ -65,7 +65,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 		// Dropbox
 		Route::post('dropbox/index', 'DropboxController@index');
-		
+
 		// API LAS
 		Route::post('api_las/index', 'ApiLasController@index');
 		Route::post('api_las/briguna', 'ApiLasController@show_briguna');
@@ -126,4 +126,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'cities', 'CityController' );
 		Route::get('city', 'CityController@getAll');
 	} );
+
+	/**
+	 * Force Update from CLAS
+	 */
+	Route::post( 'eforms/update-clas', 'EFormController@updateCLAS' );
 } );

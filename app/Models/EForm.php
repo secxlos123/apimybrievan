@@ -284,7 +284,7 @@ class EForm extends Model
                     'is_approved' => $request->is_approved,
                     'status_eform' => 'approved'
                     ] );
-                // PropertyItem::setAvailibility( $data[ 'property_item' ], "sold" );
+                PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
             }
 
         } else {
@@ -299,7 +299,7 @@ class EForm extends Model
                 'is_approved' => $request->is_approved,
                 'status_eform' => 'Rejected'
                 ] );
-            PropertyItem::setAvailibility( $data[ 'property_item' ], "available" );
+            PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
             $result['status'] = true;
 
         }
@@ -538,14 +538,19 @@ class EForm extends Model
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
+
                 } else if( $request->status == 'Initiate' ) {
                     $eform->has( 'visit_report' )->whereIsApproved( false );
+
                 } else if( $request->status == 'Dispose' ) {
                     $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+
                 } else if( $request->status == 'Rekomend' ) {
                     $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                } elseif ($request->status == 'Rejected') {
-                    $eform->where('status_eform', 'Rejected');
+
+                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
+                    $eform->where('status_eform', $request->status);
+
                 }
             }
         } );
@@ -690,6 +695,35 @@ class EForm extends Model
     public function kpr()
     {
         return $this->hasOne( KPR::class, 'eform_id' );
+    }
+
+    /**
+     * Update EForm from CLAS.
+     *
+     * @return array
+     */
+    public static function updateCLAS( $ref_number, $status )
+    {
+        $returnStatus = false;
+        $target = static::where('ref_number', $ref_number)->first();
+
+        if ($target) {
+            $target->update([
+                'is_approved' => ( $status == 'Approval1' ? true : false )
+                , 'status_eform' => $status
+            ]);
+
+            $returnStatus = "EForm berhasil di update.";
+
+            if ($target->kpr) {
+                PropertyItem::setAvailibility( $target->kpr->property_item, $status == 'Approval1' ? "sold" : "available" );
+            }
+        }
+
+        return array(
+            'message' => $returnStatus
+            , 'contents' => $target
+        );
     }
 
     /**

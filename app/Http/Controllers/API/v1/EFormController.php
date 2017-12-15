@@ -524,4 +524,43 @@ class EFormController extends Controller
         ], 422 );
       }
     }
+
+    /**
+     * Update eform status from CLAS.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCLAS( Request $request )
+    {
+        $message = "EForm tidak ditemukan.";
+        DB::beginTransaction();
+
+        try {
+            if ( $request->has('ref_number') && $request->has('status') ) {
+                $updateCLAS = EForm::updateCLAS(
+                    $request->input('ref_number')
+                    , $request->input('status')
+                );
+
+                if ( $updateCLAS['message'] ) {
+                    \DB::commit();
+                    return response()->json([
+                        "responseCode" => "01",
+                        "responseDesc" => $updateCLAS['message']
+                    ], 200);
+                }
+            }
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $message = $e->getMessage();
+            dd($e);
+        }
+
+        return response()->json([
+            "responseCode" => "02",
+            "responseDesc" => $message
+        ], 200 );
+    }
 }
