@@ -458,9 +458,9 @@ class EForm extends Model
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71',null]
-            , ['InsertIntoReviewer',null]
-            , ['InsertDataAgunanTanahRumahTinggal',null]
+            //, ['InsertDataAgunanModel71',null]
+            //, ['InsertIntoReviewer',null]
+            //, ['InsertDataAgunanTanahRumahTinggal',null]
 
         ];
 
@@ -497,7 +497,7 @@ class EForm extends Model
             $step++;
         }
 
-        if ($step == 10) {
+        if ($step == 7) {
             $this->update( [ 'is_approved' => true ] );
         }
         return $return;
@@ -997,6 +997,7 @@ class EForm extends Model
             "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : $lkn->source_income,
             "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
             "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
+            "harga_agunan" => !($kpr->price) ? '0' : round( str_replace(',', '.', str_replace('.', '', $kpr->price)) )
         ];
 
         return $request;
