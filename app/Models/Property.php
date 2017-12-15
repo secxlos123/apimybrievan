@@ -321,9 +321,10 @@ class Property extends Model
                     {
                         $property->where('prop_dev_id', $developerId);
                     }
-                else{
-                        $property->where('is_approved',true);
-                    }
+                // jgn di hapus sengaja di disable untuk prod
+                // else{
+                //         $property->where('is_approved',true);
+                //     }
                 if ($request->has('dev_id')) $property->where('prop_dev_id', $request->input('dev_id'));
             })
             ->where(function ($property) use (&$request, &$query) {
