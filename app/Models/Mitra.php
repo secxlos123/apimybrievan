@@ -26,7 +26,9 @@ class Mitra extends Authenticatable  {
         $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
 			
       $key = $request->input('key');
-                    $mitra->Where('BRANCH_CODE', $key);
+					if(!$request->has( 'internal' )){
+						 $mitra->Where('BRANCH_CODE', $key);
+					}
         } );
 				$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($kode)).'%']);
 				//$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
