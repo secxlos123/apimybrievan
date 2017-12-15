@@ -385,7 +385,7 @@ class Property extends Model
             ->orderBy( 'distance', 'asc' );
 
         if ($radius > -1) {
-            $query = $query->havingRaw("{$distance} <= {$radius}");
+            $query = $query->havingRaw("{$distance} <= {$radius + 10}");
         }
 
         return $query;
@@ -401,7 +401,7 @@ class Property extends Model
     {
         $lat    = $request->get('lat', '');
         $long   = $request->get('long', '');
-        $radius = $request->get('radius', 10);
+        $radius = $request->get('radius', 20);
         $type   = $request->get('type', 'km');
         $limit  = $request->get('limit', 6);
         $rawPrice = \DB::raw('(SELECT max(property_types.price) from property_types where property_types.property_id = properties.id) as price');
