@@ -459,4 +459,48 @@ class Property extends Model
 
         return round($distance, 2);
     }
+
+    public function getNewestPropertyAttribute()
+    {
+        return [
+            'property_name' => $this->property_name,
+            'city'          => $this->cities,
+            'pic_name'      => $this->pic_name,
+            'pic_phone'     => $this->pic_phone,
+            'property_type' => "Tipe ".$this->building_area,
+            'property_unit' => $this->unit_property
+        ];
+    }
+
+    public function getNewestProperty($cityId)
+    {
+        $condition = empty($cityId) ? false : true;
+
+        $data = Property::select(
+                DB::raw("count(property_items.id) as unit_property"),
+                "properties.name as property_name",
+                "cities.name as cities",
+                "properties.pic_name",
+                "properties.pic_phone",
+                "property_types.building_area"
+            )
+            ->join('property_types', 'property_types.property_id', '=', 'properties.id')
+            ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')
+            ->join('cities', 'cities.id', '=', 'properties.city_id')
+            ->when($condition, function($query) use ($cityId){
+                return $query->where('city_id', $cityId);
+            })
+            ->groupBy(
+                'properties.id',
+                'properties.name',
+                'cities.name',
+                'properties.pic_name',
+                'properties.pic_phone',
+                "property_types.building_area"
+            )
+            ->orderBy('properties.created_at', 'desc')
+            ->get()->pluck('newestProperty');
+
+        return $data;
+    }
 }
