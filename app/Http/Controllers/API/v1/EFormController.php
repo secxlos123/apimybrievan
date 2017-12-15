@@ -163,8 +163,11 @@ class EFormController extends Controller
 		
 				$birth_place_couple = $birth_place_couple ->toArray();
 				$birth_place_couple = json_decode(json_encode($birth_place_couple ), True);
+				if($request->has($birth_place[0]['name'])){
 		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple;
-		  
+				}else{
+					$eform[0]['customer']['personal']['couple_birth_place']  = null;
+				}
 		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
