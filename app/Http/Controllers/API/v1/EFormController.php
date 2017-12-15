@@ -160,6 +160,10 @@ class EFormController extends Controller
 						 ->select('name')
 						 ->where('cities.id', $customer[0]['couple_birth_place_id'])
 						 ->get();
+		
+				$birth_place_couple = $birth_place_couple ->toArray();
+				$birth_place_couple = json_decode(json_encode($birth_place_couple ), True);
+		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple;
 		  
 		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
