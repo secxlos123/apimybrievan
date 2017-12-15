@@ -19,42 +19,40 @@ class BRIGUNA extends Model
      * @var string
      */
     protected $table = 'briguna';
-
     /**
      * Disabling timestamp feature.
      *
      * @var boolean
      */
     public $timestamps = false;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-	 
     protected $fillable = [  
-        'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan','mitra','tujuan_penggunaan',
-		'NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
+        'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan','mitra',
+        'tujuan_penggunaan','NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
         'SK_AKHIR','REKOMENDASI','SKPG',
-		//'SK_PERTAMA', 'SK_TERAKHIR','NPWP','REKOMENDASI_ATASAN',
-        'eform_id', 'tujuan_penggunaan_id', 
-        'mitra_id', 
-        'jenis_pinjaman_id',  'year',
+        'eform_id','tujuan_penggunaan_id','mitra_id','jenis_pinjaman_id','year',
 		'request_amount', 'angsuran_usulan', 'maksimum_plafond',
 		'uid','uid_pemrakarsa','tp_produk','id_aplikasi','cif_las',
 		'Tgl_perkiraan_pensiun','Sifat_suku_bunga','Briguna_profesi',
 		'Pendapatan_profesi'.'Potongan_per_bulan,Plafond_briguna_existing',
 		'Angsuran_briguna_existing','Suku_bunga','Jangka_waktu','Baki_debet','Plafond_usulan',
-		'Rek_simpanan_bri','Riwayat_pinjaman','Penguasaan_cashflow','Payroll','Gaji_bersih_per_bulan',
-		'Maksimum_angsuran','Tujuan_membuka_rek','Briguna_smart','Kode_fasilitas',
-		'Tujuan_penggunaan_kredit','Penggunaan_kredit','Provisi_kredit',
+		'Rek_simpanan_bri','Riwayat_pinjaman','Penguasaan_cashflow','Payroll',
+        'Gaji_bersih_per_bulan','Maksimum_angsuran','Tujuan_membuka_rek','Briguna_smart',
+        'Kode_fasilitas','Tujuan_penggunaan_kredit','Penggunaan_kredit','Provisi_kredit',
 		'Biaya_administrasi','Penalty','Perusahaan_asuransi','Premi_asuransi_jiwa',
 		'Premi_beban_bri','Premi_beban_debitur','Flag_promo','Fid_promo',
 		'Pengadilan_terdekat','Bupln','Agribisnis','Sandi_stp',
 		'Sifat_kredit','Jenis_penggunaan','Sektor_ekonomi_sid','Jenis_kredit_lbu',
-		'Sifat_kredit_lbu','Kategori_kredit_lbu','Jenis_penggunaan_lbu','Sumber_aplikasi','Sektor_ekonomi_lbu',
-		'id_Status_gelar','Status_gelar','score','grade','cutoff','definisi'
+		'Sifat_kredit_lbu','Kategori_kredit_lbu','Jenis_penggunaan_lbu','Sumber_aplikasi',
+        'Sektor_ekonomi_lbu', 'id_Status_gelar','Status_gelar','score','grade','cutoff',
+        'definisi','no_npwp','no_dan_tanggal_sk_awal','no_dan_tanggal_sk_akhir',
+        'branch_name','baru_atau_perpanjang','total_exposure','program_asuransi',
+        'kredit_take_over','pemrakarsa_name','agama','npl_instansi','npl_unitkerja',
+        'gimmick','jumlah_pekerja','jumlah_debitur','scoring_mitra'
 	];
 	
     /**
@@ -69,8 +67,7 @@ class BRIGUNA extends Model
      *
      * @return string
      */
-    public function getIdAttribute( $value )
-    {
+    public function getIdAttribute( $value ) {
         return $this->eform_id;
     }
 
@@ -80,253 +77,123 @@ class BRIGUNA extends Model
      * @return void
      */
     public static function create( $data ) {
-    try {        
-        \Log::info($data);
-        $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
-		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
-        $data[ 'mitra' ] = $data[ 'mitra_name' ];
-        $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
-        if(isset($data[ 'angsuran_usulan' ])){
-            $data[ 'angsuran_usulan' ] =  $data[ 'request_amount' ];
-        }else{
-            $data[ 'angsuran_usulan' ] = "0";
-        }
-        $data[ 'Status_Pekerjaan' ] = $data[ 'job_type' ];
-
-        $data[ 'maksimum_plafond' ] = '0';
-        $data[ 'NIP' ] = $data[ 'nip' ];
-        $data[ 'Nama_atasan_Langsung' ] = '';
-        $data[ 'Jabatan_atasan' ] = '';
-        $data[ 'SK_AKHIR' ] = '';
-        $data[ 'REKOMENDASI' ] = '';
-	/*    if(isset($data[ 'maksimum_plafond' ])){
-            $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
-	    }else{
-	       $data[ 'maksimum_plafond' ] = "0";
-	    }*/
-	    /*if(isset($data['jenis_pinjaman_id'])){
-            $data[ 'jenis_pinjaman_id' ] = $data[ 'jenis_pinjaman' ];
-	        $data[ 'jenis_pinjaman' ] = $data[ 'jenis_pinjaman_name' ];
-	    }else{
-	        $data[ 'jenis_pinjaman_id' ] = "0";
-            $data[ 'jenis_pinjaman' ] = "";
-	    }*/
-
-        $eform = EForm::create( $data );
-        \Log::info($eform);
-        // Start Code Insert to API LAS and Dropbox
-        $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
-        // $ApiLas  = new ApiLas();
-        $Dropbox = new Dropbox();
-        $customer        = $eform->customer;
-        $customer_detail = $customer->detail;
-        // print_r($customer);
-        // print_r($customer_detail);exit();
-        $kecamatan = '';
-        $kabupaten = '';
-        $kodepos   = '';
-        $kelurahan = '';
-
-        \Log::info($briguna);
-
-        if (!empty($customer_detail->address)) {
-            $address = explode('=', $customer_detail->address);
-            // print_r($address);
-                if (count($address) > 1) {
-                    $kel     = explode(' ', $address[1]);
-                    $kec     = explode(',', $address[2]);
-                    $kecamatan = $kec[0];
-                    $kabupaten = $kec[1];
-                    $kodepos   = $kec[2];
-                    $kelurahan = $kel[0];
-                }
+        try {        
+            \Log::info($data);
+            $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
+    		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
+            $data[ 'mitra' ] = $data[ 'mitra_name' ];
+            $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
+            if(isset($data[ 'angsuran_usulan' ])){
+                $data[ 'angsuran_usulan' ] =  $data[ 'request_amount' ];
+            }else{
+                $data[ 'angsuran_usulan' ] = "0";
             }
+            $data[ 'Status_Pekerjaan' ] = $data[ 'job_type' ];
 
-        $content_insert_dropbox = [
-            "cif"       => "",
-            "nik"       => $eform->nik,
-            "nama"      => $customer->first_name.' '.$customer->last_name,
-            "kelamin"   => $customer->gender,
-            "tmp_lahir" => $customer_detail->birth_place,
-            "tgl_lahir" => $customer_detail->birth_date,
-            "ibu"       => $customer_detail->mother_name,
-            "email"     => $customer->email,
-            "kontak"    => $customer->mobile_phone,
-            "kawin"     => $customer_detail->status,
-            "hist"      => "tidak",
-            "nama_bank" => "",
-            "alamat"    => $customer_detail->address,
-            "kodepos"   => $kodepos,
-            "provinsi"  => $kabupaten,
-            "kabupaten" => $kabupaten,
-            "kecamatan" => $kecamatan,
-            "kelurahan" => $kelurahan,
-            "jenis"     => $eform->jenis_pinjaman,
-            "amount"    => $customer_detail->loan_installment,
-            "tujuan"    => $eform->tujuan_penggunaan,
-            "agunan"    => $eform->mitra,
-            "jangka"    => ($briguna->year * 12),
-            "email_atasan" => "aswin.taopik@gmail.com",
-            "npwp"      => $customer_detail->npwp,
-            "mitra"     => $data['mitra_name'],
-            "nip"       => $data['nip'],
-           "status_pekerjaan" => $data['job_type']
-        ];
+            $data[ 'maksimum_plafond' ] = '0';
+            $data[ 'NIP' ] = $data[ 'nip' ];
+            $data[ 'Nama_atasan_Langsung' ] = '';
+            $data[ 'Jabatan_atasan' ] = '';
+    	    /*if(isset($data[ 'maksimum_plafond' ])){
+                $data[ 'maksimum_plafond' ] =  $data[ 'maksimum_plafond' ];
+    	    }else{
+    	       $data[ 'maksimum_plafond' ] = "0";
+    	    }
+    	    if(isset($data['jenis_pinjaman_id'])){
+                $data[ 'jenis_pinjaman_id' ] = $data[ 'jenis_pinjaman' ];
+    	        $data[ 'jenis_pinjaman' ] = $data[ 'jenis_pinjaman_name' ];
+    	    }else{
+    	        $data[ 'jenis_pinjaman_id' ] = "0";
+                $data[ 'jenis_pinjaman' ] = "";
+    	    }*/
 
-        $postData = [
-            'requestMethod' => 'insertSkpp',
-            'requestData'   => json_encode([
-                'branch'  => $eform->branch_id,
-                'appname' => 'MBR',
-                'jenis'   => 'BG',
-                'expdate' => date('Y-m-d'),
-                'content' => $content_insert_dropbox,
-                'status'  => '1',
-            ])
-        ];
-        $data_dropbox = $Dropbox->insertDropbox($postData);
-        \Log::info($data_dropbox);
-        // dd($data_dropbox);
-        $data_dropbox['eform_id'] = $eform->id;
-        if( $data_dropbox['responseCode'] == "01" ) {
-            $briguna['ref_number_new'] = $data_dropbox['refno'];
-            // $update_data  = [
-            //     'ref_number' => $data_dropbox['refno']
-            // ];
-            $eforms = EForm::findOrFail($data_dropbox['eform_id']);
-            $base_request["ref_number"] = $data_dropbox['refno'];
-            // $eforms = EForm::where('id','=',$data_dropbox['eform_id']);
-            $eforms->update($base_request);
-            /*$kecamatan_domisili = '';
-            $kabupaten_domisili = '';
-            $kodepos_domisili   = '';
-            $kelurahan_domisili = '';
-            $kecamatan_usaha    = '';
-            $kabupaten_usaha    = '';
-            $kodepos_usaha      = '';
-            $kelurahan_usaha    = '';
-            if (!empty($customer_detail->address_domisili)) {
-                $address_domisili   = explode('=', $customer_detail->address_domisili);
-                if (count($address_domisili) > 1) {
-                    $kel                = explode(' ', $address_domisili[1]);
-                    $kec                = explode(',', $address_domisili[2]);
-                    $kecamatan_domisili = $kec[0];
-                    $kabupaten_domisili = $kec[1];
-                    $kodepos_domisili   = $kec[2];
-                    $kelurahan_domisili = $kel[0];
+            $eform = EForm::create( $data );
+            \Log::info($eform);
+            // Start Code Insert to Dropbox
+            $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
+
+            $Dropbox = new Dropbox();
+            $customer        = $eform->customer;
+            $customer_detail = $customer->detail;
+            // print_r($customer);
+            // print_r($customer_detail);exit();
+            $kecamatan = '';
+            $kabupaten = '';
+            $kodepos   = '';
+            $kelurahan = '';
+
+            \Log::info($briguna);
+            if (!empty($customer_detail->address)) {
+                $address = explode('=', $customer_detail->address);
+                // print_r($address);
+                    if (count($address) > 1) {
+                        $kel     = explode(' ', $address[1]);
+                        $kec     = explode(',', $address[2]);
+                        $kecamatan = $kec[0];
+                        $kabupaten = $kec[1];
+                        $kodepos   = $kec[2];
+                        $kelurahan = $kel[0];
+                    }
                 }
-            } 
 
-            if (!empty($customer_detail->office_address)) {
-                $address_usaha   = explode('=', $customer_detail->office_address);
-                // print_r($address_usaha);exit();
-                if (count($address_usaha) > 1) {
-                    $kel             = explode(' ', $address_usaha[1]);
-                    $kec             = explode(',', $address_usaha[2]);
-                    $kecamatan_usaha = $kec[0];
-                    $kabupaten_usaha = $kec[1];
-                    $kodepos_usaha   = $kec[2];
-                    $kelurahan_usaha = $kel[0];
-                }
-            }
-
-            $portofolio = 175;
-            if ($data['product_type'] == 'kpr') {
-                $portofolio = 172;
-            }
-            $content_las_debt = [
-                "tp_produk"              => "10",
-                "uid"                    => "10740",
-                "kode_cabang"            => $eform->branch_id,
-                "cif_las"                => "11039307",
-                "no_ktp"                 => $eform->nik,
-                "expired_ktp"            => "31122899",
-                "nama_debitur_1"   => $customer->first_name.' '. $customer->last_name,
-                "nama_tanpa_gelar" => $customer->first_name.' '. $customer->last_name,
-                "nama_debitur_2"         => "",
-                "nama_debitur_3"         => "",
-                "nama_debitur_4"         => "",
-                "tgl_lahir"              => $customer_detail->birth_date,
-                "tempat_lahir"           => $customer_detail->birth_place_id,
-                "status_perkawinan"      => $customer_detail->status,
-                "nama_pasangan"          => $customer_detail->couple_name,
-                "tgl_lahir_pasangan"     => $customer_detail->couple_birth_date,
-                "no_ktp_pasangan"        => $customer_detail->couple_nik,
-                "perjanjian_pisah_harta" => "0",
-                "jumlah_tanggungan"      => $customer_detail->dependent_amount,
-                "bidang_usaha"           => $customer_detail->job_field_id,
-                "status_gelar"           => "0100",
-                "keterangan_status_gelar"=> "ST",
-                "jenis_kelamin"          => $customer->gender,
-                "nama_ibu"               => $customer_detail->mother_name,
-                "alamat"                 => $customer_detail->address,
-                "kelurahan"              => $kelurahan,
-                "kecamatan"              => $kecamatan,
-                "kabupaten"              => $kabupaten,
-                "kode_pos"               => $kodepos,
-                "fixed_line"             => $customer->phone,
-                "no_hp"                  => $customer->mobile_phone,
-                "lama_menetap"           => "2",
-                "email"                  => $customer->email,
-                "tgl_mulai_usaha"        => date('d-m-Y'),
-                "kewarganegaraan"        => $customer_detail->citizenship_id,
-                "negara_domisili"        => $customer_detail->citizenship_id,
-                "kepemilikan_tempat_tinggal" => $customer_detail->address_status,
-                "kategori_portofolio"    => $portofolio,
-                "golongan_debitur_sid"   => "907", //hardcode dari las
-                "golongan_debitur_lbu"   => "886", //hardcode dari las
-                "nama_kelg"              => "squad consumer",
-                "telp_kelg"              => "02198349480",
-                "tgl_mulai_debitur"      => date('d-m-Y'),
-                "jenis_rekening"         => "3",
-                "nama_bank_lain"         => "",
-                "pekerjaan_debitur"      => $customer_detail->job_id,
-                "alamat_usaha"           => $customer_detail->office_address,
-                "nama_perusahaan"        => $customer_detail->company_name,
-                "resident_flag"          => "Y",
-                "customer_type"          => "I", //hardcode dari las
-                "hub_bank"               => "9900",
-                "pernah_pinjam"          => "Ya",
-                "sumber_utama"           => "2",
-                "federal_wh_code"        => "1",
-                "sub_customer_type"      => "I", //hardcode dari las
-                "segmen_bisnis_bri"      => "RITEL", //hardcode dari las
-                "transaksi_normal_harian" => "2",
-                "alias"                  => "Squad enam",
-                "agama"                  => "ISL",
-                "ket_agama"              => "",
-                "alamat_domisili"        => $customer_detail->address_domisili,
-                "kodepos_domisili"       => $kodepos_domisili,
-                "kelurahan_domisili"     => $kelurahan_domisili,
-                "kecamatan_domisili"     => $kecamatan_domisili,
-                "kota_domisili"          => $kabupaten_domisili,
-                "propinsi_domisili"      => $kabupaten_domisili,
-                "jenis_pekerjaan"        => $customer_detail->job_type_id,
-                "ket_pekerjaan"          => $customer_detail->job_field_id,
-                "jabatan"                => $customer_detail->position,
-                "kelurahan_usaha"        => $kelurahan_usaha,
-                "kecamatan_usaha"        => $kecamatan_usaha,
-                "kota_usaha"             => $kabupaten_usaha,
-                "propinsi_usaha"         => $kabupaten_usaha,
-                "kodepos_usaha"          => $kodepos_usaha,
-                "tujuan_membuka_rekening"=> "ZZ",
-                "ket_buka_rekening"      => "Pinjaman",
-                "penghasilan_per_bulan"  => "G1",
-                "usia_mpp"               => "58",
-                "id_instansi"            => "1"
+            $content_insert_dropbox = [
+                "cif"       => "",
+                "nik"       => $eform->nik,
+                "nama"      => $customer->first_name.' '.$customer->last_name,
+                "kelamin"   => $customer->gender,
+                "tmp_lahir" => $customer_detail->birth_place,
+                "tgl_lahir" => $customer_detail->birth_date,
+                "ibu"       => $customer_detail->mother_name,
+                "email"     => $customer->email,
+                "kontak"    => $customer->mobile_phone,
+                "kawin"     => $customer_detail->status,
+                "hist"      => "tidak",
+                "nama_bank" => "",
+                "alamat"    => $customer_detail->address,
+                "kodepos"   => $kodepos,
+                "provinsi"  => $kabupaten,
+                "kabupaten" => $kabupaten,
+                "kecamatan" => $kecamatan,
+                "kelurahan" => $kelurahan,
+                "jenis"     => $eform->jenis_pinjaman,
+                "amount"    => $customer_detail->loan_installment,
+                "tujuan"    => $eform->tujuan_penggunaan,
+                "agunan"    => $eform->mitra,
+                "jangka"    => ($briguna->year * 12),
+                "email_atasan" => "aswin.taopik@gmail.com",
+                "npwp"      => $customer_detail->npwp,
+                "mitra"     => $data['mitra_name'],
+                "nip"       => $data['nip'],
+                "status_pekerjaan" => $data['job_type']
             ];
 
-            $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
-            \Log::info($eforms);
-            \Log::info($insertDebitur);*/
-            return $briguna;
-        } else {
-            throw new \Exception( "Error Processing Request", 1 );
-        }
-     } catch (Exception $e) {
+            $postData = [
+                'requestMethod' => 'insertSkpp',
+                'requestData'   => json_encode([
+                    'branch'  => $eform->branch_id,
+                    'appname' => 'MBR',
+                    'jenis'   => 'BG',
+                    'expdate' => date('Y-m-d'),
+                    'content' => $content_insert_dropbox,
+                    'status'  => '1',
+                ])
+            ];
+            $data_dropbox = $Dropbox->insertDropbox($postData);
+            \Log::info($data_dropbox);
+            // dd($data_dropbox);
+            $data_dropbox['eform_id'] = $eform->id;
+            if( $data_dropbox['responseCode'] == "01" ) {
+                $briguna['ref_number_new'] = $data_dropbox['refno'];
+                $eforms = EForm::findOrFail($data_dropbox['eform_id']);
+                $base_request["ref_number"] = $data_dropbox['refno'];
+                $eforms->update($base_request);
+                return $briguna;
+            } else {
+                throw new \Exception( "Error Processing Request", 1 );
+            }
+        } catch (Exception $e) {
             return $e;    
-    }
-
+        }
         // End insert
         
         // $customer = $eform->customer;
@@ -432,6 +299,4 @@ class BRIGUNA extends Model
             // throw new \Exception( "Error Processing Request", 1 );
         // }
     }
-
-
 }

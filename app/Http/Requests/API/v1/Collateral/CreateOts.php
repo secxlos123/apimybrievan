@@ -31,6 +31,10 @@ class CreateOts extends FormRequest
           ->merge($this->valuationRules())
           ->merge($this->otherRules())
           ->merge($this->environmentRules())
+          ->merge($this->sevenRules())
+          ->merge($this->eightRules())
+          ->merge($this->nineRules())
+          ->merge($this->tenRules())
           ->toArray();
     }
 
@@ -172,6 +176,83 @@ class CreateOts extends FormRequest
         'environment.other_guide' => 'required',
         'environment.transportation' => 'required',
         'environment.distance_from_transportation' => 'required|regex:/^[\d.]+$/'
+      ];
+    }
+
+     /**
+     * environment rules
+     * @return array
+     */
+    private function sevenRules()
+    {
+      return [
+        'seven.collateral_status' => 'required',
+        'seven.on_behalf_of' => '',
+        'seven.ownership_number' => '',
+        'seven.location' => '',
+        'seven.address_collateral' => '',
+        'seven.description' => 'required',
+        'seven.ownership_status' => 'required',
+        'seven.date_evidence' => 'required',
+        'seven.village' => 'required',
+        'seven.districts' => 'required'
+      ];
+    }
+
+     /**
+     * environment rules
+     * @return array
+     */
+    private function eightRules()
+    {
+      return [
+        'eight.liquidation_realization' => 'required',
+        'eight.fair_market' => '',
+        'eight.liquidation' => '',
+        'eight.fair_market_projection' => '',
+        'eight.liquidation_projection' => '',
+        'eight.njop' => 'required',
+        'eight.appraisal_by' => 'required',
+        'eight.independent_appraiser' => 'required',
+        'eight.date_assessment' => 'required',
+        'eight.type_binding' => 'required',
+        'eight.binding_number' => 'required',
+        'eight.binding_value' => 'required',
+      ];
+    }
+
+     /**
+     * environment rules
+     * @return array
+     */
+    private function nineRules()
+    {
+      return [
+        'nine.certificate_status' => 'required',
+        'nine.receipt_date' => '',
+        'nine.information' => '',
+        'nine.notary_status' => '',
+        'nine.takeover_status' => '',
+        'nine.credit_status' => 'required',
+        'nine.skmht_status' => 'required',
+        'nine.imb_status' => 'required',
+        'nine.shgb_status' => 'required',
+      ];
+    }
+
+    /**
+     * environment rules
+     * @return array
+     */
+    private function tenRules()
+    {
+      return [
+        'ten.paripasu' => 'required',
+        'ten.paripasu_bank' => '',
+        'ten.insurance' => '',
+        'ten.insurance_company' => '',
+        'ten.insurance_value' => '',
+        'ten.eligibility' => 'required',
       ];
     }
 }
