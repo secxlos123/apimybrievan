@@ -17,6 +17,8 @@ use App\Models\PropertyType;
 use App\Models\Collateral;
 use Sentinel;
 use DB;
+use App\Notifications\VerificationDataNasabah;
+
 
 class CustomerController extends Controller
 {
@@ -186,11 +188,17 @@ class CustomerController extends Controller
 				KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
 		}
 
+
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'eform_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
 
+		// $usersModel = User::FindOrFail($customer->user_id);
+		// $notificationToCustomer = $usersModel->notify(new VerificationDataNasabah($eform));		/*send notification to customer nasabah*/
+		
 		DB::commit();
+		\Log::info($request->verify_status);
 		if( $request->verify_status == 'verify' ) {
+			
 			event( new CustomerVerify( $customer, $eform ) );
 			return response()->success( [
 				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',
