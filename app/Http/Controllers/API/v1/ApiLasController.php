@@ -399,24 +399,27 @@ class ApiLasController extends Controller
     }
 
     public function putusan($data) {
-        $ApiLas  = new ApiLas();
-        // $user_pn = request()->header('pn');
-        // $pn      = substr('00000000'. $user_pn, -8 );
-        // $pn = '00062498';
-        // $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        // $uid   = $inquiryUserLAS['items'][0]['uid'];
-        // $uid = "56124";
-        // print_r($data);
-        // print_r($inquiryUserLAS);exit();
-        $conten_putusan = [
-            "id_aplikasi" => $data['id_aplikasi'],
-            "uid"         => $data['uid'],
-            "flag_putusan"=> $data['flag_putusan'],
-            "catatan"     => $data['catatan']
-        ];
+        if (!empty($data)) {
+            $ApiLas  = new ApiLas();
+            $conten_putusan = [
+                "id_aplikasi" => $data['id_aplikasi'],
+                "uid"         => $data['uid'],
+                "flag_putusan"=> $data['flag_putusan'],
+                "catatan"     => empty($data['catatan'])? "":$data['catatan']
+            ];
 
-        $putus = $ApiLas->putusSepakat($conten_putusan);
-        return $putus;
+            $putus = $ApiLas->putusSepakat($conten_putusan);
+            return $putus;
+        }        
+
+        $error[0] = 'Uknown request data';
+        return [
+            'code' => 05, 
+            'descriptions' => 'Uknown request data',
+            'contents' => [
+                'data' => $error
+            ]
+        ];
     }
 
     public function insertAllAnalisa($request) {
@@ -614,7 +617,7 @@ class ApiLasController extends Controller
                         "Baru_perpanjangan"            => "0", // hardcode las
                         "Jenis_fasilitas"              => "0605", // hardcode las
                         "Sisa_jangka_waktu_sd_penyesuaian"=> "0", // hardcode
-                        "Valuta"                       => "idr", // hardcode
+                        "Valuta"                       => "IDR", // hardcode
                         "Segmen_owner"                 => "RITEL", // hardcode
                         "Sub_segmen_owner"             => "RITEL", // hardcode
                         "Kode_jangka_waktu"            => "M", // hardcode las
