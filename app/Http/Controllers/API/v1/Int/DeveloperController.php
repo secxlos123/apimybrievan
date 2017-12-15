@@ -53,7 +53,7 @@ class DeveloperController extends Controller
             $temp = $developer->toArray();
             if ($developer->image) {
                 if (file_exists(url("uploads/avatars/{$developer->image}"))) {
-                    $temp['image'] = url("uploads/avatars/{$developer->image}")
+                    $temp['image'] = url("uploads/avatars/{$developer->image}");
                 }elseif (file_exists(url("uploads/{$developer->image}"))) {
                     $temp['image'] = url("uploads/{$developer->image}");
                 }else{
