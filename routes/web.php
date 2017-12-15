@@ -39,7 +39,7 @@ Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
 
 Route::get('/resend_verification/{ref_number}', function ($ref_number) {
 	$eform = \App\Models\EForm::where( 'ref_number', $ref_number )->first();
-	$customer = \App\Models\Customer::where( 'user_id', $eform->user_id )->first();
+	$customer = \App\Models\Customer::where( 'id', $eform->user_id )->first();
 
 	event( new CustomerVerify( $customer, $eform ) );
 
