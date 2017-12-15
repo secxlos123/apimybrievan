@@ -51,10 +51,21 @@ class DeveloperController extends Controller
         }
         $developers->transform(function ($developer) {
             $temp = $developer->toArray();
-            $temp['image'] = $developer->image ? url("uploads/avatars/{$developer->image}") : asset('img/noimage.jpg');
+            if ($developer->image) {
+                if (file_exists(url("uploads/avatars/{$developer->image}"))) {
+                    $temp['image'] = url("uploads/avatars/{$developer->image}");
+                }elseif (file_exists(url("uploads/{$developer->image}"))) {
+                    $temp['image'] = url("uploads/{$developer->image}");
+                }else{
+                    $temp['image'] = asset('img/noimage.jpg');
+                }
+            }else{
+                $temp['image'] = asset('img/noimage.jpg');
+            }
+
             return $temp;
         });
-        \Log::info($developers);
+        // \Log::info($developers);
         return response()->success(['contents' => !$id ? $developers : $developers->first()]);
     }
 

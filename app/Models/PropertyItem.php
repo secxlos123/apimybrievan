@@ -136,10 +136,13 @@ class PropertyItem extends Model
      */
     public static function setAvailibility( $id, $status )
     {
-        static::find( $id )
-            ->update([
+        $target = static::find( $id );
+
+        if ($target) {
+            $target->update([
                 'is_available' => ( $status == "available" ? true : false )
                 , 'available_status' => $status
             ]);
+        }
     }
 }
