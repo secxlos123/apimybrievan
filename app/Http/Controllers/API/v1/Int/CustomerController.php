@@ -144,8 +144,8 @@ class CustomerController extends Controller
 
 			$developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        
-            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  
+
+            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)
             {
                 $property =  Property::updateOrCreate(['id' => $baseRequest['property']],[
                     'developer_id'=>$baseRequest['developer'],
@@ -220,5 +220,33 @@ class CustomerController extends Controller
 		return response()->success([
 			'contents' => $data
 		]);
+	}
+
+	public function newestCustomer()
+	{
+		$customer = new Customer;
+		$data = $customer->newestCustomer();
+		return response()->success([
+			'contents' => $data
+		]);
+	}
+
+	public function chartNewestCustomer(Request $req)
+	{
+		$params = $req->all();
+    	$startChart   = (isset($params['startChart'])) ? $params['startChart'] : '';
+    	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
+
+		$customer = new Customer;
+		$data 	  = $customer->chartNewestCustomer($startChart, $endChart);
+
+		return response()->success([
+			'contents' => $data
+		]);
+	}
+
+	public function newestSubmission(Request $req)
+	{
+
 	}
 }
