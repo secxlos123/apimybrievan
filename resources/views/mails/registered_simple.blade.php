@@ -30,13 +30,13 @@
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
                         @if ($mail['role'] == 5)
-                        Terima kasih telah mengajukan aplikasi kredit di Bank BRI, pada Tanggal {{ date('d F Y', strtotime($mail['created_at'])) }} Pukul {{ date('H:i', strtotime($mail['created_at'])) }}. Data yang telah diinput telah masuk ke sistem kami.
+                        <p align="justify">Terima kasih telah mengajukan aplikasi kredit di Bank BRI, pada Tanggal {{ date('d F Y', strtotime($mail['created_at'])) }} Pukul {{ date('H:i', strtotime($mail['created_at'])) }}. Data yang telah diinput telah masuk ke sistem kami.</p>
                         <br>
-                        Untuk Keamanan Anda, kami telah membuatkan akun dan kata sandi MyBRI untuk Anda yang dapat digunakan untuk melihat status aplikasi Anda. Untuk mengakses MyBRI silahkan Anda mengunduh aplikasinya di playstore/google play atau Anda dapat mengakses di browser dengan alamat mybri.bri.co.id,
+                        <p align="justify">Untuk Keamanan Anda, kami telah membuatkan akun dan kata sandi MyBRI untuk Anda yang dapat digunakan untuk melihat status aplikasi Anda. Untuk mengakses MyBRI silahkan Anda mengunduh aplikasinya di playstore/google play atau Anda dapat mengakses di browser dengan alamat mybri.bri.co.id,</p>
                         <br>
                         @else
-                        Terima kasih telah menjadi mitra kerja sama Bank BRI.
-                        Kami telah membuatkan akun dan kata sandi MyBRI untuk Anda mewakili atas nama Perusahaan Anda yang dapat digunakan untuk melakukan aktivitas di apliksi MyBRI sesuai dengan yang ada di Perjanjian Kerja Sama. Aplikasi MyBRI  dapat diakses dengan alamat mybri.bri.co.id
+                        <p align="justify">Terima kasih telah menjadi mitra kerja sama Bank BRI.
+                        Kami telah membuatkan akun dan kata sandi MyBRI untuk Anda mewakili atas nama Perusahaan Anda yang dapat digunakan untuk melakukan aktivitas di apliksi MyBRI sesuai dengan yang ada di Perjanjian Kerja Sama. Aplikasi MyBRI  dapat diakses dengan alamat mybri.bri.co.id</p>
                         <br>
                         @endif
                         berikut informasi akun Anda di My BRI :

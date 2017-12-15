@@ -22,13 +22,18 @@ class Mitra extends Authenticatable  {
 	  public function scopeFilter( $query, Request $request )
     {
 		
-      $kode = $request->input('kode');
+	  $kode= '';
         $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
-			
-      $key = $request->input('key');
-                    $mitra->Where('BRANCH_CODE', $key);
+		
+						$key = $request->input('key');
+						
+						 $mitra->Where('BRANCH_CODE', $key);
         } );
+			if(!$request->has( 'internal' )){
+				
+				$kode = $request->input('kode');
 				$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($kode)).'%']);
+			}
 				//$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
 				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([

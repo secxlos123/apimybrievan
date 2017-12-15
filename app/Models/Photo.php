@@ -56,10 +56,10 @@ class Photo extends Model
             case 'App\Models\Property': $disk = 'properties'; break;
             case 'App\Models\PropertyType': $disk = 'types'; break;
             case 'App\Models\PropertyItem': $disk = 'units'; break;
-            case 'App\Models\Developer': $disk = 'photo'; break;
+            case 'App\Models\Developer': $disk = 'avatars'; break;
             default: $disk = 'uploads'; break;
         }
-
-        return \Storage::disk($disk)->url($this->attributes['path']);
+        
+        return url('uploads'.'/'.$disk.'/'.$this->attributes['path']);
     }
 }
