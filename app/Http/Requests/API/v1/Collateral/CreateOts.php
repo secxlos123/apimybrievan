@@ -213,7 +213,7 @@ class CreateOts extends FormRequest
         'eight.liquidation_projection' => '',
         'eight.njop' => 'required',
         'eight.appraisal_by' => 'required',
-        'eight.independent_appraiser' => 'required',
+        'eight.independent_appraiser' => '',
         'eight.date_assessment' => 'required',
         'eight.type_binding' => 'required',
         'eight.binding_number' => 'required',
