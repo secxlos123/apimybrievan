@@ -73,10 +73,6 @@ class EFormController extends Controller
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-			//-----------customer------------------
-     	  $eform[0]['customer']['is_simple'] = true;
-		  $eform[0]['customer']['is_completed'] = false;
-		  $eform[0]['customer']['is_verified'] = $customer[0]['is_verified'];
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
 		  //-----------work---------------------------
@@ -139,6 +135,24 @@ class EFormController extends Controller
 					];
 		  $eform[0]['customer']['other'] = $other;
 
+		  $status = '';
+		 if ($eform[0]['status_eform'] == 'Rejected' ) {
+            $status= 'Kredit Ditolak';
+        }
+        if( $eform[0]['is_approved'] && $customer[0]['is_verified'] ) {
+            $status= 'Proses CLF';
+        }
+        if( $eform[0]['ao_id'] ) {
+            $status= 'Disposisi Pengajuan';
+        }
+		$eform[0]['status'] = $status;
+		
+			//-----------customer------------------
+     	  $eform[0]['customer']['is_simple'] = true;
+		  $eform[0]['customer']['is_completed'] = false;
+		  $eform[0]['customer']['is_verified'] = $customer[0]['is_verified'];
+		  
+		
 		  $eform[0]['customer']['schedule'] = [];
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
