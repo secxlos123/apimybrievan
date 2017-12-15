@@ -53,18 +53,20 @@ class DeveloperController extends Controller
         $developers->transform(function ($developer) {
             $temp = $developer->toArray();
             if (!empty($developer->image)) {
-                $temp['image'] = asset('img/noimage.jpg');
-
                 if (file_exists(public_path("uploads/avatars/{$developer->image}"))) {
                     $temp['image'] = url("uploads/avatars/{$developer->image}");
 
+                } elseif (file_exists(public_path("uploads/{$developer->image}"))) {
+                    $temp['image'] = url("uploads/{$developer->image}");
+
+                } else {
+                    $temp['image'] = asset('img/noimage.jpg');
+
                 }
 
-                if (file_exists(public_path("uploads/{$developer->image}"))) {
-                    $temp['image'] = url("uploads/{$developer->image}");
-                }
-            }else{
+            } else {
                 $temp['image'] = asset('img/noimage.jpg');
+
             }
 
             \Log::info($temp);
