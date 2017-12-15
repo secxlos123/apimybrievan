@@ -284,6 +284,7 @@ class EForm extends Model
                     'is_approved' => $request->is_approved,
                     'status_eform' => 'approved'
                     ] );
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
                 PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
             }
 
@@ -875,7 +876,8 @@ class EForm extends Model
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
+            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
         return $request;
@@ -995,6 +997,7 @@ class EForm extends Model
             "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : $lkn->source_income,
             "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
             "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
+            "harga_agunan" => !($kpr->price) ? '0' : round( str_replace(',', '.', str_replace('.', '', $kpr->price)) )
         ];
 
         return $request;
@@ -1197,8 +1200,8 @@ class EForm extends Model
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
             "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : $otsLetter->date,
-            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : $otsLetter->duration_land_authorization,
+            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : date('dmY', strtotime($otsLetter->date)),
+            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : date('dmY', strtotime($otsLetter->duration_land_authorization)),
             "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
