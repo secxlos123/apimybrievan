@@ -19,6 +19,10 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::get( 'check-token', 'TokenController@index' );
 		Route::get('debitur-list', 'CustomerController@listDebitur');
+		Route::get('newest-customer', 'CustomerController@newestCustomer');
+		Route::get('chart-newest-customer', 'CustomerController@chartNewestCustomer');
+		Route::get('newest-property', 'PropertyController@newestProperty');
+		Route::get('newest-submission', 'CustomerController@newestSubmission');
 
 		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::group( [ 'prefix' => 'auth' ], function () {
