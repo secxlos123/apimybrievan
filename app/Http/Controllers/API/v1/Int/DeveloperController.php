@@ -63,9 +63,11 @@ class DeveloperController extends Controller
                 $temp['image'] = asset('img/noimage.jpg');
             }
 
+            \Log::info($temp);
             return $temp;
         });
-        // \Log::info($developers);
+
+        \Log::info($developers);
         return response()->success(['contents' => !$id ? $developers : $developers->first()]);
     }
 
