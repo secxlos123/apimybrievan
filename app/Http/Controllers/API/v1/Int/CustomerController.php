@@ -194,11 +194,11 @@ class CustomerController extends Controller
 
 		// $usersModel = User::FindOrFail($customer->user_id);
 		// $notificationToCustomer = $usersModel->notify(new VerificationDataNasabah($eform));		/*send notification to customer nasabah*/
-		
+
 		DB::commit();
 		\Log::info($request->verify_status);
 		if( $request->verify_status == 'verify' ) {
-			
+
 			event( new CustomerVerify( $customer, $eform ) );
 			return response()->success( [
 				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',

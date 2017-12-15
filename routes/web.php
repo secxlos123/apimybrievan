@@ -2,6 +2,7 @@
 
 use App\Mail\Register;
 use App\Mail\VerificationEFormCustomer;
+use App\Events\Customer\CustomerVerify;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,15 @@ Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
    	echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
     echo "<br/>";
 	return $detail->nik;
+});
+
+Route::get('/resend_verification/{ref_number}', function ($ref_number) {
+	$eform = \App\Models\EForm::where( 'ref_number', $ref_number )->first();
+	$customer = \App\Models\Customer::where( 'user_id', $eform->user_id )->first();
+
+	event( new CustomerVerify( $customer, $eform ) );
+
+	return "Resend Verification Email.";
 });
 
 Route::get('email', function () {
