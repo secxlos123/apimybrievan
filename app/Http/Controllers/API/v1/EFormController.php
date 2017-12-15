@@ -154,7 +154,7 @@ class EFormController extends Controller
 						 ->get();
 				$birth_place = $birth_place->toArray();
 				$birth_place = json_decode(json_encode($birth_place), True);
-		  $eform[0]['customer']['personal']['birth_place'] = $birth_place;
+		  $eform[0]['customer']['personal']['birth_place'] = $birth_place['name'];
 		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
