@@ -55,12 +55,12 @@ class DeveloperController extends Controller
             if (!empty($developer->image)) {
                 $temp['image'] = asset('img/noimage.jpg');
 
-                if (file_exists(url("uploads/avatars/{$developer->image}"))) {
+                if (file_exists(public_path("uploads/avatars/{$developer->image}"))) {
                     $temp['image'] = url("uploads/avatars/{$developer->image}");
 
                 }
 
-                if (file_exists(url("uploads/{$developer->image}"))) {
+                if (file_exists(public_path("uploads/{$developer->image}"))) {
                     $temp['image'] = url("uploads/{$developer->image}");
                 }
             }else{
