@@ -25,6 +25,7 @@ class TrackingController extends Controller
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                 , developers.company_name as developer_name
                 , kpr.property_item_name as property_name
+                , eforms.product_type as product_type
                 , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                     when eforms.is_approved = true then 'Proses CLF'
                     when visit_reports.id is not null then 'Prakarsa'
