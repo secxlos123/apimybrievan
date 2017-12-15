@@ -156,9 +156,39 @@ class ApiLas extends Model
     public function insertPrescoringBriguna($data) {
         \Log::info("parameter data prescoring masuk");
         try {
+            $content_las_prescoring = [
+                "Fid_aplikasi"              => $data['Fid_aplikasi'],
+                "Fid_cif_las"               => $data['Fid_cif_las'],
+                "Tgl_perkiraan_pensiun"     => '07122039',
+                "Sifat_suku_bunga"     =>'annuitas',
+                "Briguna_profesi"     =>'1',
+                "Gaji_per_bulan"     =>'10000000',
+                "Pendapatan_profesi"     =>'0',
+                "Potongan_per_bulan"     =>'0',
+                "Plafond_briguna_existing"     =>'0',
+                "Angsuran_briguna_existing"     =>'0',
+                "Suku_bunga"     =>'12',
+                "Jangka_waktu"     =>'24',
+                "Maksimum_plafond"     =>'159325404',
+                "Permohonan_kredit"     =>'120000000',
+                "Baki_debet"     =>'0',
+                "Plafond_usulan"     =>'120000000',
+                "Angsuran_usulan"     =>'5648817',
+                "Rek_simpanan_bri"     =>'1',
+                "Riwayat_pinjaman"     =>'0',
+                "Penguasaan_cashflow"     =>'2',
+                "Payroll"     =>'1',
+                "Gaji_bersih_per_bulan"     =>'10000000',
+                "Maksimum_angsuran"     =>'7500000',
+                "pembayaran_gaji"     =>'1',
+                "Angsuran_lainnya"          => "0",                    
+                "Tp_produk"                 => "1",
+                "Briguna_smart"             => "0",
+                "Kelengkapan_dokumen"       => "1"
+            ];
             $insertPrescoring = AsmxLas::setEndpoint('insertPrescoringBriguna')
                 ->setBody([
-                    'JSON' => json_encode($data)
+                    'JSON' => json_encode($content_las_prescoring)
                 ])->post('form_params');
 
             return $insertPrescoring;
