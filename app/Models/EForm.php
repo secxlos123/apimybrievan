@@ -15,7 +15,7 @@ use App\Models\Collateral;
 use Sentinel;
 use Asmx;
 use RestwsHc;
-
+use DB;
 class EForm extends Model
 {
     /**
@@ -259,9 +259,9 @@ class EForm extends Model
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
-            // di update kalo collateral udah jalan
-            //if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
-            //{
+            //di update kalo collateral udah jalan
+            // if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+            // {
                 $result = $eform->insertCoreBRI();
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
@@ -288,6 +288,8 @@ class EForm extends Model
             }
 
         } else {
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+                PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
 
             $eform->update( [
                 'pros' => $request->pros,
@@ -299,7 +301,7 @@ class EForm extends Model
                 'is_approved' => $request->is_approved,
                 'status_eform' => 'Rejected'
                 ] );
-            PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
+
             $result['status'] = true;
 
         }
@@ -455,7 +457,10 @@ class EForm extends Model
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71',null]
+            //, ['InsertDataAgunanModel71',null]
+            //, ['InsertIntoReviewer',null]
+            //, ['InsertDataAgunanTanahRumahTinggal',null]
+
         ];
 
         $step = 1;
@@ -491,7 +496,7 @@ class EForm extends Model
             $step++;
         }
 
-        if ($step == 8) {
+        if ($step == 7) {
             $this->update( [ 'is_approved' => true ] );
         }
         return $return;
@@ -1059,20 +1064,20 @@ class EForm extends Model
             "Kelurahan_agunan"=> !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan"=> !($otsInArea->district) ? '0' : $otsInArea->district,
             "Kabupaten_kotamadya_agunan" => !($otsInArea->city_id) ? '0' : $otsInArea->city_id,
-            "Jarak_agunan" => !($otsInArea->distance) ? '0' : $otsInArea->distance,
+            "Jarak_agunan" => !($otsInArea->distance) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->distance))),
             "Jarak_satuan_agunan" => 'Kilometer',
             "Jarak_dari_agunan" => 'Pusat Kota',
             "Kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '0' : $customer_detail->citizenship_id,
             "Posisi_terhadap_jalan_agunan_value"=> !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
             "Posisi_terhadap_jalan_agunan" => !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
-            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' : $otsInArea->north_limit,
-            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' : $otsInArea->east_limit,
-            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : $otsInArea->south_limit,
-            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' : $otsInArea->west_limit,
+            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->north_limit))),
+            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->east_limit))),
+            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->south_limit))),
+            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->west_limit))),
             "Keterangan_lain_agunan" => !($otsInArea->another_information) ? '0' : $otsInArea->another_information,
             "Bentuk_tanah_value" => !($otsInArea->ground_type) ? '0' : $otsInArea->ground_type,
             "Permukaan_tanah_agunan_value" => !($otsInArea->ground_level) ? '0' : $otsInArea->ground_level,
-            "Luas_tanah_sesuai_identifikasi_lapangan_agunan" => !($otsInArea->surface_area) ? '0' : $otsInArea->surface_area,
+            "Luas_tanah_sesuai_identifikasi_lapangan_agunan" => !($otsInArea->surface_area) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->surface_area))),
             //ots Letter
             "Jenis_surat_tanah_agunan_value" => !($otsLetter->type) ? '0' : $otsLetter->type,
             "No_surat_tanah" => !($otsLetter->number) ? '0' : $otsLetter->number,
@@ -1083,9 +1088,10 @@ class EForm extends Model
             "Kemampuan_perpanjangan_hak_atas_tanah_agunan_value" => '0',//tidak ada di table
             "Kecocokan_data_kantor_agraniabpn_agunan" => !($otsLetter->match_bpn) ? '0' : $otsLetter->match_bpn,
             "Kecocokan_data_kantor_agraniabpn_agunan_value" => !($otsLetter->match_bpn) ? '0' : $otsLetter->match_bpn,
+            "Nama_kantor_agrariabpn_agunan"=> !($otsLetter->bpn_name) ? '0' : $otsLetter->bpn_name,
             "Kecocokan_pemeriksaan_lokasi_tanah_lapangan_agunan_value" => !($otsLetter->match_area) ? '0' : $otsLetter->match_area,
             "Kecocokan_batas_tanah_lapangan_agunan_value" => !($otsLetter->match_limit_in_area) ? '0' : $otsLetter->match_limit_in_area,
-            "Luas_tanah_berdasarkan_surat_tanah_agunan" => !($otsLetter->surface_area_by_letter) ? '0' : $otsLetter->surface_area_by_letter,
+            "Luas_tanah_berdasarkan_surat_tanah_agunan" => !($otsLetter->surface_area_by_letter) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsLetter->surface_area_by_letter))),
             //otsBuilding
             "No_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_number) ? '0' : $otsBuilding->permit_number,
             "Tanggal_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_date) ? '0' : $otsBuilding->permit_date,
@@ -1095,14 +1101,14 @@ class EForm extends Model
             "Luas_bangunan_agunan" => !($otsBuilding->spacious) ? '0' : $otsBuilding->spacious,
             "Tahun_bangunan_agunan" => !($otsBuilding->year) ? '0' : $otsBuilding->year,
             "Uraian_bangunan_agunan" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
-            "Batas_utara_bangunan_agunan" => !($otsBuilding->north_limit) ? '0' : $otsBuilding->north_limit,
-            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' : $otsBuilding->north_limit_from,
-            "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : $otsBuilding->east_limit,
-            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' : $otsBuilding->east_limit_from,
-            "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : $otsBuilding->south_limit,
-            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' : $otsBuilding->south_limit_form,
-            "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : $otsBuilding->west_limit,
-            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' : $otsBuilding->west_limit_froms,
+            "Batas_utara_bangunan_agunan" => !($otsBuilding->north_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->north_limit))),
+            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->north_limit_from))),
+            "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->east_limit))),
+            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->east_limit_from))),
+            "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->south_limit))),
+            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->south_limit_form))),
+            "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->west_limit))),
+            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->west_limit_from))),
             //otsEnvironment
             "Peruntukan_bangunan_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
             "Fasilitas_umum_yang_ada_agunan_pln" => !($otsEnvironment->designated_pln) ? '0' : $otsEnvironment->designated_pln,
@@ -1111,41 +1117,45 @@ class EForm extends Model
             "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
-            "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : $otsEnvironment->distance_from_transportation,
+            "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsEnvironment->distance_from_transportation))),
             "Lain_lain_agunan_value" => '0',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
             "Tanggal_penilaian_npw_tanah_agunan" => !($otsValuation->scoring_land_date) ? '0' : $otsValuation->scoring_land_date,
-            "Npw_tanah_agunan" => !($otsValuation->npw_land) ? '0' : $otsValuation->npw_land,
-            "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : $otsValuation->nl_land,
-            "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : $otsValuation->pnpw_land,
-            "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : $otsValuation->pnl_land,
-            "Tanggal_penilaian_npw_bangunan_agunan" => !($otsValuation->scoring_building_date) ? '0' : $otsValuation->scoring_building_date,
-            "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : $otsValuation->npw_building,
-            "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : $otsValuation->nl_building,
-            "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : $otsValuation->pnpw_building,
-            "Pnl_bangunan_agunan" => !($otsValuation->pnl_building) ? '0' : $otsValuation->pnl_building,
+            "Npw_tanah_agunan" => !($otsValuation->npw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_land))),
+            "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_land))),
+            "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_land))),
+            "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_land))),
+            "Tanggal_penilaian_npw_bangunan_agunan" => !($otsValuation->scoring_building_date) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->scoring_building_date))),
+            "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_building))),
+            "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_building))),
+            "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_building))),
+            "Pnl_bangunan_agunan" => !($otsValuation->pnl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_building))),
             "Tanggal_penilaian_npw_tanah_bangunan_agunan"=> !($otsValuation->scoring_all_date) ? '0' : $otsValuation->scoring_all_date,
-            "Npw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : $otsValuation->npw_all,
-            "Nl_tanah_bangunan_agunan" => !($otsValuation->nl_all) ? '0' : $otsValuation->nl_all,
-            "Pnpw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : $otsValuation->npw_all,
-            "Pnl_tanah_bangunan_agunan" => !($otsValuation->pnl_all) ? '0' : $otsValuation->pnl_all,
+            "Npw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_all))),
+            "Nl_tanah_bangunan_agunan" => !($otsValuation->nl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_all))),
+            "Pnpw_tanah_bangunan_agunan" => !($otsValuation->pnpw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_all))),
+            "Pnl_tanah_bangunan_agunan" => !($otsValuation->pnl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_all))),
             //otsOther
             "Jenis_ikatan_agunan_value" => !($otsOther->bond_type) ? '0' : $otsOther->bond_type,
             "Penggunaan_bangunan_sesuai_fungsinya_agunan_value" => !($otsOther->use_of_building_function) ? '0' : $otsOther->use_of_building_function,
             "Penggunaan_bangunan_sesuai_optimal_agunan_value" => !($otsOther->optimal_building_use) ? '0' : $otsOther->optimal_building_use,
-            "Peruntukan_bangunan_agunan_value" => '0',//tidak ada di table
+            //"Peruntukan_bangunan_agunan_value" => '0',//tidak ada di table
+            "Peruntukan_tanah_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
+            "jarak_posisi_terhadap_jalan"=>!($otsInArea->distance_of_position) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->distance_of_position))),
+            "Nama_debitur_agunan" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Biaya_sewa_agunan" => '0',//tidak ada di table
             "Hal_perludiketahui_bank_agunan" => !($otsOther->things_bank_must_know) ? '0' : $otsOther->things_bank_must_know,
             //"fid_aplikasi" => '0',
-            "uid_ao"=>!($collateral->staff_id) ? '0' : $collateral->staff_id
+            "uid_ao"=> '0'
+            //"uid_ao"=>!($collateral->staff_id) ? '0' : $collateral->staff_id
 
         ];
         return $request;
     }
 
      /**
-     * Generate Parameters for step 8.
+     * Generate Parameters for step 9.
      *
      * @param array $data
      * @return array $request
@@ -1153,43 +1163,65 @@ class EForm extends Model
     public function step9($data)
     {
         \Log::info("step9");
-        $datacollateral = $this->visit_report;
+        return $data + [
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
+        ];
+
+    }
+     /**
+     * Generate Parameters for step 9.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step10($data)
+    {
+        \Log::info("step10");
+        $kpr = $this->kpr;
+        $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
+        $otsInArea = $collateral->otsInArea;
+        $otsLetter = $collateral->otsLetter;
+        $otsBuilding = $collateral->otsBuilding;
+        $otsEnvironment = $collateral->otsEnvironment;
+        $otsValuation = $collateral->otsValuation;
+        $otsOther = $collateral->otsOther;
 
         $request = $data + [
             "Fid_agunan" => '0',
             //"Fid_cif_las" => '',
-            "Nama_debitur_agunan_rt" => '',
+            "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => 'Rumah Tinggal',
             "Status_agunan_value_agunan_rt" => 'Ditempati Sendiri',
-            "Deskripsi_agunan_rt" => '',
+            "Deskripsi_agunan_rt" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
-            "Nama_pemilik_agunan_rt" => '',
-            "Status_bukti_kepemilikan_value_agunan_rt" =>'Sertifikat Hak Milik',
-            "Nomor_bukti_kepemilikan_agunan_rt" => '',
-            "Tanggal_bukti_kepemilikan_agunan_rt" =>'',
-            "Tanggal_jatuh_tempo_agunan_rt"=>'',
-            "Alamat_agunan_rt" => '',
-            "Kelurahan_agunan_rt" => '',
-            "Kecamatan_agunan_rt" => '',
-            "Lokasi_agunan_rt" =>'',
-            "Nilai_pasar_wajar_agunan_rt"=>'',
-            "Nilai_likuidasi_agunan_rt"=>'',
-            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>'',
-            "Proyeksi_nilai_likuidasi_agunan_rt" => '',
-            "Nilai_jual_obyek_pajak_agunan_rt" =>'',
-            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'',
-            "Penilai_independent_agunan_rt"=>'',
-            "Tanggal_penilaian_terakhir_agunan_rt"=>'',
-            "Jenis_pengikatan_value_agunan_rt" => '',
-            "No_bukti_pengikatan_agunan_rt" => '',
-            "Nilai_pengikatan_agunan_rt" => '',
-            "Paripasu_value_agunan_rt" => '',
-            "Nilai_paripasu_agunan_bank_rt" => '',
-            "Flag_asuransi_value_agunan_rt" => '',
-            "Nama_perusahaan_asuransi_agunan_rt" =>'',
-            "Nilai_asuransi_agunan_rt" => '',
-            "Eligibility_value_agunan_rt" => '',
-            "Proyeksi_nilai_likuidasi_agunan_rt" => ''
+            "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
+            "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
+            "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
+            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : $otsLetter->date,
+            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : $otsLetter->duration_land_authorization,
+            "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
+            "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
+            "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
+            "Lokasi_agunan_rt" =>!($otsInArea->location) ? '0' : $otsInArea->location,
+            "Nilai_pasar_wajar_agunan_rt"=>!($otsValuation->npw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_all))),
+            "Nilai_likuidasi_agunan_rt"=>!($otsValuation->nl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_all))),
+            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsValuation->pnpw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_all))),
+            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsValuation->pnl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_all))),
+            "Nilai_likuidasi_saat_realisasi_agunan_rt"=>'0',
+            "Nilai_jual_obyek_pajak_agunan_rt" =>'0',// no pokok wajib pajak
+            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'bank',// bank and independent
+            "Penilai_independent_agunan_rt"=>'0',
+            "Tanggal_penilaian_terakhir_agunan_rt"=>'0',//!($otsValuation->scoring_all_date) ? '0' : $otsValuation->scoring_all_date,
+            "Jenis_pengikatan_value_agunan_rt" => '01',//!($otsOther->bond_type) ? '0' : $otsOther->bond_type,
+            "No_bukti_pengikatan_agunan_rt" => '0',//taidak
+            "Nilai_pengikatan_agunan_rt" => '0',//taidak
+            "Paripasu_value_agunan_rt" => '0',//taidak
+            "Nilai_paripasu_agunan_bank_rt" => '0',//taidak
+            "Flag_asuransi_value_agunan_rt" => '0',//taidak
+            "Nama_perusahaan_asuransi_agunan_rt" =>'IJK',//taidak
+            "Nilai_asuransi_agunan_rt" => '0',//taidak
+            "Eligibility_value_agunan_rt" => '0',//taidak
+            "Proyeksi_nilai_likuidasi_agunan_rt" => '0'//taidak
         ];
         return $request;
     }
@@ -1234,5 +1266,74 @@ class EForm extends Model
         $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
 
         return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
+    }
+
+    /**
+     * Get chart attribute
+     */
+
+    public function getChartAttribute()
+    {
+        return [
+            'month'  => $this->month,
+            'month2' => $this->month2,
+            'value'  => $this->value,
+        ];
+    }
+
+
+    /**
+        * Get list count for chart
+        *
+        * @param  string $startChart
+        * @param  string $endChart
+        * @return array
+    */
+    public function getChartSubmission($startChart, $endChart, $user_id)
+    {
+        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
+
+        if(!empty($startChart) && !empty($endChart)){
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startChart) && !empty($endChart)){
+            $now        = new \DateTime();
+            $startChart = $now->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endChart) && !empty($startChart)){
+            $now      = new \DateTime();
+            $endChart = $now->format('Y-m-d h:i:s');
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = Eform::select(
+                    DB::raw("count(eforms.id) as value"),
+                    DB::raw("to_char(eforms.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
+                    DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
+                })
+                ->groupBy('month', 'month2', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
+        return $data;
     }
 }

@@ -101,6 +101,40 @@ class Collateral extends Model
       return $this->hasOne(OtsAnotherData::class, 'collateral_id');
     }
 
+    /**
+     * Relation with otsSeven
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsSeven()
+    {
+      return $this->hasOne(OtsSeven::class, 'collateral_id');
+    }
+
+     /**
+     * Relation with otsEight
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsEight()
+    {
+      return $this->hasOne(OtsEight::class, 'collateral_id');
+    }
+     /**
+     * Relation with otsNine
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsNine()
+    {
+      return $this->hasOne(OtsNine::class, 'collateral_id');
+    }
+     /**
+     * Relation with otsTen
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsTen()
+    {
+      return $this->hasOne(OtsTen::class, 'collateral_id');
+    }
+
     public function scopeWithAll($query)
     {
       return $query
@@ -111,7 +145,11 @@ class Collateral extends Model
           ->with('otsBuilding')
           ->with('otsEnvironment')
           ->with('otsValuation')
-          ->with('otsOther');
+          ->with('otsOther')
+          ->with('otsSeven')
+          ->with('otsEight')
+          ->with('otsNine')
+          ->with('otsTen');
     }
 
     /**

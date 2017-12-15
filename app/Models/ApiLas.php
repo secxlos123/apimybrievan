@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use AsmxLas;
+use DB;
 
 class ApiLas extends Model
 {
@@ -27,7 +28,18 @@ class ApiLas extends Model
         ]);
         \Log::info($eforms->toSql());
         return $eforms;
+    }
 
+    public function eform_briguna() {
+        $eforms = DB::table('eforms')
+                 ->select('eforms.id','briguna.*')
+                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->get();
+        $eforms = $eforms->toArray();
+        $eforms = json_decode(json_encode($eforms), True);
+        
+        \Log::info($eforms);
+        return $eforms;
     }
 
     public function insertDataDebtPerorangan($data) {

@@ -54,6 +54,7 @@ class DeveloperController extends Controller
             $temp['image'] = $developer->image ? url("uploads/avatars/{$developer->image}") : asset('img/noimage.jpg');
             return $temp;
         });
+        \Log::info($developers);
         return response()->success(['contents' => !$id ? $developers : $developers->first()]);
     }
 
@@ -154,7 +155,7 @@ class DeveloperController extends Controller
             'deskripsi_pihak_ketiga' => $developer->summary,
             'telepon_pihak_ketiga' => $developer->user->phone,
             'hp_pihak_ketiga' => $developer->user->mobile_phone,
-            'fax_pihak_ketiga' => "", 
+            'fax_pihak_ketiga' => "",
             'deskripsi_pks_pihak_ketiga' => $developer->pks_description,
             'plafon_induk_pihak_ketiga' => $developer->plafond,
             'grup_sub_pihak_ketiga' => "null",

@@ -21,17 +21,21 @@ class Mitra extends Authenticatable  {
 	
 	  public function scopeFilter( $query, Request $request )
     {
+		
+      $kode = $request->input('kode');
         $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
 			
-      $kode = $request->input('key');
-                    $mitra->Where('mitra.BRANCH_CODE', $kode);
+      $key = $request->input('key');
+                    $mitra->Where('BRANCH_CODE', $key);
         } );
-
+				$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($kode)).'%']);
+				//$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
+				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([
                     '*',
                      \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
                 ]);
-
+		
         \Log::info($mitra->toSql());
 
         return $mitra;

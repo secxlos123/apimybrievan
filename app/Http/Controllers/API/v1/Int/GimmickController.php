@@ -104,6 +104,8 @@ class GimmickController extends Controller
     public function store( GimmickRequest $request )
     {
         $baseRequest = $request->all();
+		
+		return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
     }

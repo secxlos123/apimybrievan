@@ -61,8 +61,9 @@ class CollateralController extends Controller
      */
     public function indexNon(Request $request)
     {
+      $developer_id = env('DEVELOPER_KEY',1);
       $limit = $request->input( 'limit' ) ?: 10;
-      $data = $this->collateral->GetLists($request)->paginate($limit);
+      $data = $this->collateral->GetLists($request)->where('developer_id','=',$developer_id)->where('is_approved',true)->paginate($limit);
       
       return $this->makeResponse($data);
     }
@@ -88,7 +89,7 @@ class CollateralController extends Controller
      */
     public function showNon($type, $developerId, $propertyId)
     {
-      $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()->toArray();
+      $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->where('is_approved',true)->firstOrFail()->toArray();
       $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
 
       $data = array_merge($ots,$nonkerjasama);
@@ -152,6 +153,10 @@ class CollateralController extends Controller
         $collateral->otsBuilding()->create($this->request->building);
         $collateral->otsEnvironment()->create($this->request->environment);
         $collateral->otsValuation()->create($this->request->valuation);
+        $collateral->otsSeven()->create($this->request->seven);
+        $collateral->otsEight()->create($this->request->eight);
+        $collateral->otsNine()->create($this->request->nine);
+        $collateral->otsTen()->create($this->request->ten);
         $otsOther = $collateral->otsOther()->create($this->request->other);
         $otsOther->image_condition_area = $this->uploadAndGetFileNameImage($otsOther);
         $otsOther->save();
@@ -197,6 +202,10 @@ class CollateralController extends Controller
         $collateral->approved_by = $this->request->header('pn');
         $property->is_approved = true;
         $property->save();
+          if ($request->has('eform_id') && $request->input('eform_id') != false) {
+              $eformdata = EForm::findOrFail($request->input('eform_id'));
+              $sentclas =  EForm::approve( $eformdata->id, $eformdata );
+          }
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
