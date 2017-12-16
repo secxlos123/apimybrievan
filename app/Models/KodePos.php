@@ -8,14 +8,12 @@ class KodePos extends Model
 {
 	  protected $table = 'tbl_kodepos';
 	  public function scopeFilter($query, $request) {
-		  if($request->has($request['key'])){
         $kodepos = $query->where( function( $kodepos ) use( $request, &$user ) {
           $kode = $request['key'];
           $kodepos->Where('tbl_kodepos.postal_code','like', $kode.'%');
 					$kodepos->orWhere('tbl_kodepos.postal_code','like', $kode.'%');
 					$kodepos->orderByRaw('tbl_kodepos.postal_code DESC');
         });
-		  };
 
 			
 				$kodepos = $kodepos->select([
