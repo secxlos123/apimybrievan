@@ -79,20 +79,20 @@ class VerificationController extends Controller
                     'emergency_relation'=> $customer->detail->emergency_relation
                 ]
                 , 'kpr' => $eform->kpr
-                // , 'kemendagri' => [
-                //     'name' => 'namaLengkap'
-                //     , 'gender' => 'jenisKelamin'
-                //     , 'birth_place' => 'tempatLahir'
-                //     , 'birth_date' => 'tanggalLahir'
-                //     , 'phone' => ''
-                //     , 'mobile_phone' => ''
-                //     , 'address' => 'alamat'
-                //     , 'citizenship' => ''
-                //     , 'status' => 'statusKawin'
-                //     , 'address_status' => ''
-                //     , 'mother_name' => 'namaIbu'
-                // ]
-                , 'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
+                , 'kemendagri' => [
+                    'name' => 'namaLengkap'
+                    , 'gender' => 'jenisKelamin'
+                    , 'birth_place' => 'tempatLahir'
+                    , 'birth_date' => 'tanggalLahir'
+                    , 'phone' => ''
+                    , 'mobile_phone' => ''
+                    , 'address' => 'alamat'
+                    , 'citizenship' => ''
+                    , 'status' => 'statusKawin'
+                    , 'address_status' => ''
+                    , 'mother_name' => 'namaIbu'
+                ]
+                // , 'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
                 , 'cif' => [
                     'cif_number' => 'cifno'
                     , 'name' => 'nama_sesuai_id'
