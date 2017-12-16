@@ -14,8 +14,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         \DB::listen(function ($query) {
+            \Log::info('--------------------- start query -------------------------');
             \Log::info('query : ' . $query->sql);
+            \Log::info('bindings : ' . print_r($query->bindings));
             \Log::info('time : ' . $query->time);
+            \Log::info('--------------------- end query -------------------------');
         });
     }
 
