@@ -20,10 +20,12 @@ class SelectKodePosController extends Controller
         $kodepos = KodePos::filter( $request )->get();
 		$kodedrkode = '';	
 		$kodepost = '';
+		$count = 0;
 		foreach($kodepos as $key){
 			if($kodedrkode!=$key['postal_code']){
 				$kodepost[]['postal_code'] = $key['postal_code'];
 				$kodedrkode = $key['postal_code'];
+				$count = $count+1;
 			}
 		}
 		
@@ -33,7 +35,7 @@ class SelectKodePosController extends Controller
 
 		return response()->success( [
             'message' => 'Sukses',
-            'contents' => ['data'=>$kodepost]
+            'contents' => ['data'=>$kodepost,'count'=>$count]
         ], 200 );
 
 	}
