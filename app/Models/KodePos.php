@@ -17,7 +17,9 @@ class KodePos extends Model
         });
 		  };
 
-				$kodepos = $kodepos->select(['*')
+			
+				$kodepos = $kodepos->select([
+          '*'
         ]);
 
         \Log::info($kodepos->toSql());
