@@ -27,7 +27,8 @@ class ApiLasController extends Controller
         
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
-                if (!empty($data)) {
+                // if (!empty($data)) {
+                    $data = $respons;
                     $data['kodepos']            = '';
                     $data['kelurahan']          = '';
                     $data['kecamatan']          = '';
@@ -100,15 +101,15 @@ class ApiLasController extends Controller
                     $data['gaji'] = $gaji;
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
-                } 
-                $error[0] = 'Uknown request data';
-                return [
-                    'code' => 05, 
-                    'descriptions' => 'Uknown request data',
-                    'contents' => [
-                        'data' => $error
-                    ]
-                ];
+                // } 
+                // $error[0] = 'Uknown request data';
+                // return [
+                //     'code' => 05, 
+                //     'descriptions' => 'Uknown request data',
+                //     'contents' => [
+                //         'data' => $error
+                //     ]
+                // ];
                 // print_r($data);exit();
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
                 break;
@@ -399,24 +400,27 @@ class ApiLasController extends Controller
     }
 
     public function putusan($data) {
-        $ApiLas  = new ApiLas();
-        // $user_pn = request()->header('pn');
-        // $pn      = substr('00000000'. $user_pn, -8 );
-        // $pn = '00062498';
-        // $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        // $uid   = $inquiryUserLAS['items'][0]['uid'];
-        // $uid = "56124";
-        // print_r($data);
-        // print_r($inquiryUserLAS);exit();
-        $conten_putusan = [
-            "id_aplikasi" => $data['id_aplikasi'],
-            "uid"         => $data['uid'],
-            "flag_putusan"=> $data['flag_putusan'],
-            "catatan"     => $data['catatan']
-        ];
+        if (!empty($data)) {
+            $ApiLas  = new ApiLas();
+            $conten_putusan = [
+                "id_aplikasi" => $data['id_aplikasi'],
+                "uid"         => $data['uid'],
+                "flag_putusan"=> $data['flag_putusan'],
+                "catatan"     => empty($data['catatan'])? "":$data['catatan']
+            ];
 
-        $putus = $ApiLas->putusSepakat($conten_putusan);
-        return $putus;
+            $putus = $ApiLas->putusSepakat($conten_putusan);
+            return $putus;
+        }        
+
+        $error[0] = 'Uknown request data';
+        return [
+            'code' => 05, 
+            'descriptions' => 'Uknown request data',
+            'contents' => [
+                'data' => $error
+            ]
+        ];
     }
 
     public function insertAllAnalisa($request) {
@@ -614,7 +618,7 @@ class ApiLasController extends Controller
                         "Baru_perpanjangan"            => "0", // hardcode las
                         "Jenis_fasilitas"              => "0605", // hardcode las
                         "Sisa_jangka_waktu_sd_penyesuaian"=> "0", // hardcode
-                        "Valuta"                       => "idr", // hardcode
+                        "Valuta"                       => "IDR", // hardcode
                         "Segmen_owner"                 => "RITEL", // hardcode
                         "Sub_segmen_owner"             => "RITEL", // hardcode
                         "Kode_jangka_waktu"            => "M", // hardcode las
@@ -738,8 +742,7 @@ class ApiLasController extends Controller
                                 "mitra"                     => $request['mitra_name'],
                                 "NIP"                       => $request['nip'],
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
-                                "tujuan_penggunaan_id"      => $request['tujuan_penggunaan_id'],
-                                "tujuan_penggunaan"         => $request['tujuan_penggunaan_kredit'],
+                                "tujuan_penggunaan_id"      => $request['Penggunaan_kredit'],
                                 "request_amount"            => $request['Permohonan_kredit'],
                                 "year"                      => $request['Jangka_waktu'],
                                 "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
@@ -754,9 +757,9 @@ class ApiLasController extends Controller
                                 "branch_name"               => $request['kantor_cabang_name'],
                                 "baru_atau_perpanjang"    => $request['baru_atau_perpanjang'],
                                 "total_exposure"            => $request['total_exposure'],
-                                "program_asuransi"          => $request['program_asuransi'],
+                                // "program_asuransi"          => $request['program_asuransi'],
                                 "kredit_take_over"          => $request['kredit_take_over'],
-                                "pemrakarsa_name"           => $request['pemrakarsa'],
+                                "pemrakarsa_name"           => $request['kantor_cabang_name'],
                                 "agama"                     => $request['ket_agama'],
                                 "npl_instansi"              => $request['npl_instansi'],
                                 "npl_unitkerja"             => $request['npl_unitkerja'],
