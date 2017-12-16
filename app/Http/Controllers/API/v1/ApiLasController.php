@@ -410,6 +410,7 @@ class ApiLasController extends Controller
             ];
 
             $putus = $ApiLas->putusSepakat($conten_putusan);
+			\Log::info($putus);
             return $putus;
         }        
 
