@@ -430,6 +430,7 @@ class ApiLasController extends Controller
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
         $uid     = $inquiryUserLAS['items'][0]['uid'];
         $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        \Log::info($request);
         // print_r($uker);
         // print_r($request);exit();
 
