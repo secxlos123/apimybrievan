@@ -22,6 +22,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('newest-customer', 'CustomerController@newestCustomer');
 		Route::get('chart-newest-customer', 'CustomerController@chartNewestCustomer');
 		Route::get('newest-property', 'PropertyController@newestProperty');
+		Route::get('chart-newest-property', 'PropertyController@chartNewestProperty');
 		Route::get('newest-submission', 'CustomerController@newestSubmission');
 
 		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');

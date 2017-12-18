@@ -460,6 +460,10 @@ class Property extends Model
         return round($distance, 2);
     }
 
+    /**
+     * Get property attribute
+     * @return array
+     */
     public function getNewestPropertyAttribute()
     {
         return [
@@ -472,6 +476,12 @@ class Property extends Model
         ];
     }
 
+    /**
+     * Get list new property
+     *
+     * @param  integer $cityId
+     * @return collection
+     */
     public function getNewestProperty($cityId)
     {
         $condition = empty($cityId) ? false : true;
@@ -501,6 +511,59 @@ class Property extends Model
             ->orderBy('properties.created_at', 'desc')
             ->get()->pluck('newestProperty');
 
+        return $data;
+    }
+
+    public function getChartAttribute()
+    {
+        return [
+            'month'  => $this->month,
+            'value'  => $this->value,
+        ];
+    }
+
+    public function chartNewestProperty($startChart, $endChart)
+    {
+        if(!empty($startChart) && !empty($endChart)){
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startChart) && !empty($endChart)){
+            $now        = new \DateTime();
+            $startChart = $now->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endChart) && !empty($startChart)){
+            $now      = new \DateTime();
+            $endChart = $now->format('Y-m-d h:i:s');
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = Property::select(
+                    DB::raw("count(properties.id) as value"),
+                    DB::raw("to_char(properties.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(properties.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('properties.created_at', [$startChart, $endChart]);
+                })
+                ->groupBy('month', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
         return $data;
     }
 }
