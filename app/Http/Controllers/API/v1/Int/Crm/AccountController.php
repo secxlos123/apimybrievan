@@ -23,14 +23,14 @@ class AccountController extends Controller
           "request" => json_encode([
             "requestMethod" => "get_customer_leads",
             "requestData"=> [
-              "id_user" => "00163502",
-              "kode_branch" => "00376", // 5 digit uker
-              "type_request" => "list",//$request->input('type_request'), // list or search
-              "type_usulan" => "kpr",//$request->input('type_usulan'), // kpr or kkb
-              "limit" => "",//$request->input('limit'),
-              "page" => "",//$request->input('page'),
-              "order_by" => "nama",//$request->input('order_by'), // nama or amount
-              "search_value" => "",//$request->input('search_value')
+              "id_user" => request()->header( 'pn' ),
+              "kode_branch" => request()->header( 'branch' ), // 5 digit uker
+              "type_request" => $request->input('type_request'), // list or search
+              "type_usulan" => $request->input('type_usulan'), // kpr or kkb
+              "limit" => $request->input('limit'),
+              "page" => $request->input('page'),
+              "order_by" => $request->input('order_by'), // nama or amount
+              "search_value" => $request->input('search_value')
             ]
           ])
       ])
