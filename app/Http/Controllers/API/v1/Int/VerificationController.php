@@ -77,12 +77,37 @@ class VerificationController extends Controller
                     'emergency_name'=> $customer->detail->emergency_name,
                     'emergency_contact'=> $customer->detail->emergency_contact,
                     'emergency_relation'=> $customer->detail->emergency_relation
-
-
-                ],
-                'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) ),
-                'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) ),
-                'kpr' => $eform->kpr
+                ]
+                , 'kpr' => $eform->kpr
+                , 'kemendagri' => [
+                    'name' => 'namaLengkap'
+                    , 'gender' => 'jenisKelamin'
+                    , 'birth_place' => 'tempatLahir'
+                    , 'birth_date' => 'tanggalLahir'
+                    , 'phone' => ''
+                    , 'mobile_phone' => ''
+                    , 'address' => 'alamat'
+                    , 'citizenship' => ''
+                    , 'status' => 'statusKawin'
+                    , 'address_status' => ''
+                    , 'mother_name' => 'namaIbu'
+                ]
+                // , 'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
+                , 'cif' => [
+                    'cif_number' => 'cifno'
+                    , 'name' => 'nama_sesuai_id'
+                    , 'gender' => 'jenis_kelamin'
+                    , 'birth_place' => 'tempat_lahir'
+                    , 'birth_date' => 'tanggal_lahir'
+                    , 'phone' => 'telp_rumah'
+                    , 'mobile_phone' => 'handphone'
+                    , 'address' => 'alamat_id1'
+                    , 'citizenship' => 'kewarganegaraan'
+                    , 'status' => 'status_nikah'
+                    , 'address_status' => ''
+                    , 'mother_name' => 'nama_ibu_kandung'
+                ]
+                // , 'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
             ]
         ], 200 );
     }

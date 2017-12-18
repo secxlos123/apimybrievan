@@ -96,7 +96,8 @@ class Developer extends Model
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
-                        $developer->where('bri', '=', NULL);
+                        // $developer->where('bri', '=', NULL);
+                        $developer->where('bri', '!=', '1');
                     }
                 }
 
@@ -165,7 +166,7 @@ class Developer extends Model
                     'unit_type'       => "Type ".$item->building_area,
                     'address'         => $item->address,
                     'approved_status' => ($item->is_approved) ? 'Approved' : 'Rejected',
-                    'created_at'         => $item->created_at,
+                    'created_at'      => $item->created_at,
                     'created'         => strtotime($item->created_at),
                 ];
             })->toArray();

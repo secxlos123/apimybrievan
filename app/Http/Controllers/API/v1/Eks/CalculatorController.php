@@ -395,6 +395,7 @@ class CalculatorController extends Controller
                 "suku_bunga_floor"    => $ffloorrate."%",
                 "suku_bunga_floating" => $ffloatlrate."%",
                 "kredit_fix"          => $ffxterm." Bulan",
+                "jangka_waktu_floor"  => $fflterm." Bulan",
                 "lama_pinjaman"       => $fxflflterm." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,

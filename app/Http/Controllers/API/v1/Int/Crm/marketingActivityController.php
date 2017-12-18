@@ -67,8 +67,16 @@ class marketingActivityController extends Controller
       $data['action_activity'] = $request['action_activity'];
       $data['start_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
       $data['end_date'] = date('Y-m-d H:i:s', strtotime($request['end_date'].$request['end_time']));
-      $data['longitude'] = $request['longitude'];
-      $data['latitude'] = $request['latitude'];
+
+      if(isset($request['longitude']) && isset($request['latitude']) ){
+        $data['longitude'] = $request['longitude'];
+        $data['latitude'] = $request['latitude'];
+      }else{
+        $data['longitude'] = 'unset';
+        $data['latitude'] = 'unset';
+      }
+
+      $data['address'] = $request['address'];
       $data['marketing_id'] = $request['marketing_id'];
       $data['pn_join'] = $request['pn_join'];
       $data['desc'] = $request['desc'];
