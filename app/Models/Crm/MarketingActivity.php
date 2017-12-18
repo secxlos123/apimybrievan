@@ -14,6 +14,7 @@ class MarketingActivity extends Model
       'end_date',
       'longitude',
       'latitude',
+      'address',
       'marketing_id',
       'pn_join',
       'desc'

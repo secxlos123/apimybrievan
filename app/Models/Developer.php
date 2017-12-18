@@ -96,7 +96,8 @@ class Developer extends Model
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
-                        $developer->where('bri', '=', NULL);
+                        // $developer->where('bri', '=', NULL);
+                        $developer->where('bri', '!=', '1');
                     }
                 }
 

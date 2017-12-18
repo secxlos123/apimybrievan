@@ -15,9 +15,9 @@ class KodePos extends Model
 					$kodepos->orderByRaw('tbl_kodepos.postal_code DESC');
         });
 
+			
 				$kodepos = $kodepos->select([
-          'postal_code','Kelurahan','Kecamatan','Kota','Propinsi',
-       		\DB::Raw(" case when tbl_kodepos.postal_code is not null then 2 else 1 end as new_order ")
+          '*'
         ]);
 
         \Log::info($kodepos->toSql());

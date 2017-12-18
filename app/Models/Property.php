@@ -310,7 +310,8 @@ class Property extends Model
                  */
                 if ($request->has('without_independent')){
                     if ($request->without_independent) {
-                        $property->where('bri', '=', NULL);
+                        // $property->where('bri', '=', NULL);
+                        $property->where('bri', '!=', '1');
                     }
                 }
 
@@ -321,9 +322,10 @@ class Property extends Model
                     {
                         $property->where('prop_dev_id', $developerId);
                     }
-                else{
-                        $property->where('is_approved',true);
-                    }
+                // jgn di hapus sengaja di disable untuk prod
+                // else{
+                //         $property->where('is_approved',true);
+                //     }
                 if ($request->has('dev_id')) $property->where('prop_dev_id', $request->input('dev_id'));
             })
             ->where(function ($property) use (&$request, &$query) {
@@ -368,7 +370,7 @@ class Property extends Model
         $type = ($type === "km") ? 6378.10 : 3963.17;
         $lat  = (float) $lat;
         $lng  = (float) $lng;
-        $radius = (double) $radius;
+        $radius = ((double) $radius) + 30;
 
         $distance = "round( CAST( ( {$type}
             * acos( cos( radians( cast( {$lat} as double precision ) ) )
@@ -400,7 +402,7 @@ class Property extends Model
     {
         $lat    = $request->get('lat', '');
         $long   = $request->get('long', '');
-        $radius = $request->get('radius', 10);
+        $radius = $request->get('radius', 30);
         $type   = $request->get('type', 'km');
         $limit  = $request->get('limit', 6);
         $rawPrice = \DB::raw('(SELECT max(property_types.price) from property_types where property_types.property_id = properties.id) as price');

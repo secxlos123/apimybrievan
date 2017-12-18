@@ -91,15 +91,23 @@ class CreateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $latitude  = '-6.90390';
-        $longitude = '107.61860';
-
         if ($this->method() != 'PUT') {
             $developer_id = $this->user()->developer->id;
             $this->merge(compact('developer_id'));
         }
 
-        $this->merge(compact('latitude', 'longitude'));
+        if ( $this->has('longitude') ) {
+            $longitude = '106.81350';
+            $this->merge(compact('longitude'));
+
+        }
+
+        if ( $this->has('latitude') ) {
+            $latitude = '-6.21670';
+            $this->merge(compact('latitude'));
+
+        }
+
         return parent::getValidatorInstance();
     }
 }
