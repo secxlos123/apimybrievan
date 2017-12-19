@@ -69,6 +69,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		// API LAS
 		Route::post('api_las/index', 'ApiLasController@index');
 		Route::post('api_las/briguna', 'ApiLasController@show_briguna');
+		Route::post('api_las/update', 'ApiLasController@update_briguna');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
