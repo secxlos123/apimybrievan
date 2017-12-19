@@ -21,7 +21,20 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+		function aasort (&$array, $key) {
+			$sorter=array();
+			$ret=array();
+			reset($array);
+			foreach ($array as $ii => $va) {
+				$sorter[$ii]=$va[$key];
+			}
+			asort($sorter);
+			foreach ($sorter as $ii => $va) {
+				$ret[$ii]=$array[$ii];
+			}
+			$array=$ret;
+		return $array;
+		}
 	public function getCabang( Request $request )
 	{
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
@@ -59,9 +72,9 @@ class SelectCabangController extends Controller
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
+						$mitra = $this->aasort($mitra,"NAMA_INSTANSI");
 						$countmitra = count($mitra);
 						for($i=0;$i<$countmitra;$i++){
-
 						$mitra[$i]['kanwil'] = $branch['kanwil'];
 						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
@@ -80,19 +93,19 @@ class SelectCabangController extends Controller
                 }
             }
 		}
-
-            $histories = new LengthAwarePaginator(
+	
+			$histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
         );
+
         $histories->transform(function ($history) {
 
             return $history;
         });
-
         return response()->success([
             'contents' => $histories,
             'message' => $branchs['responseDesc']
@@ -140,6 +153,7 @@ class SelectCabangController extends Controller
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
+						$mitra = $this->aasort($mitra,"NAMA_INSTANSI");
 						$countmitra = count($mitra);
 
 						for($i=0;$i<$countmitra;$i++){
@@ -184,8 +198,8 @@ class SelectCabangController extends Controller
     private function fetch(Request $request)
     {
         \Log::info($request->all());
-        $long = number_format($request->get('long', 106.81350), 5);
-        $lat = number_format($request->get('lat', -6.21670), 5);
+        $long = number_format($request->get('long', env('DEF_LONG', '106.81350')), 5);
+        $lat = number_format($request->get('lat', env('DEF_LAT', '-6.21670')), 5);
         $return = RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',

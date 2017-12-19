@@ -97,13 +97,13 @@ class CreateRequest extends FormRequest
         }
 
         if ( $this->has('longitude') ) {
-            $longitude = '106.81350';
+            $longitude = env('DEF_LONG', '106.81350');
             $this->merge(compact('longitude'));
 
         }
 
         if ( $this->has('latitude') ) {
-            $latitude = '-6.21670';
+            $latitude = env('DEF_LAT', '-6.21670');
             $this->merge(compact('latitude'));
 
         }
