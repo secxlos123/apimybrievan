@@ -21,7 +21,20 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+		function aasort (&$array, $key) {
+			$sorter=array();
+			$ret=array();
+			reset($array);
+			foreach ($array as $ii => $va) {
+				$sorter[$ii]=$va[$key];
+			}
+			asort($sorter);
+			foreach ($sorter as $ii => $va) {
+				$ret[$ii]=$array[$ii];
+			}
+			$array=$ret;
+		return $array;
+		}
 	public function getCabang( Request $request )
 	{
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
@@ -61,7 +74,6 @@ class SelectCabangController extends Controller
 						$mitra = $mitra->toArray();
 						$countmitra = count($mitra);
 						for($i=0;$i<$countmitra;$i++){
-
 						$mitra[$i]['kanwil'] = $branch['kanwil'];
 						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
@@ -81,8 +93,17 @@ class SelectCabangController extends Controller
             }
 		}
 
-            $histories = new LengthAwarePaginator(
-            $offices, // Only grab the items we need
+			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$countoffices = count($offices);
+			$i = 0;
+			$offics = array();
+			foreach($offices as $offic => $x_office){
+				$offics[$i] = $x_office;
+				$i = $i+1;
+			}
+			
+			$histories = new LengthAwarePaginator(
+            $offics, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
@@ -163,8 +184,16 @@ class SelectCabangController extends Controller
             }
 		}
 
+			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$countoffices = count($offices);
+			$i = 0;
+			$offics = array();
+			foreach($offices as $offic => $x_office){
+				$offics[$i] = $x_office;
+				$i = $i+1;
+			}
             $histories = new LengthAwarePaginator(
-            $offices, // Only grab the items we need
+            $offics, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
@@ -184,8 +213,8 @@ class SelectCabangController extends Controller
     private function fetch(Request $request)
     {
         \Log::info($request->all());
-        $long = number_format($request->get('long', 106.81350), 5);
-        $lat = number_format($request->get('lat', -6.21670), 5);
+        $long = number_format($request->get('long', env('DEF_LONG', '106.81350')), 5);
+        $lat = number_format($request->get('lat', env('DEF_LAT', '-6.21670')), 5);
         $return = RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',

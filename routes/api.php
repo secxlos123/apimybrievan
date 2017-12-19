@@ -20,6 +20,7 @@ Route::post( 'urgent-function', 'RemovableController@run' );
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
 		Route::post('select', 'SelectController@select');
+		Route::get('phpini', 'EFormController@php_ini');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
 		//Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::post('eforms_briguna', 'EFormController@show_briguna');
