@@ -97,7 +97,7 @@ class TrackingController extends Controller
      */
     public function show($id)
     {
-        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->find($id);
+        $eform = EForm::with( 'visit_report.mutation.bankstatement', 'kpr' )->find($id);
 
         return response()->success( [
             'message' => 'Sukses',

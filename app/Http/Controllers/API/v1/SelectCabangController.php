@@ -74,38 +74,46 @@ class SelectCabangController extends Controller
 						$mitra = $mitra->toArray();
 						$countmitra = count($mitra);
 						for($i=0;$i<$countmitra;$i++){
-
-						$mitra[$i]['kanwil'] = $branch['kanwil'];
+//						$mitra[$i]['kanwil'] = $branch['kanwil'];
 						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
-						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
-						$mitra[$i]['dati2'] = $branch['dati2'];
-						$mitra[$i]['dati1'] = $branch['dati1'];
+//						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
+//						$mitra[$i]['dati2'] = $branch['dati2'];
+//						$mitra[$i]['dati1'] = $branch['dati1'];
 						$mitra[$i]['alamat'] = $branch['alamat'];
-						$mitra[$i]['no_telp'] = $branch['no_telp'];
-						$mitra[$i]['no_fax'] = $branch['no_fax'];
-						$mitra[$i]['koordinat'] = $branch['koordinat'];
-						$mitra[$i]['latitude'] = $branch['latitude'];
-						$mitra[$i]['longitude'] = $branch['longitude'];
+//						$mitra[$i]['no_telp'] = $branch['no_telp'];
+//						$mitra[$i]['no_fax'] = $branch['no_fax'];
+//						$mitra[$i]['koordinat'] = $branch['koordinat'];
+//						$mitra[$i]['latitude'] = $branch['latitude'];
+//						$mitra[$i]['longitude'] = $branch['longitude'];
 						$offices[] = $mitra[$i];
 
 						}
                 }
             }
 		}
+
 			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$countoffices = count($offices);
+			$i = 0;
+			$offics = array();
+			foreach($offices as $offic => $x_office){
+				$offics[$i] = $x_office;
+				$i = $i+1;
+			}
+			
 			$histories = new LengthAwarePaginator(
-            $offices, // Only grab the items we need
+            $offics, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
         );
-
         $histories->transform(function ($history) {
 
             return $history;
         });
+
         return response()->success([
             'contents' => $histories,
             'message' => $branchs['responseDesc']
@@ -157,18 +165,18 @@ class SelectCabangController extends Controller
 
 						for($i=0;$i<$countmitra;$i++){
 
-						$mitra[$i]['kanwil'] = $branch['kanwil'];
+//						$mitra[$i]['kanwil'] = $branch['kanwil'];
 						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
-						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
-						$mitra[$i]['dati2'] = $branch['dati2'];
-						$mitra[$i]['dati1'] = $branch['dati1'];
+//						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
+//						$mitra[$i]['dati2'] = $branch['dati2'];
+//						$mitra[$i]['dati1'] = $branch['dati1'];
 						$mitra[$i]['alamat'] = $branch['alamat'];
-						$mitra[$i]['no_telp'] = $branch['no_telp'];
-						$mitra[$i]['no_fax'] = $branch['no_fax'];
-						$mitra[$i]['koordinat'] = $branch['koordinat'];
-						$mitra[$i]['latitude'] = $branch['latitude'];
-						$mitra[$i]['longitude'] = $branch['longitude'];
+//						$mitra[$i]['no_telp'] = $branch['no_telp'];
+//						$mitra[$i]['no_fax'] = $branch['no_fax'];
+//						$mitra[$i]['koordinat'] = $branch['koordinat'];
+//						$mitra[$i]['latitude'] = $branch['latitude'];
+//						$mitra[$i]['longitude'] = $branch['longitude'];
 						$offices[] = $mitra[$i];
 
 						}
@@ -177,8 +185,15 @@ class SelectCabangController extends Controller
 		}
 
 			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$countoffices = count($offices);
+			$i = 0;
+			$offics = array();
+			foreach($offices as $offic => $x_office){
+				$offics[$i] = $x_office;
+				$i = $i+1;
+			}
             $histories = new LengthAwarePaginator(
-            $offices, // Only grab the items we need
+            $offics, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page

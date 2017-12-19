@@ -19,4 +19,14 @@ class MarketingActivity extends Model
       'pn_join',
       'desc'
     ];
+
+    public function marketing()
+    {
+      return $this->belongsTo('App\Models\Crm\Marketing');
+    }
+
+    public function reSchedule()
+    {
+      return $this->hasMany('App\Models\Crm\rescheduleActivity');
+    }
 }

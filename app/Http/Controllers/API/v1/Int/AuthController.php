@@ -81,7 +81,6 @@ class AuthController extends Controller
             } else {
                 $branch = $data[ 'branch' ];
             }
-            
             $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
             if(!$checkedRolePn){
                 UserServices::create([  'pn'=>$data['pn'],
