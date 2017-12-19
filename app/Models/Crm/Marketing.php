@@ -27,4 +27,10 @@ class Marketing extends Model
    * @var array
    */
     protected $hidden = ['created_at', 'updated_at'];
+
+
+    public function activity()
+    {
+      return $this->hasMany('App\Models\Crm\MarketingActivity');
+    }
 }
