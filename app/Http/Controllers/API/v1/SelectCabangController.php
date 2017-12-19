@@ -21,7 +21,20 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+		function aasort (&$array, $key) {
+			$sorter=array();
+			$ret=array();
+			reset($array);
+			foreach ($array as $ii => $va) {
+				$sorter[$ii]=$va[$key];
+			}
+			asort($sorter);
+			foreach ($sorter as $ii => $va) {
+				$ret[$ii]=$array[$ii];
+			}
+			$array=$ret;
+		return $array;
+		}
 	public function getCabang( Request $request )
 	{
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
@@ -80,8 +93,8 @@ class SelectCabangController extends Controller
                 }
             }
 		}
-print_r($offices);die();
-            $histories = new LengthAwarePaginator(
+			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
@@ -162,7 +175,8 @@ print_r($offices);die();
                 }
             }
 		}
-			$offices = asort($offices);
+
+			$offices = $this->aasort($offices,"NAMA_INSTANSI");
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
