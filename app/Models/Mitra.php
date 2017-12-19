@@ -17,7 +17,7 @@ class Mitra extends Authenticatable  {
 	 *
 	 * @var string
 	 */
-	protected $table = 'mitra_relation';
+	protected $table = 'mitra';
 	
 	  public function scopeFilter( $query, Request $request )
     {
@@ -27,7 +27,7 @@ class Mitra extends Authenticatable  {
 		
 						$key = $request->input('key');
 						
-						 $mitra->Where('BRANCH_CODE', '00001');
+						 $mitra->Where('BRANCH_CODE', $key);
         } );
 			if(!$request->has( 'internal' )){
 				
@@ -38,7 +38,7 @@ class Mitra extends Authenticatable  {
 				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([
                     '*',
-                     \DB::Raw(" case when mitra_relation.kode is not null then 2 else 1 end as new_order ")
+                     \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
                 ]);
 		
         \Log::info($mitra->toSql());
