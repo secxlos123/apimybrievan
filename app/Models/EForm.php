@@ -1339,4 +1339,25 @@ class EForm extends Model
                 ->pluck("chart");
         return $data;
     }
+
+    public function getNewestEFormAttribute()
+    {
+        return [
+            'no_ref'            => $this->ref_number,
+            'nasabah'           => $this->customer['personal']['name'],
+            'nominal'           => $this->nominal,
+            'product_type'      => $this->product_type,
+            'tanggal_pengajuan' => date('d-M-Y', strtotime($this->created_at)),
+            'no_telepon'        => empty($this->mobile_phone) ? null : $this->mobile_phone,
+            'prescreening'      => $this->prescreening_status,
+            'status'            => $this->status,
+            // 'aging'             => $this->
+        ];
+    }
+
+    public function getNewestEForm($startDate, $endDate)
+    {
+        $data = EForm::all()->pluck('newestEForm');
+        return $data;
+    }
 }
