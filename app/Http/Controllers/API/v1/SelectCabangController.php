@@ -80,8 +80,7 @@ class SelectCabangController extends Controller
                 }
             }
 		}
-
-			$offices = asort($offices);
+print_r($offices);die();
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
@@ -89,11 +88,11 @@ class SelectCabangController extends Controller
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
         );
+
         $histories->transform(function ($history) {
 
             return $history;
         });
-
         return response()->success([
             'contents' => $histories,
             'message' => $branchs['responseDesc']
