@@ -81,6 +81,7 @@ class SelectCabangController extends Controller
             }
 		}
 
+			$offices = asort($offices);
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
@@ -162,7 +163,7 @@ class SelectCabangController extends Controller
                 }
             }
 		}
-
+			$offices = asort($offices);
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
