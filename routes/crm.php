@@ -7,7 +7,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //route account
   Route::post( 'account', 'AccountController@index')->name('crm.account');
-
+ 
   //route activity
   Route::resource( 'activity', 'marketingActivityController', [
     'only' => ['index', 'create', 'store', 'update']
