@@ -182,10 +182,11 @@ class Customer extends User
             'loan_installment' => $this->detail ? $this->detail->loan_installment : '',
             'dependent_amount' => $this->detail ? $this->detail->dependent_amount : '',
             'status_income' => $this->detail ? ($this->detail->couple_salary == NULL ? 'Pisah Harta':'Gabung Harta') : NULL,
-            'status_finance' => $this->detail ? ($this->detail->couple_salary == NULL ? 'Single Income':'Join Income') : NULL,
+            'status_finance' => $this->detail ? ($this->detail->source_income == NULL || $this->detail->source_income == 'single' ? 'Single Income':'Joint Income') : NULL,
             'salary_couple' => $this->detail ? $this->detail->couple_salary : '',
             'other_salary_couple' => $this->detail ? $this->detail->couple_other_salary : '',
-            'loan_installment_couple' => $this->detail ? $this->detail->couple_loan_installment : ''
+            'loan_installment_couple' => $this->detail ? $this->detail->couple_loan_installment : '',
+            'source_income' => $this->detail ? $this->detail->source_income : ''
         ];
     }
 
