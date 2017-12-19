@@ -15,4 +15,9 @@ class rescheduleActivity extends Model
     'origin_date',
     'reschedule_date'
   ];
+
+  public function activity()
+  {
+    return $this->belongsTo('App\Models\Crm\MarketingActivity');
+  }
 }

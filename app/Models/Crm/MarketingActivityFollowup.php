@@ -16,4 +16,9 @@ class MarketingActivityFollowup extends Model
       'amount',
       'target_commitment_date'
     ];
+
+    public function activity()
+    {
+      return $this->belongsTo('App\Models\Crm\MarketingActivity');
+    }
 }
