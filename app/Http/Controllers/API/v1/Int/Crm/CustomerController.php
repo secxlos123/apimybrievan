@@ -20,8 +20,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-
-  		$customers = User::getCustomers( $request );
+  		$customers = User::getCustomers( $request )->get();
   		return response()->success( [
   			'message' => 'Sukses',
   			'contents' => $customers

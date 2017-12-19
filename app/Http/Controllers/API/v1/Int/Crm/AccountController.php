@@ -38,7 +38,7 @@ class AccountController extends Controller
                         "kode_branch" => request()->header( 'branch' ), // 5 digit uker
                         "type_request" => "list",//$request->input('type_request'), // list or search
                         "type_usulan" => $request->input('type_usulan'), // kpr or kkb
-                        "limit" => "10",//$request->input('limit'),
+                        "limit" => "10000",//$request->input('limit'),
                         "page" => "1",//$request->input('page'),
                         "order_by" => "nama",//$request->input('order_by'), // nama or amount
                         "search_value" => "0",//$request->input('search_value')
