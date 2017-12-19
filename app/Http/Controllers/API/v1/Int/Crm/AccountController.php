@@ -50,9 +50,17 @@ class AccountController extends Controller
       );
       $leads = json_decode($requestLeads->getBody()->getContents(), true);
       // dd($leads);
-      return response()->success( [
-          'message' => 'Sukses',
-          'contents' => $leads
-        ]);
+      if ($leads['responseCode'] == 00) {
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $leads['responseData']
+          ]);
+      } else {
+        return response()->success( [
+            'message' => 'Gagal',
+            'contents' => $leads['responseDesc']
+          ]);
+      }
+
     }
 }
