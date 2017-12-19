@@ -72,7 +72,6 @@ class SelectCabangController extends Controller
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
-						$mitra = $this->aasort($mitra,"NAMA_INSTANSI");
 						$countmitra = count($mitra);
 						for($i=0;$i<$countmitra;$i++){
 						$mitra[$i]['kanwil'] = $branch['kanwil'];
@@ -93,19 +92,28 @@ class SelectCabangController extends Controller
                 }
             }
 		}
-	
+
+			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$countoffices = count($offices);
+			$i = 0;
+			$offics = array();
+			foreach($offices as $offic => $x_office){
+				$offics[$i] = $x_office;
+				$i = $i+1;
+			}
+			
 			$histories = new LengthAwarePaginator(
-            $offices, // Only grab the items we need
+            $offics, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
             ['path' => $request->url(), 'query' => $request->query()] // We need this so we can keep all old query parameters from the url
         );
-
         $histories->transform(function ($history) {
 
             return $history;
         });
+
         return response()->success([
             'contents' => $histories,
             'message' => $branchs['responseDesc']
@@ -153,7 +161,6 @@ class SelectCabangController extends Controller
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
-						$mitra = $this->aasort($mitra,"NAMA_INSTANSI");
 						$countmitra = count($mitra);
 
 						for($i=0;$i<$countmitra;$i++){
@@ -177,8 +184,16 @@ class SelectCabangController extends Controller
             }
 		}
 
+			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+			$countoffices = count($offices);
+			$i = 0;
+			$offics = array();
+			foreach($offices as $offic => $x_office){
+				$offics[$i] = $x_office;
+				$i = $i+1;
+			}
             $histories = new LengthAwarePaginator(
-            $offices, // Only grab the items we need
+            $offics, // Only grab the items we need
             count($branchs['responseData']), // Total items
             $perPage, // Items per page
             $page, // Current page
