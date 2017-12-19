@@ -41,6 +41,28 @@ class TrackingController extends Controller
 
         }
 
+        else if( $user->inRole('developer-sales') ) {
+                $eforms = EForm::selectRaw("eforms.id
+                , eforms.ao_name as ao
+                , concat(users.first_name, ' ', users.last_name) as nama_pemohon
+                , developers.company_name as developer_name
+                , kpr.property_item_name as property_name
+                , eforms.product_type as product_type
+                , eforms.ref_number as ref_number
+                , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                    when eforms.is_approved = true then 'Proses CLF'
+                    when visit_reports.id is not null then 'Prakarsa'
+                    when eforms.ao_id is not null then 'Disposisi Pengajuan'
+                    else 'Pengajuan Kredit' end as status
+                ")
+                ->leftJoin("users", "users.id", "=", "eforms.user_id")
+                ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
+                ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
+                ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+                ->where( "eforms.sales_dev_id", $user->id )
+                ->paginate( $request->input( 'limit' ) ?: 10 );
+        }
+
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $eforms

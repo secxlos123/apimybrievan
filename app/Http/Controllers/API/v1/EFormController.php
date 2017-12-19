@@ -49,7 +49,9 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-
+	public function php_ini(){
+		phpinfo();
+	}
     public function show_briguna( Request $request )
     {
         \Log::info($request->all());
