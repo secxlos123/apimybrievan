@@ -24,7 +24,8 @@ class marketingActivityController extends Controller
     {
       $pn = $request->header('pn');
       // $marketingActivity = MarketingActivity::get();
-      foreach (MarketingActivity::get() as $activity) {
+      $marketingActivity = [];
+      foreach (MarketingActivity::where('pn', $pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
