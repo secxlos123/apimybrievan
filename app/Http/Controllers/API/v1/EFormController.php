@@ -22,6 +22,7 @@ use App\Models\User;
 use App\Models\UserServices;
 use App\Notifications\EFormPenugasanDisposisi;
 use App\Models\UserNotification;
+use App\Notifications\ApproveEFormCustomer;
 
 use DB;
 
@@ -500,7 +501,12 @@ class EFormController extends Controller
         $role = request()->header( 'role' );
         $pn = request()->header( 'pn' );
         $branch_id = request()->header( 'branch_id' );
-        //$getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, $pn )->first();
+        $notificationIsRead =  $this->userNotification::where('eform_id',$eform_id)
+                                       ->whereNull('read_at')
+                                       ->first();                
+        if(@$notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
 
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
@@ -517,9 +523,6 @@ class EFormController extends Controller
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
-        /*if($getDataNotification){
-            $getDataNotification->update(['read_at'=>$this->freshTimestamp(),'updated_at'=>'']);
-        }*/
 
 
         DB::commit();
@@ -552,6 +555,16 @@ class EFormController extends Controller
 
             $data =  EForm::findOrFail($eform_id);
             if ($request->is_approved) {
+                $notificationIsRead =  $this->userNotification::where('eform_id',$eform_id)
+                                       ->whereNull('read_at')
+                                       ->first();                
+                if(@$notificationIsRead){
+                    $notificationIsRead->markAsRead();
+                }
+
+                $usersModel = User::FindOrFail($data->user_id);
+                $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send notification to AO*/
+
                 event( new Approved( $data ) );
             } else {
                 event( new RejectedEform( $data ) );

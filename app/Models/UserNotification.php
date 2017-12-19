@@ -60,6 +60,12 @@ class UserNotification extends Model
             case 'App\Notifications\EFormPenugasanDisposisi':                
                 $subjectNotif = 'Penugasan KPR Baru';
                 break;
+            case 'App\Notifications\ApproveEFormCustomer':                
+                $subjectNotif = 'Pengajuan KPR Telah Di Setujui';
+                break;
+            case 'App\Notifications\RejectEFormCustomer':                
+                $subjectNotif = 'Pengajuan KPR Telah Di Tolak';
+                break;
             default:
                 $subjectNotif = 'Type undefined';
                 break;
@@ -106,22 +112,31 @@ class UserNotification extends Model
                     ->orderBy('notifications.created_at', 'DESC');
         
         if($role == 'pinca'){
-            $query->where('notifications.type','App\Notifications\PengajuanKprNotification'); 
+            $query->where('notifications.type','App\Notifications\PengajuanKprNotification');   
             $query->whereNull('ao_id');
             $query->whereNull('ao_name');
             $query->whereNull('ao_position');
         }  
 
         if($role == 'ao'){
-            $query->where('notifications.type','App\Notifications\EFormPenugasanDisposisi'); 
-            $query->Where('eforms.ao_id', $pn);
-            $query->whereNotNull('ao_id');
-            $query->whereNotNull('ao_name');
-            $query->whereNotNull('ao_position');
-            // $query->Where('eforms.ao_id', 'ilike', "%{$pn}%");
-           /* $query->where('eforms.recommended',false);
-            $query->where('eforms.is_approved',false);*/
-            
+            if($query->where('notifications.type','App\Notifications\EFormPenugasanDisposisi')){         
+                $query->Where('eforms.ao_id', $pn);
+                $query->whereNotNull('eforms.ao_id');
+                $query->whereNotNull('eforms.ao_name');
+                $query->whereNotNull('eforms.ao_position');
+            }
+
+            if ($query->Orwhere('notifications.type','App\Notifications\ApproveEFormCustomer')) {    /*is approved*/
+                $query->Where('eforms.ao_id', $pn);
+                $query->Where('eforms.status_eform', 'approved');
+                $query->Where('eforms.recommended', true);
+                $query->Where('eforms.is_approved', true);
+                $query->whereNotNull('eforms.recommendation');
+                $query->whereNotNull('eforms.pinca_name');
+                $query->whereNotNull('eforms.pinca_position');
+                $query->whereNotNull('eforms.cons');
+                $query->whereNotNull('eforms.pros');
+            }            
         }
 
         return $query;
