@@ -13,8 +13,8 @@ use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
 
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
+// use GuzzleHttp\Exception\GuzzleException;
+// use GuzzleHttp\Client;
 
 use Client;
 
