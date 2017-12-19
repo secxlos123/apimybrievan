@@ -72,9 +72,9 @@ class SelectCabangController extends Controller
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
+						$mitra = $this->aasort($mitra,"NAMA_INSTANSI");
 						$countmitra = count($mitra);
 						for($i=0;$i<$countmitra;$i++){
-
 						$mitra[$i]['kanwil'] = $branch['kanwil'];
 						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
@@ -93,7 +93,7 @@ class SelectCabangController extends Controller
                 }
             }
 		}
-			$offices = $this->aasort($offices,"NAMA_INSTANSI");
+	
 			$histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
@@ -153,6 +153,7 @@ class SelectCabangController extends Controller
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
+						$mitra = $this->aasort($mitra,"NAMA_INSTANSI");
 						$countmitra = count($mitra);
 
 						for($i=0;$i<$countmitra;$i++){
@@ -176,7 +177,6 @@ class SelectCabangController extends Controller
             }
 		}
 
-			$offices = $this->aasort($offices,"NAMA_INSTANSI");
             $histories = new LengthAwarePaginator(
             $offices, // Only grab the items we need
             count($branchs['responseData']), // Total items
