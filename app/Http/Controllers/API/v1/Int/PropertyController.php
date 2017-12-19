@@ -25,4 +25,16 @@ class PropertyController extends Controller
             'contents' => $data
         ]);
 	}
+
+	public function chartNewestProperty()
+	{
+		$params 	  = $this->request->all();
+    	$startChart   = (isset($params['startChart'])) ? $params['startChart'] : '';
+    	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
+
+		$data 	  	  = $this->model->chartNewestProperty($startChart, $endChart);
+		return response()->success([
+			'contents' => $data
+		]);
+	}
 }
