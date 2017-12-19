@@ -49,23 +49,31 @@ class DeveloperController extends Controller
         } else {
           $developers = Developer::where('id', $id)->get();
         }
+        \Log::info($developers);
         $developers->transform(function ($developer) {
             $temp = $developer->toArray();
-            if ($developer->image) {
-                if (file_exists(url("uploads/avatars/{$developer->image}"))) {
+            if (!empty($developer->image)) {
+                if (file_exists(public_path("uploads/avatars/{$developer->image}"))) {
                     $temp['image'] = url("uploads/avatars/{$developer->image}");
-                }elseif (file_exists(url("uploads/{$developer->image}"))) {
+
+                } elseif (file_exists(public_path("uploads/{$developer->image}"))) {
                     $temp['image'] = url("uploads/{$developer->image}");
-                }else{
+
+                } else {
                     $temp['image'] = asset('img/noimage.jpg');
+
                 }
-            }else{
+
+            } else {
                 $temp['image'] = asset('img/noimage.jpg');
+
             }
 
+            \Log::info($temp);
             return $temp;
         });
-        // \Log::info($developers);
+
+        \Log::info($developers);
         return response()->success(['contents' => !$id ? $developers : $developers->first()]);
     }
 

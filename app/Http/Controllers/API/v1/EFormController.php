@@ -69,14 +69,10 @@ class EFormController extends Controller
 						 ->get();
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
-				
+
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-			//-----------customer------------------
-     	  $eform[0]['customer']['is_simple'] = true;
-		  $eform[0]['customer']['is_completed'] = false;
-		  $eform[0]['customer']['is_verified'] = $customer[0]['is_verified'];
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
 		  //-----------work---------------------------
@@ -105,8 +101,8 @@ class EFormController extends Controller
 		  }
 		  if($customer[0]['couple_salary']==NULL){
 			  $status_finance = 'Single Income';
-		  }else{ 
-			  $status_finance = 'Join Income';
+		  }else{
+			  $status_finance = 'Joint Income';
 		  }
 		  $financial = [
 				 "salary"=> $customer[0]['salary'],
@@ -128,7 +124,7 @@ class EFormController extends Controller
 					];
 		  $eform[0]['customer']['contact'] = $contact;
 
-		  $other = [                
+		  $other = [
 				"image"=> $customer[0]['image'],
                 "identity"=> $customer[0]['identity'],
                 "npwp"=> $customer[0]['npwp'],
@@ -139,15 +135,33 @@ class EFormController extends Controller
 					];
 		  $eform[0]['customer']['other'] = $other;
 
+		  $status = '';
+		 if ($eform[0]['status_eform'] == 'Rejected' ) {
+            $status= 'Kredit Ditolak';
+        }
+        if( $eform[0]['is_approved'] && $customer[0]['is_verified'] ) {
+            $status= 'Proses CLF';
+        }
+        if( $eform[0]['ao_id'] ) {
+            $status= 'Disposisi Pengajuan';
+        }
+		$eform[0]['status'] = $status;
+
+			//-----------customer------------------
+     	  $eform[0]['customer']['is_simple'] = true;
+		  $eform[0]['customer']['is_completed'] = false;
+		  $eform[0]['customer']['is_verified'] = $customer[0]['is_verified'];
+
+
 		  $eform[0]['customer']['schedule'] = [];
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
 		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
-		  
+
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-		  
+
 		  $birth_place = DB::table('cities')
 						 ->select('name')
 						 ->where('cities.id', $customer[0]['birth_place_id'])
@@ -155,12 +169,12 @@ class EFormController extends Controller
 				$birth_place = $birth_place->toArray();
 				$birth_place = json_decode(json_encode($birth_place), True);
 		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
-		  
+
 		   $birth_place_couple = DB::table('cities')
 						 ->select('name')
 						 ->where('cities.id', $customer[0]['couple_birth_place_id'])
 						 ->get();
-		
+
 				$birth_place_couple = $birth_place_couple ->toArray();
 				$birth_place_couple = json_decode(json_encode($birth_place_couple ), True);
 				if($request->has($birth_place[0]['name'])){
@@ -201,7 +215,7 @@ class EFormController extends Controller
 			$another_array = [];
 			$another_array['id'] = $eform_id;
 			$another_array['user_id'] = $eform['user_id'];
-				
+
 			$request = new Request($another_array);
 			$eform = $this->show_bri($request);
 	        return $eform;
@@ -535,7 +549,7 @@ class EFormController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         $eform->update( $baseRequest );
-        
+
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 

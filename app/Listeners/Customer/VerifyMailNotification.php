@@ -33,7 +33,7 @@ class VerifyMailNotification
         $customer_data = $event->customer;
         $eform = $event->eform;
 
-        
+
             $mail = [
                 'no_ref' => $eform->ref_number,
                 'email' => $customer_data->email,
@@ -76,7 +76,8 @@ class VerifyMailNotification
                 'emergency_name'=>$customer->emergency_name,
                 'emergency_contact'=>$customer->emergency_contact,
                 'emergency_relation'=>$customer->emergency_relation,
-                'kpr'=>$eform->kpr
+                'kpr'=>$eform->kpr,
+                'source_income'=>$customer->source_income
             ];
 
         Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
