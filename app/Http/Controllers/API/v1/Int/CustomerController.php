@@ -221,32 +221,4 @@ class CustomerController extends Controller
 			'contents' => $data
 		]);
 	}
-
-	public function newestCustomer()
-	{
-		$customer = new Customer;
-		$data = $customer->newestCustomer();
-		return response()->success([
-			'contents' => $data
-		]);
-	}
-
-	public function chartNewestCustomer(Request $req)
-	{
-		$params = $req->all();
-    	$startChart   = (isset($params['startChart'])) ? $params['startChart'] : '';
-    	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
-
-		$customer = new Customer;
-		$data 	  = $customer->chartNewestCustomer($startChart, $endChart);
-
-		return response()->success([
-			'contents' => $data
-		]);
-	}
-
-	public function newestSubmission(Request $req)
-	{
-
-	}
 }
