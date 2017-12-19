@@ -72,7 +72,7 @@ class UserDeveloper extends Model
                 $developer->where('admin_developer_id', $request->user()->id);
 
             })
-            ->select(array_merge(['users.is_actived','users.first_name','users.last_name','users.email','users.last_login','users.mobile_phone'],$userdeveloperfill))
+            ->select(array_merge(['users.is_actived','users.first_name','users.last_name','users.email','users.last_login','users.mobile_phone', 'users.is_banned'],$userdeveloperfill))
             // ->selectRaw('(select users.image from users where users.id = user_developers.user_id) as image')
             ->orderBy('user_developers'.'.'.$sort[0], $sort[1]);
     }
