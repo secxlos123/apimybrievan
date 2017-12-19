@@ -184,8 +184,18 @@ class DeveloperAgentController extends Controller
         if ($user->is_banned) {
             $user->update( ['is_banned' => false] );
 
+             return response()->success([
+            'message' => 'Unbanned Agent Developer Berhasil !',
+            'contents' => $user,
+            ], 200);
+
         } else {
             $user->update( ['is_banned' => true] );
+
+             return response()->success([
+            'message' => 'Banned Agent Developer Berhasil !',
+            'contents' => $user,
+            ], 200);
 
         }
         // if($user->is_actived == true) {
@@ -199,10 +209,7 @@ class DeveloperAgentController extends Controller
         // }
 
         // $user->update($request->all());
-        return response()->success([
-            'message' => 'Data Activated Agent Developer ini Berhasil update',
-            'contents' => $user,
-            ], 201);
+       
     }
 
 
