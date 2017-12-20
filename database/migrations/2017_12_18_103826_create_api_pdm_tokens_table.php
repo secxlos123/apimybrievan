@@ -15,12 +15,12 @@ class CreateApiPdmTokensTable extends Migration
     {
         Schema::create('api_pdm_tokens', function (Blueprint $table) {
             $table->increments('id');
-            $table->string(`access_token`);
-            $table->string(`expires_in`);
-            $table->string(`token_type`);
-            $table->string(`scope`);
-            $table->string(`clientid`);
-            $table->string(`clientsecret`);
+            $table->string('access_token');
+            $table->string('expires_in');
+            $table->string('token_type');
+            $table->string('scope');
+            $table->string('clientid');
+            $table->string('clientsecret');
             $table->timestamps();
         });
     }
