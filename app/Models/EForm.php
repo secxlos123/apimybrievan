@@ -18,8 +18,13 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
-class EForm extends Model
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+
+class EForm extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *`

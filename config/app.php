@@ -188,6 +188,7 @@ return [
         App\Providers\AsmxLasServiceProvider::class,
         App\Providers\DbwsRestServiceProvider::class,
         LaravelFCM\FCMServiceProvider::class,
+        OwenIt\Auditing\AuditingServiceProvider::class
 
     ],
 
