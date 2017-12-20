@@ -77,7 +77,7 @@ class VerificationController extends Controller
                     'emergency_name'=> $customer->detail->emergency_name,
                     'emergency_contact'=> $customer->detail->emergency_contact,
                     'emergency_relation'=> $customer->detail->emergency_relation,
-                    'source_income' => $eform->financial ? ($eform->financial->source_income ? $eform->financial->source_income : 'single') : 'single'
+                    'source_income' => $customer->financial ? ($customer->financial['source_income'] ? $customer->financial['source_income'] : 'single') : 'single'
                 ]
                 , 'kpr' => $eform->kpr
                 , 'kemendagri' => [
