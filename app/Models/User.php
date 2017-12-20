@@ -709,7 +709,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
         $user = \Sentinel::check() ? \Sentinel::check()->id : null;
         if (env('APP_ENV') == 'production') {
             $user_int = \RestwsHc::getUser();
-            return array_key_exists('pn', $user_int) ? ltrim($user_int['pn'], '0') : $user;
+            return !($user_int) ? $user : ltrim($user_int['pn'], '0') ;
         }
         $headers = apache_request_headers();
         \Log::info($user);
