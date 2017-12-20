@@ -9,9 +9,23 @@ use File;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use App\Events\Customer\CustomerRegistered;
-class User extends Authenticatable
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Contracts\UserResolver;
+
+
+class User extends Authenticatable implements AuditableContract, UserResolver
 {
-    use Notifiable;
+    use Notifiable, Auditable ;
+
+    /**
+     * Attributes to exclude from the Audit.
+     *
+     * @var array
+     */
+    protected $auditExclude = [
+        'last_login',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -277,8 +291,6 @@ class User extends Authenticatable
         if ( ! $user instanceof $this ) {
             //$password = str_random(8);
             $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
-	        \Log::info('================================== Password ============================');
-	        \Log::info($password);
             $request->merge(['password' => bcrypt($password)]);
             $user = $this->create($request->all());
             $activation = Activation::create($user);
@@ -687,5 +699,16 @@ class User extends Authenticatable
     public function user_notifications()
     {
         return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function resolveId()
+    {
+        $headers = apache_request_headers();
+        $user = \Sentinel::check() ? \Sentinel::check()->id : null;
+        \Log::info($user);
+        return array_key_exists('pn', $headers) ? ltrim($headers['pn'], '0') : $user;
     }
 }

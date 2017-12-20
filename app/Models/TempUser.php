@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use File;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class TempUser extends Model
+class TempUser extends Model implements AuditableContract
 {
+    use Auditable;
 	/**
      * The attributes that are mass assignable.
      *

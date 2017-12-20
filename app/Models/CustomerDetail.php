@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Auth;
 use File;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class CustomerDetail extends Model
+class CustomerDetail extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *
