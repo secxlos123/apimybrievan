@@ -23,8 +23,19 @@ class DashboardController extends Controller
     {
       $data['product_type'] = ProductType::all();
       $data['activity_type'] = ActivityType::all();
-      $data['status'] = Status::all();
-
+      // $data['status'] = Status::all();
+      foreach (Status::all() as $status) {
+          $data['status'][]=[
+            'id'=> $status->id,
+            'status_name'=>$status->status_name
+          ];
+      }
+      $additional =[
+        'id'=>0,
+        'status_name'=>'All'
+      ];
+      array_push($data['status'],$additional);
+      // return $data['status'];
       $data['object_activity'] = ObjectActivity::all();
       $data['action_activity'] = ActionActivity::all();
 
