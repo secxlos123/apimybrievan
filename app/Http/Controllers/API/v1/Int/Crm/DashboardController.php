@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\v1\Int\Crm;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use RestwsHc;
 
 
 use App\Models\Crm\ProductType;
@@ -11,6 +12,8 @@ use App\Models\Crm\ActivityType;
 use App\Models\Crm\Status;
 use App\Models\Crm\ObjectActivity;
 use App\Models\Crm\ActionActivity;
+
+
 
 class DashboardController extends Controller
 {
@@ -110,4 +113,28 @@ class DashboardController extends Controller
     {
         //
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function pemasar(Request $request)
+    {
+      $pemasar = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      return response()->success([
+        'contents' => $pemasar
+      ]);
+    }
+
 }
