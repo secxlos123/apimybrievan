@@ -6,8 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
-class Developer extends Model
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+
+class Developer extends Model implements AuditableContract
 {
+    use Auditable;
+    
 	/**
      * The attributes that are mass assignable.
      *

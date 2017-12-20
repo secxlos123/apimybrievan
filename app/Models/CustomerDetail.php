@@ -7,9 +7,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Auth;
 use File;
+use DB;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class CustomerDetail extends Model
+class CustomerDetail extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *
@@ -373,36 +378,22 @@ class CustomerDetail extends Model
         $nik  = empty($params['nik']) ? '' : $params['nik'];
         $city = empty($params['city_id']) ? false : $params['city_id'];
 
-        $data = CustomerDetail::with('user', 'city')
+        $data = CustomerDetail::with('user', 'city', 'eform')
                 ->whereHas('user', function($query) use ($name){
-                    return $query->where('first_name', 'like', '%'.$name.'%')
-                                 ->orWhere('last_name', 'like', '%'.$name.'%');
+                    return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
+                                 ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
+                })
+                ->whereHas('eform', function($query){
+                    return $query->where('is_approved', true);
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
                     return $query->where('city_id', $city);
                 })
-                ->get()
-                ->pluck('listDebitur');
+                ->paginate(10);
         return $data;
     }
 
-    /**
-     * Mutator for list debitur.
-     *
-     * @return void
-     */
-    public function getListDebiturAttribute()
-    {
-        return [
-            "nik"    => $this->nik,
-            "nama"   => $this->user->first_name." ".$this->user->last_name,
-            "email"  => $this->user->email,
-            "kota"   => $this->city ? $this->city->name : '',
-            "phone"  => $this->user->mobile_phone,
-            "gender" => $this->user->gender,
-        ];
-    }
     /**
      * Set customer npwp image.
      *
@@ -521,5 +512,10 @@ class CustomerDetail extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function eform()
+    {
+        return $this->hasOne(EForm::class, 'user_id', 'user_id');
     }
 }

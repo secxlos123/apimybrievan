@@ -5,8 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use DB;
-class UserDeveloper extends Model
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+
+class UserDeveloper extends Model implements AuditableContract
 {
+    use Auditable;
 	/**
      * The table name.
      *`
