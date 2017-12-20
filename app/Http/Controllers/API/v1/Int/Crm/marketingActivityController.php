@@ -144,8 +144,9 @@ class marketingActivityController extends Controller
      * @param  int  $id of Activity
      * @return \Illuminate\Http\Response
      */
-     public function reSchedule(Request $request, $id)
+     public function reSchedule(Request $request)
      {
+       $id = $request['activity_id'];
        $marketingActivity = MarketingActivity::find($id);
        $reSchedule['activity_id'] = $id;
        $reSchedule['desc'] = $request['desc'];
@@ -179,8 +180,9 @@ class marketingActivityController extends Controller
       * @param  int  $id of Activity
       * @return \Illuminate\Http\Response
       */
-      public function storeFollowUp(Request $request, $id)
+      public function storeFollowUp(Request $request)
       {
+        $id = $request['activity_id'];
         $marketingActivity = MarketingActivity::find($id);
         $marketing_id = $marketingActivity->marketing_id;
         $marketing = Marketing::find($marketing_id);
