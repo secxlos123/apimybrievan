@@ -10,9 +10,13 @@ use App\Models\PropertyItem;
 use App\Notifications\PengajuanKprNotification;
 use App\Models\Collateral;
 use Asmx;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class KPR extends Model
+class KPR extends Model implements AuditableContract
 {
+    use Auditable;
+    
     /**
      * The table name.
      *

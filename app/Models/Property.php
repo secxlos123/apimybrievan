@@ -7,10 +7,12 @@ use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use DB;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Property extends Model
+class Property extends Model implements AuditableContract
 {
-    use Sluggable, SluggableScopeHelpers;
+    use Sluggable, SluggableScopeHelpers , Auditable ;
 
     /**
      * The attributes that are mass assignable.

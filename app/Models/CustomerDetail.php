@@ -8,8 +8,13 @@ use Illuminate\Http\Request;
 use Auth;
 use File;
 use DB;
-class CustomerDetail extends Model
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+
+class CustomerDetail extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *

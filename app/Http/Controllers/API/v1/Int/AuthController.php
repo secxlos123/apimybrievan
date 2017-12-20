@@ -11,7 +11,7 @@ use App\Models\UserServices;
 
 class AuthController extends Controller
 {
-    
+
     public function __construct(User $user, UserServices $userservices)
     {
       $this->user = $user;
@@ -83,18 +83,19 @@ class AuthController extends Controller
             }
             $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
             if(!$checkedRolePn){
-                UserServices::create([  'pn'=>$data['pn'],
-                                        'hilfm'=>$data['hilfm'],
-                                        'role'=> $role,
-                                        'name'=> $data['nama'],
-                                        'tipe_uker'=> $data['tipe_uker'],
-                                        'htext'=> $data['htext'],
-                                        'posisi'=> $data['posisi'],
-                                        'last_activity'=> $data['last_activity'],                                        
-                                        'mobile_phone'=> 0,
-                                        'is_actived'=> true,
-                                        'branch_id'=>$data['branch'],
-                                    ]);
+                UserServices::create([
+                    'pn'=>$data['pn'],
+                    'hilfm'=>$data['hilfm'],
+                    'role'=> $role,
+                    'name'=> $data['nama'],
+                    'tipe_uker'=> $data['tipe_uker'],
+                    'htext'=> $data['htext'],
+                    'posisi'=> $data['posisi'],
+                    'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
+                    'mobile_phone'=> 0,
+                    'is_actived'=> true,
+                    'branch_id'=>$data['branch'],
+                ]);
             }
 
             return response()->success( [

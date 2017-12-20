@@ -133,7 +133,7 @@ class DashboardController extends Controller
       ])->post('form_params');
 
       return response()->success([
-        'contents' => $pemasar
+        'contents' => $pemasar['responseData']
       ]);
     }
 
