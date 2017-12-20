@@ -1011,16 +1011,34 @@ class EForm extends Model implements AuditableContract
         $customer = clone $this->customer;
         $customer_finance = (object) $customer->financial;
 
+        $income = 0;
+        $otherIncome = 0;
+
+        if ( $lkn->source ) {
+            if ( $lkn->source == 'nonfixed' ) {
+                if ( $lkn->income ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
+                }
+            } else {
+                if ( $lkn->income_salary ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
+                }
+                if ( $lkn->income_allowance ) {
+                    $otherIncome = round( str_replace(',', '.', str_replace('.', '', $lkn->income_allowance) ) );
+                }
+            }
+        }
+
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)) ),
-            "pendapatan_lain_pemohon" => !( $lkn->income_salary ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary)) ),
             "jangka_waktu" => $kpr->year,
             "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '0' : $lkn->type_financed,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '0' : $kpr->request_amount,
             "uang_muka" => round( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $lkn->income ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $lkn->income)) ),
-            "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : $lkn->source_income,
+            "gaji_bulanan_pemohon" => $income,
+            "pendapatan_lain_pemohon" => $otherIncome,
+            "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : ( $lkn->source_income == 'single' ) ? 'Single Income' : 'Joint Income',
             "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
             "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
             "harga_agunan" => !($kpr->price) ? '0' : round( str_replace(',', '.', str_replace('.', '', $kpr->price)) )
@@ -1343,7 +1361,7 @@ class EForm extends Model implements AuditableContract
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
-            
+
             $startList = date("01-m-Y",strtotime($startList));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
@@ -1393,7 +1411,7 @@ class EForm extends Model implements AuditableContract
         if(!empty($startList) && !empty($endList)){
             $startList = date("01-m-Y",strtotime($startList));
             $endList   = date("t-m-Y", strtotime($endList));
-     
+
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
             $startList = $dateStart->format('Y-m-d h:i:s');
 
