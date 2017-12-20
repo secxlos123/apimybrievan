@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class PropertyItem extends Model
+class PropertyItem extends Model implements AuditableContract
 {
+    use Auditable;
     /**
      * The attributes that are mass assignable.
      *

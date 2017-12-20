@@ -23,7 +23,19 @@ class MarketingController extends Controller
     public function index(Request $request)
     {
       $pn = $request->header('pn');
-      $marketings = Marketing::where('pn',$pn)->get();
+      // $marketings = Marketing::where('pn',$pn)->get();
+      $marketings = [];
+      foreach (Marketing::where('pn',$pn)->get() as $marketing) {
+        $marketings[]=[
+          'pn'=> $marketing->pn,
+          'product_type'=> $marketing->product_type,
+          'activity_type'=> $marketing->activity_type,
+          'target'=> $marketing->target,
+          'account_id'=> $marketing->account_id,
+          'status'=> $marketing->status,
+          'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date))
+        ];
+      }
       return response()->success( [
           'message' => 'Sukses',
           'contents' => $marketings

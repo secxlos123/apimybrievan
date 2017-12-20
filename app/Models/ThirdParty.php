@@ -5,9 +5,12 @@ namespace App\Models;
 use App\Models\City;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class ThirdParty extends Model
+class ThirdParty extends Model implements AuditableContract
 {
+    use Auditable;
     /**
      * The attributes that are mass assignable.
      *

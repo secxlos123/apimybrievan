@@ -23,7 +23,27 @@ class marketingActivityController extends Controller
     public function index(Request $request)
     {
       $pn = $request->header('pn');
-      $marketingActivity = MarketingActivity::where('pn',$pn)->get();
+      // $marketingActivity = MarketingActivity::get();
+      $marketingActivity = [];
+      foreach (MarketingActivity::where('pn', $pn)->get() as $activity) {
+        $marketingActivity[]= [
+          'id' => $activity->id,
+          'pn' => $activity->pn,
+          'object_activity' => $activity->object_activity,
+          'action_activity' => $activity->action_activity,
+          'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+          'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+          'start_time' => date('H:i', strtotime($activity->start_date)),
+          'end_time' => date('H:i', strtotime($activity->end_date)),
+          'longitude' => $activity->longitude,
+          'latitude' => $activity->latitude,
+          'marketing_id' => $activity->marketing_id,
+          'pn_join' => $activity->pn_join,
+          'desc' => $activity->desc,
+          'address' => $activity->address,
+          ];
+      }
+
       return response()->success( [
           'message' => 'Sukses',
           'contents' => $marketingActivity
@@ -124,8 +144,9 @@ class marketingActivityController extends Controller
      * @param  int  $id of Activity
      * @return \Illuminate\Http\Response
      */
-     public function reSchedule(Request $request, $id)
+     public function reSchedule(Request $request)
      {
+       $id = $request['activity_id'];
        $marketingActivity = MarketingActivity::find($id);
        $reSchedule['activity_id'] = $id;
        $reSchedule['desc'] = $request['desc'];
@@ -159,8 +180,9 @@ class marketingActivityController extends Controller
       * @param  int  $id of Activity
       * @return \Illuminate\Http\Response
       */
-      public function storeFollowUp(Request $request, $id)
+      public function storeFollowUp(Request $request)
       {
+        $id = $request['activity_id'];
         $marketingActivity = MarketingActivity::find($id);
         $marketing_id = $marketingActivity->marketing_id;
         $marketing = Marketing::find($marketing_id);

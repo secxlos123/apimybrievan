@@ -220,4 +220,20 @@ class CustomerController extends Controller
 			'contents' => $data
 		]);
 	}
+
+	public function detailDebitur(Request $req)
+	{
+		$params   = $req->all();
+		if(empty($params['user_id'])){
+			return response()->error([
+				'message' => 'User ID is required !',
+			]);
+		}else{
+			$customer = new CustomerDetail;
+			$data 	  = $customer->getDetailDebitur($params);
+			return response()->success([
+				'contents' => $data
+			]);
+		}
+	}
 }

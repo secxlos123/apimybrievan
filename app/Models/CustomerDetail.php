@@ -7,9 +7,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Auth;
 use File;
+use DB;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class CustomerDetail extends Model
+class CustomerDetail extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *
@@ -369,34 +374,106 @@ class CustomerDetail extends Model
      */
     public function getListDebitur($params)
     {
-        $data = CustomerDetail::with('user', 'city')
-                ->whereHas('user', function($query) use ($params){
-                    return $query->where('first_name', 'like', '%'.$params['name'].'%')
-                                 ->orWhere('last_name', 'like', '%'.$params['name'].'%');
+        $name = empty($params['name']) ? '' : $params['name'];
+        $nik  = empty($params['nik']) ? '' : $params['nik'];
+        $city = empty($params['city_id']) ? false : $params['city_id'];
+
+        $data = CustomerDetail::with('user', 'city', 'eform')
+                ->whereHas('user', function($query) use ($name){
+                    return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
+                                 ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
                 })
-                ->where('nik', 'like', '%'.$params['nik'].'%')
-                ->where('city_id', $params['city_id'])
-                ->get()
-                ->pluck('listDebitur');
+                ->whereHas('eform', function($query){
+                    return $query->where('is_approved', true);
+                })
+                ->where('nik', 'like', '%'.$nik.'%')
+                ->when($city, function($query) use ($city){
+                    return $query->where('city_id', $city);
+                })
+                ->paginate(10);
         return $data;
     }
 
-    /**
-     * Mutator for list debitur.
+    public function getDetailDebitur($params)
+    {
+        $data = CustomerDetail::with('user', 'city', 'eform')
+                ->where('user_id', $params['user_id'])
+                ->get()
+                ->pluck('detailDebitur');
+        return $data;
+    }
+    
+    /*
+     * Mutator for detail debitur.
      *
      * @return void
-     */
-    public function getListDebiturAttribute()
+    */
+
+    public function getDetailDebiturAttribute()
     {
         return [
-            "nik"    => $this->nik,
-            "nama"   => $this->user->first_name." ".$this->user->last_name,
-            "email"  => $this->user->email,
-            "kota"   => $this->city ? $this->city->name : '',
-            "phone"  => $this->user->mobile_phone,
-            "gender" => $this->user->gender,
+            "data_pribadi" => [
+                "nik"           => $this->nik,
+                "nama"          => $this->user->first_name." ".$this->user->last_name,
+                "tempat_lahir"  => $this->eform['customer']['personal']['birth_place'],
+                "tanggal_lahir" => $this->birth_date,
+                "alamat"        => $this->address,
+                "gender"        => $this->user->gender,
+                "status_nikah"  => $this->status,
+                "email"         => $this->user->email,
+                "nama_ibu"      => $this->mother_name,
+                "phone"         => $this->user->mobile_phone
+            ],
+            "data_pekerjaan" => [
+                "bidang_pekerjaan"  => $this->job_field_id,
+                "jenis_pekerjaan"   => $this->job_type_name,
+                "pekerjaan"         => $this->job_id,
+                "nama_perusahaan"   => $this->company_name,
+                "jabatan"           => $this->position,
+                "lama_kerja"        => $this->work_duration,
+                "alamat_kantor"     => $this->office_address
+            ],
+            "data_keuangan" => [
+                "gaji"                  => $this->salary,
+                "pendapatan_lain"       => $this->other_salary,
+                "angsuran_permohonan"   => $this->loan_installment,
+                "jumlah_tanggungan"     => $this->dependent_amount
+            ],
+            "data_keluarga" => [
+                "nama"      => $this->user->customer_detail->emergency_name, 
+                "phone"     => $this->user->customer_detail->emergency_phone, 
+                "hubungan"  => $this->emergency_relation
+            ],
+            "data_pasangan" => [
+                "gaji"                  => $this->couple_salary,
+                "pendapatan_lain"       => $this->couple_other_salary,
+                "angsuran_permohonan"   => $this->couple_loan_installment
+            ],
+            "data_pengajuan" => [
+                "no_ref"            => $this->eform['ref_number'],
+                "nominal"           => $this->eform['nominal'],
+                "nama_produk"       => $this->eform['product_type'],
+                "type_produk"       => $this->kpr['status_property'],
+                "developer"         => $this->kpr['developer_name'],
+                "jenis_property"    => $this->kpr['kpr_type_property'],
+                "kantor_cabang"     => $this->eform['branch'],
+                "tanggal_pertemuan" => $this->eform['appointment_date'],
+                "harga_rumah"       => $this->kpr['price'],
+                "luas_bangunan"     => $this->kpr['building_area'],
+                "lokasi_rumah"      => $this->kpr['home_location'],
+                "jangka_waktu"      => $this->kpr['year'],
+                "kpr_ke"            => $this->kpr['active_kpr'],
+                "uang_muka"         => $this->kpr['down_payment'],
+                "jumlah_permohonan" => $this->eform['nominal'],
+            ],
+            "lain_lain" =>  [
+                "identity"          => $this->identity,
+                "couple_identity"   => $this->user->customer_detail->couple_identity
+            ]
         ];
     }
+
+
     /**
      * Set customer npwp image.
      *
@@ -515,5 +592,10 @@ class CustomerDetail extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function eform()
+    {
+        return $this->hasOne(EForm::class, 'user_id', 'user_id');
     }
 }
