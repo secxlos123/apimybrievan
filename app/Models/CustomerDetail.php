@@ -373,10 +373,13 @@ class CustomerDetail extends Model
         $nik  = empty($params['nik']) ? '' : $params['nik'];
         $city = empty($params['city_id']) ? false : $params['city_id'];
 
-        $data = CustomerDetail::with('user', 'city')
+        $data = CustomerDetail::with('user', 'city', 'eform')
                 ->whereHas('user', function($query) use ($name){
                     return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
                                  ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
+                })
+                ->whereHas('eform', function($query){
+                    return $query->where('is_approved', true);
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
@@ -504,5 +507,10 @@ class CustomerDetail extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function eform()
+    {
+        return $this->hasOne(EForm::class, 'user_id', 'user_id');
     }
 }
