@@ -12,12 +12,19 @@ use App\Models\UserNotification;
 use App\Models\Developer;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
+use App\Models\Appointment;
+use Carbon\Carbon;
 use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
-class EForm extends Model
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+
+class EForm extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *`
@@ -31,7 +38,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id'
     ];
 
     /**
@@ -138,7 +145,8 @@ class EForm extends Model
          if ($this->status_eform == 'Rejected' ) {
             return 'Kredit Ditolak';
         }
-        if( $this->is_approved && $this->customer->detail->is_verified ) {
+        if( $this->is_approved && $this->customer["detail"]["is_verified"] ) {
+        // if( $this->is_approved && $this->customer->detail->is_verified ) {
             return 'Proses CLF';
         }
         if( $this->visit_report ) {
@@ -521,6 +529,24 @@ class EForm extends Model
                     $eform->ao_id = $user_input->id;
                 }
             }
+        } );
+
+        static::created( function( $eform ) {
+            $scheduleData = array(
+                'title' => $eform->ref_number
+                , 'appointment_date' => $eform->appointment_date
+                , 'user_id' => $eform->user_id
+                , 'ao_id' => $eform->ao_id
+                , 'eform_id' => $eform->id
+                , 'ref_number' => $eform->ref_number
+                , 'address' => $eform->address
+                , 'latitude' => $eform->longitude
+                , 'longitude' => $eform->latitude
+                , 'desc' => '-'
+                , 'status' => 'waiting'
+            );
+
+            $schedule = Appointment::create($scheduleData);
         } );
     }
 
@@ -985,16 +1011,34 @@ class EForm extends Model
         $customer = clone $this->customer;
         $customer_finance = (object) $customer->financial;
 
+        $income = 0;
+        $otherIncome = 0;
+
+        if ( $lkn->source ) {
+            if ( $lkn->source == 'nonfixed' ) {
+                if ( $lkn->income ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
+                }
+            } else {
+                if ( $lkn->income_salary ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
+                }
+                if ( $lkn->income_allowance ) {
+                    $otherIncome = round( str_replace(',', '.', str_replace('.', '', $lkn->income_allowance) ) );
+                }
+            }
+        }
+
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
             "angsuran" => !( $customer_finance->loan_installment ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)) ),
-            "pendapatan_lain_pemohon" => !( $lkn->income_salary ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary)) ),
             "jangka_waktu" => $kpr->year,
             "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '0' : $lkn->type_financed,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '0' : $kpr->request_amount,
             "uang_muka" => round( ( $kpr->request_amount * $kpr->dp ) / 100 ),
-            "gaji_bulanan_pemohon" => !( $lkn->income ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $lkn->income)) ),
-            "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : $lkn->source_income,
+            "gaji_bulanan_pemohon" => $income,
+            "pendapatan_lain_pemohon" => $otherIncome,
+            "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : ( $lkn->source_income == 'single' ) ? 'Single Income' : 'Joint Income',
             "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
             "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
             "harga_agunan" => !($kpr->price) ? '0' : round( str_replace(',', '.', str_replace('.', '', $kpr->price)) )
@@ -1292,11 +1336,12 @@ class EForm extends Model
         * @param  string $endChart
         * @return array
     */
-    public function getChartSubmission($startChart, $endChart, $user_id)
+    public function getChartEForm($startChart, $endChart)
     {
-        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
-
         if(!empty($startChart) && !empty($endChart)){
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $endChart   = date("t-m-Y", strtotime($endChart));
+
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
@@ -1308,6 +1353,7 @@ class EForm extends Model
             $now        = new \DateTime();
             $startChart = $now->format('Y-m-d h:i:s');
 
+            $endChart   = date("t-m-Y", strtotime($endChart));
             $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
@@ -1316,6 +1362,7 @@ class EForm extends Model
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
 
+            $startList = date("01-m-Y",strtotime($startList));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
@@ -1342,6 +1389,10 @@ class EForm extends Model
 
     public function getNewestEFormAttribute()
     {
+        // Set language to Bahasa
+        Carbon::setLocale('id');
+
+        // return custom collection
         return [
             'no_ref'            => $this->ref_number,
             'nasabah'           => $this->customer['personal']['name'],
@@ -1351,13 +1402,52 @@ class EForm extends Model
             'no_telepon'        => empty($this->mobile_phone) ? null : $this->mobile_phone,
             'prescreening'      => $this->prescreening_status,
             'status'            => $this->status,
-            // 'aging'             => $this->
+            'aging'             => Carbon::createFromTimeStamp(strtotime($this->created_at))->diffForHumans()
         ];
     }
 
-    public function getNewestEForm($startDate, $endDate)
+    public function getNewestEForm($startList, $endList)
     {
-        $data = EForm::all()->pluck('newestEForm');
+        if(!empty($startList) && !empty($endList)){
+            $startList = date("01-m-Y",strtotime($startList));
+            $endList   = date("t-m-Y", strtotime($endList));
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startList) && !empty($endList)){
+            $now        = new \DateTime();
+            $startList = $now->format('Y-m-d h:i:s');
+
+            $endList   = date("t-m-Y", strtotime($endList));
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endList) && !empty($startList)){
+            $now      = new \DateTime();
+            $endList = $now->format('Y-m-d h:i:s');
+
+            $startList = date("01-m-Y",strtotime($startList));
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = EForm::when($filter, function($query) use ($startList, $endList){
+                    return $query->whereBetween('eforms.created_at', [$startList, $endList]);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->pluck('newestEForm');
+
         return $data;
     }
 }

@@ -353,6 +353,9 @@ class Customer extends User
     public function chartNewestCustomer($startChart = null, $endChart = null)
     {
         if(!empty($startChart) && !empty($endChart)){
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $endChart   = date("t-m-Y", strtotime($endChart));
+
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
@@ -364,6 +367,7 @@ class Customer extends User
             $now        = new \DateTime();
             $startChart = $now->format('Y-m-d h:i:s');
 
+            $endChart   = date("t-m-Y", strtotime($endChart));
             $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
@@ -371,7 +375,8 @@ class Customer extends User
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
-
+            
+            $startChart = date("01-m-Y",strtotime($startChart));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 

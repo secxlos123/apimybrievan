@@ -7,10 +7,12 @@ use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use DB;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Property extends Model
+class Property extends Model implements AuditableContract
 {
-    use Sluggable, SluggableScopeHelpers;
+    use Sluggable, SluggableScopeHelpers , Auditable ;
 
     /**
      * The attributes that are mass assignable.
@@ -527,6 +529,9 @@ class Property extends Model
     public function chartNewestProperty($startChart, $endChart)
     {
         if(!empty($startChart) && !empty($endChart)){
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $endChart   = date("t-m-Y", strtotime($endChart));
+
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
@@ -538,6 +543,7 @@ class Property extends Model
             $now        = new \DateTime();
             $startChart = $now->format('Y-m-d h:i:s');
 
+            $endChart = date("t-m-Y", strtotime($endChart));
             $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
@@ -546,6 +552,7 @@ class Property extends Model
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
 
+            $startChart = date("01-m-Y",strtotime($startChart));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 

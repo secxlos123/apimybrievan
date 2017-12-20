@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class OtsTen extends Model
+class OtsTen extends Model implements AuditableContract
 {
-   
+   		use Auditable;
 			/**
 		   * The fillable columns
 		   * @var [type]

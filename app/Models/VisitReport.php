@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BankStatement;
 use App\Models\Mutation;
 use App\Models\EForm;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class VisitReport extends Model
+class VisitReport extends Model implements AuditableContract
 {
+    use Auditable;
     /**
      * The table name.
      *

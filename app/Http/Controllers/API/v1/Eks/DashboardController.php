@@ -30,7 +30,7 @@ class DashboardController extends Controller
     	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
 
     	$userList  	  = $this->modelDeveloper->getListUserProperties($startList, $endList, $user_id);
-    	$chartData	  = $this->modelEforms->getChartSubmission($startChart, $endChart, $user_id);
+    	$chartData	  = $this->modelEforms->getChartEForm($startChart, $endChart, $user_id);
         return response()->success([
             'contents' => [
                 'user_list' => $userList,

@@ -222,31 +222,19 @@ class CustomerController extends Controller
 		]);
 	}
 
-	public function newestCustomer()
+	public function detailDebitur(Request $req)
 	{
-		$customer = new Customer;
-		$data = $customer->newestCustomer();
-		return response()->success([
-			'contents' => $data
-		]);
-	}
-
-	public function chartNewestCustomer(Request $req)
-	{
-		$params = $req->all();
-    	$startChart   = (isset($params['startChart'])) ? $params['startChart'] : '';
-    	$endChart     = (isset($params['endChart'])) ? $params['endChart'] : '';
-
-		$customer = new Customer;
-		$data 	  = $customer->chartNewestCustomer($startChart, $endChart);
-
-		return response()->success([
-			'contents' => $data
-		]);
-	}
-
-	public function newestSubmission(Request $req)
-	{
-
+		$params   = $req->all();
+		if(empty($params['user_id'])){
+			return response()->error([
+				'message' => 'User ID is required !',
+			]);
+		}else{
+			$customer = new CustomerDetail;
+			$data 	  = $customer->getDetailDebitur($params);
+			return response()->success([
+				'contents' => $data
+			]);
+		}
 	}
 }
