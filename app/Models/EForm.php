@@ -12,6 +12,7 @@ use App\Models\UserNotification;
 use App\Models\Developer;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
+use App\Models\Appointment;
 use Carbon\Carbon;
 use Sentinel;
 use Asmx;
@@ -32,7 +33,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id'
     ];
 
     /**
@@ -523,6 +524,24 @@ class EForm extends Model
                     $eform->ao_id = $user_input->id;
                 }
             }
+        } );
+
+        static::created( function( $eform ) {
+            $scheduleData = array(
+                'title' => $eform->ref_number
+                , 'appointment_date' => $eform->appointment_date
+                , 'user_id' => $eform->user_id
+                , 'ao_id' => $eform->ao_id
+                , 'eform_id' => $eform->id
+                , 'ref_number' => $eform->ref_number
+                , 'address' => $eform->address
+                , 'latitude' => $eform->longitude
+                , 'longitude' => $eform->latitude
+                , 'desc' => '-'
+                , 'status' => 'waiting'
+            );
+
+            $schedule = Appointment::create($scheduleData);
         } );
     }
 
