@@ -389,6 +389,63 @@ class CustomerDetail extends Model
         return $data;
     }
 
+    public function getDetailDebitur($params)
+    {
+        $data = CustomerDetail::with('user', 'city', 'eform')
+                ->where('user_id', $params['user_id'])
+                ->get()
+                ->pluck('detailDebitur');
+        return $data;
+    }
+    
+    /*
+     * Mutator for list debitur.
+     *
+     * @return void
+    */
+
+    public function getDetailDebiturAttribute()
+    {
+        return [
+            "data_pribadi" => [
+                "nik"           => $this->nik,
+                "nama"          => $this->user->first_name." ".$this->user->last_name,
+                "tempat_lahir"  => $this->eform['customer']['personal']['birth_place'],
+                "tanggal_lahir" => $this->birth_date,
+                "alamat"        => $this->address,
+                "gender"        => $this->user->gender,
+                "status_nikah"  => $this->status,
+                "email"         => $this->user->email,
+                "nama_ibu"      => $this->mother_name,
+                "phone"         => $this->user->mobile_phone
+            ],
+            "data_pekerjaan" => [
+                "bidang_pekerjaan"  => $this->job_field_id,
+                "jenis_pekerjaan"   => $this->job_type_name,
+                "pekerjaan"         => $this->job_id,
+                "nama_perusahaan"   => $this->company_name,
+                "jabatan"           => $this->position,
+                "lama_kerja"        => $this->work_duration,
+                "alamat_kantor"     => $this->office_address
+            ],
+            "data_keuangan" => [
+                "gaji"                  => $this->salary,
+                "pendapatan_lain"       => $this->other_salary,
+                "angsuran_permohonnan"  => $this->loan_installment,
+                "jumlah_tanggungan"     => $this->dependent_amount
+            ],
+            "data_keluarga" => [
+                "nama"      => $this->user->customer_detail->emergency_name, 
+                "phone"     => $this->user->customer_detail->emergency_phone, 
+                "hubungan"  => $this->emergency_relation
+            ],
+            "lain_lain" =>  [
+                "image" => $this->identity
+            ]
+        ];
+    }
+
+
     /**
      * Set customer npwp image.
      *
