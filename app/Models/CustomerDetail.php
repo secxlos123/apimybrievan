@@ -436,7 +436,7 @@ class CustomerDetail extends Model implements AuditableContract
             "data_keuangan" => [
                 "gaji"                  => $this->salary,
                 "pendapatan_lain"       => $this->other_salary,
-                "angsuran_permohonnan"  => $this->loan_installment,
+                "angsuran_permohonan"   => $this->loan_installment,
                 "jumlah_tanggungan"     => $this->dependent_amount
             ],
             "data_keluarga" => [
@@ -444,8 +444,31 @@ class CustomerDetail extends Model implements AuditableContract
                 "phone"     => $this->user->customer_detail->emergency_phone, 
                 "hubungan"  => $this->emergency_relation
             ],
+            "data_pasangan" => [
+                "gaji"                  => $this->couple_salary,
+                "pendapatan_lain"       => $this->couple_other_salary,
+                "angsuran_permohonan"   => $this->couple_loan_installment
+            ],
+            "data_pengajuan" => [
+                "no_ref"            => $this->eform['ref_number'],
+                "nominal"           => $this->eform['nominal'],
+                "nama_produk"       => $this->eform['product_type'],
+                "type_produk"       => $this->kpr['status_property'],
+                "developer"         => $this->kpr['developer_name'],
+                "jenis_property"    => $this->kpr['kpr_type_property'],
+                "kantor_cabang"     => $this->eform['branch'],
+                "tanggal_pertemuan" => $this->eform['appointment_date'],
+                "harga_rumah"       => $this->kpr['price'],
+                "luas_bangunan"     => $this->kpr['building_area'],
+                "lokasi_rumah"      => $this->kpr['home_location'],
+                "jangka_waktu"      => $this->kpr['year'],
+                "kpr_ke"            => $this->kpr['active_kpr'],
+                "uang_muka"         => $this->kpr['down_payment'],
+                "jumlah_permohonan" => $this->eform['nominal'],
+            ],
             "lain_lain" =>  [
-                "image" => $this->identity
+                "identity"          => $this->identity,
+                "couple_identity"   => $this->user->customer_detail->couple_identity
             ]
         ];
     }
