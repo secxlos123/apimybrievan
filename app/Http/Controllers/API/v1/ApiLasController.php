@@ -27,7 +27,8 @@ class ApiLasController extends Controller
         
     	switch ($method) {
     		case 'insertDataDebtPerorangan':
-                if (!empty($data)) {
+                // if (!empty($data)) {
+                    $data = $respons;
                     $data['kodepos']            = '';
                     $data['kelurahan']          = '';
                     $data['kecamatan']          = '';
@@ -100,15 +101,15 @@ class ApiLasController extends Controller
                     $data['gaji'] = $gaji;
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
-                } 
-                $error[0] = 'Uknown request data';
-                return [
-                    'code' => 05, 
-                    'descriptions' => 'Uknown request data',
-                    'contents' => [
-                        'data' => $error
-                    ]
-                ];
+                // } 
+                // $error[0] = 'Uknown request data';
+                // return [
+                //     'code' => 05, 
+                //     'descriptions' => 'Uknown request data',
+                //     'contents' => [
+                //         'data' => $error
+                //     ]
+                // ];
                 // print_r($data);exit();
 		        // $insert = $ApiLas->insertDataDebtPerorangan($data);
                 break;
@@ -275,9 +276,7 @@ class ApiLasController extends Controller
 
             case 'eformBriguna':
                 $inquiry = $ApiLas->eform_briguna();
-                print_r($inquiry->toArray());exit();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                return $inquiry;
                 break;
 
             case 'inquiryUserLAS':
@@ -401,24 +400,28 @@ class ApiLasController extends Controller
     }
 
     public function putusan($data) {
-        $ApiLas  = new ApiLas();
-        $user_pn = request()->header('pn');
-        $pn      = substr('00000000'. $user_pn, -8 );
-        // $pn = '00062498';
-        $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        $uid   = $inquiryUserLAS['items'][0]['uid'];
-        // $uid = "56124";
-        // print_r($data);
-        // print_r($inquiryUserLAS);exit();
-        $conten_putusan = [
-            "id_aplikasi" => $data['id_aplikasi'],
-            "uid"         => $uid,
-            "flag_putusan"=> $data['flag_putusan'],
-            "catatan"     => $data['catatan']
-        ];
+        if (!empty($data)) {
+            $ApiLas  = new ApiLas();
+            $conten_putusan = [
+                "id_aplikasi" => $data['id_aplikasi'],
+                "uid"         => $data['uid'],
+                "flag_putusan"=> $data['flag_putusan'],
+                "catatan"     => empty($data['catatan'])? "":$data['catatan']
+            ];
 
-        $putus = $ApiLas->putusSepakat($conten_putusan);
-        return $putus;
+            $putus = $ApiLas->putusSepakat($conten_putusan);
+			\Log::info($putus);
+            return $putus;
+        }        
+
+        $error[0] = 'Uknown request data';
+        return [
+            'code' => 05, 
+            'descriptions' => 'Uknown request data',
+            'contents' => [
+                'data' => $error
+            ]
+        ];
     }
 
     public function insertAllAnalisa($request) {
@@ -428,6 +431,7 @@ class ApiLasController extends Controller
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
         $uid     = $inquiryUserLAS['items'][0]['uid'];
         $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        \Log::info($request);
         // print_r($uker);
         // print_r($request);exit();
 
@@ -616,7 +620,7 @@ class ApiLasController extends Controller
                         "Baru_perpanjangan"            => "0", // hardcode las
                         "Jenis_fasilitas"              => "0605", // hardcode las
                         "Sisa_jangka_waktu_sd_penyesuaian"=> "0", // hardcode
-                        "Valuta"                       => "idr", // hardcode
+                        "Valuta"                       => "IDR", // hardcode
                         "Segmen_owner"                 => "RITEL", // hardcode
                         "Sub_segmen_owner"             => "RITEL", // hardcode
                         "Kode_jangka_waktu"            => "M", // hardcode las
@@ -740,15 +744,32 @@ class ApiLasController extends Controller
                                 "mitra"                     => $request['mitra_name'],
                                 "NIP"                       => $request['nip'],
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
-                                "tujuan_penggunaan_id"      => $request['tujuan_penggunaan_id'],
-                                "tujuan_penggunaan"         => $request['tujuan_penggunaan_kredit'],
+                                "tujuan_penggunaan_id"      => $request['Penggunaan_kredit'],
                                 "request_amount"            => $request['Permohonan_kredit'],
                                 "year"                      => $request['Jangka_waktu'],
-                                "Nama_atasan_Langsung"      => empty($request['Nama_atasan_Langsung'])?"":$request['Nama_atasan_Langsung'],
-                                "Jabatan_atasan"            => empty($request['Jabatan_atasan'])?"":$request['Jabatan_atasan'],
+                                "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
+                                "Jabatan_atasan"            => empty($request['jabatan_atasan'])?"":$request['jabatan_atasan'],
                                 "jenis_pinjaman_id"         => $request['jenis_pinjaman_id'],
                                 "angsuran_usulan"           => $request['Angsuran_usulan'],
-                                "maksimum_plafond"          => $request['Maksimum_plafond']
+                                "maksimum_plafond"          => $request['Maksimum_plafond'],
+                                // baru
+                                "no_npwp"                   => $request['no_npwp'],
+                                "no_dan_tanggal_sk_awal"    => $request['no_dan_tanggal_sk_awal'],
+                                "no_dan_tanggal_sk_akhir"   => $request['no_dan_tanggal_sk_akhir'],
+                                "branch_name"               => $request['kantor_cabang_name'],
+                                "baru_atau_perpanjang"    => $request['baru_atau_perpanjang'],
+                                "total_exposure"            => $request['total_exposure'],
+                                // "program_asuransi"          => $request['program_asuransi'],
+                                "kredit_take_over"          => $request['kredit_take_over'],
+                                "pemrakarsa_name"           => $request['kantor_cabang_name'],
+                                "agama"                     => $request['ket_agama'],
+                                "npl_instansi"              => $request['npl_instansi'],
+                                "npl_unitkerja"             => $request['npl_unitkerja'],
+                                "gimmick"                   => $request['nama_program_promo'],
+                                "jumlah_pekerja"            => $request['jumlah_pekerja'],
+                                "jumlah_debitur"            => $request['jumlah_debitur'],
+                                "scoring_mitra"             => $request['scoring_mitra'],
+                                "is_send"                   => 0
 							];
 
 							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
@@ -833,7 +854,7 @@ class ApiLasController extends Controller
         }
     }
 
-    public function show_briguna (Request $request) {
+    public function show_briguna(Request $request) {
         $eform = EformBriguna::filter($request)->get();
         $eform = $eform->toArray();
         if (!empty($eform)) {
@@ -847,5 +868,99 @@ class ApiLasController extends Controller
         return response()->error( [
             'contents' => 'data tidak ditemukan'
         ],400);
+    }
+
+    public function update_briguna(Request $request) {
+        dd($request->all());
+        $params   = [
+            "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
+            "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
+            "Briguna_profesi"           => $request['Briguna_profesi'],
+            "Pendapatan_profesi"        => $request['Pendapatan_profesi'],
+            "Potongan_per_bulan"        => $request['Potongan_per_bulan'],
+            "Plafond_briguna_existing"  => $request['Plafond_briguna_existing'],
+            "Angsuran_briguna_existing" => $request['Angsuran_briguna_existing'],
+            "Suku_bunga"                => $request['Suku_bunga'],
+            "Jangka_waktu"              => $request['Jangka_waktu'],
+            "Baki_debet"                => $request['Baki_debet'],
+            "Plafond_usulan"            => $request['Plafond_usulan'],
+            "Rek_simpanan_bri"          => $request['Rek_simpanan_bri'],
+            "Riwayat_pinjaman"          => $request['Riwayat_pinjaman'],
+            "Penguasaan_cashflow"       => $request['Penguasaan_cashflow'],
+            "Payroll"                   => $request['pembayaran_gaji'],
+            "Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
+            "Maksimum_angsuran"         => $request['Maksimum_angsuran'],
+            "Tujuan_membuka_rek"        => $request['Tujuan_membuka_rek'],
+            "Briguna_smart"             => $request['Briguna_smart'],
+            "Kode_fasilitas"            => $request['Kode_fasilitas'],
+            "Tujuan_penggunaan_kredit"  => $request['Tujuan_penggunaan_kredit'],
+            "Penggunaan_kredit"         => $request['Penggunaan_kredit'],
+            "Provisi_kredit"            => $request['Provisi_kredit'],
+            "Biaya_administrasi"        => $request['Biaya_administrasi'],
+            "Penalty"                   => $request['Penalty'],
+            "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+            "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
+            "Premi_beban_bri"           => $request['Premi_beban_bri'],
+            "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+            "Flag_promo"                => $request['promo'],
+            "Fid_promo"                 => $request['nama_program_promo'],
+            "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
+            "Bupln"                     => $request['Bupln'],
+            "Agribisnis"                => $request['Agribisnis'],
+            "Sandi_stp"                 => $request['Sandi_stp'],
+            "Sifat_kredit"              => $request['Sifat_kredit'],
+            "Jenis_penggunaan"          => $request['Jenis_penggunaan'],
+            "Sektor_ekonomi_sid"        => $request['Sektor_ekonomi_sid'],
+            "Jenis_kredit_lbu"          => $request['Jenis_kredit_lbu'],
+            "Sifat_kredit_lbu"          => $request['Sifat_kredit_lbu'],
+            "Kategori_kredit_lbu"       => $request['Kategori_kredit_lbu'],
+            "Jenis_penggunaan_lbu"      => $request['Jenis_penggunaan_lbu'],
+            "Sumber_aplikasi"           => $request['Sumber_aplikasi'],
+            "Sektor_ekonomi_lbu"        => $request['Sektor_ekonomi_lbu'],
+            "id_Status_gelar"           => $request['status_gelar_id'],
+            "Status_gelar"              => $request['status_gelar_name'],
+            "score"                     => $hitung['items'][0]['score'],
+            "grade"                     => $hitung['items'][0]['grade'],
+            "cutoff"                    => $hitung['items'][0]['cutoff'],
+            "definisi"                  => $hitung['items'][0]['definisi'],
+            "NPWP_nasabah"              => $request['NPWP_nasabah'],
+            "KK"                        => $request['KK'],
+            "SLIP_GAJI"                 => $request['SLIP_GAJI'],
+            "SK_AWAL"                   => $request['SK_AWAL'],
+            "SK_AKHIR"                  => $request['SK_AKHIR'],
+            "REKOMENDASI"               => $request['REKOMENDASI'],
+            "SKPG"                      => $request['SKPG'],
+            "mitra_id"                  => $request['mitra_id'],
+            "mitra"                     => $request['mitra_name'],
+            "NIP"                       => $request['nip'],
+            "Status_Pekerjaan"          => $request['status_pekerjaan'],
+            "tujuan_penggunaan_id"      => $request['Penggunaan_kredit'],
+            "request_amount"            => $request['Permohonan_kredit'],
+            "year"                      => $request['Jangka_waktu'],
+            "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
+            "Jabatan_atasan"            => empty($request['jabatan_atasan'])?"":$request['jabatan_atasan'],
+            "jenis_pinjaman_id"         => $request['jenis_pinjaman_id'],
+            "angsuran_usulan"           => $request['Angsuran_usulan'],
+            "maksimum_plafond"          => $request['Maksimum_plafond'],
+            // baru
+            "no_npwp"                   => $request['no_npwp'],
+            "no_dan_tanggal_sk_awal"    => $request['no_dan_tanggal_sk_awal'],
+            "no_dan_tanggal_sk_akhir"   => $request['no_dan_tanggal_sk_akhir'],
+            "branch_name"               => $request['kantor_cabang_name'],
+            "baru_atau_perpanjang"    => $request['baru_atau_perpanjang'],
+            "total_exposure"            => $request['total_exposure'],
+            // "program_asuransi"          => $request['program_asuransi'],
+            "kredit_take_over"          => $request['kredit_take_over'],
+            "pemrakarsa_name"           => $request['kantor_cabang_name'],
+            "agama"                     => $request['ket_agama'],
+            "npl_instansi"              => $request['npl_instansi'],
+            "npl_unitkerja"             => $request['npl_unitkerja'],
+            "gimmick"                   => $request['nama_program_promo'],
+            "jumlah_pekerja"            => $request['jumlah_pekerja'],
+            "jumlah_debitur"            => $request['jumlah_debitur'],
+            "scoring_mitra"             => $request['scoring_mitra']
+        ];
+        $briguna = BRIGUNA::where("eform_id","=",$eform_id);
+        $eform->update($base_request);
     }
 }

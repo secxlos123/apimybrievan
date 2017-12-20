@@ -19,7 +19,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::get( 'check-token', 'TokenController@index' );
 		Route::get('debitur-list', 'CustomerController@listDebitur');
-
+		Route::post('dashboard-internal', 'DashboardController@getDataDashboardInternal');
 		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::delete( 'logout', 'AuthController@destroy' );
@@ -65,7 +65,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
-		] );		
+		] );
 		/* Route::resource( 'gimmick', 'GimmickController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] ); */
@@ -174,6 +174,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 	} );
 
 	Route::get( 'eforms/{ids}/{ref_number}', 'EFormController@showIdsAndRefNumber' );
+
 	 /**
      * User Notification
      */

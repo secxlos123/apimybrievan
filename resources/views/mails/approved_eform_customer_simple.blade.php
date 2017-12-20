@@ -29,7 +29,7 @@
                     <td align="center">
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        Pengajuan e-Form Anda dengan No. Reff. Aplikasi: <b>{!! $mail[ 'ref_number' ] !!}</b> diproses lebih lanjut. Untuk memonitor status pengajuan kredit Anda silahkan log in dengan akun MyBRI Anda di aplikasi MyBRI.
+                        <p align="justify">Pengajuan e-Form Anda dengan No. Reff. Aplikasi: <b>{!! $mail[ 'ref_number' ] !!}</b> diproses lebih lanjut. Untuk memonitor status pengajuan kredit Anda silahkan log in dengan akun MyBRI Anda di aplikasi MyBRI.</p>
                         <br>
                         Terima kasih.
                     </td>

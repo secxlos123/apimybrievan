@@ -82,11 +82,9 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "suku_bunga"          => 0,
-                "suku_bunga_floating" => "0%",
+                "suku_bunga"          => $rate."%",
                 "kredit_fix"          => $term." Bulan",
                 "lama_pinjaman"       => $term." Bulan",
-                "pinjaman_maksimum"   => 0,
             ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
@@ -165,11 +163,9 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "suku_bunga"          => 0,
-                "suku_bunga_floating" => "0%",
+                "suku_bunga"          => $rate."%",
                 "kredit_fix"          => $term." Bulan",
                 "lama_pinjaman"       => $term." Bulan",
-                "pinjaman_maksimum"   => 0,
             ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
@@ -271,11 +267,10 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "suku_bunga"          => 0,
+                "suku_bunga"          => $fxrate."%",
                 "suku_bunga_floating" => $flrate."%",
                 "kredit_fix"          => $fxterm." Bulan",
                 "lama_pinjaman"       => $fxflterm." Bulan",
-                "pinjaman_maksimum"   => 0,
             ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
@@ -396,11 +391,12 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "uang_muka"           => ($total * $downPayment) / 100,
-                "suku_bunga"          => 0,
+                "suku_bunga"          => $ffxrate."%",
+                "suku_bunga_floor"    => $ffloorrate."%",
                 "suku_bunga_floating" => $ffloatlrate."%",
                 "kredit_fix"          => $ffxterm." Bulan",
+                "jangka_waktu_floor"  => $fflterm." Bulan",
                 "lama_pinjaman"       => $fxflflterm." Bulan",
-                "pinjaman_maksimum"   => 0,
             ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,

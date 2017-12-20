@@ -26,22 +26,24 @@ class ApiLas extends Model
             'eforms.*','briguna.*',
             \DB::Raw("case when eforms.id is not null then 2 else 1 end as new_order")
         ]);
-        \Log::info($eforms->toSql());
+        \Log::info("query berhasil");
         return $eforms;
     }
 
     public function eform_briguna() {
-        $eforms = DB::select([
-            'eforms.*','briguna.*',
-            \DB::Raw("case when eforms.id is not null then 2 else 1 end as new_order")
-        ]);
-        $eforms->join('briguna', 'eform_id', '=', 'eforms.id');
-        \Log::info($eforms->toSql());
+        $eforms = DB::table('eforms')
+                 ->select('eforms.id','briguna.*')
+                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->get();
+        $eforms = $eforms->toArray();
+        $eforms = json_decode(json_encode($eforms), True);
+        
+        \Log::info("query berhasil");
         return $eforms;
     }
 
     public function insertDataDebtPerorangan($data) {
-        \Log::info($data);
+        \Log::info("parameter data debitur perorangan masuk");
         try {
             $content_las_debt = [
                 "tp_produk"             => $data['tp_produk'],
@@ -138,21 +140,8 @@ class ApiLas extends Model
     }
 
     public function insertPrescreeningBriguna($data) {
-        \Log::info($data);
+        \Log::info("parameter data prescreening masuk");
         try {
-            /*$content_las_prescreening = [
-                "Fid_aplikasi"           => $data['Fid_aplikasi'],
-                "Ps_krd"                 => $data['Ps_krd'],
-                "Pks"                    => $data['Pks'],
-                "Daftar_hitam_bi"        => $data['Daftar_hitam_bi'],
-                "Daftar_kredit_macet_bi" => $data['Daftar_kredit_macet_bi'],
-                "Daftar_hitam_bri"       => $data['Daftar_hitam_bri'],
-                "Tunggakan_di_bri"       => $data['Tunggakan_di_bri'],
-                "Npl_instansi"           => $data['Npl_instansi'],
-                "Sicd"                   => $data['Sicd'],
-                "Hasil_prescreening"     => $data['Hasil_prescreening']
-            ];*/
-
             $insertPrescreening = AsmxLas::setEndpoint('insertPrescreeningBriguna')
                 ->setBody([
                     'JSON' => json_encode($data)
@@ -165,41 +154,41 @@ class ApiLas extends Model
     }
 
     public function insertPrescoringBriguna($data) {
-        \Log::info($data);
+        \Log::info("parameter data prescoring masuk");
         try {
-            /*$content_las_prescoring = [
+            $content_las_prescoring = [
                 "Fid_aplikasi"              => $data['Fid_aplikasi'],
                 "Fid_cif_las"               => $data['Fid_cif_las'],
-                "Tp_produk"                 => $data['Tp_produk'],
-                "Briguna_smart"             => $data['Briguna_smart'],
-                "Briguna_profesi"           => $data['Briguna_profesi'],
-                "Tgl_perkiraan_pensiun"     => $data['Tgl_perkiraan_pensiun'],
-                "Payroll"                   => $data['Payroll'],
-                "Gaji_per_bulan"            => $data['Gaji_per_bulan'],
-                "Pendapatan_profesi"        => $data['Pendapatan_profesi'],
-                "Potongan_per_bulan"        => $data['Potongan_per_bulan'],
-                "Angsuran_lainnya"          => $data['Angsuran_lainnya'],
-                "Plafond_briguna_existing"  => $data['Plafond_briguna_existing'],
-                "Angsuran_briguna_existing" => $data['Angsuran_briguna_existing'],
-                "Gaji_bersih_per_bulan"     => $data['Gaji_bersih_per_bulan'],
-                "Maksimum_angsuran"         => $data['Maksimum_angsuran'],
-                "Suku_bunga"                => $data['Suku_bunga'],
-                "Sifat_suku_bunga"          => $data['Sifat_suku_bunga'],
-                "Jangka_waktu"              => $data['Jangka_waktu'],
-                "Maksimum_plafond"          => $data['Maksimum_plafond'],
-                "Permohonan_kredit"         => $data['Permohonan_kredit'],
-                "Baki_debet"                => $data['Baki_debet'],
-                "Plafond_usulan"            => $data['Plafond_usulan'],
-                "Angsuran_usulan"           => $data['Angsuran_usulan'],
-                "Rek_simpanan_bri"          => $data['Rek_simpanan_bri'],
-                "Riwayat_pinjaman"          => $data['Riwayat_pinjaman'],
-                "Penguasaan_cashflow"       => $data['Penguasaan_cashflow'],
-                "Kelengkapan_dokumen"       => $data['Kelengkapan_dokumen']
-            ];*/
-
+                "Tgl_perkiraan_pensiun"     => '07122039',
+                "Sifat_suku_bunga"     =>'annuitas',
+                "Briguna_profesi"     =>'1',
+                "Gaji_per_bulan"     =>'10000000',
+                "Pendapatan_profesi"     =>'0',
+                "Potongan_per_bulan"     =>'0',
+                "Plafond_briguna_existing"     =>'0',
+                "Angsuran_briguna_existing"     =>'0',
+                "Suku_bunga"     =>'12',
+                "Jangka_waktu"     =>'24',
+                "Maksimum_plafond"     =>'159325404',
+                "Permohonan_kredit"     =>'120000000',
+                "Baki_debet"     =>'0',
+                "Plafond_usulan"     =>'120000000',
+                "Angsuran_usulan"     =>'5648817',
+                "Rek_simpanan_bri"     =>'1',
+                "Riwayat_pinjaman"     =>'0',
+                "Penguasaan_cashflow"     =>'2',
+                "Payroll"     =>'1',
+                "Gaji_bersih_per_bulan"     =>'10000000',
+                "Maksimum_angsuran"     =>'7500000',
+                "pembayaran_gaji"     =>'1',
+                "Angsuran_lainnya"          => "0",                    
+                "Tp_produk"                 => "1",
+                "Briguna_smart"             => "0",
+                "Kelengkapan_dokumen"       => "1"
+            ];
             $insertPrescoring = AsmxLas::setEndpoint('insertPrescoringBriguna')
                 ->setBody([
-                    'JSON' => json_encode($data)
+                    'JSON' => json_encode($content_las_prescoring)
                 ])->post('form_params');
 
             return $insertPrescoring;
@@ -209,7 +198,7 @@ class ApiLas extends Model
     }
 
     public function insertDataKreditBriguna($data) {
-        \Log::info($data);
+        \Log::info("parameter data kredit masuk");
         try {
             $content_insertKreditBriguna = [
                 "Fid_aplikasi"                     => !isset($data['Fid_aplikasi']) ? "" : $data['Fid_aplikasi'],
@@ -285,7 +274,7 @@ class ApiLas extends Model
     }
 
     public function insertAgunanLainnya($data) {
-        \Log::info($data);
+        \Log::info("parameter data masuk");
         try {
             $content_insertAgunanLainnya = [
                 "id_aplikasi"                       => "42067",
@@ -339,7 +328,7 @@ class ApiLas extends Model
     }
 
     public function hitungCRSBrigunaKarya($data) {
-        \Log::info($data);
+        \Log::info("parameter data hitung crs masuk");
         try {
             $Id_aplikasi = $data;
 
@@ -355,7 +344,7 @@ class ApiLas extends Model
     }
 
     public function kirimPemutus($data) {
-        \Log::info($data);
+        \Log::info("parameter data kirim pemutus masuk");
         try {
             $kirim = AsmxLas::setEndpoint('kirimPemutus')
                 ->setBody([
@@ -371,7 +360,7 @@ class ApiLas extends Model
     }
 
     public function getStatusInterface($data) {
-        \Log::info($data);
+        \Log::info("parameter data getStatus Interface masuk");
         try {
             $get = AsmxLas::setEndpoint('getStatusInterface')
                 ->setBody([
@@ -385,7 +374,7 @@ class ApiLas extends Model
     }
 
     public function putusSepakat($data) {
-        \Log::info($data);
+        \Log::info("parameter data putus sepakat masuk");
         try {
             $conten_putusan = [
                 "id_aplikasi" => !isset($data['id_aplikasi']) ? "" : $data['id_aplikasi'],
@@ -407,7 +396,7 @@ class ApiLas extends Model
     }
 
     public function inquiryInstansiBriguna($data) {
-        \Log::info($data);
+        \Log::info("parameter data instansi briguna masuk");
         try {
             $inquiry = AsmxLas::setEndpoint('inquiryInstansiBriguna')
                 ->setBody([
@@ -421,7 +410,7 @@ class ApiLas extends Model
     }
 
     public function inquirySifatKredit($data) {
-        \Log::info($data);
+        \Log::info("parameter data sifat kredit masuk");
         try {
             $inquiry = AsmxLas::setEndpoint('inquirySifatKredit')
                 ->setBody([
@@ -435,7 +424,7 @@ class ApiLas extends Model
     }
 
     public function inquiryHistoryDebiturPerorangan($data) {
-        \Log::info($data);
+        \Log::info("parameter data history debitur masuk");
         try {
             $conten = [
                 'nik'           => !isset($data['nik']) ? "" : $data['nik'],
@@ -455,7 +444,7 @@ class ApiLas extends Model
     }
 
     public function inquiryListPutusan($data) {
-        \Log::info($data);
+        \Log::info("parameter data list putusan masuk");
         try {
             $uid = $data;
 
@@ -471,7 +460,7 @@ class ApiLas extends Model
     }
 
     public function inquiryListVerputADK($data) {
-        \Log::info($data);
+        \Log::info("parameter data verput adk masuk");
         try {
             $inquiryListADK = AsmxLas::setEndpoint('inquiryListVerputADK')
                 ->setBody([
@@ -485,7 +474,7 @@ class ApiLas extends Model
     }
 
     public function inquiryPremiAJKO($data) {
-        \Log::info($data);
+        \Log::info("parameter data inquiry premiajko masuk");
         try {
             $inquiry = AsmxLas::setEndpoint('inquiryPremiAJKO')
                 ->setBody([
@@ -499,7 +488,7 @@ class ApiLas extends Model
     }
 
     public function inquiryUserLAS($data) {
-        \Log::info($data);
+        \Log::info("parameter data user las masuk");
         try {
             $pn = $data;
 

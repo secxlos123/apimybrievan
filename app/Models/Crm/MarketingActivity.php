@@ -14,8 +14,19 @@ class MarketingActivity extends Model
       'end_date',
       'longitude',
       'latitude',
+      'address',
       'marketing_id',
       'pn_join',
       'desc'
     ];
+
+    public function marketing()
+    {
+      return $this->belongsTo('App\Models\Crm\Marketing');
+    }
+
+    public function reSchedule()
+    {
+      return $this->hasMany('App\Models\Crm\rescheduleActivity');
+    }
 }

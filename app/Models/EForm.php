@@ -12,6 +12,7 @@ use App\Models\UserNotification;
 use App\Models\Developer;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
+use Carbon\Carbon;
 use Sentinel;
 use Asmx;
 use RestwsHc;
@@ -31,7 +32,7 @@ class EForm extends Model
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id'
     ];
 
     /**
@@ -138,7 +139,8 @@ class EForm extends Model
          if ($this->status_eform == 'Rejected' ) {
             return 'Kredit Ditolak';
         }
-        if( $this->is_approved && $this->customer->detail->is_verified ) {
+        if( $this->is_approved && $this->customer["detail"]["is_verified"] ) {
+        // if( $this->is_approved && $this->customer->detail->is_verified ) {
             return 'Proses CLF';
         }
         if( $this->visit_report ) {
@@ -284,12 +286,14 @@ class EForm extends Model
                     'is_approved' => $request->is_approved,
                     'status_eform' => 'approved'
                     ] );
-                // PropertyItem::setAvailibility( $data[ 'property_item' ], "sold" );
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+                PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
             }
 
         } else {
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
                 PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
+
             $eform->update( [
                 'pros' => $request->pros,
                 'cons' => $request->cons,
@@ -300,6 +304,7 @@ class EForm extends Model
                 'is_approved' => $request->is_approved,
                 'status_eform' => 'Rejected'
                 ] );
+
             $result['status'] = true;
 
         }
@@ -541,14 +546,19 @@ class EForm extends Model
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
+
                 } else if( $request->status == 'Initiate' ) {
                     $eform->has( 'visit_report' )->whereIsApproved( false );
+
                 } else if( $request->status == 'Dispose' ) {
                     $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+
                 } else if( $request->status == 'Rekomend' ) {
                     $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-                } elseif ($request->status == 'Rejected') {
-                    $eform->where('status_eform', 'Rejected');
+
+                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
+                    $eform->where('status_eform', $request->status);
+
                 }
             }
         } );
@@ -696,6 +706,35 @@ class EForm extends Model
     }
 
     /**
+     * Update EForm from CLAS.
+     *
+     * @return array
+     */
+    public static function updateCLAS( $ref_number, $status )
+    {
+        $returnStatus = false;
+        $target = static::where('ref_number', $ref_number)->first();
+
+        if ($target) {
+            $target->update([
+                'is_approved' => ( $status == 'Approval1' ? true : false )
+                , 'status_eform' => $status
+            ]);
+
+            $returnStatus = "EForm berhasil di update.";
+
+            if ($target->kpr) {
+                PropertyItem::setAvailibility( $target->kpr->property_item, $status == 'Approval1' ? "sold" : "available" );
+            }
+        }
+
+        return array(
+            'message' => $returnStatus
+            , 'contents' => $target
+        );
+    }
+
+    /**
      * Verify E-Form customer data.
      *
      * @return array
@@ -839,7 +878,8 @@ class EForm extends Model
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
+            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
         return $request;
@@ -959,6 +999,7 @@ class EForm extends Model
             "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : $lkn->source_income,
             "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
             "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
+            "harga_agunan" => !($kpr->price) ? '0' : round( str_replace(',', '.', str_replace('.', '', $kpr->price)) )
         ];
 
         return $request;
@@ -1161,8 +1202,8 @@ class EForm extends Model
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
             "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : $otsLetter->date,
-            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : $otsLetter->duration_land_authorization,
+            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : date('dmY', strtotime($otsLetter->date)),
+            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : date('dmY', strtotime($otsLetter->duration_land_authorization)),
             "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
@@ -1253,11 +1294,12 @@ class EForm extends Model
         * @param  string $endChart
         * @return array
     */
-    public function getChartSubmission($startChart, $endChart, $user_id)
+    public function getChartEForm($startChart, $endChart)
     {
-        $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
-
         if(!empty($startChart) && !empty($endChart)){
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $endChart   = date("t-m-Y", strtotime($endChart));
+
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
@@ -1269,6 +1311,7 @@ class EForm extends Model
             $now        = new \DateTime();
             $startChart = $now->format('Y-m-d h:i:s');
 
+            $endChart   = date("t-m-Y", strtotime($endChart));
             $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
@@ -1276,7 +1319,8 @@ class EForm extends Model
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
-
+            
+            $startList = date("01-m-Y",strtotime($startList));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
@@ -1298,6 +1342,70 @@ class EForm extends Model
                 ->orderBy("order", "asc")
                 ->get()
                 ->pluck("chart");
+        return $data;
+    }
+
+    public function getNewestEFormAttribute()
+    {
+        // Set language to Bahasa
+        Carbon::setLocale('id');
+
+        // return custom collection
+        return [
+            'no_ref'            => $this->ref_number,
+            'nasabah'           => $this->customer['personal']['name'],
+            'nominal'           => $this->nominal,
+            'product_type'      => $this->product_type,
+            'tanggal_pengajuan' => date('d-M-Y', strtotime($this->created_at)),
+            'no_telepon'        => empty($this->mobile_phone) ? null : $this->mobile_phone,
+            'prescreening'      => $this->prescreening_status,
+            'status'            => $this->status,
+            'aging'             => Carbon::createFromTimeStamp(strtotime($this->created_at))->diffForHumans()
+        ];
+    }
+
+    public function getNewestEForm($startList, $endList)
+    {
+        if(!empty($startList) && !empty($endList)){
+            $startList = date("01-m-Y",strtotime($startList));
+            $endList   = date("t-m-Y", strtotime($endList));
+     
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startList) && !empty($endList)){
+            $now        = new \DateTime();
+            $startList = $now->format('Y-m-d h:i:s');
+
+            $endList   = date("t-m-Y", strtotime($endList));
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endList) && !empty($startList)){
+            $now      = new \DateTime();
+            $endList = $now->format('Y-m-d h:i:s');
+
+            $startList = date("01-m-Y",strtotime($startList));
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = EForm::when($filter, function($query) use ($startList, $endList){
+                    return $query->whereBetween('eforms.created_at', [$startList, $endList]);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->pluck('newestEForm');
+
         return $data;
     }
 }

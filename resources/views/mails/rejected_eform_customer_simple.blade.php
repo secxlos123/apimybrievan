@@ -29,7 +29,7 @@
                     <td align="center">
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        E-form yang anda ajukan dengan nomor referensi <b>{!! $mail[ 'ref_number' ] !!}</b> saat ini belum bisa diproses lebih lanjut. Untuk informasi terkait pinjaman Konsumtif BRI lainnya, silahkan log in dengan akun MyBRI Anda di aplikasi MyBRI.
+                        <p align="justify">E-form yang anda ajukan dengan nomor referensi <b>{!! $mail[ 'ref_number' ] !!}</b> saat ini belum bisa diproses lebih lanjut. Untuk informasi terkait pinjaman Konsumtif BRI lainnya, silahkan log in dengan akun MyBRI Anda di aplikasi MyBRI.</p>
                         <br>
                         Terima kasih atas kepercayaan Anda kepada kami.
                     </td>

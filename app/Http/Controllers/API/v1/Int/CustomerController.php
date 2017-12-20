@@ -144,8 +144,8 @@ class CustomerController extends Controller
 
 			$developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        
-            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  
+
+            if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)
             {
                 $property =  Property::updateOrCreate(['id' => $baseRequest['property']],[
                     'developer_id'=>$baseRequest['developer'],
@@ -193,7 +193,6 @@ class CustomerController extends Controller
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
 
 		DB::commit();
-		// \Log::info($customer->id);
 		
 		if( $request->verify_status == 'verify' ) {
 			$usersModel = User::FindOrFail($customer->id);

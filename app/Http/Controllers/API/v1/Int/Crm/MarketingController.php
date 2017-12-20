@@ -63,7 +63,7 @@ class MarketingController extends Controller
       $data['target'] = $request['target'];
       $data['account_id'] = $request['account_id'];
       $data['status'] = $request['status'];
-      $data['target_closing_date'] = $request['target_closing_date'];
+      $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
       $save = Marketing::create($data);
       if ($save) {

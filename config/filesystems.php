@@ -105,6 +105,12 @@ return [
             'bucket' => env('AWS_BUCKET'),
         ],
 
+        'avatars' => [
+            'driver' => 'local',
+            'root' => public_path('uploads/avatars'),
+            'url' => env('APP_URL').'/uploads/avatars',
+            'visibility' => 'public',
+        ],
     ],
 
 ];

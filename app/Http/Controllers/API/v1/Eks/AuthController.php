@@ -234,7 +234,7 @@ class AuthController extends Controller
                 unset($request[$base]);
             }
         }
-        \Log::info("=======================================================");
+        \Log::info("==================== re arrange ===================================");
         \Log::info($request);
 
         return $request;

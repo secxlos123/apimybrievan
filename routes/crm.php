@@ -1,24 +1,29 @@
 <?php
 Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' => 'API\v1\Int\Crm'], function(){
- // route dashboard
- Route::get( '/', 'DashboardController@index', [
+  // route dashboard
+  Route::get( '/', 'DashboardController@index', [
 
- ] )->name('crm.index');
+  ] )->name('crm.index');
 
- //route account
- // Route::resource( 'account', 'AccountController', [
- //   'only' => ['index','show']
- // ] );
+  //route account
+  Route::post( 'account/leads', 'AccountController@index')->name('crm.account');
 
- //route activity
- Route::resource( 'activity', 'marketingActivityController', [
-   'only' => ['index', 'create', 'store', 'update']
- ] );
+  // route customer ext and int
+  Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');
 
- // Route::get('/activity/reSchedule', 'ActivityController@reSchedule')->name('activity.reschedule');
+  //route activity
+  Route::resource( 'activity', 'marketingActivityController', [
+    'only' => ['index', 'create', 'store', 'update']
+  ] );
 
- //Route Marketing
- Route::resource('marketing', 'MarketingController', [
-   'only' => ['index', 'create', 'store', 'update', 'show']
- ]);
+  // Route reschedule Activity
+  Route::post('/activity/{activity}/reschedule', 'marketingActivityController@reSchedule')->name('crm.reschedule');
+
+  // Route storeFollowUp Activity
+  Route::post('/activity/{activity}/storeFollowUp', 'marketingActivityController@storeFollowUp')->name('crm.storeFollowUp');
+
+  //Route Marketing
+  Route::resource('marketing', 'MarketingController', [
+    'only' => ['index', 'create', 'store', 'update', 'show']
+  ]);
 });

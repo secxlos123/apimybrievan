@@ -167,7 +167,7 @@
                                 <td>{!! $mail['dependent_amount'] !!}</td>
                             </tr>
 
-                            @if ($mail['status_id'] == '2' )
+                            @if ($mail['source_income'] == 'joint' )
                                 <tr>
                                     <td align="center">DATA KEUANGAN PASANGAN</td>
                                 </tr>

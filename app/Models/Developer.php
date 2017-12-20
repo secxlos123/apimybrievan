@@ -96,7 +96,8 @@ class Developer extends Model
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
-                        $developer->where('bri', '=', NULL);
+                        // $developer->where('bri', '=', NULL);
+                        $developer->where('bri', '!=', '1');
                     }
                 }
 
@@ -126,14 +127,34 @@ class Developer extends Model
     public function getListUserProperties($startList = null, $endList = null, $user_id)
     {
         $developer = Developer::select('id')->where('user_id', $user_id)->firstOrFail();
+        if(!empty($startList) && !empty($endList)){
+            $startList = date("01-m-Y",strtotime($startList));
+            $endList   = date("t-m-Y", strtotime($endList));
+     
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList = $dateStart->format('Y-m-d h:i:s');
 
-        if(empty($startList) && !empty($endList)){
-            $startList = Date('d-m-Y');
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startList) && !empty($endList)){
+            $now        = new \DateTime();
+            $startList = $now->format('Y-m-d h:i:s');
+
+            $endList   = date("t-m-Y", strtotime($endList));
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endList);
+            $endList = $dateEnd->format('Y-m-d h:i:s');
+
             $filter = true;
         }else if(empty($endList) && !empty($startList)){
-            $endList = Date('d-M-Y');
-            $filter = true;
-        }else if(!empty($startList) && !(empty($endList))){
+            $now      = new \DateTime();
+            $endList = $now->format('Y-m-d h:i:s');
+
+            $startList = date("01-m-Y",strtotime($startList));
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
+            $startList = $dateStart->format('Y-m-d h:i:s');
+
             $filter = true;
         }else{
             $filter = false;
@@ -152,7 +173,7 @@ class Developer extends Model
                         JOIN property_types property_types USING (id)
                         JOIN property_items property_items USING (id)
                         WHERE properties.developer_id = ".$developer['id']."
-                        AND properties.created_at >= '".$startList."' AND properties.created_at <= '".$endList."'
+                        AND properties.created_at between '".$startList."' and '".$endList."'
                         ORDER  BY developers.id, properties.name, users.id, users.first_name
             ");
 
@@ -165,7 +186,7 @@ class Developer extends Model
                     'unit_type'       => "Type ".$item->building_area,
                     'address'         => $item->address,
                     'approved_status' => ($item->is_approved) ? 'Approved' : 'Rejected',
-                    'created_at'         => $item->created_at,
+                    'created_at'      => $item->created_at,
                     'created'         => strtotime($item->created_at),
                 ];
             })->toArray();
