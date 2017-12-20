@@ -12,6 +12,7 @@ use App\Models\UserNotification;
 use App\Models\Developer;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
+use App\Models\Appointment;
 use Carbon\Carbon;
 use Sentinel;
 use Asmx;
@@ -523,6 +524,24 @@ class EForm extends Model
                     $eform->ao_id = $user_input->id;
                 }
             }
+        } );
+
+        static::created( function( $eform ) {
+            $scheduleData = array(
+                'title' => $eform->ref_number
+                , 'appointment_date' => $eform->appointment_date
+                , 'user_id' => $eform->user_id
+                , 'ao_id' => $eform->ao_id
+                , 'eform_id' => $eform->id
+                , 'ref_number' => $eform->ref_number
+                , 'address' => $eform->address
+                , 'latitude' => $eform->longitude
+                , 'longitude' => $eform->latitude
+                , 'desc' => '-'
+                , 'status' => 'waiting'
+            );
+
+            $schedule = Appointment::create($scheduleData);
         } );
     }
 

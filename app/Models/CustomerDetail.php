@@ -369,13 +369,19 @@ class CustomerDetail extends Model
      */
     public function getListDebitur($params)
     {
+        $name = empty($params['name']) ? '' : $params['name'];
+        $nik  = empty($params['nik']) ? '' : $params['nik'];
+        $city = empty($params['city_id']) ? false : $params['city_id'];
+
         $data = CustomerDetail::with('user', 'city')
-                ->whereHas('user', function($query) use ($params){
-                    return $query->where('first_name', 'like', '%'.$params['name'].'%')
-                                 ->orWhere('last_name', 'like', '%'.$params['name'].'%');
+                ->whereHas('user', function($query) use ($name){
+                    return $query->where('first_name', 'like', '%'.$name.'%')
+                                 ->orWhere('last_name', 'like', '%'.$name.'%');
                 })
-                ->where('nik', 'like', '%'.$params['nik'].'%')
-                ->where('city_id', $params['city_id'])
+                ->where('nik', 'like', '%'.$nik.'%')
+                ->when($city, function($query) use ($city){
+                    return $query->where('city_id', $city);
+                })
                 ->get()
                 ->pluck('listDebitur');
         return $data;
