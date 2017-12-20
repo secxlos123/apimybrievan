@@ -404,7 +404,7 @@ class CustomerDetail extends Model implements AuditableContract
     }
     
     /*
-     * Mutator for list debitur.
+     * Mutator for detail debitur.
      *
      * @return void
     */
