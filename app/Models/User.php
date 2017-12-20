@@ -706,8 +706,12 @@ class User extends Authenticatable implements AuditableContract, UserResolver
      */
     public static function resolveId()
     {
-        $headers = apache_request_headers();
         $user = \Sentinel::check() ? \Sentinel::check()->id : null;
+        if (env('APP_ENV') == 'production') {
+            $user_int = \RestwsHc::getUser();
+            return array_key_exists('pn', $user_int) ? ltrim($user_int['pn'], '0') : $user;
+        }
+        $headers = apache_request_headers();
         \Log::info($user);
         return array_key_exists('pn', $headers) ? ltrim($headers['pn'], '0') : $user;
     }
