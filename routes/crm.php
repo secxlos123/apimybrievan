@@ -5,6 +5,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   ] )->name('crm.index');
 
+  //route $pemasar
+  Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');
+
   //route account
   Route::post( 'account/leads', 'AccountController@index')->name('crm.account');
 

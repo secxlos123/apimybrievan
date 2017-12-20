@@ -373,34 +373,26 @@ class CustomerDetail extends Model implements AuditableContract
      */
     public function getListDebitur($params)
     {
-        $data = CustomerDetail::with('user', 'city')
-                ->whereHas('user', function($query) use ($params){
-                    return $query->where('first_name', 'like', '%'.$params['name'].'%')
-                                 ->orWhere('last_name', 'like', '%'.$params['name'].'%');
+        $name = empty($params['name']) ? '' : $params['name'];
+        $nik  = empty($params['nik']) ? '' : $params['nik'];
+        $city = empty($params['city_id']) ? false : $params['city_id'];
+
+        $data = CustomerDetail::with('user', 'city', 'eform')
+                ->whereHas('user', function($query) use ($name){
+                    return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
+                                 ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
                 })
-                ->where('nik', 'like', '%'.$params['nik'].'%')
-                ->where('city_id', $params['city_id'])
-                ->get()
-                ->pluck('listDebitur');
+                ->whereHas('eform', function($query){
+                    return $query->where('is_approved', true);
+                })
+                ->where('nik', 'like', '%'.$nik.'%')
+                ->when($city, function($query) use ($city){
+                    return $query->where('city_id', $city);
+                })
+                ->paginate(10);
         return $data;
     }
 
-    /**
-     * Mutator for list debitur.
-     *
-     * @return void
-     */
-    public function getListDebiturAttribute()
-    {
-        return [
-            "nik"    => $this->nik,
-            "nama"   => $this->user->first_name." ".$this->user->last_name,
-            "email"  => $this->user->email,
-            "kota"   => $this->city ? $this->city->name : '',
-            "phone"  => $this->user->mobile_phone,
-            "gender" => $this->user->gender,
-        ];
-    }
     /**
      * Set customer npwp image.
      *
@@ -519,5 +511,10 @@ class CustomerDetail extends Model implements AuditableContract
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function eform()
+    {
+        return $this->hasOne(EForm::class, 'user_id', 'user_id');
     }
 }
