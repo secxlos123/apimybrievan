@@ -287,16 +287,13 @@ if (! function_exists('get_title')) {
     function get_title($key)
     {
         $data = array(
-            "1" => "SDTT"
-            , "2" => "SD"
-            , "3" => "SMP"
-            , "4" => "SMA"
-            , "5" => "Diploma 1"
-            , "6" => "Diploma 2"
-            , "7" => "Diploma 3"
-            , "8" => "S-1"
-            , "9" => "S-2"
-            , "10" => "S-3"
+            "S1" => "Sarjana"
+            , "S2" => "Master"
+            , "S3" => "Doktor"
+            , "SD" => "SD"
+            , "SM" => "SMP"
+            , "SU" => "SMU/SMK"
+            , "ZZ" => "Lainnya"
         );
 
         if ( $key != 'all' ) {
