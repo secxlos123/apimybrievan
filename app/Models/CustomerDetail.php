@@ -398,9 +398,25 @@ class CustomerDetail extends Model implements AuditableContract
     {
         $data = CustomerDetail::with('user', 'city', 'eform')
                 ->where('user_id', $params['user_id'])
-                ->get();
+                ->get()
+                ->pluck('detailDebitur');
         return $data;
     }
+    
+    /*
+     * Mutator for detail debitur.
+     *
+     * @return void
+    */
+
+    public function getDetailDebiturAttribute()
+    {
+        return [
+            "eform" => $this->eform,
+            "user"  => $this->user
+        ];
+    }
+
 
     /**
      * Set customer npwp image.
