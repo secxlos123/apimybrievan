@@ -225,10 +225,10 @@ class ApprovalDataChangeController extends Controller
         $related->address = $dataChange->address;
       }
       if ($dataChange->first_name) {
-        $related->first_name = $dataChange->first_name;
+        $related->user->first_name = $dataChange->first_name;
       }
       if ($dataChange->last_name) {
-        $related->last_name = $dataChange->last_name;
+        $related->user->last_name = $dataChange->last_name;
       }
 
       if ($dataChange->logo) {
