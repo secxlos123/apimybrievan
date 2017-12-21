@@ -398,81 +398,9 @@ class CustomerDetail extends Model implements AuditableContract
     {
         $data = CustomerDetail::with('user', 'city', 'eform')
                 ->where('user_id', $params['user_id'])
-                ->get()
-                ->pluck('detailDebitur');
+                ->get();
         return $data;
     }
-    
-    /*
-     * Mutator for detail debitur.
-     *
-     * @return void
-    */
-
-    public function getDetailDebiturAttribute()
-    {
-        return [
-            "data_pribadi" => [
-                "nik"           => $this->nik,
-                "nama"          => $this->user->first_name." ".$this->user->last_name,
-                "tempat_lahir"  => $this->eform['customer']['personal']['birth_place'],
-                "tanggal_lahir" => $this->birth_date,
-                "alamat"        => $this->address,
-                "gender"        => $this->user->gender,
-                "status_nikah"  => $this->status,
-                "email"         => $this->user->email,
-                "nama_ibu"      => $this->mother_name,
-                "phone"         => $this->user->mobile_phone
-            ],
-            "data_pekerjaan" => [
-                "bidang_pekerjaan"  => $this->job_field_id,
-                "jenis_pekerjaan"   => $this->job_type_name,
-                "pekerjaan"         => $this->job_id,
-                "nama_perusahaan"   => $this->company_name,
-                "jabatan"           => $this->position,
-                "lama_kerja"        => $this->work_duration,
-                "alamat_kantor"     => $this->office_address
-            ],
-            "data_keuangan" => [
-                "gaji"                  => $this->salary,
-                "pendapatan_lain"       => $this->other_salary,
-                "angsuran_permohonan"   => $this->loan_installment,
-                "jumlah_tanggungan"     => $this->dependent_amount
-            ],
-            "data_keluarga" => [
-                "nama"      => $this->user->customer_detail->emergency_name, 
-                "phone"     => $this->user->customer_detail->emergency_phone, 
-                "hubungan"  => $this->emergency_relation
-            ],
-            "data_pasangan" => [
-                "gaji"                  => $this->couple_salary,
-                "pendapatan_lain"       => $this->couple_other_salary,
-                "angsuran_permohonan"   => $this->couple_loan_installment
-            ],
-            "data_pengajuan" => [
-                "no_ref"            => $this->eform['ref_number'],
-                "nominal"           => $this->eform['nominal'],
-                "nama_produk"       => $this->eform['product_type'],
-                "type_produk"       => $this->kpr['status_property'],
-                "developer"         => $this->kpr['developer_name'],
-                "jenis_property"    => $this->kpr['kpr_type_property'],
-                "kantor_cabang"     => $this->eform['branch'],
-                "tanggal_pertemuan" => $this->eform['appointment_date'],
-                "harga_rumah"       => $this->kpr['price'],
-                "luas_bangunan"     => $this->kpr['building_area'],
-                "lokasi_rumah"      => $this->kpr['home_location'],
-                "jangka_waktu"      => $this->kpr['year'],
-                "kpr_ke"            => $this->kpr['active_kpr'],
-                "uang_muka"         => $this->kpr['down_payment'],
-                "jumlah_permohonan" => $this->eform['nominal'],
-            ],
-            "lain_lain" =>  [
-                "identity"          => $this->identity,
-                "couple_identity"   => $this->user->customer_detail->couple_identity
-            ]
-        ];
-    }
-
 
     /**
      * Set customer npwp image.
