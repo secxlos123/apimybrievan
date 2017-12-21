@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\ApprovalDataChange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\ApprovalDataChange\CreateRequest;
+use App\Models\Developer;
+use App\Models\ThirdParty;
 
 class ApprovalDataChangeController extends Controller
 {
@@ -133,8 +135,16 @@ class ApprovalDataChangeController extends Controller
      */
     public function show($eks, $approvalType, $id)
     {
+      $new = $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id);
+      if ($approvalType == 'developer') {
+        $old = DEVELOPER::with('city')->where(['user_id'=>$new->related_id])->firstOrFail();
+      }else
+      {
+        $old = ThirdParty::with('city')->where(['user_id'=>$new->related_id])->firstOrFail();
+      }
+      $newold = compact('new','old');
       return $this->makeResponse(
-        $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id)
+        $newold
       );
     }
 
