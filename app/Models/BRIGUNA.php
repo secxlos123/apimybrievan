@@ -52,7 +52,11 @@ class BRIGUNA extends Model
         'definisi','no_npwp','no_dan_tanggal_sk_awal','no_dan_tanggal_sk_akhir',
         'branch_name','baru_atau_perpanjang','total_exposure','program_asuransi',
         'kredit_take_over','pemrakarsa_name','agama','npl_instansi','npl_unitkerja',
-        'gimmick','jumlah_pekerja','jumlah_debitur','scoring_mitra'
+        'gimmick','jumlah_pekerja','jumlah_debitur','scoring_mitra','is_verified',
+        'catatan_kk','catatan_ktp','catatan_couple_ktp','catatan_npwp',
+        'catatan_sk_awal','catatan_sk_akhir','catatan_skpu','catatan_rekomendasi',
+        'catatan_gaji','flag_kk','flag_ktp','flag_couple_ktp','flag_npwp','flag_sk_awal',
+        'flag_sk_akhir','flag_skpu','flag_rekomendasi','flag_slip_gaji'
 	];
 	
     /**
