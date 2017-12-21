@@ -24,6 +24,10 @@ class SelectKodePosController extends Controller
 		foreach($kodepos as $key){
 			if($kodedrkode!=$key['postal_code']){
 				$kodepost[]['postal_code'] = $key['postal_code'];
+				$kodepost[]['Kelurahan'] = $key['Kelurahan'];
+				$kodepost[]['Kecamatan'] = $key['Kecamatan'];
+				$kodepost[]['Kota'] = $key['Kota'];
+				$kodepost[]['Propinsi'] = $key['Propinsi'];
 				$kodedrkode = $key['postal_code'];
 				$count = $count+1;
 			}
