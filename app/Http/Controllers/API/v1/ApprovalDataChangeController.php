@@ -227,6 +227,9 @@ class ApprovalDataChangeController extends Controller
       if ($dataChange->city_id) {
         $related->city_id = $dataChange->city_id;
       }
+       if ($dataChange->address) {
+        $related->address = $dataChange->address;
+      }
 
       if ($dataChange->logo) {
         $path = $this->transformToArray($dataChange);

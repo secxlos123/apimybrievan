@@ -31,7 +31,8 @@ class ApprovalDataChange extends Model implements AuditableContract
       'mobile_phone',
       'status',
       'remark',
-      'approval_by'
+      'approval_by',
+      'address'
     ];
 
     /**
