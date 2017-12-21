@@ -108,8 +108,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			->where(['developerId' => '[0-9]+', 'propertyId' => '[0-9]+']);
 		Route::post('/collateral/disposition/{collateralId}', ['as' => 'collateral.disposition', 'uses' => 'CollateralController@disposition'])
 			->where('collateralId', '[0-9]+');
-		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
-			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
+		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
 		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		Route::get('collateral/nonindex/{developerId}/{propertyId}', ['as' => 'collateral.showNon', 'uses' => 'CollateralController@showNon']);
 		/**
@@ -120,6 +119,21 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 				->where('collateralId', '[0-9]+');
 			Route::get('/{collateralId}', ['as' => 'collateral.ots.show', 'uses' => 'CollateralController@getOts'])
 				->where('collateralId', '[0-9]+');
+		});
+
+		/**
+		 * Route approval data change
+		 * @var [type]
+		 */
+		Route::group(['prefix' => 'approval-data-change/{approvalType}', 'as' => 'approval-data-change.'], function($router) {
+			Route::resource('', 'ApprovalDataChangeController', [
+				'only' => ['index', 'store', 'show', 'update'],
+				'parameters' => [
+				   '' => 'approvalDataChangeId'
+				]
+			]);
+			Route::post('{status}/{id}', ['as' => 'change-status', 'uses' => 'ApprovalDataChangeController@changeStatus'])
+			->where(['status' => '^(approve|reject)$', 'id' => '[0-9]+']);
 		});
 	} );
 
