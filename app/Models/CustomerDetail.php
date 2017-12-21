@@ -412,8 +412,8 @@ class CustomerDetail extends Model implements AuditableContract
     public function getDetailDebiturAttribute()
     {
         return [
-            "eform" => $this->eform,
-            "user"  => $this->user
+            "customer" => $this->eform['customer'],
+            "kpr"  => $this->eform['kpr']
         ];
     }
 
