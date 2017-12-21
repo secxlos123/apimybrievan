@@ -70,7 +70,7 @@ class CalculatorController extends Controller
                 $plafond -= $angsuranPokok;
                 $returnVal[$i] = [
                     "bulan"          => $i,
-                    "sisa_pinjaman"  => $plafond,
+                    "sisa_pinjaman"  => round($plafond),
                     "angsuran_pokok" => round($angsuranPokok),
                     "angsuran_bunga" => round($angsuranBunga),
                     "angsuran"       => $angsuran,
@@ -81,10 +81,10 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "uang_muka"           => ($total * $downPayment) / 100,
-                "suku_bunga"          => $rate."%",
-                "kredit_fix"          => $term." Bulan",
-                "lama_pinjaman"       => $term." Bulan",
+                "uang_muka"     => ($total * $downPayment) / 100,
+                "suku_bunga"    => $rate."%",
+                "kredit_fix"    => $term." Bulan",
+                "lama_pinjaman" => $term." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
@@ -162,10 +162,10 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "uang_muka"           => ($total * $downPayment) / 100,
-                "suku_bunga"          => $rate."%",
-                "kredit_fix"          => $term." Bulan",
-                "lama_pinjaman"       => $term." Bulan",
+                "uang_muka"     => ($total * $downPayment) / 100,
+                "suku_bunga"    => $rate."%",
+                "kredit_fix"    => $term." Bulan",
+                "lama_pinjaman" => $term." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,
             "pembayaran_pertama" => $uangMuka,
