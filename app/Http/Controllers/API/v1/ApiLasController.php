@@ -375,6 +375,12 @@ class ApiLasController extends Controller
                 return $conten;
                 break;
 
+            case 'inquiryDati2':
+                $inquiry = $ApiLas->inquiryDati2();
+                $conten = $this->return_conten($inquiry);
+                return $conten;
+                break;
+
     		default:
                 $error[0] = 'Uknown request data';
     			return [

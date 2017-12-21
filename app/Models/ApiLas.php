@@ -667,4 +667,15 @@ class ApiLas extends Model
             throw new \Exception( "Error Processing Request", 1 );
         }
     }
+
+    public function inquiryDati2() {
+        try {
+            $inquiry = AsmxLas::setEndpoint('inquiryDati2')
+                ->post('form_params');
+
+            return $inquiry;
+        } catch (Exception $e) {
+            throw new \Exception( "Error Processing Request", 1 );
+        }
+    }
 }

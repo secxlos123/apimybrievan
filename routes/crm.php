@@ -14,9 +14,12 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   // route customer ext and int
   Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');
 
+  // route customer ext and int
+  Route::post( 'account/customer_nik', 'CustomerController@customer_nik')->name('crm.customer_nik');
+
   //route activity
   Route::resource( 'activity', 'marketingActivityController', [
-    'only' => ['index', 'create', 'store', 'update']
+    'only' => ['index', 'create', 'store']
   ] );
 
   // Route reschedule Activity
@@ -27,6 +30,6 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //Route Marketing
   Route::resource('marketing', 'MarketingController', [
-    'only' => ['index', 'create', 'store', 'update', 'show']
+    'only' => ['index', 'create', 'store']
   ]);
 });
