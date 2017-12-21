@@ -34,8 +34,16 @@ class SentinelAuthAdapter implements AuthInterface
     {
         try {
             $user = Sentinel::findById($id);
+           if (count($user) > 0) {
             Sentinel::login($user);
             return $user instanceof UserInterface && Sentinel::check();
+           }
+           else
+           {
+            Sentinel::logout($user);
+            return false;
+           }
+
         } catch (Exception $e) {
             return false;
         }
