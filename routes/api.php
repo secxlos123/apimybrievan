@@ -18,8 +18,23 @@ Route::post( 'urgent-function', 'RemovableController@run' );
  * Route group for api v1
  */
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
+		/* BRIGUNA */
+		Route::post('select', 'SelectController@select');
+		Route::get('phpini', 'EFormController@php_ini');
+		Route::post('mitra_relation', 'EFormController@mitra_relation');
+		//Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
+		Route::post('eforms_briguna', 'EFormController@show_briguna');
+		Route::get('Download_Rekomendasi', 'Download_RekomendasiController@Download');
+		Route::get('Surat_Kuasa_Potong_Upah', 'DownloadFileController@Download');
+		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
+		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
+		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
+		Route::post('SelectCabang', 'SelectCabangController@getCabang');
+
+		/* ------------*/
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
+
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );
@@ -31,7 +46,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'project-list', 'ProjectController@index' );
 		Route::get( 'economy-sectors', 'EconomySectorController@index' );
 		Route::get( 'use-reasons', 'UseReasonController@index' );
-
+		Route::get( 'kanwil-list', 'KanwilController@index' );
 		Route::get( 'kemendagri', 'CustomerController@kemendagri' );
 		Route::get( 'customer-bri', 'CustomerController@customer' );
 
@@ -40,12 +55,21 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		] );
 
 		Route::get( 'offices', 'OfficeController@index' );
+		Route::post('SelectCabang', 'SelectCabangController@index');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');
 			Route::get('types', 'DropdownController@types');
 			Route::get('units', 'DropdownController@items');
 		});
+
+		// Dropbox
+		Route::post('dropbox/index', 'DropboxController@index');
+
+		// API LAS
+		Route::post('api_las/index', 'ApiLasController@index');
+		Route::post('api_las/briguna', 'ApiLasController@show_briguna');
+		Route::post('api_las/update', 'ApiLasController@update_briguna');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
@@ -68,6 +92,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 
 		Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
+		Route::post( 'eforms/submit-screening', 'EFormController@submitScreening' );
 
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
@@ -84,8 +109,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('/collateral/disposition/{collateralId}', ['as' => 'collateral.disposition', 'uses' => 'CollateralController@disposition'])
 			->where('collateralId', '[0-9]+');
 		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
+<<<<<<< HEAD
 			->where(['collateralId' => '[0-9]+', 'action' => '^(approve|reject)$']);
 
+=======
+			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
+		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
+		Route::get('collateral/nonindex/{developerId}/{propertyId}', ['as' => 'collateral.showNon', 'uses' => 'CollateralController@showNon']);
+>>>>>>> c91dda14c108e656e5c69fbda6a255c3bae0d581
 		/**
 		 * Collateral ots routes
 		 */
@@ -112,10 +143,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 	} );
 
-
-	Route::put( 'eforms/submit-screening', 'EFormController@submitScreening' );
 	Route::group( [ 'prefix' => '{type}' ], function () {
 		Route::get( 'cities', 'CityController' );
 		Route::get('city', 'CityController@getAll');
 	} );
+
+	/**
+	 * Force Update from CLAS
+	 */
+	Route::post( 'eforms/update-clas', 'EFormController@updateCLAS' );
 } );

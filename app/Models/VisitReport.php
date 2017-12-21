@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\BankStatement;
 use App\Models\Mutation;
+use App\Models\EForm;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class VisitReport extends Model
+class VisitReport extends Model implements AuditableContract
 {
+    use Auditable;
     /**
      * The table name.
      *
@@ -22,54 +26,7 @@ class VisitReport extends Model
      * @var array
      */
     protected $fillable = [
-        'eform_id',
-        'purpose_of_visit',
-        'visit_result',
-        'photo_with_customer',
-        'pros',
-        'cons',
-        'seller_name',
-        'seller_address',
-        'seller_phone',
-        'selling_price',
-        'reason_for_sale',
-        'relation_with_seller',
-        'npwp_number',
-        'income',
-        'income_salary',
-        'income_allowance',
-        'kpp_type',
-        'type_financed',
-        'economy_sector',
-        'project_list',
-        'program_list',
-        'kpp_type_name',
-        'type_financed_name',
-        'economy_sector_name',
-        'project_list_name',
-        'program_list_name',
-        'id_prescreening',
-        'npwp',
-        'use_reason_name',
-        'use_reason',
-        'source',
-        'recommended',
-        'recommendation',
-        'legal_document',
-        'marrital_certificate',
-        'divorce_certificate',
-        'offering_letter',
-        'down_payment',
-        'building_tax',
-        'salary_slip',
-        'proprietary',
-        'building_permit',
-        'legal_bussiness_document',
-        'license_of_practice',
-        'work_letter',
-        'family_card',
-        'couple_salary',
-        'couple_other_salary'
+        'eform_id', 'purpose_of_visit', 'visit_result', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller', 'npwp_number', 'income', 'income_salary', 'income_allowance', 'kpp_type', 'type_financed', 'economy_sector', 'project_list', 'program_list', 'kpp_type_name', 'type_financed_name', 'economy_sector_name', 'project_list_name', 'program_list_name', 'id_prescreening', 'npwp', 'use_reason_name', 'use_reason', 'source', 'recommended', 'recommendation', 'marrital_certificate', 'divorce_certificate', 'offering_letter', 'down_payment', 'building_tax', 'salary_slip', 'proprietary', 'building_permit', 'legal_bussiness_document', 'license_of_practice', 'work_letter', 'family_card', 'couple_salary', 'couple_other_salary', 'title', 'employment_status', 'age_of_mpp', 'loan_history_accounts', 'religion', 'office_phone', 'source_income'
     ];
 
     /**
@@ -78,7 +35,7 @@ class VisitReport extends Model
      * @var array
      */
     protected $appends = [
-        'npwp_number_masking'
+        'npwp_number_masking', 'title_name', 'employment_status_name', 'loan_history_accounts_name', 'religion_name'
     ];
 
     /**
@@ -87,6 +44,7 @@ class VisitReport extends Model
      * @return void
      */
     public static function create( $data ) {
+	if ( isset($data['mutations']) ){
         $visit_report = ( new static )->newQuery()->create( $data );
         foreach ( $data[ 'mutations' ] as $key => $mutation_data ) {
             $mutation = Mutation::create( [
@@ -98,6 +56,7 @@ class VisitReport extends Model
                 ] + $bank_statement_data );
             }
         }
+}
     }
 
     /**
@@ -129,16 +88,6 @@ class VisitReport extends Model
     }
 
     /**
-     * Set Report Legal Document image.
-     *
-     * @return void
-     */
-    public function setLegalDocumentAttribute( $image )
-    {
-        $this->globalSetImageAttribute( $image, 'legal_document' );
-    }
-
-    /**
      * Set Report Salary Slip image.
      *
      * @return void
@@ -147,7 +96,7 @@ class VisitReport extends Model
     {
         $this->globalSetImageAttribute( $image, 'salary_slip' );
     }
-    
+
     /**
      * Set Report Family Card image.
      *
@@ -406,7 +355,6 @@ class VisitReport extends Model
         return $this->globalImageCheck( $image );
     }
 
-
     /**
      * Get Report NPWP Number Masking.
      *
@@ -428,14 +376,15 @@ class VisitReport extends Model
      */
     public function globalImageCheck( $filename )
     {
+        $eformData = EForm::findOrFail($this->eform_id);
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $image = 'uploads/eforms/' . $this->eform_id . '/visit_report/' . $filename;
+            $image = 'uploads/' . $eformData->nik . '/' . $filename;
             if( \File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
         }
-        
+
         return url( $path );
     }
 
@@ -464,8 +413,9 @@ class VisitReport extends Model
      */
     public function globalSetImage( $image, $attribute )
     {
+        $eformData = EForm::findOrFail($this->eform_id);
         if ( gettype($image) == 'object' ) {
-            $path = public_path( 'uploads/eforms/' . $this->eform_id . '/visit_report/' );
+            $path = public_path( 'uploads/' . $eformData->nik . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 \File::delete( $path . $this->attributes[ $attribute ] );
             }
@@ -488,6 +438,62 @@ class VisitReport extends Model
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get mutator age of title name.
+     *
+     * @return string
+     */
+    public function getTitleNameAttribute(  )
+    {
+        if (null !== $this->title) {
+            return get_title($this->title);
+        }
+
+        return '-';
+    }
+
+    /**
+     * Get mutator age of employment status name.
+     *
+     * @return string
+     */
+    public function getEmploymentStatusNameAttribute(  )
+    {
+        if (null !== $this->employment_status) {
+            return get_employment($this->employment_status);
+        }
+
+        return '-';
+    }
+
+    /**
+     * Get mutator age of history account name.
+     *
+     * @return string
+     */
+    public function getLoanHistoryAccountsNameAttribute(  )
+    {
+        if (null !== $this->loan_history_accounts) {
+            return get_loan_history($this->loan_history_accounts);
+        }
+
+        return '-';
+    }
+
+    /**
+     * Get mutator age of religion name.
+     *
+     * @return string
+     */
+    public function getReligionNameAttribute(  )
+    {
+        if (null !== $this->religion) {
+            return get_religion($this->religion);
+        }
+
+        return '-';
     }
 
     /**

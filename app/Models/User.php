@@ -8,10 +8,24 @@ use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 use File;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use App\Events\Customer\CustomerRegistered;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Contracts\UserResolver;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements AuditableContract, UserResolver
 {
-    use Notifiable;
+    use Notifiable, Auditable ;
+
+    /**
+     * Attributes to exclude from the Audit.
+     *
+     * @var array
+     */
+    protected $auditExclude = [
+        'last_login',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +34,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'email', 'password', 'permissions', 'last_login', 'first_name', 'last_name', 'image',
-        'phone', 'mobile_phone', 'gender', 'is_actived',
+        'phone', 'mobile_phone', 'gender', 'is_actived', 'is_banned'
     ];
 
     /**
@@ -54,7 +68,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected static $image_path = 'uploads/avatars/';
+    protected static $image_path = 'uploads/';
 
     /**
      * The directories belongs to broadcasts.
@@ -109,6 +123,11 @@ class User extends Authenticatable
     public function favourite()
     {
       return $this->hasOne( Favourite::class );
+    }
+
+    public function eforms()
+    {
+        return $this->hasOne( EForm::class, 'user_id' );
     }
 
     /**
@@ -183,8 +202,9 @@ class User extends Authenticatable
      */
     public function getIdentityAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
+        if( File::exists( 'uploads/' . $base . '/' . $value ) ) {
+            $image = url( 'uploads/' . $base . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -198,8 +218,9 @@ class User extends Authenticatable
      */
     public function getCoupleIdentityAttribute( $value )
     {
-        if( File::exists( 'uploads/users/' . $this->id . '/' . $value ) ) {
-            $image = url( 'uploads/users/' . $this->id . '/' . $value );
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
+        if( File::exists( 'uploads/' . $base . '/' . $value ) ) {
+            $image = url( 'uploads/' . $base . '/' . $value );
         } else {
             $image = url( 'img/noimage.jpg' );
         }
@@ -213,10 +234,11 @@ class User extends Authenticatable
      */
     public function getImageAttribute( $value )
     {
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
         $image = url( 'img/avatar.jpg' );
         if(  ! empty( $value ) ) {
-            if( File::exists( static::$image_path . $value ) ) {
-                $image = url( static::$image_path . $value );
+            if( File::exists( static::$image_path . $base . '/' . $value ) ) {
+                $image = url( static::$image_path . $base . '/' . $value );
             }
         }
         return $image;
@@ -229,9 +251,10 @@ class User extends Authenticatable
      */
     public function setImageAttribute( $image )
     {
+        $base = $this->customer_detail ? $this->customer_detail->nik : $this->user_id;
         if ( !empty( $image ) ) {
             if ( gettype($image) != 'string' ) {
-                $path = public_path( static::$image_path );
+                $path = public_path( static::$image_path . $base . '/' );
                 if ( ! empty( $this->attributes[ 'image' ] ) ) {
                     File::delete( $path . $this->attributes[ 'image' ] );
                 }
@@ -266,14 +289,13 @@ class User extends Authenticatable
     protected function createOrUpdate(Request $request, $user, $relation = null)
     {
         if ( ! $user instanceof $this ) {
-            $password = str_random(8);
-	        \Log::info('================================== Password ============================');
-	        \Log::info($password);
+            //$password = str_random(8);
+            $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
             $request->merge(['password' => bcrypt($password)]);
             $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
-            dispatch(new SendPasswordEmail($user, $password, 'registered'));
+            event(new CustomerRegistered($user, $password, $request->input('role_id')));
         } else {
             $user->update($request->all());
         }
@@ -482,6 +504,10 @@ class User extends Authenticatable
             ->leftJoin( 'visit_reports as v', 'e.id', '=', 'v.eform_id' )
             ->where( function( $user ) use( $request ) {
 
+                if( $request->has( 'eform' )) {
+                    if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
+
+                }
                 if ($request->has('name')) {
                     $user->whereRaw(
                     "CONCAT(users.first_name, ' ', users.last_name) ilike ?", [ '%' . $request->input( 'name' ) . '%' ]
@@ -638,5 +664,55 @@ class User extends Authenticatable
         return $return;
 
 
+    }
+    /**
+     * Generate Random Password
+     * @param  [type] $length     [description]
+     * @param  [type] $characters [description]
+     * @return [type]             [description]
+     */
+    public function randomPassword($length,$characters) {
+        // $length - the length of the generated password
+        // $characters - types of characters to be used in the password
+        // define variables used within the function
+        $symbols = array();
+        $passwords = array();
+        $used_symbols = '';
+        $pass = '';
+        // an array of different character types
+        $symbols["lower_case"] = 'abcdefghijklmnopqrstuvwxyz';
+        $symbols["upper_case"] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $symbols["numbers"] = '1234567890';
+        $symbols["special_symbols"] = '!?~@#-_+<>[]{}';
+        $characters = explode(",",$characters); // get characters types to be used for the passsword
+        foreach ($characters as $key=>$value) {
+            $used_symbols .= $symbols[$value]; // build a string with all characters
+        }
+        $symbols_length = strlen($used_symbols) - 1; //strlen starts from 0 so to get number of characters deduct 1
+            for ($i = 0; $i < $length; $i++) {
+                $n = rand(0, $symbols_length); // get a random character from the string with all characters
+                $pass .= $used_symbols[$n]; // add the character to the password string
+            }
+        return $pass; // return the generated password
+    }
+
+    public function user_notifications()
+    {
+        return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function resolveId()
+    {
+        $user = \Sentinel::check() ? \Sentinel::check()->id : null;
+        if (env('APP_ENV') == 'production') {
+            $user_int = \RestwsHc::getUser();
+            return !($user_int) ? $user : ltrim($user_int['pn'], '0') ;
+        }
+        $headers = apache_request_headers();
+        \Log::info($user);
+        return array_key_exists('pn', $headers) ? ltrim($headers['pn'], '0') : $user;
     }
 }

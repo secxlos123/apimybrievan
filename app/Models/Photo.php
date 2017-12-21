@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Photo extends Model
+class Photo extends Model implements AuditableContract
 {
+    use Auditable;
     /**
      * The attributes that are mass assignable.
      *
@@ -56,9 +59,10 @@ class Photo extends Model
             case 'App\Models\Property': $disk = 'properties'; break;
             case 'App\Models\PropertyType': $disk = 'types'; break;
             case 'App\Models\PropertyItem': $disk = 'units'; break;
+            case 'App\Models\Developer': $disk = 'avatars'; break;
             default: $disk = 'uploads'; break;
         }
         
-        return \Storage::disk($disk)->url($this->attributes['path']);
+        return url('uploads'.'/'.$disk.'/'.$this->attributes['path']);
     }
 }

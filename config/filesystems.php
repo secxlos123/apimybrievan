@@ -54,7 +54,7 @@ return [
             'url' => env('APP_URL').'/uploads',
             'visibility' => 'public',
         ],
-        
+
         'properties' => [
             'driver' => 'local',
             'root' => public_path('uploads/properties'),
@@ -105,6 +105,12 @@ return [
             'bucket' => env('AWS_BUCKET'),
         ],
 
+        'avatars' => [
+            'driver' => 'local',
+            'root' => public_path('uploads/avatars'),
+            'url' => env('APP_URL').'/uploads/avatars',
+            'visibility' => 'public',
+        ],
     ],
 
 ];

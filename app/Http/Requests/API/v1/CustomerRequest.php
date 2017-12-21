@@ -28,6 +28,8 @@ class CustomerRequest extends BaseRequest
         switch ( strtolower( $this->method() ) ) {
             case 'post':
                 return [
+                    'product_leads' => '',
+                    'mobile_phone_couple' =>'required_if:product_leads,briguna,required|string|regex:/^[0-9]+$/|min:9|max:12',
                     'nik' => 'required|numeric|digits:16|unique:customer_details,nik',
                     'first_name' => 'required',
                     'last_name' => '',
@@ -150,7 +152,6 @@ class CustomerRequest extends BaseRequest
                         //'other_salary' => 'required|numeric',
                         //'loan_installment' => 'required',
                         //'dependent_amount' => 'required',
-                        'legal_document' => 'required|file',
                         'salary_slip' => 'required|file',
                         'identity' => 'image|mimes:jpg,jpeg,png',
                         'image' => 'image|mimes:jpg,jpeg,png',
@@ -185,6 +186,11 @@ class CustomerRequest extends BaseRequest
             if (count($detail) != 0) {
                 $user = User::find($detail->user_id);
                 $email = $user->email;
+                if (count($user->eforms) > 0) {
+                    return [
+                        'nik.unique' => 'Nomor Induk Kartu Penduduk Sedang Melakukan Pengajuan Dengan No Ref '.$user->eforms->ref_number,
+                    ];
+                }
             }
 
         }

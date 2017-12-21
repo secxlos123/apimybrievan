@@ -6,10 +6,13 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Cviebrock\EloquentSluggable\SluggableScopeHelpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use DB;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Property extends Model
+class Property extends Model implements AuditableContract
 {
-    use Sluggable, SluggableScopeHelpers;
+    use Sluggable, SluggableScopeHelpers , Auditable ;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +21,7 @@ class Property extends Model
      */
     protected $fillable = [
         'developer_id', 'city_id', 'name', 'address', 'category', 'latitude', 'longitude',
-        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description', 'pks_number'
+        'facilities', 'approved_by', 'pic_name', 'pic_phone', 'is_approved', 'description', 'pks_number', 'region_id', 'region_name','prop_id_bri'
     ];
 
     /**
@@ -307,12 +310,24 @@ class Property extends Model
                 /**
                  * Query for filter by range items.
                  */
-                if ($request->has('without_independent')) $property->where('bri', '!=', '1');
+                if ($request->has('without_independent')){
+                    if ($request->without_independent) {
+                        // $property->where('bri', '=', NULL);
+                        $property->where('bri', '!=', '1');
+                    }
+                }
 
                 /**
                  * Query for filter by developer or user login.
                  */
-                if ($developerId) $property->where('prop_dev_id', $developerId);
+                if ($developerId)
+                    {
+                        $property->where('prop_dev_id', $developerId);
+                    }
+                // jgn di hapus sengaja di disable untuk prod
+                // else{
+                //         $property->where('is_approved',true);
+                //     }
                 if ($request->has('dev_id')) $property->where('prop_dev_id', $request->input('dev_id'));
             })
             ->where(function ($property) use (&$request, &$query) {
@@ -357,7 +372,7 @@ class Property extends Model
         $type = ($type === "km") ? 6378.10 : 3963.17;
         $lat  = (float) $lat;
         $lng  = (float) $lng;
-        $radius = (double) $radius;
+        $radius = ((double) $radius) + 30;
 
         $distance = "round( CAST( ( {$type}
             * acos( cos( radians( cast( {$lat} as double precision ) ) )
@@ -389,7 +404,7 @@ class Property extends Model
     {
         $lat    = $request->get('lat', '');
         $long   = $request->get('long', '');
-        $radius = $request->get('radius', 10);
+        $radius = $request->get('radius', 30);
         $type   = $request->get('type', 'km');
         $limit  = $request->get('limit', 6);
         $rawPrice = \DB::raw('(SELECT max(property_types.price) from property_types where property_types.property_id = properties.id) as price');
@@ -447,5 +462,117 @@ class Property extends Model
             * sin( deg2rad( $data->latitude ) ) ) );
 
         return round($distance, 2);
+    }
+
+    /**
+     * Get property attribute
+     * @return array
+     */
+    public function getNewestPropertyAttribute()
+    {
+        return [
+            'property_name' => $this->property_name,
+            'city'          => $this->cities,
+            'pic_name'      => $this->pic_name,
+            'pic_phone'     => $this->pic_phone,
+            'property_type' => "Tipe ".$this->building_area,
+            'property_unit' => $this->unit_property
+        ];
+    }
+
+    /**
+     * Get list new property
+     *
+     * @param  integer $cityId
+     * @return collection
+     */
+    public function getNewestProperty($cityId)
+    {
+        $condition = empty($cityId) ? false : true;
+
+        $data = Property::select(
+                DB::raw("count(property_items.id) as unit_property"),
+                "properties.name as property_name",
+                "cities.name as cities",
+                "properties.pic_name",
+                "properties.pic_phone",
+                "property_types.building_area"
+            )
+            ->join('property_types', 'property_types.property_id', '=', 'properties.id')
+            ->join('property_items', 'property_items.property_type_id', '=', 'property_types.id')
+            ->join('cities', 'cities.id', '=', 'properties.city_id')
+            ->when($condition, function($query) use ($cityId){
+                return $query->where('city_id', $cityId);
+            })
+            ->groupBy(
+                'properties.id',
+                'properties.name',
+                'cities.name',
+                'properties.pic_name',
+                'properties.pic_phone',
+                "property_types.building_area"
+            )
+            ->orderBy('properties.created_at', 'desc')
+            ->get()->pluck('newestProperty');
+
+        return $data;
+    }
+
+    public function getChartAttribute()
+    {
+        return [
+            'month'  => $this->month,
+            'value'  => $this->value,
+        ];
+    }
+
+    public function chartNewestProperty($startChart, $endChart)
+    {
+        if(!empty($startChart) && !empty($endChart)){
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $endChart   = date("t-m-Y", strtotime($endChart));
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startChart) && !empty($endChart)){
+            $now        = new \DateTime();
+            $startChart = $now->format('Y-m-d h:i:s');
+
+            $endChart = date("t-m-Y", strtotime($endChart));
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endChart) && !empty($startChart)){
+            $now      = new \DateTime();
+            $endChart = $now->format('Y-m-d h:i:s');
+
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = Property::select(
+                    DB::raw("count(properties.id) as value"),
+                    DB::raw("to_char(properties.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(properties.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('properties.created_at', [$startChart, $endChart]);
+                })
+                ->groupBy('month', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
+        return $data;
     }
 }

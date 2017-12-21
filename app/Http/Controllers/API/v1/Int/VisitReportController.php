@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\VisitReportRequest;
+use App\Models\EForm;
 use App\Models\VisitReport;
 use DB;
 
@@ -21,7 +22,26 @@ class VisitReportController extends Controller
     public function store( $eform_id, VisitReportRequest $request )
     {
         DB::beginTransaction();
-        $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $request->all() );
+
+        \Log::info($request->all());
+
+        $data = $request->all();
+    	if (!isset($data['mutations'])){
+            $data['mutations'] = array();
+        }
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+
+        $eform = EForm::find($eform_id);
+        $eform->update([
+            'address' => $request->input('address')
+            , 'appointment_date' => $request->input('date')
+            , 'ao_name' => $user_login['name']
+            , 'ao_position' => $user_login['position']
+        ]);
+
+        $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $data );
 
         DB::commit();
         return response()->success( [

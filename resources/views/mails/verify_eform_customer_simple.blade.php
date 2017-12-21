@@ -140,7 +140,7 @@
                             </tr>
                             <tr>
                                 <td>Lama Kerja : </td>
-                                <td>{!! $mail['work_duration'] !!}</td>
+                                <td>{!! $mail['work_duration'] !!} Tahun {!! $mail['work_duration_month'] !!} Bulan</td>
                             </tr>
                             <tr>
                                 <td>Alamat Kantor : </td>
@@ -152,36 +152,36 @@
                             </tr>
                             <tr>
                                 <td>Gaji/Pendapatan : </td>
-                                <td>{!! $mail['salary'] !!}</td>
+                                <td>Rp. {!! number_format($mail['salary'],2) !!}</td>
                             </tr>
                             <tr>
                                 <td>Pendapatan Lain : </td>
-                                <td>{!! $mail['other_salary'] !!}</td>
+                                <td>Rp. {!! number_format($mail['other_salary'],2) !!}</td>
                             </tr>
                             <tr>
                                 <td>Angsuran Pinjaman : </td>
-                                <td>{!! $mail['loan_installment'] !!}</td>
+                                <td>Rp. {!! number_format($mail['loan_installment'],2) !!}</td>
                             </tr>
                             <tr>
                                 <td>Jumlah Tanggungan : </td>
                                 <td>{!! $mail['dependent_amount'] !!}</td>
                             </tr>
 
-                            @if ($mail['status_id'] == '2' )
+                            @if ($mail['source_income'] == 'joint' )
                                 <tr>
                                     <td align="center">DATA KEUANGAN PASANGAN</td>
                                 </tr>
                                 <tr>
                                     <td>Gaji/Pendapatan : </td>
-                                    <td>{!! $mail['couple_salary'] !!}</td>
+                                    <td>Rp. {!! number_format($mail['couple_salary'],2) !!}</td>
                                 </tr>
                                 <tr>
                                     <td>Pendapatan Lain : </td>
-                                    <td>{!! $mail['couple_other_salary'] !!}</td>
+                                    <td>Rp. {!! number_format($mail['couple_other_salary'],2) !!}</td>
                                 </tr>
                                 <tr>
                                     <td>Angsuran Pinjaman : </td>
-                                    <td>{!! $mail['couple_loan_installment'] !!}</td>
+                                    <td>Rp. {!! number_format($mail['couple_loan_installment'],2) !!}</td>
                                 </tr>
                             @endif
 
@@ -200,6 +200,71 @@
                                 <td>Hubungan : </td>
                                 <td>{!! $mail['emergency_relation'] !!}</td>
                             </tr>
+
+                             <tr>
+                                <td align="center">DATA PENGAJUAN</td>
+                            </tr>
+                            <tr>
+                                <td>Jenis KPR : </td>
+                                <td>{!! $mail['kpr']['status_property_name'] !!}</td>
+                            </tr>
+                            @if ($mail['kpr']['status_property'] == '1' )
+                            <tr>
+                                <td>Developer : </td>
+                                <td>{!! $mail['kpr']['developer_name'] !!}</td>
+                            </tr>
+                                @if ($mail['kpr']['developer_name'] != 'Non Kerja Sama')
+                                <tr>
+                                    <td>Nama Proyek : </td>
+                                    <td>{!! $mail['kpr']['property_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tipe Properti : </td>
+                                    <td>{!! $mail['kpr']['property_type_name'] !!}</td>
+                                </tr>
+                                <tr>
+                                    <td>Unit Properti : </td>
+                                    <td>{!! $mail['kpr']['property_item_name'] !!}</td>
+                                </tr>
+                                @endif
+                            @else
+
+                            <tr>
+                                <td>Jenis Properti : </td>
+                                <td>{!! $mail['kpr']['kpr_type_property_name'] !!}</td>
+                            </tr>
+
+                            @endif
+                            <tr>
+                                <td>Harga Rumah : </td>
+                                <td>Rp. {!! number_format($mail['kpr']['price'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Luas Bangunan : </td>
+                                <td>{!! $mail['kpr']['building_area'] !!} m<sup>2</sup></td>
+                            </tr>
+                            <tr>
+                                <td>Lokasi Rumah : </td>
+                                <td>{!! $mail['kpr']['home_location'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jangka Waktu : </td>
+                                <td>{!! $mail['kpr']['year'] !!} Bulan</td>
+                            </tr>
+                            <tr>
+                                <td>KPR Aktif ke : </td>
+                                <td>{!! $mail['kpr']['active_kpr'] == 3 ? '> 2' : $mail['kpr']['active_kpr'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Uang Muka : </td>
+                                <td>Rp. {!! number_format($mail['kpr']['down_payment'],2) !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Jumlah Permohonan : </td>
+                                <td>Rp. {!! number_format($mail['kpr']['request_amount'],2) !!}</td>
+                            </tr>
+
+
                             <tr>
                                 <td height="20px"></td>
                             </tr>

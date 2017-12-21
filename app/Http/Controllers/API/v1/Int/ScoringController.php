@@ -66,7 +66,8 @@ class ScoringController extends Controller
 	}
 
 	 public function uploadimage($image,$id){
-		 $path = public_path( 'uploads/prescreening/' . $id . '/' );
+	 	$eform = EForm::where('id', $id)->first();
+		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore' ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore' ] );
         }
@@ -82,7 +83,7 @@ class ScoringController extends Controller
 	            $extension = $image->getClientOriginalExtension();
 	        }
 	        // log::info('image = '.$image->getMimeType());
-	        $filename = $id . '-prescreening.' . $extension;
+	        $filename = $id . '-pefindo-report.' . $extension;
 	        $image->move( $path, $filename );
         }
 		return $filename;
@@ -90,7 +91,8 @@ class ScoringController extends Controller
 	 }
 
 	 public function uploadimagemulti($image,$id,$i){
-		 $path = public_path( 'uploads/prescreening/' . $id . '/' );
+	 	$eform = EForm::where('id', $id)->first();
+		$path = public_path( 'uploads/' . $eform->nik . '/' );
 		if ( ! empty( $this->attributes[ 'uploadscore'.$i ] ) ) {
             File::delete( $path . $this->attributes[ 'uploadscore'.$i ] );
         }
@@ -104,7 +106,7 @@ class ScoringController extends Controller
             $extension = $image->getClientOriginalExtension();
         }
         // log::info('image = '.$image->getMimeType());
-        $filename = $id.'-'.$i.'-prescreening.' . $extension;
+        $filename = $id.'-'.$i.'-pefindo-report.' . $extension;
         $image->move( $path, $filename );
 		return $filename;
 
@@ -134,16 +136,6 @@ class ScoringController extends Controller
 
 		}
 
-		$score = $request->input('pefindo_score');
-		$pefindoC = 'Kuning';
-		if ( $score >= 250 && $score <= 573 ) {
-			$pefindoC = 'Merah';
-
-		} elseif ( $score >= 677 && $score <= 900 ) {
-			$pefindoC = 'Hijau';
-
-		}
-
 		$data = EForm::findOrFail( $id );
 		$personal = $data->customer->personal;
 
@@ -160,14 +152,13 @@ class ScoringController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+        \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
-            $dhn = ['warna' => 'Hijau'];
-
-        } else {
-            $dhn = $dhn['responseData'];
+            $dhn = ['responseData' => [['warna' => 'Hijau']], 'responseCode' => '01'];
 
         }
+        \Log::info($dhn);
 
         $sicd = \RestwsHc::setBody( [
             'request' => json_encode( [
@@ -183,30 +174,46 @@ class ScoringController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+         \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['bikole' => 1];
-
-        } else {
-            $sicd = $sicd['responseData'];
-        }
-
-        $score = $data->pefindo_score;
-        $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
-            $pefindo = 'Merah';
-
-        } elseif ( $score >= 677 && $score <= 900 ) {
-            $pefindo = 'Hijau';
+            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
 
         }
 
-        $dhnC = $dhn['warna'];
+		$score = $request->input('pefindo_score');
+		$pefindoC = 'Kuning';
+		if ( $score >= 250 && $score <= 573 ) {
+			$pefindoC = 'Merah';
 
-        if ( $sicd['bikole'] == 1 ) {
+		} elseif ( $score >= 677 && $score <= 900 ) {
+			$pefindoC = 'Hijau';
+
+		}
+
+        $dhnC = $dhn['responseData'][0]['warna'];
+
+        $target = 1;
+        $selected = 0;
+
+        foreach ($sicd['responseData'] as $index => $responseData) {
+        	if ($sicd['responseCode'] == '00') {
+        		$date = explode(" ", $responseData['tgl_lahir']);
+
+	        	if ( strtoupper($responseData['nama_debitur']) == strtoupper($personal['first_name'].' '.$personal['last_name']) && $personal['birth_date'] == $date[0] && $personal['nik'] == $responseData['no_identitas'] ) {
+	        		if ( $responseData['bikole'] > $target ) {
+	        			$target = $responseData['bikole'];
+	        			$selected = $index;
+	        		}
+
+	        	}
+        	}
+        }
+
+        if ( $target == 1 ) {
             $sicdC = 'Hijau';
 
-        } elseif ( $sicd['bikole'] == 2 ) {
+        } elseif ( $target == 2 ) {
             $sicdC = 'Kuning';
 
         } else {
@@ -219,25 +226,32 @@ class ScoringController extends Controller
         if ( in_array('Merah', $calculate) ) {
             $result = '3';
 
-        } else if ( in_array('Hijau', $calculate) ) {
-            $result = '1';
+        } else if ( in_array('Kuning', $calculate) ) {
+            $result = '2';
 
         } else {
-            $result = '2';
+            $result = '1';
 
         }
 
         $dats['prescreening_status'] = $result;
         $dats['dhn_detail'] = json_encode($dhn);
         $dats['sicd_detail'] = json_encode($sicd);
+        $dats['selected_sicd'] = $selected;
+
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
+        $dats['prescreening_name'] = $user_login['name'];
+        $dats['prescreening_position'] = $user_login['position'];
 
 		DB::beginTransaction();
-		$Scoring = Scoring::findOrFail( $id );
-		$Scoring->update( $dats );
+        $data->update($dats);
+        $detail = $data;
+        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 		DB::commit();
 		return response()->success( [
 			'message' => 'Data nasabah berhasil dirubah.',
-			'contents' => $Scoring
+			'contents' => $data
 		] );
 	}
 

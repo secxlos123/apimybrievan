@@ -13,8 +13,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'App\Events\EForm\RejectedEform' => [
+            'App\Listeners\EForm\Rejected\RejectedToCustomer',
+        ],
         'App\Events\Customer\CustomerRegister' => [
             'App\Listeners\Customer\Register\SendMailNotification',
+        ],
+        'App\Events\Customer\CustomerReset' => [
+            'App\Listeners\Customer\CustomerResetNotification',
         ],
         'App\Events\Customer\CustomerRegistered' => [
             'App\Listeners\Customer\SendMailNotification',
@@ -31,6 +37,7 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Developer\CreateOrUpdate' => [
             'App\Listeners\Developer\CreateOrUpdate',
         ],
+        
     ];
 
     /**

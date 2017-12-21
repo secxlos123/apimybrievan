@@ -13,11 +13,15 @@
 
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 	Route::post( 'auth/login', 'AuthController@store' );
+	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
 		Route::get( 'check-token', 'TokenController@index' );
-
+		Route::get('debitur-list', 'CustomerController@listDebitur');
+		Route::post('dashboard-internal', 'DashboardController@getDataDashboardInternal');
+		Route::get('debitur-detail', 'CustomerController@detailDebitur');
+		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::delete( 'logout', 'AuthController@destroy' );
 		} );
@@ -58,6 +62,17 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::group( [ 'prefix' => 'verification' ], function () {
 			Route::post( 'search-nik', 'VerificationController@searchNik' );
 		} );
+<<<<<<< HEAD
+=======
+		Route::get( 'staff-list', 'StaffController@index' );
+
+		Route::resource( 'scorings', 'ScoringController', [
+			'except' => [ 'edit', 'create' ]
+		] );
+		/* Route::resource( 'gimmick', 'GimmickController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] ); */
+>>>>>>> c91dda14c108e656e5c69fbda6a255c3bae0d581
 	} );
 } );
 
@@ -156,9 +171,35 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 	 * Manage e-form from internal BRI
 	 */
 	Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
+		Route::post( 'delete', 'EFormController@delete' )->name( 'eforms.delete' );
 		Route::post( 'disposition', 'EFormController@disposition' )->name( 'eforms.disposition' );
 		Route::post( 'approve', 'EFormController@approve' );
 		Route::post( 'step-{step_id}', 'EFormController@insertCoreBRI' ); // step id must between 1 - 7
 	} );
+
+	Route::get( 'eforms/{ids}/{ref_number}', 'EFormController@showIdsAndRefNumber' );
+
+	 /**
+     * User Notification
+     */
+	Route::get('users/notification', [
+        'as'    => 'api.user.notification',
+        'uses'  => 'NotificationController@index'
+    ]);
+
+    Route::get('users/notification/unread', [
+        'as'    => 'api.user.unread_notification',
+        'uses'  => 'NotificationController@unread'
+    ]);
+
+    Route::get('users/notification/summary', [
+        'as'    => 'api.user.summary_notification',
+        'uses'  => 'NotificationController@summary'
+    ]);
+
+    Route::get('users/notification/read/{eform_id}', [
+        'as'    => 'api.user.read_notification',
+        'uses'  => 'NotificationController@read'
+    ]);
 
 });

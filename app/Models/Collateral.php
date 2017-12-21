@@ -4,21 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Collateral extends Model
+class Collateral extends Model implements AuditableContract
 {
+    use Auditable;
 
     /**
      * The fillable columns
      * @var array
      */
-    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by'];
+    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by','is_staff'];
 
     /**
      * The hidden columns
      * @var [type]
      */
-    protected $hidden = ['property_id', 'developer_id'];
+    protected $hidden = [];
 
     CONST STATUS = [
       'baru',
@@ -101,6 +104,40 @@ class Collateral extends Model
       return $this->hasOne(OtsAnotherData::class, 'collateral_id');
     }
 
+    /**
+     * Relation with otsSeven
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsSeven()
+    {
+      return $this->hasOne(OtsSeven::class, 'collateral_id');
+    }
+
+     /**
+     * Relation with otsEight
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsEight()
+    {
+      return $this->hasOne(OtsEight::class, 'collateral_id');
+    }
+     /**
+     * Relation with otsNine
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsNine()
+    {
+      return $this->hasOne(OtsNine::class, 'collateral_id');
+    }
+     /**
+     * Relation with otsTen
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsTen()
+    {
+      return $this->hasOne(OtsTen::class, 'collateral_id');
+    }
+
     public function scopeWithAll($query)
     {
       return $query
@@ -111,7 +148,11 @@ class Collateral extends Model
           ->with('otsBuilding')
           ->with('otsEnvironment')
           ->with('otsValuation')
-          ->with('otsOther');
+          ->with('otsOther')
+          ->with('otsSeven')
+          ->with('otsEight')
+          ->with('otsNine')
+          ->with('otsTen');
     }
 
     /**
@@ -140,16 +181,15 @@ class Collateral extends Model
      */
     public function scopeGetLists($query, Request $request)
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['prop_id', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['eform_id', 'asc'];
 
-        return $query->from('developer_properties_view_table')
-            ->where(function ($property) use ($request) {
+        return $query->from('collateral_view_table')
+            ->where(function ($collaterals) use ($request) {
 
-                if ($request->has('city_id')) $developer->where('prop_city_id', $request->input('city_id'));
+                if ($request->has('status')) $collaterals->where('status', $request->input('status'));
 
             })
             ->select('*')
-            ->where('prop_id', '!=', '1')
             ->orderBy($sort[0], $sort[1]);
     }
 
@@ -160,10 +200,10 @@ class Collateral extends Model
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeGetDetails($query, $id)
+    public function scopeGetDetails($query, $developerId,$propertyId)
     {
 
-        return $query->from('developer_properties_view_table')
-            ->where('prop_id', '=', $id)->get();
+        return $query->from('collateral_view_table')
+            ->where('developer_id',$developerId)->where('property_id',$propertyId);
     }
 }

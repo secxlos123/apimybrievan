@@ -10,7 +10,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-use App\Models\Customer;
+use App\Models\User;
 
 class CustomerRegistered
 {
@@ -24,10 +24,11 @@ class CustomerRegistered
      *
      * @return void
      */
-    public function __construct( Customer $customer, $password )
+    public function __construct( User $customer, $password , $role)
     {
         $this->customer = $customer;
         $this->password = $password;
+        $this->role = $role;
     }
 
     /**

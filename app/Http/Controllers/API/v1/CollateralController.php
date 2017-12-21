@@ -15,6 +15,8 @@ use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
 use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
+use App\Models\Property;
+use App\Models\EForm;
 
 class CollateralController extends Controller
 {
@@ -47,9 +49,23 @@ class CollateralController extends Controller
      */
     public function index()
     {
+      $developer_id = env('DEVELOPER_KEY',1);
       return $this->makeResponse(
-        $this->collateral->withAll()->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
+        $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
       );
+    }
+
+    /**
+     * Show Collateral Non Kerjasama
+     * @return \Illuminate\Http\Response
+     */
+    public function indexNon(Request $request)
+    {
+      $developer_id = env('DEVELOPER_KEY',1);
+      $limit = $request->input( 'limit' ) ?: 10;
+      $data = $this->collateral->GetLists($request)->where('developer_id','=',$developer_id)->where('is_approved',true)->paginate($limit);
+      
+      return $this->makeResponse($data);
     }
 
     /**
@@ -62,6 +78,23 @@ class CollateralController extends Controller
     {
       return $this->makeResponse(
         $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
+      );
+    }
+
+    /**
+     * Show detail collateral Non Kerja
+     * @param  string $type
+     * @param  integer $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showNon($type, $developerId, $propertyId)
+    {
+      $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->where('is_approved',true)->firstOrFail()->toArray();
+      $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
+
+      $data = array_merge($ots,$nonkerjasama);
+      return $this->makeResponse(
+        $data
       );
     }
 
@@ -98,7 +131,7 @@ class CollateralController extends Controller
           ->collateral
           ->where('status', Collateral::STATUS[0])
           ->findOrFail($id)
-          ->update($this->request->only(['status', 'approved_by', 'staff_id', 'staff_name']))
+          ->update($this->request->only(['status', 'approved_by', 'staff_id', 'staff_name','is_staff']))
           ? $this->collateral->findOrFail($id)
           : (object)[]
       );
@@ -120,6 +153,10 @@ class CollateralController extends Controller
         $collateral->otsBuilding()->create($this->request->building);
         $collateral->otsEnvironment()->create($this->request->environment);
         $collateral->otsValuation()->create($this->request->valuation);
+        $collateral->otsSeven()->create($this->request->seven);
+        $collateral->otsEight()->create($this->request->eight);
+        $collateral->otsNine()->create($this->request->nine);
+        $collateral->otsTen()->create($this->request->ten);
         $otsOther = $collateral->otsOther()->create($this->request->other);
         $otsOther->image_condition_area = $this->uploadAndGetFileNameImage($otsOther);
         $otsOther->save();
@@ -153,7 +190,9 @@ class CollateralController extends Controller
      */
     public function changeStatus(ChangeStatusRequest $request, $eks, $action, $collateralId)
     {
+      \DB::beginTransaction();
       $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
+      $property = Property::findOrFail($collateral->property_id);
       $prevStatus = $collateral->status;
       $handleReject = function($prevStatus) {
         return $prevStatus === Collateral::STATUS[1] ? Collateral::STATUS[0] : Collateral::STATUS[4];
@@ -161,11 +200,18 @@ class CollateralController extends Controller
       $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : $handleReject($prevStatus);
       if ($action === 'approve') {
         $collateral->approved_by = $this->request->header('pn');
+        $property->is_approved = true;
+        $property->save();
+          if ($request->has('eform_id') && $request->input('eform_id') != false) {
+              $eformdata = EForm::findOrFail($request->input('eform_id'));
+              $sentclas =  EForm::approve( $eformdata->id, $eformdata );
+          }
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
       }
       $collateral->save();
+      \DB::commit();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
@@ -180,7 +226,7 @@ class CollateralController extends Controller
     public function disposition($eks, $collateralId)
     {
       $this->request->request->add(['status' => Collateral::STATUS[1]]);
-      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark'));
+      $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff'));
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );

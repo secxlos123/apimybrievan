@@ -50,6 +50,7 @@ class ViewSeeder extends Seeder
                 properties.staff_id AS staff_id,
                 properties.staff_name AS staff_name,
                 properties.status AS status,
+                properties.is_approved,
                 ( SELECT max(property_types.price) FROM property_types WHERE properties.id = property_types.property_id ) AS prop_price,
                 ( SELECT developers.user_id FROM developers WHERE properties.developer_id = developers.id ) AS prop_dev_id,
                 ( SELECT developers.dev_id_bri FROM developers WHERE properties.developer_id = developers.id ) AS dev_id_bri,
@@ -58,5 +59,46 @@ class ViewSeeder extends Seeder
             FROM properties
                 LEFT JOIN cities ON properties.city_id = cities.id
         ");
+
+        \DB::unprepared("DROP VIEW IF EXISTS collateral_view_table");
+        \DB::unprepared("CREATE VIEW collateral_view_table AS
+              SELECT
+              users.first_name,
+              users.last_name,
+              users.phone,
+              users.mobile_phone,
+              eforms.id AS eform_id,
+              eforms.ref_number,
+              eforms.product_type,
+              eforms.is_approved,
+              kpr.status_property,
+              kpr.developer_id,
+              kpr.property_id,
+              kpr.price,
+              kpr.building_area,
+              kpr.home_location,
+              kpr.year,
+              kpr.active_kpr,
+              kpr.dp,
+              kpr.request_amount,
+              kpr.developer_name,
+              kpr.property_name,
+              kpr.kpr_type_property,
+              kpr.property_type,
+              kpr.property_type_name,
+              kpr.is_sent,
+              collaterals.id AS collaterals_id,
+              collaterals.staff_id,
+              collaterals.staff_name,
+              collaterals.status,
+              collaterals.is_staff,
+              collaterals.approved_by
+
+              from users
+              LEFT JOIN eforms ON eforms.user_id = users.id
+              LEFT JOIN kpr ON kpr.eform_id = eforms.id
+              LEFT JOIN collaterals ON collaterals.property_id = kpr.property_id
+              WHERE eforms.id is not null AND collaterals.id is not null
+          ");
     }
 }

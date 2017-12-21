@@ -2,6 +2,7 @@
 
 use App\Mail\Register;
 use App\Mail\VerificationEFormCustomer;
+use App\Events\Customer\CustomerVerify;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,32 @@ use App\Mail\VerificationEFormCustomer;
 Route::get('/routes', function () {
 	$routeCollection = Route::getRoutes();
 	return view('routes', compact('routeCollection'));
+});
+
+Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr' )
+		->where('ref_number', $ref_number)->first();
+	$path = public_path('uploads/'.$detail->nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
+
+    echo "Generate " .generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail'))->render());
+    echo "<br/>";
+
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+    echo "<br/>";
+
+   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+    echo "<br/>";
+	return $detail->nik;
+});
+
+Route::get('/resend_verification/{ref_number}', function ($ref_number) {
+	$eform = \App\Models\EForm::where( 'ref_number', $ref_number )->first();
+	$customer = \App\Models\Customer::where( 'id', $eform->user_id )->first();
+
+	event( new CustomerVerify( $customer, $eform ) );
+
+	return "Resend Verification Email.";
 });
 
 Route::get('email', function () {

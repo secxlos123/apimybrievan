@@ -54,6 +54,11 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
 
 		/**
+			Route for dashboard developer [Top 5 User List and Chart]
+		**/
+		Route::post('get-data-dashboard-developer', 'DashboardController@dashboard');
+
+		/**
 		 * Route for customer for register simple, complete and logout
 		 */
 		Route::group([ 'prefix' => 'auth' ], function () {
@@ -78,6 +83,8 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		 * Route property
 		 */
 		Route::resource('property', 'PropertyController', [ 'except' => [ 'create', 'edit' ] ]);
+
+		Route::resource('tracking', 'TrackingController');
 
 		/**
 		 * Route property type get by property
@@ -129,7 +136,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		/**
 		*Route developer agent banned
 		*/
-		Route::put('developer-agent/banned/{id}', 'DeveloperAgentController@banned');
+		Route::get('developer-agent/banned/{id}', 'DeveloperAgentController@banned')->name('banned');
 
 		/**
 		 * Route property type
@@ -187,7 +194,6 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		Route::resource('favourite', 'FavouriteController', [
 			'only' => ['store', 'show']
 		]);
-
 	});
 });
 

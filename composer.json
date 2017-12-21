@@ -6,8 +6,10 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "barryvdh/laravel-dompdf": "^0.7.0",
+        "barryvdh/laravel-dompdf": "^0.8.1",
+        "brozot/laravel-fcm": "^1.2",
         "cartalyst/sentinel": "2.0.*",
+        "coreproc/laravel-notification-channel-fcm": "dev-master",
         "cviebrock/eloquent-sluggable": "^4.2",
         "doctrine/dbal": "^2.5",
         "guzzlehttp/guzzle": "^6.2",
@@ -15,8 +17,9 @@
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "maatwebsite/excel": "~2.1.0",
+        "owen-it/laravel-auditing": "4.1.4",
         "tymon/jwt-auth": "0.5.*",
-        "yajra/laravel-datatables-oracle": "^6.22"
+        "yajra/laravel-datatables-oracle": "7.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

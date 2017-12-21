@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Property\CreateRequest;
 use App\Models\Property;
+use App\Models\Collateral;
 
 class PropertyController extends Controller
 {
@@ -99,20 +100,33 @@ class PropertyController extends Controller
         try {
             if ( ! $property instanceof Property ) {
                 $property = Property::create($request->all());
+                \Log::info($property);
+                $data = [
+                    'developer_id' => $request->user()->id,
+                    'property_id' => $property->id,
+                    'status' => Collateral::STATUS[0]
+                ];
+                $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
                 $code = 201; $method = 'disimpan';
             } else {
                 $property->update($request->all());
                 $code = 200; $method = 'dirubah';
             }
-
             // this logic for saving data to internal bri
-            $this->service($property);
-            $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
-            \DB::commit();
+            $data = $this->service($property);
+            if ($data['code']== '200') {
+                $property->update(['prop_id_bri' => $data['contents']]);
+                $status = 'success'; $message = "Project {$property->name} berhasil {$method}.";
+                \DB::commit();
+            } else {
+                 \DB::rollBack();
+                $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}. ". $data['descriptions'];
+                $code = 422;
+            }
         } catch (\Exception $e) {
             \DB::rollBack();
-            $status = 'error'; $message = $e->getMessage();
-            $code = $e->getCode();
+            $status = 'error'; $message = "Gagal Terhubung Server.";
+            $code = 422;
         }
 
         return response()->{$status}(compact('message'), $code);
@@ -133,7 +147,7 @@ class PropertyController extends Controller
             // 'alamat_project' => $property->address,
             'pic_project' => $property->pic_name ?: '',
             'pks_project' => $property->developer->pks_number ?: '-',
-            'deskripsi_project' => $property->description,
+            'deskripsi_project' => substr($property->description, 255),
             'telepon_project' => $property->pic_phone ?: '',
             'hp_project' => $property->pic_project ?: '',
             'fax_project' => '',
@@ -144,13 +158,7 @@ class PropertyController extends Controller
         $id = \Asmx::setEndpoint('InsertDataProject')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-
-        if ($id['code'] == 200) {
-            $property->update(['prop_id_bri' => $id['contents']]);
-            return true;
-        }
-
-        throw new \Exception($id['contents'], 422);
+        return $id;
     }
 
     /**

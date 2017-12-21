@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use App\Models\User;
 use Sentinel;
-
+use DB;
 class Customer extends User
 {
     /**
@@ -31,6 +31,36 @@ class Customer extends User
     public function getIsSimpleAttribute()
     {
         return ! empty( $this->detail );
+    }
+
+    /**
+     * Get list lastest customer
+     *
+     * @return bool
+     */
+
+    public function getNewestCustomerAttribute()
+    {
+        return [
+            'name'     => $this->personal['name'],
+            'nik'      => $this->personal['nik'],
+            'email'    => $this->personal['email'],
+            'city'     => $this->personal['city'],
+            'phone'    => $this->personal['mobile_phone'],
+            'gender'   => $this->personal['gender']
+        ];
+    }
+
+    /**
+     * Get newest chart
+     */
+
+    public function getChartAttribute()
+    {
+        return [
+            'month'  => $this->month,
+            'value'  => $this->value,
+        ];
     }
 
     /**
@@ -107,7 +137,10 @@ class Customer extends User
             'couple_birth_place' => $this->couple_birth_place,
             'couple_identity' => $this->detail ? $this->detail->couple_identity : '',
             'status_id' => $this->detail ? $this->detail->status_id : '',
-            'cif_number'=> $this->detail ? $this->detail->cif_number : ''
+            'cif_number'=> $this->detail ? $this->detail->cif_number : '',
+            'pendidikan_terakhir' => $this->detail ? $this->detail->pendidikan_terakhir : '',
+            'address_domisili' => $this->detail ? $this->detail->address_domisili : '',
+            'mobile_phone_couple' => $this->detail ? $this->detail->mobile_phone_couple : '',
         ];
 
         return $personal_data;
@@ -149,10 +182,11 @@ class Customer extends User
             'loan_installment' => $this->detail ? $this->detail->loan_installment : '',
             'dependent_amount' => $this->detail ? $this->detail->dependent_amount : '',
             'status_income' => $this->detail ? ($this->detail->couple_salary == NULL ? 'Pisah Harta':'Gabung Harta') : NULL,
-            'status_finance' => $this->detail ? ($this->detail->couple_salary == NULL ? 'Single Income':'Join Income') : NULL,
+            'status_finance' => $this->detail ? ($this->detail->source_income == NULL || $this->detail->source_income == 'single' ? 'Single Income':'Joint Income') : NULL,
             'salary_couple' => $this->detail ? $this->detail->couple_salary : '',
             'other_salary_couple' => $this->detail ? $this->detail->couple_other_salary : '',
-            'loan_installment_couple' => $this->detail ? $this->detail->couple_loan_installment : ''
+            'loan_installment_couple' => $this->detail ? $this->detail->couple_loan_installment : '',
+            'source_income' => $this->detail ? $this->detail->source_income : ''
         ];
     }
 
@@ -290,9 +324,83 @@ class Customer extends User
         CustomerDetail::create( $customer_data );
         // send mail notification
         $customer = static::find( $user->id );
-        event( new CustomerRegistered( $customer, $password ) );
+        event( new CustomerRegistered( $customer, $password ,'5') );
 
         return $customer;
+    }
+
+
+    /**
+     * Get the 10 newest customer
+     *
+     * @return array
+     */
+    public function newestCustomer()
+    {
+        $data = Customer::with('detail')
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->pluck('newestCustomer');
+        return $data;
+    }
+
+    /**
+     * Get the 10 newest customer
+     *
+     * @return array
+     */
+    public function chartNewestCustomer($startChart = null, $endChart = null)
+    {
+        if(!empty($startChart) && !empty($endChart)){
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $endChart   = date("t-m-Y", strtotime($endChart));
+
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($startChart) && !empty($endChart)){
+            $now        = new \DateTime();
+            $startChart = $now->format('Y-m-d h:i:s');
+
+            $endChart   = date("t-m-Y", strtotime($endChart));
+            $dateEnd  = \DateTime::createFromFormat('d-m-Y', $endChart);
+            $endChart = $dateEnd->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else if(empty($endChart) && !empty($startChart)){
+            $now      = new \DateTime();
+            $endChart = $now->format('Y-m-d h:i:s');
+            
+            $startChart = date("01-m-Y",strtotime($startChart));
+            $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
+            $startChart = $dateStart->format('Y-m-d h:i:s');
+
+            $filter = true;
+        }else{
+            $filter = false;
+        }
+
+        $data = Customer::select(
+                    DB::raw("count(users.id) as value"),
+                    DB::raw("to_char(users.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(users.created_at, 'YYYY MM') as order")
+                )
+                ->when($filter, function ($query) use ($startChart, $endChart){
+                    return $query->whereBetween('users.created_at', [$startChart, $endChart]);
+                })
+                ->join('role_users', 'role_users.user_id', '=', 'users.id')
+                ->where('role_users.role_id', '5')
+                ->groupBy('month', 'order')
+                ->orderBy("order", "asc")
+                ->get()
+                ->pluck("chart");
+
+        return $data;
     }
 
     /**
@@ -304,7 +412,7 @@ class Customer extends User
      */
     public function update( array $attributes = [], array $options = [] )
     {
-        $keys = array('npwp', 'identity', 'couple_identity', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
+        $keys = array('npwp', 'identity', 'couple_identity', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
 
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );
@@ -312,6 +420,8 @@ class Customer extends User
         $separate_array_keys = array_flip( $this->fillable );
         $customer_data = array_diff_key( $attributes, $separate_array_keys );
         unset( $customer_data[ '_method' ] );
+        unset( $customer_data[ 'product_type' ] );
+        unset( $customer_data[ 'ao_id' ] );
         if (count($customer_data) > 0) {
           $this->detail()->update( $customer_data );
         }
@@ -397,6 +507,6 @@ class Customer extends User
      */
     public function eforms()
     {
-        return $this->hasMany( EForm::class, 'user_id' );
+        return $this->hasOne( EForm::class, 'user_id' );
     }
 }

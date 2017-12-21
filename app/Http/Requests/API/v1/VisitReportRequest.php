@@ -28,7 +28,7 @@ class VisitReportRequest extends BaseRequest
             // 'visitor_name' => 'required',
             // 'place' => 'required',
             // 'date' => 'required|date|after_or_equal:today',
-            // 'name' => 'required', 
+            // 'name' => 'required',
             // 'job' => 'required',
             // 'phone' => 'required',
             // 'account' => 'required',
@@ -36,6 +36,7 @@ class VisitReportRequest extends BaseRequest
             'npwp_number' => 'required',
             'purpose_of_visit' => 'required',
             'visit_result' => 'required',
+            //'source_income'=>'required',
             'source' => 'required|in:fixed,nonfixed',
             'income' => 'required_if:source,nonfixed',
             'income_salary' => 'required_if:source,fixed',
@@ -50,7 +51,7 @@ class VisitReportRequest extends BaseRequest
             'mutations.*.tables.*.type' => 'required_if:source,nonfixed',
             'mutations.*.tables.*.note' => '',
             'status_id'=>'required|in:1,2,3',
-            
+
             'pros' => 'required',
             'cons' => 'required',
             'photo_with_customer' => 'required|image|mimes:jpg,jpeg,png',
@@ -61,10 +62,9 @@ class VisitReportRequest extends BaseRequest
             'reason_for_sale' => '',
             'relation_with_seller' => '',
             'npwp'=> 'required|file',
-            // 'legal_document' => 'required',
             'salary_slip'=> 'required_if:source,fixed|file',
             'family_card'=> 'required|file',
-            'marrital_certificate'=> 'required_if:status_id,2|file',
+            'marrital_certificate'=> 'file',
             'divorce_certificate'=> 'file',
             'offering_letter'=> 'required|file',
             'proprietary'=> 'file',
@@ -75,7 +75,13 @@ class VisitReportRequest extends BaseRequest
             'recommendation'=> '',
             'legal_bussiness_document'=>'required_if:source,non-fixed|file',
             'license_of_practice'=>'file',
-            'work_letter'=>'required_if:source,fixed|file'
+            'work_letter'=>'required_if:source,fixed|file',
+            'title' => 'required',
+            'employment_status' => 'required',
+            'age_of_mpp' => 'required',
+            'loan_history_accounts' => 'required',
+            'religion' => 'required',
+            'office_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12'
         ];
     }
 

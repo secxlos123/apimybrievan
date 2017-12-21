@@ -50,7 +50,14 @@ class EFormRequest extends BaseRequest
                     ];
                 } else {
                     return [
-                        'product_type' => 'required|in:kpr',
+                        /* changing */
+                        'product_type' => 'required|in:kpr,briguna',
+                        /* ---------------- */
+                        /* BRIGUNA */
+                        'status_property' => 'required_if:product_type,kpr,required',
+                        'idMitrakerja' => 'required_if:product_type,briguna,required',
+                        'tujuan_penggunaan' => 'required_if:product_type,briguna,required',
+                        /*-----------------------*/
                         'status_property' => 'required_if:product_type,kpr,required',
                         'developer' => 'required_if:status_property,1',
                         'kpr_type_property' => $kpr_type_property,
@@ -62,7 +69,8 @@ class EFormRequest extends BaseRequest
                         'active_kpr' => 'required_if:product_type,kpr,required|numeric',
                         'dp' => 'required_if:product_type,kpr,required|numeric',
                         'request_amount' => 'required_if:product_type,kpr,required',
-                        'nik' => 'required|exists:customer_details,nik',
+                        //'nik' => 'required|exists:customer_details,nik',
+                        'nik' => 'required',
                         'branch_id' => 'required',
                         'appointment_date' => 'required|date',
                         'address' => 'required',

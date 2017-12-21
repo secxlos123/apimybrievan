@@ -136,7 +136,7 @@ class ApprovalDataChange extends Model
 
     /**
      * Check is developer
-     * @return boolean 
+     * @return boolean
      */
     public function isDeveloper()
     {

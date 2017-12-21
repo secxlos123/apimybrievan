@@ -6,9 +6,17 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\InternalController as Controller;
 
 use App\Http\Requests\API\v1\Int\AuthRequest;
+use App\Models\User;
+use App\Models\UserServices;
 
 class AuthController extends Controller
 {
+
+    public function __construct(User $user, UserServices $userservices)
+    {
+      $this->user = $user;
+      $this->userservices = $userservices;
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -28,6 +36,7 @@ class AuthController extends Controller
             ] )
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
+        // print_r($data);exit();
         \Log::info($data);
         if( $login[ 'responseCode' ] == '00' ) {
 
@@ -35,19 +44,36 @@ class AuthController extends Controller
                 $role = 'ao';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
                 $role = 'mp';
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 44 ] ) ) {
+                $role = 'fo';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                 $role = 'pinca';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
+                if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
+                    $role = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
+                }
             } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
+            } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
+                $role = 'collateral';
+            // hilfm adk tambah filter posisi
+            } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
+                $adk = explode(' ', $data['posisi']);
+                // print_r($adk);
+                // print_r($data);exit();
+                if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    $role = 'adk';
+                }
             } else {
-                $request->headers->set( 'pn', $pn );
-                $this->destroy( $request );
-                return response()->success( [
-                    'message' => 'Unauthorized',
-                    'contents'=> []
-                ], 401 );
+                // $request->headers->set( 'pn', $pn );
+                // $this->destroy( $request );
+                // return response()->success( [
+                //     'message' => 'Unauthorized',
+                //     'contents'=> []
+                // ], 401 );
+                // Ini Buat Handle Semua User Bisa Masuk Role Staff
+                $role = 'staff';
             }
 
             if (ENV('APP_ENV') == 'local') {
@@ -55,8 +81,23 @@ class AuthController extends Controller
             } else {
                 $branch = $data[ 'branch' ];
             }
+            $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
+            if(!$checkedRolePn){
+                UserServices::create([
+                    'pn'=>$data['pn'],
+                    'hilfm'=>$data['hilfm'],
+                    'role'=> $role,
+                    'name'=> $data['nama'],
+                    'tipe_uker'=> $data['tipe_uker'],
+                    'htext'=> $data['htext'],
+                    'posisi'=> $data['posisi'],
+                    'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
+                    'mobile_phone'=> 0,
+                    'is_actived'=> true,
+                    'branch_id'=>$data['branch'],
+                ]);
+            }
 
-            \Log::info($role);
             return response()->success( [
                 'message' => 'Login Sukses',
                 'contents'=> [
@@ -65,13 +106,14 @@ class AuthController extends Controller
                     'name' => $data[ 'nama' ],
                     'branch' => $branch,
                     'role' => $role,
+                    'position' => $data['posisi'],
                     'uker' => $data['tipe_uker']
                 ]
             ], 200 );
 
         } else {
             return response()->error( [
-                'message' => 'Gagal Terhubung Dengan Server',
+                'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
                 'contents'=> []
             ], 422 );
         }

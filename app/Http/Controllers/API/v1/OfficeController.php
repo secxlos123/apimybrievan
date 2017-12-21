@@ -80,9 +80,9 @@ class OfficeController extends Controller
     private function fetch(Request $request)
     {
         \Log::info($request->all());
-        $long = number_format($request->get('long', 106.813880), 5);
-        $lat = number_format($request->get('lat', -6.217458), 5);
-        return RestwsHc::setBody([
+        $long = number_format($request->get('long', env('DEF_LONG', '106.81350')), 5);
+        $lat = number_format($request->get('lat', env('DEF_LAT', '-6.21670')), 5);
+        $return = RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
                 'requestData'   => [
@@ -97,5 +97,7 @@ class OfficeController extends Controller
             ])
         ])
         ->post('form_params');
+        \Log::info($return);
+        return $return;
     }
 }

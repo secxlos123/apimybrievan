@@ -7,9 +7,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Auth;
 use File;
+use DB;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class CustomerDetail extends Model
+class CustomerDetail extends Model implements AuditableContract
 {
+    use Auditable;
+
     /**
      * The table name.
      *
@@ -30,7 +35,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'legal_document', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number','current_address'
+        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number','current_address', 'kewarganegaraan','pendidikan_terakhir_name','address_domisili','mobile_phone_couple', 'source_income'
     ];
 
     /**
@@ -39,7 +44,7 @@ class CustomerDetail extends Model
      * @var array
      */
     protected $appends = [
-        'status_id'
+        'status_id','address_status_id'
     ];
 
     /**
@@ -51,6 +56,20 @@ class CustomerDetail extends Model
         'id'
     ];
 
+    public static $folder = '';
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        self::$folder = \Request::input('nik');
+
+        parent::boot();
+    }
+
     /**
      * Global function for check file.
      *
@@ -60,7 +79,7 @@ class CustomerDetail extends Model
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $image = 'uploads/users/' . $this->user_id . '/' . $filename;
+            $image = 'uploads/' . $this->nik . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -259,13 +278,19 @@ class CustomerDetail extends Model
     public function globalSetImage( $image, $attribute, $callbackPosition = null )
     {
         $doFunction = true;
+        if (!empty($this->user)) {
+            $user = $this->user->id;
+        }else{
+            $user = user_info('id');
+        }
 
         if ($callbackPosition) {
             $doFunction = isset($this->attributes[ $attribute ]);
         }
-
+        \Log::info("========================handling upload=============================");
+        $base = $this->nik ? $this->nik : self::$folder;
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
-            $path = public_path( 'uploads/users/' . $this->user_id . '/' );
+            $path = public_path( 'uploads/' . $base . '/' );
             if ( ! empty( $this->attributes[ $attribute ] ) ) {
                 File::delete( $path . $this->attributes[ $attribute ] );
             }
@@ -282,7 +307,7 @@ class CustomerDetail extends Model
                 $extension = $image->getClientOriginalExtension();
             }
 
-            $filename = $this->user_id . '-' . $attribute . '.' . $extension;
+            $filename = $user . '-' . $attribute . '.' . $extension;
             $image->move( $path, $filename );
             return $filename;
         } else {
@@ -320,7 +345,7 @@ class CustomerDetail extends Model
                     ->leftJoin('visit_reports','eforms.id','=','visit_reports.eform_id')
                     ->where(function ($data) use ($request) {
                         $data->where('customer_details.nik','=',$request->input('nik'));
-                    })->selectRaw(" 
+                    })->selectRaw("
                                     customer_details.user_id,
                                     visit_reports.eform_id,
                                     customer_details.identity AS KTP,
@@ -330,7 +355,6 @@ class CustomerDetail extends Model
                                     visit_reports.down_payment AS Bukti_Uang_Muka,
                                     visit_reports.photo_with_customer AS Foto_Debitur,
                                     visit_reports.npwp AS Kartu_Npwp,
-                                    visit_reports.legal_document AS Dokumen_legal_Agunan,
                                     visit_reports.offering_letter AS Surat_Penawaran,
                                     visit_reports.building_tax AS PBB,
                                     visit_reports.salary_slip AS Slip_Gaji,
@@ -342,6 +366,57 @@ class CustomerDetail extends Model
                                     visit_reports.family_card AS Kartu_Keluarga "
                                 );
     }
+
+    /**
+     * Get list debitur.
+     *
+     * @return array
+     */
+    public function getListDebitur($params)
+    {
+        $name = empty($params['name']) ? '' : $params['name'];
+        $nik  = empty($params['nik']) ? '' : $params['nik'];
+        $city = empty($params['city_id']) ? false : $params['city_id'];
+
+        $data = CustomerDetail::with('user', 'city', 'eform')
+                ->whereHas('user', function($query) use ($name){
+                    return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
+                                 ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
+                })
+                ->whereHas('eform', function($query){
+                    return $query->where('is_approved', true);
+                })
+                ->where('nik', 'like', '%'.$nik.'%')
+                ->when($city, function($query) use ($city){
+                    return $query->where('city_id', $city);
+                })
+                ->paginate(10);
+        return $data;
+    }
+
+    public function getDetailDebitur($params)
+    {
+        $data = CustomerDetail::with('user', 'city', 'eform')
+                ->where('user_id', $params['user_id'])
+                ->get()
+                ->pluck('detailDebitur');
+        return $data;
+    }
+    
+    /*
+     * Mutator for detail debitur.
+     *
+     * @return void
+    */
+
+    public function getDetailDebiturAttribute()
+    {
+        return [
+            "customer" => $this->eform['customer'],
+            "kpr"  => $this->eform['kpr']
+        ];
+    }
+
 
     /**
      * Set customer npwp image.
@@ -371,16 +446,6 @@ class CustomerDetail extends Model
     public function setCoupleIdentityAttribute( $image )
     {
         $this->globalSetImageAttribute( $image, 'couple_identity' );
-    }
-
-    /**
-     * Set customer identity image.
-     *
-     * @return void
-     */
-    public function setLegalDocumentAttribute( $image )
-    {
-        $this->globalSetImageAttribute( $image, 'legal_document' );
     }
 
     /**
@@ -461,5 +526,20 @@ class CustomerDetail extends Model
     public function couple_birth_place_city()
     {
         return $this->belongsTo( City::class, 'couple_birth_place_id' );
+    }
+
+    /**
+     * The user_id belongs to user
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function eform()
+    {
+        return $this->hasOne(EForm::class, 'user_id', 'user_id');
     }
 }

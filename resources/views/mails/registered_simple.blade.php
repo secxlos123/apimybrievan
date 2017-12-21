@@ -29,22 +29,30 @@
                     <td align="center">
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        Selamat bergabung di My BRI.
+                        @if ($mail['role'] == 5)
+                        <p align="justify">Terima kasih telah mengajukan aplikasi kredit di Bank BRI, pada Tanggal {{ date('d F Y', strtotime($mail['created_at'])) }} Pukul {{ date('H:i', strtotime($mail['created_at'])) }}. Data yang telah diinput telah masuk ke sistem kami.</p>
                         <br>
-                        Kemudahan anda untuk investasi properti Anda,
+                        <p align="justify">Untuk Keamanan Anda, kami telah membuatkan akun dan kata sandi MyBRI untuk Anda yang dapat digunakan untuk melihat status aplikasi Anda. Untuk mengakses MyBRI silahkan Anda mengunduh aplikasinya di playstore/google play atau Anda dapat mengakses di browser dengan alamat mybri.bri.co.id,</p>
                         <br>
+                        @else
+                        <p align="justify">Terima kasih telah menjadi mitra kerja sama Bank BRI.
+                        Kami telah membuatkan akun dan kata sandi MyBRI untuk Anda mewakili atas nama Perusahaan Anda yang dapat digunakan untuk melakukan aktivitas di apliksi MyBRI sesuai dengan yang ada di Perjanjian Kerja Sama. Aplikasi MyBRI  dapat diakses dengan alamat mybri.bri.co.id</p>
+                        <br>
+                        @endif
                         berikut informasi akun Anda di My BRI :
                         <br>
                         <table width="100%" border="1">
-                        	<tr>
-                        		<td>Email : </td>
-                        		<td>{!! $mail['email'] !!}</td>
-                        	</tr>
-                        	<tr>
-                        		<td>Password : </td>
-                        		<td>{!! $mail['password'] !!}</td>
-                        	</tr>
+                            <tr>
+                                <td>Email : </td>
+                                <td>{!! $mail['email'] !!}</td>
+                            </tr>
+                            <tr>
+                                <td>Password : </td>
+                                <td>{!! $mail['password'] !!}</td>
+                            </tr>
                         </table>
+                        <br>
+                        *Harap ubah kata sandi Anda setelah mengakses.
                     </td>
                 </tr>
             </table>

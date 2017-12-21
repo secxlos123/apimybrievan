@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class OtsEnvironment extends Model
+class OtsEnvironment extends Model implements AuditableContract
 {
+  use Auditable;
+  
   /**
    * The fillable columns
    * @var [type]
@@ -18,7 +22,11 @@ class OtsEnvironment extends Model
     'nearest_location',
     'other_guide',
     'transportation',
-    'distance_from_transportation'
+    'distance_from_transportation',
+    'designated_pln',
+    'designated_phone',
+    'designated_pam',
+    'designated_telex'
   ];
 
   /**

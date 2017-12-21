@@ -29,10 +29,7 @@
                     <td align="center">
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        Terima kasih telah mendaftarkan akun Anda di My BRI.
-                        <br>
-                        Untuk langkah selanjutnya, silahkan meng-klik tombol di bawah ini untuk mengaktivasi akun Anda.
-                    </td>
+                        <p align="justify">Terima kasih telah melakukan registrasi akun Anda di MyBRI. Untuk langkah selanjutnya, silahkan meng-klik tautan di bawah ini untuk mengaktivasi akun Anda.</p>
                 </tr>
             </table>
         </td>
@@ -46,7 +43,14 @@
                 <tbody>
                     <tr>
                         <td align="center">
-                            <a href="{!! $mail[ 'url' ] !!}">Tautan</a>
+                            <a href="{!! $mail[ 'url' ] !!}">Aktivasi Akun</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        *Mohon abaikan apabila aktivitas ini bukan Anda yang melakukan
+                        <br>
+                        atau atas sepengetahuan Anda.
                         </td>
                     </tr>
                 </tbody>

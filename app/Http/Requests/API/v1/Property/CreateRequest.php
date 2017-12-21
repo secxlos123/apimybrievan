@@ -45,6 +45,8 @@ class CreateRequest extends FormRequest
             // 'latitude'   => 'required',
             // 'longitude'  => 'required',
             'pks_number' => 'required',
+            'region_id' => 'required',
+            'region_name' => 'required',
             'facilities' => 'required',
             'pic_name'   => 'required|alpha_spaces',
             'pic_phone'  => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
@@ -89,15 +91,23 @@ class CreateRequest extends FormRequest
      */
     protected function getValidatorInstance()
     {
-        $latitude  = '-6.90390';
-        $longitude = '107.61860';
-
         if ($this->method() != 'PUT') {
             $developer_id = $this->user()->developer->id;
             $this->merge(compact('developer_id'));
         }
 
-        $this->merge(compact('latitude', 'longitude'));
+        if ( $this->has('longitude') ) {
+            $longitude = env('DEF_LONG', '106.81350');
+            $this->merge(compact('longitude'));
+
+        }
+
+        if ( $this->has('latitude') ) {
+            $latitude = env('DEF_LAT', '-6.21670');
+            $this->merge(compact('latitude'));
+
+        }
+
         return parent::getValidatorInstance();
     }
 }
