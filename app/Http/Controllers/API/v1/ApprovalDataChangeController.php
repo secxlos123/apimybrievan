@@ -135,7 +135,11 @@ class ApprovalDataChangeController extends Controller
     public function show($eks, $approvalType, $id)
     {
       $new = $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id);
-      $old = User::with($approvalType.'.city')->findOrFail($new->related_id);
+      $old = User::with([$approvalType =>  function($query) use ($new)
+            {
+              $query->with('city')->where('user_id',$new->id);
+            }])->firstOrFail();
+      
       $newold = compact('new','old');
       return $this->makeResponse(
         $newold
