@@ -752,6 +752,10 @@ class EForm extends Model implements AuditableContract
                 , 'status_eform' => $status
             ]);
 
+            $target->kpr->update([
+                'is_sent' => ( $status == 'Approval1' ? true : false )
+            ]);
+
             $returnStatus = "EForm berhasil di update.";
 
             if ($target->kpr) {

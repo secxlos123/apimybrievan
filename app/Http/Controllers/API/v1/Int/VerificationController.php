@@ -80,35 +80,35 @@ class VerificationController extends Controller
                     'source_income' => $customer->financial ? ($customer->financial['source_income'] ? $customer->financial['source_income'] : 'single') : 'single'
                 ]
                 , 'kpr' => $eform->kpr
-                , 'kemendagri' => [
-                    'name' => 'namaLengkap'
-                    , 'gender' => 'jenisKelamin'
-                    , 'birth_place' => 'tempatLahir'
-                    , 'birth_date' => 'tanggalLahir'
-                    , 'phone' => ''
-                    , 'mobile_phone' => ''
-                    , 'address' => 'alamat'
-                    , 'citizenship' => ''
-                    , 'status' => 'statusKawin'
-                    , 'address_status' => ''
-                    , 'mother_name' => 'namaIbu'
-                ]
-                // , 'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
-                , 'cif' => [
-                    'cif_number' => 'cifno'
-                    , 'name' => 'nama_sesuai_id'
-                    , 'gender' => 'jenis_kelamin'
-                    , 'birth_place' => 'tempat_lahir'
-                    , 'birth_date' => 'tanggal_lahir'
-                    , 'phone' => 'telp_rumah'
-                    , 'mobile_phone' => 'handphone'
-                    , 'address' => 'alamat_id1'
-                    , 'citizenship' => 'kewarganegaraan'
-                    , 'status' => 'status_nikah'
-                    , 'address_status' => ''
-                    , 'mother_name' => 'nama_ibu_kandung'
-                ]
-                // , 'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
+                // , 'kemendagri' => [
+                //     'name' => 'namaLengkap'
+                //     , 'gender' => 'jenisKelamin'
+                //     , 'birth_place' => 'tempatLahir'
+                //     , 'birth_date' => 'tanggalLahir'
+                //     , 'phone' => ''
+                //     , 'mobile_phone' => ''
+                //     , 'address' => 'alamat'
+                //     , 'citizenship' => ''
+                //     , 'status' => 'statusKawin'
+                //     , 'address_status' => ''
+                //     , 'mother_name' => 'namaIbu'
+                // ]
+                , 'kemendagri' => $this->getKemendagri( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
+                // , 'cif' => [
+                //     'cif_number' => 'cifno'
+                //     , 'name' => 'nama_sesuai_id'
+                //     , 'gender' => 'jenis_kelamin'
+                //     , 'birth_place' => 'tempat_lahir'
+                //     , 'birth_date' => 'tanggal_lahir'
+                //     , 'phone' => 'telp_rumah'
+                //     , 'mobile_phone' => 'handphone'
+                //     , 'address' => 'alamat_id1'
+                //     , 'citizenship' => 'kewarganegaraan'
+                //     , 'status' => 'status_nikah'
+                //     , 'address_status' => ''
+                //     , 'mother_name' => 'nama_ibu_kandung'
+                // ]
+                , 'cif' => $this->getCIF( $request->header( 'Authorization' ), $eform->nik, $request->header( 'pn' ) )
             ]
         ], 200 );
     }
