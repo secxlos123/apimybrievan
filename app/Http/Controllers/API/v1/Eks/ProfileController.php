@@ -11,6 +11,7 @@ use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\ThirdParty;
+use App\Models\Developer;
 
 
 class ProfileController extends Controller
@@ -93,12 +94,14 @@ class ProfileController extends Controller
         if ($user->inRole('developer') || $user->inRole('others')) {
             $type = 'Unknown';
             if ($user->inRole('developer')) {
+                $dev = Developer::where(['user_id'=> $user->id])->firstOrFail();
                 $type = \App\Models\Developer::class;
             } elseif ($user->inRole('others')) {
                $type = \App\Models\ThirdParty::class;
+               $dev = $user; 
             }
 
-            $request->merge(['related_id' => $user->id,
+            $request->merge(['related_id' => $dev->id,
                               'related_type' => $type ]);
             \Log::info($request->all());
             $temp = ApprovalDataChange::updateOrCreate(['related_id' => $user->id],$request->all());

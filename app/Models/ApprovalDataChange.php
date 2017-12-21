@@ -32,7 +32,9 @@ class ApprovalDataChange extends Model implements AuditableContract
       'status',
       'remark',
       'approval_by',
-      'address'
+      'address',
+      'first_name',
+      'last_name'
     ];
 
     /**
