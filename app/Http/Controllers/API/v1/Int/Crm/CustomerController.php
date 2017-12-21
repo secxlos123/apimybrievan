@@ -13,6 +13,8 @@ use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
 
+use RestwsHc;
+
 // use GuzzleHttp\Exception\GuzzleException;
 // use GuzzleHttp\Client;
 
@@ -53,4 +55,24 @@ class CustomerController extends Controller
   	// 		'contents' => $dataCustomer
   	// 	], 200 );
     // }
+
+    public function customer_nik(Request $request)
+    {
+      $customer_nik = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_customer_profile_nik',
+          'requestData' => [
+            'app_id' => 'mybriapi',
+            'nik' => $request['nik']
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      return response()->success([
+        'message' => 'Get Customer Detail by NIK success',
+        'contents' => $customer_nik['responseData']
+      ]);
+    }
 }
