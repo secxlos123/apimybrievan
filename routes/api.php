@@ -30,6 +30,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		Route::post('SelectCabang', 'SelectCabangController@getCabang');
+		Route::post('GetView', 'ViewController@index');
 
 		/* ------------*/
 
@@ -135,6 +136,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post('{status}/{id}', ['as' => 'change-status', 'uses' => 'ApprovalDataChangeController@changeStatus'])
 			->where(['status' => '^(approve|reject)$', 'id' => '[0-9]+']);
 		});
+
+		Route::resource('tracking', 'TrackingController',[
+			'only' => ['index', 'show']]);
 	} );
 
 	Route::group( [ 'prefix' => '{type}' ], function () {

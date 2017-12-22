@@ -21,7 +21,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('debitur-list', 'CustomerController@listDebitur');
 		Route::post('dashboard-internal', 'DashboardController@getDataDashboardInternal');
 		Route::get('debitur-detail', 'CustomerController@detailDebitur');
-		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
+		//Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::delete( 'logout', 'AuthController@destroy' );
 		} );
@@ -82,6 +82,10 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		 * Route For Prescreening
 		 */
 		Route::resource( 'prescreening', 'PrescreeningController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		
+		Route::resource( 'GetView', 'ViewController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 
