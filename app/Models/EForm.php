@@ -38,7 +38,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn'
     ];
 
     /**
@@ -934,6 +934,20 @@ class EForm extends Model implements AuditableContract
         $customer_work = (object) $customer->work;
         $lkn = $this->visit_report;
 
+        $income = 0;
+
+        if ( $lkn->source ) {
+            if ( $lkn->source == 'nonfixed' ) {
+                if ( $lkn->income ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
+                }
+            } else {
+                if ( $lkn->income_salary ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
+                }
+            }
+        }
+
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
@@ -959,7 +973,29 @@ class EForm extends Model implements AuditableContract
             "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
             'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
             'tujuan_membuka_rekening_value' => 'T2',
-            'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012')
+            'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012'),
+
+            'Kode_pos_cif' => '40000',
+            'Kelurahan_cif' => 'kelurahan',
+            'Kecamatan_cif' => 'kecamatan',
+            'Kota_cif' => $this->reformatCity( $customer_detail->city ),
+            'Propinsi_cif' => 'propinsi',
+
+            'Kode_pos_domisili' => '40000',
+            'Kelurahan_domisili' => 'kelurahan',
+            'Kecamatan_domisili' => 'kecamatan',
+            'Kota_domisili' => $this->reformatCity( $customer_detail->city ),
+            'Propinsi_domisili' => 'propinsi',
+
+            'Kode_pos_perusahaan' => '40000',
+            'Kelurahan_perusahaan' => 'kelurahan',
+            'Kecamatan_perusahaan' => 'kecamatan',
+            'Kota_perusahaan' => $this->reformatCity( $customer_detail->city ),
+            'Propinsi_perusahaan' => 'propinsi',
+
+            'Alamat_surat_menyurat_value' => '1',
+            'Penghasilan_perbulan_value' => $income,
+            'Pendidikan_terakhir' => !( $lkn->title ) ? '' : $lkn->title
         ];
         return $request;
     }

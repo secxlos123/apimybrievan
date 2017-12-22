@@ -275,6 +275,7 @@ class EFormController extends Controller
     {
 
         DB::beginTransaction();
+        try {
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
@@ -428,8 +429,14 @@ class EFormController extends Controller
             }
 
         }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->error( [
+                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+                ], 422 );
+        }
 
-        DB::commit();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
@@ -446,7 +453,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
 
-        if ( $request->has('selected_sicd') ) {
+        if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
             $eform = EForm::find( $request->input('eform_id') );
 
             $calculate = array(
@@ -467,8 +474,9 @@ class EFormController extends Controller
             }
 
             $eform->update( [
-                'selected_sicd' => $request->input('selected_sicd')
-                , 'prescreening_status' => $result
+                'prescreening_status' => $result
+                , 'selected_dhn' => $request->input('selected_dhn')
+                , 'selected_sicd' => $request->input('selected_sicd')
             ] );
 
             $eform = array();
