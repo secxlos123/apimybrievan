@@ -248,6 +248,7 @@ class ApprovalDataChangeController extends Controller
 
       $related->user->save();
       $related->save();
+      $dataChange->delete();
     }
 
     private function removeFirstAndSecondArrayPath($path)
