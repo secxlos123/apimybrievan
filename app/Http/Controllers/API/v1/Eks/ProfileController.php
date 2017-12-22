@@ -102,9 +102,9 @@ class ProfileController extends Controller
             }
 
             $request->merge(['related_id' => $dev->id,
-                              'related_type' => $type ]);
-            \Log::info($request->all());
-            $temp = ApprovalDataChange::updateOrCreate(['related_id' => $user->id],$request->all());
+                              'related_type' => $type,
+                              'status' => 'menunggu persetujuan' ]);
+            $temp = ApprovalDataChange::updateOrCreate(['related_id' => $dev->id],$request->all());
 
 
             if ($temp) {

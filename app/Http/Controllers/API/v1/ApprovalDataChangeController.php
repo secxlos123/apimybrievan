@@ -42,7 +42,7 @@ class ApprovalDataChangeController extends Controller
     public function index($type, $approvalType)
     {
         return $this->makeResponse(
-          $this->approvalDateChange->getList()->only($approvalType)->paginate(10)
+          $this->approvalDateChange->getList()->only($approvalType)->orderBy('created_at','desc')->paginate(10)
         );
     }
 

@@ -80,7 +80,7 @@ class AccountController extends Controller
             'contents' => $detailByCif['data']['info'][0]
         ]);
       } else {
-        $briConnect = $this->briconnectToken();
+        $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
         // $apiPdmToken = $apiPdmToken[0];
 
@@ -97,7 +97,7 @@ class AccountController extends Controller
     public function byCif($cif, $token)
     {
       $client = new Client();
-      $requestLeadsDetail = $client->request('GET', 'http://172.18.44.182/customer/details/'.$cif,
+      $requestLeadsDetail = $client->request('GET', config('restapi.apipdm').'/customer/details/'.$cif,
         [
           'headers' =>
           [

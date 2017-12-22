@@ -139,6 +139,18 @@ class ScoringController extends Controller
 		$data = EForm::findOrFail( $id );
 		$personal = $data->customer->personal;
 
+		// Get pefindo
+		$score = $request->input('pefindo_score');
+		$pefindoC = 'Kuning';
+		if ( $score >= 250 && $score <= 573 ) {
+			$pefindoC = 'Merah';
+
+		} elseif ( $score >= 677 && $score <= 900 ) {
+			$pefindoC = 'Hijau';
+
+		}
+
+		// Get DHN
 		$dhn = \RestwsHc::setBody( [
             'request' => json_encode( [
                 'requestMethod' => 'get_dhn_consumer',
@@ -152,6 +164,7 @@ class ScoringController extends Controller
         ] )->setHeaders( [
             'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
+        \Log::info("==============dhn====================");
         \Log::info($dhn);
 
         if ($dhn['responseCode'] != '00') {
@@ -160,6 +173,63 @@ class ScoringController extends Controller
         }
         \Log::info($dhn);
 
+        $pasangan = false;
+        try {
+        	if ( $personal['status_id'] == 2 ) {
+		        $dhnPasangan = \RestwsHc::setBody( [
+		            'request' => json_encode( [
+		                'requestMethod' => 'get_dhn_consumer',
+		                'requestData' => [
+		                    'id_user' => request()->header( 'pn' ),
+		                    'nik'=> $personal['couple_nik'],
+		                    'nama_nasabah'=> strtolower($personal['couple_name']),
+		                    'tgl_lahir'=> $personal['couple_birth_date']
+		                ]
+		            ] )
+		        ] )->setHeaders( [
+		            'Authorization' => request()->header( 'Authorization' )
+		        ] )->post( 'form_params' );
+		        \Log::info("==============dhnPasangan====================");
+		        \Log::info($dhnPasangan);
+
+		        if ($dhnPasangan['responseCode'] != '00') {
+		            $dhn['responseData'][] = ['warna' => 'Hijau'];
+
+		        } else {
+		            $dhn['responseData'] = array_merge(
+		            	$dhn['responseData']
+		            	, $dhnPasangan['responseData']
+		            );
+
+		        }
+		        \Log::info($dhn);
+	        	$pasangan = true;
+        	}
+        } catch (Exception $e) {
+        	\Log::info("=====================data DHN pasangan salaaah====================");
+        	\Log::info($e);
+        }
+
+        $dhnC = $dhn['responseData'][0]['warna'];
+        $selectedDHN = 0;
+
+		if ( $pasangan ) {
+			foreach ($dhn['responseData'] as $key => $responseData) {
+				$doAction = false;
+
+				if ( ( $responseData['warna'] == 'Kuning' && $dhnC != 'Merah' ) || ( $responseData['warna'] == 'Merah' ) ) {
+					$doAction = true;
+
+				}
+
+				if ( $doAction ) {
+					$dhnC = $responseData['warna'];
+					$selectedDHN = $key;
+				}
+			}
+		}
+
+		// Get SICD
         $sicd = \RestwsHc::setBody( [
             'request' => json_encode( [
                 'requestMethod' => 'get_sicd_consumer',
@@ -181,17 +251,43 @@ class ScoringController extends Controller
 
         }
 
-		$score = $request->input('pefindo_score');
-		$pefindoC = 'Kuning';
-		if ( $score >= 250 && $score <= 573 ) {
-			$pefindoC = 'Merah';
+        $pasangan = false;
+        try {
+        	if ( $personal['status_id'] == 2 ) {
+		        $sicdPasangan = \RestwsHc::setBody( [
+		        	'request' => json_encode( [
+		                'requestMethod' => 'get_sicd_consumer',
+		                'requestData' => [
+		                    'id_user' => request()->header( 'pn' ),
+		                    'nik'=> $personal['couple_nik'],
+		                    'nama_nasabah'=> strtolower($personal['couple_name']),
+		                    'tgl_lahir'=> $personal['couple_birth_date'],
+		                    'kode_branch'=> $data->branch_id
+		                ]
+		            ] )
+		        ] )->setHeaders( [
+		            'Authorization' => request()->header( 'Authorization' )
+		        ] )->post( 'form_params' );
+		        \Log::info("==============sicdPasangan====================");
+		        \Log::info($sicdPasangan);
 
-		} elseif ( $score >= 677 && $score <= 900 ) {
-			$pefindoC = 'Hijau';
+		        if ($sicdPasangan['responseCode'] != '00') {
+		            $sicd['responseData'][] = ['bikole' => '-'];
 
-		}
+		        } else {
+		        	$sicd['responseData'] = array_merge(
+		        		$sicd['responseData']
+		        		, $sicdPasangan['responseData']
+		        	);
 
-        $dhnC = $dhn['responseData'][0]['warna'];
+		        }
+		        \Log::info($sicd);
+		        $pasangan = true;
+        	}
+        } catch (Exception $e) {
+        	\Log::info("=====================data DHN pasangan salaaah====================");
+        	\Log::info($e);
+        }
 
         $target = 1;
         $selected = 0;
@@ -200,7 +296,15 @@ class ScoringController extends Controller
         	if ($sicd['responseCode'] == '00') {
         		$date = explode(" ", $responseData['tgl_lahir']);
 
-	        	if ( strtoupper($responseData['nama_debitur']) == strtoupper($personal['first_name'].' '.$personal['last_name']) && $personal['birth_date'] == $date[0] && $personal['nik'] == $responseData['no_identitas'] ) {
+        		$doAction = false;
+
+        		if ( $pasangan ) {
+        			if ( strtoupper($responseData['nama_debitur']) == strtoupper($personal['couple_name']) && $personal['couple_birth_date'] == $date[0] && $personal['couple_nik'] == $responseData['no_identitas'] ) {
+        				$doAction = true;
+        			}
+        		}
+
+	        	if ( ( strtoupper($responseData['nama_debitur']) == strtoupper($personal['first_name'].' '.$personal['last_name']) && $personal['birth_date'] == $date[0] && $personal['nik'] == $responseData['no_identitas'] ) || $doAction ) {
 	        		if ( $responseData['bikole'] > $target ) {
 	        			$target = $responseData['bikole'];
 	        			$selected = $index;
@@ -238,6 +342,7 @@ class ScoringController extends Controller
         $dats['dhn_detail'] = json_encode($dhn);
         $dats['sicd_detail'] = json_encode($sicd);
         $dats['selected_sicd'] = $selected;
+        $dats['selected_dhn'] = $selectedDHN;
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
