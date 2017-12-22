@@ -246,10 +246,10 @@
             </table>
 
             @if( $detail->dhn_detail )
-                @php( $dhn = json_decode((string) $detail->dhn_detail) )
+                @php( $dhnData = json_decode((string) $detail->dhn_detail) )
 
-                @if( isset($dhn->responseData) )
-                    @php( $dhn = $dhn->responseData[0] )
+                @if( isset($dhnData->responseData) )
+                    @php( $dhnData = $dhnData->responseData )
                     <table class="full-width">
                         <tbody>
                             <tr>
@@ -258,14 +258,21 @@
                         </tbody>
                     </table>
 
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td class="label">Hasil DHN</td>
-                                <td class="break-word">: <span class="{{ $dhn->warna }}">{{ $dhn->warna }}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    @foreach( $dhnData as $key => $dhn )
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="label">Hasil DHN</td>
+                                    <td class="break-word">:
+                                        <span class="{{ $dhn->warna }}">{{ $dhn->warna }}</span>
+                                        {!! $detail->selected_dhn == $key ? ' <strong>(Dipilih)</strong>' : '' !!}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <br/>
+                    @endforeach
                 @endif
             @endif
 
