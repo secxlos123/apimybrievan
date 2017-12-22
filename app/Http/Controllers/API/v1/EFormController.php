@@ -275,6 +275,7 @@ class EFormController extends Controller
     {
 
         DB::beginTransaction();
+        try {
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
@@ -428,8 +429,14 @@ class EFormController extends Controller
             }
 
         }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->error( [
+                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+                ], 422 );
+        }
 
-        DB::commit();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
