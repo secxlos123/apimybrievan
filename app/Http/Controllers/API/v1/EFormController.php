@@ -446,7 +446,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
 
-        if ( $request->has('selected_sicd') ) {
+        if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
             $eform = EForm::find( $request->input('eform_id') );
 
             $calculate = array(
@@ -467,8 +467,9 @@ class EFormController extends Controller
             }
 
             $eform->update( [
-                'selected_sicd' => $request->input('selected_sicd')
-                , 'prescreening_status' => $result
+                'prescreening_status' => $result
+                , 'selected_dhn' => $request->input('selected_dhn')
+                , 'selected_sicd' => $request->input('selected_sicd')
             ] );
 
             $eform = array();
