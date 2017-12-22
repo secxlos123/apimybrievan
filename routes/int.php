@@ -83,6 +83,10 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+		
+		Route::resource( 'GetView', 'ViewController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 
 	/**
 	 * Route group for namespace controller Int

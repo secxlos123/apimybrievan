@@ -22,7 +22,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('select', 'SelectController@select');
 		Route::get('phpini', 'EFormController@php_ini');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
-		//Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
+		Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::post('eforms_briguna', 'EFormController@show_briguna');
 		Route::get('Download_Rekomendasi', 'Download_RekomendasiController@Download');
 		Route::get('Surat_Kuasa_Potong_Upah', 'DownloadFileController@Download');
@@ -30,6 +30,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		Route::post('SelectCabang', 'SelectCabangController@getCabang');
+		Route::post('GetView', 'ViewController@index');
 
 		/* ------------*/
 
