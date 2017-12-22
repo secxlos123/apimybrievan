@@ -75,4 +75,37 @@ class CustomerController extends Controller
         'contents' => $customer_nik['responseData']
       ]);
     }
+
+    public function customer_officer(Request $request)
+    {
+      // http://api.briconnect.bri.co.id/customer/officer/00025222
+      $token =
+      $request_customer_officer = Client()->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
+        'headers' =>
+        [
+          'Authorization' => 'Bearer '.$this->get_token()
+        ]
+      ]);
+
+      $customer_officer = json_encode($request_customer_officer->getBody()->getContents(), true);
+
+      return $customer_officer;
+    }
+
+    public function get_token()
+    {
+      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // $apiPdmToken = $apiPdmToken[0];
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+
+        return $apiPdmToken['access_token'];
+
+      } else {
+        $briConnect = $this->gen_token();
+        $apiPdmToken = apiPdmToken::get()->toArray();
+
+        return $apiPdmToken['access_token'];
+      }
+    }
 }
