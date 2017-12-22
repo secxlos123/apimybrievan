@@ -5,12 +5,13 @@ namespace App\Http\Controllers\API\v1\Eks;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\TempUser;
+use App\Models\ApprovalDataChange;
 use App\Http\Requests\API\v1\Profile\CustomerRequest;
 use App\Http\Requests\API\v1\Eks\ChangePasswordRequest;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\ThirdParty;
+use App\Models\Developer;
 
 
 class ProfileController extends Controller
@@ -91,8 +92,19 @@ class ProfileController extends Controller
         // }
 
         if ($user->inRole('developer') || $user->inRole('others')) {
-            $request->merge(['user_id' => $user->id]);
-            $temp = TempUser::updateOrCreate(['user_id' => $user->id], $request->all());
+            $type = 'Unknown';
+            if ($user->inRole('developer')) {
+                $dev = Developer::where(['user_id'=> $user->id])->firstOrFail();
+                $type = \App\Models\Developer::class;
+            } elseif ($user->inRole('others')) {
+               $type = \App\Models\ThirdParty::class;
+               $dev = $user; 
+            }
+
+            $request->merge(['related_id' => $dev->id,
+                              'related_type' => $type ]);
+            \Log::info($request->all());
+            $temp = ApprovalDataChange::updateOrCreate(['related_id' => $user->id],$request->all());
 
 
             if ($temp) {

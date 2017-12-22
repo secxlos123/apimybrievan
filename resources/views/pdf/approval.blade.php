@@ -367,6 +367,33 @@
                 </tbody>
             </table>
 
+            @if( $detail->customer->financial['status_finance'] == "Joint Income" )
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Keuangan pasangan</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="label">Gaji/ Pendapatan</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary_couple']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Pendapatan Lain</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary_couple']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Angsuran Pinjaman</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment_couple']), 0, ",", ".") }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
             <table class="full-width">
                 <tbody>
                     <tr>

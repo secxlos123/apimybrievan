@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ApprovalDataChange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\ApprovalDataChange\CreateRequest;
+use App\Models\User;
 
 class ApprovalDataChangeController extends Controller
 {
@@ -133,8 +134,15 @@ class ApprovalDataChangeController extends Controller
      */
     public function show($eks, $approvalType, $id)
     {
+      $new = $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id);
+      $old = User::with([$approvalType =>  function($query) use ($new)
+            {
+              $query->with('city')->where('user_id',$new->id);
+            }])->firstOrFail();
+      
+      $newold = compact('new','old');
       return $this->makeResponse(
-        $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id)
+        $newold
       );
     }
 
@@ -216,6 +224,15 @@ class ApprovalDataChangeController extends Controller
 
       if ($dataChange->city_id) {
         $related->city_id = $dataChange->city_id;
+      }
+       if ($dataChange->address) {
+        $related->address = $dataChange->address;
+      }
+      if ($dataChange->first_name) {
+        $related->user->first_name = $dataChange->first_name;
+      }
+      if ($dataChange->last_name) {
+        $related->user->last_name = $dataChange->last_name;
       }
 
       if ($dataChange->logo) {
