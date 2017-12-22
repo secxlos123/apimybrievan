@@ -10,6 +10,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //route account
   Route::post( 'account/leads', 'AccountController@index')->name('crm.account');
+  Route::post( 'account/leads_detail', 'AccountController@detail')->name('crm.account_detail');
 
   // route customer ext and int
   Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');
