@@ -62,8 +62,6 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::group( [ 'prefix' => 'verification' ], function () {
 			Route::post( 'search-nik', 'VerificationController@searchNik' );
 		} );
-<<<<<<< HEAD
-=======
 		Route::get( 'staff-list', 'StaffController@index' );
 
 		Route::resource( 'scorings', 'ScoringController', [
@@ -72,7 +70,6 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		/* Route::resource( 'gimmick', 'GimmickController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] ); */
->>>>>>> c91dda14c108e656e5c69fbda6a255c3bae0d581
 	} );
 } );
 
