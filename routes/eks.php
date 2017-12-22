@@ -84,8 +84,6 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		 */
 		Route::resource('property', 'PropertyController', [ 'except' => [ 'create', 'edit' ] ]);
 
-		Route::resource('tracking', 'TrackingController');
-
 		/**
 		 * Route property type get by property
 		 */
