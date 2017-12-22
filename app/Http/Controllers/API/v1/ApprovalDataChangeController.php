@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\ApprovalDataChange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\ApprovalDataChange\CreateRequest;
+use App\Models\User;
+use App\Models\Developer;
 
 class ApprovalDataChangeController extends Controller
 {
@@ -133,8 +135,17 @@ class ApprovalDataChangeController extends Controller
      */
     public function show($eks, $approvalType, $id)
     {
+      $new = $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id);
+      if ($approvalType == 'developer') {
+        $developer = Developer::findOrFail($new->related_id);
+        $old = User::with($approvalType.'.city')->findOrFail($developer->user_id);
+      }else
+      {
+        $old = User::with($approvalType.'.city')->findOrFail($new->related_id);
+      }
+      $newold = compact('new','old');
       return $this->makeResponse(
-        $this->approvalDateChange->getList($id)->only($approvalType)->findOrFail($id)
+        $newold
       );
     }
 
@@ -217,6 +228,15 @@ class ApprovalDataChangeController extends Controller
       if ($dataChange->city_id) {
         $related->city_id = $dataChange->city_id;
       }
+       if ($dataChange->address) {
+        $related->address = $dataChange->address;
+      }
+      if ($dataChange->first_name) {
+        $related->user->first_name = $dataChange->first_name;
+      }
+      if ($dataChange->last_name) {
+        $related->user->last_name = $dataChange->last_name;
+      }
 
       if ($dataChange->logo) {
         $path = $this->transformToArray($dataChange);
@@ -228,6 +248,7 @@ class ApprovalDataChangeController extends Controller
 
       $related->user->save();
       $related->save();
+      $dataChange->delete();
     }
 
     private function removeFirstAndSecondArrayPath($path)

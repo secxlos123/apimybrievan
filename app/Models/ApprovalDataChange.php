@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class ApprovalDataChange extends Model
+class ApprovalDataChange extends Model implements AuditableContract
 {
+    use Auditable;
 
     /**
      * Status of approval data change
@@ -28,7 +31,10 @@ class ApprovalDataChange extends Model
       'mobile_phone',
       'status',
       'remark',
-      'approval_by'
+      'approval_by',
+      'address',
+      'first_name',
+      'last_name'
     ];
 
     /**

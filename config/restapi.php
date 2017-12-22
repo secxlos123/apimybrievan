@@ -25,4 +25,13 @@ return [
 	'restwshc'  => env('CLIENT_RESTWSHC', 'http://10.35.65.111/skpp_concept/restws_hc'),
 
   	'key'  		=> env('CLIENT_KEY', '$2y$10$OoDAS6saH1b3D/nZJ4DXKuOTqVumFTACUZDFkZfepS1h15jDNxdzK'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | CLIENT_APIPDM
+    |--------------------------------------------------------------------------
+    */
+    'apipdm' => 'http://api.briconnect.bri.co.id',
+    'pdm_client_id' => '3f60d2edcd0399e6ea25290fe4022e0af91e5016',
+    'pdm_client_secret' => 'ef3d569a4a609c636e114ff9056b8c324e0f2e7a',
 ];

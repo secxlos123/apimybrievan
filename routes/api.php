@@ -108,8 +108,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			->where(['developerId' => '[0-9]+', 'propertyId' => '[0-9]+']);
 		Route::post('/collateral/disposition/{collateralId}', ['as' => 'collateral.disposition', 'uses' => 'CollateralController@disposition'])
 			->where('collateralId', '[0-9]+');
-		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])
-			->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
+		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
 		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		Route::get('collateral/nonindex/{developerId}/{propertyId}', ['as' => 'collateral.showNon', 'uses' => 'CollateralController@showNon']);
 		/**
