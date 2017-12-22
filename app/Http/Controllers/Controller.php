@@ -37,10 +37,10 @@ class Controller extends BaseController
         }
     }
 
-    public function briconnectToken()
+    public function gen_token()
     {
       $client = new Client();
-      $requestBriconnect = $client->request('POST', 'http://172.18.44.182/oauth/token',
+      $requestBriconnect = $client->request('POST', congig('restapi.apipdm').'/oauth/token',
         [
           'form_params' =>
           [
