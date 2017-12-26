@@ -63,20 +63,26 @@ class KPR extends Model implements AuditableContract
      * @return void
      */
     public static function create( $data ) {
-        \Log::info($data);
-        $eform = EForm::create( $data );
-        $data[ 'developer_id' ] = $data[ 'developer' ];
-        $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
-        $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
+        \DB::beginTransaction();
+        try {
+            $eform = EForm::create( $data );
+            $data[ 'developer_id' ] = $data[ 'developer' ];
+            $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
+            $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
 
-        if ( isset($data[ 'property_item' ]) ) {
-            PropertyItem::setAvailibility( $data[ 'property_item' ], "book" );
+            if ( isset($data[ 'property_item' ]) ) {
+                PropertyItem::setAvailibility( $data[ 'property_item' ], "book" );
+            }
+
+            $usersModel = User::FindOrFail($eform->user_id);
+            $usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
+            
+            return $kpr;
+            \DB::commit();
+        } catch (Exception $e) {
+            \DB::rollback();
+            return $e;
         }
-
-        $usersModel = User::FindOrFail($eform->user_id);
-        $usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
-        
-        return $kpr;
     }
 
     public function getStatusPropertyNameAttribute()

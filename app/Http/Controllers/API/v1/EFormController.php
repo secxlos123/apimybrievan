@@ -59,7 +59,7 @@ class EFormController extends Controller
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+		  $eform[0]['Url'] = 'http://api.dev.net/uploads/';
         return response()->success( [
             'contents' => $eform
         ],200 );
@@ -160,7 +160,7 @@ class EFormController extends Controller
 		  $eform[0]['customer']['schedule'] = [];
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
-		  $eform[0]['Url'] = 'http://api.dev.net/uploads/'.$eform[0]['user_id'];
+		  $eform[0]['Url'] = 'http://api.dev.net/uploads/';
 
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
@@ -277,6 +277,7 @@ class EFormController extends Controller
     {
 
         DB::beginTransaction();
+        try {
         $branchs = \RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
@@ -430,8 +431,14 @@ class EFormController extends Controller
             }
 
         }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->error( [
+                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+                ], 422 );
+        }
 
-        DB::commit();
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
@@ -448,7 +455,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
 
-        if ( $request->has('selected_sicd') ) {
+        if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
             $eform = EForm::find( $request->input('eform_id') );
 
             $calculate = array(
@@ -469,8 +476,9 @@ class EFormController extends Controller
             }
 
             $eform->update( [
-                'selected_sicd' => $request->input('selected_sicd')
-                , 'prescreening_status' => $result
+                'prescreening_status' => $result
+                , 'selected_dhn' => $request->input('selected_dhn')
+                , 'selected_sicd' => $request->input('selected_sicd')
             ] );
 
             $eform = array();
@@ -645,7 +653,6 @@ class EFormController extends Controller
         $result = $eform->insertCoreBRI( $step_id );
 
         DB::commit();
-        dd( $result );
     }
 
     /**
