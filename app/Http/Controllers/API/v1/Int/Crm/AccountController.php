@@ -116,8 +116,13 @@ class AccountController extends Controller
       $data['main_branch'] = $request->input('main_branch');
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
-      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // $apiPdmToken = $apiPdmToken[0];
+      if ( count(apiPdmToken::latest('id')->first()->toArray()) != null ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->briconnectToken();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
