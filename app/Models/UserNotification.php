@@ -58,7 +58,7 @@ class UserNotification extends Model
                 $subjectNotif = 'Pengajuan KPR Baru';
                 break;
             case 'App\Notifications\EFormPenugasanDisposisi':                
-                $subjectNotif = 'Penugasan KPR Baru';
+                $subjectNotif = 'Penugasan Disposisi';
                 break;
             case 'App\Notifications\ApproveEFormCustomer':                
                 $subjectNotif = 'Pengajuan KPR Telah Di Setujui';
@@ -67,7 +67,7 @@ class UserNotification extends Model
                 $subjectNotif = 'Pengajuan KPR Telah Di Tolak';
                 break;
             case 'App\Notifications\LKNEFormCustomer':                
-                $subjectNotif = 'Pengajuan LKN Baru';
+                $subjectNotif = 'Prakarsa LKN';
                 break;
             default:
                 $subjectNotif = 'Type undefined';
