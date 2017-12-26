@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ViewSeeder::class);
         $this->call(CrmTableSeeder::class);
         $this->call(FixAutoId::class);
+        $this->call(UserServicesTableSeeder::class);
 
     }
 }

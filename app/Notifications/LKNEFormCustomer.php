@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\CustomDbChannel;
 
-class RejectEFormCustomer extends Notification
+class LKNEFormCustomer extends Notification
 {
     use Queueable;
 
@@ -30,7 +30,7 @@ class RejectEFormCustomer extends Notification
      */
     public function via($notifiable)
     {
-       return [NotificationsDbChannel::class];
+        return [NotificationsDbChannel::class];
     }
 
     /**
@@ -53,7 +53,7 @@ class RejectEFormCustomer extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toDatabase($notifiable)
     {
         return [
             'eform_id' => $this->eForm->id,
