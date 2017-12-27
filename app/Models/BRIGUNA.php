@@ -163,7 +163,7 @@ class BRIGUNA extends Model
                 "amount"    => $customer_detail->loan_installment,
                 "tujuan"    => $eform->tujuan_penggunaan,
                 "agunan"    => $eform->mitra,
-                "jangka"    => ($briguna->year * 12),
+                "jangka"    => $briguna->year,
                 "email_atasan" => "aswin.taopik@gmail.com",
                 "npwp"      => $customer_detail->npwp,
                 "mitra"     => $data['mitra_name'],
