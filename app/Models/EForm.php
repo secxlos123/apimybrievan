@@ -470,9 +470,9 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            //, ['InsertDataAgunanModel71',null]
-            //, ['InsertIntoReviewer',null]
-            //, ['InsertDataAgunanTanahRumahTinggal',null]
+            , ['InsertDataAgunanModel71',null]
+            , ['InsertIntoReviewer',null]
+            , ['InsertDataAgunanTanahRumahTinggal',null]
 
         ];
 
