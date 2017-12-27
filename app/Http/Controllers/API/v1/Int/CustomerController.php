@@ -130,9 +130,9 @@ class CustomerController extends Controller
 	 */
 	public function verify( CustomerRequest $request, $id )
 	{
-		DB::beginTransaction();
+		//DB::beginTransaction();
 		$customer = Customer::findOrFail( $id );
-
+		
 		$baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name');
 
         // Get User Login
@@ -192,13 +192,12 @@ class CustomerController extends Controller
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'eform_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
 
-		// $usersModel = User::FindOrFail($customer->user_id);
-		// $notificationToCustomer = $usersModel->notify(new VerificationDataNasabah($eform));		/*send notification to customer nasabah*/
-
 		DB::commit();
-		\Log::info($request->verify_status);
+		
 		if( $request->verify_status == 'verify' ) {
-
+			$usersModel = User::FindOrFail($customer->id);
+			$notificationToCustomer = $usersModel->notify(new VerificationDataNasabah($eform));		/*send notification to customer nasabah*/
+			
 			event( new CustomerVerify( $customer, $eform ) );
 			return response()->success( [
 				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',
