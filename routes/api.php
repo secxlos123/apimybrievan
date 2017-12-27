@@ -55,6 +55,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 
+		Route::resource( 'dirrpc', 'Dir_rpcController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		Route::get( 'offices', 'OfficeController@index' );
 		Route::post('SelectCabang', 'SelectCabangController@index');
 
