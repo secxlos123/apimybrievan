@@ -79,7 +79,7 @@ class CustomerController extends Controller
     public function customer_officer(Request $request)
     {
       // http://api.briconnect.bri.co.id/customer/officer/00025222
-      $token = $this->gen_token();
+      // $token = $this->gen_token();
       $request_customer_officer = Client()->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
         'headers' =>
         [
