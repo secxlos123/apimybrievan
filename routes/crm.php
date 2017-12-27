@@ -20,7 +20,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post( 'account/customer_nik', 'CustomerController@customer_nik')->name('crm.customer_nik');
 
   // route customer officer
-  Route::get( 'account/customer_officer', 'CustomerController@customer_officer')->name('crm.customer_officer');
+  Route::post( 'account/customer_officer', 'CustomerController@customer_officer')->name('crm.customer_officer');
 
   //route activity
   Route::resource( 'activity', 'marketingActivityController', [

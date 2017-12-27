@@ -18,7 +18,7 @@ class UserServices extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'pn', 'branch_id', 'hilfm', 'role', 'name', 'tipe_uker', 'htext', 'posisi', 'last_activity', 'created_at', 'updated_at'
+        'pn', 'branch_id', 'hilfm', 'role', 'name', 'tipe_uker', 'htext', 'posisi', 'last_activity','password','created_at', 'updated_at'
     ];
 
      /**
