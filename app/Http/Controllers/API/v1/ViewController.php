@@ -37,12 +37,25 @@ class ViewController extends Controller
 
 			}elseif($table_view[$i]['kolom']=='2'){
 				if($table_view[$i]['first']=='1'){
-					$view1 .= '<div class="row"><div class="col-md-6"><div class="form-horizontal">';
+					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+				}
+				if($table_view[$i]['last']=='1'){
+					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
 				}
 				$view1 .= $this->generate_table($table_view,$i);
-				if($table_view[$i]['last']=='1'){
-					$view1 .= '</div></div>';
+				$view1 .= '</div></div>';
+			}elseif($table_view[$i]['kolom']=='3'){
+				if($table_view[$i]['first']=='1'){
+					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
 				}
+				if($table_view[$i]['last']=='1'){
+					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+				}
+				if($table_view[$i]['last']=='0'&&$table_view[$i]['first']=='0'){
+					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+				}
+				$view1 .= $this->generate_table($table_view,$i);
+				$view1 .= '</div></div>';
 			}elseif($table_view[$i]['kolom']=='0'){			
 				$view1 .= '<div class="row"><div class="col-md-6"><div class="form-horizontal"></div></div></div>';
 			}elseif($table_view[$i]['kolom']=='single'){
@@ -72,6 +85,10 @@ class ViewController extends Controller
 					$view1 .= $this->table($table_view[$i]);
 				}elseif($table_view[$i]['type']=='button'){
 					$view1 .= $this->button($table_view[$i]);
+				}elseif($table_view[$i]['type']=='label'){
+					$view1 .= $this->labeling($table_view[$i]);
+				}elseif($table_view[$i]['type']=='radio'){
+					$view1 .= $this->radio($table_view[$i]);
 				}
 				return $view1;
 	}
@@ -79,6 +96,23 @@ class ViewController extends Controller
     {
 			$label = '<label class="'.$class.'">'.$value.'</label>';
 			return $label;
+    }
+	
+    public function labeling($view)
+    {
+			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+//			if(!empty($view['div'])){
+//			$form .= '<div class="'.$view['div_class'].'">';
+//			}
+//			if(!empty($view['div'])){
+//			$form .= '</div>';
+//			}
+			$form .= '</div>';
+	
+		return $form;
     }
     public function text($view)
     {
@@ -132,6 +166,29 @@ class ViewController extends Controller
 			}
 			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'">
 						'.$view['value'].'</select>';
+			if(!empty($view['div'])){
+			$form .= '</div>';
+			}
+			$form .= '</div>';
+		return $form;
+    }
+	   public function radio($view)
+    {
+			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+			if(!empty($view['div'])){
+			$form .= '<div class="'.$view['div_class'].'">';
+			}
+			$radio = explode(";",$view['value']);
+			$x = count($radio);
+			for($i=0;$i<$x;$i++){
+				$radios = explode(",",$radio[$i]);
+				$form .= '<input type="radio" name="'.$view['id_table'].'" value="'.$radios['0'].'">'.$radios['1'];
+			}
+/* 			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'">
+						'.$view['value'].'</select>'; */
 			if(!empty($view['div'])){
 			$form .= '</div>';
 			}
