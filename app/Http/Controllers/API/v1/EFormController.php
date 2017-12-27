@@ -25,8 +25,11 @@ use App\Models\UserNotification;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
 
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\PayloadDataBuilder;
+use LaravelFCM\Message\PayloadNotificationBuilder;
 use DB;
-
+use FCM;
 class EFormController extends Controller
 {
     public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
@@ -275,7 +278,6 @@ class EFormController extends Controller
      */
     public function store( EFormRequest $request )
     {
-
         DB::beginTransaction();
         try {
         $branchs = \RestwsHc::setBody([
@@ -368,7 +370,6 @@ class EFormController extends Controller
                 $kpr = BRIGUNA::create( $baseRequest );
                     \Log::info($kpr);
         } else {
-
             $dataEform =  EForm::where('nik', $request->nik)->get();
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
@@ -443,7 +444,6 @@ class EFormController extends Controller
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
         ], 201 );
-
     }
 
     /**

@@ -995,7 +995,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir' => !( $lkn->title ) ? '' : $lkn->title
+            'Pendidikan_terakhir_value' => !( $lkn->title ) ? '' : $lkn->title
         ];
         return $request;
     }
