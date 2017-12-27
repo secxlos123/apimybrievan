@@ -22,9 +22,9 @@ class Briguna extends Migration
             $table->double( 'price' );
             $table->integer( 'tujuan_penggunaan_id' );
             $table->text( 'year' );
-            $table->integer( 'request_amount' );
-            $table->integer( 'maksimum_plafond' );
-            $table->integer( 'angsuran_usulan' );
+            $table->double( 'request_amount' );
+            $table->double( 'maksimum_plafond' );
+            $table->double( 'angsuran_usulan' );
 
             $table->foreign( 'eform_id' )
                 ->references( 'id' )->on( 'eforms' )

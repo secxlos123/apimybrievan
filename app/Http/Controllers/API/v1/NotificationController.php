@@ -61,8 +61,7 @@ class NotificationController extends Controller
     	$pn = request()->header( 'pn' );
         $ArrGetDataNotification = [];
         if($branch_id !=  ''){
-            \Log::info($role);
-            $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, $pn )->get();
+            $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn )->get();
             if($getDataNotification){
                 foreach ($getDataNotification as $value) {
                     $ArrGetDataNotification[] = [
@@ -83,8 +82,7 @@ class NotificationController extends Controller
             
                  
         }
-        \Log::info($getDataNotification);
-
+        
     	return  response()->success( [
             'message' => 'Sukses',
             'contents' => $ArrGetDataNotification
@@ -98,10 +96,8 @@ class NotificationController extends Controller
             ->where('eform_id',$eform_id)
             ->whereNull('read_at')
             ->first();
-        
-        $notification->markAsRead();
-        
-        \Log::info($notification->markAsRead());
+
+        if($notification) $notification->markAsRead();        
         return  response()->success( [
             'message' => 'Sukses',
             'contents' => $notification

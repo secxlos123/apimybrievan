@@ -74,8 +74,8 @@ class KPR extends Model implements AuditableContract
                 PropertyItem::setAvailibility( $data[ 'property_item' ], "book" );
             }
 
-            // $usersModel = User::FindOrFail($eform->user_id);
-            // $usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
+            $usersModel = User::FindOrFail($eform->user_id);
+            $usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
             
             return $kpr;
             \DB::commit();

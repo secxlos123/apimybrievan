@@ -25,9 +25,6 @@ class TableView extends Migration
             $table->text( 'etc' )->nullable();
             $table->integer( 'div' )->nullable();
             $table->integer( 'label' )->nullable();
-            $table->kolom( 'etc' )->nullable();
-            $table->first( 'etc' )->nullable();
-            $table->last( 'etc' )->nullable();
         } );
  
     }

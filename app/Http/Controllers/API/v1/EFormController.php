@@ -22,6 +22,8 @@ use App\Models\User;
 use App\Models\UserServices;
 use App\Notifications\EFormPenugasanDisposisi;
 use App\Models\UserNotification;
+use App\Notifications\ApproveEFormCustomer;
+use App\Notifications\RejectEFormCustomer;
 
 use DB;
 
@@ -545,7 +547,6 @@ class EFormController extends Controller
         $role = request()->header( 'role' );
         $pn = request()->header( 'pn' );
         $branch_id = request()->header( 'branch_id' );
-        //$getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, $pn )->first();
 
         DB::beginTransaction();
         $eform = EForm::findOrFail( $id );
@@ -558,13 +559,17 @@ class EFormController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         $eform->update( $baseRequest );
+        
+        $notificationIsRead =  $this->userNotification->where('eform_id',$id)
+                                       ->whereNull('read_at')
+                                       ->first();                
+        if(@$notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
 
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
-        /*if($getDataNotification){
-            $getDataNotification->update(['read_at'=>$this->freshTimestamp(),'updated_at'=>'']);
-        }*/
 
 
         DB::commit();
@@ -596,9 +601,23 @@ class EFormController extends Controller
         if( $eform['status'] ) {
 
             $data =  EForm::findOrFail($eform_id);
+            $notificationIsRead =  $this->userNotification->where('eform_id',$eform_id)
+                                   ->whereNull('read_at')
+                                   ->first();                
+            if(@$notificationIsRead){
+                $notificationIsRead->markAsRead();
+            }
             if ($request->is_approved) {
+
+                $usersModel = User::FindOrFail($data->user_id);
+                $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO*/
+
                 event( new Approved( $data ) );
             } else {
+             
+                $usersModel = User::FindOrFail($data->user_id);
+                $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO*/
+
                 event( new RejectedEform( $data ) );
             }
 
@@ -634,7 +653,6 @@ class EFormController extends Controller
         $result = $eform->insertCoreBRI( $step_id );
 
         DB::commit();
-        dd( $result );
     }
 
     /**
