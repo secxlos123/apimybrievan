@@ -27,19 +27,19 @@ class AuditRailHandler
                 , 'latitude' => number_format($request->header('lat', env('DEF_LAT', '-6.21670')), 5)
             );
 
-            Audit::create([
-                'user_id' => $request->header('pn')
-                , 'event' => 'action-log'
-                , 'auditable_id' => $request->header('pn')
-                , 'auditable_type' => Audit::class
-                , 'old_values' => (object) array()
-                , 'new_values' => (object) array()
-                , 'url' => $request->fullUrl()
-                , 'ip_address' => $request->ip()
-                , 'user_agent' => $request->header('User-Agent')
-                , 'extra_params' => json_encode($extraParams)
-                , 'action' => $request->header('auditaction', 'Undefined Action')
-            ]);
+            // Audit::create([
+            //     'user_id' => $request->header('pn')
+            //     , 'event' => 'action-log'
+            //     , 'auditable_id' => $request->header('pn')
+            //     , 'auditable_type' => Audit::class
+            //     , 'old_values' => (object) array()
+            //     , 'new_values' => (object) array()
+            //     , 'url' => $request->fullUrl()
+            //     , 'ip_address' => $request->ip()
+            //     , 'user_agent' => $request->header('User-Agent')
+            //     , 'extra_params' => json_encode($extraParams)
+            //     , 'action' => $request->header('auditaction', 'Undefined Action')
+            // ]);
         }
         return $next($request);
     }
