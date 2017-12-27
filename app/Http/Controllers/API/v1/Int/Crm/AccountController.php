@@ -117,10 +117,11 @@ class AccountController extends Controller
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
       // $apiPdmToken = $apiPdmToken[0];
-      if ( count(apiPdmToken::latest('id')->first()->toArray()) != null ) {
+      // dd(count(apiPdmToken::all()));
+      if ( count(apiPdmToken::all()) > 0 ) {
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       } else {
-        $this->briconnectToken();
+        $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       }
 
@@ -133,10 +134,9 @@ class AccountController extends Controller
             'contents' => $listExisting['data']
         ]);
       } else {
-        $briConnect = $this->briconnectToken();
+        $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
         // $apiPdmToken = $apiPdmToken[0];
-
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->getExistingByFo($data, $token);
 
