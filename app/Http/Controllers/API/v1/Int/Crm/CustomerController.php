@@ -90,7 +90,7 @@ class CustomerController extends Controller
       // return $customer_officer;
       return response()->success( [
           'message' => 'Get Customer by Officer success',
-          'contents' => $customer_officer
+          'contents' => $customer_officer["data"]
         ]);
     }
 
