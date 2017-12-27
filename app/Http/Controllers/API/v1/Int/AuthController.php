@@ -36,7 +36,7 @@ class AuthController extends Controller
 
             }else {
                 $role = checkRolesInternal($userservices[ 'hilfm' ] ,$userservices[ 'posisi' ]);
-                $a = $this->CheckroleAndpn( $userservices, $role['role'], (integer)$userservices['pn'], $request );
+                $this->CheckroleAndpn( $userservices, $role['role'], (integer)$userservices['pn'], $request );
              
                 return response()->success( [
                     'message' => 'Login Sukses',
@@ -75,7 +75,7 @@ class AuthController extends Controller
                         'token' => 'Bearer ' . $data[ 'token' ],
                         'pn' => $data[ 'pn' ],
                         'name' => $data[ 'nama' ],
-                        'branch' => $branch,
+                        'branch' => $data[ 'branch' ],
                         'role' => $role['role'],
                         'position' => $data['posisi'],
                         'uker' => $data['tipe_uker']
@@ -108,7 +108,7 @@ class AuthController extends Controller
                 'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
                 'mobile_phone'=> 0,
                 'is_actived'=> true,
-                'branch_id'=>$data['branch'],
+                'branch_id'=> isset($data['branch']) ? $data['branch'] : $data['branch_id'] ,
                 'password' => md5($request->password)
             ]);
             return true;
