@@ -59,6 +59,7 @@ class Customer extends User
     {
         return [
             'month'  => $this->month,
+            'month2' => $this->month2,
             'value'  => $this->value,
         ];
     }
@@ -388,6 +389,7 @@ class Customer extends User
         $data = Customer::select(
                     DB::raw("count(users.id) as value"),
                     DB::raw("to_char(users.created_at, 'TMMonth YYYY') as month"),
+                    DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
                     DB::raw("to_char(users.created_at, 'YYYY MM') as order")
                 )
                 ->when($filter, function ($query) use ($startChart, $endChart){
@@ -395,7 +397,7 @@ class Customer extends User
                 })
                 ->join('role_users', 'role_users.user_id', '=', 'users.id')
                 ->where('role_users.role_id', '5')
-                ->groupBy('month', 'order')
+                ->groupBy('month', 'month2', 'order')
                 ->orderBy("order", "asc")
                 ->get()
                 ->pluck("chart");
