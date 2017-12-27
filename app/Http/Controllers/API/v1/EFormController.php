@@ -559,10 +559,10 @@ class EFormController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         $eform->update( $baseRequest );
-        
+
         $notificationIsRead =  $this->userNotification->where('eform_id',$id)
                                        ->whereNull('read_at')
-                                       ->first();                
+                                       ->first();
         if(@$notificationIsRead){
             $notificationIsRead->markAsRead();
         }
@@ -603,7 +603,7 @@ class EFormController extends Controller
             $data =  EForm::findOrFail($eform_id);
             $notificationIsRead =  $this->userNotification->where('eform_id',$eform_id)
                                    ->whereNull('read_at')
-                                   ->first();                
+                                   ->first();
             if(@$notificationIsRead){
                 $notificationIsRead->markAsRead();
             }
@@ -614,7 +614,7 @@ class EFormController extends Controller
 
                 event( new Approved( $data ) );
             } else {
-             
+
                 $usersModel = User::FindOrFail($data->user_id);
                 $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO*/
 
