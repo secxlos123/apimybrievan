@@ -159,7 +159,7 @@ class BRIGUNA extends Model
                 "kabupaten" => $kabupaten,
                 "kecamatan" => $kecamatan,
                 "kelurahan" => $kelurahan,
-                "jenis"     => $eform->jenis_pinjaman,
+                "jenis"     => 'karya',
                 "amount"    => $customer_detail->loan_installment,
                 "tujuan"    => $eform->tujuan_penggunaan,
                 "agunan"    => $eform->mitra,
@@ -168,7 +168,11 @@ class BRIGUNA extends Model
                 "npwp"      => $customer_detail->npwp,
                 "mitra"     => $data['mitra_name'],
                 "nip"       => $data['nip'],
-                "status_pekerjaan" => $data['job_type']
+                "status_pekerjaan" => $data['job_type'],
+				"expdate"	=> '2999-12-31 60:60:60',
+				"expdate_pimpinan"	=> '2999-12-31 60:60:60',
+				
+				
             ];
 
             $postData = [
