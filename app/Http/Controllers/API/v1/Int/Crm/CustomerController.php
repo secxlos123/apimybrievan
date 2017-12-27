@@ -15,10 +15,9 @@ use App\Models\User;
 
 use RestwsHc;
 
-// use GuzzleHttp\Exception\GuzzleException;
-// use GuzzleHttp\Client;
-
-use App\Classes\Client\Client;
+use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 
 class CustomerController extends Controller
@@ -78,34 +77,35 @@ class CustomerController extends Controller
 
     public function customer_officer(Request $request)
     {
-      // http://api.briconnect.bri.co.id/customer/officer/00025222
-      $token = $this->gen_token();
-      $request_customer_officer = Client()->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
+      $client = new Client();
+      $request_customer_officer = $client->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
         'headers' =>
         [
           'Authorization' => 'Bearer '.$this->get_token()
+          // 'Authorization' => 'Bearer 9fe282cc12ce8182e8abee820154825445b86be6'
         ]
       ]);
+      $customer_officer = json_decode($request_customer_officer->getBody()->getContents(), true);
 
-      $customer_officer = json_encode($request_customer_officer->getBody()->getContents(), true);
-
-      return $customer_officer;
+      // return $customer_officer;
+      return response()->success( [
+          'message' => 'Get Customer by Officer success',
+          'contents' => $customer_officer["data"]
+        ]);
     }
 
     public function get_token()
     {
-      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      // $apiPdmToken = $apiPdmToken[0];
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-
-        return $apiPdmToken['access_token'];
-
-      } else {
-        $briConnect = $this->gen_token();
-        $apiPdmToken = apiPdmToken::get()->toArray();
-
-        return $apiPdmToken['access_token'];
+        $token = $apiPdmToken['access_token'];
+        return $token;
       }
     }
 }

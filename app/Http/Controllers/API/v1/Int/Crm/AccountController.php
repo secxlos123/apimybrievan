@@ -116,8 +116,14 @@ class AccountController extends Controller
       $data['main_branch'] = $request->input('main_branch');
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
-      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // $apiPdmToken = $apiPdmToken[0];
+      // dd(count(apiPdmToken::all()));
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
@@ -128,10 +134,9 @@ class AccountController extends Controller
             'contents' => $listExisting['data']
         ]);
       } else {
-        $briConnect = $this->briconnectToken();
+        $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
         // $apiPdmToken = $apiPdmToken[0];
-
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->getExistingByFo($data, $token);
 
