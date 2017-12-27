@@ -53,7 +53,7 @@ class ApproveEFormCustomer extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
+    public function toDatabase($notifiable)
     {
         return [
             'eform_id' => $this->eForm->id,

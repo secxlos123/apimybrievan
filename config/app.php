@@ -187,6 +187,7 @@ return [
         App\Providers\BRIMailServiceProvider::class,
         App\Providers\AsmxLasServiceProvider::class,
         App\Providers\DbwsRestServiceProvider::class,
+        OwenIt\Auditing\AuditingServiceProvider::class
         // LaravelFCM\FCMServiceProvider::class,
 
     ],
