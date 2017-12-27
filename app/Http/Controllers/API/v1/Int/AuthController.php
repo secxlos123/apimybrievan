@@ -76,7 +76,7 @@ class AuthController extends Controller
                         'pn' => $data[ 'pn' ],
                         'name' => $data[ 'nama' ],
                         'branch' => $branch,
-                        'role' => $role,
+                        'role' => $role['role'],
                         'position' => $data['posisi'],
                         'uker' => $data['tipe_uker']
                     ]
@@ -97,10 +97,10 @@ class AuthController extends Controller
 
         $checkedRolePn = $this->userservices->where('role',$role)->where('pn',$pn)->first();
         if(!$checkedRolePn){
-            return $this->userservices->updateOrCreate(['pn'=>$request->pn],[
+            $this->userservices->updateOrCreate(['pn'=>$request->pn],[
                 'pn'=>$request->pn,
                 'hilfm'=>$data['hilfm'],
-                'role'=> $role,
+                'role'=> $role['role'],
                 'name'=> $data['nama'],
                 'tipe_uker'=> $data['tipe_uker'],
                 'htext'=> $data['htext'],
@@ -111,8 +111,9 @@ class AuthController extends Controller
                 'branch_id'=>$data['branch'],
                 'password' => md5($request->password)
             ]);
+            return true;
         }else {
-            return [];
+           return false;
         }
     }
 
