@@ -27,8 +27,7 @@ class UserServices extends Authenticatable
      * @var data
      */
     public function checkroleAndpn($role, $pn){
-        return \DB::table('user_services')->where('role',$role)->where('pn',$pn)->first();
-
+        return $this->where('role',$role)->where('pn',$pn)->first();
     }
 
      /**
@@ -38,6 +37,5 @@ class UserServices extends Authenticatable
      */
     public function getByBranchId($branch_id){
         return $this->where('branch_id',$branch_id)->first();
-
     }
 }
