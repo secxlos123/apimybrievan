@@ -154,13 +154,13 @@ class marketingActivityController extends Controller
        $reSchedule['origin_date'] = $marketingActivity->start_date;
        $reSchedule['reschedule_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
 
-       $updateMarketing['start_date'] = $reSchedule['reschedule_date'];
-       $updateMarketing['end_date'] = date('Y-m-d H:i:s', strtotime($request['end_date'].$request['end_time']));
+       $updateMarketingActivity['start_date'] = $reSchedule['reschedule_date'];
+       $updateMarketingActivity['end_date'] = date('Y-m-d H:i:s', strtotime($request['end_date'].$request['end_time']));
 
        $save = rescheduleActivity::create($reSchedule);
 
        if($save) {
-         $marketingActivity->update($updateMarketing);
+         $marketingActivity->update($updateMarketingActivity);
 
          return response()->success([
            'message' => 'Data Activity berhasil direschedule.',
@@ -183,9 +183,12 @@ class marketingActivityController extends Controller
       public function storeFollowUp(Request $request)
       {
         $id = $request['activity_id'];
+        $mrk_id = $request['marketing_id'];
+
         $marketingActivity = MarketingActivity::find($id);
-        $marketing_id = $marketingActivity->marketing_id;
-        $marketing = Marketing::find($marketing_id);
+        // $marketing_id = $marketingActivity->marketing_id;
+        // $marketing = Marketing::find($marketing_id);
+        $marketing = Marketing::find($mrk_id);
 
         $followUp['activity_id'] = $id;
         $followUp['desc'] = $request['desc'];
@@ -200,8 +203,9 @@ class marketingActivityController extends Controller
         $updateMarketingStatus['status'] = $request['fu_result'];
 
         $save = MarketingActivityFollowup::create($followUp);
+        $marketing->update($updateMarketingStatus);
+
         if ($save) {
-            $marketing->update($updateMarketingStatus);
             return response()->success([
                 'message' => 'Data Tindakan berhasil ditambah.',
                 'contents' => collect($save)->merge($request->all()),
@@ -209,7 +213,7 @@ class marketingActivityController extends Controller
         }
 
         return response()->error([
-            'message' => 'Data Marketing Tidak Dapat Ditambah.',
+            'message' => 'Data tindakan Tidak Dapat Ditambah.',
         ], 500);
 
       }

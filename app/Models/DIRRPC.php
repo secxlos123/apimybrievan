@@ -5,14 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\CustomerDetail;
 use Illuminate\Http\Request;
-use App\Models\Customer;
-use App\Models\UserNotification;
-use App\Models\Developer;
-use App\Models\PropertyItem;
-use App\Models\Collateral;
-use App\Models\Appointment;
 use Carbon\Carbon;
 use Sentinel;
 use Asmx;
@@ -21,7 +14,7 @@ use DB;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class EForm extends Model implements AuditableContract
+class DIRRPC extends Model implements AuditableContract
 {
     use Auditable;
 
@@ -30,7 +23,7 @@ class EForm extends Model implements AuditableContract
      *`
      * @var string
      */
-    protected $table = 'eforms';
+    protected $table = 'dirrpc';
 
     /**
      * The attributes that are mass assignable.
@@ -38,7 +31,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn'
+        'debt_name','dir_persen','maintance'
     ];
 
     /**
@@ -46,164 +39,23 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color' ];
+   // protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color' ];
 
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = [ 'updated_at', 'ao' ];
+   // protected $hidden = [ 'updated_at', 'ao' ];
 
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = [ 'additional_parameters' => 'array' ];
+    //protected $casts = [ 'additional_parameters' => 'array' ];
 
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    public function saveImages( $images )
-    {
-        foreach ( $images as $key => $image ) {
-            $path = public_path( 'uploads/' . $this->nik . '/' );
-            $filename = $key . '.' . $image->getClientOriginalExtension();
-            $image->move( $path, $filename );
-        }
-    }
-
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    public function getCustomerNameAttribute()
-    {
-        if ($this->customer) {
-            return str_replace('"', '', str_replace("'", '', $this->customer->fullname));
-        }
-
-        return '';
-    }
-
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    public function getMobilePhoneAttribute()
-    {
-        if ($this->customer) {
-            return $this->customer->mobile_phone;
-        }
-
-        return '';
-    }
-
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    public function getNominalAttribute()
-    {
-        if( $this->kpr ) {
-            return $this->kpr->request_amount;
-        }
-        return 0;
-    }
-
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    // public function getAoNameAttribute()
-    // {
-    //     if ( $this->ao_id ) {
-    //         $AO = \RestwsHc::getUser( $this->ao_id );
-    //         return $AO[ 'name' ];
-    //     }
-
-    //     return null;
-    // }
-
-    /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    public function getStatusAttribute()
-    {
-        // if ( !$this->is_approved && $this->recommended) {
-        //     return 'Kredit Ditolak';
-        // }
-         if ($this->status_eform == 'Rejected' ) {
-            return 'Kredit Ditolak';
-        }
-        if( $this->is_approved && $this->customer["detail"]["is_verified"] ) {
-        // if( $this->is_approved && $this->customer->detail->is_verified ) {
-            return 'Proses CLF';
-        }
-        if( $this->visit_report ) {
-            return 'Prakarsa';
-        }
-        if( $this->ao_id ) {
-            return 'Disposisi Pengajuan';
-        }
-
-        return 'Pengajuan Kredit';
-    }
-
-    /**
-     * Get Prescreening color information.
-     *
-     * @return string
-     */
-    public function getPrescreeningStatusAttribute( $value )
-    {
-        if ( $value == 1 ) {
-            return 'Hijau';
-
-        } elseif ( $value == 2 ) {
-            return 'Kuning';
-
-        } elseif ( $value == 3 ) {
-            return 'Merah';
-
-        }
-
-        return '-';
-    }
-
-    /**
-     * Get Pefindo color information.
-     *
-     * @return string
-     */
-    public function getPefindoColorAttribute( $value )
-    {
-        $value = $this->pefindo_score;
-        if ( $value >= 250 && $value <= 573 ) {
-            return 'Merah';
-
-        } elseif ( $value >= 677 && $value <= 900 ) {
-            return 'Hijau';
-
-        } else {
-            return 'Kuning';
-        }
-    }
-
-    /**
-     * Get eform aging detail information.
-     *
-     * @return string
-     */
+   
     public function getAgingAttribute()
     {
         $days = 0;
@@ -566,134 +418,34 @@ class EForm extends Model implements AuditableContract
      */
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['no', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "ref_number" ) {
-            $sort = ['created_at', 'asc'];
+        if ( $sort[0] == "no" ) {
+            $sort = ['no', 'asc'];
         }
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if( $request->has( 'status' ) ) {
-                if( $request->status == 'Submit' ) {
-                    $eform->whereIsApproved( true );
-
-                } else if( $request->status == 'Initiate' ) {
-                    $eform->has( 'visit_report' )->whereIsApproved( false );
-
-                } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-
-                } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-
-                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
-                    $eform->where('status_eform', $request->status);
-
-                }
-            }
+		 $dir = $query->where( function( $dir ) use( $request ) {
+            if ( $request->has('gimmick_name') ) {
+                $dir = $dir->where('gimmick.gimmick_name', $request->input('gimmick_name'));
+			}
+			if ( $request->has('mitra_kerjasama') ) {
+					$dir = $dir->where('gimmick.mitra_kerjasama', $request->input('mitra_kerjasama'));
+			}
+			if ( $request->has('kantor_wilayah') ) {
+					$dir = $dir->where('dirrpc.kantor_wilayah', $request->input('kantor_wilayah'));
+			}
+			if ( $request->has('kantor_cabang') ) {
+					$dir = $dir->where('dirrpc.kantor_cabang', $request->input('kantor_cabang'));
+			}
         } );
+		 $dir = $dir->leftJoin('gimmick', 'gimmick.id', '=', 'dirrpc.gimmick_id');
+        $dir = $dir->orderBy('dirrpc.'.$sort[0], $sort[1]);
 
-        if ($request->has('search')) {
-            $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-                ->where( function( $eform ) use( $request, &$user ) {
-                    $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
-                } );
+        \Log::info($dir->toSql());
+        \Log::info($dir->getBindings());
 
-        } else {
-            if ($request->has('customer_name')){
-                $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-                    ->where( function( $eform ) use( $request, &$user ) {
-                        $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
-                            ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%');
-                    } );
-            }
-
-            if ($request->has('ref_number')) {
-                $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                    $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
-                } );
-            }
-        }
-
-
-        if ($request->has('prescreening')) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                $prescreening = $request->input('prescreening');
-                if (strtolower($prescreening) != 'all') {
-                    $eform->Where('eforms.prescreening_status', $prescreening);
-                }
-            } );
-        }
-
-        if ($request->has('start_date') || $request->has('end_date')) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                $start_date = date('Y-m-d',strtotime($request->input('start_date')));
-                $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
-
-                $eform->where('eforms.created_at', '>=', $start_date . ' 00:00:00')
-                ->where('eforms.created_at', '<=', $end_date . ' 23:59:59');
-            } );
-        }
-
-        if ( !$request->has('is_screening') ) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                if ( $user['role'] == 'ao' ) {
-                    $eform = $eform->where('eforms.ao_id', $user['pn']);
-
-                }
-
-                if ($request->has('branch_id')) {
-                    $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')) );
-                }
-            } );
-
-            if ( $user['role'] != 'ao' || $request->has('customer_name')) {
-                if ( $request->has('customer_name') ) {
-                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
-
-                } else {
-                    $eform = $eform->select([
-                            'eforms.*'
-                            , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
-                        ])
-                        ->orderBy('new_order', 'asc');
-
-                }
-
-            }
-        }
-
-        if ( $request->has('is_screening') ) {
-            if ( $request->input('is_screening') != 'All' ) {
-                $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
-
-            }
-            \Log::info("===========================role===================================");
-            \Log::info($user['role']);
-            if ( $user['role'] != 'ao' || $request->has('search')) {
-                if ( $request->has('search') ) {
-                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
-
-                }
-            }
-        }
-
-        if ( $request->has('product') ) {
-            if ( $request->input('product') != 'All' ) {
-                $eform = $eform->where('eforms.product_type', $request->input('product'));
-
-            }
-        }
-
-        $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
-
-        \Log::info($eform->toSql());
-        \Log::info($eform->getBindings());
-
-        return $eform;
+        return $dir;
     }
 
     /**
@@ -995,7 +747,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir_value' => !( $lkn->title ) ? '' : $lkn->title
+            'Pendidikan_terakhir' => !( $lkn->title ) ? '' : $lkn->title
         ];
         return $request;
     }
