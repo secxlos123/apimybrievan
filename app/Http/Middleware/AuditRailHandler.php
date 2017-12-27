@@ -28,9 +28,9 @@ class AuditRailHandler
             );
 
             Audit::create([
-                'user_id' => $request->header('pn')
+                'user_id' => $request->header('pn', 0)
                 , 'event' => 'action-log'
-                , 'auditable_id' => $request->header('pn')
+                , 'auditable_id' => $request->header('pn', 0)
                 , 'auditable_type' => Audit::class
                 , 'old_values' => (object) array()
                 , 'new_values' => (object) array()
