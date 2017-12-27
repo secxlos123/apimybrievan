@@ -139,7 +139,10 @@ class BRIGUNA extends Model
                         $kelurahan = $kel[0];
                     }
                 }
-
+			$couple_gender = 'L';
+			if($customer->gender=='L'){
+				$couple_gender = 'P';
+			}
             $content_insert_dropbox = [
                 "cif"       => "",
                 "nik"       => $eform->nik,
@@ -153,6 +156,13 @@ class BRIGUNA extends Model
                 "kawin"     => $customer_detail->status,
                 "hist"      => "tidak",
                 "nama_bank" => "",
+				"nama_pasangan"=> $customer->couple_name,
+				"ktp_pasangan"=> $customer->identity,
+				"tmp_lahir_pasangan"=> $customer->couple_birth_place_id,
+				"tgl_lahir_pasangan"=> $customer->couple_birth_date,
+				"ibu_pasangan"=> $customer->mother_name,
+				"kelamin_pasangan"=> $couple_gender,
+				"alamat_pasangan"=> '',
                 "alamat"    => $customer_detail->address,
                 "kodepos"   => $kodepos,
                 "provinsi"  => $kabupaten,
