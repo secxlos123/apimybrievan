@@ -26,11 +26,11 @@ class AuditRailHandler
                 'longitude' => number_format($request->header('long', env('DEF_LONG', '106.81350')), 5)
                 , 'latitude' => number_format($request->header('lat', env('DEF_LAT', '-6.21670')), 5)
             );
-
+            
             Audit::create([
-                'user_id' => $request->header('pn')
+                'user_id' => $request->has('pn') ? $request->header('pn') : 0
                 , 'event' => 'action-log'
-                , 'auditable_id' => $request->header('pn')
+                , 'auditable_id' => $request->has('pn') ? $request->header('pn') : 0
                 , 'auditable_type' => Audit::class
                 , 'old_values' => (object) array()
                 , 'new_values' => (object) array()
