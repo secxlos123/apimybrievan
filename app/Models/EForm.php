@@ -948,6 +948,43 @@ class EForm extends Model implements AuditableContract
             }
         }
 
+        $title = 7;
+        if ( $lkn->title ) {
+            switch ($lkn->title) {
+                case 'SD':
+                    $title = 2;
+                    break;
+
+                case 'SM':
+                    $title = 3;
+                    break;
+
+                case 'SU':
+                    $title = 4;
+                    break;
+
+                case 'S1':
+                    $title = 8;
+                    break;
+
+                case 'S2':
+                    $title = 9;
+                    break;
+
+                case 'S3':
+                    $title = 10;
+                    break;
+
+                case 'ZZ':
+                    $title = 7;
+                    break;
+
+                default:
+                    $title = 7;
+                    break;
+            }
+        }
+
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
@@ -995,7 +1032,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir_value' => !( $lkn->title ) ? '' : $lkn->title
+            'Pendidikan_terakhir_value' => $title
         ];
         return $request;
     }
