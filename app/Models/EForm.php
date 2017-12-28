@@ -38,7 +38,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position'
     ];
 
     /**
@@ -278,11 +278,11 @@ class EForm extends Model implements AuditableContract
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
             } else {
-                if (!$eform->kpr->is_sent) {
+                if (!$eform->kpr->is_sent && $eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name) {
                     $result = $eform->insertCoreBRI();
                     if ($result['status']) {
                         $eform->kpr()->update(['is_sent'=> true]);
-                    }                       
+                    }
                 }
                 else
                 {
@@ -485,38 +485,48 @@ class EForm extends Model implements AuditableContract
 
         ];
 
-        $step = 1;
+        $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
         $allRequest = array();
         $return = array(
             'status' => true
             , 'message' => ''
         );
 
-        foreach ($endpoint as $value => $key) {
-            \Log::info("Start Step " . $step);
-
-            $request = $this->{"step".$step}($this->additional_parameters);
-            $allRequest += $request;
-
-            $sendRequest = ($step == 7 ? $allRequest : $request);
-
-            \Log::info(json_encode($sendRequest));
-
-            $set = $this->SentToBri( $sendRequest, $key[0], $key[1] );
-
-            if (!$set['status']) {
-                \Log::info('Error Step Ke -'.$step);
-                $return = array(
-                    'status' => false
-                    , 'message' => $set[ 'message' ]
-                );
-                \Log::info($return);
-                break;
+        if ( $step > 1 ) {
+            for ($i = 1; $i < $step; $i++) {
+                $request = $this->{"step".$i}($this->additional_parameters);
+                $allRequest += $request;
             }
-
-            \Log::info('Berhasil Step Ke -'.$step);
-            $step++;
         }
+
+        foreach ($endpoint as $key => $value) {
+            if ( $key+1 == $step ) {
+                \Log::info("Start Step " . $step);
+
+                $request = $this->{"step".$step}($this->additional_parameters);
+                $allRequest += $request;
+
+                $sendRequest = ($step == 7 ? $allRequest : $request);
+
+                \Log::info(json_encode($sendRequest));
+
+                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+
+                if (!$set['status']) {
+                    \Log::info('Error Step Ke -'.$step);
+                    $return = array(
+                        'status' => false
+                        , 'message' => $set[ 'message' ]
+                    );
+                    \Log::info($return);
+                    break;
+                }
+
+                \Log::info('Berhasil Step Ke -'.$step);
+                $step++;
+            }
+        }
+        $this->update(['clas_position' => $step]);
 
         if ($step == 10) {
             $this->update( [

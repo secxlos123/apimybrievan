@@ -27,6 +27,7 @@ class MarketingController extends Controller
       $marketings = [];
       foreach (Marketing::where('pn',$pn)->get() as $marketing) {
         $marketings[]=[
+          'id'=> $marketing->id,
           'pn'=> $marketing->pn,
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
