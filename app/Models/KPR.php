@@ -63,7 +63,6 @@ class KPR extends Model implements AuditableContract
      * @return void
      */
     public static function create( $data ) {
-        \DB::beginTransaction();
         try {
             $eform = EForm::create( $data );
             $data[ 'developer_id' ] = $data[ 'developer' ];
@@ -76,9 +75,7 @@ class KPR extends Model implements AuditableContract
 
             
             return $kpr;
-            \DB::commit();
         } catch (Exception $e) {
-            \DB::rollback();
             return $e;
         }
         $usersModel = User::FindOrFail($eform->user_id);
