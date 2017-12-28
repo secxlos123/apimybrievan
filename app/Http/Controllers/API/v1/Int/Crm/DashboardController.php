@@ -144,9 +144,9 @@ class DashboardController extends Controller
         'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
-      $result[] = $list_ao['responseData'];
-      $result[] .= $list_fo['responseData'];
-
+      $ao[] = $list_ao['responseData'];
+      $fo[] = $list_fo['responseData'];
+      $result = array_merge($fo,$ao);
       return response()->success([
         'contents' => $result
       ]);
