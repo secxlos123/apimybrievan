@@ -499,30 +499,32 @@ class EForm extends Model implements AuditableContract
             }
         }
 
-        foreach ($endpoint as $value => $key) {
-            \Log::info("Start Step " . $step);
+        foreach ($endpoint as $key => $value) {
+            if ( $key+1 == $step ) {
+                \Log::info("Start Step " . $step);
 
-            $request = $this->{"step".$step}($this->additional_parameters);
-            $allRequest += $request;
+                $request = $this->{"step".$step}($this->additional_parameters);
+                $allRequest += $request;
 
-            $sendRequest = ($step == 7 ? $allRequest : $request);
+                $sendRequest = ($step == 7 ? $allRequest : $request);
 
-            \Log::info(json_encode($sendRequest));
+                \Log::info(json_encode($sendRequest));
 
-            $set = $this->SentToBri( $sendRequest, $key[0], $key[1] );
+                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
 
-            if (!$set['status']) {
-                \Log::info('Error Step Ke -'.$step);
-                $return = array(
-                    'status' => false
-                    , 'message' => $set[ 'message' ]
-                );
-                \Log::info($return);
-                break;
+                if (!$set['status']) {
+                    \Log::info('Error Step Ke -'.$step);
+                    $return = array(
+                        'status' => false
+                        , 'message' => $set[ 'message' ]
+                    );
+                    \Log::info($return);
+                    break;
+                }
+
+                \Log::info('Berhasil Step Ke -'.$step);
+                $step++;
             }
-
-            \Log::info('Berhasil Step Ke -'.$step);
-            $step++;
         }
         $this->update(['clas_position' => $step]);
 

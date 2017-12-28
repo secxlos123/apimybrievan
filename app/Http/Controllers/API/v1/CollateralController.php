@@ -64,7 +64,7 @@ class CollateralController extends Controller
       $developer_id = env('DEVELOPER_KEY',1);
       $limit = $request->input( 'limit' ) ?: 10;
       $data = $this->collateral->GetLists($request)->where('developer_id','=',$developer_id)->where('is_approved',true)->paginate($limit);
-      
+
       return $this->makeResponse($data);
     }
 
@@ -205,7 +205,7 @@ class CollateralController extends Controller
           if ($collateral->developer_id == $developer_id ) {
               $eformdata = EForm::findOrFail($request->input('eform_id'));
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
-              if ($sentclas['result']) {
+              if ($sentclas['status']) {
                 $property->save();
                 $collateral->save();
               }
