@@ -112,8 +112,6 @@ class AccountController extends Controller
 
     public function existingFo(Request $request)
     {
-      $data['kode_kanwil'] = $request->input('kode_kanwil');
-      $data['main_branch'] = $request->input('main_branch');
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
       // $apiPdmToken = $apiPdmToken[0];
@@ -135,8 +133,8 @@ class AccountController extends Controller
         ]);
       } else {
         $briConnect = $this->gen_token();
-        $apiPdmToken = apiPdmToken::get()->toArray();
-        // $apiPdmToken = $apiPdmToken[0];
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+        
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->getExistingByFo($data, $token);
 
@@ -150,7 +148,7 @@ class AccountController extends Controller
     public function getExistingByFo($data, $token)
     {
       $client = new Client();
-      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['kode_kanwil'].'/'.$data['main_branch'].'/'.$data['branch'].'/'.$data['pn'],
+      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
@@ -161,5 +159,34 @@ class AccountController extends Controller
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
       return $listExisting;
+    }
+
+    public function getBranchKanwil(Request $request)
+    {
+      $client = new Client();
+      $requestLeads = $client->request('POST', 'http://10.35.65.111/skpp_concept/restws_hc',
+        [
+          'headers' =>
+          [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Authorization' => request()->header( 'Authorization' )
+          ],
+          'form_params' =>
+            [
+                'request' => json_encode(
+                    [
+                      "requestMethod" => "get_branch_kanwil",
+                      "requestData"=> [
+                        "id_user" => request()->header( 'pn' ),
+                        "kode_branch" => request()->header( 'branch' )
+                      ],
+                    ]
+                  )
+            ]
+        ]
+      );
+      $leads = json_decode($requestLeads->getBody()->getContents(), true);
+
+      return $leads;
     }
 }
