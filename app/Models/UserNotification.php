@@ -109,17 +109,14 @@ class UserNotification extends Model
     }
     
     public function getUnreads($branch_id, $role, $pn){
-        $query = $this->unreads()
-                    ->leftJoin('eforms','notifications.eform_id','=','eforms.id')
+        $query = $this->leftJoin('eforms','notifications.eform_id','=','eforms.id')
                     ->where('eforms.branch_id',$branch_id)
                     ->orderBy('notifications.created_at', 'DESC');
         
         if($role == 'pinca'){
             if ($query->where('notifications.type','App\Notifications\PengajuanKprNotification')) {
-                $query->whereNull('ao_id');
+                $query->whereNull('eforms.ao_id');
                  $query->unreads();
-                /*$query->whereNull('ao_name');
-                $query->whereNull('ao_position');*/                
             }
 
             if ($query->Orwhere('notifications.type','App\Notifications\LKNEFormCustomer')) {
@@ -169,6 +166,19 @@ class UserNotification extends Model
                 $query->unreads();
             }            
         }
+        
+        if($role == 'staff'){
+            $query->whereNull('notifications.created_at');
+        }
+
+        if($role == 'collateral-appraisal'){
+            $query->whereNull('notifications.created_at');
+        }
+        
+        if($role == 'collateral'){
+            $query->whereNull('notifications.created_at');
+        }
+
         $query->select('notifications.id','notifications.type','notifications.notifiable_id','notifications.notifiable_type','notifications.data','notifications.read_at','notifications.created_at','notifications.updated_at','notifications.branch_id','notifications.role_name','notifications.eform_id');
 
         return $query;
