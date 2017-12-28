@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -105,10 +105,20 @@ class GimmickController extends Controller
     {
         $baseRequest = $request->all();
 		
-		return $request->all();die();
+		//return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
     }
+
+	 public function save( GimmickRequest $request )
+    {
+        $baseRequest = $request->all();
+		
+		//return $request->all();die();
+        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
+		return $gimmick;
+    }
+
 
     /**
      * Update the specified resource in storage.
