@@ -139,7 +139,10 @@ class BRIGUNA extends Model
                         $kelurahan = $kel[0];
                     }
                 }
-
+			$couple_gender = 'L';
+			if($customer->gender=='L'){
+				$couple_gender = 'P';
+			}
             $content_insert_dropbox = [
                 "cif"       => "",
                 "nik"       => $eform->nik,
@@ -153,22 +156,33 @@ class BRIGUNA extends Model
                 "kawin"     => $customer_detail->status,
                 "hist"      => "tidak",
                 "nama_bank" => "",
+				"nama_pasangan"=> $customer->couple_name,
+				"ktp_pasangan"=> $customer->identity,
+				"tmp_lahir_pasangan"=> $customer->couple_birth_place_id,
+				"tgl_lahir_pasangan"=> $customer->couple_birth_date,
+				"ibu_pasangan"=> $customer->mother_name,
+				"kelamin_pasangan"=> $couple_gender,
+				"alamat_pasangan"=> '',
                 "alamat"    => $customer_detail->address,
                 "kodepos"   => $kodepos,
                 "provinsi"  => $kabupaten,
                 "kabupaten" => $kabupaten,
                 "kecamatan" => $kecamatan,
                 "kelurahan" => $kelurahan,
-                "jenis"     => $eform->jenis_pinjaman,
+                "jenis"     => 'karya',
                 "amount"    => $customer_detail->loan_installment,
                 "tujuan"    => $eform->tujuan_penggunaan,
                 "agunan"    => $eform->mitra,
-                "jangka"    => ($briguna->year * 12),
+                "jangka"    => $briguna->year,
                 "email_atasan" => "aswin.taopik@gmail.com",
                 "npwp"      => $customer_detail->npwp,
                 "mitra"     => $data['mitra_name'],
                 "nip"       => $data['nip'],
-                "status_pekerjaan" => $data['job_type']
+                "status_pekerjaan" => $data['job_type'],
+				"expdate"	=> '2999-12-31 60:60:60',
+				"expdate_pimpinan"	=> '2999-12-31 60:60:60',
+				
+				
             ];
 
             $postData = [

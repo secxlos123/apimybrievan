@@ -272,18 +272,18 @@ class EForm extends Model implements AuditableContract
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
             //di update kalo collateral udah jalan
-            // if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
-            // {
+             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+             {
                 $result = $eform->insertCoreBRI();
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            // }
-            // else
-            // {
-            //     $eform->kpr()->update(['is_sent'=> false]);
-            //     $result['status'] = true;
-            // }
+             }
+             else
+             {
+                 $eform->kpr()->update(['is_sent'=> false]);
+                 $result['status'] = true;
+             }
 
             if ($result['status']) {
                 $eform->update( [
@@ -470,9 +470,9 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            //, ['InsertDataAgunanModel71',null]
-            //, ['InsertIntoReviewer',null]
-            //, ['InsertDataAgunanTanahRumahTinggal',null]
+            , ['InsertDataAgunanModel71',null]
+            , ['InsertIntoReviewer',null]
+            , ['InsertDataAgunanTanahRumahTinggal',null]
 
         ];
 
@@ -509,7 +509,7 @@ class EForm extends Model implements AuditableContract
             $step++;
         }
 
-        if ($step == 7) {
+        if ($step == 10) {
             $this->update( [
                 'is_approved' => true
                 , 'send_clas_date' => date("Y-m-d")
@@ -948,6 +948,43 @@ class EForm extends Model implements AuditableContract
             }
         }
 
+        $title = 7;
+        if ( $lkn->title ) {
+            switch ($lkn->title) {
+                case 'SD':
+                    $title = 2;
+                    break;
+
+                case 'SM':
+                    $title = 3;
+                    break;
+
+                case 'SU':
+                    $title = 4;
+                    break;
+
+                case 'S1':
+                    $title = 8;
+                    break;
+
+                case 'S2':
+                    $title = 9;
+                    break;
+
+                case 'S3':
+                    $title = 10;
+                    break;
+
+                case 'ZZ':
+                    $title = 7;
+                    break;
+
+                default:
+                    $title = 7;
+                    break;
+            }
+        }
+
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
@@ -995,7 +1032,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir' => !( $lkn->title ) ? '' : $lkn->title
+            'Pendidikan_terakhir_value' => $title
         ];
         return $request;
     }

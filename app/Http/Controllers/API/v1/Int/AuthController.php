@@ -36,33 +36,7 @@ class AuthController extends Controller
             ] )
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
-        // print_r($data);exit();
-        
-        if (ENV('APP_ENV') == 'local') {
-            $userservices = $this->userservices->where(['pn' => $request->pn, 'password' => md5($request->password) ])->first();
-            if(!$userservices){
-                return response()->error( [
-                    'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
-                    'contents'=> []
-                ], 422 );
-
-            }else {
-                 return response()->success( [
-                    'message' => 'Login Sukses',
-                    'contents'=> [
-                        'token' => 'Bearer ' . $userservices[ 'password' ],
-                        'pn' => $userservices[ 'pn' ],
-                        'name' => $userservices[ 'name' ],
-                        'branch' => $userservices['branch_id'],
-                        'role' => $userservices['role'],
-                        'position' => $userservices['posisi'],
-                        'uker' => $userservices['tipe_uker']
-                    ]
-                ], 200 );
-
-            }
-       
-        }else {
+        \Log::info($login);
             if( $login[ 'responseCode' ] == '00' ) {
 
                 if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
@@ -101,16 +75,10 @@ class AuthController extends Controller
                     $role = 'staff';
                 }
 
-                if (ENV('APP_ENV') == 'local') {
-                    $branch = '12';
-                } else {
-                    $branch = $data[ 'branch' ];
-                }
-             
                 $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
                 if(!$checkedRolePn){
-                    UserServices::create([
-                        'pn'=>$data['pn'],
+                    $this->userservices::updateOrCreate(['pn'=>$request->pn],[
+                        'pn'=>$request->pn,
                         'hilfm'=>$data['hilfm'],
                         'role'=> $role,
                         'name'=> $data['nama'],
@@ -121,8 +89,38 @@ class AuthController extends Controller
                         'mobile_phone'=> 0,
                         'is_actived'=> true,
                         'branch_id'=>$data['branch'],
+                        'password'=>md5($request->password)
                     ]);
                 }
+
+                if (ENV('APP_ENV') == 'local') {
+                    $branch = '12';
+                    $userservices = $this->userservices->where(['pn' => $request->pn, 'password' => md5($request->password) ])->first();
+                    if(!$userservices){
+                        return response()->error( [
+                            'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
+                            'contents'=> []
+                        ], 422 );
+
+                    }else {
+                         return response()->success( [
+                            'message' => 'Login Sukses',
+                            'contents'=> [
+                                'token' => 'Bearer ' . $userservices[ 'password' ],
+                                'pn' => $userservices[ 'pn' ],
+                                'name' => $userservices[ 'name' ],
+                                'branch' => $userservices['branch_id'],
+                                'role' => $userservices['role'],
+                                'position' => $userservices['posisi'],
+                                'uker' => $userservices['tipe_uker']
+                            ]
+                        ], 200 );
+
+                    }
+                } else {
+                    $branch = $data[ 'branch' ];
+                }
+             
 
                 return response()->success( [
                     'message' => 'Login Sukses',
@@ -143,8 +141,6 @@ class AuthController extends Controller
                     'contents'=> []
                 ], 422 );
             }
-            
-        }
 
     }
 
