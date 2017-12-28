@@ -435,7 +435,7 @@ class EFormController extends Controller
                 $notification = $notificationBuilder->build();
 
                 $topic = new Topics();
-                $topic->topic('test');
+                $topic->topic('testing');
 
                 $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
                 $topicResponse->isSuccess();
