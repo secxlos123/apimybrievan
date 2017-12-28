@@ -77,8 +77,8 @@ class AuthController extends Controller
 
                 $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
                 if(!$checkedRolePn){
-                    $this->userservices->updateOrCreate(['pn'=>$request->pn],[
-                        'pn'=>$request->pn,
+                    $this->userservices->updateOrCreate(['pn'=>substr( '00000000' . $request->pn, -8 )],[
+                        'pn'=>substr( '00000000' . $request->pn, -8 ),
                         'hilfm'=>$data['hilfm'],
                         'role'=> $role,
                         'name'=> $data['nama'],
@@ -95,7 +95,7 @@ class AuthController extends Controller
 
                 if (ENV('APP_ENV') == 'local') {
                     $branch = '12';
-                    $userservices = $this->userservices->where(['pn' => $request->pn, 'password' => md5($request->password) ])->first();
+                    $userservices = $this->userservices->where(['pn' => substr( '00000000' . $request->pn, -8 ), 'password' => md5($request->password) ])->first();
                     if(!$userservices){
                         return response()->error( [
                             'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
