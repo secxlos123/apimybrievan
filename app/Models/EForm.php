@@ -278,8 +278,17 @@ class EForm extends Model implements AuditableContract
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
             } else {
-                $eform->kpr()->update(['is_sent'=> false]);
-                $result['status'] = true;
+                if (!$eform->kpr->is_sent) {
+                    $result = $eform->insertCoreBRI();
+                    if ($result['status']) {
+                        $eform->kpr()->update(['is_sent'=> true]);
+                    }                       
+                }
+                else
+                {
+                    $result['status'] = true;
+                    $eform->kpr()->update(['is_sent'=> false]);
+                }
             }
 
             if ($result['status']) {
