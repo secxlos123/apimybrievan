@@ -64,7 +64,7 @@ class CollateralController extends Controller
       $developer_id = env('DEVELOPER_KEY',1);
       $limit = $request->input( 'limit' ) ?: 10;
       $data = $this->collateral->GetLists($request)->where('developer_id','=',$developer_id)->where('is_approved',true)->paginate($limit);
-      
+
       return $this->makeResponse($data);
     }
 
@@ -191,6 +191,7 @@ class CollateralController extends Controller
     public function changeStatus(ChangeStatusRequest $request, $eks, $action, $collateralId)
     {
       \DB::beginTransaction();
+      $developer_id = env('DEVELOPER_KEY',1);
       $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
       $property = Property::findOrFail($collateral->property_id);
       $prevStatus = $collateral->status;
@@ -201,16 +202,24 @@ class CollateralController extends Controller
       if ($action === 'approve') {
         $collateral->approved_by = $this->request->header('pn');
         $property->is_approved = true;
-        $property->save();
-          if ($request->has('eform_id') && $request->input('eform_id') != false) {
+          if ($collateral->developer_id == $developer_id ) {
               $eformdata = EForm::findOrFail($request->input('eform_id'));
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
+              if ($sentclas['status']) {
+                $property->save();
+                $collateral->save();
+              }
+          }
+          else
+          {
+            $property->save();
+            $collateral->save();
           }
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
+        $collateral->save();
       }
-      $collateral->save();
       \DB::commit();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)

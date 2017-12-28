@@ -38,12 +38,14 @@ class ViewController extends Controller
 			}elseif($table_view[$i]['kolom']=='2'){
 				if($table_view[$i]['first']=='1'){
 					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= $this->generate_table($table_view,$i);
+					$view1 .= '</div></div>';
 				}
 				if($table_view[$i]['last']=='1'){
 					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= $this->generate_table($table_view,$i);
+					$view1 .= '</div></div></div>';
 				}
-				$view1 .= $this->generate_table($table_view,$i);
-				$view1 .= '</div></div>';
 			}elseif($table_view[$i]['kolom']=='3'){
 				if($table_view[$i]['first']=='1'){
 					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
@@ -89,6 +91,12 @@ class ViewController extends Controller
 					$view1 .= $this->labeling($table_view[$i]);
 				}elseif($table_view[$i]['type']=='radio'){
 					$view1 .= $this->radio($table_view[$i]);
+				}elseif($table_view[$i]['type']=='file'){
+					$view1 .= $this->files($table_view[$i]);
+				}elseif($table_view[$i]['type']=='hidden'){
+					$view1 .= $this->hidden($table_view[$i]);
+				}elseif($table_view[$i]['type']=='number'){
+					$view1 .= $this->number($table_view[$i]);
 				}
 				return $view1;
 	}
@@ -131,7 +139,58 @@ class ViewController extends Controller
 			$form .= '</div>';
 		return $form;
     }
+	 public function files($view)
+    {
+			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+			if(!empty($view['div'])){
+			$form .= '<div class="'.$view['div_class'].'">';
+			}
+			$form .=	'<input type="file" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+						value="'.$view['value'].'" '.$view['etc'].'>';
+			if(!empty($view['div'])){
+			$form .= '</div>';
+			}
+			$form .= '</div>';
+		return $form;
+    }
 	
+	 public function hidden($view)
+    {
+			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+			if(!empty($view['div'])){
+			$form .= '<div class="'.$view['div_class'].'">';
+			}
+			$form .=	'<input type="hidden" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+						value="'.$view['value'].'" '.$view['etc'].'>';
+			if(!empty($view['div'])){
+			$form .= '</div>';
+			}
+			$form .= '</div>';
+		return $form;
+    }
+	 public function number($view)
+    {
+			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+			if(!empty($view['div'])){
+			$form .= '<div class="'.$view['div_class'].'">';
+			}
+			$form .=	'<input type="number" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+						value="'.$view['value'].'" '.$view['etc'].'>';
+			if(!empty($view['div'])){
+			$form .= '</div>';
+			}
+			$form .= '</div>';
+		return $form;
+    }
     public function table($view)
     {
 			$form = '<div class="form-group '.$view['name'].'">';
