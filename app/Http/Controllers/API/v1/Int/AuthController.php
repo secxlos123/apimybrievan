@@ -75,23 +75,28 @@ class AuthController extends Controller
                     $role = 'staff';
                 }
 
-                $checkedRolePn = $this->userservices->checkroleAndpn($role,$pn);
-                if(!$checkedRolePn){
-                    $this->userservices->updateOrCreate(['pn'=> $pn],[
-                        'pn'=>$pn,
-                        'hilfm'=>$data['hilfm'],
-                        'role'=> $role,
-                        'name'=> $data['nama'],
-                        'tipe_uker'=> $data['tipe_uker'],
-                        'htext'=> $data['htext'],
-                        'posisi'=> $data['posisi'],
-                        'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
-                        'mobile_phone'=> 0,
-                        'is_actived'=> true,
-                        'branch_id'=>$data['branch'],
-                        'password'=>md5($request->password)
-                    ]);
+                if (ENV('APP_ENV') == 'local') {
+                    $arr = [];
+                }else {
+                    $checkedRolePn = $this->userservices->checkroleAndpn($role,$pn);
+                    if(!$checkedRolePn){
+                        $this->userservices->updateOrCreate(['pn'=> $pn],[
+                            'pn'=>$pn,
+                            'hilfm'=>$data['hilfm'],
+                            'role'=> $role,
+                            'name'=> $data['nama'],
+                            'tipe_uker'=> $data['tipe_uker'],
+                            'htext'=> $data['htext'],
+                            'posisi'=> $data['posisi'],
+                            'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
+                            'mobile_phone'=> 0,
+                            'is_actived'=> true,
+                            'branch_id'=>$data['branch'],
+                            'password'=>md5($request->password)
+                        ]);
+                    }                    
                 }
+
 
                 if (ENV('APP_ENV') == 'local') {
                     $branch = '12';
