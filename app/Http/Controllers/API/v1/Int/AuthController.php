@@ -75,10 +75,10 @@ class AuthController extends Controller
                     $role = 'staff';
                 }
 
-                $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
+                $checkedRolePn = $this->userservices->checkroleAndpn($role,$pn);
                 if(!$checkedRolePn){
-                    $this->userservices->updateOrCreate(['pn'=>$request->pn],[
-                        'pn'=>$request->pn,
+                    $this->userservices->updateOrCreate(['pn'=> $pn],[
+                        'pn'=>$pn,
                         'hilfm'=>$data['hilfm'],
                         'role'=> $role,
                         'name'=> $data['nama'],
@@ -95,7 +95,7 @@ class AuthController extends Controller
 
                 if (ENV('APP_ENV') == 'local') {
                     $branch = '12';
-                    $userservices = $this->userservices->where(['pn' => $request->pn, 'password' => md5($request->password) ])->first();
+                    $userservices = $this->userservices->where(['pn' => $pn, 'password' => md5($request->password) ])->first();
                     if(!$userservices){
                         return response()->error( [
                             'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
@@ -107,7 +107,7 @@ class AuthController extends Controller
                             'message' => 'Login Sukses',
                             'contents'=> [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
-                                'pn' => $userservices[ 'pn' ],
+                                'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
                                 'name' => $userservices[ 'name' ],
                                 'branch' => $userservices['branch_id'],
                                 'role' => $userservices['role'],
