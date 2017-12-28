@@ -52,6 +52,32 @@ class UserServicesTableSeeder extends Seeder
         		'updated_at' => '2017-12-21 05:23:19',	
         		'password' => md5('123')
         	],
+            [   'pn' => 137746,  
+                'branch_id' => '012',   
+                'hilfm' => 26,  
+                'role' => 'collateral-appraisal',  
+                'name' => 'Andini Setiawati', 
+                'tipe_uker' => 'other',    
+                'htext' => 'Staf & Jabatan setingkat',  
+                'posisi' => 'STAFF 2',  
+                'last_activity' => '2017-12-21 12:27:12',   
+                'created_at' => '2017-12-21 05:23:19',  
+                'updated_at' => '2017-12-21 05:23:19',  
+                'password' => md5('123')
+            ],
+            [   'pn' => 70828,  
+                'branch_id' => '012',   
+                'hilfm' => 26,  
+                'role' => 'collateral',  
+                'name' => 'Linlin Herliana', 
+                'tipe_uker' => 'other',    
+                'htext' => 'Staf & Jabatan setingkat',  
+                'posisi' => 'STAFF 2',  
+                'last_activity' => '2017-12-21 12:27:12',   
+                'created_at' => '2017-12-21 05:23:19',  
+                'updated_at' => '2017-12-21 05:23:19',  
+                'password' => md5('123')
+            ],
         );
 
         foreach ($userServices as $data) {
