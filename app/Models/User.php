@@ -553,7 +553,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
                     when e.is_approved = false and e.recommended = true then 'Kredit Ditolak'
                     when e.is_approved = true then 'Proses CLF'
                     when v.id is not null then 'Prakarsa'
-                    when e.ao_id is not null then 'Disposisi Pengajuan'
+                    when e.ao_id is null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as application_status
                 ")
             ], $userFill ) )->selectRaw( 'c.name AS city, bplace.name AS birth_place, cbplace.name AS couple_birth_place' );

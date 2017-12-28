@@ -30,7 +30,7 @@ class TrackingController extends Controller
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                         when eforms.is_approved = true then 'Proses CLF'
                         when visit_reports.id is not null then 'Prakarsa'
-                        when eforms.ao_id is not null then 'Disposisi Pengajuan'
+                        when eforms.ao_id is null then 'Disposisi Pengajuan'
                         else 'Pengajuan Kredit' end as status
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
@@ -53,7 +53,7 @@ class TrackingController extends Controller
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                         when eforms.is_approved = true then 'Proses CLF'
                         when visit_reports.id is not null then 'Prakarsa'
-                        when eforms.ao_id is not null then 'Disposisi Pengajuan'
+                        when eforms.ao_id is null then 'Disposisi Pengajuan'
                         else 'Pengajuan Kredit' end as status
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
@@ -76,7 +76,7 @@ class TrackingController extends Controller
                 , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                     when eforms.is_approved = true then 'Proses CLF'
                     when visit_reports.id is not null then 'Prakarsa'
-                    when eforms.ao_id is not null then 'Disposisi Pengajuan'
+                    when eforms.ao_id is null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as status
                 ")
                 ->leftJoin("users", "users.id", "=", "eforms.user_id")
