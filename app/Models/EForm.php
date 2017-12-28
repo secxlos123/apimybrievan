@@ -272,18 +272,15 @@ class EForm extends Model implements AuditableContract
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         if ( $request->is_approved ) {
             //di update kalo collateral udah jalan
-             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
-             {
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 $result = $eform->insertCoreBRI();
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-             }
-             else
-             {
-                 $eform->kpr()->update(['is_sent'=> false]);
-                 $result['status'] = true;
-             }
+            } else {
+                $eform->kpr()->update(['is_sent'=> false]);
+                $result['status'] = true;
+            }
 
             if ($result['status']) {
                 $eform->update( [
@@ -295,14 +292,17 @@ class EForm extends Model implements AuditableContract
                     'recommended' => $request->recommended == "yes" ? true : false,
                     'is_approved' => $request->is_approved,
                     'status_eform' => 'approved'
-                    ] );
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
-                PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
+                ] );
+
+                if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+                    PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
+                }
             }
 
         } else {
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name)
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
+            }
 
             $eform->update( [
                 'pros' => $request->pros,
@@ -313,7 +313,7 @@ class EForm extends Model implements AuditableContract
                 'recommended' => $request->recommended == "yes" ? true : false,
                 'is_approved' => $request->is_approved,
                 'status_eform' => 'Rejected'
-                ] );
+            ] );
 
             $result['status'] = true;
 
@@ -796,6 +796,55 @@ class EForm extends Model implements AuditableContract
             'message' => $returnStatus
             , 'contents' => $target
         );
+    }
+
+    /**
+     * Submit Prescreening.
+     *
+     * @return array
+     */
+    public static function searchPrescreening( $eform )
+    {
+        // $customer = $eform->customer;
+        // $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
+        //     ->setBody([
+        //         'Request' => json_encode( array(
+        //             'nomer_id_pefindo' => $eform->nik
+        //             , 'nama_pefindo' => $customer->personal['name']
+        //             , 'tanggal_lahir_pefindo' => $customer->personal['birth_date']
+        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+        //         ) )
+        //     ])
+        //     ->post( 'form_params' );
+
+        // \Log::info($getPefindo);
+
+        // $customer = $target->customer;
+        // $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
+        // ->setBody([
+        // 'Request' => json_encode(array(
+        // 'id_pefindo' => 1 // ada pas SmartSearchIndividual
+        // , 'tipesubject_pefindo' => 'individual'
+        // , 'alasan_pefindo' => 'Prescreening oleh ' . $target->ao_name . '-' . $target->ao_name
+        // , 'nomer_id_pefindo' => $target->nik
+        // ))
+        // ])
+        // ->post( 'form_params' );
+        // \Log::info($getReportPefindo);
+
+
+        // $customer = $target->customer;
+        // $getFilePefindo = Asmx::setEndpoint( 'GetPdfReport' )
+        // ->setBody([
+        // 'Request' => json_encode(array(
+        // 'id_pefindo' => 1 // ada pas SmartSearchIndividual
+        // , 'tipesubject_pefindo' => 'individual'
+        // , 'alasan_pefindo' => 'Prescreening oleh ' . $target->ao_name . '-' . $target->ao_name
+        // , 'nomer_id_pefindo' => $target->nik
+        // ))
+        // ])
+        // ->post( 'form_params' );
+        // \Log::info($getFilePefindo);
     }
 
     /**
