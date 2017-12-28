@@ -107,7 +107,7 @@ class AuthController extends Controller
                             'message' => 'Login Sukses',
                             'contents'=> [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
-                                'pn' => $userservices[ 'pn' ],
+                                'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
                                 'name' => $userservices[ 'name' ],
                                 'branch' => $userservices['branch_id'],
                                 'role' => $userservices['role'],
