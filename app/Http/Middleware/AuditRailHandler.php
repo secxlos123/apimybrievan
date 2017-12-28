@@ -19,7 +19,7 @@ class AuditRailHandler
         $path = str_replace("api/v1/int/", "", $request->path());
         $exclude = array("password/reset", "check-token");
 
-        if ( !in_array($path, $exclude) && strpos($request->path(), 'api/v1/eks') ) {
+        if ( !in_array($path, $exclude) && strpos($request->path(), 'v1/eks') ) {
             \Log::info("-------create audit log-------------");
 
             $extraParams = array(

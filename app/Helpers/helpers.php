@@ -237,7 +237,7 @@ if (! function_exists('checkRolesInternal')) {
         } else if( in_array( intval($branch_id), [18] ) ) {
             $ArrRole = ['role' =>'collateral','branch_id' => $branch_id ];
         } else {
-            $ArrRole = ['role' =>'null','branch_id' => $branch_id ];
+            $ArrRole = ['role' =>'staff','branch_id' => $branch_id ];
         }
 
         return $ArrRole;

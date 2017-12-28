@@ -12,6 +12,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post( 'account/leads', 'AccountController@index')->name('crm.account');
   Route::post( 'account/leads_detail', 'AccountController@detail')->name('crm.account_detail');
   Route::post( 'account/existing_fo', 'AccountController@existingFo')->name('crm.existing_fo');
+  Route::post( 'account/test', 'AccountController@getBranchKanwil');
 
   // route customer
   Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');

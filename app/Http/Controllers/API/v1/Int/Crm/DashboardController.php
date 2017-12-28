@@ -120,7 +120,7 @@ class DashboardController extends Controller
      */
     public function pemasar(Request $request)
     {
-      $pemasar = RestwsHc::setBody([
+      $list_ao = RestwsHc::setBody([
         'request' => json_encode([
           'requestMethod' => 'get_list_tenaga_pemasar',
           'requestData' => [
@@ -132,8 +132,23 @@ class DashboardController extends Controller
         'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $ao[] = $list_ao['responseData'];
+      $fo[] = $list_fo['responseData'];
+      $result = array_merge($fo,$ao);
       return response()->success([
-        'contents' => $pemasar['responseData']
+        'contents' => $result
       ]);
     }
 

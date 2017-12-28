@@ -36,7 +36,7 @@ class AuthController extends Controller
             ] )
         ] )->post( 'form_params' );
         $data = $login[ 'responseData' ];
-       
+        \Log::info($login);
             if( $login[ 'responseCode' ] == '00' ) {
 
                 if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
@@ -75,30 +75,35 @@ class AuthController extends Controller
                     $role = 'staff';
                 }
 
-                $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
-                if(!$checkedRolePn){
-                    $this->userservices->updateOrCreate(['pn'=>$request->pn],[
-                        'pn'=>$request->pn,
-                        'hilfm'=>$data['hilfm'],
-                        'role'=> $role,
-                        'name'=> $data['nama'],
-                        'tipe_uker'=> $data['tipe_uker'],
-                        'htext'=> $data['htext'],
-                        'posisi'=> $data['posisi'],
-                        'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
-                        'mobile_phone'=> 0,
-                        'is_actived'=> true,
-                        'branch_id'=>$data['branch'],
-                        'password' => md5($request->password)
-                    ]);
+                if (ENV('APP_ENV') == 'local') {
+                    $arr = [];
+                }else {
+                    $checkedRolePn = $this->userservices->checkroleAndpn($role,$pn);
+                    if(!$checkedRolePn){
+                        $this->userservices->updateOrCreate(['pn'=> $pn],[
+                            'pn'=>$pn,
+                            'hilfm'=>$data['hilfm'],
+                            'role'=> $role,
+                            'name'=> $data['nama'],
+                            'tipe_uker'=> $data['tipe_uker'],
+                            'htext'=> $data['htext'],
+                            'posisi'=> $data['posisi'],
+                            'last_activity'=> isset($data['last_activity']) ? $data['last_activity'] : date("Y-m-d h:i:s") ,
+                            'mobile_phone'=> 0,
+                            'is_actived'=> true,
+                            'branch_id'=>$data['branch'],
+                            'password'=>md5($request->password)
+                        ]);
+                    }                    
                 }
+
 
                 if (ENV('APP_ENV') == 'local') {
                     $branch = '12';
-                    $userservices = $this->userservices->where(['pn' => $request->pn, 'password' => md5($request->password) ])->first();
+                    $userservices = $this->userservices->where(['pn' => $pn, 'password' => md5($request->password) ])->first();
                     if(!$userservices){
                         return response()->error( [
-                            'message' => 'Gagal Terhubung Dengan Server',
+                            'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
                             'contents'=> []
                         ], 422 );
 
@@ -107,7 +112,7 @@ class AuthController extends Controller
                             'message' => 'Login Sukses',
                             'contents'=> [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
-                                'pn' => $userservices[ 'pn' ],
+                                'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
                                 'name' => $userservices[ 'name' ],
                                 'branch' => $userservices['branch_id'],
                                 'role' => $userservices['role'],
@@ -115,7 +120,8 @@ class AuthController extends Controller
                                 'uker' => $userservices['tipe_uker']
                             ]
                         ], 200 );
-                     }
+
+                    }
                 } else {
                     $branch = $data[ 'branch' ];
                 }
