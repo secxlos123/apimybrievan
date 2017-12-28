@@ -28,8 +28,9 @@ use App\Notifications\RejectEFormCustomer;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
-use DB;
+use LaravelFCM\Message\Topics;
 use FCM;
+use DB;
 class EFormController extends Controller
 {
     public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
@@ -371,6 +372,8 @@ class EFormController extends Controller
                     \Log::info($kpr);
         } else {
             $dataEform =  EForm::where('nik', $request->nik)->get();
+            // var_dump(json_encode($dataEform));
+            // die();
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
                 $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
@@ -425,6 +428,20 @@ class EFormController extends Controller
                 $kpr = KPR::create( $baseRequest );
 
             } else {
+                $notificationBuilder = new PayloadNotificationBuilder('Success - Test');
+                $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
+                                    ->setSound('default');
+
+                $notification = $notificationBuilder->build();
+
+                $topic = new Topics();
+                $topic->topic('test');
+
+                $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                $topicResponse->isSuccess();
+                $topicResponse->shouldRetry();
+                $topicResponse->error();
+                
                 return response()->error( [
                     'message' => 'User sedang dalam pengajuan',
                     'contents' => $dataEform

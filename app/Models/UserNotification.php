@@ -169,6 +169,7 @@ class UserNotification extends Model
                 $query->unreads();
             }            
         }
+        $query->select('notifications.id','notifications.type','notifications.notifiable_id','notifications.notifiable_type','notifications.data','notifications.read_at','notifications.created_at','notifications.updated_at','notifications.branch_id','notifications.role_name','notifications.eform_id');
 
         return $query;
     }
