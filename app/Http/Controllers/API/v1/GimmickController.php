@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use PDF;
 
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Events\EForm\Approved;
@@ -42,12 +41,7 @@ class GimmickController extends Controller
             'contents' => $eform
         ],200 );
     }
-
-    public function gimmick_pdf( Request $request )
-    {
-       $pdf = PDF::loadView('gimmick',compact($request->all()));
-      return $pdf->download('invoice.pdf');
-    }	
+	
 	
     public function mitra_relation( Request $request )
     {
@@ -109,19 +103,28 @@ class GimmickController extends Controller
      */
     public function store( GimmickRequest $request )
     {
-		$baseRequest = $request->all();
-		$k = $request->gimmick;
-		if($k['action']=='unduh'){
-			 $pdf = PDF::loadView('gimmick',compact($request->all()));
-			return $pdf->download('invoice.pdf');
-			die();
-			//$nilai = $this->gimmick_pdf($request);
-		}
+        $baseRequest = $request->all();
 		
-		return ['testing'=>'luar'];die();
+		//return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
     }
+
+	 public function save( GimmickRequest $request )
+    {
+		
+		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
+        $baseRequest = $request->all();
+		
+		//return $request->all();die();
+        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
+		return $gimmick;
+		}else{
+			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
+			 return $response;
+		}
+    }
+
 
     /**
      * Update the specified resource in storage.
