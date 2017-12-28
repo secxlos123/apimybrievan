@@ -77,7 +77,7 @@ class AuthController extends Controller
 
                 $checkedRolePn = $this->userservices->checkroleAndpn($role,substr($data['pn'],3));
                 if(!$checkedRolePn){
-                    $this->userservices::updateOrCreate(['pn'=>$request->pn],[
+                    $this->userservices->updateOrCreate(['pn'=>$request->pn],[
                         'pn'=>$request->pn,
                         'hilfm'=>$data['hilfm'],
                         'role'=> $role,
