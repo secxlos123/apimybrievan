@@ -112,11 +112,17 @@ class GimmickController extends Controller
 
 	 public function save( GimmickRequest $request )
     {
+		
+		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
         $baseRequest = $request->all();
 		
 		//return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
+		}else{
+			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
+			 return $response;
+		}
     }
 
 
