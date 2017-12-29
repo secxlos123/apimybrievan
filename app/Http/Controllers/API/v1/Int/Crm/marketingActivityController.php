@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\v1\Int\Crm;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use RestwsHc;
 
 use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
@@ -239,5 +240,65 @@ class marketingActivityController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function activity_branch(Request $request)
+    {
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $fo_list = array_column($list_fo['responseData'], 'PERNR');
+      $ao_list = array_column($list_ao['responseData'], 'PERNR');
+
+      $list_pn = array_push($fo_list, $ao_list);
+
+      // $marketingActivity = MarketingActivity::get();
+      $marketingActivity = [];
+      foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
+        $marketingActivity[]= [
+          'id' => $activity->id,
+          'pn' => $activity->pn,
+          'object_activity' => $activity->object_activity,
+          'action_activity' => $activity->action_activity,
+          'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+          'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+          'start_time' => date('H:i', strtotime($activity->start_date)),
+          'end_time' => date('H:i', strtotime($activity->end_date)),
+          'longitude' => $activity->longitude,
+          'latitude' => $activity->latitude,
+          'marketing_id' => $activity->marketing_id,
+          'pn_join' => $activity->pn_join,
+          'desc' => $activity->desc,
+          'address' => $activity->address,
+          ];
+      }
+
+       // return array_column($marketingActivity,'pn');die();
+      return response()->success( [
+          'message' => 'Sukses',
+          'contents' => $marketingActivity
+        ]);
     }
 }
