@@ -21,7 +21,7 @@ class TrackingController extends Controller
 
 
             if( $user->inRole( 'customer' ) ) {
-                $eforms = EForm::selectRaw("eforms.id
+                $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                     , developers.company_name as developer_name
@@ -43,7 +43,7 @@ class TrackingController extends Controller
             }
 
             else if( $user->inRole('developer-sales') ) {
-                    $eforms = EForm::selectRaw("eforms.id
+                    $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                     , developers.company_name as developer_name
@@ -65,7 +65,7 @@ class TrackingController extends Controller
             }
         }
             if( $request->header('pn') ) {
-                $eforms = EForm::selectRaw("eforms.id
+                $eforms = \DB::table('eforms')->selectRaw("eforms.id
                 , eforms.ao_name as ao
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                 , developers.company_name as developer_name

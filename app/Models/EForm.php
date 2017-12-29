@@ -139,20 +139,20 @@ class EForm extends Model implements AuditableContract
      */
     public function getStatusAttribute()
     {
-        // if ( !$this->is_approved && $this->recommended) {
-        //     return 'Kredit Ditolak';
-        // }
-         if ($this->status_eform == 'Rejected' ) {
+        if ( !$this->is_approved && $this->recommended) {
+             return 'Kredit Ditolak';
+        }
+         elseif ($this->status_eform == 'Rejected' ) {
             return 'Kredit Ditolak';
         }
-        if( $this->is_approved && $this->customer["detail"]["is_verified"] ) {
+        elseif( $this->is_approved ) {
         // if( $this->is_approved && $this->customer->detail->is_verified ) {
             return 'Proses CLF';
         }
-        if( $this->visit_report ) {
+        elseif( $this->visit_report ) {
             return 'Prakarsa';
         }
-        if( $this->ao_id ) {
+        elseif( $this->ao_id == null || $this->ao_id == '') {
             return 'Disposisi Pengajuan';
         }
 
@@ -603,10 +603,10 @@ class EForm extends Model implements AuditableContract
                     $eform->has( 'visit_report' )->whereIsApproved( false );
 
                 } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
                     $eform->where('status_eform', $request->status);
