@@ -24,13 +24,12 @@ class GimmickController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newForm = EForm::filter( $request )->paginate( $limit );
+        $newForm = GIMMICK::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newForm
         ], 200 );
     }
-
     public function show_briguna( Request $request )
     {
         \Log::info($request->all());
