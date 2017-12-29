@@ -1357,7 +1357,7 @@ class EForm extends Model implements AuditableContract
             "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_land))),
             "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_land))),
             "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_land))),
-            "Tanggal_penilaian_npw_bangunan_agunan" => !($otsValuation->scoring_building_date) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->scoring_building_date))),
+            "Tanggal_penilaian_npw_bangunan_agunan" => $this->reformatDate($otsValuation->scoring_building_date),
             "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_building))),
             "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_building))),
             "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_building))),
