@@ -428,7 +428,7 @@ class EFormController extends Controller
                 $kpr = KPR::create( $baseRequest );
 
             } else {
-                $notificationBuilder = new PayloadNotificationBuilder('Success - Test');
+                $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
                 $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
                                     ->setSound('default');
 
