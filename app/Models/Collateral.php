@@ -137,6 +137,14 @@ class Collateral extends Model implements AuditableContract
     {
       return $this->hasOne(OtsTen::class, 'collateral_id');
     }
+    /**
+     * Relation with otsDoc
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function otsDoc()
+    {
+      return $this->hasOne(OtsDoc::class, 'collateral_id');
+    }
 
     public function scopeWithAll($query)
     {
