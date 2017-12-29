@@ -292,9 +292,9 @@ class EForm extends Model implements AuditableContract
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            } 
+            }
             else{
-                
+
                     $result['status'] = true;
                     $eform->kpr()->update(['is_sent'=> false]);
             }
@@ -1044,39 +1044,43 @@ class EForm extends Model implements AuditableContract
             }
         }
 
-        $title = 7;
+        $title = '0103';
         if ( $lkn->title ) {
             switch ($lkn->title) {
                 case 'SD':
-                    $title = 2;
+                    $title = '0100';
+                    break;
+
+                case 'SE':
+                    $title = '0100';
                     break;
 
                 case 'SM':
-                    $title = 3;
+                    $title = '0100';
                     break;
 
                 case 'SU':
-                    $title = 4;
+                    $title = '0100';
                     break;
 
                 case 'S1':
-                    $title = 8;
+                    $title = '0104';
                     break;
 
                 case 'S2':
-                    $title = 9;
+                    $title = '0105';
                     break;
 
                 case 'S3':
-                    $title = 10;
+                    $title = '0106';
                     break;
 
                 case 'ZZ':
-                    $title = 7;
+                    $title = '0103';
                     break;
 
                 default:
-                    $title = 7;
+                    $title = '0103';
                     break;
             }
         }
