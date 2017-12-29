@@ -272,8 +272,8 @@ class marketingActivityController extends Controller
       $fo_list = array_column($list_fo['responseData'], 'PERNR');
       $ao_list = array_column($list_ao['responseData'], 'PERNR');
 
-      $list_pn = array_push($fo_list, $ao_list);
-      print_r($ao_list);die();
+      $list_pn = array_merge_recursive($fo_list, $ao_list);
+      // print_r($list_pn);die();
       // $marketingActivity = MarketingActivity::get();
       $marketingActivity = [];
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
