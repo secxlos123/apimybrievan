@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\GimmickRequest;
-use App\Events\EForm\Approved;
-use App\Events\EForm\RejectedEform;
-use App\Events\EForm\VerifyEForm;
 use App\Models\User;
 use App\Models\GIMMICK;
 use DB;
@@ -24,7 +21,7 @@ class GimmickController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newForm = EForm::filter( $request )->paginate( $limit );
+        $newForm = GIMMICK::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newForm
@@ -101,21 +98,11 @@ class GimmickController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
-	 
-	  public function save( GimmickRequest $request )
-    {
-        $baseRequest = $request->all();
-		
-		//return $request->all();die();
-        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
-		return $gimmick;
-    }
-
     public function store( GimmickRequest $request )
     {
         $baseRequest = $request->all();
 		
-		//return $request->all();die();
+		return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
     }
