@@ -389,7 +389,7 @@ class Customer extends User
         $data = Customer::select(
                     DB::raw("count(users.id) as value"),
                     DB::raw("to_char(users.created_at, 'TMMonth YYYY') as month"),
-                    DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
+                    DB::raw("to_char(users.created_at, 'MM YYYY') as month2"),
                     DB::raw("to_char(users.created_at, 'YYYY MM') as order")
                 )
                 ->when($filter, function ($query) use ($startChart, $endChart){
