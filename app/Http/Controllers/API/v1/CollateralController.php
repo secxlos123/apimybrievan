@@ -15,6 +15,7 @@ use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
 use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
+use App\Http\Requests\API\v1\Collateral\CreateOtsDoc;
 use App\Models\Property;
 use App\Models\EForm;
 
@@ -200,6 +201,7 @@ class CollateralController extends Controller
       };
       $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : $handleReject($prevStatus);
       if ($action === 'approve') {
+        $collateral->remark = $this->request->remark;
         $collateral->approved_by = $this->request->header('pn');
         $property->is_approved = true;
           if ($collateral->developer_id == $developer_id ) {
@@ -266,5 +268,44 @@ class CollateralController extends Controller
       return response()->success([
         'contents' => $data
       ]);
+    }
+
+    /**
+     * Public Function Upload Ots_Document
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
+    public function storeOtsDoc(CreateOtsDoc $request, $eks, $collateralId)
+    {
+      \DB::beginTransaction();
+      try {
+            $store = $this->collateral->findOrFail($collateralId);
+            $data = $store->otsDoc()->updateOrCreate(['collateral_id'=>$collateralId],$request->all());
+            \DB::commit();
+        return response()->success([
+                'message' => 'Data Collateral berhasil ditambah.',
+                'contents' => $data,
+            ], 201);
+      } catch (Exception $e) {
+        \DB::rollback();
+        return response()->error([
+                'message' => 'Data Collateral Gagal ditambah.',
+                'contents' => $e,
+            ], 422);
+      }
+    }
+
+     /**
+     * Public Function show Ots_Document
+     * @param  string $eks
+     * @param  integer $collateralId
+     * @return \Illuminate\Http\Response
+     */
+    public function showOtsDoc($eks, $collateralId)
+    {
+      return $this->makeResponse(
+        $this->collateral->with('otsDoc')->findOrFail($collateralId)
+      );
     }
 }

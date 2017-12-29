@@ -13,6 +13,7 @@ use App\Models\Developer;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
 use App\Models\Appointment;
+use App\Models\BRIGUNA;
 use Carbon\Carbon;
 use Sentinel;
 use Asmx;
@@ -226,10 +227,17 @@ class EForm extends Model implements AuditableContract
      */
     public function getIsVisitedAttribute()
     {
-        if( $this->visit_report ) {
-            return true;
-        }
-        return false;
+        // if ($this->product_type == 'kpr') {
+            if( $this->visit_report ) {
+                return true;
+            }
+            return false;
+        // } else {
+        //     if ($this->briguna) {
+        //         return true;
+        //     }
+        //     return false;
+        // }
     }
 
     /**
@@ -745,6 +753,11 @@ class EForm extends Model implements AuditableContract
     public function visit_report()
     {
         return $this->hasOne( VisitReport::class, 'eform_id' );
+    }
+
+    public function briguna()
+    {
+        return $this->hasOne( BRIGUNA::class, 'eform_id' );
     }
 
     /**
