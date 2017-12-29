@@ -972,78 +972,6 @@ class EForm extends Model implements AuditableContract
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
 
-        $request = $data + [
-            "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
-            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
-            "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
-            "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
-            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
-            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
-            "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
-            "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
-            "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
-            "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
-            "nik_pasangan" => !( $customer_detail->couple_nik ) ? '' : $customer_detail->couple_nik,
-            "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
-            "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '0' : $customer_detail->address_status_id,
-            "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
-            "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
-            "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
-            "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
-            "lama_usaha" => $lama_usaha,
-            "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
-            "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
-            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
-            "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
-            "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
-            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
-            "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
-            "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
-            "Status_gelar_cif" => !( $lkn->title ) ? '' : $lkn->title,
-            "Kecamatan_cif" => 'kecamatan',
-            "Kelurahan_cif" => 'kelurahan',
-            "Kode_pos_cif" => '40000',
-            "Lokasi_dati_cif" => $this->reformatCity( $customer_detail->city ),
-            "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
-            "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
-            "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
-            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
-            'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
-            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
-        ];
-
-        return $request;
-    }
-
-    /**
-     * Generate Parameters for step 2.
-     *
-     * @param array $data
-     * @return array $request
-     */
-    public function step2($data)
-    {
-        \Log::info("step2");
-        $customer = clone $this->customer;
-        $customer_detail = (object) $customer->personal;
-        $customer_work = (object) $customer->work;
-        $lkn = $this->visit_report;
-
-        $income = 0;
-
-        if ( $lkn->source ) {
-            if ( $lkn->source == 'nonfixed' ) {
-                if ( $lkn->income ) {
-                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
-                }
-            } else {
-                if ( $lkn->income_salary ) {
-                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
-                }
-            }
-        }
-
         $title = '0103';
         if ( $lkn->title ) {
             switch ($lkn->title) {
@@ -1084,6 +1012,77 @@ class EForm extends Model implements AuditableContract
                     break;
             }
         }
+        $request = $data + [
+            "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
+            "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
+            "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
+            "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
+            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
+            "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
+            "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
+            "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
+            "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
+            "nik_pasangan" => !( $customer_detail->couple_nik ) ? '' : $customer_detail->couple_nik,
+            "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
+            "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '0' : $customer_detail->address_status_id,
+            "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
+            "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
+            "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
+            "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
+            "lama_usaha" => $lama_usaha,
+            "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
+            "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
+            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
+            "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
+            "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
+            "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
+            "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
+            "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
+            "Status_gelar_cif" => !( $lkn->title ) ? '' : $lkn->title,
+            "Kecamatan_cif" => 'kecamatan',
+            "Kelurahan_cif" => 'kelurahan',
+            "Kode_pos_cif" => '40000',
+            "Lokasi_dati_cif" => $this->reformatCity( $customer_detail->city ),
+            "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
+            "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
+            "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
+            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
+            'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
+            "jenis_kpp_value" => $title
+        ];
+
+        return $request;
+    }
+
+    /**
+     * Generate Parameters for step 2.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step2($data)
+    {
+        \Log::info("step2");
+        $customer = clone $this->customer;
+        $customer_detail = (object) $customer->personal;
+        $customer_work = (object) $customer->work;
+        $lkn = $this->visit_report;
+
+        $income = 0;
+
+        if ( $lkn->source ) {
+            if ( $lkn->source == 'nonfixed' ) {
+                if ( $lkn->income ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
+                }
+            } else {
+                if ( $lkn->income_salary ) {
+                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
+                }
+            }
+        }
 
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
@@ -1095,9 +1094,9 @@ class EForm extends Model implements AuditableContract
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
-            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
-            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
+            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
             "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
@@ -1132,7 +1131,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir_value' => $title
+            'Pendidikan_terakhir_value' => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
         return $request;
     }
