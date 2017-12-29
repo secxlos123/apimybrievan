@@ -204,25 +204,30 @@ class CollateralController extends Controller
         $collateral->remark = $this->request->remark;
         $collateral->approved_by = $this->request->header('pn');
         $property->is_approved = true;
+        $collateral->save();
+        $property->save();
           if ($collateral->developer_id == $developer_id ) {
-              $eformdata = EForm::findOrFail($request->input('eform_id'));
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
+              $eformdata = EForm::findOrFail($request->input('eform_id'));
               if ($sentclas['status']) {
-                $property->save();
-                $collateral->save();
+               \DB::commit();
+              }else
+              {
+              \DB::rollback();
               }
           }
           else
           {
             $property->save();
             $collateral->save();
+            \DB::commit();
           }
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
         $collateral->save();
+        \DB::commit();
       }
-      \DB::commit();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
