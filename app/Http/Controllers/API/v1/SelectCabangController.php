@@ -125,6 +125,26 @@ class SelectCabangController extends Controller
 		}
 	}
 
+		public function getCabangMitra( Request $request )
+	{
+		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
+	        \Log::info($request->all());
+				
+			$mitra = Mitra::filter( $request )->get();
+			$mitra = $mitra->toArray();
+			print_r($mitra);die();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+		}
+		else{
+			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
+			 return $response;
+		}
+	}
+
+
 	public function index( Request $request )
 	{
 		        \Log::info($request->all());
