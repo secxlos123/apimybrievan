@@ -132,7 +132,6 @@ class SelectCabangController extends Controller
 				
 			$mitra = Mitra::filter( $request )->get();
 			$mitra = $mitra->toArray();
-			print_r($mitra);die();
         return response()->success([
             'contents' => $mitra,
             'message' => 'Sukses'
