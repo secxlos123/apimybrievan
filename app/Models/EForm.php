@@ -278,6 +278,7 @@ class EForm extends Model implements AuditableContract
         $result['status'] = false;
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+        $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
         if ( $request->is_approved ) {
             //di update kalo collateral udah jalan
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
@@ -285,18 +286,17 @@ class EForm extends Model implements AuditableContract
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            } else {
-                if (!$eform->kpr->is_sent && $eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name) {
-                    $result = $eform->insertCoreBRI();
-                    if ($result['status']) {
-                        $eform->kpr()->update(['is_sent'=> true]);
-                    }
+            } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
+            {
+                $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
                 }
-                else
-                {
+            } 
+            else{
+                
                     $result['status'] = true;
                     $eform->kpr()->update(['is_sent'=> false]);
-                }
             }
 
             if ($result['status']) {

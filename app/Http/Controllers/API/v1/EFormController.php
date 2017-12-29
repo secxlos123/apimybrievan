@@ -428,20 +428,6 @@ class EFormController extends Controller
                 $kpr = KPR::create( $baseRequest );
 
             } else {
-                $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
-                $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
-                                    ->setSound('default');
-
-                $notification = $notificationBuilder->build();
-
-                $topic = new Topics();
-                $topic->topic('testing');
-
-                $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-                $topicResponse->isSuccess();
-                $topicResponse->shouldRetry();
-                $topicResponse->error();
-
                 return response()->error( [
                     'message' => 'User sedang dalam pengajuan',
                     'contents' => $dataEform
@@ -457,6 +443,20 @@ class EFormController extends Controller
                 ], 422 );
         }
 
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
+        $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
+                            ->setSound('default');
+
+        $notification = $notificationBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing');
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+        
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
@@ -587,9 +587,22 @@ class EFormController extends Controller
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
-
-
         DB::commit();
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Disposition - Test');
+        $notificationBuilder->setBody('E-Form berhasil di disposisi')
+                            ->setSound('default');
+
+        $notification = $notificationBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing');
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
             'contents' => $eform
