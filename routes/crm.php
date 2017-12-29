@@ -28,6 +28,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
     'only' => ['index', 'store']
   ] );
 
+  Route::post('/activity/by_branch', 'marketingActivityController@activity_branch');
+
   // Route reschedule Activity
   Route::post('/activity/reschedule', 'marketingActivityController@reSchedule')->name('crm.reschedule');
 

@@ -13,6 +13,7 @@ use App\Models\Developer;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
 use App\Models\Appointment;
+use App\Models\BRIGUNA;
 use Carbon\Carbon;
 use Sentinel;
 use Asmx;
@@ -139,20 +140,20 @@ class EForm extends Model implements AuditableContract
      */
     public function getStatusAttribute()
     {
-        // if ( !$this->is_approved && $this->recommended) {
-        //     return 'Kredit Ditolak';
-        // }
-         if ($this->status_eform == 'Rejected' ) {
+        if ( !$this->is_approved && $this->recommended) {
+             return 'Kredit Ditolak';
+        }
+         elseif ($this->status_eform == 'Rejected' ) {
             return 'Kredit Ditolak';
         }
-        if( $this->is_approved && $this->customer["detail"]["is_verified"] ) {
+        elseif( $this->is_approved ) {
         // if( $this->is_approved && $this->customer->detail->is_verified ) {
             return 'Proses CLF';
         }
-        if( $this->visit_report ) {
+        elseif( $this->visit_report ) {
             return 'Prakarsa';
         }
-        if( $this->ao_id ) {
+        elseif( $this->ao_id == null || $this->ao_id == '') {
             return 'Disposisi Pengajuan';
         }
 
@@ -226,10 +227,17 @@ class EForm extends Model implements AuditableContract
      */
     public function getIsVisitedAttribute()
     {
-        if( $this->visit_report ) {
-            return true;
-        }
-        return false;
+        // if ($this->product_type == 'kpr') {
+            if( $this->visit_report ) {
+                return true;
+            }
+            return false;
+        // } else {
+        //     if ($this->briguna) {
+        //         return true;
+        //     }
+        //     return false;
+        // }
     }
 
     /**
@@ -270,6 +278,7 @@ class EForm extends Model implements AuditableContract
         $result['status'] = false;
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+        $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
         if ( $request->is_approved ) {
             //di update kalo collateral udah jalan
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
@@ -277,18 +286,17 @@ class EForm extends Model implements AuditableContract
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            } else {
-                if (!$eform->kpr->is_sent && $eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name) {
-                    $result = $eform->insertCoreBRI();
-                    if ($result['status']) {
-                        $eform->kpr()->update(['is_sent'=> true]);
-                    }
+            } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
+            {
+                $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
                 }
-                else
-                {
+            } 
+            else{
+                
                     $result['status'] = true;
                     $eform->kpr()->update(['is_sent'=> false]);
-                }
             }
 
             if ($result['status']) {
@@ -510,7 +518,9 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info(json_encode($sendRequest));
 
-                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                if ($value[0] != 'InsertIntoReviewer') { // request by Gilang
+                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                }
 
                 if (!$set['status']) {
                     \Log::info('Error Step Ke -'.$step);
@@ -601,10 +611,10 @@ class EForm extends Model implements AuditableContract
                     $eform->has( 'visit_report' )->whereIsApproved( false );
 
                 } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
                     $eform->where('status_eform', $request->status);
@@ -745,6 +755,11 @@ class EForm extends Model implements AuditableContract
         return $this->hasOne( VisitReport::class, 'eform_id' );
     }
 
+    public function briguna()
+    {
+        return $this->hasOne( BRIGUNA::class, 'eform_id' );
+    }
+
     /**
      * The relation to visit report.
      *
@@ -824,7 +839,7 @@ class EForm extends Model implements AuditableContract
      */
     public static function searchPrescreening( $eform )
     {
-        // $customer = $eform->customer;
+        $customer = $eform->customer;
         // $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
         //     ->setBody([
         //         'Request' => json_encode( array(
@@ -838,32 +853,45 @@ class EForm extends Model implements AuditableContract
 
         // \Log::info($getPefindo);
 
-        // $customer = $target->customer;
         // $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
-        // ->setBody([
-        // 'Request' => json_encode(array(
-        // 'id_pefindo' => 1 // ada pas SmartSearchIndividual
-        // , 'tipesubject_pefindo' => 'individual'
-        // , 'alasan_pefindo' => 'Prescreening oleh ' . $target->ao_name . '-' . $target->ao_name
-        // , 'nomer_id_pefindo' => $target->nik
-        // ))
-        // ])
-        // ->post( 'form_params' );
+        //     ->setBody([
+        //         'Request' => json_encode( array(
+        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+        //             , 'tipesubject_pefindo' => 'individual'
+        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+        //             , 'nomer_id_pefindo' => $eform->nik
+        //         ) )
+        //     ])
+        //     ->post( 'form_params' );
+
         // \Log::info($getReportPefindo);
 
-
-        // $customer = $target->customer;
         // $getFilePefindo = Asmx::setEndpoint( 'GetPdfReport' )
-        // ->setBody([
-        // 'Request' => json_encode(array(
-        // 'id_pefindo' => 1 // ada pas SmartSearchIndividual
-        // , 'tipesubject_pefindo' => 'individual'
-        // , 'alasan_pefindo' => 'Prescreening oleh ' . $target->ao_name . '-' . $target->ao_name
-        // , 'nomer_id_pefindo' => $target->nik
-        // ))
-        // ])
-        // ->post( 'form_params' );
+        //     ->setBody([
+        //         'Request' => json_encode( array(
+        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+        //             , 'tipesubject_pefindo' => 'individual'
+        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+        //             , 'nomer_id_pefindo' => $eform->nik
+        //         ) )
+        //     ])
+        //     ->post( 'form_params' );
+
         // \Log::info($getFilePefindo);
+
+        // $eform = \App\Models\EForm::first();
+        // $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
+        //     ->setBody([
+        //         'Request' => json_encode( array(
+        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+        //             , 'tipesubject_pefindo' => 'individual'
+        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+        //             , 'nomer_id_pefindo' => $eform->nik
+        //         ) )
+        //     ])
+        //     ->post( 'form_params' );
+        // return file_put_contents(public_path('uploads/test.zip'), base64_decode($getFilePefindo["contents"]));
+        // return base64_decode($getFilePefindo["contents"]);
     }
 
     /**
@@ -1280,10 +1308,10 @@ class EForm extends Model implements AuditableContract
             //ots Letter
             "Jenis_surat_tanah_agunan_value" => !($otsLetter->type) ? '0' : $otsLetter->type,
             "No_surat_tanah" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_surat_tanah_agunan" => !($otsLetter->date) ? '0' : $otsLetter->date,
+            "Tanggal_surat_tanah_agunan" => $this->reformatDate($otsLetter->date),
             "Atas_nama_agunan" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
             "Hak_atas_tanah_agunan_value" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
-            "Masa_hak_atas_tanah_agunan" => !($otsLetter->duration_land_authorization) ? '0' : $otsLetter->duration_land_authorization,
+            "Masa_hak_atas_tanah_agunan" => $this->reformatDate($otsLetter->duration_land_authorization),
             "Kemampuan_perpanjangan_hak_atas_tanah_agunan_value" => '0',//tidak ada di table
             "Kecocokan_data_kantor_agraniabpn_agunan" => !($otsLetter->match_bpn) ? '0' : $otsLetter->match_bpn,
             "Kecocokan_data_kantor_agraniabpn_agunan_value" => !($otsLetter->match_bpn) ? '0' : $otsLetter->match_bpn,
@@ -1293,7 +1321,7 @@ class EForm extends Model implements AuditableContract
             "Luas_tanah_berdasarkan_surat_tanah_agunan" => !($otsLetter->surface_area_by_letter) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsLetter->surface_area_by_letter))),
             //otsBuilding
             "No_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_number) ? '0' : $otsBuilding->permit_number,
-            "Tanggal_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_date) ? '0' : $otsBuilding->permit_date,
+            "Tanggal_ijin_mendirikan_bangunan_agunan" => $this->reformatDate($otsBuilding->permit_date),
             "Atas_nama_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->on_behalf_of) ? '0' : $otsBuilding->on_behalf_of,
             "Jenis_bangunan_agunan_value" => !($otsBuilding->type) ? '0' : $otsBuilding->type,
             "Jumlah_bangunan_agunan" => !($otsBuilding->count) ? '0' : $otsBuilding->count,
@@ -1320,7 +1348,7 @@ class EForm extends Model implements AuditableContract
             "Lain_lain_agunan_value" => '0',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
-            "Tanggal_penilaian_npw_tanah_agunan" => !($otsValuation->scoring_land_date) ? '0' : $otsValuation->scoring_land_date,
+            "Tanggal_penilaian_npw_tanah_agunan" => $this->reformatDate($otsValuation->scoring_land_date),
             "Npw_tanah_agunan" => !($otsValuation->npw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_land))),
             "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_land))),
             "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_land))),
@@ -1330,7 +1358,7 @@ class EForm extends Model implements AuditableContract
             "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_building))),
             "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_building))),
             "Pnl_bangunan_agunan" => !($otsValuation->pnl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_building))),
-            "Tanggal_penilaian_npw_tanah_bangunan_agunan"=> !($otsValuation->scoring_all_date) ? '0' : $otsValuation->scoring_all_date,
+            "Tanggal_penilaian_npw_tanah_bangunan_agunan"=> $this->reformatDate($otsValuation->scoring_all_date),
             "Npw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_all))),
             "Nl_tanah_bangunan_agunan" => !($otsValuation->nl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_all))),
             "Pnpw_tanah_bangunan_agunan" => !($otsValuation->pnpw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_all))),
@@ -1465,6 +1493,22 @@ class EForm extends Model implements AuditableContract
         $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
 
         return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
+    }
+
+     /**
+     * Reformat Date ddmmyyyy.
+     *
+     * @param string $place
+     * @return string $return
+     */
+    public function reformatDate( $date )
+    {
+        if ( $date ) {
+            $dates = explode("-", $date);
+            return $dates[2].$dates[1].$dates[0];
+        }
+
+        return '0';
     }
 
     /**

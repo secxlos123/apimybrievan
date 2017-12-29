@@ -33,6 +33,8 @@ class MarketingController extends Controller
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
           'account_id'=> $marketing->account_id,
+          'number'=> $marketing->number,
+          'nik'=> $marketing->nik,
           'status'=> $marketing->status,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date))
         ];
@@ -75,6 +77,8 @@ class MarketingController extends Controller
       $data['activity_type'] = $request['activity_type'];
       $data['target'] = $request['target'];
       $data['account_id'] = $request['account_id'];
+      $data['number'] = $request['number'];
+      $data['nik'] = $request['nik'];
       $data['status'] = $request['status'];
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
@@ -133,6 +137,8 @@ class MarketingController extends Controller
       $update['activity_type'] = $request['activity_type'];
       $update['target'] = $request['target'];
       $update['account_id'] = $request['account_id'];
+      $update['number'] = $request['number'];
+      $update['nik'] = $request['nik'];
       $update['status'] = $request['status'];
       $update['target_closing_date'] = $request['target_closing_date'];
 

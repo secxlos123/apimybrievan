@@ -124,6 +124,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::get('/{collateralId}', ['as' => 'collateral.ots.show', 'uses' => 'CollateralController@getOts'])
 				->where('collateralId', '[0-9]+');
 		});
+		/**
+		 * Collateral ots Doc routes
+		 */
+		Route::group(['prefix' => 'collateral/otsdoc'], function($router) {
+			Route::post('/{collateralId}', ['as' => 'collateral.otsdoc.store', 'uses' => 'CollateralController@storeOtsDoc'])
+				->where('collateralId', '[0-9]+');
+			Route::get('/{collateralId}', ['as' => 'collateral.otsdoc.show', 'uses' => 'CollateralController@showOtsDoc'])
+				->where('collateralId', '[0-9]+');
+		});
 
 		/**
 		 * Route approval data change
