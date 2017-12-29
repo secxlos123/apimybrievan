@@ -1493,9 +1493,10 @@ class EForm extends Model implements AuditableContract
      */
     public function reformatCity( $city )
     {
-        $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
+        // $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
+        // return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
 
-        return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
+        return $city;
     }
 
      /**
