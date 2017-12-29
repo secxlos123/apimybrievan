@@ -29,7 +29,7 @@ class ApiLasController extends Controller
     		case 'insertDataDebtPerorangan':
                 // if (!empty($data)) {
                     $data = $respons;
-                    $data['kodepos']            = '';
+                    /*$data['kodepos']            = '';
                     $data['kelurahan']          = '';
                     $data['kecamatan']          = '';
                     $data['kabupaten']          = '';
@@ -84,7 +84,7 @@ class ApiLasController extends Controller
                                 $data['propinsi_usaha']     = $value['Propinsi'];
                             }
                         }
-                    }
+                    }*/
 
                     if ($request['transaksi_normal_harian'] == '1') {
                         $gaji = "G1";
@@ -487,20 +487,20 @@ class ApiLasController extends Controller
             "jenis_pekerjaan"       => $request['job_type_id'],
             "ket_pekerjaan"         => $request['job_field_id'],
             "jabatan"               => $request['position'],
-            "kode_pos"              => $request['kodepos'],
-            "kodepos_usaha"         => $request['kodepos_usaha'],
-            "kodepos_domisili"      => $request['kodepos_domisili'],
+            "kode_pos"              => $request['kode_pos'],
+            "kodepos_usaha"         => $request['kode_pos_domisili'],
+            "kodepos_domisili"      => $request['kode_pos_domisili'],
             "kelurahan"             => $request['kelurahan'],
             "kelurahan_domisili"    => $request['kelurahan_domisili'],
-            "kelurahan_usaha"       => $request['kelurahan_usaha'],
+            "kelurahan_usaha"       => $request['kelurahan_domisili'],
             "kecamatan"             => $request['kecamatan'],
             "kecamatan_domisili"    => $request['kecamatan_domisili'],
-            "kecamatan_usaha"       => $request['kecamatan_usaha'],
-            "kabupaten"             => "0394",
-            "kota_domisili"         => $request['kota_domisili'],
+            "kecamatan_usaha"       => $request['kecamatan_domisili'],
+            "kabupaten"             => $request['kabupaten'],//"0394",
+            "kota_domisili"         => $request['kabupaten_domisili'],
             "propinsi_domisili"     => $request['propinsi_domisili'],
-            "kota_usaha"            => $request['kota_usaha'],
-            "propinsi_usaha"        => $request['propinsi_usaha'],
+            "kota_usaha"            => $request['kabupaten_domisili'],
+            "propinsi_usaha"        => $request['propinsi_domisili'],
             "nama_debitur_2"        => "",
             "nama_debitur_3"        => "",
             "nama_debitur_4"        => "",

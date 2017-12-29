@@ -32,8 +32,16 @@ class ApiLas extends Model
 
     public function eform_briguna() {
         $eforms = DB::table('eforms')
-                 ->select('eforms.id','briguna.*')
+                 ->select('briguna.id','briguna.id_aplikasi',
+                    'briguna.request_amount','briguna.Plafond_usulan',
+                    'briguna.eform_id','briguna.tp_produk','customer_details.nik',
+                    'customer_details.birth_date','customer_details.address',
+                    'customer_details.mother_name',
+                    'users.first_name','users.mobile_phone','users.gender'
+                   )
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
+                 ->join('users', 'users.id', '=', 'eforms.user_id') 
                  ->get();
         $eforms = $eforms->toArray();
         $eforms = json_decode(json_encode($eforms), True);
