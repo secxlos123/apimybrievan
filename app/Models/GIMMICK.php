@@ -172,38 +172,27 @@ class GIMMICK extends Model
         // }
     }
 
+ 
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['no', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "no" ) {
-            $sort = ['no', 'asc'];
+        if ( $sort[0] == "id" ) {
+            $sort = ['id', 'asc'];
         }
 
 		 $dir = $query->where( function( $dir ) use( $request ) {
             if ( $request->has('gimmick_name') ) {
                 $dir = $dir->where('gimmick.gimmick_name', $request->input('gimmick_name'));
 			}
-			if ( $request->has('mitra_kerjasama') ) {
-					$dir = $dir->where('gimmick.mitra_kerjasama', $request->input('mitra_kerjasama'));
-			}
-			if ( $request->has('kantor_wilayah') ) {
-					$dir = $dir->where('dirrpc.kantor_wilayah', $request->input('kantor_wilayah'));
-			}
-			if ( $request->has('kantor_cabang') ) {
-					$dir = $dir->where('dirrpc.kantor_cabang', $request->input('kantor_cabang'));
-			}
         } );
-		 $dir = $dir->leftJoin('gimmick', 'gimmick.id', '=', 'dirrpc.gimmick_id');
-        $dir = $dir->orderBy('dirrpc.'.$sort[0], $sort[1]);
+        $dir = $dir->orderBy('gimmick.'.$sort[0], $sort[1]);
 
         \Log::info($dir->toSql());
         \Log::info($dir->getBindings());
 
         return $dir;
     }
-
-  
 
 }

@@ -297,8 +297,20 @@ class marketingActivityController extends Controller
 
        // return array_column($marketingActivity,'pn');die();
       return response()->success( [
-          'message' => 'Sukses',
+          'message' => 'Success get marketing Activity by branch',
           'contents' => $marketingActivity
         ]);
+    }
+
+    public function activity_by_marketing(Request $request)
+    {
+      $marketing_id = $request['marketing_id'];
+      $activity_marketing = MarketingActivity::where('marketing_id', $marketing_id)->get();
+
+      return response()->success( [
+          'message' => 'Success get activity by marketing',
+          'contents' => $activity_marketing
+        ]);
+
     }
 }

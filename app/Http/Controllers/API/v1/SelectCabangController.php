@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Mitra;
+use App\Models\Mitra3;
 use Sentinel;
 use DB;
 use App\Models\Office;
@@ -40,6 +41,7 @@ class SelectCabangController extends Controller
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
+		
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
@@ -124,6 +126,25 @@ class SelectCabangController extends Controller
 			 return $response;
 		}
 	}
+
+		public function getCabangMitra( Request $request )
+	{
+		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
+	        \Log::info($request->all());
+				
+			$mitra = Mitra3::filter( $request )->get();
+			$mitra = $mitra->toArray();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+		}
+		else{
+			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
+			 return $response;
+		}
+	}
+
 
 	public function index( Request $request )
 	{
