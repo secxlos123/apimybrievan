@@ -10,10 +10,10 @@ use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\User;
-use App\Models\GIMMICK;
+use App\Models\DIRRPC;
 use DB;
 
-class GimmickController extends Controller
+class dirrpcController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,10 +24,10 @@ class GimmickController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newForm = EForm::filter( $request )->paginate( $limit );
+        $newDir = DIRRPC::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $newForm
+            'contents' => $newDir
         ], 200 );
     }
 
@@ -106,25 +106,9 @@ class GimmickController extends Controller
         $baseRequest = $request->all();
 		
 		//return $request->all();die();
-        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
-		return $gimmick;
+        $dirrpc = DIRRPC::create( $baseRequest['dirrpc'] );
+		return $dirrpc;
     }
-
-	 public function save( GimmickRequest $request )
-    {
-		
-		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
-        $baseRequest = $request->all();
-		
-		//return $request->all();die();
-        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
-		return $gimmick;
-		}else{
-			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
-			 return $response;
-		}
-    }
-
 
     /**
      * Update the specified resource in storage.

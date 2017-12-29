@@ -441,7 +441,7 @@ class EFormController extends Controller
                 $topicResponse->isSuccess();
                 $topicResponse->shouldRetry();
                 $topicResponse->error();
-                
+
                 return response()->error( [
                     'message' => 'User sedang dalam pengajuan',
                     'contents' => $dataEform

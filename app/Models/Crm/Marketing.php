@@ -17,6 +17,8 @@ class Marketing extends Model
       'activity_type',
       'target',
       'account_id',
+      'number',
+      'nik',
       'status',
       'target_closing_date'
     ];

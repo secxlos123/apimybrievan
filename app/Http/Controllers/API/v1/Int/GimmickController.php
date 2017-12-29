@@ -101,11 +101,21 @@ class GimmickController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
+	 
+	  public function save( GimmickRequest $request )
+    {
+        $baseRequest = $request->all();
+		
+		//return $request->all();die();
+        $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
+		return $gimmick;
+    }
+
     public function store( GimmickRequest $request )
     {
         $baseRequest = $request->all();
 		
-		return $request->all();die();
+		//return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
     }

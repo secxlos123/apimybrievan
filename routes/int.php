@@ -14,6 +14,7 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 	Route::post( 'auth/login', 'AuthController@store' );
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
+	Route::post('gimmickinternal', 'GimmickController@save');
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
@@ -68,9 +69,12 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
 		] );
-		/* Route::resource( 'gimmick', 'GimmickController', [
+		 Route::resource( 'gimmick', 'GimmickController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
-		] ); */
+		] ); 
+		 Route::resource( 'dirrpc', 'dirrpcController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] ); 
 		} );
 	} );
 
