@@ -9,7 +9,7 @@ use Asmx;
 use RestwsHc;
 use Cartalyst\Sentinel\Users\EloquentUser as Authenticatable;
 
-class Mitra extends Authenticatable  {
+class Mitra3 extends Authenticatable  {
 
 
 	/**
