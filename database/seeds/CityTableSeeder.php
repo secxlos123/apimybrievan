@@ -16,11 +16,9 @@ class CityTableSeeder extends Seeder
 
         Schema::disableForeignKeyConstraints();
         DB::table('cities')->delete();
-        // $city = DB::table('cities')->where('name', $data[0]['name'])->first();
-        // if ( !$city ) {
-            foreach(collect($data)->chunk(50) as $chunk) {
-                \DB::table('cities')->insert($chunk->toArray());
-            }
-        // }
+        foreach(collect($data)->chunk(50) as $chunk) {
+            \DB::table('cities')->insert($chunk->toArray());
+        }
+        Schema::enableForeignKeyConstraints();
     }
 }
