@@ -26,7 +26,7 @@ class marketingActivityController extends Controller
       $pn = $request->header('pn');
       // $marketingActivity = MarketingActivity::get();
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
@@ -42,6 +42,7 @@ class marketingActivityController extends Controller
           'pn_join' => $activity->pn_join,
           'desc' => $activity->desc,
           'address' => $activity->address,
+          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
           ];
       }
 
