@@ -115,6 +115,46 @@ class marketingActivityController extends Controller
           'message' => 'Data Activity Tidak Dapat Ditambah.',
       ], 500);
     }
+    /**
+    * Store a newly created resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function store_by_pinca(Request $request)
+    {
+      $data['pn'] = $request['pn'];
+      $data['object_activity'] = $request['object_activity'];
+      $data['action_activity'] = $request['action_activity'];
+      $data['start_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
+      $data['end_date'] = date('Y-m-d H:i:s', strtotime($request['end_date'].$request['end_time']));
+
+      if(isset($request['longitude']) && isset($request['latitude']) ){
+        $data['longitude'] = $request['longitude'];
+        $data['latitude'] = $request['latitude'];
+      }else{
+        $data['longitude'] = 'unset';
+        $data['latitude'] = 'unset';
+      }
+
+      $data['address'] = $request['address'];
+      $data['marketing_id'] = $request['marketing_id'];
+      $data['pn_join'] = $request['pn_join'];
+      $data['desc'] = $request['desc'];
+
+      $save = MarketingActivity::create($data);
+
+      if ($save) {
+          return response()->success([
+              'message' => 'Data Activity by pinca berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Data Activity by pinca Tidak Dapat Ditambah.',
+      ], 500);
+    }
 
     /**
      * Display the specified resource.
