@@ -292,9 +292,9 @@ class EForm extends Model implements AuditableContract
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            } 
+            }
             else{
-                
+
                     $result['status'] = true;
                     $eform->kpr()->update(['is_sent'=> false]);
             }
@@ -972,13 +972,53 @@ class EForm extends Model implements AuditableContract
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
 
+        $title = '0103';
+        if ( $lkn->title ) {
+            switch ($lkn->title) {
+                case 'SD':
+                    $title = '0100';
+                    break;
+
+                case 'SE':
+                    $title = '0100';
+                    break;
+
+                case 'SM':
+                    $title = '0100';
+                    break;
+
+                case 'SU':
+                    $title = '0100';
+                    break;
+
+                case 'S1':
+                    $title = '0104';
+                    break;
+
+                case 'S2':
+                    $title = '0105';
+                    break;
+
+                case 'S3':
+                    $title = '0106';
+                    break;
+
+                case 'ZZ':
+                    $title = '0103';
+                    break;
+
+                default:
+                    $title = '0103';
+                    break;
+            }
+        }
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
             "tempat_lahir_pemohon" => $this->reformatString( $customer_detail->birth_place ),
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
-            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
-            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
+            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
             "jenis_kelamin_pemohon" => !( $customer->gender_sim ) ? '' : strtolower($customer->gender_sim),
             "kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '' : $customer_detail->citizenship_id,
             "pekerjaan_pemohon_value" => !( $customer_work->work_id ) ? '' : $customer_work->work_id,
@@ -1010,7 +1050,7 @@ class EForm extends Model implements AuditableContract
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
             'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
-            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
+            "jenis_kpp_value" => $title
         ];
 
         return $request;
@@ -1044,43 +1084,6 @@ class EForm extends Model implements AuditableContract
             }
         }
 
-        $title = 7;
-        if ( $lkn->title ) {
-            switch ($lkn->title) {
-                case 'SD':
-                    $title = 2;
-                    break;
-
-                case 'SM':
-                    $title = 3;
-                    break;
-
-                case 'SU':
-                    $title = 4;
-                    break;
-
-                case 'S1':
-                    $title = 8;
-                    break;
-
-                case 'S2':
-                    $title = 9;
-                    break;
-
-                case 'S3':
-                    $title = 10;
-                    break;
-
-                case 'ZZ':
-                    $title = 7;
-                    break;
-
-                default:
-                    $title = 7;
-                    break;
-            }
-        }
-
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
@@ -1091,9 +1094,9 @@ class EForm extends Model implements AuditableContract
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "status_pernikahan_pemohon_value" => !( $customer_detail->status_id ) ? '' : $customer_detail->status_id,
-            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 40),
+            "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
-            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 40),
+            "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
             "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
@@ -1128,7 +1131,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir_value' => $title
+            'Pendidikan_terakhir_value' => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
         return $request;
     }
@@ -1215,7 +1218,8 @@ class EForm extends Model implements AuditableContract
             "jangka_waktu" => $kpr->year,
             "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '0' : $lkn->type_financed,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '0' : $kpr->request_amount,
-            "uang_muka" => round( ( $kpr->request_amount * $kpr->dp ) / 100 ),
+            "uang_muka" => round( ( $kpr->dp / 100 ) * $kpr->price ),
+            "persen_uang_muka" => $kpr->dp,
             "gaji_bulanan_pemohon" => $income,
             "pendapatan_lain_pemohon" => $otherIncome,
             "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : ( $lkn->source_income == 'single' ) ? 'Single Income' : 'Joint Income',
@@ -1353,7 +1357,7 @@ class EForm extends Model implements AuditableContract
             "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_land))),
             "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_land))),
             "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_land))),
-            "Tanggal_penilaian_npw_bangunan_agunan" => !($otsValuation->scoring_building_date) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->scoring_building_date))),
+            "Tanggal_penilaian_npw_bangunan_agunan" => $this->reformatDate($otsValuation->scoring_building_date),
             "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_building))),
             "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_building))),
             "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_building))),
@@ -1490,9 +1494,10 @@ class EForm extends Model implements AuditableContract
      */
     public function reformatCity( $city )
     {
-        $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
+        // $needle = strpos(strtolower($city), 'kota') == 0 ? 'kota' : 'kab';
+        // return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
 
-        return strtoupper(str_replace($needle, '', strtolower($city)) . " " . $needle);
+        return $city;
     }
 
      /**

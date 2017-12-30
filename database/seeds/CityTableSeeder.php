@@ -12,12 +12,13 @@ class CityTableSeeder extends Seeder
     public function run()
     {
         $file = __DIR__. '/../csv/cities.csv';
-        $data = csv_to_array($file, ['name']);
-        $city = DB::table('cities')->where('name', $data[0]['name'])->first();
-        if ( !$city ) {
-            foreach(collect($data)->chunk(50) as $chunk) {
-                \DB::table('cities')->insert($chunk->toArray());
-            }
+        $data = csv_to_array($file, ['name'], ';');
+
+        Schema::disableForeignKeyConstraints();
+        DB::table('cities')->delete();
+        foreach(collect($data)->chunk(50) as $chunk) {
+            \DB::table('cities')->insert($chunk->toArray());
         }
+        Schema::enableForeignKeyConstraints();
     }
 }
