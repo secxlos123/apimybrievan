@@ -290,10 +290,10 @@ if (! function_exists('get_title')) {
             "S1" => "Sarjana"
             , "S2" => "Master"
             , "S3" => "Doktor"
-            , "SE" => "Sekolah"
-            // , "SD" => "SD"
-            // , "SM" => "SMP"
-            // , "SU" => "SMU/SMK"
+            // , "SE" => "Sekolah"
+            , "SD" => "SD"
+            , "SM" => "SMP"
+            , "SU" => "SMU/SMK"
             , "ZZ" => "Diploma"
         );
 

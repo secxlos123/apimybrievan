@@ -915,7 +915,7 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
-     * [Sent To 7 End Point Bri]
+     * [Sent To 10 End Point Bri]
      * @author erwan.akse@wgs.co.id
      * @param $request  Data User
      * @param $endpoint End Point BRI
@@ -972,46 +972,6 @@ class EForm extends Model implements AuditableContract
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
 
-        $title = '0103';
-        if ( $lkn->title ) {
-            switch ($lkn->title) {
-                case 'SD':
-                    $title = '0100';
-                    break;
-
-                case 'SE':
-                    $title = '0100';
-                    break;
-
-                case 'SM':
-                    $title = '0100';
-                    break;
-
-                case 'SU':
-                    $title = '0100';
-                    break;
-
-                case 'S1':
-                    $title = '0104';
-                    break;
-
-                case 'S2':
-                    $title = '0105';
-                    break;
-
-                case 'S3':
-                    $title = '0106';
-                    break;
-
-                case 'ZZ':
-                    $title = '0103';
-                    break;
-
-                default:
-                    $title = '0103';
-                    break;
-            }
-        }
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
             "nama_pemohon" => !( $this->customer_name ) ? '' : $this->reformatString( $this->customer_name ),
@@ -1039,7 +999,7 @@ class EForm extends Model implements AuditableContract
             "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
             "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
             "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
-            "Status_gelar_cif" => !( $lkn->title ) ? '' : $lkn->title,
+            "Status_gelar_cif" => $this->reformatTitle( $lkn->title ),
             "Kecamatan_cif" => 'kecamatan',
             "Kelurahan_cif" => 'kelurahan',
             "Kode_pos_cif" => '40000',
@@ -1050,7 +1010,7 @@ class EForm extends Model implements AuditableContract
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
             'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
-            "jenis_kpp_value" => $title
+            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
         return $request;
@@ -1119,7 +1079,7 @@ class EForm extends Model implements AuditableContract
 
             'Alamat_surat_menyurat_value' => '1',
             'Penghasilan_perbulan_value' => $income,
-            'Pendidikan_terakhir_value' => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
+            'Pendidikan_terakhir_value' => !( $lkn->title ) ? '' : $lkn->title,
         ];
         return $request;
     }
@@ -1566,6 +1526,57 @@ class EForm extends Model implements AuditableContract
     public function reformatString( $place )
     {
         return $place ? str_replace(',', '', str_replace('.', '', $place)) : '';
+    }
+
+    /**
+     * Reformat Title
+     *
+     * @param string $place
+     * @return string $return
+     */
+    public function reformatTitle( $title )
+    {
+        if ( $title ) {
+            switch ($title) {
+                case 'SD':
+                    return 2;
+                    break;
+
+                case 'SE':
+                    return 2;
+                    break;
+
+                case 'SM':
+                    return 3;
+                    break;
+
+                case 'SU':
+                    return 4;
+                    break;
+
+                case 'S1':
+                    return 8;
+                    break;
+
+                case 'S2':
+                    return 9;
+                    break;
+
+                case 'S3':
+                    return 10;
+                    break;
+
+                case 'ZZ':
+                    return 7;
+                    break;
+
+                default:
+                    return 7;
+                    break;
+            }
+        }
+
+        return 7;
     }
 
     /**
