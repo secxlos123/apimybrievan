@@ -1269,7 +1269,7 @@ class EForm extends Model implements AuditableContract
             "Nilai_jual_obyek_pajak_agunan_rt" =>'0',// no pokok wajib pajak
             "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'bank',// bank and independent
             "Penilai_independent_agunan_rt"=>'0',
-            "Tanggal_penilaian_terakhir_agunan_rt"=>'0',//!($otsValuation->scoring_all_date) ? '0' : $otsValuation->scoring_all_date,
+            "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsValuation->scoring_all_date),
             "Jenis_pengikatan_value_agunan_rt" => '01',//!($otsOther->bond_type) ? '0' : $otsOther->bond_type,
             "No_bukti_pengikatan_agunan_rt" => '0',//taidak
             "Nilai_pengikatan_agunan_rt" => '0',//taidak
