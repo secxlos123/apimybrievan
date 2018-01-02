@@ -1501,7 +1501,7 @@ class EForm extends Model implements AuditableContract
                     'fid_aplikasi' => $fid_aplikasi
                 ) )
             ])
-            ->post();
+            ->post( 'post_params' );
 
         return floatval($getGimmick[ 'contents' ]);
     }
