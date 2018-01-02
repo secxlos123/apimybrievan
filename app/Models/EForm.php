@@ -300,9 +300,9 @@ class EForm extends Model implements AuditableContract
             //     $eform->kpr()->update(['is_sent'=> false]);
             // }
 
-            $max = 10;
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                $max = 7;
+            $max = 7;
+            if ( $collateral ) {
+                $max = 10;
 
             }
 
