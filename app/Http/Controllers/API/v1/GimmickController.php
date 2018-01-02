@@ -24,13 +24,28 @@ class GimmickController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newForm = EForm::filter( $request )->paginate( $limit );
+        $newForm = GIMMICK::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newForm
         ], 200 );
     }
-
+	
+	 public function list_gimmick( Request $request )
+    {
+		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
+        \Log::info($request->all());
+        $limit = $request->input( 'limit' ) ?: 10;
+        $newForm = GIMMICK::filter( $request )->paginate( $limit );
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newForm
+        ], 200 );
+		}else{
+			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
+			 return $response;
+		}
+    }
     public function show_briguna( Request $request )
     {
         \Log::info($request->all());
