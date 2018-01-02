@@ -18,6 +18,7 @@ use RestwsHc;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use URL;
 
 
 class CustomerController extends Controller
@@ -73,6 +74,28 @@ class CustomerController extends Controller
         'message' => 'Get Customer Detail by NIK success',
         'contents' => $customer_nik['responseData']
       ]);
+    }
+
+    public function detailByCif(Request $request)
+    {
+      $cif = $request->input('cif');
+      $client = new Client();
+      $baseUrl = URL::to('/');
+      $requestLeadsDetail = $client->request('POST', $baseUrl.'/api/v1/int/crm/account/leads_detail',
+        [
+          'headers' =>
+          [
+            'Authorization' => $request->header('Authorization')
+          ],
+          'form_params' =>
+          [
+            'cif' => $cif
+          ]
+        ]
+      );
+      $leadsDetail = json_decode($requestLeadsDetail->getBody()->getContents(), true);
+
+      return $leadsDetail;
     }
 
     public function customer_officer(Request $request)
