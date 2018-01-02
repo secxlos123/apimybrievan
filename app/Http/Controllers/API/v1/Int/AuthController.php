@@ -94,7 +94,7 @@ class AuthController extends Controller
                             'branch_id'=>$data['branch'],
                             'password'=>md5($request->password)
                         ]);
-                    }                    
+                    }
                 }
 
 
@@ -103,7 +103,7 @@ class AuthController extends Controller
                     $userservices = $this->userservices->where(['pn' => $pn, 'password' => md5($request->password) ])->first();
                     if(!$userservices){
                         return response()->error( [
-                            'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
+                            'message' => 'PN atau Password Salah',
                             'contents'=> []
                         ], 422 );
 
@@ -125,7 +125,7 @@ class AuthController extends Controller
                 } else {
                     $branch = $data[ 'branch' ];
                 }
-             
+
 
                 return response()->success( [
                     'message' => 'Login Sukses',

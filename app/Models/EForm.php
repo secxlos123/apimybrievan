@@ -519,7 +519,7 @@ class EForm extends Model implements AuditableContract
                 \Log::info(json_encode($sendRequest));
 
                 if ($value[0] != 'InsertIntoReviewer') { // request by Gilang
-                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                    // $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
                 }
 
                 if (!$set['status']) {
@@ -675,7 +675,7 @@ class EForm extends Model implements AuditableContract
                 }
 
                 if ($request->has('branch_id')) {
-                    $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')) );
+                    $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
                 }
             } );
 
@@ -1070,19 +1070,7 @@ class EForm extends Model implements AuditableContract
         $customer_work = (object) $customer->work;
         $lkn = $this->visit_report;
 
-        $income = 0;
-
-        if ( $lkn->source ) {
-            if ( $lkn->source == 'nonfixed' ) {
-                if ( $lkn->income ) {
-                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
-                }
-            } else {
-                if ( $lkn->income_salary ) {
-                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
-                }
-            }
-        }
+        $income = ( $lkn->source ) ? ( $this->validateData( $lkn->source == 'nonfixed' ? $lkn->income : $lkn->income_salary ) ) : 0 ;
 
         $request = $data + [
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4),
@@ -1194,27 +1182,21 @@ class EForm extends Model implements AuditableContract
         $customer = clone $this->customer;
         $customer_finance = (object) $customer->financial;
 
-        $income = 0;
-        $otherIncome = 0;
-
-        if ( $lkn->source ) {
-            if ( $lkn->source == 'nonfixed' ) {
-                if ( $lkn->income ) {
-                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income) ) );
-                }
-            } else {
-                if ( $lkn->income_salary ) {
-                    $income = round( str_replace(',', '.', str_replace('.', '', $lkn->income_salary) ) );
-                }
-                if ( $lkn->income_allowance ) {
-                    $otherIncome = round( str_replace(',', '.', str_replace('.', '', $lkn->income_allowance) ) );
-                }
-            }
-        }
+        $income = $this->validateData( $lkn->source == 'nonfixed' ? $lkn->income : $lkn->income_salary );
+        $otherIncome = $lkn->source == 'nonfixed' ? 0 : $this->validateData( $lkn->income_allowance ) ;
+        $incomeCouple = $this->validateData( $customer_finance->salary_couple );
+        $otherIncomeCouple = $this->validateData( $customer_finance->other_salary_couple );
+        $loan = $this->validateData( $customer_finance->loan_installment );
+        $thp = $income + $otherIncome + ( $lkn->source_income == 'joint' ? $incomeCouple + $otherIncomeCouple : 0 );
+        $dir = $this->getDIR( $thp, 40 );
+        $maxInstallment = $dir * $thp;
+        $interest = $this->getInterest( $data['fid_aplikasi'] );
+        $installment = $this->getInstallment( $interest );
+        $maxPlafond = $this->getMaxPlafond( $interest, $installment );
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
-            "angsuran" => !( $customer_finance->loan_installment ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->loan_installment)) ),
+            "angsuran" => $loan,
             "jangka_waktu" => $kpr->year,
             "Jenis_dibiayai_value" => !( $lkn->type_financed ) ? '0' : $lkn->type_financed,
             "permohonan_pinjaman" => !( $kpr->request_amount ) ? '0' : $kpr->request_amount,
@@ -1223,9 +1205,14 @@ class EForm extends Model implements AuditableContract
             "gaji_bulanan_pemohon" => $income,
             "pendapatan_lain_pemohon" => $otherIncome,
             "jenis_penghasilan" =>  !( $lkn->source_income ) ? 'Single Income' : ( $lkn->source_income == 'single' ) ? 'Single Income' : 'Joint Income',
-            "gaji_bulanan_pasangan" => !( $customer_finance->salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->salary_couple)) ),
-            "pendapatan_lain_pasangan" => !( $customer_finance->other_salary_couple ) ? '0' : round( str_replace(',', '.', str_replace('.', '', $customer_finance->other_salary_couple)) ),
-            "harga_agunan" => !($kpr->price) ? '0' : round( str_replace(',', '.', str_replace('.', '', $kpr->price)) )
+            "gaji_bulanan_pasangan" => $incomeCouple,
+            "pendapatan_lain_pasangan" => $otherIncomeCouple,
+            "harga_agunan" => !($kpr->price) ? '0' : $this->reformatCurrency($kpr->price),
+            "maksimal_angsuran" => $maxInstallment,
+            "kelonggaran_angsuran_kredit" => $maxInstallment - $loan,
+            "suku_bunga_bulan" => number_format( $interest, 4, '.' ),
+            "maksimum_plafond" => $maxPlafond,
+            "angsuran_sesuai_jumlah_plafond" => $installment
         ];
 
         return $request;
@@ -1295,20 +1282,20 @@ class EForm extends Model implements AuditableContract
             "Kelurahan_agunan"=> !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan"=> !($otsInArea->district) ? '0' : $otsInArea->district,
             "Kabupaten_kotamadya_agunan" => !($otsInArea->city_id) ? '0' : $otsInArea->city_id,
-            "Jarak_agunan" => !($otsInArea->distance) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->distance))),
+            "Jarak_agunan" => !($otsInArea->distance) ? '0' : $this->reformatCurrency( $otsInArea->distance),
             "Jarak_satuan_agunan" => 'Kilometer',
             "Jarak_dari_agunan" => 'Pusat Kota',
             "Kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '0' : $customer_detail->citizenship_id,
             "Posisi_terhadap_jalan_agunan_value"=> !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
             "Posisi_terhadap_jalan_agunan" => !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
-            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->north_limit))),
-            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->east_limit))),
-            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->south_limit))),
-            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->west_limit))),
+            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' : $this->reformatCurrency( $otsInArea->north_limit ),
+            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' : $this->reformatCurrency( $otsInArea->east_limit ),
+            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : $this->reformatCurrency( $otsInArea->south_limit ),
+            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' : $this->reformatCurrency( $otsInArea->west_limit ),
             "Keterangan_lain_agunan" => !($otsInArea->another_information) ? '0' : $otsInArea->another_information,
             "Bentuk_tanah_value" => !($otsInArea->ground_type) ? '0' : $otsInArea->ground_type,
             "Permukaan_tanah_agunan_value" => !($otsInArea->ground_level) ? '0' : $otsInArea->ground_level,
-            "Luas_tanah_sesuai_identifikasi_lapangan_agunan" => !($otsInArea->surface_area) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->surface_area))),
+            "Luas_tanah_sesuai_identifikasi_lapangan_agunan" => !($otsInArea->surface_area) ? '0' : $this->reformatCurrency( $otsInArea->surface_area ),
             //ots Letter
             "Jenis_surat_tanah_agunan_value" => !($otsLetter->type) ? '0' : $otsLetter->type,
             "No_surat_tanah" => !($otsLetter->number) ? '0' : $otsLetter->number,
@@ -1322,7 +1309,7 @@ class EForm extends Model implements AuditableContract
             "Nama_kantor_agrariabpn_agunan"=> !($otsLetter->bpn_name) ? '0' : $otsLetter->bpn_name,
             "Kecocokan_pemeriksaan_lokasi_tanah_lapangan_agunan_value" => !($otsLetter->match_area) ? '0' : $otsLetter->match_area,
             "Kecocokan_batas_tanah_lapangan_agunan_value" => !($otsLetter->match_limit_in_area) ? '0' : $otsLetter->match_limit_in_area,
-            "Luas_tanah_berdasarkan_surat_tanah_agunan" => !($otsLetter->surface_area_by_letter) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsLetter->surface_area_by_letter))),
+            "Luas_tanah_berdasarkan_surat_tanah_agunan" => !($otsLetter->surface_area_by_letter) ? '0' : $this->reformatCurrency( $otsLetter->surface_area_by_letter ),
             //otsBuilding
             "No_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_number) ? '0' : $otsBuilding->permit_number,
             "Tanggal_ijin_mendirikan_bangunan_agunan" => $this->reformatDate($otsBuilding->permit_date),
@@ -1332,14 +1319,14 @@ class EForm extends Model implements AuditableContract
             "Luas_bangunan_agunan" => !($otsBuilding->spacious) ? '0' : $otsBuilding->spacious,
             "Tahun_bangunan_agunan" => !($otsBuilding->year) ? '0' : $otsBuilding->year,
             "Uraian_bangunan_agunan" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
-            "Batas_utara_bangunan_agunan" => !($otsBuilding->north_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->north_limit))),
-            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->north_limit_from))),
-            "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->east_limit))),
-            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->east_limit_from))),
-            "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->south_limit))),
-            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->south_limit_form))),
-            "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->west_limit))),
-            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsBuilding->west_limit_from))),
+            "Batas_utara_bangunan_agunan" => !($otsBuilding->north_limit) ? '0' : $this->reformatCurrency( $otsBuilding->north_limit ),
+            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' : $this->reformatCurrency( $otsBuilding->north_limit_from ),
+            "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : $this->reformatCurrency( $otsBuilding->east_limit ),
+            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' : $this->reformatCurrency( $otsBuilding->east_limit_from ),
+            "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : $this->reformatCurrency( $otsBuilding->south_limit ),
+            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' : $this->reformatCurrency( $otsBuilding->south_limit_form ),
+            "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : $this->reformatCurrency( $otsBuilding->west_limit ),
+            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' : $this->reformatCurrency( $otsBuilding->west_limit_from ),
             //otsEnvironment
             "Peruntukan_bangunan_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
             "Fasilitas_umum_yang_ada_agunan_pln" => !($otsEnvironment->designated_pln) ? '0' : $otsEnvironment->designated_pln,
@@ -1348,32 +1335,32 @@ class EForm extends Model implements AuditableContract
             "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
-            "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsEnvironment->distance_from_transportation))),
+            "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
             "Lain_lain_agunan_value" => '0',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
             "Tanggal_penilaian_npw_tanah_agunan" => $this->reformatDate($otsValuation->scoring_land_date),
-            "Npw_tanah_agunan" => !($otsValuation->npw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_land))),
-            "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_land))),
-            "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_land))),
-            "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_land))),
+            "Npw_tanah_agunan" => !($otsValuation->npw_land) ? '0' : $this->reformatCurrency( $otsValuation->npw_land ),
+            "Nl_tanah_agunan" => !($otsValuation->nl_land) ? '0' : $this->reformatCurrency( $otsValuation->nl_land ),
+            "Pnpw_tanah_agunan" => !($otsValuation->pnpw_land) ? '0' : $this->reformatCurrency( $otsValuation->pnpw_land ),
+            "Pnl_tanah_agunan" => !($otsValuation->pnl_land) ? '0' : $this->reformatCurrency( $otsValuation->pnl_land ),
             "Tanggal_penilaian_npw_bangunan_agunan" => $this->reformatDate($otsValuation->scoring_building_date),
-            "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_building))),
-            "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_building))),
-            "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_building))),
-            "Pnl_bangunan_agunan" => !($otsValuation->pnl_building) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_building))),
+            "Npw_bangunan_agunan" => !($otsValuation->npw_building) ? '0' : $this->reformatCurrency( $otsValuation->npw_building ),
+            "Nl_bangunan_agunan" => !($otsValuation->nl_building) ? '0' : $this->reformatCurrency( $otsValuation->nl_building ),
+            "Pnpw_bangunan_agunan" => !($otsValuation->pnpw_building) ? '0' : $this->reformatCurrency( $otsValuation->pnpw_building ),
+            "Pnl_bangunan_agunan" => !($otsValuation->pnl_building) ? '0' : $this->reformatCurrency( $otsValuation->pnl_building ),
             "Tanggal_penilaian_npw_tanah_bangunan_agunan"=> $this->reformatDate($otsValuation->scoring_all_date),
-            "Npw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_all))),
-            "Nl_tanah_bangunan_agunan" => !($otsValuation->nl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_all))),
-            "Pnpw_tanah_bangunan_agunan" => !($otsValuation->pnpw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_all))),
-            "Pnl_tanah_bangunan_agunan" => !($otsValuation->pnl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_all))),
+            "Npw_tanah_bangunan_agunan" => !($otsValuation->npw_all) ? '0' : $this->reformatCurrency( $otsValuation->npw_all ),
+            "Nl_tanah_bangunan_agunan" => !($otsValuation->nl_all) ? '0' : $this->reformatCurrency( $otsValuation->nl_all ),
+            "Pnpw_tanah_bangunan_agunan" => !($otsValuation->pnpw_all) ? '0' : $this->reformatCurrency( $otsValuation->pnpw_all ),
+            "Pnl_tanah_bangunan_agunan" => !($otsValuation->pnl_all) ? '0' : $this->reformatCurrency( $otsValuation->pnl_all ),
             //otsOther
             "Jenis_ikatan_agunan_value" => !($otsOther->bond_type) ? '0' : $otsOther->bond_type,
             "Penggunaan_bangunan_sesuai_fungsinya_agunan_value" => !($otsOther->use_of_building_function) ? '0' : $otsOther->use_of_building_function,
             "Penggunaan_bangunan_sesuai_optimal_agunan_value" => !($otsOther->optimal_building_use) ? '0' : $otsOther->optimal_building_use,
             //"Peruntukan_bangunan_agunan_value" => '0',//tidak ada di table
             "Peruntukan_tanah_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
-            "jarak_posisi_terhadap_jalan"=>!($otsInArea->distance_of_position) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsInArea->distance_of_position))),
+            "jarak_posisi_terhadap_jalan"=>!($otsInArea->distance_of_position) ? '0' : $this->reformatCurrency( $otsInArea->distance_of_position ),
             "Nama_debitur_agunan" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Biaya_sewa_agunan" => '0',//tidak ada di table
             "Hal_perludiketahui_bank_agunan" => !($otsOther->things_bank_must_know) ? '0' : $otsOther->things_bank_must_know,
@@ -1434,10 +1421,10 @@ class EForm extends Model implements AuditableContract
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
             "Lokasi_agunan_rt" =>!($otsInArea->location) ? '0' : $otsInArea->location,
-            "Nilai_pasar_wajar_agunan_rt"=>!($otsValuation->npw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->npw_all))),
-            "Nilai_likuidasi_agunan_rt"=>!($otsValuation->nl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->nl_all))),
-            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsValuation->pnpw_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnpw_all))),
-            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsValuation->pnl_all) ? '0' : round( str_replace(',', '.', str_replace('.', '',$otsValuation->pnl_all))),
+            "Nilai_pasar_wajar_agunan_rt"=>!($otsValuation->npw_all) ? '0' : $this->reformatCurrency( $otsValuation->npw_all ),
+            "Nilai_likuidasi_agunan_rt"=>!($otsValuation->nl_all) ? '0' : $this->reformatCurrency( $otsValuation->nl_all ),
+            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsValuation->pnpw_all) ? '0' : $this->reformatCurrency( $otsValuation->pnpw_all ),
+            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsValuation->pnl_all) ? '0' : $this->reformatCurrency( $otsValuation->pnl_all ),
             "Nilai_likuidasi_saat_realisasi_agunan_rt"=>'0',
             "Nilai_jual_obyek_pajak_agunan_rt" =>'0',// no pokok wajib pajak
             "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'bank',// bank and independent
@@ -1474,8 +1461,103 @@ class EForm extends Model implements AuditableContract
      * @return array $request
      */
 
+    /**
+     * Validate data.
+     *
+     * @param string $money
+     * @return string $return
+     */
+    public function validateData( $variable )
+    {
+        if ( $variable ) {
+            return $this->reformatCurrency( $variable );
+        }
+        return '0';
+    }
 
-     /**
+    /**
+     * Get DIR.
+     *
+     * @param string $money
+     * @return string $return
+     */
+    public function getDIR( $thp, $dir )
+    {
+        if ( $thp > 25000000 ) {
+            $dir = 50;
+
+        } else if ( $thp >= 15000000 && $thp <= 25000000 ) {
+            $dir = 45;
+
+        }
+        return $dir;
+    }
+
+    /**
+     * Max Plafond.
+     *
+     * @return string $return
+     */
+    public function getMaxPlafond( $interestInYear, $installment )
+    {
+        $rate = $this->kpr->year;
+
+        $interestInMonth = $interestInYear / 12; //suku bunga per tahun dibagi 12
+        $interestInMonthPercentage = $interestInMonth / 100; //suku bunga per bulan dibagi %
+        $x = 1 + $interestInMonthPercentage;
+        $y = pow($x, $rate); //di pangkatkan jangka waktu
+
+        return intval(( $installment / $interestInMonthPercentage ) * ( 1 - ( 1 / $y ) )); //maksimum plafond
+    }
+
+    /**
+     * Get installment based on plafond.
+     *
+     * @return string $return
+     */
+    public function getInstallment( $interestInYear )
+    {
+        $rate = $this->kpr->year;
+        $requested_amount = $this->kpr->request_amount;
+
+        $interestInMonth = $interestInYear / 12; //suku bunga per tahun dibagi 12
+        $interestInMonthPercentage = $interestInMonth / 100; //suku bunga per bulan dibagi %
+        $x = 1 + $interestInMonthPercentage;
+        $y = pow($x, $rate); //di pangkatkan jangka waktu
+
+        return intval(( $requested_amount * $interestInMonthPercentage ) / ( 1 - ( 1 / $y ) )); //jumlah plafon kredit yang diusulkan
+    }
+
+    /**
+     * Get interest from service.
+     *
+     * @return string $return
+     */
+    public function getInterest( $fid_aplikasi )
+    {
+        $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
+            ->setBody([
+                'Request' => json_encode( array(
+                    'fid_aplikasi' => $fid_aplikasi
+                ) )
+            ])
+            ->post();
+
+        return floatval($getGimmick[ 'contents' ]);
+    }
+
+    /**
+     * Reformat currency.
+     *
+     * @param string $money
+     * @return string $return
+     */
+    public function reformatCurrency( $money )
+    {
+        return $money ? round( str_replace(',', '.', str_replace('.', '', $money))) : '0';
+    }
+
+    /**
      * Remove comma and dot.
      *
      * @param string $place
@@ -1486,7 +1568,7 @@ class EForm extends Model implements AuditableContract
         return $place ? str_replace(',', '', str_replace('.', '', $place)) : '';
     }
 
-     /**
+    /**
      * Reformat City.
      *
      * @param string $place
@@ -1500,7 +1582,7 @@ class EForm extends Model implements AuditableContract
         return $city;
     }
 
-     /**
+    /**
      * Reformat Date ddmmyyyy.
      *
      * @param string $place
