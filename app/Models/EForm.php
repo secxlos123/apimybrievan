@@ -1029,7 +1029,7 @@ class EForm extends Model implements AuditableContract
         $loan = $this->validateData( $customer_finance->loan_installment );
         $thp = $income + $otherIncome + ( $lkn->source_income == 'joint' ? $incomeCouple + $otherIncomeCouple : 0 );
         $dir = $this->getDIR( $thp, 40 );
-        $maxInstallment = $dir * $thp;
+        $maxInstallment = ( $dir * $thp ) / 100;
         $interest = $this->getInterest( $data['fid_aplikasi'] );
         $installment = $this->getInstallment( $interest );
         $maxPlafond = $this->getMaxPlafond( $interest, $installment );
