@@ -29,7 +29,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   ] );
 
   // Route create Activity by pinca
-  Route::post('/activity_by_pinca', 'marketingActivityController@astore_by_pinca');
+  Route::post('/activity_by_pinca', 'marketingActivityController@store_by_pinca');
 
   // Route Activity by branch
   Route::post('/activity/by_branch', 'marketingActivityController@activity_branch');
