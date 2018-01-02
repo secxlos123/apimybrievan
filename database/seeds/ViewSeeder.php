@@ -92,7 +92,19 @@ class ViewSeeder extends Seeder
               collaterals.staff_name,
               collaterals.status,
               collaterals.is_staff,
-              collaterals.approved_by
+              collaterals.approved_by,
+              CASE WHEN kpr.status_property::int = 1 THEN 'Baru'
+                   WHEN kpr.status_property::int = 2 THEN 'Secondary'
+                   WHEN kpr.status_property::int = 3 THEN 'Refinancing'
+                   WHEN kpr.status_property::int = 4 THEN 'Renovasi'
+                   WHEN kpr.status_property::int = 5 THEN 'Top Up'
+                   WHEN kpr.status_property::int = 6 THEN 'Take Over'
+                   WHEN kpr.status_property::int = 7 THEN 'Take Over Top Up'
+                   ELSE 'Tidak Ada' END AS status_property_name,
+              CASE WHEN kpr.kpr_type_property::int = 1 THEN 'Rumah Tapak'
+                   WHEN kpr.kpr_type_property::int = 2 THEN 'Rumah Susun/Apartment'
+                   WHEN kpr.kpr_type_property::int = 3 THEN 'Rumah Toko'
+                   ELSE 'Tidak Ada' END AS kpr_type_property_name
 
               from users
               LEFT JOIN eforms ON eforms.user_id = users.id
