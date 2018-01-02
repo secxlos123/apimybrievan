@@ -282,31 +282,31 @@ class EForm extends Model implements AuditableContract
         if ( $request->is_approved ) {
             // di update kalo collateral udah jalan
             // ganti lgi, request by Mas Danu
-            // if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-            //     $result = $eform->insertCoreBRI();
-            //     if ($result['status']) {
-            //         $eform->kpr()->update(['is_sent'=> true]);
-            //     }
-            // } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
-            // {
-            //     $result = $eform->insertCoreBRI();
-            //     if ($result['status']) {
-            //         $eform->kpr()->update(['is_sent'=> true]);
-            //     }
-            // }
-            // else{
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+                $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
+                }
+            } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
+            {
+                $result = $eform->insertCoreBRI();
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
+                }
+            }
+            else{
 
-            //     $result['status'] = true;
-            //     $eform->kpr()->update(['is_sent'=> false]);
-            // }
-
-            $max = 7;
-            if ( $collateral ) {
-                $max = 10;
-
+                $result['status'] = true;
+                $eform->kpr()->update(['is_sent'=> false]);
             }
 
-            $result = $eform->insertCoreBRI( $max );
+            // $max = 7;
+            // if ( $collateral ) {
+            //     $max = 10;
+
+            // }
+
+            $result = $eform->insertCoreBRI();
             if ($result['status']) {
                 $eform->kpr()->update(['is_sent'=> true]);
             }
@@ -356,7 +356,7 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      */
-    public function insertCoreBRI( $maxService )
+    public function insertCoreBRI()
     {
         $this->traceLog();
 
@@ -388,7 +388,7 @@ class EForm extends Model implements AuditableContract
         }
 
         foreach ($endpoint as $key => $value) {
-            if ( $key+1 == $step && $step <= $maxService ) {
+            if ( $key+1 == $step ) {
                 \Log::info("Start Step " . $step);
 
                 $request = $this->{"step".$step}($this->additional_parameters);
