@@ -534,9 +534,9 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info('Berhasil Step Ke -'.$step);
                 $step++;
+                $this->update(['clas_position' => $step]);
             }
         }
-        $this->update(['clas_position' => $step]);
 
         if ($step == 10) {
             $this->update( [
@@ -1170,7 +1170,7 @@ class EForm extends Model implements AuditableContract
             "harga_agunan" => !($kpr->price) ? '0' : $this->reformatCurrency($kpr->price),
             "maksimal_angsuran" => $maxInstallment,
             "kelonggaran_angsuran_kredit" => $maxInstallment - $loan,
-            "suku_bunga_bulan" => number_format( $interest, 4, '.' ),
+            "suku_bunga_bulan" => number_format( $interest, 4 ),
             "maksimum_plafond" => $maxPlafond,
             "angsuran_sesuai_jumlah_plafond" => $installment
         ];
@@ -1501,7 +1501,10 @@ class EForm extends Model implements AuditableContract
                     'fid_aplikasi' => $fid_aplikasi
                 ) )
             ])
-            ->post( 'post_params' );
+            ->post( 'form_params' );
+
+        $this->additional_parameters += [ "gimmick_rate" => $getGimmick[ 'contents' ] ] ;
+        $this->save();
 
         return floatval($getGimmick[ 'contents' ]);
     }
