@@ -146,7 +146,13 @@ class DashboardController extends Controller
 
       $ao = $list_ao['responseData'];
       $fo = $list_fo['responseData'];
-      $result = array_merge_recursive($fo,$ao);
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
       return response()->success([
         'contents' => $result
       ]);
