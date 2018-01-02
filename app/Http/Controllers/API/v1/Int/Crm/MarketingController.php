@@ -33,6 +33,8 @@ class MarketingController extends Controller
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
           'account_id'=> $marketing->account_id,
+          'number'=> $marketing->number,
+          'nik'=> $marketing->nik,
           'status'=> $marketing->status,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date))
         ];

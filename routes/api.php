@@ -29,7 +29,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get	('Surat_Rekomendasi_Atasan', 'DownloadFileController@Download2');
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
-		Route::post('SelectCabang', 'SelectCabangController@getCabang');
+		Route::post('SelectCabang', 'SelectCabangController@getCabangMitra');
+		Route::post('gimmick_list', 'Int\GimmickController@list_gimmick');
 		Route::post('GetView', 'ViewController@index');
 
 		/* ------------*/
@@ -122,6 +123,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::post('/{collateralId}', ['as' => 'collateral.ots.store', 'uses' => 'CollateralController@storeOts'])
 				->where('collateralId', '[0-9]+');
 			Route::get('/{collateralId}', ['as' => 'collateral.ots.show', 'uses' => 'CollateralController@getOts'])
+				->where('collateralId', '[0-9]+');
+		});
+		/**
+		 * Collateral ots Doc routes
+		 */
+		Route::group(['prefix' => 'collateral/otsdoc'], function($router) {
+			Route::post('/{collateralId}', ['as' => 'collateral.otsdoc.store', 'uses' => 'CollateralController@storeOtsDoc'])
+				->where('collateralId', '[0-9]+');
+			Route::get('/{collateralId}', ['as' => 'collateral.otsdoc.show', 'uses' => 'CollateralController@showOtsDoc'])
 				->where('collateralId', '[0-9]+');
 		});
 
