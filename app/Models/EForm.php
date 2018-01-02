@@ -534,8 +534,8 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info('Berhasil Step Ke -'.$step);
                 $step++;
-                $this->update(['clas_position' => $step]);
             }
+            $this->update(['clas_position' => $step]);
         }
 
         if ($step == 10) {
