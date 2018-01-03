@@ -434,4 +434,13 @@ class marketingActivityController extends Controller
 
       return $result;
     }
+
+    public function deleteAll(Request $request)
+    {
+      MarketingActivity::truncate();
+
+      return response()->success([
+          'message' => 'Semua data activity telah dihapus'
+      ], 200);
+    }
 }
