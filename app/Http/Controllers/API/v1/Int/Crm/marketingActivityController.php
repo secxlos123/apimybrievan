@@ -59,7 +59,7 @@ class marketingActivityController extends Controller
       }
 
       $pemasar = array_column($result, 'SNAME','PERNR' );
-      // print_r($pemasar);die();
+      print_r($pemasar);die();
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
         $marketingActivity[]= [
