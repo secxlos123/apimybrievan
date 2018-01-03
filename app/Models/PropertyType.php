@@ -149,7 +149,7 @@ class PropertyType extends Model implements AuditableContract
                         $query->developerOwned($request->user()->developer->id);
                 }
             })
-            ->select($select)
+            ->select($select)->selectRaw('(select properties.is_approved from properties where property_types.property_id = properties.id)')
             ->orderBy($sort[0], $sort[1]);
 
         if ( ! $request->has('dropdown') ) {
