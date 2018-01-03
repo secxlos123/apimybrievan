@@ -304,6 +304,9 @@ class EFormController extends Controller
         if ($user_login['role'] === 'ao' ) {
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
+        } else {
+            $baseRequest['staff_name'] = $user_login['name'];
+            $baseRequest['staff_position'] = $user_login['position'];
         }
 
         if ( $branchs['responseCode'] == '00' ) {
