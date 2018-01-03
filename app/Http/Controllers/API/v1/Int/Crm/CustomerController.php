@@ -18,6 +18,7 @@ use RestwsHc;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use URL;
 
 
 class CustomerController extends Controller
@@ -73,6 +74,65 @@ class CustomerController extends Controller
         'message' => 'Get Customer Detail by NIK success',
         'contents' => $customer_nik['responseData']
       ]);
+    }
+
+    public function detailByCif(Request $request)
+    {
+      $cif = $request->input('cif');
+      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // $apiPdmToken = $apiPdmToken[0];
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        $detailByCif = $this->byCif($cif, $token);
+
+        $detail = $detailByCif['data']['info'][0];
+        $nik = preg_replace('/\s+/', '', $detail['id_number']);
+
+        $customer_nik = RestwsHc::setBody([
+          'request' => json_encode([
+            'requestMethod' => 'get_customer_profile_nik',
+            'requestData' => [
+              'app_id' => 'mybriapi',
+              'nik' => $nik
+            ],
+          ])
+        ])->setHeaders([
+          'Authorization' => $request->header('Authorization')
+        ])->post('form_params');
+
+        return response()->success([
+          'message' => 'Get Customer Detail by NIK success',
+          'contents' => $customer_nik['responseData']
+        ]);
+      } else {
+        $briConnect = $this->gen_token();
+        $apiPdmToken = apiPdmToken::get()->toArray();
+        // $apiPdmToken = $apiPdmToken[0];
+        $token = $apiPdmToken['access_token'];
+        $detailByCif = $this->byCif($cif, $token);
+
+        $detail = $detailByCif['data']['info'][0];
+        $nik = preg_replace('/\s+/', '', $detail['id_number']);
+
+        $customer_nik = RestwsHc::setBody([
+          'request' => json_encode([
+            'requestMethod' => 'get_customer_profile_nik',
+            'requestData' => [
+              'app_id' => 'mybriapi',
+              'nik' => $nik
+            ],
+          ])
+        ])->setHeaders([
+          'Authorization' => $request->header('Authorization')
+        ])->post('form_params');
+
+        return response()->success([
+          'message' => 'Get Customer Detail by NIK success',
+          'contents' => $customer_nik['responseData']
+        ]);
+      }
+
     }
 
     public function customer_officer(Request $request)

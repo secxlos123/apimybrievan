@@ -17,6 +17,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   // route customer
   Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');
 
+  //route portfolio
+  Route::post('account/detail_by_cif', 'CustomerController@detailByCif');
+
   // route customer by nik
   Route::post( 'account/customer_nik', 'CustomerController@customer_nik')->name('crm.customer_nik');
 

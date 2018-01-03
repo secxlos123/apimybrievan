@@ -26,7 +26,7 @@ class VisitReport extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'eform_id', 'purpose_of_visit', 'visit_result', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller', 'npwp_number', 'income', 'income_salary', 'income_allowance', 'kpp_type', 'type_financed', 'economy_sector', 'project_list', 'program_list', 'kpp_type_name', 'type_financed_name', 'economy_sector_name', 'project_list_name', 'program_list_name', 'id_prescreening', 'npwp', 'use_reason_name', 'use_reason', 'source', 'recommended', 'recommendation', 'marrital_certificate', 'divorce_certificate', 'offering_letter', 'down_payment', 'building_tax', 'salary_slip', 'proprietary', 'building_permit', 'legal_bussiness_document', 'license_of_practice', 'work_letter', 'family_card', 'couple_salary', 'couple_other_salary', 'title', 'employment_status', 'age_of_mpp', 'loan_history_accounts', 'religion', 'office_phone', 'source_income'
+        'eform_id', 'purpose_of_visit', 'visit_result', 'photo_with_customer', 'pros', 'cons', 'seller_name', 'seller_address', 'seller_phone', 'selling_price', 'reason_for_sale', 'relation_with_seller', 'npwp_number', 'income', 'income_salary', 'income_allowance', 'kpp_type', 'type_financed', 'economy_sector', 'project_list', 'program_list', 'kpp_type_name', 'type_financed_name', 'economy_sector_name', 'project_list_name', 'program_list_name', 'id_prescreening', 'npwp', 'use_reason_name', 'use_reason', 'source', 'recommended', 'recommendation', 'marrital_certificate', 'divorce_certificate', 'offering_letter', 'down_payment', 'building_tax', 'salary_slip', 'proprietary', 'building_permit', 'legal_bussiness_document', 'license_of_practice', 'work_letter', 'family_card', 'couple_salary', 'couple_other_salary', 'title', 'employment_status', 'age_of_mpp', 'loan_history_accounts', 'religion', 'office_phone', 'source_income','other_document'
     ];
 
     /**
@@ -67,6 +67,15 @@ class VisitReport extends Model implements AuditableContract
     public function setLegalBussinessDocumentAttribute( $image )
     {
         $this->globalSetImageAttribute( $image, 'legal_bussiness_document' );
+    }
+    /**
+     * Set Report other_document image.
+     *
+     * @return void
+     */
+    public function setOtherDocumentAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'other_document' );
     }
     /**
      * Set Report license_of_practice image.
@@ -213,6 +222,16 @@ class VisitReport extends Model implements AuditableContract
      * @return string
      */
     public function getLegalDocumentAttribute( $image )
+    {
+        return $this->globalImageCheck( $image );
+    }
+
+    /**
+     * Get Report other_document image url.
+     *
+     * @return string
+     */
+    public function getOtherDocumentAttribute( $image )
     {
         return $this->globalImageCheck( $image );
     }

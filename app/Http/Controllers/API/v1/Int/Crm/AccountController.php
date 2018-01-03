@@ -83,7 +83,6 @@ class AccountController extends Controller
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
         // $apiPdmToken = $apiPdmToken[0];
-
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
 
@@ -92,22 +91,6 @@ class AccountController extends Controller
             'contents' => $detailByCif['data']['info'][0]
         ]);
       }
-    }
-
-    public function byCif($cif, $token)
-    {
-      $client = new Client();
-      $requestLeadsDetail = $client->request('GET', config('restapi.apipdm').'/customer/details/'.$cif,
-        [
-          'headers' =>
-          [
-            'Authorization' => 'Bearer '.$token
-          ]
-        ]
-      );
-      $leadsDetail = json_decode($requestLeadsDetail->getBody()->getContents(), true);
-
-      return $leadsDetail;
     }
 
     public function existingFo(Request $request)
@@ -134,7 +117,7 @@ class AccountController extends Controller
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-        
+
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->getExistingByFo($data, $token);
 

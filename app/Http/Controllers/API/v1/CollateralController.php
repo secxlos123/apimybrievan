@@ -50,23 +50,28 @@ class CollateralController extends Controller
      */
     public function index()
     {
+      $user = \RestwsHc::getUser();
       $developer_id = env('DEVELOPER_KEY',1);
-      return $this->makeResponse(
-        $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
-      );
+      $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
+      if ($user['role'] != 'collateral manager') {
+        $data->where('staff_id',(int)$this->request->header('pn'));
+      }
+      return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
     /**
      * Show Collateral Non Kerjasama
      * @return \Illuminate\Http\Response
      */
-    public function indexNon(Request $request)
+    public function indexNon()
     {
+      $user = \RestwsHc::getUser();
       $developer_id = env('DEVELOPER_KEY',1);
-      $limit = $request->input( 'limit' ) ?: 10;
-      $data = $this->collateral->GetLists($request)->where('developer_id','=',$developer_id)->where('is_approved',true)->paginate($limit);
-
-      return $this->makeResponse($data);
+      $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
+      if ($user['role'] != 'collateral manager') {
+        $data->where('staff_id',(int) $this->request->header('pn'));
+      }
+      return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
     /**
