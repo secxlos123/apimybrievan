@@ -25,7 +25,39 @@ class marketingActivityController extends Controller
     {
       $pn = $request->header('pn');
       // $marketingActivity = MarketingActivity::get();
-      $result = $this->pemasar($request->header('pn'),$request->header('branch'),$request->header('Authorization'));
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
       $pemasar = array_column($result, 'PERNR', 'SNAME');
       print_r($pemasar);die();
       $marketingActivity = [];
