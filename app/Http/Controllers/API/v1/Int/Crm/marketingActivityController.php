@@ -434,4 +434,14 @@ class marketingActivityController extends Controller
 
       return $result;
     }
+
+    public function deleteAll(Request $request)
+    {
+      MarketingActivityFollowup::where('id', '!=', 0)->delete();
+      MarketingActivity::where('id', '!=', 0)->delete();
+
+      return response()->success([
+          'message' => 'Semua data activity telah dihapus'
+      ], 200);
+    }
 }
