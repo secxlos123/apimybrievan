@@ -301,8 +301,10 @@ class EFormController extends Controller
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
-        $baseRequest['ao_name'] = $user_login['name'];
-        $baseRequest['ao_position'] = $user_login['position'];
+        if ($user_login['role'] === 'ao' ) {
+            $baseRequest['ao_name'] = $user_login['name'];
+            $baseRequest['ao_position'] = $user_login['position'];
+        }
 
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
