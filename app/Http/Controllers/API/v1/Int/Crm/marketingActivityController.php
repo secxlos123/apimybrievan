@@ -27,6 +27,7 @@ class marketingActivityController extends Controller
       // $marketingActivity = MarketingActivity::get();
       $result = $this->pemasar($request->header('pn'),$request->header('branch'),$request->header('Authorization'));
       $pemasar = array_column($result, 'PERNR', 'SNAME');
+      print_r($pemasar);die();
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
         $marketingActivity[]= [
