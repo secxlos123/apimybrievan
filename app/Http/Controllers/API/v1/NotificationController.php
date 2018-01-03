@@ -22,35 +22,7 @@ class NotificationController extends Controller
 
     public function index(Request $request)
     {
-        $branch_id = request()->header( 'branch_id' );
-        $ArrGetDataNotification = [];
-        if($branch_id !=  ''){
-            $checkRoles = checkRolesInternal($branch_id);
-            if(isset($checkRoles)){
-                $getDataNotification = $this->userNotification->getNotifications($checkRoles['role'])->get();
-                if($getDataNotification){
-                    foreach ($getDataNotification as $value) {
-                        $ArrGetDataNotification[] = [
-                                                'id' => $value->id,
-                                                'subject' => $value->getSubject(),
-                                                'type' => $value->type,
-                                                'notifiable_id' => $value->notifiable_id,
-                                                'notifiable_type' => $value->notifiable_type,
-                                                'role_name' => $value->role_name,
-                                                'branch_id' => $value->branch_id,
-                                                'data' => $value->data,
-                                                'created_at' => $value->created_at->diffForHumans(),
-                                                'is_read' => (bool) $value->is_read,
-                                                'read_at' => Carbon::parse($value->read_at)->format('Y-m-d H:i:s'),
-                                            ];
-                    }
-                }
-            }
-        }
-        return  response()->success( [
-            'message' => 'Sukses',
-            'contents' => $ArrGetDataNotification
-        ], 200 );
+       //
     }
 
    
@@ -59,6 +31,8 @@ class NotificationController extends Controller
         $branch_id = request()->header( 'branch_id' );
         $role = request()->header( 'role' );
     	$pn = request()->header( 'pn' );
+       /* \Log::info($role);
+        die();*/
         $ArrGetDataNotification = [];
         if($branch_id !=  ''){
             $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn )->get();
@@ -66,7 +40,7 @@ class NotificationController extends Controller
                 foreach ($getDataNotification as $value) {
                     $ArrGetDataNotification[] = [
                                             'id' => $value->id,
-                                            'subject' => $value->getSubject(),
+                                            'subject' => $value->getSubject($value->is_approved),
                                             'type' => $value->type,
                                             'notifiable_id' => $value->notifiable_id,
                                             'notifiable_type' => $value->notifiable_type,

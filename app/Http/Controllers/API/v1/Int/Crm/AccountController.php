@@ -83,7 +83,6 @@ class AccountController extends Controller
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
         // $apiPdmToken = $apiPdmToken[0];
-
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
 
@@ -134,7 +133,7 @@ class AccountController extends Controller
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-        
+
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->getExistingByFo($data, $token);
 

@@ -443,20 +443,20 @@ class EFormController extends Controller
                 ], 422 );
         }
 
-        $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
-        $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
-                            ->setSound('default');
+        // $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
+        // $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
+        //                     ->setSound('default');
 
-        $notification = $notificationBuilder->build();
+        // $notification = $notificationBuilder->build();
 
-        $topic = new Topics();
-        $topic->topic('testing');
+        // $topic = new Topics();
+        // $topic->topic('testing');
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        $topicResponse->isSuccess();
-        $topicResponse->shouldRetry();
-        $topicResponse->error();
-        
+        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        // $topicResponse->isSuccess();
+        // $topicResponse->shouldRetry();
+        // $topicResponse->error();
+
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
@@ -596,7 +596,7 @@ class EFormController extends Controller
         $notification = $notificationBuilder->build();
 
         $topic = new Topics();
-        $topic->topic('testing');
+        $topic->topic('testing')->orTopic('user_'.$eform['user_id']);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
         $topicResponse->isSuccess();
@@ -640,13 +640,13 @@ class EFormController extends Controller
             if ($request->is_approved) {
 
                 $usersModel = User::FindOrFail($data->user_id);
-                $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO*/
+                $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO and Customer*/
 
                 event( new Approved( $data ) );
             } else {
 
                 $usersModel = User::FindOrFail($data->user_id);
-                $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO*/
+                $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO and Customer*/
 
                 event( new RejectedEform( $data ) );
             }
