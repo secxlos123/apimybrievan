@@ -59,7 +59,7 @@ class marketingActivityController extends Controller
       }
 
       $pemasar = array_column($result, 'SNAME','PERNR' );
-      print_r($pemasar);
+      // print_r($pemasar);
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
         $marketingActivity[]= [
@@ -76,7 +76,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          // 'join_name' => $pemasar[$activity->pn_join],
+          'join_name' => $pemasar[$activity->pn_join],
           'desc' => $activity->desc,
           'address' => $activity->address,
           'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
