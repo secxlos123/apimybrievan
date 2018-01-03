@@ -65,7 +65,7 @@ class marketingActivityController extends Controller
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          // 'pn_name' => $pemasar[$activity->pn],
+          'pn_name' => $pemasar[$activity->pn],
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -357,12 +357,15 @@ class marketingActivityController extends Controller
       $list_pn = array_merge_recursive($fo_list, $ao_list);
       // print_r($list_pn);die();
       // $marketingActivity = MarketingActivity::get();
+      $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
+      $pn_name = array_column($result, 'SNAME', 'PERNR');
+      
       $marketingActivity = [];
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          'pn_name' => $activity->pn_name,
+          'pn_name' => $pn_name[$activity->pn],
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -373,7 +376,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => $activity->join_name,
+          'join_name' => $pn_name[$activity->pn_join],
           'desc' => $activity->desc,
           'address' => $activity->address,
           ];
