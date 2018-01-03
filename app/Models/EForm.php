@@ -745,6 +745,7 @@ class EForm extends Model implements AuditableContract
         //     ->post( 'form_params' );
 
         // \Log::info($getReportPefindo);
+        // return $return['contents']['cip']['recordlist'][0]["score"];
 
         // $getFilePefindo = Asmx::setEndpoint( 'GetPdfReport' )
         //     ->setBody([
