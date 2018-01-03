@@ -65,4 +65,20 @@ class Controller extends BaseController
 
       return $briConnect;
     }
+
+    public function byCif($cif, $token)
+    {
+      $client = new Client();
+      $requestLeadsDetail = $client->request('GET', config('restapi.apipdm').'/customer/details/'.$cif,
+        [
+          'headers' =>
+          [
+            'Authorization' => 'Bearer '.$token
+          ]
+        ]
+      );
+      $leadsDetail = json_decode($requestLeadsDetail->getBody()->getContents(), true);
+
+      return $leadsDetail;
+    }
 }
