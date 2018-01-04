@@ -11,6 +11,7 @@ use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
 use App\Models\Customer;
+use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
@@ -21,10 +22,10 @@ use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
 use App\Notifications\EFormPenugasanDisposisi;
+use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
-
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -35,6 +36,7 @@ class EFormController extends Controller
 {
     public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
     {
+        $this->userServices = new UserServices;
         $this->user = $user;
         $this->userservices = $userservices;
         $this->userNotification = $userNotification;
@@ -372,8 +374,6 @@ class EFormController extends Controller
                     \Log::info($kpr);
         } else {
             $dataEform =  EForm::where('nik', $request->nik)->get();
-            // var_dump(json_encode($dataEform));
-            // die();
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
                 $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
@@ -443,11 +443,20 @@ class EFormController extends Controller
                 ], 422 );
         }
 
+        $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
+                                       ->whereNull('read_at')
+                                       ->first();
+
+        $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/        
+        $usersModel->notify(new PengajuanKprNotification($kpr));
+
         // $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
         // $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
         //                     ->setSound('default');
 
         // $notification = $notificationBuilder->build();
+        // // $data = $this->userServices->getPinca($baseRequest['branch_id'], )
 
         // $topic = new Topics();
         // $topic->topic('testing');
