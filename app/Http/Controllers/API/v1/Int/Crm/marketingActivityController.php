@@ -439,8 +439,8 @@ class marketingActivityController extends Controller
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
-          'pn' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
-          'pn_name' => $pn_name[$activity->pn],
+          'pn' => $activity->pn,
+          'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),

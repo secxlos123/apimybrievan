@@ -37,6 +37,6 @@ class CreateRescheduleActivitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reschedule_activities');
+        Schema::dropIfExists('marketing_reschedule_activities');
     }
 }

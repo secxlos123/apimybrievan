@@ -48,6 +48,72 @@ class MarketingController extends Controller
           'contents' => $marketings
         ]);
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function by_branch(Request $request)
+    {
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      if($list_fo!=NULL && $list_ao!=NULL){
+        $fo_list = array_column($list_fo['responseData'], 'PERNR');
+        $ao_list = array_column($list_ao['responseData'], 'PERNR');
+        $list_pn = array_merge_recursive($fo_list, $ao_list);
+        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
+        $pn_name = array_column($result, 'SNAME', 'PERNR');
+      } else {
+        $list_pn = '';
+      }
+
+      $pn = $request->header('pn');
+      // $marketings = Marketing::where('pn',$pn)->get();
+      $marketings = [];
+      foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
+        $marketings[]=[
+          'id'=> $marketing->id,
+          'pn'=> $marketing->pn,
+          'pn_name'=> array_key_exists($marketing->pn, $pn_name) ? $pn_name[$marketing->pn]:'',
+          'product_type'=> $marketing->product_type,
+          'activity_type'=> $marketing->activity_type,
+          'target'=> $marketing->target,
+          'account_id'=> $marketing->account_id,
+          'nama'=> $marketing->nama,
+          'nik'=> $marketing->nik,
+          'cif'=> $marketing->cif,
+          'status'=> $marketing->status,
+          'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
+          'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
+        ];
+      }
+      return response()->success( [
+          'message' => 'Sukses',
+          'contents' => $marketings
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -173,5 +239,43 @@ class MarketingController extends Controller
     {
         //
     }
+
+    public function pemasar($pn, $branch, $auth){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
+    }
+
 
 }

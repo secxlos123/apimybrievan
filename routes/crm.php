@@ -54,5 +54,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
     'only' => ['index', 'store']
   ]);
 
+  // Route marketing by branch
+  Route::post('/marketing/by_branch', 'MarketingController@by_branch');
+
   Route::get('/activity/deleteAll', 'marketingActivityController@deleteAll');
 });
