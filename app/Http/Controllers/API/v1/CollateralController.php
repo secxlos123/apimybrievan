@@ -50,23 +50,28 @@ class CollateralController extends Controller
      */
     public function index()
     {
+      $user = \RestwsHc::getUser();
       $developer_id = env('DEVELOPER_KEY',1);
-      return $this->makeResponse(
-        $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc')->paginate($this->request->has('limit') ? $this->request->limit : 10)
-      );
+      $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
+      if ($user['role'] != 'collateral manager') {
+        $data->where('staff_id',(int)$this->request->header('pn'));
+      }
+      return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
     /**
      * Show Collateral Non Kerjasama
      * @return \Illuminate\Http\Response
      */
-    public function indexNon(Request $request)
+    public function indexNon()
     {
+      $user = \RestwsHc::getUser();
       $developer_id = env('DEVELOPER_KEY',1);
-      $limit = $request->input( 'limit' ) ?: 10;
-      $data = $this->collateral->GetLists($request)->where('developer_id','=',$developer_id)->where('is_approved',true)->paginate($limit);
-
-      return $this->makeResponse($data);
+      $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
+      if ($user['role'] != 'collateral manager') {
+        $data->where('staff_id',(int) $this->request->header('pn'));
+      }
+      return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
     /**
@@ -204,25 +209,30 @@ class CollateralController extends Controller
         $collateral->remark = $this->request->remark;
         $collateral->approved_by = $this->request->header('pn');
         $property->is_approved = true;
+        $collateral->save();
+        $property->save();
           if ($collateral->developer_id == $developer_id ) {
               $eformdata = EForm::findOrFail($request->input('eform_id'));
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
               if ($sentclas['status']) {
-                $property->save();
-                $collateral->save();
+               \DB::commit();
+              }else
+              {
+              \DB::rollback();
               }
           }
           else
           {
             $property->save();
             $collateral->save();
+            \DB::commit();
           }
       }
       if ($action === 'reject') {
         $collateral->remark = $this->request->remark;
         $collateral->save();
+        \DB::commit();
       }
-      \DB::commit();
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );

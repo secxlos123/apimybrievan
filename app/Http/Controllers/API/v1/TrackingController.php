@@ -48,6 +48,7 @@ class TrackingController extends Controller
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                     , developers.company_name as developer_name
                     , kpr.property_item_name as property_name
+                    , kpr.request_amount as nominal
                     , eforms.product_type as product_type
                     , eforms.ref_number as ref_number
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'

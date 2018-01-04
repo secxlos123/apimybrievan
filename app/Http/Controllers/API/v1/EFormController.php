@@ -11,6 +11,7 @@ use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
 use App\Models\Customer;
+use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
@@ -21,10 +22,10 @@ use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
 use App\Notifications\EFormPenugasanDisposisi;
+use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
-
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -35,6 +36,7 @@ class EFormController extends Controller
 {
     public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
     {
+        $this->userServices = new UserServices;
         $this->user = $user;
         $this->userservices = $userservices;
         $this->userNotification = $userNotification;
@@ -301,8 +303,13 @@ class EFormController extends Controller
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
-        $baseRequest['ao_name'] = $user_login['name'];
-        $baseRequest['ao_position'] = $user_login['position'];
+        if ($user_login['role'] === 'ao' ) {
+            $baseRequest['ao_name'] = $user_login['name'];
+            $baseRequest['ao_position'] = $user_login['position'];
+        } else {
+            $baseRequest['staff_name'] = $user_login['name'];
+            $baseRequest['staff_position'] = $user_login['position'];
+        }
 
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
@@ -372,8 +379,6 @@ class EFormController extends Controller
                     \Log::info($kpr);
         } else {
             $dataEform =  EForm::where('nik', $request->nik)->get();
-            // var_dump(json_encode($dataEform));
-            // die();
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
                 $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
@@ -443,20 +448,29 @@ class EFormController extends Controller
                 ], 422 );
         }
 
-        $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
-        $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
-                            ->setSound('default');
+        $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
+                                       ->whereNull('read_at')
+                                       ->first();
 
-        $notification = $notificationBuilder->build();
+        $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/        
+        $usersModel->notify(new PengajuanKprNotification($kpr));
 
-        $topic = new Topics();
-        $topic->topic('testing');
+        // $notificationBuilder = new PayloadNotificationBuilder('EForm Create - Test');
+        // $notificationBuilder->setBody('Data e-form berhasil ditambahkan')
+        //                     ->setSound('default');
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        $topicResponse->isSuccess();
-        $topicResponse->shouldRetry();
-        $topicResponse->error();
-        
+        // $notification = $notificationBuilder->build();
+        // // $data = $this->userServices->getPinca($baseRequest['branch_id'], )
+
+        // $topic = new Topics();
+        // $topic->topic('testing');
+
+        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        // $topicResponse->isSuccess();
+        // $topicResponse->shouldRetry();
+        // $topicResponse->error();
+
         return response()->success( [
             'message' => 'Data e-form berhasil ditambahkan.',
             'contents' => $kpr
@@ -596,7 +610,7 @@ class EFormController extends Controller
         $notification = $notificationBuilder->build();
 
         $topic = new Topics();
-        $topic->topic('testing');
+        $topic->topic('testing')->orTopic('user_'.$eform['user_id']);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
         $topicResponse->isSuccess();
@@ -640,13 +654,13 @@ class EFormController extends Controller
             if ($request->is_approved) {
 
                 $usersModel = User::FindOrFail($data->user_id);
-                $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO*/
+                $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO and Customer*/
 
                 event( new Approved( $data ) );
             } else {
 
                 $usersModel = User::FindOrFail($data->user_id);
-                $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO*/
+                $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO and Customer*/
 
                 event( new RejectedEform( $data ) );
             }

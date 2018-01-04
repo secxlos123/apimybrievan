@@ -25,11 +25,47 @@ class marketingActivityController extends Controller
     {
       $pn = $request->header('pn');
       // $marketingActivity = MarketingActivity::get();
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      $pemasar = array_column($result, 'SNAME','PERNR' );
+      // print_r($pemasar);
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
+          'pn_name' => $pemasar[$activity->pn],
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -40,8 +76,10 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
+          'join_name' => $pemasar[$activity->pn_join],
           'desc' => $activity->desc,
           'address' => $activity->address,
+          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
           ];
       }
 
@@ -84,6 +122,7 @@ class marketingActivityController extends Controller
     public function store(Request $request)
     {
       $data['pn'] = $request->header('pn');
+      // $data['pn_name'] = $request['pn_name'];
       $data['object_activity'] = $request['object_activity'];
       $data['action_activity'] = $request['action_activity'];
       $data['start_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
@@ -100,6 +139,7 @@ class marketingActivityController extends Controller
       $data['address'] = $request['address'];
       $data['marketing_id'] = $request['marketing_id'];
       $data['pn_join'] = $request['pn_join'];
+      // $data['join_name'] = $request['join_name'];
       $data['desc'] = $request['desc'];
 
       $save = MarketingActivity::create($data);
@@ -113,6 +153,48 @@ class marketingActivityController extends Controller
 
       return response()->error([
           'message' => 'Data Activity Tidak Dapat Ditambah.',
+      ], 500);
+    }
+    /**
+    * Store a newly created resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function store_by_pinca(Request $request)
+    {
+      $data['pn'] = $request['pn'];
+      $data['pn_name'] = $request['pn_name'];
+      $data['object_activity'] = $request['object_activity'];
+      $data['action_activity'] = $request['action_activity'];
+      $data['start_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
+      $data['end_date'] = date('Y-m-d H:i:s', strtotime($request['end_date'].$request['end_time']));
+
+      if(isset($request['longitude']) && isset($request['latitude']) ){
+        $data['longitude'] = $request['longitude'];
+        $data['latitude'] = $request['latitude'];
+      }else{
+        $data['longitude'] = 'unset';
+        $data['latitude'] = 'unset';
+      }
+
+      $data['address'] = $request['address'];
+      $data['marketing_id'] = $request['marketing_id'];
+      $data['pn_join'] = $request['pn_join'];
+      $data['join_name'] = $request['join_name'];
+      $data['desc'] = $request['desc'];
+
+      $save = MarketingActivity::create($data);
+
+      if ($save) {
+          return response()->success([
+              'message' => 'Data Activity by pinca berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Data Activity by pinca Tidak Dapat Ditambah.',
       ], 500);
     }
 
@@ -275,11 +357,15 @@ class marketingActivityController extends Controller
       $list_pn = array_merge_recursive($fo_list, $ao_list);
       // print_r($list_pn);die();
       // $marketingActivity = MarketingActivity::get();
+      $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
+      $pn_name = array_column($result, 'SNAME', 'PERNR');
+      
       $marketingActivity = [];
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
+          'pn_name' => $pn_name[$activity->pn],
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -290,6 +376,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
+          'join_name' => $pn_name[$activity->pn_join],
           'desc' => $activity->desc,
           'address' => $activity->address,
           ];
@@ -312,5 +399,52 @@ class marketingActivityController extends Controller
           'contents' => $activity_marketing
         ]);
 
+    }
+
+    public function pemasar($pn, $branch, $auth){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
+    }
+
+    public function deleteAll(Request $request)
+    {
+      MarketingActivityFollowup::where('id', '!=', 0)->delete();
+      MarketingActivity::where('id', '!=', 0)->delete();
+
+      return response()->success([
+          'message' => 'Semua data activity telah dihapus'
+      ], 200);
     }
 }

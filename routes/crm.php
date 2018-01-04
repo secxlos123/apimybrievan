@@ -1,5 +1,5 @@
 <?php
-Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' => 'API\v1\Int\Crm'], function(){
+Route::group(['prefix'=>'v1/int/crm', /*'middleware' => 'api.auth',*/ 'namespace' => 'API\v1\Int\Crm'], function(){
   // route dashboard
   Route::get( '/', 'DashboardController@index', [
 
@@ -17,6 +17,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   // route customer
   Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');
 
+  //route portfolio
+  Route::post('account/detail_by_cif', 'CustomerController@detailByCif');
+
   // route customer by nik
   Route::post( 'account/customer_nik', 'CustomerController@customer_nik')->name('crm.customer_nik');
 
@@ -27,6 +30,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::resource( 'activity', 'marketingActivityController', [
     'only' => ['index', 'store']
   ] );
+
+  // Route create Activity by pinca
+  Route::post('/activity_by_pinca', 'marketingActivityController@store_by_pinca');
 
   // Route Activity by branch
   Route::post('/activity/by_branch', 'marketingActivityController@activity_branch');
@@ -44,4 +50,6 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::resource('marketing', 'MarketingController', [
     'only' => ['index', 'store']
   ]);
+
+  Route::get('/activity/deleteAll', 'marketingActivityController@deleteAll');
 });

@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\CustomDbChannel;
-
+use App\Models\EForm;
 class PengajuanKprNotification extends Notification
 {
     use Queueable;
@@ -59,13 +59,14 @@ class PengajuanKprNotification extends Notification
 
     public function toDatabase($notifiable)
     {
+        $data = EForm::findOrFail($this->eForm->id);
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
             'nik' => $this->eForm->nik,
             'ref_number' => $this->eForm->ref_number,
-            'branch_id' => $this->eForm->branch_id,
+            'branch_id' => $data->branch_id,
             'created_at' => $this->eForm->created_at,
         ];
     }
