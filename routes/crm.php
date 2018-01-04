@@ -1,5 +1,5 @@
 <?php
-Route::group(['prefix'=>'v1/int/crm', /*'middleware' => 'api.auth',*/ 'namespace' => 'API\v1\Int\Crm'], function(){
+Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' => 'API\v1\Int\Crm'], function(){
   // route dashboard
   Route::get( '/', 'DashboardController@index', [
 
@@ -33,6 +33,9 @@ Route::group(['prefix'=>'v1/int/crm', /*'middleware' => 'api.auth',*/ 'namespace
 
   // Route create Activity by pinca
   Route::post('/activity_by_pinca', 'marketingActivityController@store_by_pinca');
+
+  // Route Activity by officer
+  Route::post('/activity/by_officer', 'marketingActivityController@activity_by_officer');
 
   // Route Activity by branch
   Route::post('/activity/by_branch', 'marketingActivityController@activity_branch');
