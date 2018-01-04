@@ -49,10 +49,10 @@ class marketingActivityController extends Controller
         'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
-      $ao = $list_ao['responseData'];
-      $fo = $list_fo['responseData'];
-
       if ($ao != null && $fo != null) {
+        $ao = $list_ao['responseData'];
+        $fo = $list_fo['responseData'];
+
         $result = array_merge_recursive($fo,$ao);
         $pemasar = array_column($result, 'SNAME','PERNR' );
       } else {
@@ -88,6 +88,81 @@ class marketingActivityController extends Controller
           'contents' => $marketingActivity
         ]);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function activity_by_officer(Request $request)
+    {
+      $pn = $request->header('pn');
+      // $marketingActivity = MarketingActivity::get();
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+
+      if ($ao != null && $fo != null) {
+        $ao = $list_ao['responseData'];
+        $fo = $list_fo['responseData'];
+
+        $result = array_merge_recursive($fo,$ao);
+        $pemasar = array_column($result, 'SNAME','PERNR' );
+      } else {
+        $pemasar = [];
+      }
+
+      // print_r($pemasar);
+      $marketingActivity = [];
+      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
+        $marketingActivity[]= [
+          'id' => $activity->id,
+          'pn' => $activity->pn,
+          'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
+          'object_activity' => $activity->object_activity,
+          'action_activity' => $activity->action_activity,
+          'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+          'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+          'start_time' => date('H:i', strtotime($activity->start_date)),
+          'end_time' => date('H:i', strtotime($activity->end_date)),
+          'longitude' => $activity->longitude,
+          'latitude' => $activity->latitude,
+          'marketing_id' => $activity->marketing_id,
+          'pn_join' => $activity->pn_join,
+          'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
+          'desc' => $activity->desc,
+          'address' => $activity->address,
+          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+          ];
+      }
+
+      return response()->success( [
+          'message' => 'Sukses',
+          'contents' => $marketingActivity
+        ]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
