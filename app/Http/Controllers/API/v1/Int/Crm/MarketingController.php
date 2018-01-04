@@ -96,6 +96,7 @@ class MarketingController extends Controller
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
+          'pn_name'=> array_key_exists($marketing->pn, $pn_name) ? $pn_name[$marketing->pn]:'',
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
@@ -238,5 +239,43 @@ class MarketingController extends Controller
     {
         //
     }
+
+    public function pemasar($pn, $branch, $auth){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
+    }
+
 
 }
