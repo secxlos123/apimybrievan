@@ -56,22 +56,22 @@ class SelectUkerController extends Controller
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
-   //     $listExisting = $this->ListBranch($data, $token);
+        $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $token
+            'contents' => $listExisting
         ]);
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
         
         $token = $apiPdmToken['access_token'];
-     //   $listExisting = $this->ListBranch($data, $token);
+        $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $token
+            'contents' => $listExisting
         ]);
       }
 	}
@@ -79,16 +79,16 @@ class SelectUkerController extends Controller
 	public function ListBranch($data, $token)
     {
       $client = new Client();
-	   $return =  Brispot::setEndpoint('region/v3')
+	 /*   $return =  Brispot::setEndpoint('region/v3')
 				->setHeaders([
-					'Authorization' => $token,
+					'Authorization' => 'Bearer '.$token,
 				])
                 ->setBody([
                 ])->get('form_params');
 
-            return $return;
-/* 	  if($data['keys']=='main'){
-			  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3/'.$data['kode'],
+            return $return; */
+ 	  if($data['keys']=='main'){
+			  $requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/region/v3/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
@@ -97,7 +97,7 @@ class SelectUkerController extends Controller
 				]
 			  );
 	  }elseif($data['keys']=='branch'){
-				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/mainbr/'.$data['kode'],
+				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
@@ -106,7 +106,7 @@ class SelectUkerController extends Controller
 				]
 			  );
 	  }elseif($data['keys']=='kanwil'){
-				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3',
+				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/region/v3',
 				[
 				  'headers' =>
 				  [
@@ -117,7 +117,7 @@ class SelectUkerController extends Controller
 	  } 
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      return $listExisting;*/
+      return $listExisting;
     }
 	
 
