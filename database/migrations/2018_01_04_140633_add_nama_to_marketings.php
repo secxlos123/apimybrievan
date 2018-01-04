@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddCifToMarketings extends Migration
+class AddNamaToMarketings extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddCifToMarketings extends Migration
     public function up()
     {
       Schema::table('marketings', function (Blueprint $table) {
-          $table->string('nik')->default('null')->change();
-          $table->string('cif')->default('null');
+          $table->string('nama')->default('null');
       });
     }
 
@@ -27,8 +26,7 @@ class AddCifToMarketings extends Migration
     public function down()
     {
       Schema::table('marketings', function (Blueprint $table) {
-          $table->dropColumn('nik');
-          $table->dropColumn('cif');
+          $table->dropColumn('nama');
       });
     }
 }
