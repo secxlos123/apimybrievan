@@ -29,7 +29,7 @@
                     <td align="center">
                         <span>Hai, {!! $mail['name'] !!}!</span>
                         <br>
-                        Terima kasih telah melakukan persetujuan atas e-Form Anda dengan No. Reff. Aplikasi :
+                        Terima kasih telah melakukan {!! $mail['status'] !!} atas e-Form Anda dengan No. Reff. Aplikasi :
                         <br/>
                         <b>{!! $mail[ 'ref_number' ] !!}</b> .
                         <br>

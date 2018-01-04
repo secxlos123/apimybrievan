@@ -12,9 +12,11 @@ use DB;
 use App\Models\Office;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
-use RestwsHc;
+use Brispot;
 use Cache;
 use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class SelectUkerController extends Controller
 {
@@ -40,8 +42,8 @@ class SelectUkerController extends Controller
 	public function getBranch( Request $request )
 	{
 	    $data['branch'] = $request->header('branch');
-	    $data['kode'] = $request->header('kode_kanwil');
-	    $data['key'] = $request->header('key');
+	    $data['kode'] = $request->kode_kanwil;
+	    $data['keys'] = $request->keys;
       $data['pn'] = $request->header('pn');
       // $apiPdmToken = $apiPdmToken[0];
       // dd(count(apiPdmToken::all()));
@@ -54,22 +56,22 @@ class SelectUkerController extends Controller
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
-        $listExisting = $this->ListBranch($data, $token);
+   //     $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $listExisting
+            'contents' => $token
         ]);
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
         
         $token = $apiPdmToken['access_token'];
-        $listExisting = $this->ListBranch($data, $token);
+     //   $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $listExisting
+            'contents' => $token
         ]);
       }
 	}
@@ -77,7 +79,15 @@ class SelectUkerController extends Controller
 	public function ListBranch($data, $token)
     {
       $client = new Client();
-	  if($data['key']=='main'){
+	   $return =  Brispot::setEndpoint('region/v3')
+				->setHeaders([
+					'Authorization' => $token,
+				])
+                ->setBody([
+                ])->get('form_params');
+
+            return $return;
+/* 	  if($data['keys']=='main'){
 			  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3/'.$data['kode'],
 				[
 				  'headers' =>
@@ -86,7 +96,7 @@ class SelectUkerController extends Controller
 				  ]
 				]
 			  );
-	  }elseif($data['key']=='branch'){
+	  }elseif($data['keys']=='branch'){
 				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/mainbr/'.$data['kode'],
 				[
 				  'headers' =>
@@ -95,7 +105,7 @@ class SelectUkerController extends Controller
 				  ]
 				]
 			  );
-	  }elseif($data['key']=='kanwil'){
+	  }elseif($data['keys']=='kanwil'){
 				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3',
 				[
 				  'headers' =>
@@ -104,10 +114,10 @@ class SelectUkerController extends Controller
 				  ]
 				]
 			  );
-	  }
+	  } 
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      return $listExisting;
+      return $listExisting;*/
     }
 	
 
