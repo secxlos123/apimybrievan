@@ -43,6 +43,8 @@ class MarketingController extends Controller
           'created_at' => date('M Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
 
+        dd($marketing->nik);
+
         if ($marketing->nik != null || $marketing->nik != 'null') {
           $nik = $this->customer_nik($marketing->nik);
           $marketings['name'] = $nik['info']['nama_sesuai_id'];
