@@ -56,7 +56,7 @@ class SelectUkerController extends Controller
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
-        $listExisting = $this->ListBranch($data, $token);
+   //     $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
@@ -67,7 +67,7 @@ class SelectUkerController extends Controller
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
         
         $token = $apiPdmToken['access_token'];
-        $listExisting = $this->ListBranch($data, $token);
+     //   $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
