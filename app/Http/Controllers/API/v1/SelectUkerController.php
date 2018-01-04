@@ -37,9 +37,11 @@ class SelectUkerController extends Controller
 			$array=$ret;
 		return $array;
 		}
-	public function getToken( Request $request )
+	public function getBranch( Request $request )
 	{
 	    $data['branch'] = $request->header('branch');
+	    $data['kode'] = $request->header('kode_kanwil');
+	    $data['key'] = $request->header('key');
       $data['pn'] = $request->header('pn');
       // $apiPdmToken = $apiPdmToken[0];
       // dd(count(apiPdmToken::all()));
@@ -52,7 +54,7 @@ class SelectUkerController extends Controller
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
-        //$listExisting = $this->getExistingByFo($data, $token);
+        $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
@@ -63,7 +65,7 @@ class SelectUkerController extends Controller
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
         
         $token = $apiPdmToken['access_token'];
-        //$listExisting = $this->getExistingByFo($data, $token);
+        $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
@@ -72,6 +74,41 @@ class SelectUkerController extends Controller
       }
 	}
 
+	public function ListBranch($data, $token)
+    {
+      $client = new Client();
+	  if($data['key']=='main'){
+			  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3/'.$data['kode'],
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	  }elseif($data['key']=='branch'){
+				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/mainbr/'.$data['kode'],
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	  }elseif($data['key']=='kanwil'){
+				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3',
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	  }
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
+
+      return $listExisting;
+    }
 		public function getCabangMitra( Request $request )
 	{
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
