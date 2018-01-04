@@ -424,7 +424,7 @@ class marketingActivityController extends Controller
         'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
-      if($fo_list!=NULL && $ao_list!=NULL){
+      if($list_fo!=NULL && $list_ao!=NULL){
         $fo_list = array_column($list_fo['responseData'], 'PERNR');
         $ao_list = array_column($list_ao['responseData'], 'PERNR');
         $list_pn = array_merge_recursive($fo_list, $ao_list);
