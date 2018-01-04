@@ -15,6 +15,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use RestwsHc;
 use Cache;
 use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class SelectUkerController extends Controller
 {
@@ -40,8 +42,8 @@ class SelectUkerController extends Controller
 	public function getBranch( Request $request )
 	{
 	    $data['branch'] = $request->header('branch');
-	    $data['kode'] = $request->header('kode_kanwil');
-	    $data['key'] = $request->header('key');
+	    $data['kode'] = $request->kode_kanwil;
+	    $data['keys'] = $request->keys;
       $data['pn'] = $request->header('pn');
       // $apiPdmToken = $apiPdmToken[0];
       // dd(count(apiPdmToken::all()));
@@ -77,7 +79,7 @@ class SelectUkerController extends Controller
 	public function ListBranch($data, $token)
     {
       $client = new Client();
-	  if($data['key']=='main'){
+	  if($data['keys']=='main'){
 			  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3/'.$data['kode'],
 				[
 				  'headers' =>
@@ -86,7 +88,7 @@ class SelectUkerController extends Controller
 				  ]
 				]
 			  );
-	  }elseif($data['key']=='branch'){
+	  }elseif($data['keys']=='branch'){
 				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/mainbr/'.$data['kode'],
 				[
 				  'headers' =>
@@ -95,7 +97,7 @@ class SelectUkerController extends Controller
 				  ]
 				]
 			  );
-	  }elseif($data['key']=='kanwil'){
+	  }elseif($data['keys']=='kanwil'){
 				$requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3',
 				[
 				  'headers' =>
