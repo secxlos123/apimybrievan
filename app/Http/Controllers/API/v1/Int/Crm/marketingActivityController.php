@@ -61,10 +61,11 @@ class marketingActivityController extends Controller
 
       // print_r($pemasar);
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->with('marketing')->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
+          'marketing_activity_type' => $activity->marketing->activity_type,
           'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
