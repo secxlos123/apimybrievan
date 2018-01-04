@@ -283,32 +283,23 @@ class EForm extends Model implements AuditableContract
             // di update kalo collateral udah jalan
             // ganti lgi, request by Mas Danu
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                $result = $eform->insertCoreBRI();
+                $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
             } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
             {
-                $result = $eform->insertCoreBRI();
+                $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
             }
             else{
 
-                $result['status'] = true;
-                $eform->kpr()->update(['is_sent'=> false]);
-            }
-
-            // $max = 7;
-            // if ( $collateral ) {
-            //     $max = 10;
-
-            // }
-
-            $result = $eform->insertCoreBRI();
-            if ($result['status']) {
-                $eform->kpr()->update(['is_sent'=> true]);
+                $result = $eform->insertCoreBRI(7);
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> false]);
+                }
             }
 
             if ($result['status']) {
@@ -356,7 +347,7 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      */
-    public function insertCoreBRI()
+    public function insertCoreBRI($maxStep)
     {
         $this->traceLog();
 
@@ -388,7 +379,7 @@ class EForm extends Model implements AuditableContract
         }
 
         foreach ($endpoint as $key => $value) {
-            if ( $key+1 == $step ) {
+            if ( $key+1 == $step && $step <= $maxStep) {
                 \Log::info("Start Step " . $step);
 
                 $request = $this->{"step".$step}($this->additional_parameters);
