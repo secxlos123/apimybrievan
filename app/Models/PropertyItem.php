@@ -111,7 +111,7 @@ class PropertyItem extends Model implements AuditableContract
                }
            })
            ->select($select)
-           ->selectRaw("developers.id as developer_id, developers.company_name as developer_name, developers.dev_id_bri, properties.status as prop_status, property_items.address, property_items.available_status")
+           ->selectRaw("developers.id as developer_id, developers.company_name as developer_name, developers.dev_id_bri, properties.status as prop_status, properties.is_approved, property_items.address, property_items.available_status")
            ->orderBy($sort[0], $sort[1]);
     }
 

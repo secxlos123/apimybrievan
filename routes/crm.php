@@ -1,5 +1,5 @@
 <?php
-Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' => 'API\v1\Int\Crm'], function(){
+Route::group(['prefix'=>'v1/int/crm', /*'middleware' => 'api.auth',*/ 'namespace' => 'API\v1\Int\Crm'], function(){
   // route dashboard
   Route::get( '/', 'DashboardController@index', [
 
@@ -50,4 +50,6 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::resource('marketing', 'MarketingController', [
     'only' => ['index', 'store']
   ]);
+
+  Route::get('/activity/deleteAll', 'marketingActivityController@deleteAll');
 });

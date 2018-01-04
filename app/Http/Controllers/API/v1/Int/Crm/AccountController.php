@@ -93,22 +93,6 @@ class AccountController extends Controller
       }
     }
 
-    public function byCif($cif, $token)
-    {
-      $client = new Client();
-      $requestLeadsDetail = $client->request('GET', config('restapi.apipdm').'/customer/details/'.$cif,
-        [
-          'headers' =>
-          [
-            'Authorization' => 'Bearer '.$token
-          ]
-        ]
-      );
-      $leadsDetail = json_decode($requestLeadsDetail->getBody()->getContents(), true);
-
-      return $leadsDetail;
-    }
-
     public function existingFo(Request $request)
     {
       $data['branch'] = $request->header('branch');

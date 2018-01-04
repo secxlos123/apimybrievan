@@ -51,7 +51,7 @@ class UserNotification extends Model
         return (bool) $this->read_at;
     }
 
-    public function getSubject()
+    public function getSubject($status_eform )
     {
         switch ($this->type) {
             case 'App\Notifications\PengajuanKprNotification':                
@@ -60,8 +60,12 @@ class UserNotification extends Model
             case 'App\Notifications\EFormPenugasanDisposisi':                
                 $subjectNotif = 'Penugasan Disposisi';
                 break;
-            case 'App\Notifications\ApproveEFormCustomer':                
-                $subjectNotif = 'Pengajuan KPR Telah Di Setujui';
+            case 'App\Notifications\ApproveEFormCustomer':   
+                if($status_eform == 'approved'){
+                    $subjectNotif = 'Pengajuan KPR Telah Di Setujui';
+                }else {
+                    $subjectNotif = 'Customer Telah Menyetujui Form KPR';
+                }
                 break;
             case 'App\Notifications\RejectEFormCustomer':                
                 $subjectNotif = 'Pengajuan KPR Telah Di Tolak';
@@ -111,25 +115,25 @@ class UserNotification extends Model
     public function getUnreads($branch_id, $role, $pn){
         $query = $this->leftJoin('eforms','notifications.eform_id','=','eforms.id')
                     ->where('eforms.branch_id',$branch_id)
+                    ->Where('eforms.ao_id', $pn)
                     ->orderBy('notifications.created_at', 'DESC');
         
         if($role == 'pinca'){
-            if ($query->where('notifications.type','App\Notifications\PengajuanKprNotification')) {
+            if ($query->Orwhere('notifications.type','App\Notifications\PengajuanKprNotification')) {
                 $query->whereNull('eforms.ao_id');
-                 $query->unreads();
+                $query->unreads();
             }
 
             if ($query->Orwhere('notifications.type','App\Notifications\LKNEFormCustomer')) {
                 $query->leftJoin('visit_reports','eforms.id','=','visit_reports.eform_id');
                 $query->whereNotNull('visit_reports.created_at');
-                 $query->unreads();
+                $query->unreads();
             }
                
         }  
 
         if($role == 'ao'){
-            if($query->where('notifications.type','App\Notifications\EFormPenugasanDisposisi')){         
-                $query->Where('eforms.ao_id', $pn);
+            if($query->Orwhere('notifications.type','App\Notifications\EFormPenugasanDisposisi')){         
                 $query->whereNotNull('eforms.ao_id');
                 $query->whereNotNull('eforms.ao_name');
                 $query->whereNotNull('eforms.ao_position');
@@ -141,7 +145,7 @@ class UserNotification extends Model
             }
 
             if ($query->Orwhere('notifications.type','App\Notifications\ApproveEFormCustomer')) {    /*is is_approved*/
-                $query->Where('eforms.ao_id', $pn);
+                /*              
                 $query->Where('eforms.status_eform', 'approved');
                 $query->Where('eforms.recommended', true);
                 $query->Where('eforms.is_approved', true);
@@ -149,20 +153,15 @@ class UserNotification extends Model
                 $query->whereNotNull('eforms.pinca_name');
                 $query->whereNotNull('eforms.pinca_position');
                 $query->whereNotNull('eforms.cons');
-                $query->whereNotNull('eforms.pros');
+                $query->whereNotNull('eforms.pros');*/
+               
                 $query->unreads();
-            }      
+            }
+             
 
             if ($query->Orwhere('notifications.type','App\Notifications\RejectEFormCustomer')) {    /*is rejected*/
-                $query->Where('eforms.ao_id', $pn);
-                $query->Where('eforms.status_eform', 'Rejected');
-                $query->Where('eforms.recommended', true);
-                $query->Where('eforms.is_approved', true);
-                $query->whereNotNull('eforms.recommendation');
-                $query->whereNotNull('eforms.pinca_name');
-                $query->whereNotNull('eforms.pinca_position');
-                $query->whereNotNull('eforms.cons');
-                $query->whereNotNull('eforms.pros');
+                /*
+                $query->Where('eforms.status_eform', 'Rejected');*/
                 $query->unreads();
             }            
         }
@@ -179,7 +178,7 @@ class UserNotification extends Model
             $query->whereNull('notifications.created_at');
         }
 
-        $query->select('notifications.id','notifications.type','notifications.notifiable_id','notifications.notifiable_type','notifications.data','notifications.read_at','notifications.created_at','notifications.updated_at','notifications.branch_id','notifications.role_name','notifications.eform_id');
+        $query->select('notifications.id','notifications.type','notifications.notifiable_id','notifications.notifiable_type','notifications.data','notifications.read_at','notifications.created_at','notifications.updated_at','notifications.branch_id','notifications.role_name','notifications.eform_id','eforms.is_approved','eforms.ao_id');
 
         return $query;
     }
