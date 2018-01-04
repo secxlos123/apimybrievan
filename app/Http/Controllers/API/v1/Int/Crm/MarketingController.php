@@ -40,6 +40,14 @@ class MarketingController extends Controller
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
           'created_at' => date('M Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
+
+        if ($marketing->nik != 'null') {
+          $nik = $this->customer_nik($marketing->nik);
+          $marketings['name'] = $nik['info']['nama_sesuai_id'];
+        } elseif ($marketing->cif != 'null') {
+          $cif = $this->customer_cif($marketing->cif);
+          $marketings['name'] = $cif['nama_sesuai_id'];
+        }
       }
       return response()->success( [
           'message' => 'Sukses',
@@ -170,5 +178,49 @@ class MarketingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function customer_nik($nik)
+    {
+      $customer_nik = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_customer_profile_nik',
+          'requestData' => [
+            'app_id' => 'mybriapi',
+            'nik' => $nik
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      return $customer_nik;
+    }
+
+    public function customer_cif($cif)
+    {
+      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // $apiPdmToken = $apiPdmToken[0];
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        $detailByCif = $this->byCif($cif, $token);
+
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $detailByCif['data']['info'][0]
+        ]);
+      } else {
+        $briConnect = $this->gen_token();
+        $apiPdmToken = apiPdmToken::get()->toArray();
+        // $apiPdmToken = $apiPdmToken[0];
+        $token = $apiPdmToken['access_token'];
+        $detailByCif = $this->byCif($cif, $token);
+
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $detailByCif['data']['info'][0]
+        ]);
+      }
     }
 }
