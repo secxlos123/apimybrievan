@@ -12,7 +12,7 @@ use DB;
 use App\Models\Office;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
-use RestwsHc;
+use Brispot;
 use Cache;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
@@ -79,7 +79,15 @@ class SelectUkerController extends Controller
 	public function ListBranch($data, $token)
     {
       $client = new Client();
-	  if($data['keys']=='main'){
+	   $return =  Brispot::setEndpoint('region/v3')
+				->setHeaders([
+					'Authorization' => $data['token'],
+				])
+                ->setBody([
+                ])->get('form_params');
+
+            return $return;
+/* 	  if($data['keys']=='main'){
 			  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/region/v3/'.$data['kode'],
 				[
 				  'headers' =>
@@ -106,10 +114,10 @@ class SelectUkerController extends Controller
 				  ]
 				]
 			  );
-	  }
+	  } 
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      return $listExisting;
+      return $listExisting;*/
     }
 	
 
