@@ -47,7 +47,7 @@ class MarketingController extends Controller
           $nik = $this->customer_nik($marketing->nik);
           $marketings['name'] = $nik['info']['nama_sesuai_id'];
         }
-        if ($marketing->cif != null) {
+        if ($marketing->cif != 'null') {
           $cif = $this->customer_cif($marketing->cif);
           $marketings['name'] = $cif['nama_sesuai_id'];
         }
