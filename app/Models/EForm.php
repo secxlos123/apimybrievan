@@ -227,17 +227,19 @@ class EForm extends Model implements AuditableContract
      */
     public function getIsVisitedAttribute()
     {
-        // if ($this->product_type == 'kpr') {
+        if ($this->product_type == 'kpr') {
             if( $this->visit_report ) {
                 return true;
             }
             return false;
-        // } else {
-        //     if ($this->briguna) {
-        //         return true;
-        //     }
-        //     return false;
-        // }
+        } else {
+            if ($this->briguna) {
+                if ($this->score) {
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 
     /**
