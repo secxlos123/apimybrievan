@@ -38,4 +38,9 @@ class UserServices extends Authenticatable
     public function getByBranchId($branch_id){
         return $this->where('branch_id',$branch_id)->first();
     }
+
+    public function getPinca($branch_id)
+    {
+        return $this->where('branch_id', $branch_id)->where('role', 'pinca')->first();
+    }
 }
