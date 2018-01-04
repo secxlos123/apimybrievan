@@ -14,7 +14,8 @@ class AddCifToMarketings extends Migration
     public function up()
     {
       Schema::table('marketings', function (Blueprint $table) {
-          $table->string('cif');
+          $table->string('nik')->default('null')->change();
+          $table->string('cif')->default('null');
       });
     }
 
