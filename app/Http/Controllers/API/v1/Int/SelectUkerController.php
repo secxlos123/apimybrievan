@@ -43,7 +43,7 @@ class SelectUkerController extends Controller
 	{
 	    $data['branch'] = $request->header('branch');
 	    $data['kode'] = $request->kode_kanwil;
-	    $data['key'] = $request->keys;
+	    $data['keys'] = $request->keys;
       $data['pn'] = $request->header('pn');
       // $apiPdmToken = $apiPdmToken[0];
       // dd(count(apiPdmToken::all()));
