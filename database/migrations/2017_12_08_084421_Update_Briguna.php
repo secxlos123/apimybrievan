@@ -80,6 +80,29 @@ class UpdateBriguna extends Migration
      */
     public function down()
     {
-        
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn([
+                'uid','uid_pemrakarsa','tp_produk',
+                'id_aplikasi','cif_las','Tgl_perkiraan_pensiun',
+                'Sifat_suku_bunga','Briguna_profesi','Pendapatan_profesi',
+                'Potongan_per_bulan','Plafond_briguna_existing',
+                'Angsuran_briguna_existing','Suku_bunga','Jangka_waktu',
+                'Baki_debet','Plafond_usulan','Rek_simpanan_bri',
+                'Riwayat_pinjaman','Penguasaan_cashflow','Payroll',
+                'Gaji_bersih_per_bulan','Maksimum_angsuran',
+                'Tujuan_membuka_rek','Briguna_smart','Kode_fasilitas',
+                'Tujuan_penggunaan_kredit','Penggunaan_kredit',
+                'Provisi_kredit','Biaya_administrasi','Penalty',
+                'Perusahaan_asuransi','Premi_asuransi_jiwa',
+                'Premi_beban_bri','Premi_beban_debitur','Flag_promo',
+                'Fid_promo','Pengadilan_terdekat','Bupln',
+                'Agribisnis','Sandi_stp','Sifat_kredit',
+                'Jenis_penggunaan','Sektor_ekonomi_sid','Sektor_ekonomi_lbu',
+                'Jenis_kredit_lbu','Jenis_penggunaan','Jenis_penggunaan_lbu',
+                'Sumber_aplikasi','Sifat_kredit_lbu','Kategori_kredit_lbu',
+                'Jenis_penggunaan_lbu','id_Status_gelar',
+                'cutoff','definisi','Status_gelar','score','grade'
+            ]);
+        });
     }
 }
