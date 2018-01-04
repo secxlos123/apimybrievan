@@ -13,6 +13,8 @@ use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
 
+use RestwsHc;
+
 class MarketingController extends Controller
 {
     /**
@@ -33,11 +35,22 @@ class MarketingController extends Controller
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
           'account_id'=> $marketing->account_id,
-          'number'=> $marketing->number,
+          // 'number'=> $marketing->number,
           'nik'=> $marketing->nik,
+          'cif'=> $marketing->cif,
           'status'=> $marketing->status,
-          'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date))
+          'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
+          'created_at' => date('M Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
+
+        if ($marketing->nik != null) {
+          $nik = $this->customer_nik($marketing->nik);
+          $marketings['name'] = $nik['info']['nama_sesuai_id'];
+        }
+        if ($marketing->cif != null) {
+          $cif = $this->customer_cif($marketing->cif);
+          $marketings['name'] = $cif['nama_sesuai_id'];
+        }
       }
       return response()->success( [
           'message' => 'Sukses',
@@ -77,8 +90,9 @@ class MarketingController extends Controller
       $data['activity_type'] = $request['activity_type'];
       $data['target'] = $request['target'];
       $data['account_id'] = $request['account_id'];
-      $data['number'] = $request['number'];
+      // $data['number'] = $request['number'];
       $data['nik'] = $request['nik'];
+      $data['cif'] = $request['cif'];
       $data['status'] = $request['status'];
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
@@ -137,8 +151,9 @@ class MarketingController extends Controller
       $update['activity_type'] = $request['activity_type'];
       $update['target'] = $request['target'];
       $update['account_id'] = $request['account_id'];
-      $update['number'] = $request['number'];
+      // $update['number'] = $request['number'];
       $update['nik'] = $request['nik'];
+      $update['cif'] = $request['cif'];
       $update['status'] = $request['status'];
       $update['target_closing_date'] = $request['target_closing_date'];
 
@@ -166,5 +181,46 @@ class MarketingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function customer_nik(Request $request, $nik)
+    {
+      $customer_nik = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_customer_profile_nik',
+          'requestData' => [
+            'app_id' => 'mybriapi',
+            'nik' => $nik
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      return $customer_nik;
+    }
+
+    public function customer_cif(Request $request, $cif)
+    {
+      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // $apiPdmToken = $apiPdmToken[0];
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        $detailByCif = $this->byCif($cif, $token);
+
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $detailByCif['data']['info'][0]
+        ]);
+      } else {
+        $briConnect = $this->gen_token();
+        $apiPdmToken = apiPdmToken::get()->toArray();
+        // $apiPdmToken = $apiPdmToken[0];
+        $token = $apiPdmToken['access_token'];
+        $detailByCif = $this->byCif($cif, $token);
+
+        return $detailByCif['data']['info'][0];
+      }
     }
 }

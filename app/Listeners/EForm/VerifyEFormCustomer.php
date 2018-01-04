@@ -36,7 +36,7 @@ class VerifyEFormCustomer
             'email' => $customer->email,
             'name' => $customer->fullname,
             'ref_number' => $eform->ref_number,
-            'status' => $eform->response_status == 'approve' ? 'Setuju' : 'Tidak Setuju'
+            'status' => $eform->response_status == 'approve' ? 'persetujuan' : 'konfirmasi'
         ];
         
         Mail::to( $mail[ 'email' ] )->send( new ConfirmationEFormCustomer( $mail ) );

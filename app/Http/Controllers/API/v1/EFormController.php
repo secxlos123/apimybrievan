@@ -354,7 +354,7 @@ class EFormController extends Controller
             $SK_AKHIR = $request->SK_AKHIR;
             $REKOMENDASI = $request->REKOMENDASI;
 
-            $id = $request->id;
+            $id = date('YmdHis');
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
@@ -368,6 +368,7 @@ class EFormController extends Controller
             $baseRequest['SK_AWAL'] = $SK_AWAL;
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
+			$baseRequest['id_foto'] = $id;
             $SKPG = '';
             if(!empty($request->SKPG)){
                 $SKPG = $request->SKPG;
