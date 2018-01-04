@@ -60,7 +60,7 @@ class SelectUkerController extends Controller
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $listExisting
+            'contents' => $token
         ]);
       } else {
         $briConnect = $this->gen_token();
@@ -71,7 +71,7 @@ class SelectUkerController extends Controller
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $listExisting
+            'contents' => $token
         ]);
       }
 	}
