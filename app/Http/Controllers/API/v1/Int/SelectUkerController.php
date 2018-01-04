@@ -117,7 +117,7 @@ class SelectUkerController extends Controller
 	  } 
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      return $listExisting;*/
+      return $listExisting;
     }
 	
 
