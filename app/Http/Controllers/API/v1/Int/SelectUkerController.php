@@ -15,6 +15,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use RestwsHc;
 use Cache;
 use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class SelectUkerController extends Controller
 {
