@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Asmx;
 
-class GIMMICK extends Model
+class DIRRPC_DETAIL extends Model
 {
     /**
      * The table name.
      *
      * @var string
      */
-    protected $table = 'gimmick';
+    protected $table = 'dirrpc_detail';
 
     /**
      * Disabling timestamp feature.
@@ -30,17 +30,14 @@ class GIMMICK extends Model
      */
 	 
     protected $fillable = [  	
-		'gimmick_name','gimmick_level','area_level','segmen_level','mitra_kerjasama',
-		'mitra_kerjasama2','mitra_kerjasama3','mitra_kerjasama4','tgl_mulai',
-		'tgl_berakhir','payroll','admin_fee','admin_minimum','provisi_fee','pemeriksa','jabatan_pemeriksa',
-		'waktu_minimum','waktu_maksimum','dir_rpc','asuransi_jiwa','suku_bunga','first_month','last_month','suku_bunga','pemutus_name','jabatan','persen_bunga'];
+	 'id_header','penghasilan_maksimal','penghasilan_minimal','dir_persen','payroll'];
 	
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = [ 'id_gimmick' ];
+    protected $hidden = [ 'no' ];
 
     /**
      * Get AO detail information.
@@ -49,7 +46,7 @@ class GIMMICK extends Model
      */
     public function getIdAttribute( $value )
     {
-        return $this->id_gimmick;
+        return $this->no;
     }
 
     /**
@@ -172,27 +169,24 @@ class GIMMICK extends Model
         // }
     }
 
- 
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['no', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "id" ) {
-            $sort = ['id', 'asc'];
+        if ( $sort[0] == "no" ) {
+            $sort = ['no', 'asc'];
         }
 
-		 $dir = $query->where( function( $dir ) use( $request ) {
-            if ( $request->has('gimmick_name') ) {
-                $dir = $dir->where('gimmick.gimmick_name', $request->input('gimmick_name'));
-			}
-        } );
-        $dir = $dir->orderBy('gimmick.'.$sort[0], $sort[1]);
+		 $dir = $dir->leftJoin('gimmick', 'gimmick.dir_rpc', '=', 'dirrpc.no');
+        $dir = $dir->orderBy('dirrpc.'.$sort[0], $sort[1]);
 
         \Log::info($dir->toSql());
         \Log::info($dir->getBindings());
 
         return $dir;
     }
+
+  
 
 }
