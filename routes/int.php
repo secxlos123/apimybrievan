@@ -17,7 +17,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::get('hapus_dir', 'dirrpcController@hapus_dir');
 	Route::post( 'auth/login', 'AuthController@store' );
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
-	Route::post('getBranch', 'SelectUkerController@getToken');
+	Route::post('getBranch', 'SelectUkerController@getBranch');
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
