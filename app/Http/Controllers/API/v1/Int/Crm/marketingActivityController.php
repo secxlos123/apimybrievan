@@ -65,7 +65,7 @@ class marketingActivityController extends Controller
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          'marketing_activity_type' => $activity->marketing->activity_type;
+          'marketing_activity_type' => $activity->marketing->activity_type,
           'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
