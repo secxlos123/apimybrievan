@@ -27,6 +27,10 @@ class AswinTambahLagi extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn([
+                'npl_instansi','npl_unitkerja','gimmick'
+            ]);
+        });
     }
 }

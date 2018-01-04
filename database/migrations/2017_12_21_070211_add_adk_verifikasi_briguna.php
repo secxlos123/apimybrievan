@@ -43,6 +43,15 @@ class AddAdkVerifikasiBriguna extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn([
+                'is_verified','catatan_kk','catatan_ktp',
+                'catatan_couple_ktp','catatan_npwp','catatan_sk_awal',
+                'catatan_sk_akhir','catatan_skpu','catatan_rekomendasi',
+                'catatan_gaji','flag_kk','flag_ktp','flag_couple_ktp',
+                'flag_npwp','flag_sk_awal','flag_sk_akhir',
+                'flag_skpu','flag_rekomendasi','flag_slip_gaji'
+            ]);
+        });
     }
 }
