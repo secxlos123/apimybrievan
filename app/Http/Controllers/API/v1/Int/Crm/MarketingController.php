@@ -40,7 +40,7 @@ class MarketingController extends Controller
           'cif'=> $marketing->cif,
           'status'=> $marketing->status,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
-          'created_at' => date('M Y', strtotime(str_replace('/', '-', $marketing->created_at)))
+          'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
       }
       return response()->success( [
