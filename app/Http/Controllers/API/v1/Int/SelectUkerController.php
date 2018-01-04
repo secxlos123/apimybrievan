@@ -81,7 +81,7 @@ class SelectUkerController extends Controller
       $client = new Client();
 	   $return =  Brispot::setEndpoint('region/v3')
 				->setHeaders([
-					'Authorization' => $data['token'],
+					'Authorization' => $token,
 				])
                 ->setBody([
                 ])->get('form_params');
