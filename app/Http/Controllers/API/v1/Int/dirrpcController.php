@@ -11,6 +11,8 @@ use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\User;
 use App\Models\DIRRPC;
+use App\Models\DIRRPC_DETAIL;
+use App\Models\DIRRPC2;
 use DB;
 
 class dirrpcController extends Controller
@@ -28,6 +30,30 @@ class dirrpcController extends Controller
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newDir
+        ], 200 );
+    }
+	 public function getdir_rpc( Request $request )
+    {
+        \Log::info($request->all());
+        $limit = $request->input( 'limit' ) ?: 10;
+        $newDir = DIRRPC2::filter( $request )->paginate( $limit );
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newDir
+        ], 200 );
+    }
+	
+		 public function hapus_dir( Request $request )
+    {
+        \Log::info($request->all());
+		$no = $request->no;
+		        $newDir = DIRRPC::where("no",$request->no)->delete();
+		        $newDir2 = DIRRPC_DETAIL::where("id_header",$request->no)->delete();
+//		$briguna = DIRRPC::where("no","=",$no);
+//        $newDir = DIRRPC2::filter( $request )->paginate( $limit );
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newDir2
         ], 200 );
     }
 
@@ -101,12 +127,30 @@ class dirrpcController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
+	function detailadd($data){
+		$array = [
+				'penghasilan_minimal'=>$data[0],
+				'penghasilan_maksimal'=>$data[1],
+				'dir_persen'=>$data[2],
+				'payroll'=>$data[3],
+				'id_header'=>$data[4],
+		];
+		return $array;
+	}
     public function store( GimmickRequest $request )
     {
         $baseRequest = $request->all();
+		$datad =$baseRequest['dirrpc'];
 		
+		
+		$x = $baseRequest['dirrpc']['countminus1'];
+			$dirrpc = DIRRPC::create( $baseRequest['dirrpc'] );
+		for($i=0;$i<=$x;$i++){
+			 $detaildata = $this->detailadd(json_decode($baseRequest['dirrpc']['data'.$i]));
+			 $dirrpc_detail = DIRRPC_DETAIL::create( $detaildata );
+		}
 		//return $request->all();die();
-        $dirrpc = DIRRPC::create( $baseRequest['dirrpc'] );
+       /*  $dirrpc = DIRRPC::create( $baseRequest['dirrpc'] ); */
 		return $dirrpc;
     }
 

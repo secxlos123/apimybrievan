@@ -30,8 +30,7 @@ class DIRRPC extends Model
      */
 	 
     protected $fillable = [  	
-	 'debt_name','dir_persen','maintance','kantor_cabang','kantor_wilayah','penghasilan_maksimal','penghasilan_minimal',
-		'payroll','pemutus_name','jabatan','pemeriksa','jabatan_pemeriksa','action','maintance'];
+	 'debt_name','maintance','pemutus_name','jabatan','pemeriksa','jabatan_pemeriksa','action','maintance','id','no'];
 	
     /**
      * The attributes that should be hidden for arrays.
@@ -183,17 +182,8 @@ class DIRRPC extends Model
             if ( $request->has('gimmick_name') ) {
                 $dir = $dir->where('gimmick.gimmick_name', $request->input('gimmick_name'));
 			}
-			if ( $request->has('mitra_kerjasama') ) {
-					$dir = $dir->where('gimmick.mitra_kerjasama', $request->input('mitra_kerjasama'));
-			}
-			if ( $request->has('kantor_wilayah') ) {
-					$dir = $dir->where('dirrpc.kantor_wilayah', $request->input('kantor_wilayah'));
-			}
-			if ( $request->has('kantor_cabang') ) {
-					$dir = $dir->where('dirrpc.kantor_cabang', $request->input('kantor_cabang'));
-			}
         } );
-		 $dir = $dir->leftJoin('gimmick', 'gimmick.id', '=', 'dirrpc.gimmick_id');
+		 $dir = $dir->leftJoin('gimmick', 'gimmick.dir_rpc', '=', 'dirrpc.no');
         $dir = $dir->orderBy('dirrpc.'.$sort[0], $sort[1]);
 
         \Log::info($dir->toSql());

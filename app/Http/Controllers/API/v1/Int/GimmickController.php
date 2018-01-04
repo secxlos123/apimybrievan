@@ -117,7 +117,6 @@ class GimmickController extends Controller
     {
         $baseRequest = $request->all();
 		
-		return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
     }
