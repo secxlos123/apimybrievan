@@ -33,6 +33,6 @@ class CreateCrmProductTypeTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('crm_product_types');
     }
 }
