@@ -182,7 +182,7 @@ class MarketingController extends Controller
         //
     }
 
-    public function customer_nik($nik)
+    public function customer_nik(Request $request, $nik)
     {
       $customer_nik = RestwsHc::setBody([
         'request' => json_encode([
@@ -199,7 +199,7 @@ class MarketingController extends Controller
       return $customer_nik;
     }
 
-    public function customer_cif($cif)
+    public function customer_cif(Request $request, $cif)
     {
       $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // $apiPdmToken = $apiPdmToken[0];
@@ -219,10 +219,7 @@ class MarketingController extends Controller
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
 
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $detailByCif['data']['info'][0]
-        ]);
+        return $detailByCif['data']['info'][0];
       }
     }
 }
