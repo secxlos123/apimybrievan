@@ -62,6 +62,8 @@ class marketingActivityController extends Controller
       // print_r($pemasar);
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->with('marketing')->get() as $activity) {
+        $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+        $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
@@ -80,7 +82,9 @@ class marketingActivityController extends Controller
           'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
           'desc' => $activity->desc,
           'address' => $activity->address,
-          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main'),
+          'followup'=> $followUp,
+          'rescheduled'=> $rescheduled,
           ];
       }
 
@@ -137,6 +141,8 @@ class marketingActivityController extends Controller
       // print_r($pemasar);
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
+        $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+        $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
@@ -154,7 +160,9 @@ class marketingActivityController extends Controller
           'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
           'desc' => $activity->desc,
           'address' => $activity->address,
-          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+          'ownership' => ($activity->pn_join == $pn ? 'join' : 'main'),
+          'followup'=> $followUp,
+          'rescheduled'=> $rescheduled,
           ];
       }
 
@@ -440,6 +448,8 @@ class marketingActivityController extends Controller
 
       $marketingActivity = [];
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
+        $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+        $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
@@ -457,6 +467,8 @@ class marketingActivityController extends Controller
           'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
           'desc' => $activity->desc,
           'address' => $activity->address,
+          'followup'=> $followUp,
+          'rescheduled'=> $rescheduled,
           ];
       }
 
