@@ -56,22 +56,22 @@ class SelectUkerController extends Controller
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
-   //     $listExisting = $this->ListBranch($data, $token);
+        $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $token
+            'contents' => $listExisting
         ]);
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
         
         $token = $apiPdmToken['access_token'];
-     //   $listExisting = $this->ListBranch($data, $token);
+        $listExisting = $this->ListBranch($data, $token);
 
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $token
+            'contents' => $listExisting
         ]);
       }
 	}
@@ -81,7 +81,7 @@ class SelectUkerController extends Controller
       $client = new Client();
 	   $return =  Brispot::setEndpoint('region/v3')
 				->setHeaders([
-					'Authorization' => $token,
+					'Authorization' => 'Bearer '.$token,
 				])
                 ->setBody([
                 ])->get('form_params');
