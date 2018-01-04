@@ -54,11 +54,11 @@ class marketingActivityController extends Controller
 
       if ($ao != null && $fo != null) {
         $result = array_merge_recursive($fo,$ao);
+        $pemasar = array_column($result, 'SNAME','PERNR' );
       } else {
-        $result = [];
+        $pemasar = [];
       }
 
-      $pemasar = array_column($result, 'SNAME','PERNR' );
       // print_r($pemasar);
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
@@ -349,14 +349,15 @@ class marketingActivityController extends Controller
         'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
-      $fo_list = array_column($list_fo['responseData'], 'PERNR');
-      $ao_list = array_column($list_ao['responseData'], 'PERNR');
-
-      $list_pn = array_merge_recursive($fo_list, $ao_list);
-      // print_r($list_pn);die();
-      // $marketingActivity = MarketingActivity::get();
-      $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
-      $pn_name = array_column($result, 'SNAME', 'PERNR');
+      if($fo_list!=NULL && $ao_list!=NULL){
+        $fo_list = array_column($list_fo['responseData'], 'PERNR');
+        $ao_list = array_column($list_ao['responseData'], 'PERNR');
+        $list_pn = array_merge_recursive($fo_list, $ao_list);
+        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
+        $pn_name = array_column($result, 'SNAME', 'PERNR');
+      } else {
+        $list_pn = '';
+      }
 
       $marketingActivity = [];
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
