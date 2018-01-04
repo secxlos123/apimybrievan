@@ -65,7 +65,7 @@ class marketingActivityController extends Controller
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          'pn_name' => $pemasar[$activity->pn],
+          'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -76,7 +76,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => $pemasar[$activity->pn_join],
+          'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
           'desc' => $activity->desc,
           'address' => $activity->address,
           'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
@@ -164,7 +164,6 @@ class marketingActivityController extends Controller
     public function store_by_pinca(Request $request)
     {
       $data['pn'] = $request['pn'];
-      $data['pn_name'] = $request['pn_name'];
       $data['object_activity'] = $request['object_activity'];
       $data['action_activity'] = $request['action_activity'];
       $data['start_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
@@ -181,7 +180,6 @@ class marketingActivityController extends Controller
       $data['address'] = $request['address'];
       $data['marketing_id'] = $request['marketing_id'];
       $data['pn_join'] = $request['pn_join'];
-      $data['join_name'] = $request['join_name'];
       $data['desc'] = $request['desc'];
 
       $save = MarketingActivity::create($data);
@@ -359,12 +357,12 @@ class marketingActivityController extends Controller
       // $marketingActivity = MarketingActivity::get();
       $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
       $pn_name = array_column($result, 'SNAME', 'PERNR');
-      
+
       $marketingActivity = [];
       foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
         $marketingActivity[]= [
           'id' => $activity->id,
-          'pn' => $activity->pn,
+          'pn' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
           'pn_name' => $pn_name[$activity->pn],
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
@@ -376,7 +374,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => $pn_name[$activity->pn_join],
+          'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
           'desc' => $activity->desc,
           'address' => $activity->address,
           ];

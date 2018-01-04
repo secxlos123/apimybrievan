@@ -17,8 +17,6 @@ class MarketingActivity extends Model
       'address',
       'marketing_id',
       'pn_join',
-      'pn_name',
-      'join_name',
       'desc'
     ];
 
