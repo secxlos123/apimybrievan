@@ -357,10 +357,13 @@ class marketingActivityController extends Controller
           $followUp['target_commitment_date'] = $request['target_commitment_date'];
         }
 
+        $save = MarketingActivityFollowup::create($followUp);
+
         $updateMarketingStatus['status'] = $request['fu_result'];
 
-        $save = MarketingActivityFollowup::create($followUp);
-        $marketing->update($updateMarketingStatus);
+        if($request['fu_result']=='Done' || $request['fu_result']=='Batal'){
+          $marketing->update($updateMarketingStatus);
+        }
 
         if ($save) {
             return response()->success([
