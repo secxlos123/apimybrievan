@@ -49,7 +49,7 @@ class marketingActivityController extends Controller
         'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
-      if ($ao != null && $fo != null) {
+      if ($list_ao != null && $list_fo != null) {
         $ao = $list_ao['responseData'];
         $fo = $list_fo['responseData'];
 
