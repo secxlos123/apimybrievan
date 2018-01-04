@@ -164,7 +164,6 @@ class marketingActivityController extends Controller
     public function store_by_pinca(Request $request)
     {
       $data['pn'] = $request['pn'];
-      $data['pn_name'] = $request['pn_name'];
       $data['object_activity'] = $request['object_activity'];
       $data['action_activity'] = $request['action_activity'];
       $data['start_date'] = date('Y-m-d H:i:s', strtotime($request['start_date'].$request['start_time']));
@@ -181,7 +180,6 @@ class marketingActivityController extends Controller
       $data['address'] = $request['address'];
       $data['marketing_id'] = $request['marketing_id'];
       $data['pn_join'] = $request['pn_join'];
-      $data['join_name'] = $request['join_name'];
       $data['desc'] = $request['desc'];
 
       $save = MarketingActivity::create($data);
