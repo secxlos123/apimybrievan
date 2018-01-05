@@ -126,16 +126,14 @@ class GimmickController extends Controller
     public function store( GimmickRequest $request )
     {
         $baseRequest = $request->all();
+		return $baseRequest;die();
 		
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		
 		$x = $baseRequest['gimmick']['countminus1'];\Log::info($x);
 		for($i=0;$i<=$x;$i++){
-			 \Log::info('heres');
 			 $detaildata = $this->detailadd(json_decode($baseRequest['gimmick']['data'.$i]));
-        \Log::info($detaildata);
-			 $GIMMICK_DETAIL = GIMMICK_DETAIL::create( $detaildata );
-			 \Log::info($GIMMICK_DETAIL);
+        	 $GIMMICK_DETAIL = GIMMICK_DETAIL::create( $detaildata );
 		}
 		return $GIMMICK_DETAIL;
     }
