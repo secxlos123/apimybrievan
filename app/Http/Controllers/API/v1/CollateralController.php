@@ -18,6 +18,7 @@ use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
 use App\Http\Requests\API\v1\Collateral\CreateOtsDoc;
 use App\Models\Property;
 use App\Models\EForm;
+use App\Models\VisitReport;
 
 class CollateralController extends Controller
 {
@@ -97,8 +98,9 @@ class CollateralController extends Controller
     {
       $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()->toArray();
       $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
+      $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
 
-      $data = array_merge($ots,$nonkerjasama);
+      $data = array_merge($ots,$nonkerjasama,$visitreport);
       return $this->makeResponse(
         $data
       );

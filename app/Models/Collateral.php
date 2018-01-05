@@ -198,7 +198,6 @@ class Collateral extends Model implements AuditableContract
                 if ($request->has('status')) $collaterals->where('status', $request->input('status'));
 
             })
-            ->join('visit_reports', 'collateral_view_table.eform_id', '=', 'visit_reports.eform_id')
             ->select('*')
             ->orderBy($sort[0], $sort[1]);
     }
@@ -214,7 +213,6 @@ class Collateral extends Model implements AuditableContract
     {
 
         return $query->from('collateral_view_table')
-            ->join('visit_reports', 'collateral_view_table.eform_id', '=', 'visit_reports.eform_id')
             ->where('developer_id',$developerId)->where('property_id',$propertyId);
     }
 }
