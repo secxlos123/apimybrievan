@@ -229,6 +229,8 @@ class marketingActivityController extends Controller
       $save = MarketingActivity::create($data);
 
       if ($save) {
+          $marketing_activity_type = Marketing::find($request['marketing_id']);
+          $request['marketing_activity_type'] = $marketing_activity_type->activity_type;
           return response()->success([
               'message' => 'Data Activity berhasil ditambah.',
               'contents' => collect($save)->merge($request->all()),
