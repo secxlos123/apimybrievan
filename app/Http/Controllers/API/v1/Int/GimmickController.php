@@ -129,11 +129,13 @@ class GimmickController extends Controller
 		
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		
-		$x = $baseRequest['gimmick']['countminus1'];
+		$x = $baseRequest['gimmick']['countminus1'];\Log::info($x);
 		for($i=0;$i<=$x;$i++){
+			 \Log::info('heres');
 			 $detaildata = $this->detailadd(json_decode($baseRequest['gimmick']['data'.$i]));
         \Log::info($detaildata);
 			 $GIMMICK_DETAIL = GIMMICK_DETAIL::create( $detaildata );
+			 \Log::info($GIMMICK_DETAIL);
 		}
 		return $GIMMICK_DETAIL;
     }
