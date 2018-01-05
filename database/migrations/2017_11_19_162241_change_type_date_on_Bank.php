@@ -25,8 +25,6 @@ class ChangeTypeDateOnBank extends Migration
      */
     public function down()
     {
-        Schema::table('bank_statements', function (Blueprint $table) {
-            $table->date( 'date' )->nullable()->change();
-        });
+        DB::statement('ALTER TABLE bank_statements ALTER date TYPE DATE USING date::date');
     }
 }

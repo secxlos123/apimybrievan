@@ -33,6 +33,6 @@ class CreateCrmActivityTypeTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('crm_activity_types');
     }
 }

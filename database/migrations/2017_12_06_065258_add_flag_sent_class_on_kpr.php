@@ -25,6 +25,7 @@ class AddFlagSentClassOnKpr extends Migration
      */
     public function down()
     {
+        DB::statement('DROP VIEW IF EXISTS collateral_view_table');
         Schema::table('kpr', function (Blueprint $table) {
             $table->dropColumn('is_sent');
         });

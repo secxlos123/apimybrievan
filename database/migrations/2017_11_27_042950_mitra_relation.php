@@ -19,8 +19,7 @@ class MitraRelation extends Migration
 			$table->text( 'NAMA_INSTANSI' )->nullable();
 			$table->text( 'idMitrakerja' )->nullable();
 			$table->text( 'segmen' )->nullable();
-			$table->foreign( 'kode' )
-                ->references( 'kode' )->on( 'mitra_relation' );
+			$table->foreign( 'kode' )->references( 'kode' )->on( 'mitra_relation' );
         } );
 
     }
@@ -33,6 +32,10 @@ class MitraRelation extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('mitra_relation', function (Blueprint $table) {
+            $table->dropColumn([
+                'BRANCH_CODE','NAMA_INSTANSI','idMitrakerja','segmen','kode'
+            ]);
+        });
     }
 }

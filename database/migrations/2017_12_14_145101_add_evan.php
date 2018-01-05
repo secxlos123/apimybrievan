@@ -27,6 +27,10 @@ class AddEvan extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn([
+                'jumlah_debitur','jumlah_pekerja','scoring_mitra'
+            ]);
+        });
     }
 }

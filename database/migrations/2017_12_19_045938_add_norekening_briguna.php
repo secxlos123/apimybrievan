@@ -26,6 +26,10 @@ class AddNorekeningBriguna extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn([
+                'cif','no_rekening'
+            ]);
+        });
     }
 }
