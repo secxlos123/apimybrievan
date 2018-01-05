@@ -160,7 +160,8 @@ class Collateral extends Model implements AuditableContract
           ->with('otsSeven')
           ->with('otsEight')
           ->with('otsNine')
-          ->with('otsTen');
+          ->with('otsTen')
+          ->with('otsDoc');
     }
 
     /**

@@ -35,6 +35,12 @@ class OpiTambah extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn([
+                'no_npwp','no_dan_tanggal_sk_akhir','no_dan_tanggal_sk_awal',
+                'branch_name','baru_atau_perpanjang','total_exposure',
+                'program_asuransi','kredit_take_over','pemrakarsa_name'
+            ]);
+        });
     }
 }
