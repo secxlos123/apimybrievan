@@ -117,6 +117,16 @@ class GimmickController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
+	 
+	  function detailadd($data){
+		$array = [
+				'first_month'=>$data[0],
+				'last_month'=>$data[1],
+				'persen_bunga'=>$data[2],
+				'id_header'=>$data[3],
+		];
+		return $array;
+	}
     public function store( GimmickRequest $request )
     {
          $baseRequest = $request->all();
