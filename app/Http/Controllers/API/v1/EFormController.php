@@ -47,6 +47,17 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	 public function delete( Request $request )
+    {
+        \Log::info($request->all());
+          $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
+		  $briguna = $eform->delete();
+          $eform = EForm::where('eform_id', $request->id )->findOrFail();
+		  $eform = $eform->delete();
+        return response()->success( [
+            'contents' => 'Hapus berhasil'
+        ],200 );
+    }
     public function index( Request $request )
     {
         \Log::info($request->all());
