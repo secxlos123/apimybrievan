@@ -52,6 +52,7 @@ class CollateralController extends Controller
     public function index()
     {
       $user = \RestwsHc::getUser();
+      \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
       if ($user['role'] != 'collateral manager') {
@@ -67,6 +68,7 @@ class CollateralController extends Controller
     public function indexNon()
     {
       $user = \RestwsHc::getUser();
+      \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
       if ($user['role'] != 'collateral manager') {
