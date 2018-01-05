@@ -193,7 +193,7 @@ class GIMMICK extends Model
 			
 //			if ( $request->has('tgl_mulai')&&$request->has('tgl_berakhir') ) {
                 $dir = $dir->where('gimmick.tgl_mulai','<', $hari_ini);
-                $dir = $dir->where('gimmick.tgl_berakhir','<', $hari_ini)	;
+                $dir = $dir->where('gimmick.tgl_berakhir','<', $hari_ini);
 //			}
         } );
 		 $dir = $dir->join('gimmick_detail', 'gimmick_detail.id_header', '=', 'gimmick.id_header');
