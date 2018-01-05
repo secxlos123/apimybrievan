@@ -55,7 +55,7 @@ class CollateralController extends Controller
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
-      if ($user['role'] != 'collateral manager') {
+      if ($user['position'] != 'COLLATERAL APPRAISAL') {
         $data->where('staff_id',(int)$this->request->header('pn'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
@@ -71,7 +71,7 @@ class CollateralController extends Controller
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
-      if ($user['role'] != 'collateral manager') {
+      if ($user['position'] != 'COLLATERAL APPRAISAL') {
         $data->where('staff_id',(int) $this->request->header('pn'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
