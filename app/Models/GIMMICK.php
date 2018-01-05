@@ -33,7 +33,7 @@ class GIMMICK extends Model
 		'gimmick_name','gimmick_level','area_level','segmen_level','mitra_kerjasama',
 		'mitra_kerjasama2','mitra_kerjasama3','mitra_kerjasama4','tgl_mulai',
 		'tgl_berakhir','payroll','admin_fee','admin_minimum','provisi_fee','pemeriksa','jabatan_pemeriksa','id_header',
-		'waktu_minimum','waktu_maksimum','dir_rpc','asuransi_jiwa','suku_bunga','first_month','last_month','suku_bunga','pemutus_name','jabatan','persen_bunga'];
+		'waktu_minimum','waktu_maksimum','dir_rpc','asuransi_jiwa','suku_bunga','first_month','last_month','suku_bunga','pemutus_name','jabatan'];
 	
     /**
      * The attributes that should be hidden for arrays.
