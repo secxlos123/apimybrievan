@@ -18,7 +18,6 @@ class CreateDirrpc extends Migration
             $table->text( 'debt_name' )->nullable();
             $table->text( 'maintance' )->nullable();
             $table->text( 'action' )->nullable();
-            $table->text( 'no' )->nullable();
             $table->text( 'pemutus_name' )->nullable();
             $table->text( 'jabatan' )->nullable();
             $table->text( 'pemeriksa' )->nullable();
