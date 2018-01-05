@@ -11,6 +11,7 @@ use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\User;
 use App\Models\GIMMICK;
+use App\Models\GIMMICK_DETAIL;
 use DB;
 
 class GimmickController extends Controller
@@ -118,11 +119,16 @@ class GimmickController extends Controller
      */
     public function store( GimmickRequest $request )
     {
-        $baseRequest = $request->all();
+         $baseRequest = $request->all();
 		
-		//return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
-		return $gimmick;
+		
+		$x = $baseRequest['gimmick']['countminus1'];
+		for($i=0;$i<=$x;$i++){
+			 $detaildata = $this->detailadd(json_decode($baseRequest['gimmick']['data'.$i]));
+        	 $GIMMICK_DETAIL = GIMMICK_DETAIL::create( $detaildata );
+		}
+		return $GIMMICK_DETAIL;
     }
 
 	 public function save( GimmickRequest $request )
