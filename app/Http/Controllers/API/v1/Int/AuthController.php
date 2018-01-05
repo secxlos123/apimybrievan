@@ -100,7 +100,7 @@ class AuthController extends Controller
 
                 if (ENV('APP_ENV') == 'local') {
                     $branch = '12';
-                    $userservices = $this->userservices->where(['pn' => $pn, 'password' => md5($request->password) ])->first();
+                    $userservices = $this->userservices->where(['pn' => $pn ])->first();
                     if(!$userservices){
                         return response()->error( [
                             'message' => 'PN atau Password Salah',
@@ -109,7 +109,14 @@ class AuthController extends Controller
 
                     }else {
                          return response()->success( [
-                            'message' => 'Login Sukses',
+                            'message' => [
+                                'token' => 'Bearer ' . $userservices[ 'password' ],
+                                'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
+                                'name' => $userservices[ 'name' ],
+                                'branch' => $userservices['branch_id'],
+                                'role' => $userservices['role'],
+                                'position' => $userservices['posisi'],
+                                'uker' => $userservices['tipe_uker']],
                             'contents'=> [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
                                 'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
