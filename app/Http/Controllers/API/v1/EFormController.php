@@ -473,24 +473,22 @@ class EFormController extends Controller
         }
 
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
-        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/        
-        $usersModel->notify(new PengajuanKprNotification($kpr));
-
+        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
         // if($role == 'nasabah'){
-        //     $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-        //     $notificationBuilder->setBody('Pengajuan KPR Baru')
-        //                         ->setSound('default');
+            // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            // $notificationBuilder->setBody('Pengajuan KPR Baru')
+            //                     ->setSound('default');
 
-        //     $notification = $notificationBuilder->build();
-        //     $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
+            // $notification = $notificationBuilder->build();
+            // $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
 
-        //     $topic = new Topics();
-        //     $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
+            // $topic = new Topics();
+            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
 
-        //     $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        //     $topicResponse->isSuccess();
-        //     $topicResponse->shouldRetry();
-        //     $topicResponse->error();            
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
         // }
 
         return response()->success( [

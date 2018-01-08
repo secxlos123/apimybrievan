@@ -87,7 +87,7 @@ class CreateOts extends FormRequest
         'letter.number' => 'required',
         'letter.date' => 'required|date',
         'letter.on_behalf_of' => 'required',
-        'letter.duration_land_authorization' => 'required',
+        'letter.duration_land_authorization' => '',
         'letter.bpn_name' => 'required'
       ];
     }

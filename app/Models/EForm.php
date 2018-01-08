@@ -234,7 +234,7 @@ class EForm extends Model implements AuditableContract
             return false;
         } else {
             if ($this->briguna) {
-                if ($this->score) {
+                if ($this->briguna->score) {
                     return true;
                 }
                 return false;
