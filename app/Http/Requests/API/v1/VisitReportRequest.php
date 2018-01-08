@@ -40,7 +40,7 @@ class VisitReportRequest extends BaseRequest
             'source' => 'required|in:fixed,nonfixed',
             'income' => 'required_if:source,nonfixed',
             'income_salary' => 'required_if:source,fixed',
-            'income_allowance' => 'required_if:source,fixed',
+            'income_allowance' => '',
             'mutations' => 'required_if:source,nonfixed',
             'mutations.*.bank' => 'required_if:source,nonfixed',
             'mutations.*.number' => 'required_if:source,nonfixed',

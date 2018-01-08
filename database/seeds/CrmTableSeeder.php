@@ -45,7 +45,7 @@ class CrmTableSeeder extends Seeder
         array('id' => 4, 'name' => 'pick_up', 'display_name' => 'Pick Up Dana Baru / Top Up'),
         array('id' => 5, 'name' => 'collection_document', 'display_name' => 'Collection Dokumen'),
         array('id' => 6, 'name' => 'maintenance', 'display_name' => 'Maintenance'),
-        array('id' => 7, 'name' => 'sosialisai', 'display_name' => 'Sosialisai'),
+        array('id' => 7, 'name' => 'sosialisasi', 'display_name' => 'Sosialisasi'),
         array('id' => 8, 'name' => 'implementasi', 'display_name' => 'Implementasi'),
         array('id' => 9, 'name' => 'complain_handling', 'display_name' => 'Complain Handling'),
       ));
