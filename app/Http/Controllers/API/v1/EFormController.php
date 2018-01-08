@@ -47,6 +47,17 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	 public function hapuseform( Request $request )
+    {
+        \Log::info($request->all());
+          $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
+		  $briguna = $eform->delete();
+          $eform = EForm::where('eform_id', $request->id )->findOrFail();
+		  $eform = $eform->delete();
+        return response()->success( [
+            'contents' => 'Hapus berhasil'
+        ],200 );
+    }
     public function index( Request $request )
     {
         \Log::info($request->all());
@@ -381,6 +392,7 @@ class EFormController extends Controller
                     \Log::info($kpr);
         } else {
             $dataEform =  EForm::where('nik', $request->nik)->get();
+            // $dataEform = [];
             // $role = $baseRequest['role'];
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
@@ -453,29 +465,30 @@ class EFormController extends Controller
 
         // //  Push Notification To Pinca
 
-        // $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
-        //                                ->whereNull('read_at')
-        //                                ->first();
+        $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
+                                       ->whereNull('read_at')
+                                       ->first();
+        if(@$notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
 
-        // $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
-        // $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/        
-        // $usersModel->notify(new PengajuanKprNotification($kpr));
-
+        $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
         // if($role == 'nasabah'){
-        //     $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-        //     $notificationBuilder->setBody('Pengajuan KPR Baru')
-        //                         ->setSound('default');
+            // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            // $notificationBuilder->setBody('Pengajuan KPR Baru')
+            //                     ->setSound('default');
 
-        //     $notification = $notificationBuilder->build();
-        //     $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
+            // $notification = $notificationBuilder->build();
+            // $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
 
-        //     $topic = new Topics();
-        //     $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
+            // $topic = new Topics();
+            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
 
-        //     $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        //     $topicResponse->isSuccess();
-        //     $topicResponse->shouldRetry();
-        //     $topicResponse->error();            
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
         // }
 
         return response()->success( [
@@ -610,19 +623,19 @@ class EFormController extends Controller
 
         DB::commit();
 
-        $notificationBuilder = new PayloadNotificationBuilder('EForm Norification');
-        $notificationBuilder->setBody('E-Form berhasil di disposisi')
-                            ->setSound('default');
+        // $notificationBuilder = new PayloadNotificationBuilder('EForm Norification');
+        // $notificationBuilder->setBody('E-Form berhasil di disposisi')
+        //                     ->setSound('default');
 
-        $notification = $notificationBuilder->build();
+        // $notification = $notificationBuilder->build();
 
-        $topic = new Topics();
-        $topic->topic('testing')->orTopic('ao_'.$ao_id)->orTopic($pn);
+        // $topic = new Topics();
+        // $topic->topic('testing')->orTopic('ao_'.$ao_id)->orTopic($pn);
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        $topicResponse->isSuccess();
-        $topicResponse->shouldRetry();
-        $topicResponse->error();
+        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        // $topicResponse->isSuccess();
+        // $topicResponse->shouldRetry();
+        // $topicResponse->error();
 
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Crm\Marketing\CreateRequest;
 // use App\Http\Request\API\v1\Crm\Marketing\UpdateRequest;
 use App\Models\Crm\Marketing;
+use App\Models\Crm\MarketingActivity;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
@@ -27,7 +28,67 @@ class MarketingController extends Controller
       $pn = $request->header('pn');
       // $marketings = Marketing::where('pn',$pn)->get();
       $marketings = [];
-      foreach (Marketing::where('pn',$pn)->get() as $marketing) {
+      foreach (Marketing::where('pn',$pn)->with('activity')->get() as $marketing) {
+        // $list_ao = [];
+        $list_ao = RestwsHc::setBody([
+          'request' => json_encode([
+            'requestMethod' => 'get_list_tenaga_pemasar',
+            'requestData' => [
+              'id_user' => $request->header('pn'),
+              'kode_branch' => $request->header('branch')
+            ],
+          ])
+        ])->setHeaders([
+          'Authorization' => $request->header('Authorization')
+        ])->post('form_params');
+
+        // $list_fo = [];
+        $list_fo = RestwsHc::setBody([
+          'request' => json_encode([
+            'requestMethod' => 'get_list_fo',
+            'requestData' => [
+              'id_user' => $request->header('pn'),
+              'kode_branch' => $request->header('branch')
+            ],
+          ])
+        ])->setHeaders([
+          'Authorization' => $request->header('Authorization')
+        ])->post('form_params');
+
+        if (is_array($list_ao)  && is_array($list_fo)) {
+          $ao = $list_ao['responseData'];
+          $fo = $list_fo['responseData'];
+
+          $result = array_merge_recursive($fo,$ao);
+          $pemasar = array_column($result, 'SNAME','PERNR' );
+        } else {
+          $pemasar = [];
+        }
+
+        $marketingActivity = [];
+        foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
+          $marketingActivity[]= [
+            'id' => $activity->id,
+            'pn' => $activity->pn,
+            'marketing_activity_type' => $activity->marketing->activity_type,
+            'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
+            'object_activity' => $activity->object_activity,
+            'action_activity' => $activity->action_activity,
+            'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+            'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+            'start_time' => date('H:i', strtotime($activity->start_date)),
+            'end_time' => date('H:i', strtotime($activity->end_date)),
+            'longitude' => $activity->longitude,
+            'latitude' => $activity->latitude,
+            'marketing_id' => $activity->marketing_id,
+            'pn_join' => $activity->pn_join,
+            'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
+            'desc' => $activity->desc,
+            'address' => $activity->address,
+            'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+            ];
+        }
+
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
@@ -39,6 +100,7 @@ class MarketingController extends Controller
           'nik'=> $marketing->nik,
           'cif'=> $marketing->cif,
           'status'=> $marketing->status,
+          'activities'=>$marketingActivity,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
           'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
@@ -93,6 +155,30 @@ class MarketingController extends Controller
       // $marketings = Marketing::where('pn',$pn)->get();
       $marketings = [];
       foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
+        $marketingActivity = [];
+        foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
+          $marketingActivity[]= [
+            'id' => $activity->id,
+            'pn' => $activity->pn,
+            'marketing_activity_type' => $activity->marketing->activity_type,
+            'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
+            'object_activity' => $activity->object_activity,
+            'action_activity' => $activity->action_activity,
+            'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+            'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+            'start_time' => date('H:i', strtotime($activity->start_date)),
+            'end_time' => date('H:i', strtotime($activity->end_date)),
+            'longitude' => $activity->longitude,
+            'latitude' => $activity->latitude,
+            'marketing_id' => $activity->marketing_id,
+            'pn_join' => $activity->pn_join,
+            'join_name' => array_key_exists($activity->pn_join,$pn_name)? $pn_name[$activity->pn_join]: '',
+            'desc' => $activity->desc,
+            'address' => $activity->address,
+            'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+            ];
+        }
+
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
@@ -105,6 +191,7 @@ class MarketingController extends Controller
           'nik'=> $marketing->nik,
           'cif'=> $marketing->cif,
           'status'=> $marketing->status,
+          'activities'=> $marketingActivity,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
           'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
