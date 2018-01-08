@@ -22,7 +22,7 @@ class AccountController extends Controller
     public function index(Request $request)
     {
       $client = new Client();
-      $requestLeads = $client->request('POST', 'http://10.35.65.111/skpp_concept/restws_hc',
+      $requestLeads = $client->request('POST', config('restapi.restwshc'),
         [
           'headers' =>
           [
@@ -131,7 +131,7 @@ class AccountController extends Controller
     public function getExistingByFo($data, $token)
     {
       $client = new Client();
-      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+      $requestListExisting = $client->request('GET', config('restapi.apipdm').'/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
@@ -147,7 +147,7 @@ class AccountController extends Controller
     public function getBranchKanwil(Request $request)
     {
       $client = new Client();
-      $requestLeads = $client->request('POST', 'http://10.35.65.111/skpp_concept/restws_hc',
+      $requestLeads = $client->request('POST', config('restapi.restwshc'),
         [
           'headers' =>
           [
