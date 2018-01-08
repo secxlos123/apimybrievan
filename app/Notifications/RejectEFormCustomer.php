@@ -65,4 +65,23 @@ class RejectEFormCustomer extends Notification
             'created_at' => $this->eForm->created_at,
         ];
     }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toDatabase($notifiable)
+    {
+        return [
+            'eform_id' => $this->eForm->id,
+            'user_id' => $notifiable->id,
+            'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
+            'nik' => $this->eForm->nik,
+            'ref_number' => $this->eForm->ref_number,
+            'branch_id' => $this->eForm->branch_id,
+            'created_at' => $this->eForm->created_at,
+        ];
+    }
 }

@@ -731,12 +731,61 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $verify = EForm::verify( $token, $status );
-
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+
+                    // Push Notification
+
+                    $notificationIsRead =  $this->userNotification->where('eform_id', $verify['contents']['id'])
+                                                   ->whereNull('read_at')
+                                                   ->first();
+                    if(@$notificationIsRead){
+                        $notificationIsRead->markAsRead();
+                    }
+
+                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
+                    $usersModel->notify(new ApproveEFormCustomer($verify['contents']));
+
+                    // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                    // $notificationBuilder->setBody('Pengajuan anda telah disetujui.')
+                    //                     ->setSound('default');
+
+                    // $notification = $notificationBuilder->build();
+                    // $topic = new Topics();
+                    // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
+
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                    // $topicResponse->isSuccess();
+                    // $topicResponse->shouldRetry();
+                    // $topicResponse->error();
+                }else{
+
+                    // Push Notification
+                    $notificationIsRead =  $this->userNotification->where('eform_id', $verify['contents']['id'])
+                                                   ->whereNull('read_at')
+                                                   ->first();
+                    if(@$notificationIsRead){
+                        $notificationIsRead->markAsRead();
+                    }
+
+                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
+                    $usersModel->notify(new RejectEFormCustomer($verify['contents']));
+
+                    // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                    // $notificationBuilder->setBody('Pengajuan anda telah ditolak.')
+                    //                     ->setSound('default');
+
+                    // $notification = $notificationBuilder->build();
+                    // $topic = new Topics();
+                    // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
+
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                    // $topicResponse->isSuccess();
+                    // $topicResponse->shouldRetry();
+                    // $topicResponse->error();
                 }
 
                 event( new VerifyEForm( $verify['contents'] ) );
@@ -747,7 +796,6 @@ class EFormController extends Controller
         } else {
             DB::rollback();
             $code = 404;
-
         }
 
 
