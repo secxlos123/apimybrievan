@@ -55,7 +55,7 @@ class MarketingController extends Controller
           'Authorization' => $request->header('Authorization')
         ])->post('form_params');
 
-        if ($list_ao != null && $list_fo != null) {
+        if (is_array($list_ao)  && is_array($list_fo)) {
           $ao = $list_ao['responseData'];
           $fo = $list_fo['responseData'];
 
@@ -172,7 +172,7 @@ class MarketingController extends Controller
             'latitude' => $activity->latitude,
             'marketing_id' => $activity->marketing_id,
             'pn_join' => $activity->pn_join,
-            'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
+            'join_name' => array_key_exists($activity->pn_join,$pn_name)? $pn_name[$activity->pn_join]: '',
             'desc' => $activity->desc,
             'address' => $activity->address,
             'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')

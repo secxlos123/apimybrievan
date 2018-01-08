@@ -18,6 +18,7 @@ use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
 use App\Http\Requests\API\v1\Collateral\CreateOtsDoc;
 use App\Models\Property;
 use App\Models\EForm;
+use App\Models\VisitReport;
 
 class CollateralController extends Controller
 {
@@ -51,9 +52,10 @@ class CollateralController extends Controller
     public function index()
     {
       $user = \RestwsHc::getUser();
+      \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
-      if ($user['role'] != 'collateral manager') {
+      if ($user['position'] != 'COLLATERAL APPRAISAL') {
         $data->where('staff_id',(int)$this->request->header('pn'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
@@ -66,9 +68,10 @@ class CollateralController extends Controller
     public function indexNon()
     {
       $user = \RestwsHc::getUser();
+      \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
-      if ($user['role'] != 'collateral manager') {
+      if ($user['position'] != 'COLLATERAL APPRAISAL') {
         $data->where('staff_id',(int) $this->request->header('pn'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
@@ -97,8 +100,9 @@ class CollateralController extends Controller
     {
       $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()->toArray();
       $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
-
-      $data = array_merge($ots,$nonkerjasama);
+      $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
+      unset($visitreport['id']);
+      $data = array_merge($ots,$nonkerjasama,$visitreport);
       return $this->makeResponse(
         $data
       );
