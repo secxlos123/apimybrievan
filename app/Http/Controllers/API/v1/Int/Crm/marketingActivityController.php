@@ -222,7 +222,7 @@ class marketingActivityController extends Controller
 
       $data['address'] = $request['address'];
       $data['marketing_id'] = $request['marketing_id'];
-      $data['pn_join'] = $request['pn_join'];
+      $data['pn_join'] = ($request['pn_join']!='' ? $request['pn_join'] : 'null');
       // $data['join_name'] = $request['join_name'];
       $data['desc'] = $request['desc'];
 
@@ -265,7 +265,7 @@ class marketingActivityController extends Controller
 
       $data['address'] = $request['address'];
       $data['marketing_id'] = $request['marketing_id'];
-      $data['pn_join'] = $request['pn_join'];
+      $data['pn_join'] = ($request['pn_join']!='' ? $request['pn_join'] : 'null');
       $data['desc'] = $request['desc'];
 
       $save = MarketingActivity::create($data);
