@@ -95,10 +95,28 @@ class AccountController extends Controller
 
     public function existingFo(Request $request)
     {
-      $data['branch'] = $request->header('branch');
-      $data['pn'] = $request->header('pn');
-      // $apiPdmToken = $apiPdmToken[0];
-      // dd(count(apiPdmToken::all()));
+      $branch = $request->header('branch');
+      $pn = $request->header('pn');
+
+      $client = new Client();
+      $requestListExisting = $client->request('GET', config('restapi.apipdm').'/customer/saving/'.$branch.'/'.$pn,
+        [
+          'headers' =>
+          [
+            'Authorization' => 'Bearer '.$this->get_token()
+          ]
+        ]
+      );
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
+
+      return response()->success( [
+          'message' => 'Sukses',
+          'contents' => $listExisting['data']
+      ]);
+    }
+
+    public function get_token()
+    {
       if ( count(apiPdmToken::all()) > 0 ) {
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       } else {
@@ -108,40 +126,8 @@ class AccountController extends Controller
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
-        $listExisting = $this->getExistingByFo($data, $token);
-
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $listExisting['data']
-        ]);
-      } else {
-        $briConnect = $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-
-        $token = $apiPdmToken['access_token'];
-        $listExisting = $this->getExistingByFo($data, $token);
-
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $listExisting['data']
-        ]);
+        return $token;
       }
-    }
-
-    public function getExistingByFo($data, $token)
-    {
-      $client = new Client();
-      $requestListExisting = $client->request('GET', config('restapi.apipdm').'/customer/saving/'.$data['branch'].'/'.$data['pn'],
-        [
-          'headers' =>
-          [
-            'Authorization' => 'Bearer '.$token
-          ]
-        ]
-      );
-      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
-
-      return $listExisting;
     }
 
     public function getBranchKanwil(Request $request)
