@@ -28,19 +28,20 @@ class NotificationController extends Controller
    
     public function unread(Request $request)
     {
-        $branch_id = request()->header( 'branch_id' );
-        $role = request()->header( 'role' );
-    	$pn = request()->header( 'pn' );
-       /* \Log::info($role);
-        die();*/
+        $branch_id = ( request()->header( 'branch_id' ) != '' ) ? request()->header( 'branch_id' ) : 0 ;
+        $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
+        $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
+    	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
+      
         $ArrGetDataNotification = [];
-        if($branch_id !=  ''){
-            $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn )->get();
+        // if($branch_id !=  ''){
+            $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id)->get();
             if($getDataNotification){
                 foreach ($getDataNotification as $value) {
                     $ArrGetDataNotification[] = [
                                             'id' => $value->id,
-                                            'subject' => $value->getSubject($value->is_approved),
+                                            'url' => $value->getSubject($value->is_approved, $value->ref_number)['url'],
+                                            'subject' => $value->getSubject($value->is_approved, $value->ref_number)['message'],
                                             'type' => $value->type,
                                             'notifiable_id' => $value->notifiable_id,
                                             'notifiable_type' => $value->notifiable_type,
@@ -53,10 +54,10 @@ class NotificationController extends Controller
                                         ];
                 }
             }
-            
-                 
-        }
-        
+        // }
+          // \Log::info($ArrGetDataNotification);
+          // \Log::info($branch_id .' - '.$role.' - '.$pn.' - '.$user_id);
+        // die();
     	return  response()->success( [
             'message' => 'Sukses',
             'contents' => $ArrGetDataNotification

@@ -43,6 +43,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   // Route Activity by marketing
   Route::post('/activity/by_marketing', 'marketingActivityController@activity_by_marketing');
 
+  // Route Activity by customer
+  Route::post('/activity/by_customer', 'marketingActivityController@activity_by_customer');
+
   // Route reschedule Activity
   Route::post('/activity/reschedule', 'marketingActivityController@reSchedule')->name('crm.reschedule');
 

@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
 
-class ApproveEFormCustomer extends Notification
+class VerificationRejectFormNasabah extends Notification
 {
     use Queueable;
 

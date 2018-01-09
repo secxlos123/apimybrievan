@@ -52,6 +52,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	 * Route for customer or developer require authentication
 	 */
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
+		Route::get( 'customer-data/{ref_number}/{ids}', 'CustomerEksController@getDataCustomer' );
 
 		/**
 			Route for dashboard developer [Top 5 User List and Chart]
@@ -206,5 +207,32 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1' ], function() {
 		$router->resource('schedule', 'AppointmentController', [
 			'only' => ['index', 'store', 'show']
 		]);
+
+		/**
+	     * User Notification
+	     */
+		Route::get('users/notification', [
+	        'as'    => 'api.user.notification.eks',
+	        'uses'  => 'NotificationController@index'
+	    ]);
+
+	    Route::get('users/notification/unread', [
+	        'as'    => 'api.user.unread_notification.eks',
+	        'uses'  => 'NotificationController@unread'
+	    ]);
+
+	    Route::get('users/notification/summary', [
+	        'as'    => 'api.user.summary_notification.eks',
+	        'uses'  => 'NotificationController@summary'
+	    ]);
+
+	    Route::get('users/notification/read/{eform_id}', [
+	        'as'    => 'api.user.read_notification.eks',
+	        'uses'  => 'NotificationController@read'
+	    ]);
+		/**
+		 * Route for namespace API\v1\Eks
+		 */
+		
 	});
 });

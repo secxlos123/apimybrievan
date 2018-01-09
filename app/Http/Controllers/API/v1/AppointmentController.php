@@ -9,7 +9,11 @@ use App\Http\Requests\API\v1\Appointment\CreateRequest;
 use App\Http\Requests\API\v1\Appointment\UpdateRequest;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
-
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\PayloadDataBuilder;
+use LaravelFCM\Message\PayloadNotificationBuilder;
+use LaravelFCM\Message\Topics;
+use FCM;
 class AppointmentController extends Controller
 {
     /**
@@ -74,6 +78,21 @@ class AppointmentController extends Controller
         $postTaken = ['title', 'appointment_date', 'user_id', 'ao_id', 'eform_id', 'ref_number', 'address', 'latitude', 'longitude', 'guest_name', 'desc', 'status'];
         $save = Appointment::create($request->only($postTaken));
         if ($save) {
+            // Push Notification
+
+            // $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
+            // $notificationBuilder->setBody('Anda memiliki schedule baru.')
+            //                     ->setSound('default');
+
+            // $notification = $notificationBuilder->build();
+            // $topic = new Topics();
+            // $topic->topic('user_'.$save['user_id']);
+
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
+
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',
                 'contents' => collect($save)->merge($request->all()),
@@ -125,9 +144,24 @@ class AppointmentController extends Controller
     public function update(Request $request, $type, $id)
     {
         $data = Appointment::find($id);
-
         if ($data) {
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
+
+            // Push Notification
+
+            // $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
+            // $notificationBuilder->setBody('Schedule anda telah di update.')
+            //                     ->setSound('default');
+
+            // $notification = $notificationBuilder->build();
+            // $topic = new Topics();
+            // $topic->topic('stagging')->andTopic('user_'.$Update['user_id']);
+
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
+
             return response()->success([
                 'message' => 'Data schedule User berhasil Dirubah.',
                 'contents' => Appointment::visibleColumn()->withEform()->find($id),

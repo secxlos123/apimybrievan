@@ -12,7 +12,7 @@ use App\Events\Customer\CustomerRegistered;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Contracts\UserResolver;
-
+use App\Models\UserDetail;
 
 class User extends Authenticatable implements AuditableContract, UserResolver
 {

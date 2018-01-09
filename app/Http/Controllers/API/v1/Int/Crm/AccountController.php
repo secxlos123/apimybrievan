@@ -131,16 +131,23 @@ class AccountController extends Controller
           'headers' =>
           [
             'Authorization' => 'Bearer '.$this->get_token()
+            // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
           ]
         ]
       );
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      return response()->success( [
-          'message' => 'Get Customer by Officer success',
-          'contents' => $listExisting["data"]
+      if ($listExisting['code'] == 200) {
+        return response()->success( [
+          'message' => 'Sukses',
+          'contents' => $listExisting['data']
         ]);
-
+      } else {
+        return response()->success( [
+          'message' => $listExisting['message'],
+          'contents' => $listExisting['message']
+        ]);
+      }
     }
 
     public function getExistingByFo($data, $token)
@@ -198,6 +205,12 @@ class AccountController extends Controller
       }
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
         $token = $apiPdmToken['access_token'];
         return $token;
       }

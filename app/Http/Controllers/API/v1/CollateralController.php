@@ -55,7 +55,7 @@ class CollateralController extends Controller
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
-      if ($user['position'] != 'COLLATERAL APPRAISAL') {
+      if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int)$this->request->header('pn'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
@@ -71,7 +71,7 @@ class CollateralController extends Controller
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
-      if ($user['position'] != 'COLLATERAL APPRAISAL') {
+      if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int) $this->request->header('pn'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
@@ -156,6 +156,13 @@ class CollateralController extends Controller
      */
     public function storeOts(CreateOts $request, $eks, $collateralId)
     {
+      if (!array_key_exists('image_area',$this->request->other)) {
+        $imagearea = array();
+        $dataother = array_merge($this->request->other,['image_area' => $imagearea]);
+      }else
+      {
+        $dataother = $this->request->other;
+      }
       return DB::transaction(function() use($collateralId) {
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->findOrFail($collateralId);
         $collateral->otsInArea()->create($this->request->area);
@@ -167,7 +174,7 @@ class CollateralController extends Controller
         $collateral->otsEight()->create($this->request->eight);
         $collateral->otsNine()->create($this->request->nine);
         $collateral->otsTen()->create($this->request->ten);
-        $otsOther = $collateral->otsOther()->create($this->request->other);
+        $otsOther = $collateral->otsOther()->create($dataother);
         $otsOther->image_condition_area = $this->uploadAndGetFileNameImage($otsOther);
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
