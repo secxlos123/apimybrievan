@@ -40,7 +40,8 @@ class NotificationController extends Controller
                 foreach ($getDataNotification as $value) {
                     $ArrGetDataNotification[] = [
                                             'id' => $value->id,
-                                            'subject' => $value->getSubject($value->is_approved),
+                                            'url' => $value->getSubject($value->is_approved, $value->ref_number)['url'],
+                                            'subject' => $value->getSubject($value->is_approved, $value->ref_number)['message'],
                                             'type' => $value->type,
                                             'notifiable_id' => $value->notifiable_id,
                                             'notifiable_type' => $value->notifiable_type,

@@ -468,12 +468,12 @@ class EFormController extends Controller
 
         // //  Push Notification To Pinca
 
-        $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
+        /*$notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
                                        ->whereNull('read_at')
                                        ->first();
         if(@$notificationIsRead){
             $notificationIsRead->markAsRead();
-        }
+        }*/
 
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
@@ -738,31 +738,24 @@ class EFormController extends Controller
         $verify = EForm::verify( $token, $status );
         if( $verify['message'] ) {
             if ($verify['contents']) {
-                /*$notificationIsRead =  $this->userNotification->where('eform_id',$verify['contents']->id)
+                $notificationIsRead =  $this->userNotification->where('eform_id',$verify['contents']->id)
                                                    ->whereNull('read_at')
-                                                   ->first();*/
-                /*if(@$notificationIsRead){
+                                                   ->first();
+                if(@$notificationIsRead){
                     $notificationIsRead->markAsRead();
-                }*/
+                }
                 $usersModel = User::FindOrFail($verify['contents']->user_id);  
 
                 if ($status == 'approve') {
-                    // $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
+                    $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
 
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
 
                     // Push Notification
 
-                    $notificationIsRead =  $this->userNotification->where('eform_id', $verify['contents']['id'])
-                                                   ->whereNull('read_at')
-                                                   ->first();
-                    if(@$notificationIsRead){
-                        $notificationIsRead->markAsRead();
-                    }
-
-                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
-                    $usersModel->notify(new ApproveEFormCustomer($verify['contents']));
+                    //$usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
+                    //$usersModel->notify(new ApproveEFormCustomer($verify['contents']));
 
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
                     // $notificationBuilder->setBody('Pengajuan anda telah disetujui.')
@@ -778,17 +771,10 @@ class EFormController extends Controller
                     // $topicResponse->error();
                 }else{
 
-                    // Push Notification
-                    $notificationIsRead =  $this->userNotification->where('eform_id', $verify['contents']['id'])
-                                                   ->whereNull('read_at')
-                                                   ->first();
-                    if(@$notificationIsRead){
-                        $notificationIsRead->markAsRead();
-                    }
-
-                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
                     $usersModel->notify(new RejectEFormCustomer($verify['contents']));
 
+                    // Push Notification
+                    
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
                     // $notificationBuilder->setBody('Pengajuan anda telah ditolak.')
                     //                     ->setSound('default');

@@ -52,7 +52,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	 * Route for customer or developer require authentication
 	 */
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
-		Route::get( 'customer-data/{id}', 'CustomerEksController@getDataCustomer' );
+		Route::get( 'customer-data/{ref_number}/{ids}', 'CustomerEksController@getDataCustomer' );
 
 		/**
 			Route for dashboard developer [Top 5 User List and Chart]
