@@ -26,6 +26,9 @@ use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
+use App\Notifications\VerificationApproveFormNasabah;
+use App\Notifications\VerificationRejectFormNasabah;
+
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -658,9 +661,11 @@ class EFormController extends Controller
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
-        $baseRequest['pinca_name'] = $user_login['name'];
-        $baseRequest['pinca_position'] = $user_login['position'];
-
+        if(isset($user_login)){
+            $baseRequest['pinca_name'] = $user_login['name'];
+            $baseRequest['pinca_position'] = $user_login['position'];            
+        }        
+  
         $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
@@ -733,7 +738,17 @@ class EFormController extends Controller
         $verify = EForm::verify( $token, $status );
         if( $verify['message'] ) {
             if ($verify['contents']) {
+                /*$notificationIsRead =  $this->userNotification->where('eform_id',$verify['contents']->id)
+                                                   ->whereNull('read_at')
+                                                   ->first();*/
+                /*if(@$notificationIsRead){
+                    $notificationIsRead->markAsRead();
+                }*/
+                $usersModel = User::FindOrFail($verify['contents']->user_id);  
+
                 if ($status == 'approve') {
+                    // $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
+
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
 
@@ -788,7 +803,7 @@ class EFormController extends Controller
                     // $topicResponse->error();
                 }
 
-                event( new VerifyEForm( $verify['contents'] ) );
+                                //event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
             $code = 201;
@@ -797,7 +812,6 @@ class EFormController extends Controller
             DB::rollback();
             $code = 404;
         }
-
 
         return response()->success( $verify, $code );
     }
