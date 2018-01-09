@@ -40,13 +40,13 @@ class CustomerController extends Controller
      */
     public function customer(Request $request)
     {
-    	$customer = RestwsHc::setBody([
-    		'request' => json_encode([
-    			'requestMethod' => 'get_customer_profile_nik',
-    			'requestData'   => ['nik' => '3274032403920004'],
-    		])
-    	])->post('form_params');
+        $customer = RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_customer_profile_nik',
+                'requestData'   => ['nik' => '3274032403920004'],
+            ])
+        ])->post('form_params');
 
-    	return response()->success(['contents' => $customer]);
+        return response()->success(['contents' => $customer]);
     }
 }
