@@ -15,6 +15,11 @@ use App\Models\KPR;
 use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Collateral;
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\PayloadDataBuilder;
+use LaravelFCM\Message\PayloadNotificationBuilder;
+use LaravelFCM\Message\Topics;
+use FCM;
 use Sentinel;
 use DB;
 use App\Notifications\VerificationDataNasabah;
@@ -199,6 +204,22 @@ class CustomerController extends Controller
 			$notificationToCustomer = $usersModel->notify(new VerificationDataNasabah($eform));		/*send notification to customer nasabah*/
 			
 			event( new CustomerVerify( $customer, $eform ) );
+
+	        // Push Notification
+
+	        // $notificationBuilder = new PayloadNotificationBuilder('Verify Notification');
+	        // $notificationBuilder->setBody('Data anda telah diverifikasi.')
+	        //                     ->setSound('default');
+
+	        // $notification = $notificationBuilder->build();
+	        // $topic = new Topics();
+	        // $topic->topic('user_'.$id);
+
+	        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+	        // $topicResponse->isSuccess();
+	        // $topicResponse->shouldRetry();
+	        // $topicResponse->error();
+
 			return response()->success( [
 				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',
 				'contents' => $customer

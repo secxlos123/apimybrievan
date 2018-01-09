@@ -93,55 +93,54 @@ class AccountController extends Controller
       }
     }
 
-    public function byCif($cif, $token)
-    {
-      $client = new Client();
-      $requestLeadsDetail = $client->request('GET', config('restapi.apipdm').'/customer/details/'.$cif,
-        [
-          'headers' =>
-          [
-            'Authorization' => 'Bearer '.$token
-          ]
-        ]
-      );
-      $leadsDetail = json_decode($requestLeadsDetail->getBody()->getContents(), true);
-
-      return $leadsDetail;
-    }
-
     public function existingFo(Request $request)
     {
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
-      // $apiPdmToken = $apiPdmToken[0];
-      // dd(count(apiPdmToken::all()));
-      if ( count(apiPdmToken::all()) > 0 ) {
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      }
 
-      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-        $token = $apiPdmToken['access_token'];
-        $listExisting = $this->getExistingByFo($data, $token);
+      // if ( count(apiPdmToken::all()) > 0 ) {
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // } else {
+      //   $this->gen_token();
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // }
+      //
+      // if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+      //   $token = $apiPdmToken['access_token'];
+      //   $listExisting = $this->getExistingByFo($data, $token);
+      //
+      //   return response()->success( [
+      //       'message' => 'Sukses',
+      //       'contents' => $listExisting['data']
+      //   ]);
+      // } else {
+      //   $briConnect = $this->gen_token();
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      //
+      //   $token = $apiPdmToken['access_token'];
+      //   $listExisting = $this->getExistingByFo($data, $token);
+      //
+      //   return response()->success( [
+      //       'message' => 'Sukses',
+      //       'contents' => $listExisting['data']
+      //   ]);
+      // }
+      $client = new Client();
+      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+        [
+          'headers' =>
+          [
+            'Authorization' => 'Bearer '.$this->get_token()
+          ]
+        ]
+      );
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $listExisting['data']
+      return response()->success( [
+          'message' => 'Get Customer by Officer success',
+          'contents' => $listExisting["data"]
         ]);
-      } else {
-        $briConnect = $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 
-        $token = $apiPdmToken['access_token'];
-        $listExisting = $this->getExistingByFo($data, $token);
-
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $listExisting['data']
-        ]);
-      }
     }
 
     public function getExistingByFo($data, $token)
@@ -187,5 +186,20 @@ class AccountController extends Controller
       $leads = json_decode($requestLeads->getBody()->getContents(), true);
 
       return $leads;
+    }
+
+    public function get_token()
+    {
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      }
     }
 }

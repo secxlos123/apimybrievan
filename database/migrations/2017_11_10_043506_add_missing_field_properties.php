@@ -27,6 +27,7 @@ class AddMissingFieldProperties extends Migration
      */
     public function down()
     {
+        DB::statement('DROP VIEW IF EXISTS developer_properties_view_table');
         Schema::table('properties', function (Blueprint $table) {
             $table->dropColumn('staff_id');
             $table->dropColumn('staff_name');

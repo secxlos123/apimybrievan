@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Models\User;
 use App\Models\GIMMICK;
+use App\Models\GIMMICK_DETAIL;
 use DB;
 
 class GimmickController extends Controller
@@ -113,13 +114,27 @@ class GimmickController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
+	 function detailadd($data){
+		$array = [
+				'first_month'=>$data[0],
+				'last_month'=>$data[1],
+				'persen_bunga'=>$data[2],
+				'id_header'=>$data[3],
+		];
+		return $array;
+	}
     public function store( GimmickRequest $request )
     {
         $baseRequest = $request->all();
 		
-		return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
-		return $gimmick;
+		
+		$x = $baseRequest['gimmick']['countminus1'];
+		for($i=0;$i<=$x;$i++){
+			 $detaildata = $this->detailadd(json_decode($baseRequest['gimmick']['data'.$i]));
+        	 $GIMMICK_DETAIL = GIMMICK_DETAIL::create( $detaildata );
+		}
+		return $GIMMICK_DETAIL;
     }
 
     /**

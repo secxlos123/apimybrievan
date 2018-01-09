@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ChangeTypeDateOnBank extends Migration
+class AddCatatanBriguna extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ChangeTypeDateOnBank extends Migration
      */
     public function up()
     {
-        Schema::table('bank_statements', function (Blueprint $table) {
-            $table->string( 'date' )->nullable()->change();
+        Schema::table( 'briguna', function ( Blueprint $table ) {
+            $table->text( 'catatan_adk')->nullable();
         });
     }
 
@@ -25,6 +25,8 @@ class ChangeTypeDateOnBank extends Migration
      */
     public function down()
     {
-        DB::statement('ALTER TABLE bank_statements ALTER date TYPE DATE USING date::date');
+        Schema::table('briguna', function (Blueprint $table) {
+            $table->dropColumn(['catatan_adk']);
+        });
     }
 }

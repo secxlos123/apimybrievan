@@ -33,6 +33,6 @@ class CreateCrmStatusTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('crm_statuses');
     }
 }

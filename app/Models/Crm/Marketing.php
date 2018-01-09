@@ -19,6 +19,8 @@ class Marketing extends Model
       'account_id',
       'number',
       'nik',
+      'cif',
+      'nama',
       'status',
       'target_closing_date'
     ];
