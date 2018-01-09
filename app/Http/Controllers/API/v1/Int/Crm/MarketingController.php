@@ -9,6 +9,8 @@ use App\Http\Requests\API\v1\Crm\Marketing\CreateRequest;
 // use App\Http\Request\API\v1\Crm\Marketing\UpdateRequest;
 use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
+use App\Models\Crm\rescheduleActivity;
+use App\Models\Crm\MarketingActivityFollowup;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
@@ -67,6 +69,17 @@ class MarketingController extends Controller
 
         $marketingActivity = [];
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
+          $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+          $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+          if($activity->pn != $activity->pn_join){
+            if($activity->pn == $pn) {
+              $ownership = 'main';
+            }else {
+              $ownership = 'join';
+            }
+          }else {
+            $ownership = 'main';
+          }
           $marketingActivity[]= [
             'id' => $activity->id,
             'pn' => $activity->pn,
@@ -85,7 +98,9 @@ class MarketingController extends Controller
             'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
             'desc' => $activity->desc,
             'address' => $activity->address,
-            'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+            'ownership' => $ownership,
+            'followup'=> $followUp,
+            'rescheduled'=> $rescheduled,
             ];
         }
 
@@ -157,6 +172,17 @@ class MarketingController extends Controller
       foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
         $marketingActivity = [];
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
+          $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+          $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+          if($activity->pn != $activity->pn_join){
+            if($activity->pn == $pn) {
+              $ownership = 'main';
+            }else {
+              $ownership = 'join';
+            }
+          }else {
+            $ownership = 'main';
+          }
           $marketingActivity[]= [
             'id' => $activity->id,
             'pn' => $activity->pn,
@@ -175,7 +201,9 @@ class MarketingController extends Controller
             'join_name' => array_key_exists($activity->pn_join,$pn_name)? $pn_name[$activity->pn_join]: '',
             'desc' => $activity->desc,
             'address' => $activity->address,
-            'ownership' => ($activity->pn_join == $pn ? 'join' : 'main')
+            'ownership' => $ownership,
+            'followup'=> $followUp,
+            'rescheduled'=> $rescheduled,
             ];
         }
 

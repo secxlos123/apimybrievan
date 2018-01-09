@@ -131,6 +131,7 @@ class AccountController extends Controller
           'headers' =>
           [
             'Authorization' => 'Bearer '.$this->get_token()
+            // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
           ]
         ]
       );
@@ -198,6 +199,12 @@ class AccountController extends Controller
       }
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
         $token = $apiPdmToken['access_token'];
         return $token;
       }
