@@ -24,11 +24,13 @@ class CustomerEksController extends Controller
      * @param  Request $request [description]
      * @return [type]           [description]
      */
-    public function getDataCustomer($id)
+    public function getDataCustomer($ref_number, $ids)
     {
-    	$customer = $this->customer->find($id)->detail;
-        $customer_data = $this->customer->find($id);
-        $eform = $this->eform->where('user_id',$id)->first();
+        $eform = $this->eform->where('ref_number',$ref_number)->where('id',$ids)->first();
+
+        $customer = $this->customer->find($eform->user_id)->detail;
+        $customer_data = $this->customer->find($eform->user_id);
+        //$eform = $this->eform->where('user_id',$id)->first();
 
         $data = [
             'no_ref' => $eform->ref_number,
