@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\mobile;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Notifications\NotificationsDbChannel;
 
-class ApproveEFormCustomer extends Notification
+class PengajuanKprNotification extends Notification
 {
     use Queueable;
 
@@ -17,9 +16,9 @@ class ApproveEFormCustomer extends Notification
      *
      * @return void
      */
-    public function __construct($eForm)
+    public function __construct()
     {
-        $this->eForm   = $eForm;
+        //
     }
 
     /**
@@ -30,7 +29,7 @@ class ApproveEFormCustomer extends Notification
      */
     public function via($notifiable)
     {
-        return [NotificationsDbChannel::class];
+        return ['mail'];
     }
 
     /**
@@ -41,10 +40,10 @@ class ApproveEFormCustomer extends Notification
      */
     public function toMail($notifiable)
     {
-        /*return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');*/
+        // return (new MailMessage)
+        //             ->line('The introduction to the notification.')
+        //             ->action('Notification Action', url('/'))
+        //             ->line('Thank you for using our application!');
     }
 
     /**
@@ -53,16 +52,32 @@ class ApproveEFormCustomer extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
+    public function toArray($notifiable)
+    {
+        return [
+            //
+        ];
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+
     public function toDatabase($notifiable)
     {
+        $data = EForm::findOrFail($this->eForm->id);
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
             'nik' => $this->eForm->nik,
             'ref_number' => $this->eForm->ref_number,
-            'branch_id' => $this->eForm->branch_id,
+            'branch_id' => $data->branch_id,
             'created_at' => $this->eForm->created_at,
+            'notification_type' => 'mobile'
         ];
     }
 }
