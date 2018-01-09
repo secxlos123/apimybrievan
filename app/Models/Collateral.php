@@ -156,7 +156,7 @@ class Collateral extends Model implements AuditableContract
           ->with('otsBuilding')
           ->with('otsEnvironment')
           ->with('otsValuation')
-          ->with('otsOther')
+          ->with('otsOther.images')
           ->with('otsSeven')
           ->with('otsEight')
           ->with('otsNine')
