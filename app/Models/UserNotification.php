@@ -73,6 +73,9 @@ class UserNotification extends Model
             case 'App\Notifications\LKNEFormCustomer':                
                 $subjectNotif = 'Prakarsa LKN';
                 break;
+            case 'App\Notifications\VerificationDataNasabah':                
+                $subjectNotif = 'Verifikasi Pengajuan KPR';
+                break;
             default:
                 $subjectNotif = 'Type undefined';
                 break;
@@ -112,37 +115,37 @@ class UserNotification extends Model
         return $query;  
     }
     
-    public function getUnreads($branch_id, $role, $pn){
+    public function getUnreads($branch_id, $role, $pn , $user_id){
         $query = $this->leftJoin('eforms','notifications.eform_id','=','eforms.id')
-                    ->where('eforms.branch_id',$branch_id)
-                    ->Where('eforms.ao_id', $pn)
+                    ->where('eforms.branch_id',@$branch_id)
+                    ->Where('eforms.ao_id', @$pn)
+                    // ->where('notifications.notifiable_id',@$user_id)
                     ->orderBy('notifications.created_at', 'DESC');
         
-        if($role == 'pinca'){
+        if(@$role == 'pinca'){
             if ($query->Orwhere('notifications.type','App\Notifications\PengajuanKprNotification')) {
-                $query->whereNull('eforms.ao_id');
-                $query->unreads();
+                $query->whereNull('eforms.ao_id')->unreads();
             }
 
             if ($query->Orwhere('notifications.type','App\Notifications\LKNEFormCustomer')) {
-                $query->leftJoin('visit_reports','eforms.id','=','visit_reports.eform_id');
-                $query->whereNotNull('visit_reports.created_at');
-                $query->unreads();
+                $query->leftJoin('visit_reports','eforms.id','=','visit_reports.eform_id')
+                ->whereNotNull('visit_reports.created_at')
+                ->unreads();
             }
                
         }  
 
-        if($role == 'ao'){
+        if(@$role == 'ao'){
             if($query->Orwhere('notifications.type','App\Notifications\EFormPenugasanDisposisi')){         
-                $query->whereNotNull('eforms.ao_id');
-                $query->whereNotNull('eforms.ao_name');
-                $query->whereNotNull('eforms.ao_position');
-                $query->unreads();
+                $query->whereNotNull('eforms.ao_id')
+                ->whereNotNull('eforms.ao_name')
+                ->whereNotNull('eforms.ao_position')
+                ->unreads();
             }
            
-            if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {    /*is verification*/
-                // unverified
-            }
+            // if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {    /*is verification*/
+            //     // unverified
+            // }
 
             if ($query->Orwhere('notifications.type','App\Notifications\ApproveEFormCustomer')) {    /*is is_approved*/
                 /*              
@@ -166,15 +169,21 @@ class UserNotification extends Model
             }            
         }
         
-        if($role == 'staff'){
+        if(@$role == 'customer'){
+           if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {               
+                $query->unreads()->where('notifications.notifiable_id',@$user_id);
+            }
+        }
+
+        if(@$role == 'staff'){
             $query->whereNull('notifications.created_at');
         }
 
-        if($role == 'collateral-appraisal'){
+        if(@$role == 'collateral-appraisal'){
             $query->whereNull('notifications.created_at');
         }
         
-        if($role == 'collateral'){
+        if(@$role == 'collateral'){
             $query->whereNull('notifications.created_at');
         }
 
