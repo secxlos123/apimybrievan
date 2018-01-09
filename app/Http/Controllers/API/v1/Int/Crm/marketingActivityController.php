@@ -591,7 +591,7 @@ class marketingActivityController extends Controller
       $cif = $request->input('cif');
       $nik = $request->input('nik');
 
-      $customerActivity[];
+      $customerActivity = [];
 
       foreach (Marketing::where('cif', $cif)->orWhere('nik', $nik)->get() as $key => $marketing) {
 
