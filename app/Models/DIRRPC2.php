@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Asmx;
 
-class GIMMICK extends Model
+class DIRRPC2 extends Model
 {
     /**
      * The table name.
      *
      * @var string
      */
-    protected $table = 'gimmick';
+    protected $table = 'dirrpc';
 
     /**
      * Disabling timestamp feature.
@@ -30,17 +30,15 @@ class GIMMICK extends Model
      */
 	 
     protected $fillable = [  	
-		'gimmick_name','gimmick_level','area_level','segmen_level','mitra_kerjasama',
-		'mitra_kerjasama2','mitra_kerjasama3','mitra_kerjasama4','tgl_mulai',
-		'tgl_berakhir','payroll','admin_fee','admin_minimum','provisi_fee','pemeriksa','jabatan_pemeriksa','id_header',
-		'waktu_minimum','waktu_maksimum','dir_rpc','asuransi_jiwa','suku_bunga','first_month','last_month','suku_bunga','pemutus_name','jabatan'];
+	 'debt_name','dir_persen','maintance','kantor_cabang','kantor_wilayah','penghasilan_maksimal','penghasilan_minimal',
+		'payroll','pemutus_name','jabatan','pemeriksa','jabatan_pemeriksa','action','maintance','id'];
 	
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = [ 'id_gimmick' ];
+    protected $hidden = [ 'id' ];
 
     /**
      * Get AO detail information.
@@ -49,7 +47,7 @@ class GIMMICK extends Model
      */
     public function getIdAttribute( $value )
     {
-        return $this->id_gimmick;
+        return $this->id;
     }
 
     /**
@@ -172,7 +170,6 @@ class GIMMICK extends Model
         // }
     }
 
- 
     public function scopeFilter( $query, Request $request )
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
@@ -182,27 +179,16 @@ class GIMMICK extends Model
             $sort = ['id', 'asc'];
         }
 
-		$hari_ini = date("Y/m/d") ;
-		
-		 $dir = $query->where( function( $dir ) use( $request,$hari_ini ) {
-            if ( $request->has('gimmick_name') ) {
-                $dir = $dir->where('gimmick.gimmick_name', $request->input('gimmick_name'));
-			} 
-			
-		\Log::info($hari_ini);
-			
-//			if ( $request->has('tgl_mulai')&&$request->has('tgl_berakhir') ) {
-                $dir = $dir->where('gimmick.tgl_mulai','<', $hari_ini);
-                $dir = $dir->where('gimmick.tgl_berakhir','>', $hari_ini);
-//			}
+		 $dir = $query->where( function( $dir ) use( $request ) {
         } );
-		 $dir = $dir->join('gimmick_detail', 'gimmick_detail.id_header', '=', 'gimmick.id_header');
-        $dir = $dir->orderBy('gimmick.'.$sort[0], $sort[1]);
+        $dir = $dir->orderBy('dirrpc.'.$sort[0], $sort[1]);
 
         \Log::info($dir->toSql());
         \Log::info($dir->getBindings());
 
         return $dir;
     }
+
+  
 
 }

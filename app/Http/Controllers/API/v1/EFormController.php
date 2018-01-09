@@ -26,6 +26,9 @@ use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
+use App\Notifications\VerificationApproveFormNasabah;
+use App\Notifications\VerificationRejectFormNasabah;
+
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -47,6 +50,17 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	 public function hapuseform( Request $request )
+    {
+        \Log::info($request->all());
+          $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
+		  $briguna = $eform->delete();
+          $eform = EForm::where('eform_id', $request->id )->findOrFail();
+		  $eform = $eform->delete();
+        return response()->success( [
+            'contents' => 'Hapus berhasil'
+        ],200 );
+    }
     public function index( Request $request )
     {
         \Log::info($request->all());
@@ -381,6 +395,7 @@ class EFormController extends Controller
                     \Log::info($kpr);
         } else {
             $dataEform =  EForm::where('nik', $request->nik)->get();
+            // $dataEform = [];
             // $role = $baseRequest['role'];
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
@@ -453,29 +468,30 @@ class EFormController extends Controller
 
         // //  Push Notification To Pinca
 
-        // $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
-        //                                ->whereNull('read_at')
-        //                                ->first();
+        $notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
+                                       ->whereNull('read_at')
+                                       ->first();
+        if(@$notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
 
-        // $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
-        // $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/        
-        // $usersModel->notify(new PengajuanKprNotification($kpr));
-
+        $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
         // if($role == 'nasabah'){
-        //     $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-        //     $notificationBuilder->setBody('Pengajuan KPR Baru')
-        //                         ->setSound('default');
+            // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            // $notificationBuilder->setBody('Pengajuan KPR Baru')
+            //                     ->setSound('default');
 
-        //     $notification = $notificationBuilder->build();
-        //     $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
+            // $notification = $notificationBuilder->build();
+            // $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
 
-        //     $topic = new Topics();
-        //     $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
+            // $topic = new Topics();
+            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
 
-        //     $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        //     $topicResponse->isSuccess();
-        //     $topicResponse->shouldRetry();
-        //     $topicResponse->error();            
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
         // }
 
         return response()->success( [
@@ -610,19 +626,19 @@ class EFormController extends Controller
 
         DB::commit();
 
-        $notificationBuilder = new PayloadNotificationBuilder('EForm Norification');
-        $notificationBuilder->setBody('E-Form berhasil di disposisi')
-                            ->setSound('default');
+        // $notificationBuilder = new PayloadNotificationBuilder('EForm Norification');
+        // $notificationBuilder->setBody('E-Form berhasil di disposisi')
+        //                     ->setSound('default');
 
-        $notification = $notificationBuilder->build();
+        // $notification = $notificationBuilder->build();
 
-        $topic = new Topics();
-        $topic->topic('testing')->orTopic('ao_'.$ao_id)->orTopic($pn);
+        // $topic = new Topics();
+        // $topic->topic('testing')->orTopic('ao_'.$ao_id)->orTopic($pn);
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        $topicResponse->isSuccess();
-        $topicResponse->shouldRetry();
-        $topicResponse->error();
+        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        // $topicResponse->isSuccess();
+        // $topicResponse->shouldRetry();
+        // $topicResponse->error();
 
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
@@ -645,9 +661,11 @@ class EFormController extends Controller
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
-        $baseRequest['pinca_name'] = $user_login['name'];
-        $baseRequest['pinca_position'] = $user_login['position'];
-
+        if(isset($user_login)){
+            $baseRequest['pinca_name'] = $user_login['name'];
+            $baseRequest['pinca_position'] = $user_login['position'];            
+        }        
+  
         $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
@@ -718,15 +736,74 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $verify = EForm::verify( $token, $status );
-
         if( $verify['message'] ) {
             if ($verify['contents']) {
+                /*$notificationIsRead =  $this->userNotification->where('eform_id',$verify['contents']->id)
+                                                   ->whereNull('read_at')
+                                                   ->first();*/
+                /*if(@$notificationIsRead){
+                    $notificationIsRead->markAsRead();
+                }*/
+                $usersModel = User::FindOrFail($verify['contents']->user_id);  
+
                 if ($status == 'approve') {
+                    // $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
+
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+
+                    // Push Notification
+
+                    $notificationIsRead =  $this->userNotification->where('eform_id', $verify['contents']['id'])
+                                                   ->whereNull('read_at')
+                                                   ->first();
+                    if(@$notificationIsRead){
+                        $notificationIsRead->markAsRead();
+                    }
+
+                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
+                    $usersModel->notify(new ApproveEFormCustomer($verify['contents']));
+
+                    // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                    // $notificationBuilder->setBody('Pengajuan anda telah disetujui.')
+                    //                     ->setSound('default');
+
+                    // $notification = $notificationBuilder->build();
+                    // $topic = new Topics();
+                    // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
+
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                    // $topicResponse->isSuccess();
+                    // $topicResponse->shouldRetry();
+                    // $topicResponse->error();
+                }else{
+
+                    // Push Notification
+                    $notificationIsRead =  $this->userNotification->where('eform_id', $verify['contents']['id'])
+                                                   ->whereNull('read_at')
+                                                   ->first();
+                    if(@$notificationIsRead){
+                        $notificationIsRead->markAsRead();
+                    }
+
+                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
+                    $usersModel->notify(new RejectEFormCustomer($verify['contents']));
+
+                    // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                    // $notificationBuilder->setBody('Pengajuan anda telah ditolak.')
+                    //                     ->setSound('default');
+
+                    // $notification = $notificationBuilder->build();
+                    // $topic = new Topics();
+                    // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
+
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                    // $topicResponse->isSuccess();
+                    // $topicResponse->shouldRetry();
+                    // $topicResponse->error();
                 }
 
-                event( new VerifyEForm( $verify['contents'] ) );
+                                //event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
             $code = 201;
@@ -734,9 +811,7 @@ class EFormController extends Controller
         } else {
             DB::rollback();
             $code = 404;
-
         }
-
 
         return response()->success( $verify, $code );
     }

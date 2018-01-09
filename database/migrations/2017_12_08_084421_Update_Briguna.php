@@ -96,9 +96,8 @@ class UpdateBriguna extends Migration
                 'Perusahaan_asuransi','Premi_asuransi_jiwa',
                 'Premi_beban_bri','Premi_beban_debitur','Flag_promo',
                 'Fid_promo','Pengadilan_terdekat','Bupln',
-                'Agribisnis','Sandi_stp','Sifat_kredit',
+                'Agribisnis','Sandi_stp','Sifat_kredit','Jenis_kredit_lbu',
                 'Jenis_penggunaan','Sektor_ekonomi_sid','Sektor_ekonomi_lbu',
-                'Jenis_kredit_lbu','Jenis_penggunaan','Jenis_penggunaan_lbu',
                 'Sumber_aplikasi','Sifat_kredit_lbu','Kategori_kredit_lbu',
                 'Jenis_penggunaan_lbu','id_Status_gelar',
                 'cutoff','definisi','Status_gelar','score','grade'

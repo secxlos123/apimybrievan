@@ -37,6 +37,27 @@ class Controller extends BaseController
         }
     }
 
+    public function get_token()
+    {
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      }
+    }
+    
     public function gen_token()
     {
       $client = new Client();

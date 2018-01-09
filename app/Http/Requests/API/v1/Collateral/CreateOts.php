@@ -87,7 +87,7 @@ class CreateOts extends FormRequest
         'letter.number' => 'required',
         'letter.date' => 'required|date',
         'letter.on_behalf_of' => 'required',
-        'letter.duration_land_authorization' => 'required',
+        'letter.duration_land_authorization' => '',
         'letter.bpn_name' => 'required'
       ];
     }
@@ -155,7 +155,8 @@ class CreateOts extends FormRequest
         'other.optimal_building_use' => 'required',
         'other.building_exchange' => 'required',
         'other.things_bank_must_know' => 'required',
-        'other.image_condition_area' => 'required|file'
+        'other.image_area.*.image_data' => 'required|mimes:jpeg,png,jpg,zip,pdf',
+        'other.image_condition_area' => 'mimes:jpeg,png,jpg,zip,pdf'
       ];
     }
 

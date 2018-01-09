@@ -97,33 +97,55 @@ class AccountController extends Controller
     {
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
-      // $apiPdmToken = $apiPdmToken[0];
-      // dd(count(apiPdmToken::all()));
-      if ( count(apiPdmToken::all()) > 0 ) {
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      }
 
-      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-        $token = $apiPdmToken['access_token'];
-        $listExisting = $this->getExistingByFo($data, $token);
+      // if ( count(apiPdmToken::all()) > 0 ) {
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // } else {
+      //   $this->gen_token();
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // }
+      //
+      // if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+      //   $token = $apiPdmToken['access_token'];
+      //   $listExisting = $this->getExistingByFo($data, $token);
+      //
+      //   return response()->success( [
+      //       'message' => 'Sukses',
+      //       'contents' => $listExisting['data']
+      //   ]);
+      // } else {
+      //   $briConnect = $this->gen_token();
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      //
+      //   $token = $apiPdmToken['access_token'];
+      //   $listExisting = $this->getExistingByFo($data, $token);
+      //
+      //   return response()->success( [
+      //       'message' => 'Sukses',
+      //       'contents' => $listExisting['data']
+      //   ]);
+      // }
+      $client = new Client();
+      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+        [
+          'headers' =>
+          [
+            'Authorization' => 'Bearer '.$this->get_token()
+            // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
+          ]
+        ]
+      );
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
+      if ($listExisting['code'] == 200) {
         return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $listExisting['data']
+          'message' => 'Sukses',
+          'contents' => $listExisting['data']
         ]);
       } else {
-        $briConnect = $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-
-        $token = $apiPdmToken['access_token'];
-        $listExisting = $this->getExistingByFo($data, $token);
-
         return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $listExisting['data']
+          'message' => $listExisting['message'],
+          'contents' => $listExisting['message']
         ]);
       }
     }
@@ -171,5 +193,26 @@ class AccountController extends Controller
       $leads = json_decode($requestLeads->getBody()->getContents(), true);
 
       return $leads;
+    }
+
+    public function get_token()
+    {
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      }
     }
 }
