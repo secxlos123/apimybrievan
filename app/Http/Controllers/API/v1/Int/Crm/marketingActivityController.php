@@ -530,6 +530,82 @@ class marketingActivityController extends Controller
       return $result;
     }
 
+    public function activity_by_customer(Request $request)
+    {
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $request->header('pn'),
+            'kode_branch' => $request->header('branch')
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $request->header('Authorization')
+      ])->post('form_params');
+
+      if($list_fo!=NULL && $list_ao!=NULL){
+        $fo_list = array_column($list_fo['responseData'], 'PERNR');
+        $ao_list = array_column($list_ao['responseData'], 'PERNR');
+        $list_pn = array_merge_recursive($fo_list, $ao_list);
+        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
+        $pn_name = array_column($result, 'SNAME', 'PERNR');
+      } else {
+        $list_pn = '';
+      }
+
+      $cif = $request->input('cif');
+      $nik = $request->input('nik');
+
+      $customerActivity[];
+
+      foreach (Marketing::where('cif', $cif)->orWhere('nik', $nik)->get() as $key => $marketing) {
+
+        foreach (MarketingActivity::where('pn', $marketing->pn)->get() as $activity) {
+          $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+          $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+          $customerActivity[] = [
+            'id' => $activity->id,
+            'pn' => $activity->pn,
+            'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
+            'object_activity' => $activity->object_activity,
+            'action_activity' => $activity->action_activity,
+            'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+            'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+            'start_time' => date('H:i', strtotime($activity->start_date)),
+            'end_time' => date('H:i', strtotime($activity->end_date)),
+            'longitude' => $activity->longitude,
+            'latitude' => $activity->latitude,
+            'marketing_id' => $activity->marketing_id,
+            'pn_join' => $activity->pn_join,
+            'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
+            'desc' => $activity->desc,
+            'address' => $activity->address,
+            'followup'=> $followUp,
+            'rescheduled'=> $rescheduled,
+            ];
+        }
+      }
+
+      return response()->success( [
+          'message' => 'Success get marketing Activity by branch',
+          'contents' => $customerActivity
+      ]);
+
+    }
+
     public function deleteAll(Request $request)
     {
 

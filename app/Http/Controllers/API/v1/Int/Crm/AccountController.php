@@ -109,10 +109,17 @@ class AccountController extends Controller
       );
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      return response()->success( [
+      if ($listExisting['code'] == 200) {
+        return response()->success( [
           'message' => 'Sukses',
           'contents' => $listExisting['data']
-      ]);
+        ]);
+      } else {
+        return response()->success( [
+          'message' => $listExisting['message'],
+          'contents' => $listExisting['message']
+        ]);
+      }
     }
 
     public function get_token()
