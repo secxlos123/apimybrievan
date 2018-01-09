@@ -22,7 +22,7 @@ class AccountController extends Controller
     public function index(Request $request)
     {
       $client = new Client();
-      $requestLeads = $client->request('POST', config('restapi.restwshc'),
+      $requestLeads = $client->request('POST', 'http://10.35.65.111/skpp_concept/restws_hc',
         [
           'headers' =>
           [
@@ -95,15 +95,43 @@ class AccountController extends Controller
 
     public function existingFo(Request $request)
     {
-      $branch = $request->header('branch');
-      $pn = $request->header('pn');
+      $data['branch'] = $request->header('branch');
+      $data['pn'] = $request->header('pn');
 
+      // if ( count(apiPdmToken::all()) > 0 ) {
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // } else {
+      //   $this->gen_token();
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      // }
+      //
+      // if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+      //   $token = $apiPdmToken['access_token'];
+      //   $listExisting = $this->getExistingByFo($data, $token);
+      //
+      //   return response()->success( [
+      //       'message' => 'Sukses',
+      //       'contents' => $listExisting['data']
+      //   ]);
+      // } else {
+      //   $briConnect = $this->gen_token();
+      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      //
+      //   $token = $apiPdmToken['access_token'];
+      //   $listExisting = $this->getExistingByFo($data, $token);
+      //
+      //   return response()->success( [
+      //       'message' => 'Sukses',
+      //       'contents' => $listExisting['data']
+      //   ]);
+      // }
       $client = new Client();
-      $requestListExisting = $client->request('GET', config('restapi.apipdm').'/customer/saving/'.$branch.'/'.$pn,
+      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
             'Authorization' => 'Bearer '.$this->get_token()
+            // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
           ]
         ]
       );
@@ -122,25 +150,26 @@ class AccountController extends Controller
       }
     }
 
-    public function get_token()
+    public function getExistingByFo($data, $token)
     {
-      if ( count(apiPdmToken::all()) > 0 ) {
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      }
+      $client = new Client();
+      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+        [
+          'headers' =>
+          [
+            'Authorization' => 'Bearer '.$token
+          ]
+        ]
+      );
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-        $token = $apiPdmToken['access_token'];
-        return $token;
-      }
+      return $listExisting;
     }
 
     public function getBranchKanwil(Request $request)
     {
       $client = new Client();
-      $requestLeads = $client->request('POST', config('restapi.restwshc'),
+      $requestLeads = $client->request('POST', 'http://10.35.65.111/skpp_concept/restws_hc',
         [
           'headers' =>
           [
@@ -164,5 +193,26 @@ class AccountController extends Controller
       $leads = json_decode($requestLeads->getBody()->getContents(), true);
 
       return $leads;
+    }
+
+    public function get_token()
+    {
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      }
     }
 }

@@ -60,7 +60,6 @@ class Photo extends Model implements AuditableContract
             case 'App\Models\PropertyType': $disk = 'types'; break;
             case 'App\Models\PropertyItem': $disk = 'units'; break;
             case 'App\Models\Developer': $disk = 'avatars'; break;
-            case 'App\Models\OtsAnotherData': $disk = 'otsdata'; break;
             default: $disk = 'uploads'; break;
         }
         
