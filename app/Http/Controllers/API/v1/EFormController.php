@@ -466,15 +466,6 @@ class EFormController extends Controller
                 ], 422 );
         }
 
-        // //  Push Notification To Pinca
-
-        /*$notificationIsRead =  $this->userNotification->where('eform_id',$kpr['id'])
-                                       ->whereNull('read_at')
-                                       ->first();
-        if(@$notificationIsRead){
-            $notificationIsRead->markAsRead();
-        }*/
-
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
         // if($role == 'nasabah'){
