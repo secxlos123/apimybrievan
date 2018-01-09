@@ -213,7 +213,7 @@ class CustomerController extends Controller
 
 	        // $notification = $notificationBuilder->build();
 	        // $topic = new Topics();
-	        // $topic->topic('user_'.$id);
+	        // $topic->topic('stagging')->andTopic('user_'.$id);
 
 	        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
 	        // $topicResponse->isSuccess();
