@@ -112,6 +112,25 @@ class VerificationController extends Controller
             ]
         ], 200 );
     }
+
+    /**
+     * Resend email verification
+     *
+     * @return void
+     * @author
+     **/
+    public function resend( $eform_id )
+    {
+        $eform = EForm::findOrFail( $eform_id );
+        $customer = $eform->customer;
+
+        event( new CustomerVerify( $customer, $eform ) );
+
+        return response()->success( [
+            'message' => 'Email Verifikasi berhasil dikirim.'
+        ], 200 );
+    }
+
     /**
      * Display the specified resource.
      *

@@ -468,7 +468,7 @@ class EFormController extends Controller
 
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
-        // if($role == 'nasabah'){
+        // if($role == 'customer'){
             // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
             // $notificationBuilder->setBody('Pengajuan KPR Baru')
             //                     ->setSound('default');
@@ -624,7 +624,7 @@ class EFormController extends Controller
         // $notification = $notificationBuilder->build();
 
         // $topic = new Topics();
-        // $topic->topic('testing')->orTopic('ao_'.$ao_id)->orTopic($pn);
+        // $topic->topic('testing')->orTopic('ao_'.$ao_id);
 
         // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
         // $topicResponse->isSuccess();
@@ -654,9 +654,9 @@ class EFormController extends Controller
         $user_login = \RestwsHc::getUser();
         if(isset($user_login)){
             $baseRequest['pinca_name'] = $user_login['name'];
-            $baseRequest['pinca_position'] = $user_login['position'];            
-        }        
-  
+            $baseRequest['pinca_position'] = $user_login['position'];
+        }
+
         $eform = EForm::approve( $eform_id, $baseRequest );
         if( $eform['status'] ) {
 
@@ -735,7 +735,7 @@ class EFormController extends Controller
                 if(@$notificationIsRead){
                     $notificationIsRead->markAsRead();
                 }
-                $usersModel = User::FindOrFail($verify['contents']->user_id);  
+                $usersModel = User::FindOrFail($verify['contents']->user_id);
 
                 if ($status == 'approve') {
                     $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
@@ -765,7 +765,7 @@ class EFormController extends Controller
                     $usersModel->notify(new RejectEFormCustomer($verify['contents']));
 
                     // Push Notification
-                    
+
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
                     // $notificationBuilder->setBody('Pengajuan anda telah ditolak.')
                     //                     ->setSound('default');
