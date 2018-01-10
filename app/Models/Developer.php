@@ -90,7 +90,7 @@ class Developer extends Model implements AuditableContract
                  */
                 if ($request->has('search')) $query->search($request);
             })
-            ->where(function ($developer) use ($request) {
+            ->where(function ($developer) use ($request, $project) {
 
                 /**
                  * Query for filter by city_id.
