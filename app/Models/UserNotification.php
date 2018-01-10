@@ -51,9 +51,14 @@ class UserNotification extends Model
         return (bool) $this->read_at;
     }
 
-    public function getSubject($status_eform ,$ref_number)
+    public function getSubject($status_eform ,$ref_number,$user_id)
     {
         $url = env( 'INTERNAL_APP_URL', 'https://mybri.stagingapps.net' ) . 'eform?ref_number=' . $ref_number.'&ids='.$this->eform_id;
+        if($user_id){
+            $url = 'eform?ids='.$this->eform_id;
+        }else {
+            $url = $url;
+        }
         switch ($this->type) {
             case 'App\Notifications\PengajuanKprNotification':                
                 $subjectNotif = [ 'message' => 'Pengajuan KPR Baru',
@@ -178,8 +183,19 @@ class UserNotification extends Model
         }
         
         if(@$role == 'customer'){
-           if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {               
-                $query->unreads()->where('notifications.notifiable_id',@$user_id);
+            $query->where('notifications.notifiable_id',@$user_id);
+            
+            if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {               
+                $query->unreads();
+            }
+
+            if ($query->Orwhere('notifications.type','App\Notifications\ApproveEFormCustomer')) {    /*is is_approved*/
+                $query->unreads();
+            }
+             
+
+            if ($query->Orwhere('notifications.type','App\Notifications\RejectEFormCustomer')) {    /*is rejected*/
+                $query->unreads();
             }
         }
 
