@@ -302,7 +302,7 @@ class EForm extends Model implements AuditableContract
             }
             else{
 
-                $result = $eform->insertCoreBRI(7);
+                $result = $eform->insertCoreBRI(8);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> false]);
                 }
@@ -365,9 +365,9 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71',null]
-            , ['InsertIntoReviewer',null]
-            , ['InsertDataAgunanTanahRumahTinggal',null]
+            , ['InsertIntoReviewer', 'nama_reviewer']
+            , ['InsertDataAgunanModel71', null]
+            , ['InsertDataAgunanTanahRumahTinggal', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -395,18 +395,16 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info(json_encode($sendRequest));
 
-                if ($value[0] != 'InsertIntoReviewer') { // request by Gilang
-                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
 
-                    if (!$set['status']) {
-                        \Log::info('Error Step Ke -'.$step);
-                        $return = array(
-                            'status' => false
-                            , 'message' => $set[ 'message' ]
-                        );
-                        \Log::info($return);
-                        break;
-                    }
+                if (!$set['status']) {
+                    \Log::info('Error Step Ke -'.$step);
+                    $return = array(
+                        'status' => false
+                        , 'message' => $set[ 'message' ]
+                    );
+                    \Log::info($return);
+                    break;
                 }
 
                 \Log::info('Berhasil Step Ke -'.$step);
@@ -1116,7 +1114,7 @@ class EForm extends Model implements AuditableContract
         return $request;
     }
 
-    /**
+     /**
      * Generate Parameters for step 8.
      *
      * @param array $data
@@ -1125,6 +1123,21 @@ class EForm extends Model implements AuditableContract
     public function step8($data)
     {
         \Log::info("step8");
+        return $data + [
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
+        ];
+
+    }
+
+    /**
+     * Generate Parameters for step 9.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step9($data)
+    {
+        \Log::info("step9");
         $kpr = $this->kpr;
         $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
         $otsInArea = $collateral->otsInArea;
@@ -1235,21 +1248,7 @@ class EForm extends Model implements AuditableContract
     }
 
      /**
-     * Generate Parameters for step 9.
-     *
-     * @param array $data
-     * @return array $request
-     */
-    public function step9($data)
-    {
-        \Log::info("step9");
-        return $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
-        ];
-
-    }
-     /**
-     * Generate Parameters for step 9.
+     * Generate Parameters for step 10.
      *
      * @param array $data
      * @return array $request

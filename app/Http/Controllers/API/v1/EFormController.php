@@ -676,12 +676,17 @@ class EFormController extends Controller
                 $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO and Customer*/
 
                 event( new Approved( $data ) );
+
+                $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
+                $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
             } else {
 
                 $usersModel = User::FindOrFail($data->user_id);
                 $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO and Customer*/
 
                 event( new RejectedEform( $data ) );
+
+                $responseMessage = 'E-form berhasil di reject.';
             }
 
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
@@ -707,7 +712,7 @@ class EFormController extends Controller
 
 
             return response()->success( [
-                'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
+                'message' => $responseMessage,
                 'contents' => $eform
             ], 201 );
 
