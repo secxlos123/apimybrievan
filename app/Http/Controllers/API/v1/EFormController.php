@@ -486,6 +486,28 @@ class EFormController extends Controller
             // $topicResponse->isSuccess();
             // $topicResponse->shouldRetry();
             // $topicResponse->error();
+        // }else{
+        //     $id_user = $userId['user_id'];
+        //     $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        //     $notificationBuilder->setBody('Pengajuan KPR Baru')
+        //                         ->setSound('default');
+
+        //     $notification = $notificationBuilder->build();
+        //     $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
+
+        //     $topic = new Topics();
+     
+        //     $topic->topic('testing')->andTopic(function($condition) use ($id_user) {
+        //         // send to user
+        //         $condition->topic('user_'.$id_user);
+        //     })->andTopic(function($condition) use ($pinca){
+        //         // send to pinca
+        //           $condition->topic('branch_'.$pinca['branch_id'])->andTopic('pinca_'.$pinca['pn']);
+        //     });
+        //     $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        //     $topicResponse->isSuccess();
+        //     $topicResponse->shouldRetry();
+        //     $topicResponse->error();            
         // }
 
         return response()->success( [
