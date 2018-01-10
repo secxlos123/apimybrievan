@@ -1052,7 +1052,7 @@ class EForm extends Model implements AuditableContract
         $maxInstallment = ( $dir * $thp ) / 100;
         $interest = $this->getInterest( $data['fid_aplikasi'] );
         $installment = $this->getInstallment( $interest );
-        $maxPlafond = $this->getMaxPlafond( $interest, $installment );
+        $maxPlafond = $this->getMaxPlafond( $interest, $maxInstallment - $loan );
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
