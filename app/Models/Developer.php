@@ -12,7 +12,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 class Developer extends Model implements AuditableContract
 {
     use Auditable;
-    
+
 	/**
      * The attributes that are mass assignable.
      *
@@ -80,6 +80,7 @@ class Developer extends Model implements AuditableContract
     public function scopeGetLists($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['dev_id', 'asc'];
+        $project = $request->input('project') ? explode('|', $request->input('project')) : ['0', '50'];
 
         return $query->from('developers_view_table')
             ->where(function ($developer) use (&$request, &$query) {
@@ -105,6 +106,10 @@ class Developer extends Model implements AuditableContract
                         $developer->where('bri', '!=', '1');
                     }
                 }
+                /**
+                 * Query for for limit project
+                 */
+                if ($request->has('project')) $developer->whereBetween('project', $project);
 
             })
             ->select('*')
@@ -136,7 +141,7 @@ class Developer extends Model implements AuditableContract
             if(!empty($startList) && !empty($endList)){
                 $startList = date("01-m-Y",strtotime($startList));
                 $endList   = date("t-m-Y", strtotime($endList));
-         
+
                 $dateStart  = \DateTime::createFromFormat('d-m-Y', $startList);
                 $startList = $dateStart->format('Y-m-d h:i:s');
 
