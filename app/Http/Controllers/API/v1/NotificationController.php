@@ -32,17 +32,15 @@ class NotificationController extends Controller
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
-        // \Log::info($ArrGetDataNotification);
-        // \Log::info($branch_id .' - '.$role.' - '.$pn.' - '.$user_id);
-        // die();
+        
         $ArrGetDataNotification = [];
-        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id)->get();
+        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id);
         if($getDataNotification){
-            foreach ($getDataNotification as $value) {
+            foreach ($getDataNotification->get() as $value) {
                 $ArrGetDataNotification[] = [
                                         'id' => $value->id,
-                                        'url' => $value->getSubject($value->is_approved, $value->ref_number)['url'],
-                                        'subject' => $value->getSubject($value->is_approved, $value->ref_number)['message'],
+                                        'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],
+                                        'subject' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message'],
                                         'type' => $value->type,
                                         'notifiable_id' => $value->notifiable_id,
                                         'notifiable_type' => $value->notifiable_type,

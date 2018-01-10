@@ -26,7 +26,11 @@ class dirrpcController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newDir = DIRRPC::filter( $request )->paginate( $limit );
+        if($request->act=='search'){
+			$newDir = DIRRPC::filter( $request )->paginate( $limit );
+		}elseif($request->act=='maintance'){
+			$newDir = DIRRPC_DETAIL::filter( $request )->paginate( $limit );
+		}
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newDir
@@ -46,14 +50,52 @@ class dirrpcController extends Controller
 		 public function hapus_dir( Request $request )
     {
         \Log::info($request->all());
-		$no = $request->no;
-		        $newDir = DIRRPC::where("no",$request->no)->delete();
-		        $newDir2 = DIRRPC_DETAIL::where("id_header",$request->no)->delete();
+		$data = $request->dirrpc;
+		$no = $data['no'];  
+			$limit = 10;
+		       
+		if($data['act']=='maintance'){
+			$count = DIRRPC_DETAIL::where("id_detail",$data['no'])->count();
+			$get = DIRRPC_DETAIL::where("id_detail",$data['no'])->get();
+			$newDir2 = DIRRPC_DETAIL::where("id_detail",$data['no'])->delete();
+				if($count=='1'){
+					$no = $get['0']['id_header'];
+					$newDir = DIRRPC::where("no",$no)->delete();
+				}
+		}else{
+			
+				$newDir2 = DIRRPC_DETAIL::where("id_header",$data['no'])->delete();
+		        $newDir = DIRRPC::where("no",$data['no'])->delete();
+		}
 //		$briguna = DIRRPC::where("no","=",$no);
 //        $newDir = DIRRPC2::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $newDir2
+            'contents' => $newDir
+        ], 200 );
+    }
+	
+	 public function get_dir( Request $request )
+    {
+        \Log::info($request->all());
+			$no = $request->no;  
+			$limit = 10;
+            $newDir = DIRRPC::where("no",$no)->get();
+		return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newDir
+        ], 200 );
+    }
+	
+	 public function get_dir_detail( Request $request )
+    {
+        \Log::info($request->all());
+			$no = $request->no;  
+			$limit = 10;
+            $newDir = DIRRPC_DETAIL::where("no",$no)->get();
+		return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newDir
         ], 200 );
     }
 
@@ -127,13 +169,14 @@ class dirrpcController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
-	function detailadd($data){
+	function detailadd($data,$i){
 		$array = [
 				'penghasilan_minimal'=>$data[0],
 				'penghasilan_maksimal'=>$data[1],
 				'dir_persen'=>$data[2],
 				'payroll'=>$data[3],
 				'id_header'=>$data[4],
+				'id_detail'=>$data[4].$i,
 		];
 		return $array;
 	}
@@ -146,7 +189,7 @@ class dirrpcController extends Controller
 		$x = $baseRequest['dirrpc']['countminus1'];
 			$dirrpc = DIRRPC::create( $baseRequest['dirrpc'] );
 		for($i=0;$i<=$x;$i++){
-			 $detaildata = $this->detailadd(json_decode($baseRequest['dirrpc']['data'.$i]));
+			 $detaildata = $this->detailadd(json_decode($baseRequest['dirrpc']['data'.$i]),$i);
 			 $dirrpc_detail = DIRRPC_DETAIL::create( $detaildata );
 		}
 		//return $request->all();die();

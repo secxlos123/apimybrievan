@@ -28,7 +28,6 @@ use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
-
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -84,6 +83,16 @@ class EFormController extends Controller
             'contents' => $eform
         ],200 );
     }
+	public function birth_place($id){
+
+		  $birth_place = DB::table('cities')
+						 ->select('name')
+						 ->where('cities.id', $id)
+						 ->get();
+				$birth_place = $birth_place->toArray();
+				$birth_place = json_decode(json_encode($birth_place), True);
+		return $birth_place;
+	}
 	public function show_bri( Request $request )
     {
 		$customer = DB::table('customer_details')
@@ -93,6 +102,7 @@ class EFormController extends Controller
 						 ->get();
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
+
 
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
@@ -185,24 +195,12 @@ class EFormController extends Controller
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-
-		  $birth_place = DB::table('cities')
-						 ->select('name')
-						 ->where('cities.id', $customer[0]['birth_place_id'])
-						 ->get();
-				$birth_place = $birth_place->toArray();
-				$birth_place = json_decode(json_encode($birth_place), True);
+		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
 		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
+		  $birth_place = $this->birth_place($customer[0]['couple_birth_place_id']);
 
-		   $birth_place_couple = DB::table('cities')
-						 ->select('name')
-						 ->where('cities.id', $customer[0]['couple_birth_place_id'])
-						 ->get();
-
-				$birth_place_couple = $birth_place_couple ->toArray();
-				$birth_place_couple = json_decode(json_encode($birth_place_couple ), True);
 				if($request->has($birth_place[0]['name'])){
-		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple;
+		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
 				}else{
 					$eform[0]['customer']['personal']['couple_birth_place']  = null;
 				}
@@ -468,6 +466,7 @@ class EFormController extends Controller
 
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
         // if($role == 'customer'){
             // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
             // $notificationBuilder->setBody('Pengajuan KPR Baru')
@@ -477,12 +476,34 @@ class EFormController extends Controller
             // $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
 
             // $topic = new Topics();
-            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
+            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role']);
 
             // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
             // $topicResponse->isSuccess();
             // $topicResponse->shouldRetry();
             // $topicResponse->error();
+        // }else{
+        //     $id_user = $userId['user_id'];
+        //     $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        //     $notificationBuilder->setBody('Pengajuan KPR Baru')
+        //                         ->setSound('default');
+
+        //     $notification = $notificationBuilder->build();
+        //     $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
+
+        //     $topic = new Topics();
+
+        //     $topic->topic('testing')->andTopic(function($condition) use ($id_user) {
+        //         // send to user
+        //         $condition->topic('user_'.$id_user);
+        //     })->andTopic(function($condition) use ($pinca){
+        //         // send to pinca
+        //           $condition->topic('branch_'.$pinca['branch_id'])->andTopic('pinca_'.$pinca['pn']);
+        //     });
+        //     $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+        //     $topicResponse->isSuccess();
+        //     $topicResponse->shouldRetry();
+        //     $topicResponse->error();
         // }
 
         return response()->success( [
@@ -673,20 +694,43 @@ class EFormController extends Controller
                 $notificationToCustomer = $usersModel->notify(new ApproveEFormCustomer($data));     /*send Approve notification to AO and Customer*/
 
                 event( new Approved( $data ) );
+
+                $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
+                $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
             } else {
 
                 $usersModel = User::FindOrFail($data->user_id);
                 $notificationToCustomer = $usersModel->notify(new RejectEFormCustomer($data));     /*send Reject notification to AO and Customer*/
 
                 event( new RejectedEform( $data ) );
+
+                $responseMessage = 'E-form berhasil di reject.';
             }
 
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
             generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
             DB::commit();
+
+            // Push Notif
+
+            // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            // $notificationBuilder->setBody('Pengajuan anda telah di '.( $request->is_approved ? 'approve.' : 'reject.' ))
+                                // ->setSound('default');
+
+            // $notification = $notificationBuilder->build();
+
+            // $topic = new Topics();
+            // $topic->topic('testing')->andTopic('user_'.$data->user_id);
+
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
+
+
             return response()->success( [
-                'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
+                'message' => $responseMessage,
                 'contents' => $eform
             ], 201 );
 
@@ -743,12 +787,21 @@ class EFormController extends Controller
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
 
+                    $usersModel->notify(new ApproveEFormCustomer($verify['contents']));
+
                     // Push Notification
 
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-                    // $notificationBuilder->setBody('Pengajuan anda telah disetujui.')
+                    // $notificationBuilder->setBody('Pengajuan KPR Telah Di Setujui.')
                     //                     ->setSound('default');
 
+                    // $dataBuilder = new PayloadDataBuilder();
+                    // $dataBuilder->addData([
+                    //     // 'id'       =>
+                    //     'eform_id' => $verify['contents']->id,
+                    //     'type'     => 'pengajuan',
+                    // ]);
+                    // $data = $dataBuilder->build();
                     // $notification = $notificationBuilder->build();
                     // $topic = new Topics();
                     // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
@@ -758,16 +811,23 @@ class EFormController extends Controller
                     // $topicResponse->shouldRetry();
                     // $topicResponse->error();
                 }else{
-
+                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
                     $usersModel->notify(new RejectEFormCustomer($verify['contents']));
 
                     // Push Notification
 
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-                    // $notificationBuilder->setBody('Pengajuan anda telah ditolak.')
+                    // $notificationBuilder->setBody('Pengajuan KPR Telah Di Tolak.')
                     //                     ->setSound('default');
 
+                    // $dataBuilder = new PayloadDataBuilder();
+                    // $dataBuilder->addData([
+                    //     // 'id'       =>
+                    //     'eform_id' => $verify['contents']->id,
+                    //     'type'     => 'pengajuan',
+                    // ]);
                     // $notification = $notificationBuilder->build();
+                    // $data = $dataBuilder->build();
                     // $topic = new Topics();
                     // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
 
@@ -777,7 +837,7 @@ class EFormController extends Controller
                     // $topicResponse->error();
                 }
 
-                                //event( new VerifyEForm( $verify['contents'] ) );
+                event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
             $code = 201;
@@ -836,6 +896,46 @@ class EFormController extends Controller
 
                 if ( $updateCLAS['message'] ) {
                     \DB::commit();
+
+                    // Push Notification
+                    $data = EForm::where('ref_number', $request->input('ref_number'))->first();
+
+                    $notificationIsRead =  $this->userNotification->where('eform_id',$data['id'])
+                                                   ->whereNull('read_at')
+                                                   ->first();
+                    if(@$notificationIsRead){
+                        $notificationIsRead->markAsRead();
+                    }
+
+                    $usersModel = User::FindOrFail($data['user_id']);
+                    $usersModel->notify(new ApproveEFormCustomer($data));
+
+                    // Get data from notifications table
+                    // $notificationData = $this->userNotification->where('eform_id', $data['id'])
+                                                    // ->orderBy('created_at', 'desc')->first();
+
+                    // $status = $updateCLAS['status'];
+                    // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                    // $notificationBuilder->setBody('Pengajuan anda telah di '.($status ? 'setujui' : 'ditolak'))
+                    //                     ->setSound('default');
+
+                    // $notification = $notificationBuilder->build();
+                    // $topic = new Topics();
+                    // $topic->topic('testing')->andTopic('user_'.$data['user_id']);
+
+                    // $dataBuilder = new PayloadDataBuilder();
+                    // $dataBuilder->addData([
+                    //     'id'       => $notificationData['id'],
+                    //     'eform_id' => $data['id'],
+                    //     'type'     => 'eform',
+                    // ]);
+                    // $data = $dataBuilder->build();
+
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+                    // $topicResponse->isSuccess();
+                    // $topicResponse->shouldRetry();
+                    // $topicResponse->error();
+
                     return response()->json([
                         "responseCode" => "01",
                         "responseDesc" => $updateCLAS['message']
