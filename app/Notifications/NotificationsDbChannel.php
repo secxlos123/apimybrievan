@@ -18,7 +18,6 @@ class NotificationsDbChannel
   public function send($notifiable, Notification $notification)
   {
     $data = $notification->toDatabase($notifiable);
-    
     return $notifiable->routeNotificationFor('database')->create([
         'id' => $notification->id,
         //customize here
