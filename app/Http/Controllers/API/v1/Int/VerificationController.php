@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1\Int;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use App\Events\Customer\CustomerVerify;
 use App\Http\Requests\API\v1\Int\VerificationRequest;
 use App\Models\EForm;
 use RestwsHc;
