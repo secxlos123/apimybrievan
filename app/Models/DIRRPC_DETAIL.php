@@ -30,7 +30,7 @@ class DIRRPC_DETAIL extends Model
      */
 	 
     protected $fillable = [  	
-	 'id_header','penghasilan_maksimal','penghasilan_minimal','dir_persen','payroll'];
+	 'id_header','penghasilan_maksimal','penghasilan_minimal','dir_persen','payroll','id_detail'];
 	
     /**
      * The attributes that should be hidden for arrays.
@@ -171,15 +171,21 @@ class DIRRPC_DETAIL extends Model
 
     public function scopeFilter( $query, Request $request )
     {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['no', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id_header', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "no" ) {
-            $sort = ['no', 'asc'];
+        if ( $sort[0] == "id_header" ) {
+            $sort = ['id_header', 'asc'];
         }
 
-		 $dir = $dir->leftJoin('gimmick', 'gimmick.dir_rpc', '=', 'dirrpc.no');
-        $dir = $dir->orderBy('dirrpc.'.$sort[0], $sort[1]);
+		$dir = $query->where( function( $dir ) use( $request ) {
+           
+                $dir = $dir->where('dirrpc.debt_name','like', $request->input('nama_debt').'%');
+			     $dir = $dir->where('dirrpc_detail.payroll', $request->input('payroll'));
+		
+        } );
+		 $dir = $dir->Join('dirrpc', 'dirrpc.no', '=', 'dirrpc_detail.id_header');
+        $dir = $dir->orderBy('dirrpc_detail.'.$sort[0], $sort[1]);
 
         \Log::info($dir->toSql());
         \Log::info($dir->getBindings());

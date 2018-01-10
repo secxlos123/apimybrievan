@@ -26,7 +26,11 @@ class dirrpcController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newDir = DIRRPC::filter( $request )->paginate( $limit );
+        if($request->act=='search'){
+			$newDir = DIRRPC::filter( $request )->paginate( $limit );
+		}elseif($request->act=='maintance'){
+			$newDir = DIRRPC_DETAIL::filter( $request )->paginate( $limit );
+		}
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newDir
@@ -46,14 +50,28 @@ class dirrpcController extends Controller
 		 public function hapus_dir( Request $request )
     {
         \Log::info($request->all());
-		$no = $request->no;
-		        $newDir = DIRRPC::where("no",$request->no)->delete();
-		        $newDir2 = DIRRPC_DETAIL::where("id_header",$request->no)->delete();
+		$data = $request->dirrpc;
+		$no = $data['no'];  
+			$limit = 10;
+		       
+		if($data['act']=='maintance'){
+			$count = DIRRPC_DETAIL::where("id_detail",$data['no'])->count();
+			$get = DIRRPC_DETAIL::where("id_detail",$data['no'])->get();
+			$newDir2 = DIRRPC_DETAIL::where("id_detail",$data['no'])->delete();
+				if($count=='1'){
+					$no = $get['0']['id_header'];
+					$newDir = DIRRPC::where("no",$no)->delete();
+				}
+		}else{
+			
+				$newDir2 = DIRRPC_DETAIL::where("id_header",$data['no'])->delete();
+		        $newDir = DIRRPC::where("no",$data['no'])->delete();
+		}
 //		$briguna = DIRRPC::where("no","=",$no);
 //        $newDir = DIRRPC2::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
-            'contents' => $newDir2
+            'contents' => $newDir
         ], 200 );
     }
 
@@ -134,6 +152,7 @@ class dirrpcController extends Controller
 				'dir_persen'=>$data[2],
 				'payroll'=>$data[3],
 				'id_header'=>$data[4],
+				'id_detail'=>$data[4],
 		];
 		return $array;
 	}
