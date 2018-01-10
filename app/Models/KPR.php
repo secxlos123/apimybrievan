@@ -8,6 +8,7 @@ use App\Models\EForm;
 use App\Models\User;
 use App\Models\PropertyItem;
 use App\Notifications\PengajuanKprNotification;
+use App\Notifications\mobile\PengajuanKprNotification as PengajuanKprNotificationMobile;
 use App\Models\Collateral;
 use Asmx;
 use OwenIt\Auditing\Auditable;
@@ -74,7 +75,10 @@ class KPR extends Model implements AuditableContract
             }
 
             $usersModel = User::FindOrFail($eform->user_id);
-            $usersModel->notify(new PengajuanKprNotification($eform)); /*send notification to pinca*/
+            /*send notification to pinca (web)*/
+            $usersModel->notify(new PengajuanKprNotification($eform)); 
+            /*send notification to pinca (mobile)*/
+            $usersModel->notify(new PengajuanKprNotificationMobile($eform)); 
             
             return $kpr;
         } catch (Exception $e) {

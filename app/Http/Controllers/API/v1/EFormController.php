@@ -28,7 +28,10 @@ use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
-
+use App\Notifications\mobile\ApproveEFormCustomer as ApproveEFormCustomerMobile;
+use App\Notifications\mobile\RejectEFormCustomer as RejectEFormCustomerMobile;
+use App\Notifications\mobile\VerificationApproveFormNasabah as VerificationApproveFormNasabahMobile;
+use App\Notifications\mobile\VerificationRejectFormNasabah as VerificationRejectFormNasabahMobile;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -84,6 +87,16 @@ class EFormController extends Controller
             'contents' => $eform
         ],200 );
     }
+	public function birth_place($id){
+
+		  $birth_place = DB::table('cities')
+						 ->select('name')
+						 ->where('cities.id', $customer[0]['birth_place_id'])
+						 ->get();
+				$birth_place = $birth_place->toArray();
+				$birth_place = json_decode(json_encode($birth_place), True);
+		return $birth_place;
+	}
 	public function show_bri( Request $request )
     {
 		$customer = DB::table('customer_details')
@@ -93,6 +106,7 @@ class EFormController extends Controller
 						 ->get();
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
+
 
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
@@ -185,24 +199,12 @@ class EFormController extends Controller
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-
-		  $birth_place = DB::table('cities')
-						 ->select('name')
-						 ->where('cities.id', $customer[0]['birth_place_id'])
-						 ->get();
-				$birth_place = $birth_place->toArray();
-				$birth_place = json_decode(json_encode($birth_place), True);
+		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
 		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
+		  $birth_place = $this->birth_place($customer[0]['couple_birth_place_id']);
 
-		   $birth_place_couple = DB::table('cities')
-						 ->select('name')
-						 ->where('cities.id', $customer[0]['couple_birth_place_id'])
-						 ->get();
-
-				$birth_place_couple = $birth_place_couple ->toArray();
-				$birth_place_couple = json_decode(json_encode($birth_place_couple ), True);
 				if($request->has($birth_place[0]['name'])){
-		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple;
+		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
 				}else{
 					$eform[0]['customer']['personal']['couple_birth_place']  = null;
 				}
@@ -468,6 +470,7 @@ class EFormController extends Controller
 
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
         // if($role == 'customer'){
             // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
             // $notificationBuilder->setBody('Pengajuan KPR Baru')
@@ -477,7 +480,7 @@ class EFormController extends Controller
             // $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
 
             // $topic = new Topics();
-            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
+            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role']);
 
             // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
             // $topicResponse->isSuccess();
@@ -685,6 +688,24 @@ class EFormController extends Controller
             generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
             DB::commit();
+
+            // Push Notif
+
+            // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            // $notificationBuilder->setBody('Pengajuan anda telah di '.( $request->is_approved ? 'approve.' : 'reject.' ))
+                                // ->setSound('default');
+
+            // $notification = $notificationBuilder->build();
+
+            // $topic = new Topics();
+            // $topic->topic('testing')->andTopic('user_'.$data->user_id);
+
+            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+            // $topicResponse->isSuccess();
+            // $topicResponse->shouldRetry();
+            // $topicResponse->error();
+
+
             return response()->success( [
                 'message' => 'E-form berhasil di' . ( $request->is_approved ? 'approve.' : 'reject.' ),
                 'contents' => $eform
@@ -739,45 +760,64 @@ class EFormController extends Controller
 
                 if ($status == 'approve') {
                     $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
+                    $usersModel->notify(new VerificationApproveFormNasabahMobile($verify['contents']));   /*send notification approve*/
 
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
 
+                    $usersModel->notify(new ApproveEFormCustomer($verify['contents']));
+                    $usersModel->notify(new ApproveEFormCustomerMobile($verify['contents']));
+
                     // Push Notification
 
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-                    // $notificationBuilder->setBody('Pengajuan anda telah disetujui.')
+                    // $notificationBuilder->setBody('Pengajuan KPR Telah Di Setujui.')
                     //                     ->setSound('default');
 
+                    // $dataBuilder = new PayloadDataBuilder();
+                    // $dataBuilder->addData([
+                    //     // 'id'       =>
+                    //     'eform_id' => $verify['contents']->id,
+                    //     'type'     => 'pengajuan',
+                    // ]);
+                    // $data = $dataBuilder->build();
                     // $notification = $notificationBuilder->build();
                     // $topic = new Topics();
                     // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
 
-                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
                     // $topicResponse->isSuccess();
                     // $topicResponse->shouldRetry();
                     // $topicResponse->error();
                 }else{
-
+                    $usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
                     $usersModel->notify(new RejectEFormCustomer($verify['contents']));
+                    $usersModel->notify(new RejectEFormCustomerMobile($verify['contents']));
 
                     // Push Notification
 
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-                    // $notificationBuilder->setBody('Pengajuan anda telah ditolak.')
+                    // $notificationBuilder->setBody('Pengajuan KPR Telah Di Setujui.')
                     //                     ->setSound('default');
 
+                    // $dataBuilder = new PayloadDataBuilder();
+                    // $dataBuilder->addData([
+                    //     // 'id'       =>
+                    //     'eform_id' => $verify['contents']->id,
+                    //     'type'     => 'pengajuan',
+                    // ]);
                     // $notification = $notificationBuilder->build();
+                    // $data = $dataBuilder->build();
                     // $topic = new Topics();
                     // $topic->topic('testing')->andTopic('user_'.$verify['contents']['user_id']);
 
-                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+                    // $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
                     // $topicResponse->isSuccess();
                     // $topicResponse->shouldRetry();
                     // $topicResponse->error();
                 }
 
-                                //event( new VerifyEForm( $verify['contents'] ) );
+                event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
             $code = 201;

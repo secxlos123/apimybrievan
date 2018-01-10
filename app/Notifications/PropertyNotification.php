@@ -1,27 +1,26 @@
 <?php
 
-namespace App\Notifications\mobile;
+namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Notifications\NotificationsDbChannel;
-use App\Models\EForm;
-class PengajuanKprNotification extends Notification
+
+class PropertyNotification extends Notification
 {
     use Queueable;
 
-    public $eForm;
+    public $prop;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($eForm)
+    public function __construct($prop)
     {
-        $this->eForm   = $eForm;
+        $this->prop = $prop;
     }
 
     /**
@@ -32,6 +31,7 @@ class PengajuanKprNotification extends Notification
      */
     public function via($notifiable)
     {
+        // return ['mail'];
         return [NotificationsDbChannel::class];
     }
 
@@ -68,18 +68,13 @@ class PengajuanKprNotification extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-
     public function toDatabase($notifiable)
     {
-        $data = EForm::findOrFail($this->eForm->id);
         return [
-            'eform_id' => $this->eForm->id,
+            'prop_id' => $this->prop->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'nik' => $this->eForm->nik,
-            'ref_number' => $this->eForm->ref_number,
-            'branch_id' => $data->branch_id,
-            'created_at' => $this->eForm->created_at,
+            // 'prop_name' => $this->prop->nik,
         ];
     }
 }
