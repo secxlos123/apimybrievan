@@ -116,7 +116,7 @@ class AuthController extends Controller
                                 'branch' => $userservices['branch_id'],
                                 'role' => $userservices['role'],
                                 'position' => $userservices['posisi'],
-                                'uker' => $userservices['tipe_uker']]*/,
+                                'uker' => $userservices['tipe_uker']],*/
                             'contents'=> [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
                                 'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
