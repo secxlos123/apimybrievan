@@ -163,7 +163,7 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
-      return DB::transaction(function() use($collateralId) {
+      return DB::transaction(function() use($collateralId,$dataother) {
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->findOrFail($collateralId);
         $collateral->otsInArea()->create($this->request->area);
         $collateral->otsLetter()->create($this->request->letter);
@@ -175,7 +175,13 @@ class CollateralController extends Controller
         $collateral->otsNine()->create($this->request->nine);
         $collateral->otsTen()->create($this->request->ten);
         $otsOther = $collateral->otsOther()->create($dataother);
-        $otsOther->image_condition_area = $this->uploadAndGetFileNameImage($otsOther);
+        if (count($dataother['image_area'])>0) {
+          foreach ($dataother['image_area'] as $key => $value) {
+          \Log::info('======= data foreach ======');
+          \Log::info($value);
+          $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+          }
+        }
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1\Int;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use App\Events\Customer\CustomerVerify;
 use App\Http\Requests\API\v1\Int\VerificationRequest;
 use App\Models\EForm;
 use RestwsHc;
@@ -112,6 +113,25 @@ class VerificationController extends Controller
             ]
         ], 200 );
     }
+
+    /**
+     * Resend email verification
+     *
+     * @return void
+     * @author
+     **/
+    public function resend( $eform_id )
+    {
+        $eform = EForm::findOrFail( $eform_id );
+        $customer = $eform->customer;
+
+        event( new CustomerVerify( $customer, $eform ) );
+
+        return response()->success( [
+            'message' => 'Email Verifikasi berhasil dikirim.'
+        ], 200 );
+    }
+
     /**
      * Display the specified resource.
      *
