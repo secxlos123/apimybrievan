@@ -663,8 +663,8 @@ class EForm extends Model implements AuditableContract
     public static function updateCLAS( $ref_number, $status )
     {
         $returnStatus = false;
+        $statusEform = ( $status == 'Approval1' ? true : false );
         $target = static::where('ref_number', $ref_number)->first();
-
         if ($target) {
             $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
             $target->update([
@@ -697,8 +697,9 @@ class EForm extends Model implements AuditableContract
         }
 
         return array(
-            'message' => $returnStatus
-            , 'contents' => $target
+            'message' => $returnStatus, 
+            'contents' => $target,
+            'status' => $statusEform,
         );
     }
 
