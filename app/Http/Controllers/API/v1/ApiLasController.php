@@ -768,7 +768,7 @@ class ApiLasController extends Controller
                                 // "program_asuransi"          => $request['program_asuransi'],
                                 "kredit_take_over"          => $request['kredit_take_over'],
                                 "pemrakarsa_name"           => $request['kantor_cabang_name'],
-                                "agama"                     => $request['ket_agama'],
+                                "agama"                     => $request['agama'],
                                 "npl_instansi"              => $request['npl_instansi'],
                                 "npl_unitkerja"             => $request['npl_unitkerja'],
                                 "gimmick"                   => $request['nama_program_promo'],
