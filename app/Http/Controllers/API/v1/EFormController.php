@@ -88,7 +88,7 @@ class EFormController extends Controller
 		
 		  $birth_place = DB::table('cities')
 						 ->select('name')
-						 ->where('cities.id', $customer[0]['birth_place_id'])
+						 ->where('cities.id', $id)
 						 ->get();
 				$birth_place = $birth_place->toArray();
 				$birth_place = json_decode(json_encode($birth_place), True);

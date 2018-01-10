@@ -74,6 +74,30 @@ class dirrpcController extends Controller
             'contents' => $newDir
         ], 200 );
     }
+	
+	 public function get_dir( Request $request )
+    {
+        \Log::info($request->all());
+			$no = $request->no;  
+			$limit = 10;
+            $newDir = DIRRPC::where("no",$no)->get();
+		return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newDir
+        ], 200 );
+    }
+	
+	 public function get_dir_detail( Request $request )
+    {
+        \Log::info($request->all());
+			$no = $request->no;  
+			$limit = 10;
+            $newDir = DIRRPC_DETAIL::where("no",$no)->get();
+		return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newDir
+        ], 200 );
+    }
 
     public function show_briguna( Request $request )
     {
@@ -145,14 +169,14 @@ class dirrpcController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
-	function detailadd($data){
+	function detailadd($data,$i){
 		$array = [
 				'penghasilan_minimal'=>$data[0],
 				'penghasilan_maksimal'=>$data[1],
 				'dir_persen'=>$data[2],
 				'payroll'=>$data[3],
 				'id_header'=>$data[4],
-				'id_detail'=>$data[4],
+				'id_detail'=>$data[4].$i,
 		];
 		return $array;
 	}
@@ -165,7 +189,7 @@ class dirrpcController extends Controller
 		$x = $baseRequest['dirrpc']['countminus1'];
 			$dirrpc = DIRRPC::create( $baseRequest['dirrpc'] );
 		for($i=0;$i<=$x;$i++){
-			 $detaildata = $this->detailadd(json_decode($baseRequest['dirrpc']['data'.$i]));
+			 $detaildata = $this->detailadd(json_decode($baseRequest['dirrpc']['data'.$i]),$i);
 			 $dirrpc_detail = DIRRPC_DETAIL::create( $detaildata );
 		}
 		//return $request->all();die();
