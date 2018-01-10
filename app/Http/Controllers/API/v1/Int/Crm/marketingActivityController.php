@@ -622,7 +622,7 @@ class marketingActivityController extends Controller
       }
 
       return response()->success( [
-          'message' => 'Success get marketing Activity by branch',
+          'message' => 'Success get marketing Activity by customer',
           'contents' => $customerActivity
       ]);
 
