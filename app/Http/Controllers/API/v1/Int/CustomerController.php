@@ -202,7 +202,6 @@ class CustomerController extends Controller
 		if( $request->verify_status == 'verify' ) {
 			$usersModel = User::FindOrFail($customer->id);
 			$notificationToCustomer = $usersModel->notify(new VerificationDataNasabah($eform));		/*send notification to customer nasabah*/
-			
 			event( new CustomerVerify( $customer, $eform ) );
 
 	        // Push Notification

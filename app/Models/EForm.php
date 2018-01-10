@@ -302,7 +302,7 @@ class EForm extends Model implements AuditableContract
             }
             else{
 
-                $result = $eform->insertCoreBRI(7);
+                $result = $eform->insertCoreBRI(8);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> false]);
                 }
@@ -365,8 +365,8 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71', null]
             , ['InsertIntoReviewer', 'nama_reviewer']
+            , ['InsertDataAgunanModel71', null]
             , ['InsertDataAgunanTanahRumahTinggal', null]
         ];
 
@@ -1052,7 +1052,7 @@ class EForm extends Model implements AuditableContract
         $maxInstallment = ( $dir * $thp ) / 100;
         $interest = $this->getInterest( $data['fid_aplikasi'] );
         $installment = $this->getInstallment( $interest );
-        $maxPlafond = $this->getMaxPlafond( $interest, $installment );
+        $maxPlafond = $this->getMaxPlafond( $interest, $maxInstallment - $loan );
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
@@ -1114,7 +1114,7 @@ class EForm extends Model implements AuditableContract
         return $request;
     }
 
-    /**
+     /**
      * Generate Parameters for step 8.
      *
      * @param array $data
@@ -1123,6 +1123,21 @@ class EForm extends Model implements AuditableContract
     public function step8($data)
     {
         \Log::info("step8");
+        return $data + [
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
+        ];
+
+    }
+
+    /**
+     * Generate Parameters for step 9.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step9($data)
+    {
+        \Log::info("step9");
         $kpr = $this->kpr;
         $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
         $otsInArea = $collateral->otsInArea;
@@ -1233,21 +1248,7 @@ class EForm extends Model implements AuditableContract
     }
 
      /**
-     * Generate Parameters for step 9.
-     *
-     * @param array $data
-     * @return array $request
-     */
-    public function step9($data)
-    {
-        \Log::info("step9");
-        return $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
-        ];
-
-    }
-     /**
-     * Generate Parameters for step 9.
+     * Generate Parameters for step 10.
      *
      * @param array $data
      * @return array $request
