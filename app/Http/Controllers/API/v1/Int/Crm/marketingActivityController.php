@@ -601,7 +601,7 @@ class marketingActivityController extends Controller
          $marketing->id
         ];
       }
-      foreach (MarketingActivity::whereIn('id', $list)->get() as $activity) {
+      foreach (MarketingActivity::whereIn('marketing_id', $list)->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $customerActivity[] = [
