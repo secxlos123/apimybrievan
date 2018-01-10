@@ -67,6 +67,10 @@ class Handler extends ExceptionHandler
             return response()->error( [
                 'message' => 'Url Tidak Valid'
             ], 404 );
+        } else if ($exception instanceof \GuzzleHttp\Exception\ConnectException) {
+            return response()->error( [
+                'message' => 'Request Time Out'
+            ], 408 );
         }
         // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
         //     return response()->json( [

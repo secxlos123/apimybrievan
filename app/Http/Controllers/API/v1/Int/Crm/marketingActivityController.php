@@ -660,7 +660,7 @@ class marketingActivityController extends Controller
          $marketing->id
         ];
       }
-      foreach (MarketingActivity::whereIn('marketing_id', $list)->get() as $activity) {
+      foreach (MarketingActivity::whereIn('marketing_id', $list)->orderBy('created_at', 'desc')->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $customerActivity[] = [
@@ -687,7 +687,11 @@ class marketingActivityController extends Controller
       // return $list;
       // dd($list);die();
       return response()->success( [
+<<<<<<< HEAD
+          'message' => 'Success get marketing Activity by customer',
+=======
           'message' => 'Success get marketing Activity by Customer',
+>>>>>>> 3174fd15758e6b49bea04538582e877ae05b9ee8
           'contents' => $customerActivity
       ]);
 
