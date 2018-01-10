@@ -12,7 +12,7 @@
 */
 
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
-	
+
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
 	Route::get('hapus_dir', 'dirrpcController@hapus_dir');
 	Route::post( 'auth/login', 'AuthController@store' );
@@ -60,6 +60,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			] );
 			Route::group( [ 'prefix' => 'verification' ], function () {
 				Route::post( 'show', 'VerificationController@show' );
+				Route::get( 'resend', 'VerificationController@resend' );
 			} );
 		} );
 
@@ -74,10 +75,10 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		] );
 		 Route::resource( 'gimmick', 'GimmickController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
-		] ); 
+		] );
 		 Route::resource( 'dirrpc', 'dirrpcController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
-		] ); 
+		] );
 		} );
 	} );
 
@@ -91,7 +92,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		Route::resource( 'prescreening', 'PrescreeningController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
-		
+
 		Route::resource( 'GetView', 'ViewController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );

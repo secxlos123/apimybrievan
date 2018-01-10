@@ -47,7 +47,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -119,42 +119,30 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
-     * Get AO detail information.
-     *
-     * @return string
-     */
-    // public function getAoNameAttribute()
-    // {
-    //     if ( $this->ao_id ) {
-    //         $AO = \RestwsHc::getUser( $this->ao_id );
-    //         return $AO[ 'name' ];
-    //     }
-
-    //     return null;
-    // }
-
-    /**
-     * Get AO detail information.
+     * Get Status information.
      *
      * @return string
      */
     public function getStatusAttribute()
     {
-        if ( !$this->is_approved && $this->recommended) {
-             return 'Kredit Ditolak';
-        }
-         elseif ($this->status_eform == 'Rejected' ) {
+        if ( (!$this->is_approved && $this->recommended) || ($this->status_eform == 'Rejected') ) {
             return 'Kredit Ditolak';
-        }
-        elseif( $this->is_approved ) {
-        // if( $this->is_approved && $this->customer->detail->is_verified ) {
+
+        } elseif ( $this->status_eform == 'Approval1' ) {
+            return 'Kredit Disetujui';
+
+        } elseif ( $this->status_eform == 'Approval2' ) {
+            return 'Rekontes Kredit';
+
+        } elseif( $this->is_approved ) {
             return 'Proses CLF';
-        }
-        elseif( $this->visit_report ) {
+
+        } elseif( $this->visit_report ) {
             return 'Prakarsa';
-        }
-        elseif( $this->ao_id == null || $this->ao_id == '') {
+
+        } elseif( $this->ao_id == null || $this->ao_id == '' ) {
             return 'Disposisi Pengajuan';
+
         }
 
         return 'Pengajuan Kredit';
@@ -221,25 +209,41 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
-     * Get eform aging detail information.
+     * Get Visited status ( LKN ).
      *
      * @return string
      */
     public function getIsVisitedAttribute()
     {
         if ($this->product_type == 'kpr') {
-            if( $this->visit_report ) {
+            if ( $this->visit_report ) {
                 return true;
             }
-            return false;
+
         } else {
             if ($this->briguna) {
                 if ($this->briguna->score) {
                     return true;
                 }
-                return false;
             }
+
         }
+
+        return false;
+    }
+
+    /**
+     * Get recontest status.
+     *
+     * @return string
+     */
+    public function getIsRecontestAttribute()
+    {
+        if( $this->recontest ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -361,9 +365,9 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71',null]
-            , ['InsertIntoReviewer',null]
-            , ['InsertDataAgunanTanahRumahTinggal',null]
+            , ['InsertDataAgunanModel71', null]
+            , ['InsertIntoReviewer', 'nama_reviewer']
+            , ['InsertDataAgunanTanahRumahTinggal', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -391,18 +395,16 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info(json_encode($sendRequest));
 
-                if ($value[0] != 'InsertIntoReviewer') { // request by Gilang
-                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
 
-                    if (!$set['status']) {
-                        \Log::info('Error Step Ke -'.$step);
-                        $return = array(
-                            'status' => false
-                            , 'message' => $set[ 'message' ]
-                        );
-                        \Log::info($return);
-                        break;
-                    }
+                if (!$set['status']) {
+                    \Log::info('Error Step Ke -'.$step);
+                    $return = array(
+                        'status' => false
+                        , 'message' => $set[ 'message' ]
+                    );
+                    \Log::info($return);
+                    break;
                 }
 
                 \Log::info('Berhasil Step Ke -'.$step);
@@ -628,6 +630,16 @@ class EForm extends Model implements AuditableContract
         return $this->hasOne( VisitReport::class, 'eform_id' );
     }
 
+    /**
+     * The relation to Recontest.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function recontest()
+    {
+        return $this->hasOne( Recontest::class, 'eform_id' );
+    }
+
     public function briguna()
     {
         return $this->hasOne( BRIGUNA::class, 'eform_id' );
@@ -654,19 +666,33 @@ class EForm extends Model implements AuditableContract
         $target = static::where('ref_number', $ref_number)->first();
 
         if ($target) {
+            $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
             $target->update([
                 'is_approved' => ( $status == 'Approval1' ? true : false )
-                , 'status_eform' => $status
+                , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
             ]);
 
-            $target->kpr->update([
-                'is_sent' => ( $status == 'Approval1' ? true : false )
-            ]);
+            if ( $status == 'Approval2' ) {
+                if ( !$target->recontest ) {
+                    $target->recontest()->create( [
+                        'expired_date' => Carbon::now()->addMonths(1)
+                    ] );
+                    $returnStatus = "EForm berhasil di Rekontes.";
 
-            $returnStatus = "EForm berhasil di update.";
+                } else {
+                    $returnStatus = "EForm sudah pernah di Rekontes.";
+
+                }
+            }
 
             if ($target->kpr) {
-                PropertyItem::setAvailibility( $target->kpr->property_item, $status == 'Approval1' ? "sold" : "available" );
+                $target->kpr->update([
+                    'is_sent' => ( $status == 'Approval1' ? true : false )
+                ]);
+
+                if ( $status != 'Approval2' ) {
+                    PropertyItem::setAvailibility( $target->kpr->property_item, $status == 'Approval1' ? "sold" : "available" );
+                }
             }
         }
 
@@ -1287,13 +1313,6 @@ class EForm extends Model implements AuditableContract
     {
         return $this->morphTo();
     }
-
-    /**
-     * Get Data Notification.
-     *
-     * @param array $data
-     * @return array $request
-     */
 
     /**
      * Validate data.

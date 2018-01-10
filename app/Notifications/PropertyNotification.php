@@ -6,20 +6,21 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Notifications\NotificationsDbChannel;
 
-class ApproveEFormCustomer extends Notification
+class PropertyNotification extends Notification
 {
     use Queueable;
+
+    public $prop;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($eForm)
+    public function __construct($prop)
     {
-        $this->eForm   = $eForm;
+        $this->prop = $prop;
     }
 
     /**
@@ -30,6 +31,7 @@ class ApproveEFormCustomer extends Notification
      */
     public function via($notifiable)
     {
+        // return ['mail'];
         return [NotificationsDbChannel::class];
     }
 
@@ -41,10 +43,23 @@ class ApproveEFormCustomer extends Notification
      */
     public function toMail($notifiable)
     {
-        /*return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');*/
+        // return (new MailMessage)
+        //             ->line('The introduction to the notification.')
+        //             ->action('Notification Action', url('/'))
+        //             ->line('Thank you for using our application!');
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            //
+        ];
     }
 
     /**
@@ -56,13 +71,10 @@ class ApproveEFormCustomer extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'eform_id' => $this->eForm->id,
+            'prop_id' => $this->prop->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'nik' => $this->eForm->nik,
-            'ref_number' => $this->eForm->ref_number,
-            'branch_id' => $this->eForm->branch_id,
-            'created_at' => $this->eForm->created_at,
+            // 'prop_name' => $this->prop->nik,
         ];
     }
 }
