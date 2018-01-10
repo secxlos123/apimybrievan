@@ -14,7 +14,7 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
-	Route::get('hapus_dir', 'dirrpcController@hapus_dir');
+	Route::post('hapus_dir', 'dirrpcController@hapus_dir');
 	Route::post( 'auth/login', 'AuthController@store' );
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
 	Route::post('getBranch', 'SelectUkerController@getBranch');
@@ -60,7 +60,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			] );
 			Route::group( [ 'prefix' => 'verification' ], function () {
 				Route::post( 'show', 'VerificationController@show' );
-				Route::post( 'resend', 'VerificationController@resend' );
+				Route::get( 'resend', 'VerificationController@resend' );
 			} );
 		} );
 
