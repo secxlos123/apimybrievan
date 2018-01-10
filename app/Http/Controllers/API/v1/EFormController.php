@@ -468,16 +468,23 @@ class EFormController extends Controller
 
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
         // if($role == 'customer'){
             // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
             // $notificationBuilder->setBody('Pengajuan KPR Baru')
-            //                     ->setSound('default');
+                                // ->setSound('default');
 
-            // $notification = $notificationBuilder->build();
-            // $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
+        //     $dataBuilder = new PayloadDataBuilder();
+        //     $dataBuilder->addData([
+        //         'type'     => 'pengajuanKPR',
+        //         'eform_id' => $
+        //     ]);
+
+        //     $notification = $notificationBuilder->build();
+        //     $pinca = $this->userServices->getPinca($baseRequest['branch_id']);
 
             // $topic = new Topics();
-            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role'])->orTopic($pinca['pn']);
+            // $topic->topic('testing')->orTopic('branch_'.$pinca['branch_id'])->orTopic($pinca['role']);
 
             // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
             // $topicResponse->isSuccess();

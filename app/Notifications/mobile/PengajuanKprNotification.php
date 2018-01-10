@@ -6,19 +6,22 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-
+use App\Notifications\NotificationsDbChannel;
+use App\Models\EForm;
 class PengajuanKprNotification extends Notification
 {
     use Queueable;
+
+    public $eForm;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($eForm)
     {
-        //
+        $this->eForm   = $eForm;
     }
 
     /**
@@ -29,7 +32,7 @@ class PengajuanKprNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return [NotificationsDbChannel::class];
     }
 
     /**
