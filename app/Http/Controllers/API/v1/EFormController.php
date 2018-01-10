@@ -817,7 +817,7 @@ class EFormController extends Controller
                     // $topicResponse->error();
                 }
 
-                                //event( new VerifyEForm( $verify['contents'] ) );
+                event( new VerifyEForm( $verify['contents'] ) );
             }
             DB::commit();
             $code = 201;
