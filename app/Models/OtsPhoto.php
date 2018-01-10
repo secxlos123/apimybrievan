@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use File;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class OtsPhoto extends Model {
+class OtsPhoto extends Model implements AuditableContract
+{
 	use Auditable;
 
 	protected $fillable = [
+		'id',
 		'ots_other_id',
-		'image_data',
+		'image_data'
 	];
 	public static $folder = '';
 	
@@ -70,7 +74,6 @@ class OtsPhoto extends Model {
 			$doFunction = isset($this->attributes[$attribute]);
 		}
 		\Log::info("========================handling upload=============================");
-		$base = $this->ots_other_id ? $this->ots_other_id : self::$folder;
 		if (isset($this->attributes[$attribute]) && gettype($image) == 'object') {
 			$path = public_path('uploads/collateral/other/' . $this->ots_other_id . '/');
 			if (!empty($this->attributes[$attribute])) {
@@ -88,8 +91,8 @@ class OtsPhoto extends Model {
 			} else {
 				$extension = $image->getClientOriginalExtension();
 			}
-
-			$filename = $this->collateral_id . '-' . $attribute . '.' . $extension;
+			$num =  random_int(1,9)*(int)$this->ots_other_id;
+			$filename = $this->ots_other_id . '-' . $attribute.'-'.$num.'.' . $extension;
 			$image->move($path, $filename);
 			return $filename;
 		} else {

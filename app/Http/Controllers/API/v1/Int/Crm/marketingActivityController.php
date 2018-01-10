@@ -586,43 +586,49 @@ class marketingActivityController extends Controller
         $pn_name = array_column($result, 'SNAME', 'PERNR');
       } else {
         $list_pn = '';
+        $pn_name =[];
       }
 
       $cif = $request->input('cif');
       $nik = $request->input('nik');
 
       $customerActivity = [];
-
-      foreach (Marketing::where('cif', $cif)->orWhere('nik', $nik)->get() as $key => $marketing) {
-
-        foreach (MarketingActivity::where('pn', $marketing->pn)->get() as $activity) {
-          $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
-          $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
-          $customerActivity[] = [
-            'id' => $activity->id,
-            'pn' => $activity->pn,
-            'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
-            'object_activity' => $activity->object_activity,
-            'action_activity' => $activity->action_activity,
-            'start_date' => date('Y-m-d', strtotime($activity->start_date)),
-            'end_date' => date('Y-m-d', strtotime($activity->end_date)),
-            'start_time' => date('H:i', strtotime($activity->start_date)),
-            'end_time' => date('H:i', strtotime($activity->end_date)),
-            'longitude' => $activity->longitude,
-            'latitude' => $activity->latitude,
-            'marketing_id' => $activity->marketing_id,
-            'pn_join' => $activity->pn_join,
-            'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
-            'desc' => $activity->desc,
-            'address' => $activity->address,
-            'followup'=> $followUp,
-            'rescheduled'=> $rescheduled,
-            ];
-        }
+      $list=[];
+      // $list = Marketing::where('cif', $cif)->where('nik', $nik)->get();
+      foreach (Marketing::where('cif', $cif)->where('nik', $nik)->get() as $key => $marketing) {
+        // echo $marketing->pn.'  ';
+        $list[]=[
+         $marketing->id
+        ];
       }
-
+      foreach (MarketingActivity::whereIn('id', $list)->get() as $activity) {
+        $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+        $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+        $customerActivity[] = [
+          'id' => $activity->id,
+          'pn' => $activity->pn,
+          'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
+          'object_activity' => $activity->object_activity,
+          'action_activity' => $activity->action_activity,
+          'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+          'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+          'start_time' => date('H:i', strtotime($activity->start_date)),
+          'end_time' => date('H:i', strtotime($activity->end_date)),
+          'longitude' => $activity->longitude,
+          'latitude' => $activity->latitude,
+          'marketing_id' => $activity->marketing_id,
+          'pn_join' => $activity->pn_join,
+          'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
+          'desc' => $activity->desc,
+          'address' => $activity->address,
+          'followup'=> $followUp,
+          'rescheduled'=> $rescheduled,
+        ];
+      }
+      // return $list;
+      // dd($list);die();
       return response()->success( [
-          'message' => 'Success get marketing Activity by branch',
+          'message' => 'Success get marketing Activity by Customer',
           'contents' => $customerActivity
       ]);
 
