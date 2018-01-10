@@ -84,6 +84,16 @@ class EFormController extends Controller
             'contents' => $eform
         ],200 );
     }
+	public function birth_place($id){
+		
+		  $birth_place = DB::table('cities')
+						 ->select('name')
+						 ->where('cities.id', $customer[0]['birth_place_id'])
+						 ->get();
+				$birth_place = $birth_place->toArray();
+				$birth_place = json_decode(json_encode($birth_place), True);
+		return $birth_place;
+	}
 	public function show_bri( Request $request )
     {
 		$customer = DB::table('customer_details')
@@ -93,6 +103,7 @@ class EFormController extends Controller
 						 ->get();
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
+		
 
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
@@ -185,24 +196,12 @@ class EFormController extends Controller
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-
-		  $birth_place = DB::table('cities')
-						 ->select('name')
-						 ->where('cities.id', $customer[0]['birth_place_id'])
-						 ->get();
-				$birth_place = $birth_place->toArray();
-				$birth_place = json_decode(json_encode($birth_place), True);
+		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
 		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
-
-		   $birth_place_couple = DB::table('cities')
-						 ->select('name')
-						 ->where('cities.id', $customer[0]['couple_birth_place_id'])
-						 ->get();
-
-				$birth_place_couple = $birth_place_couple ->toArray();
-				$birth_place_couple = json_decode(json_encode($birth_place_couple ), True);
+		  $birth_place = $this->birth_place($customer[0]['couple_birth_place_id']);
+		  
 				if($request->has($birth_place[0]['name'])){
-		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple;
+		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
 				}else{
 					$eform[0]['customer']['personal']['couple_birth_place']  = null;
 				}
