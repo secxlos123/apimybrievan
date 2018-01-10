@@ -60,7 +60,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			] );
 			Route::group( [ 'prefix' => 'verification' ], function () {
 				Route::post( 'show', 'VerificationController@show' );
-				Route::post( 'resend', 'VerificationController@resend' );
+				Route::get( 'resend', 'VerificationController@resend' );
 			} );
 		} );
 

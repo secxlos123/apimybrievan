@@ -32,7 +32,7 @@ class UserNotification extends Model
     {
         return $this->morphTo();
     }
-  
+
 
     /**
     * Mark the notification as read.
@@ -55,17 +55,17 @@ class UserNotification extends Model
     {
         $url = env( 'INTERNAL_APP_URL', 'https://mybri.stagingapps.net' ) . 'eform?ref_number=' . $ref_number.'&ids='.$this->eform_id;
         switch ($this->type) {
-            case 'App\Notifications\PengajuanKprNotification':                
+            case 'App\Notifications\PengajuanKprNotification':
                 $subjectNotif = [ 'message' => 'Pengajuan KPR Baru',
                                 'url'=> $url,
                                 ];
                 break;
-            case 'App\Notifications\EFormPenugasanDisposisi':                
+            case 'App\Notifications\EFormPenugasanDisposisi':
                 $subjectNotif = [ 'message' => 'Penugasan Disposisi',
                                 'url'=> $url,
                                 ];
                 break;
-            case 'App\Notifications\ApproveEFormCustomer':   
+            case 'App\Notifications\ApproveEFormCustomer':
                 if($status_eform == 'approved'){
                     $subjectNotif = [ 'message' => 'Pengajuan KPR Telah Di Setujui',
                                 'url'=> $url,
@@ -76,29 +76,34 @@ class UserNotification extends Model
                                 ];
                 }
                 break;
-            case 'App\Notifications\RejectEFormCustomer':                
+            case 'App\Notifications\RejectEFormCustomer':
                 $subjectNotif = [ 'message' => 'Pengajuan KPR Telah Di Tolak',
                                 'url'=> $url,
                                 ];
                 break;
-            case 'App\Notifications\LKNEFormCustomer':                
+            case 'App\Notifications\LKNEFormCustomer':
                 $subjectNotif = [ 'message' => 'Prakarsa LKN',
                                 'url'=> $url,
                                 ];
                 break;
-            case 'App\Notifications\VerificationApproveFormNasabah':                
+            case 'App\Notifications\VerificationApproveFormNasabah':
                 $subjectNotif = [ 'message' => 'Customer Telah Menyetujui Form KPR',
                                 'url'=> $url,
                                 ];
                 break;
-            case 'App\Notifications\VerificationRejectFormNasabah':                
+            case 'App\Notifications\VerificationRejectFormNasabah':
                 $subjectNotif = [ 'message' => 'Customer Telah Menolak Form KPR',
                                 'url'=> $url,
                                 ];
                 break;
-            case 'App\Notifications\VerificationDataNasabah':                
+            case 'App\Notifications\VerificationDataNasabah':
                 $subjectNotif = [ 'message' => 'Verifikasi Pengajuan KPR',
                                 'url'=> env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . 'verification?ref_number=' . $ref_number.'&ids='.$this->eform_id,
+                                ];
+                break;
+            case 'App\Notifications\PropertyNotification':
+                $subjectNotif = [ 'message' => 'Proyek Baru',
+                                'url'=> '',
                                 ];
                 break;
             default:
@@ -118,16 +123,16 @@ class UserNotification extends Model
     */
     public function getNotifications($branch_name){
         return $this->where('role_name',$branch_name)->orderBy('created_at', 'DESC');
-    
+
     }
-    
+
     public function getUnreads($branch_id, $role, $pn , $user_id){
         $query = $this->leftJoin('eforms','notifications.eform_id','=','eforms.id')
                     ->where('eforms.branch_id',@$branch_id)
                     ->Where('eforms.ao_id', @$pn)
                     // ->where('notifications.notifiable_id',@$user_id)
                     ->orderBy('notifications.created_at', 'DESC');
-        
+
         if(@$role == 'pinca'){
             if ($query->Orwhere('notifications.type','App\Notifications\PengajuanKprNotification')) {
                 $query->whereNull('eforms.ao_id')->unreads();
@@ -138,19 +143,19 @@ class UserNotification extends Model
                 ->whereNotNull('visit_reports.created_at')
                 ->unreads();
             }
-               
-        }  
+
+        }
 
         if(@$role == 'ao'){
-            if($query->Orwhere('notifications.type','App\Notifications\EFormPenugasanDisposisi')){         
+            if($query->Orwhere('notifications.type','App\Notifications\EFormPenugasanDisposisi')){
                 $query->whereNotNull('eforms.ao_id')
                 ->whereNotNull('eforms.ao_name')
                 ->whereNotNull('eforms.ao_position')
                 ->unreads();
             }
-           
+
             if ($query->Orwhere('notifications.type','App\Notifications\ApproveEFormCustomer')) {    /*is is_approved*/
-                /*              
+                /*
                 $query->Where('eforms.status_eform', 'approved');
                 $query->Where('eforms.recommended', true);
                 $query->Where('eforms.is_approved', true);
@@ -159,10 +164,10 @@ class UserNotification extends Model
                 $query->whereNotNull('eforms.pinca_position');
                 $query->whereNotNull('eforms.cons');
                 $query->whereNotNull('eforms.pros');*/
-               
+
                 $query->unreads();
             }
-             
+
 
             if ($query->Orwhere('notifications.type','App\Notifications\RejectEFormCustomer')) {    /*is rejected*/
                 $query->unreads();
@@ -170,15 +175,15 @@ class UserNotification extends Model
 
             if ($query->Orwhere('notifications.type','App\Notifications\VerificationApproveFormNasabah')) {    /*verifiy app*/
                 $query->unreads();
-            } 
+            }
 
             if ($query->Orwhere('notifications.type','App\Notifications\VerificationRejectFormNasabah')) {    /*verifiy app*/
                 $query->unreads();
-            }            
+            }
         }
-        
+
         if(@$role == 'customer'){
-           if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {               
+            if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {
                 $query->unreads()->where('notifications.notifiable_id',@$user_id);
             }
         }
@@ -190,9 +195,15 @@ class UserNotification extends Model
         if(@$role == 'collateral-appraisal'){
             $query->whereNull('notifications.created_at');
         }
-        
+
         if(@$role == 'collateral'){
-            $query->whereNull('notifications.created_at');
+            if ($this->Orwhere('notifications.type','App\Notifications\PropertyNotification')) {
+                \Log::info('==========query=======================================');
+                $query = $this->where('notification.read_at', '=', null)->where('notification.branch_id', '=', @$branch_id)->select('*');
+                \Log::info($query);
+                return $query;
+            }
+            // $query->whereNull('notifications.created_at');
         }
 
         $query->select('notifications.id','notifications.type','notifications.notifiable_id','notifications.notifiable_type','notifications.data','notifications.read_at','notifications.created_at','notifications.updated_at','notifications.branch_id','notifications.role_name','notifications.eform_id','eforms.is_approved','eforms.ao_id', 'eforms.ref_number');

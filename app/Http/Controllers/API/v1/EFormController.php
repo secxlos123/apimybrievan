@@ -744,9 +744,6 @@ class EFormController extends Controller
 
                     // Push Notification
 
-                    //$usersModel = User::FindOrFail($verify['contents']['user_id']);     /*send notification*/
-                    //$usersModel->notify(new ApproveEFormCustomer($verify['contents']));
-
                     // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
                     // $notificationBuilder->setBody('Pengajuan anda telah disetujui.')
                     //                     ->setSound('default');

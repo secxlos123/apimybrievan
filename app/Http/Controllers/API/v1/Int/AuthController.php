@@ -109,14 +109,14 @@ class AuthController extends Controller
 
                     }else {
                          return response()->success( [
-                            'message' => [
+                            /*'message' => [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
                                 'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
                                 'name' => $userservices[ 'name' ],
                                 'branch' => $userservices['branch_id'],
                                 'role' => $userservices['role'],
                                 'position' => $userservices['posisi'],
-                                'uker' => $userservices['tipe_uker']],
+                                'uker' => $userservices['tipe_uker']],*/
                             'contents'=> [
                                 'token' => 'Bearer ' . $userservices[ 'password' ],
                                 'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
