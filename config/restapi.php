@@ -22,7 +22,7 @@ return [
     */
 
     // 'restwshc'  => env('CLIENT_RESTWSHC', 'https://pinjaman.bri.co.id/restws_hc'),
-    'dbwsrest'  => env('CLIENT_DBWSREST', 'http://10.35.65.111/skpp_concept/dbws_rest_prod'),
+    'dbwsrest'  => env('CLIENT_DBWSREST', 'http://10.35.65.111/skpp_concept/dbws_rest_briguna'),
 
 	'restwshc'  => env('CLIENT_RESTWSHC', 'http://10.35.65.111/skpp_concept/restws_hc'),
 

@@ -197,10 +197,9 @@ class EFormController extends Controller
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
 		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
 		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
-		  $birth_place = $this->birth_place($customer[0]['couple_birth_place_id']);
-
-				if($request->has($birth_place[0]['name'])){
-		  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
+				if(!empty($customer[0]['couple_birth_place_id'])){
+					  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
+					  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
 				}else{
 					$eform[0]['customer']['personal']['couple_birth_place']  = null;
 				}
