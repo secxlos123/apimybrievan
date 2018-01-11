@@ -377,7 +377,7 @@ class Customer extends User
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
-            
+
             $startChart = date("01-m-Y",strtotime($startChart));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
@@ -448,11 +448,13 @@ class Customer extends User
      */
     public function verify( $data )
     {
-        EForm::where( 'id', $data['eform_id'] )
-            ->update([
-                'nik' => $data['nik']
-            ]);
-        unset($data['eform_id']);
+        if ( isset($data[ 'eform_id' ]) ) {
+            EForm::where( 'id', $data[ 'eform_id' ] )
+                ->update([
+                    'nik' => $data['nik']
+                ]);
+            unset($data['eform_id']);
+        }
 
         if( $data[ 'verify_status' ] == 'verify' ) {
             $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
