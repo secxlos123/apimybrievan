@@ -79,14 +79,14 @@ class AuthRequest extends BaseRequest
                         // 'other_salary' => 'required',
                         // 'loan_installment' => 'required',
                         // 'dependent_amount' => 'required',
-                        'identity' => 'required_if:is_simple,0|image|mimes:jpg,jpeg,png',
+                        'identity' => 'required_if:is_simple,0|mimes:jpeg,png,jpg,zip,pdf',
                         'npwp' => 'image|mimes:jpg,jpeg,png',
                         'image' => 'image|mimes:jpg,jpeg,png',
                         'couple_nik' => 'required_if:status,2|numeric|digits:16',
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        // 'couple_identity' => 'required_if:status,2|image|mimes:jpg,jpeg,png'
+                        // 'couple_identity' => 'required_if:status,2|mimes:jpeg,png,jpg,zip,pdf'
                     ];
                 } else if ( $this->segment( 5 ) == 'register-simple' ) {
                     $login_session = Sentinel::getUser();
@@ -105,12 +105,12 @@ class AuthRequest extends BaseRequest
                         'mother_name' => 'required',
                         'birth_place_id' => 'required',
                         'birth_date' => 'required|date',
-                        'identity' => 'required_if:is_simple,0|image|mimes:jpg,jpeg,png',
+                        'identity' => 'required_if:is_simple,0|mimes:jpeg,png,jpg,zip,pdf',
                         'couple_nik' => 'required_if:status,2|numeric|digits:16',
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        // 'couple_identity' => 'required_if:status,2|image'
+                        // 'couple_identity' => 'required_if:status,2|mimes:jpeg,png,jpg,zip,pdf'
                     ];
                 } else {
                     return [];

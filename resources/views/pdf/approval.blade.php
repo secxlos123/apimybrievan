@@ -273,6 +273,33 @@
                 </tbody>
             </table>
 
+            @if( $detail->customer->personal['status_id'] == 2 )
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Pasangan</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="label">NIK</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_nik'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Nama</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tempat, Tanggal lahir</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_birth_place'] }}, {{ date('d M Y', strtotime($detail->customer->personal['couple_birth_date'])) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
             <table class="full-width">
                 <tbody>
                     <tr>
