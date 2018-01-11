@@ -30,7 +30,15 @@ class ServiceAsmx extends Client
                 $type      => $this->body
             ]);
             $xml = simplexml_load_string( $request->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA );
-            $string_xml = json_decode( $xml, true );
+            //pasring jika json tidak valid
+            if (!$this->isJSON($xml)) {
+                $pasrsingxml = str_replace('="','',str_replace('">','',$xml));
+            }
+            else
+            {
+                $pasrsingxml = $xml;
+            }
+            $string_xml = json_decode( $pasrsingxml, true );
             $response = $string_xml;
         } catch (ClientException $e) {
             $body = $e->getResponse()->getBody();
@@ -42,5 +50,10 @@ class ServiceAsmx extends Client
         }
 
         return $response;
+    }
+
+    private function isJSON($string)
+    {
+        return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
     }
 }
