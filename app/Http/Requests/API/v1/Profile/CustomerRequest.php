@@ -48,7 +48,7 @@ class CustomerRequest extends FormRequest
              'address_status'=>'in:0,1,3',
              // // 'phone' => 'digits:12|numeric',
              'mobile_phone' => 'string|regex:/^[0-9]+$/|min:9|max:12',
-             'identity' => 'image|mimes:jpg,jpeg,png',
+             'identity' => 'mimes:jpeg,png,jpg,zip,pdf',
              // 'mother_name'=>''
             ];
         }

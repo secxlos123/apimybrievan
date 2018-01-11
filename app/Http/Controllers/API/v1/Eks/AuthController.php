@@ -97,9 +97,12 @@ class AuthController extends Controller
     public function store( AuthRequest $request )
     {
         // grab credentials from the request
+        $email = strtolower($request->email);
+        $request->merge(['email'=>$email]);
         $credentials = $request->only('email', 'password');
+       
         try {
-             $check = Sentinel::findByCredentials(['login' => strtolower($request->email)]);
+             $check = Sentinel::findByCredentials(['login' => $email]);
              if ($check) {
                 if (!$activation = Activation::completed($check)){
                  return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
