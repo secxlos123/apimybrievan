@@ -332,7 +332,7 @@
                 </tbody>
             </table>
 
-            @if( $detail->customer->financial['status_finance'] == "Joint Income" )
+            @if( $detail->visit_report['source_income'] == "joint" )
                 <table class="full-width">
                     <tbody>
                         <tr>
@@ -345,11 +345,11 @@
                     <tbody>
                         <tr>
                             <td class="label">Gaji/ Pendapatan</td>
-                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary_couple']), 0, ",", ".") }}</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->visit_report['couple_salary']), 0, ",", ".") }}</td>
                         </tr>
                         <tr>
                             <td class="label">Pendapatan Lain</td>
-                            <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary_couple']), 0, ",", ".") }}</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->visit_report['couple_other_salary']), 0, ",", ".") }}</td>
                         </tr>
                         <tr>
                             <td class="label">Angsuran Pinjaman</td>

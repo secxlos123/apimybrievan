@@ -140,7 +140,7 @@ class EForm extends Model implements AuditableContract
         } elseif( $this->visit_report ) {
             return 'Prakarsa';
 
-        } elseif( $this->ao_id == null || $this->ao_id == '' ) {
+        } elseif( $this->ao_id != null || $this->ao_id != '' ) {
             return 'Disposisi Pengajuan';
 
         }
@@ -302,7 +302,7 @@ class EForm extends Model implements AuditableContract
             }
             else{
 
-                $result = $eform->insertCoreBRI(7);
+                $result = $eform->insertCoreBRI(8);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> false]);
                 }
@@ -365,9 +365,9 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataScoringKpr', null]
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
-            , ['InsertDataAgunanModel71',null]
-            , ['InsertIntoReviewer',null]
-            , ['InsertDataAgunanTanahRumahTinggal',null]
+            , ['InsertIntoReviewer', 'nama_reviewer']
+            , ['InsertDataAgunanModel71', null]
+            , ['InsertDataAgunanTanahRumahTinggal', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -395,7 +395,7 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info(json_encode($sendRequest));
 
-                if ($value[0] != 'InsertIntoReviewer') { // request by Gilang
+                if ( $value[0] != 'InsertIntoReviewer' ) {
                     $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
 
                     if (!$set['status']) {
@@ -665,8 +665,8 @@ class EForm extends Model implements AuditableContract
     public static function updateCLAS( $ref_number, $status )
     {
         $returnStatus = false;
+        $statusEform = ( $status == 'Approval1' ? true : false );
         $target = static::where('ref_number', $ref_number)->first();
-
         if ($target) {
             $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
             $target->update([
@@ -699,8 +699,9 @@ class EForm extends Model implements AuditableContract
         }
 
         return array(
-            'message' => $returnStatus
-            , 'contents' => $target
+            'message' => $returnStatus,
+            'contents' => $target,
+            'status' => $statusEform,
         );
     }
 
@@ -1054,7 +1055,7 @@ class EForm extends Model implements AuditableContract
         $maxInstallment = ( $dir * $thp ) / 100;
         $interest = $this->getInterest( $data['fid_aplikasi'] );
         $installment = $this->getInstallment( $interest );
-        $maxPlafond = $this->getMaxPlafond( $interest, $installment );
+        $maxPlafond = $this->getMaxPlafond( $interest, $maxInstallment - $loan );
 
         $request = $data + [
             "jenis_kredit" => strtoupper( $this->product_type ),
@@ -1116,7 +1117,7 @@ class EForm extends Model implements AuditableContract
         return $request;
     }
 
-    /**
+     /**
      * Generate Parameters for step 8.
      *
      * @param array $data
@@ -1125,6 +1126,21 @@ class EForm extends Model implements AuditableContract
     public function step8($data)
     {
         \Log::info("step8");
+        return $data + [
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
+        ];
+
+    }
+
+    /**
+     * Generate Parameters for step 9.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step9($data)
+    {
+        \Log::info("step9");
         $kpr = $this->kpr;
         $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
         $otsInArea = $collateral->otsInArea;
@@ -1143,7 +1159,7 @@ class EForm extends Model implements AuditableContract
             "Rw_agunan" => !($otsInArea->rw) ? '0' : $otsInArea->rw,
             "Kelurahan_agunan"=> !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan"=> !($otsInArea->district) ? '0' : $otsInArea->district,
-            "Kabupaten_kotamadya_agunan" => !($otsInArea->city_id) ? '0' : $otsInArea->city_id,
+            "Kabupaten_kotamadya_agunan" => !($otsInArea->city) ? '0' : ( !($otsInArea->city->name) ? '0' : $otsInArea->city->name ),
             "Jarak_agunan" => !($otsInArea->distance) ? '0' : intval( $otsInArea->distance ),
             "Jarak_satuan_agunan" => !($otsInArea->unit_type_name) ? 'Kilometer' : $otsInArea->unit_type_name,
             "Jarak_dari_agunan" => !($otsInArea->distance_from) ? 'Pusat Kota' : $otsInArea->distance_from,
@@ -1197,7 +1213,7 @@ class EForm extends Model implements AuditableContract
             "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
-            // "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
+            "jarak_sarana_transportasi" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
             "Lain_lain_agunan_value" => '0',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
@@ -1235,21 +1251,7 @@ class EForm extends Model implements AuditableContract
     }
 
      /**
-     * Generate Parameters for step 9.
-     *
-     * @param array $data
-     * @return array $request
-     */
-    public function step9($data)
-    {
-        \Log::info("step9");
-        return $data + [
-            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
-        ];
-
-    }
-     /**
-     * Generate Parameters for step 9.
+     * Generate Parameters for step 10.
      *
      * @param array $data
      * @return array $request
@@ -1277,8 +1279,8 @@ class EForm extends Model implements AuditableContract
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
             "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : date('dmY', strtotime($otsLetter->date)),
-            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : date('dmY', strtotime($otsLetter->duration_land_authorization)),
+            "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsLetter->date),
+            "Tanggal_jatuh_tempo_agunan_rt"=> $this->reformatDate($otsLetter->duration_land_authorization),
             "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
@@ -1504,7 +1506,7 @@ class EForm extends Model implements AuditableContract
             return $dates[2].$dates[1].$dates[0];
         }
 
-        return '0';
+        return '01019999';
     }
 
     /**
