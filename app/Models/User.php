@@ -290,8 +290,9 @@ class User extends Authenticatable implements AuditableContract, UserResolver
     {
         if ( ! $user instanceof $this ) {
             //$password = str_random(8);
+            $email = strtolower($request->email);
             $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
-            $request->merge(['password' => bcrypt($password)]);
+            $request->merge(['email'=> $email , 'password' => bcrypt($password)]);
             $user = $this->create($request->all());
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
