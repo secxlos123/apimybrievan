@@ -88,7 +88,7 @@ class CustomerRequest extends BaseRequest
                         'couple_salary'=>'',
                         'couple_other_salary'=>'',
                         'couple_loan_installment'=>'',
-                        'couple_identity'=>'image|mimes:jpg,jpeg,png',
+                        'couple_identity'=>'mimes:jpg,jpeg,png,pdf',
                         'emergency_name'=>'required_if:verify_status,verify',
                         'emergency_mobile_phone'=>'required_if:verify_status,verify',
                         'emergency_relation'=>'required_if:verify_status,verify',
