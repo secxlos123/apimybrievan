@@ -6,6 +6,7 @@ use App\Events\Customer\CustomerRegistered;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use App\Models\User;
+use App\Models\EForm;
 use Sentinel;
 use DB;
 class Customer extends User
@@ -447,6 +448,12 @@ class Customer extends User
      */
     public function verify( $data )
     {
+        EForm::where( 'id', $data['eform_id'] )
+            ->update([
+                'nik' => $data['nik']
+            ]);
+        unset($data['eform_id']);
+
         if( $data[ 'verify_status' ] == 'verify' ) {
             $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
 

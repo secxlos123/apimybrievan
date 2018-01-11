@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Property\CreateRequest;
 use App\Models\Property;
 use App\Models\Collateral;
+use App\Models\User;
+use App\Notifications\PropertyNotification;
 
 class PropertyController extends Controller
 {
@@ -100,6 +102,11 @@ class PropertyController extends Controller
         try {
             if ( ! $property instanceof Property ) {
                 $property = Property::create($request->all());
+
+                $dataProperty = Property::Find($property->id); 
+                $usersModel = User::FindOrFail($request->user()->id);
+                $usersModel->notify(new PropertyNotification($dataProperty)); /*send notification to pinca*/
+
                 \Log::info($property);
                 $data = [
                     'developer_id' => $request->user()->id,
