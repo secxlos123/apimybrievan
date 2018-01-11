@@ -39,7 +39,7 @@ class CustomerRequest extends BaseRequest
                     'mother_name' => 'required',
                     'birth_place_id' => 'required|numeric|exists:cities,id',
                     'birth_date' => 'required|date',
-                    'identity' => 'required|image|mimes:jpg,jpeg,png',
+                    'identity' => 'required|mimes:jpg,jpeg,png,pdf',
                     'couple_nik' => 'required_if:status,2|numeric|digits:16',
                     'couple_name' => 'required_if:status,2',
                     'couple_birth_place_id' => 'required_if:status,2',
