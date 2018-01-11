@@ -99,7 +99,7 @@ class AuthController extends Controller
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
         try {
-             $check = Sentinel::findByCredentials(['login' => $request->email]);
+             $check = Sentinel::findByCredentials(['login' => strtolower($request->email)]);
              if ($check) {
                 if (!$activation = Activation::completed($check)){
                  return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
@@ -230,7 +230,7 @@ class AuthController extends Controller
 
         foreach ($baseArray as $target => $base) {
             if ( isset($request[$base]) ) {
-                $request[$target] = $request[$base];
+                $request[$target] = ( $base == 'email' ? strtolower($request[$base]) : $request[$base] );
                 unset($request[$base]);
             }
         }
