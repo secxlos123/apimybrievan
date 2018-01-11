@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Notifications\NotificationsDbChannel;
 
 class PropertyNotification extends Notification
 {
@@ -74,6 +75,7 @@ class PropertyNotification extends Notification
             'prop_id' => $this->prop->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
+            'name' => $this->prop->name,
             // 'prop_name' => $this->prop->nik,
         ];
     }
