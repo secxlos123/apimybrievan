@@ -448,7 +448,7 @@ class Customer extends User
      */
     public function verify( $data )
     {
-        EForm::where( 'eform_id', $data['eform_id'] )
+        EForm::where( 'id', $data['eform_id'] )
             ->update([
                 'nik' => $data['nik']
             ]);
