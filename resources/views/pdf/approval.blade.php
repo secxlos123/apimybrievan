@@ -379,14 +379,23 @@
 
             <table>
                 <tbody>
+                    @if ($detail->visit_report['source'] == 'fixed')
                     <tr>
-                        <td class="label">Gaji/Pendapatan</td>
-                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['salary']), 0, ",", ".") }}</td>
+                        <td class="label">Gaji / THP per-Bulan :</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->visit_report['income_salary']), 0, ",", ".") }}</td>
                     </tr>
+                    @else
                     <tr>
-                        <td class="label">Pendapatan Lain</td>
-                        <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['other_salary']), 0, ",", ".") }}</td>
+                        <td class="label">Penghasilan per-Bulan :</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->visit_report['income']), 0, ",", ".") }}</td>
                     </tr>
+                    @endif
+                    @if ($detail->visit_report['source'] == 'fixed')
+                    <tr>
+                        <td class="label">Tunjangan / Insentif Lain :</td>
+                        <td class="break-word">: Rp. {{ number_format(round($detail->visit_report['income_allowance']), 0, ",", ".") }}</td>
+                    </tr>
+                    @endif
                     <tr>
                         <td class="label">Angsuran Pinjaman</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->customer->financial['loan_installment']), 0, ",", ".") }}</td>
