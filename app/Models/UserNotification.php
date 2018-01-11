@@ -57,7 +57,7 @@ class UserNotification extends Model
 			];
 			break;
 		case 'App\Notifications\EFormPenugasanDisposisi':
-			$subjectNotif = ['message' => 'Penugasan Disposisi',
+			$subjectNotif = ['message' => 'Disposisi Pengajuan',
 				'url' => $url,
 			];
 			break;

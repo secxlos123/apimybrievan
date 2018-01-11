@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\EForm;
+use DB;
 
 class TrackingController extends Controller
 {
@@ -62,7 +63,48 @@ class TrackingController extends Controller
                     ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
                     ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                     ->where( "eforms.sales_dev_id", $user->id )
+                    ->where(function($item) use (&$request){
+                        if($request->has('status'))
+                            $item->where('eforms.is_approved', $request->input('status'));
+                    })
+                    ->where(function($item) use (&$request){
+                        if ($request->has('search')){ 
+                             $item->where(\DB::raw('LOWER(users.first_name)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'like', '%'.strtolower($request->input('search')).'%');
+                                if($request->input('search') == "Proses Analisa Pengajuan" || $request->input('search') == "proses analisa pengajuan")
+                                {
+                                    $item->Orwhere('eforms.is_approved', 'true');
+                                   // $item->OrwhereNotNull('eforms.ao_id');
+                                }
+                                elseif($request->input('search') == "Kredit Ditolak")
+                                {
+                                    $item->where('eforms.is_approved', 'false');
+                                    $item->where('eforms.recommended', 'true');
+                                }
+                                elseif($request->input('search') == "Pengajuan Diterima" || $request->input('search') == "pengajuan diterima")
+                                {
+                                    $ao_id = DB::table('eforms')->selectRaw('eforms.ao_id')->get();
+                                    foreach ($ao_id as $key => $value) {
+                                        \Log::info("==========AO_ID=============");
+                                        \Log::info($value->ao_id);
+                                        $item->Orwhere('eforms.ao_id',  'like','%'.$value->ao_id.'%');    
+                                    }
+                                    
+                                }
+                                elseif($request->input('search') == "Pengajuan Kredit" || $request->input('search') == "pengajuan kredit")
+                                {
+                                    $item->Orwhere('eforms.ao_id',  NULL); 
+                                }
+                            }
+                    })
                     ->paginate( $request->input( 'limit' ) ?: 10 );
+                // $limit = $request->input('limit') ?: 10;
+                // $eforms = EForm::Tracking($request)->paginate($limit);
+                // return response()->success(['contents' => $eforms]);
+
             }
         }
             if( $request->header('pn') ) {
@@ -84,10 +126,91 @@ class TrackingController extends Controller
                 ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
                 ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
                 ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
-                ->where( "eforms.ao_id", $request->header('pn') )
+                //->where( "eforms.ao_id", $request->header('pn') )
+                ->where(function($item) use (&$request){
+                        if($request->has('status')){
+                            if($request->input('status') == "Proses Analisa Pengajuan" || $request->input('status') == "proses analisa pengajuan")
+                                {
+                                    $item->Orwhere('eforms.is_approved', 'true');
+                                }
+                                elseif($request->input('status') == "Rejected")
+                                {
+                                    $item->where('eforms.status_eform', 'Rejected');
+                                }
+                                elseif($request->input('status') == "Dispose")
+                                {
+                                    $item->whereNotNull('eforms.ao_id');
+                                    $item->whereNotNull('eforms.ao_name');
+                                    $item->whereNotNull('eforms.ao_position');
+                                    $item->where('eforms.is_approved', 'false');
+                                    $item->where('eforms.status_eform', NULL);
+                                    
+                                }
+                                elseif($request->input('status') == "Rekomend")
+                                {
+                                     $item->Orwhere('eforms.ao_id',  NULL);
+                                }
+                                elseif($request->input('status') == "Submit")
+                                {
+                                    $item->whereNotNull('eforms.ao_id');
+                                    $item->whereNotNull('eforms.ao_name');
+                                    $item->whereNotNull('eforms.ao_position');
+                                    $item->where('eforms.is_approved', 'true');
+                                    $item->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+                                    ->whereNotNull('visit_reports.created_at');
+                                }
+                                elseif($request->input('status') == "Initiate")
+                                {
+                                    $item->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+                                    ->whereNotNull('visit_reports.created_at');
+                                    $item->where('eforms.is_approved', 'false');
+                                    $item->where('eforms.status_eform', 'approved');
+
+                                }
+                                elseif($request->input('status') == "Approval1")
+                                {
+                                    $item->where('eforms.is_approved', 'true');
+                                    $item->where('eforms.recommended', 'true');
+                                    $item->where('eforms.status_eform', 'Approval1');
+                                }
+                        }
+                    })
+                    ->where(function($item) use (&$request){
+                        if ($request->has('search')){ 
+                             $item->where(\DB::raw('LOWER(users.first_name)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'like', '%'.strtolower($request->input('search')).'%');
+                            $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'like', '%'.strtolower($request->input('search')).'%');
+                                if($request->input('search') == "Proses Analisa Pengajuan" || $request->input('search') == "proses analisa pengajuan")
+                                {
+                                    $item->Orwhere('eforms.is_approved', 'true');
+                                   // $item->OrwhereNotNull('eforms.ao_id');
+                                }
+                                elseif($request->input('search') == "Kredit Ditolak")
+                                {
+                                    $item->where('eforms.is_approved', 'false');
+                                    $item->where('eforms.recommended', 'true');
+                                }
+                                elseif($request->input('search') == "Pengajuan Diterima" || $request->input('search') == "pengajuan diterima")
+                                {
+                                    $ao_id = DB::table('eforms')->selectRaw('eforms.ao_id')->get();
+                                    foreach ($ao_id as $key => $value) {
+                                        \Log::info("==========AO_ID=============");
+                                        \Log::info($value->ao_id);
+                                        $item->Orwhere('eforms.ao_id',  'like','%'.$value->ao_id.'%');    
+                                    }
+                                    
+                                }
+                                elseif($request->input('search') == "Pengajuan Kredit" || $request->input('search') == "pengajuan kredit")
+                                {
+                                    $item->Orwhere('eforms.ao_id',  NULL); 
+                                }
+                            }
+                    })
                 ->paginate( $request->input( 'limit' ) ?: 10 );
         }
-
+        \Log::info($eforms);
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $eforms
