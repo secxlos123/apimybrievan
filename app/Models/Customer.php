@@ -468,7 +468,7 @@ class Customer extends User
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Laki-Laki', 'L', $data[ 'gender' ] );
             $data['emergency_contact'] = $data['emergency_mobile_phone'];
-            $this->update( array_except( $data, ['emergency_mobile_phone','form_id','email','verify_status', '_method'] ) );
+            $this->update( array_except( $data, ['emergency_mobile_phone','email','verify_status', '_method'] ) );
         } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true
