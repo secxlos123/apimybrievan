@@ -24,42 +24,17 @@ class marketingActivityController extends Controller
     public function index(Request $request)
     {
       $pn = $request->header('pn');
-      // $marketingActivity = MarketingActivity::get();
-      $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
 
-      $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-      if ($list_ao != null && $list_fo != null) {
-        $ao = $list_ao['responseData'];
-        $fo = $list_fo['responseData'];
-
-        $result = array_merge_recursive($fo,$ao);
-        $pemasar = array_column($result, 'SNAME','PERNR' );
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
       } else {
-        $pemasar = [];
+        $pemasar_name = [];
       }
 
-      // print_r($pemasar);
+      // print_r($pemasar_name);
       $marketingActivity = [];
       foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->with('marketing')->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
@@ -79,7 +54,7 @@ class marketingActivityController extends Controller
           'id' => $activity->id,
           'pn' => $activity->pn,
           'marketing_activity_type' => $activity->marketing->activity_type,
-          'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
+          'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -90,7 +65,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
+          'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
           'desc' => $activity->desc,
           'address' => $activity->address,
           'ownership' => $ownership,
@@ -113,40 +88,14 @@ class marketingActivityController extends Controller
     public function activity_by_officer(Request $request)
     {
       $pn = $request->header('pn');
-      // $marketingActivity = MarketingActivity::get();
-      $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
 
-      $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-
-      if ($list_ao != null && $list_fo != null) {
-        $ao = $list_ao['responseData'];
-        $fo = $list_fo['responseData'];
-
-        $result = array_merge_recursive($fo,$ao);
-        $pemasar = array_column($result, 'SNAME','PERNR' );
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
       } else {
-        $pemasar = [];
+        $pemasar_name = [];
       }
 
       // print_r($pemasar);
@@ -168,7 +117,7 @@ class marketingActivityController extends Controller
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
+          'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -179,7 +128,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
+          'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
           'desc' => $activity->desc,
           'address' => $activity->address,
           'ownership' => $ownership,
@@ -436,38 +385,17 @@ class marketingActivityController extends Controller
 
     public function activity_branch(Request $request)
     {
-      $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
 
-      $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-      if($list_fo!=NULL && $list_ao!=NULL){
-        $fo_list = array_column($list_fo['responseData'], 'PERNR');
-        $ao_list = array_column($list_ao['responseData'], 'PERNR');
-        $list_pn = array_merge_recursive($fo_list, $ao_list);
-        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
-        $pn_name = array_column($result, 'SNAME', 'PERNR');
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
       } else {
-        $list_pn = '';
+        $pemasar_name = [];
+        $list_pn =[];
       }
 
       $marketingActivity = [];
@@ -477,7 +405,7 @@ class marketingActivityController extends Controller
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
+          'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -488,7 +416,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
+          'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
           'desc' => $activity->desc,
           'address' => $activity->address,
           'followup'=> $followUp,
@@ -505,41 +433,20 @@ class marketingActivityController extends Controller
 
     public function activity_by_marketing(Request $request)
     {
-      $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+      $marketing_id = $request['marketing_id'];
 
-      $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-      if($list_fo!=NULL && $list_ao!=NULL){
-        $fo_list = array_column($list_fo['responseData'], 'PERNR');
-        $ao_list = array_column($list_ao['responseData'], 'PERNR');
-        $list_pn = array_merge_recursive($fo_list, $ao_list);
-        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
-        $pn_name = array_column($result, 'SNAME', 'PERNR');
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
       } else {
-        $list_pn = '';
+        $pemasar_name = [];
+        $list_pn =[];
       }
 
-      $marketing_id = $request['marketing_id'];
       $marketingActivity = [];
       foreach (MarketingActivity::where('marketing_id', $marketing_id)->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
@@ -547,7 +454,7 @@ class marketingActivityController extends Controller
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
-          'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
+          'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
           'object_activity' => $activity->object_activity,
           'action_activity' => $activity->action_activity,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -558,7 +465,7 @@ class marketingActivityController extends Controller
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
           'pn_join' => $activity->pn_join,
-          'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
+          'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
           'desc' => $activity->desc,
           'address' => $activity->address,
           'followup'=> $followUp,
@@ -571,6 +478,67 @@ class marketingActivityController extends Controller
           'message' => 'Success get marketing Activity by branch',
           'contents' => $marketingActivity
         ]);
+
+    }
+
+    public function activity_by_customer(Request $request)
+    {
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+      $marketing_id = $request['marketing_id'];
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        // $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        // $list_pn =[];
+      }
+
+      $cif = $request->input('cif');
+      $nik = $request->input('nik');
+
+      $customerActivity = [];
+      $list=[];
+      // $list = Marketing::where('cif', $cif)->where('nik', $nik)->get();
+      foreach (Marketing::where('cif', $cif)->where('nik', $nik)->get() as $key => $marketing) {
+        // echo $marketing->pn.'  ';
+        $list[]=[
+         $marketing->id
+        ];
+      }
+      foreach (MarketingActivity::whereIn('marketing_id', $list)->orderBy('created_at', 'desc')->get() as $activity) {
+        $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+        $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+        $customerActivity[] = [
+          'id' => $activity->id,
+          'pn' => $activity->pn,
+          'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
+          'object_activity' => $activity->object_activity,
+          'action_activity' => $activity->action_activity,
+          'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+          'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+          'start_time' => date('H:i', strtotime($activity->start_date)),
+          'end_time' => date('H:i', strtotime($activity->end_date)),
+          'longitude' => $activity->longitude,
+          'latitude' => $activity->latitude,
+          'marketing_id' => $activity->marketing_id,
+          'pn_join' => $activity->pn_join,
+          'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
+          'desc' => $activity->desc,
+          'address' => $activity->address,
+          'followup'=> $followUp,
+          'rescheduled'=> $rescheduled,
+        ];
+      }
+      // return $list;
+      // dd($list);die();
+      return response()->success( [
+          'message' => 'Success get marketing Activity by Customer',
+          'contents' => $customerActivity
+      ]);
 
     }
 
@@ -609,88 +577,6 @@ class marketingActivityController extends Controller
       }
 
       return $result;
-    }
-
-    public function activity_by_customer(Request $request)
-    {
-      $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-      $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-      if($list_fo!=NULL && $list_ao!=NULL){
-        $fo_list = array_column($list_fo['responseData'], 'PERNR');
-        $ao_list = array_column($list_ao['responseData'], 'PERNR');
-        $list_pn = array_merge_recursive($fo_list, $ao_list);
-        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
-        $pn_name = array_column($result, 'SNAME', 'PERNR');
-      } else {
-        $list_pn = '';
-        $pn_name =[];
-      }
-
-      $cif = $request->input('cif');
-      $nik = $request->input('nik');
-
-      $customerActivity = [];
-      $list=[];
-      // $list = Marketing::where('cif', $cif)->where('nik', $nik)->get();
-      foreach (Marketing::where('cif', $cif)->where('nik', $nik)->get() as $key => $marketing) {
-        // echo $marketing->pn.'  ';
-        $list[]=[
-         $marketing->id
-        ];
-      }
-      foreach (MarketingActivity::whereIn('marketing_id', $list)->orderBy('created_at', 'desc')->get() as $activity) {
-        $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
-        $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
-        $customerActivity[] = [
-          'id' => $activity->id,
-          'pn' => $activity->pn,
-          'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
-          'object_activity' => $activity->object_activity,
-          'action_activity' => $activity->action_activity,
-          'start_date' => date('Y-m-d', strtotime($activity->start_date)),
-          'end_date' => date('Y-m-d', strtotime($activity->end_date)),
-          'start_time' => date('H:i', strtotime($activity->start_date)),
-          'end_time' => date('H:i', strtotime($activity->end_date)),
-          'longitude' => $activity->longitude,
-          'latitude' => $activity->latitude,
-          'marketing_id' => $activity->marketing_id,
-          'pn_join' => $activity->pn_join,
-          'join_name' => array_key_exists($activity->pn_join, $pn_name) ? $pn_name[$activity->pn_join]:'',
-          'desc' => $activity->desc,
-          'address' => $activity->address,
-          'followup'=> $followUp,
-          'rescheduled'=> $rescheduled,
-        ];
-      }
-      // return $list;
-      // dd($list);die();
-      return response()->success( [
-          'message' => 'Success get marketing Activity by Customer',
-          'contents' => $customerActivity
-      ]);
-
     }
 
     public function deleteAll(Request $request)
