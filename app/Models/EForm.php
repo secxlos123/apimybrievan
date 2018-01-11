@@ -395,16 +395,18 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info(json_encode($sendRequest));
 
-                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                if ( $value[0] != 'InsertIntoReviewer' ) {
+                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
 
-                if (!$set['status']) {
-                    \Log::info('Error Step Ke -'.$step);
-                    $return = array(
-                        'status' => false
-                        , 'message' => $set[ 'message' ]
-                    );
-                    \Log::info($return);
-                    break;
+                    if (!$set['status']) {
+                        \Log::info('Error Step Ke -'.$step);
+                        $return = array(
+                            'status' => false
+                            , 'message' => $set[ 'message' ]
+                        );
+                        \Log::info($return);
+                        break;
+                    }
                 }
 
                 \Log::info('Berhasil Step Ke -'.$step);
@@ -663,8 +665,8 @@ class EForm extends Model implements AuditableContract
     public static function updateCLAS( $ref_number, $status )
     {
         $returnStatus = false;
+        $statusEform = ( $status == 'Approval1' ? true : false );
         $target = static::where('ref_number', $ref_number)->first();
-
         if ($target) {
             $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
             $target->update([
@@ -697,8 +699,9 @@ class EForm extends Model implements AuditableContract
         }
 
         return array(
-            'message' => $returnStatus
-            , 'contents' => $target
+            'message' => $returnStatus,
+            'contents' => $target,
+            'status' => $statusEform,
         );
     }
 

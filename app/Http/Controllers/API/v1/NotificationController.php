@@ -34,9 +34,9 @@ class NotificationController extends Controller
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
         
         $ArrGetDataNotification = [];
-        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id)->get();
+        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id);
         if($getDataNotification){
-            foreach ($getDataNotification as $value) {
+            foreach ($getDataNotification->get() as $value) {
                 $ArrGetDataNotification[] = [
                                         'id' => $value->id,
                                         'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],

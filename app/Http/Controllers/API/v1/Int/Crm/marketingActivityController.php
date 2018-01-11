@@ -687,11 +687,7 @@ class marketingActivityController extends Controller
       // return $list;
       // dd($list);die();
       return response()->success( [
-<<<<<<< HEAD
-          'message' => 'Success get marketing Activity by customer',
-=======
           'message' => 'Success get marketing Activity by Customer',
->>>>>>> 3174fd15758e6b49bea04538582e877ae05b9ee8
           'contents' => $customerActivity
       ]);
 
