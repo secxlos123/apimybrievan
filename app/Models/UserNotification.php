@@ -191,6 +191,8 @@ class UserNotification extends Model
 
             if ($query->Orwhere('notifications.type','App\Notifications\RejectEFormCustomer')) {    /*is rejected*/
                 $query->unreads();
+            }
+
             if ($query->Orwhere('notifications.type','App\Notifications\VerificationDataNasabah')) {
                 $query->unreads()->where('notifications.notifiable_id',@$user_id);
             }
@@ -205,7 +207,7 @@ class UserNotification extends Model
         }
 
         if(@$role == 'collateral'){
-            if ($this->Orwhere('notifications.type','App\Notifications\PropertyNotification')) {
+            if ($query->Orwhere('notifications.type','App\Notifications\PropertyNotification')) {
               $query->unreads();
             }
         }

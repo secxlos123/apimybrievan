@@ -22,12 +22,8 @@ class NotificationsDbChannel
         \Log::info($data);
         if (isset($data['prop_id'])) {
             return $notifiable->routeNotificationFor('database')->create([
-                // 'id' => $notification->id,
-                    //customize here
+                'id' => $notification->id,
                 'branch_id'=> $data['prop_id'],
-                    //'role_name'=> $data['role'],
-                // 'eform_id'=> $data['eform_id'],
-                    //field existing
                 'type' => get_class($notification),
                 'data' => $data,
                 'read_at' => null,
@@ -35,11 +31,9 @@ class NotificationsDbChannel
         }else{
             return $notifiable->routeNotificationFor('database')->create([
                 'id' => $notification->id,
-                    //customize here
                 'branch_id'=> $data['branch_id'],
-                    //'role_name'=> $data['role'],
+                //'role_name'=> $data['role'],
                 'eform_id'=> $data['eform_id'],
-                    //field existing
                 'type' => get_class($notification),
                 'data' => $data,
                 'read_at' => null,
