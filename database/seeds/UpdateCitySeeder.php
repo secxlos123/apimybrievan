@@ -17,7 +17,5 @@ class UpdateCitySeeder extends Seeder
         foreach($data as $key => $chunk) {
             City::updateOrCreate(['id' => $key+1],$chunk);
         }
-
-        City::where('name', 'Undifined')->delete();
     }
 }
