@@ -1279,8 +1279,8 @@ class EForm extends Model implements AuditableContract
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
             "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : date('dmY', strtotime($otsLetter->date)),
-            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : date('dmY', strtotime($otsLetter->duration_land_authorization)),
+            "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsLetter->date),
+            "Tanggal_jatuh_tempo_agunan_rt"=> $this->reformatDate($otsLetter->duration_land_authorization),
             "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
@@ -1506,7 +1506,7 @@ class EForm extends Model implements AuditableContract
             return $dates[2].$dates[1].$dates[0];
         }
 
-        return '0';
+        return '01019999';
     }
 
     /**
