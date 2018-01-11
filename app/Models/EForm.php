@@ -140,7 +140,7 @@ class EForm extends Model implements AuditableContract
         } elseif( $this->visit_report ) {
             return 'Prakarsa';
 
-        } elseif( $this->ao_id == null || $this->ao_id == '' ) {
+        } elseif( $this->ao_id != null || $this->ao_id != '' ) {
             return 'Disposisi Pengajuan';
 
         }
