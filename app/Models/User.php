@@ -714,5 +714,6 @@ class User extends Authenticatable implements AuditableContract, UserResolver
         $headers = apache_request_headers();
         \Log::info($user);
         return array_key_exists('pn', $headers) ? ltrim($headers['pn'], '0') : $user;
+        // return true;
     }
 }
