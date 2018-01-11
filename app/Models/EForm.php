@@ -1159,7 +1159,7 @@ class EForm extends Model implements AuditableContract
             "Rw_agunan" => !($otsInArea->rw) ? '0' : $otsInArea->rw,
             "Kelurahan_agunan"=> !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan"=> !($otsInArea->district) ? '0' : $otsInArea->district,
-            "Kabupaten_kotamadya_agunan" => !($otsInArea->city_id) ? '0' : $otsInArea->city_id,
+            "Kabupaten_kotamadya_agunan" => !($otsInArea->city) ? '0' : ( !($otsInArea->city->name) ? '0' : $otsInArea->city->name ),
             "Jarak_agunan" => !($otsInArea->distance) ? '0' : intval( $otsInArea->distance ),
             "Jarak_satuan_agunan" => !($otsInArea->unit_type_name) ? 'Kilometer' : $otsInArea->unit_type_name,
             "Jarak_dari_agunan" => !($otsInArea->distance_from) ? 'Pusat Kota' : $otsInArea->distance_from,
@@ -1213,7 +1213,7 @@ class EForm extends Model implements AuditableContract
             "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
-            // "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
+            "jarak_sarana_transportasi" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
             "Lain_lain_agunan_value" => '0',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
