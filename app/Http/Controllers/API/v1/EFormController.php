@@ -695,8 +695,9 @@ class EFormController extends Controller
 
                 event( new Approved( $data ) );
 
-                $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
-                $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
+                // $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
+                // $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
+                $responseMessage = 'E-form berhasil di approve.';
             } else {
 
                 $usersModel = User::FindOrFail($data->user_id);

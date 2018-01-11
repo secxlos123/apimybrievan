@@ -395,16 +395,18 @@ class EForm extends Model implements AuditableContract
 
                 \Log::info(json_encode($sendRequest));
 
-                $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                if ( $value[0] != 'InsertIntoReviewer' ) {
+                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
 
-                if (!$set['status']) {
-                    \Log::info('Error Step Ke -'.$step);
-                    $return = array(
-                        'status' => false
-                        , 'message' => $set[ 'message' ]
-                    );
-                    \Log::info($return);
-                    break;
+                    if (!$set['status']) {
+                        \Log::info('Error Step Ke -'.$step);
+                        $return = array(
+                            'status' => false
+                            , 'message' => $set[ 'message' ]
+                        );
+                        \Log::info($return);
+                        break;
+                    }
                 }
 
                 \Log::info('Berhasil Step Ke -'.$step);
@@ -697,7 +699,7 @@ class EForm extends Model implements AuditableContract
         }
 
         return array(
-            'message' => $returnStatus, 
+            'message' => $returnStatus,
             'contents' => $target,
             'status' => $statusEform,
         );
