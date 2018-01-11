@@ -43,7 +43,13 @@ class VisitReportController extends Controller
         \Log::info($request->all());
         $data = $request->all();
     	if (!isset($data['mutations'])){
-            $data['mutations'] = array();
+            $data['mutations'] = array('tables'=> array());
+
+        } else {
+            if (!isset($data['mutations']['tables'])) {
+                $data['mutations']['tables'] = array();
+            }
+
         }
 
         // Get User Login
