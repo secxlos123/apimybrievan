@@ -12,6 +12,8 @@ class RejectEFormCustomer extends Notification
 {
     use Queueable;
 
+    public $eForm;
+
     /**
      * Create a new notification instance.
      *

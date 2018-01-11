@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Lang;
 
-class UserNotification extends Model {
-
+class UserNotification extends Model
+{
 	protected $table = 'notifications';
 	/**
 	 * The attributes that should be casted to native types.
@@ -56,7 +57,7 @@ class UserNotification extends Model {
 			];
 			break;
 		case 'App\Notifications\EFormPenugasanDisposisi':
-			$subjectNotif = ['message' => 'Penugasan Disposisi',
+			$subjectNotif = ['message' => 'Disposisi Pengajuan',
 				'url' => $url,
 			];
 			break;
@@ -125,7 +126,6 @@ class UserNotification extends Model {
 		$query = $this->leftJoin('eforms', 'notifications.eform_id', '=', 'eforms.id')
 			->where('eforms.branch_id', @$branch_id)
 			->Where('eforms.ao_id', @$pn)
-		// ->where('notifications.notifiable_id',@$user_id)
 			->orderBy('notifications.created_at', 'DESC');
 
 		if (@$role == 'pinca') {
@@ -189,24 +189,25 @@ class UserNotification extends Model {
 					$query->unreads()->where('notifications.notifiable_id', @$user_id);
 				}
 			}
-
-			if (@$role == 'staff') {
-				$query->whereNull('notifications.created_at');
-			}
-
-			if (@$role == 'collateral-appraisal') {
-				$query->whereNull('notifications.created_at');
-			}
-
-			if (@$role == 'collateral') {
-				if ($this->Orwhere('notifications.type', 'App\Notifications\PropertyNotification')) {
-					$query->unreads();
-				}
-			}
-
-			$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.eform_id', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
-
-			return $query;
 		}
+
+		if (@$role == 'staff') {
+			$query->whereNull('notifications.created_at');
+		}
+
+		if (@$role == 'collateral-appraisal') {
+			$query->whereNull('notifications.created_at');
+		}
+
+		if (@$role == 'collateral') {
+			if ($query->Orwhere('notifications.type', 'App\Notifications\PropertyNotification')) {
+				$query->unreads();
+			}
+		}
+
+		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.eform_id', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
+
+		return $query;
+		
 	}
 }

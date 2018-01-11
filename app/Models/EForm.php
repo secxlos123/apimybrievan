@@ -1013,7 +1013,7 @@ class EForm extends Model implements AuditableContract
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "program_value" => !( $lkn->program_list ) ? '' : $lkn->program_list,
             "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list,
-            "pihak_ketiga_value" => !( $developer ) ? '' : ( $developer->dev_id_bri ? $developer->dev_id_bri : '1' ),
+            "pihak_ketiga_value" => !( $developer ) ? '1' : ( $developer->dev_id_bri ? $developer->dev_id_bri : '1' ),
             "sub_pihak_ketiga_value" => '1'
         ];
         return $request;
