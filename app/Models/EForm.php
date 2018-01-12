@@ -476,7 +476,7 @@ class EForm extends Model implements AuditableContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "ref_number" ) {
+        if ( $sort[0] == "ref_number" || $sort[0] == "action" ) {
             $sort = ['created_at', 'asc'];
         }
 
