@@ -50,7 +50,7 @@ class SentSMSNotifController extends Controller
 						"Jangka Waktu : ".$request['year']." bulan. ".
 						"Angsuran : Rp.".$request['angsuran'].",-, ".
 						"Pola Angsuran : 1 bulanan. ".
-						"Mohon hubungi Petugas Pemasaran kami atau BRI XXX untuk proses akad kredit & pencairan kredit. Terima kasih";
+						"Mohon hubungi Petugas Pemasaran kami atau BRI untuk proses akad kredit & pencairan kredit. Terima kasih";
 		}elseif($request['kode_message']=='4'){
 				//4. Pengajuan Kredit Tidak Disetujui
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
@@ -60,7 +60,7 @@ class SentSMSNotifController extends Controller
 						"Belum dapat disetujui sehubungan dengan belum terpenuhinya persyaratan Bank yang telah ditetapkan. Terima kasih";
 		}elseif($request['kode_message']=='5'){
 				//5. Pembatalan Pengajuan Pinjaman
-			$message = "KepadaYth. Bapak/Ibu XXX. ".
+			$message = "KepadaYth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Kami informasikan pembatalan pengajuan kredit Anda dengan detail sebagai berikut : ".
 						"Plafond : Rp. 50.000.000,- ".
 						"Jangka Waktu : ".$request['year']." bulan. ".
