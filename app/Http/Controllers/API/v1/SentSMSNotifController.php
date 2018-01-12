@@ -14,6 +14,8 @@ use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use RestwsHc;
 use Cache;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class SentSMSNotifController extends Controller
 {
