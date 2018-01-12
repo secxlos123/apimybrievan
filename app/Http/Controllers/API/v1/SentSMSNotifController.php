@@ -83,7 +83,6 @@ class SentSMSNotifController extends Controller
 	{
 		$data = $request->all();
 		$message = $this->message($data);
-		print_r($message);die();
 		 $client = new Client();
       $requestLeads = $client->request('POST', 'http://10.35.65.61:9997/Service.asmx',
         [
