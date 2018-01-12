@@ -23,7 +23,7 @@ class SentSMSNotifController extends Controller
 		//parameter
 		//nama_cust,no_reff,no_hp,rm_mantri,plafond,year,angsuran,kode_message
 		$id_trans = '1-'.date("Ymd His");
-		if($request->kode_message=='1'){
+		if($request['kode_message']=='1'){
 				//1. Pengajuan Kredit 
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust']." Terima kasih atas pengajuan Anda. ".
 						"Aplikasi pengajuan Kredit BRIGUNA Anda telah kami terima dengan detail sbb :". 
@@ -78,6 +78,7 @@ class SentSMSNotifController extends Controller
 	}
 	public function sentsms( Request $request )
 	{
+		print_r($request->all());die();
 		$message = $this->message($request->all());
 		 $client = new Client();
       $requestLeads = $client->request('POST', 'http://10.35.65.61:9997/Service.asmx',
