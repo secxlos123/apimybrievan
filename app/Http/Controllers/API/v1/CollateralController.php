@@ -70,7 +70,7 @@ class CollateralController extends Controller
       $user = \RestwsHc::getUser();
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
-      $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
+      $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int) $this->request->header('pn'));
       }
