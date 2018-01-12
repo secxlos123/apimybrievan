@@ -90,7 +90,7 @@ class SentSMSNotifController extends Controller
             'SOAPAction' => 'http://tempuri.org/FCD_SMS'
 			
           ],
-          'raw' =>'<?xml version="1.0" encoding="utf-8"?>
+          'body' =>'<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <FCD_SMS xmlns="http://tempuri.org/">
@@ -106,10 +106,9 @@ class SentSMSNotifController extends Controller
 </soap:Envelope>'
         ]
       );
-      $leads = json_decode($requestLeads->getBody()->getContents(), true);
 
         return response()->success([
-            'contents' => $leads
+            'contents' => $requestLeads
         ]);
 	}
 
