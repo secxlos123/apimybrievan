@@ -101,7 +101,7 @@ class AccountController extends Controller
       return response()->success([
         'message' => 'Under Maintenance',
         'contents' => []
-      ])
+      ]);
 
       // if ( count(apiPdmToken::all()) > 0 ) {
       //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
@@ -153,7 +153,7 @@ class AccountController extends Controller
       //     'message' => $listExisting['message'],
       //     'contents' => $listExisting['message']
       //   ]);
-      // }
+      
     }
 
     public function getExistingByFo($data, $token)
