@@ -301,6 +301,8 @@ class Customer extends User
     public static function create( $data ) {
     	\Log::info('==========ini data awal=======');
     	\Log::info($data);
+        $email = strtolower($data['email']);
+        $data['email'] = $email;
         $user_model = new User;
         $password = str_random( 8 );
         $separate_array_keys = array_flip( $user_model->fillable );
@@ -468,7 +470,7 @@ class Customer extends User
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Laki-Laki', 'L', $data[ 'gender' ] );
             $data['emergency_contact'] = $data['emergency_mobile_phone'];
-            $this->update( array_except( $data, ['emergency_mobile_phone','form_id','email','verify_status', '_method'] ) );
+            $this->update( array_except( $data, ['emergency_mobile_phone','email','verify_status', '_method'] ) );
         } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true

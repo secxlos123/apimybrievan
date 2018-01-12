@@ -100,7 +100,7 @@ class AuthController extends Controller
         $email = strtolower($request->email);
         $request->merge(['email'=>$email]);
         $credentials = $request->only('email', 'password');
-       
+
         try {
              $check = Sentinel::findByCredentials(['login' => $email]);
              if ($check) {
@@ -241,5 +241,24 @@ class AuthController extends Controller
         \Log::info($request);
 
         return $request;
+    }
+
+    /**
+     * resend email verification
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function resendEmail(Request $request)
+    {
+        $user = User::find( $request->uid );
+        $activation = Activation::where('user_id', '=', $request->uid)->first();
+
+        event( new CustomerRegister( $user, $activation->code ) );
+
+        return response()->success( [
+            'message' => 'Register Sukses',
+            'contents' => $user
+        ], 201 );
     }
 }

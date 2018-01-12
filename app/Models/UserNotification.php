@@ -44,7 +44,7 @@ class UserNotification extends Model
 	}
 
 	public function getSubject($status_eform, $ref_number, $user_id) {
-		$url = env('INTERNAL_APP_URL', 'https://mybri.stagingapps.net') . 'eform?ref_number=' . $ref_number . '&ids=' . $this->eform_id;
+		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&ids=' . $this->eform_id;
 		if ($user_id) {
 			$url = 'eform?ids=' . $this->eform_id;
 		} else {
@@ -94,7 +94,7 @@ class UserNotification extends Model
 			break;
 		case 'App\Notifications\VerificationDataNasabah':
 			$subjectNotif = ['message' => 'Verifikasi Pengajuan KPR',
-				'url' => env('MAIN_APP_URL', 'https://mybri.stagingapps.net') . 'verification?ref_number=' . $ref_number . '&ids=' . $this->eform_id,
+				'url' => env('MAIN_APP_URL', 'http://mybri.bri.co.id/') . 'verification?ref_number=' . $ref_number . '&ids=' . $this->eform_id,
 			];
 			break;
 		case 'App\Notifications\PropertyNotification':

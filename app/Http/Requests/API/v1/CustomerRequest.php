@@ -52,7 +52,7 @@ class CustomerRequest extends BaseRequest
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
                         'cif_number' => '',
-                        'form_id'=>'required_if:verify_status,verify',
+                        'eform_id'=>'required_if:verify_status,verify',
                         'birth_place_id'=>'required_if:verify_status,verify|exists:cities,id',
                         'birth_date'=>'required_if:verify_status,verify',
                         'city_id'=>'required_if:verify_status,verify|exists:cities,id',

@@ -405,6 +405,7 @@ class EForm extends Model implements AuditableContract
                             , 'message' => $set[ 'message' ]
                         );
                         \Log::info($return);
+                        $step++;
                         break;
                     }
                 }
@@ -412,8 +413,8 @@ class EForm extends Model implements AuditableContract
                 \Log::info('Berhasil Step Ke -'.$step);
                 $step++;
             }
-            $this->update(['clas_position' => $step]);
         }
+        $this->update(['clas_position' => $step]);
 
         if ($step == 10) {
             $this->update( [
@@ -475,7 +476,7 @@ class EForm extends Model implements AuditableContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "ref_number" ) {
+        if ( $sort[0] == "ref_number" || $sort[0] == "action" ) {
             $sort = ['created_at', 'asc'];
         }
 
