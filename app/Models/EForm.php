@@ -405,6 +405,7 @@ class EForm extends Model implements AuditableContract
                             , 'message' => $set[ 'message' ]
                         );
                         \Log::info($return);
+                        $step++;
                         break;
                     }
                 }
