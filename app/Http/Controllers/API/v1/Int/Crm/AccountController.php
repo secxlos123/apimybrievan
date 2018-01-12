@@ -98,6 +98,11 @@ class AccountController extends Controller
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
 
+      return response()->success([
+        'message' => 'Under Maintenance',
+        'contents' => []
+      ])
+
       // if ( count(apiPdmToken::all()) > 0 ) {
       //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // } else {
@@ -125,29 +130,30 @@ class AccountController extends Controller
       //       'contents' => $listExisting['data']
       //   ]);
       // }
-      $client = new Client();
-      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
-        [
-          'headers' =>
-          [
-            'Authorization' => 'Bearer '.$this->get_token()
-            // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
-          ]
-        ]
-      );
-      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      if ($listExisting['code'] == 200) {
-        return response()->success( [
-          'message' => 'Sukses',
-          'contents' => $listExisting['data']
-        ]);
-      } else {
-        return response()->success( [
-          'message' => $listExisting['message'],
-          'contents' => $listExisting['message']
-        ]);
-      }
+      // $client = new Client();
+      // $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+      //   [
+      //     'headers' =>
+      //     [
+      //       'Authorization' => 'Bearer '.$this->get_token()
+      //       // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
+      //     ]
+      //   ]
+      // );
+      // $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
+      //
+      // if ($listExisting['code'] == 200) {
+      //   return response()->success( [
+      //     'message' => 'Sukses',
+      //     'contents' => $listExisting['data']
+      //   ]);
+      // } else {
+      //   return response()->success( [
+      //     'message' => $listExisting['message'],
+      //     'contents' => $listExisting['message']
+      //   ]);
+      // }
     }
 
     public function getExistingByFo($data, $token)
