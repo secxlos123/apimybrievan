@@ -77,10 +77,12 @@ class SentSMSNotifController extends Controller
 						"Kami informasikan kewajiban angsuran Anda telah melewati jatuh tempo sebesar Rp. ".$request['angsuran'].",-. ".
 						"Harap segera melakukan pembayaran. Terima kasih.";
 		}
+		return $message;
 	}
 	public function sentsms( Request $request )
 	{
 		$message = $this->message($request->all());
+		print_r($message);die();
 		 $client = new Client();
       $requestLeads = $client->request('POST', 'http://10.35.65.61:9997/Service.asmx',
         [
@@ -98,8 +100,8 @@ class SentSMSNotifController extends Controller
       <divisi>SIT</divisi>
       <produk>Sms Dev</produk>
       <fitur></fitur>
-      <hp>087854536780</hp>
-      <pesan>Abang Evan Ganteng</pesan>
+      <hp>'.$request->no_hp.'</hp>
+      <pesan>'.$message.'</pesan>
       <flag>0</flag>
     </FCD_SMS>
   </soap:Body>
