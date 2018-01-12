@@ -81,8 +81,8 @@ class SentSMSNotifController extends Controller
 	}
 	public function sentsms( Request $request )
 	{
-		$request = $request->all();
-		$message = $this->message($request);
+		$data = $request->all();
+		$message = $this->message($data);
 		 $client = new Client();
       $requestLeads = $client->request('POST', 'http://10.35.65.61:9997/Service.asmx',
         [
@@ -100,7 +100,7 @@ class SentSMSNotifController extends Controller
       <divisi>SIT</divisi>
       <produk>Sms Dev</produk>
       <fitur></fitur>
-      <hp>'.$request['no_hp'].'</hp>
+      <hp>'.$data['no_hp'].'</hp>
       <pesan>'.$message.'</pesan>
       <flag>0</flag>
     </FCD_SMS>
