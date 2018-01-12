@@ -97,9 +97,12 @@ class AuthController extends Controller
     public function store( AuthRequest $request )
     {
         // grab credentials from the request
+        $email = strtolower($request->email);
+        $request->merge(['email'=>$email]);
         $credentials = $request->only('email', 'password');
+
         try {
-             $check = Sentinel::findByCredentials(['login' => $request->email]);
+             $check = Sentinel::findByCredentials(['login' => $email]);
              if ($check) {
                 if (!$activation = Activation::completed($check)){
                  return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
@@ -230,7 +233,7 @@ class AuthController extends Controller
 
         foreach ($baseArray as $target => $base) {
             if ( isset($request[$base]) ) {
-                $request[$target] = $request[$base];
+                $request[$target] = ( $base == 'email' ? strtolower($request[$base]) : $request[$base] );
                 unset($request[$base]);
             }
         }
@@ -238,5 +241,24 @@ class AuthController extends Controller
         \Log::info($request);
 
         return $request;
+    }
+
+    /**
+     * resend email verification
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function resendEmail(Request $request)
+    {
+        $user = User::find( $request->uid );
+        $activation = Activation::where('user_id', '=', $request->uid)->first();
+
+        event( new CustomerRegister( $user, $activation->code ) );
+
+        return response()->success( [
+            'message' => 'Register Sukses',
+            'contents' => $user
+        ], 201 );
     }
 }
