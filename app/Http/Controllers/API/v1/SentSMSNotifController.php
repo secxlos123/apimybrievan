@@ -46,7 +46,7 @@ class SentSMSNotifController extends Controller
 				//3. Persetujuan Kredit
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Pinjaman anda dengan No Referensi ".$request['no_reff']." telah disetujui dengan detail sbb : ".
-						"Plafond:Rp.".$request['plafond'].",-, ".
+						"Plafond : Rp. ".$request['plafond'].",-, ".
 						"Jangka Waktu : ".$request['year']." bulan. ".
 						"Angsuran : Rp.".$request['angsuran'].",-, ".
 						"Pola Angsuran : 1 bulanan. ".
@@ -56,7 +56,7 @@ class SentSMSNotifController extends Controller
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Kami informasikan pengajuan kredit Anda dengan detail sbb :".
 						" Plafond : Rp. ".$request['plafond'].",-, ".
-						"Jangka Waktu:".$request['year']." bulan. ".
+						"Jangka Waktu : ".$request['year']." bulan. ".
 						"Belum dapat disetujui sehubungan dengan belum terpenuhinya persyaratan Bank yang telah ditetapkan. Terima kasih";
 		}elseif($request['kode_message']=='5'){
 				//5. Pembatalan Pengajuan Pinjaman
