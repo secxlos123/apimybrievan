@@ -107,14 +107,8 @@ class SentSMSNotifController extends Controller
       $leads = json_decode($requestLeads->getBody()->getContents(), true);
 
         return response()->success([
-            'contents' => $histories,
-            'message' => $branchs['responseDesc']
+            'contents' => $leads
         ]);
-		}
-		else{
-			$response = ['code'=>400,'descriptions'=>'Gagal','contents'=>''];
-			 return $response;
-		}
 	}
 
 
