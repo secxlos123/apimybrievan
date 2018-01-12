@@ -301,6 +301,8 @@ class Customer extends User
     public static function create( $data ) {
     	\Log::info('==========ini data awal=======');
     	\Log::info($data);
+        $email = strtolower($data['email']);
+        $data['email'] = $email;
         $user_model = new User;
         $password = str_random( 8 );
         $separate_array_keys = array_flip( $user_model->fillable );
