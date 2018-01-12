@@ -21,9 +21,9 @@ class SentSMSNotifController extends Controller
 	public function message( $request )
 	{
 		//parameter
-		//nama_cust,no_reff,no_hp,rm_mantri,plafond,year,angsuran
+		//nama_cust,no_reff,no_hp,rm_mantri,plafond,year,angsuran,kode_message
 		$id_trans = '1-'.date("Ymd His");
-		if($kode_message=='1'){
+		if($request->kode_message=='1'){
 				//1. Pengajuan Kredit 
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust']." Terima kasih atas pengajuan Anda. ".
 						"Aplikasi pengajuan Kredit BRIGUNA Anda telah kami terima dengan detail sbb :". 
@@ -32,7 +32,7 @@ class SentSMSNotifController extends Controller
 						"Petugas kami akan segera menghubungi Anda. ".
 						"Pantau pengajuan kredit Anda dengan nomor referensi diatas, melalui MyBRI, ".
 						"website pinjaman.bri.co.id, atau via Petugas Pemasaran kami.";
-		}elseif($kode_message=='2'){
+		}elseif($request->kode_message=='2'){
 				//2. Pengajuan Kredit Anda Sedang Dalam Proses
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].", Form pengajuan Kredit BRIGUNA Anda telah ditindaklanjuti oleh Petugas kami, ".
 						"dengan detail sbb : ".
@@ -40,7 +40,7 @@ class SentSMSNotifController extends Controller
 						"RM/Mantri ".$request['rm_mantri'].", ".
 						"No Handphone : ".$request['no_hp']." ".
 						"Terima kasih atas pengajuan kredit Anda. Petugas kami akan segera menghubungi Anda.";
-		}elseif($kode_message=='3'){
+		}elseif($request->kode_message=='3'){
 				//3. Persetujuan Kredit
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Pinjaman anda dengan No Referensi ".$request['no_reff']." telah disetujui dengan detail sbb : ".
@@ -49,27 +49,27 @@ class SentSMSNotifController extends Controller
 						"Angsuran : Rp.".$request['angsuran'].",-, ".
 						"Pola Angsuran : 1 bulanan. ".
 						"Mohon hubungi Petugas Pemasaran kami atau BRI XXX untuk proses akad kredit & pencairan kredit. Terima kasih";
-		}elseif($kode_message=='4'){
+		}elseif($request->kode_message=='4'){
 				//4. Pengajuan Kredit Tidak Disetujui
 			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Kami informasikan pengajuan kredit Anda dengan detail sbb :".
 						" Plafond : Rp. ".$request['plafond'].",-, ".
 						"Jangka Waktu:".$request['year']." bulan. ".
 						"Belum dapat disetujui sehubungan dengan belum terpenuhinya persyaratan Bank yang telah ditetapkan. Terima kasih";
-		}elseif($kode_message=='5'){
+		}elseif($request->kode_message=='5'){
 				//5. Pembatalan Pengajuan Pinjaman
 			$message = "KepadaYth. Bapak/Ibu XXX. ".
 						"Kami informasikan pembatalan pengajuan kredit Anda dengan detail sebagai berikut : ".
 						"Plafond : Rp. 50.000.000,- ".
 						"Jangka Waktu : ".$request['year']." bulan. ".
 						"Anda dapat mengajukan pinjaman kembali melalui MyBRI atau BRI terdekat. Terima kasih.";
-		}elseif($kode_message=='6'){
+		}elseif($request->kode_message=='6'){
 				//6. SMS reminder angsuran pinjaman (Khusus Debitur Payroll)
 			$message = "Yth. Bapak/Ibu ".$request['nama_cust']." ,".
 						"Kami informasikan kewajiban angsuran Anda sebesar Rp.".$request['angsuran']." ,- ".
 						"jatuh tempo pada 25 Agustus 2017. Harap segera melakukan pembayaran. ".
 						"Bilamana telah melakukan pembayaran, abaikan sms ini. Terima kasih.";
-		}elseif($kode_message=='7'){
+		}elseif($request->kode_message=='7'){
 				//7. SMS reminder tunggakan (Khusus Debitur Payroll)
 			$message = "Yth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Kami informasikan kewajiban angsuran Anda telah melewati jatuh tempo sebesar Rp. ".$request['angsuran'].",-. ".
@@ -97,7 +97,7 @@ class SentSMSNotifController extends Controller
       <produk>Sms Dev</produk>
       <fitur></fitur>
       <hp>'.$request->no_hp.'</hp>
-      <pesan>''</pesan>
+      <pesan>'.$message.'</pesan>
       <flag>0</flag>
     </FCD_SMS>
   </soap:Body>
