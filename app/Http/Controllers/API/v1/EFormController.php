@@ -784,7 +784,12 @@ class EFormController extends Controller
                 if ($status == 'approve') {
                     $usersModel->notify(new VerificationApproveFormNasabah($verify['contents']));   /*send notification approve*/
 
-                    $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
+					if($verify['contents']['product_type']=='briguna'){
+                    $detail = EForm::with( 'customer', 'briguna' )->where('id', $verify['contents']->id)->first();
+					}else{
+					$detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();	
+					}
+                    
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
 
                     $usersModel->notify(new ApproveEFormCustomer($verify['contents']));

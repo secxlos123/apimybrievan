@@ -28,49 +28,25 @@ class MarketingController extends Controller
     public function index(Request $request)
     {
       $pn = $request->header('pn');
-      // $marketings = Marketing::where('pn',$pn)->get();
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+      } else {
+        $pemasar_name = [];
+      }
+
       $marketings = [];
       foreach (Marketing::where('pn',$pn)->with('activity')->get() as $marketing) {
-        // $list_ao = [];
-        $list_ao = RestwsHc::setBody([
-          'request' => json_encode([
-            'requestMethod' => 'get_list_tenaga_pemasar',
-            'requestData' => [
-              'id_user' => $request->header('pn'),
-              'kode_branch' => $request->header('branch')
-            ],
-          ])
-        ])->setHeaders([
-          'Authorization' => $request->header('Authorization')
-        ])->post('form_params');
-
-        // $list_fo = [];
-        $list_fo = RestwsHc::setBody([
-          'request' => json_encode([
-            'requestMethod' => 'get_list_fo',
-            'requestData' => [
-              'id_user' => $request->header('pn'),
-              'kode_branch' => $request->header('branch')
-            ],
-          ])
-        ])->setHeaders([
-          'Authorization' => $request->header('Authorization')
-        ])->post('form_params');
-
-        if (is_array($list_ao)  && is_array($list_fo)) {
-          $ao = $list_ao['responseData'];
-          $fo = $list_fo['responseData'];
-
-          $result = array_merge_recursive($fo,$ao);
-          $pemasar = array_column($result, 'SNAME','PERNR' );
-        } else {
-          $pemasar = [];
-        }
 
         $marketingActivity = [];
+
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
           $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+
           if($activity->pn != $activity->pn_join){
             if($activity->pn == $pn) {
               $ownership = 'main';
@@ -80,11 +56,12 @@ class MarketingController extends Controller
           }else {
             $ownership = 'main';
           }
+
           $marketingActivity[]= [
             'id' => $activity->id,
             'pn' => $activity->pn,
             'marketing_activity_type' => $activity->marketing->activity_type,
-            'pn_name' => array_key_exists($activity->pn, $pemasar) ? $pemasar[$activity->pn]:'',
+            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
             'object_activity' => $activity->object_activity,
             'action_activity' => $activity->action_activity,
             'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -95,7 +72,7 @@ class MarketingController extends Controller
             'latitude' => $activity->latitude,
             'marketing_id' => $activity->marketing_id,
             'pn_join' => $activity->pn_join,
-            'join_name' => array_key_exists($activity->pn_join,$pemasar)? $pemasar[$activity->pn_join]: '',
+            'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
             'desc' => $activity->desc,
             'address' => $activity->address,
             'ownership' => $ownership,
@@ -119,6 +96,7 @@ class MarketingController extends Controller
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
           'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
+
       }
       return response()->success( [
           'message' => 'Sukses',
@@ -132,42 +110,19 @@ class MarketingController extends Controller
      */
     public function by_branch(Request $request)
     {
-      $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
 
-      $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
-      ])->post('form_params');
-
-      if($list_fo!=NULL && $list_ao!=NULL){
-        $fo_list = array_column($list_fo['responseData'], 'PERNR');
-        $ao_list = array_column($list_ao['responseData'], 'PERNR');
-        $list_pn = array_merge_recursive($fo_list, $ao_list);
-        $result = $this->pemasar($request->header('pn'), $request->header('branch'), $request->header('Authorization'));
-        $pn_name = array_column($result, 'SNAME', 'PERNR');
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
       } else {
-        $list_pn = '';
+        $pemasar_name = [];
+        $list_pn =[];
       }
 
-      $pn = $request->header('pn');
-      // $marketings = Marketing::where('pn',$pn)->get();
       $marketings = [];
       foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
         $marketingActivity = [];
@@ -187,7 +142,7 @@ class MarketingController extends Controller
             'id' => $activity->id,
             'pn' => $activity->pn,
             'marketing_activity_type' => $activity->marketing->activity_type,
-            'pn_name' => array_key_exists($activity->pn, $pn_name) ? $pn_name[$activity->pn]:'',
+            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
             'object_activity' => $activity->object_activity,
             'action_activity' => $activity->action_activity,
             'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -198,7 +153,7 @@ class MarketingController extends Controller
             'latitude' => $activity->latitude,
             'marketing_id' => $activity->marketing_id,
             'pn_join' => $activity->pn_join,
-            'join_name' => array_key_exists($activity->pn_join,$pn_name)? $pn_name[$activity->pn_join]: '',
+            'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
             'desc' => $activity->desc,
             'address' => $activity->address,
             'ownership' => $ownership,
@@ -210,7 +165,7 @@ class MarketingController extends Controller
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
-          'pn_name'=> array_key_exists($marketing->pn, $pn_name) ? $pn_name[$marketing->pn]:'',
+          'pn_name'=> array_key_exists($marketing->pn, $pemasar_name) ? $pemasar_name[$marketing->pn]:'',
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
@@ -391,6 +346,5 @@ class MarketingController extends Controller
 
       return $result;
     }
-
-
+    
 }
