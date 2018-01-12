@@ -98,8 +98,8 @@ class SentSMSNotifController extends Controller
       <divisi>SIT</divisi>
       <produk>Sms Dev</produk>
       <fitur></fitur>
-      <hp>'.$request->no_hp.'</hp>
-      <pesan>'.$message.'</pesan>
+      <hp>087854536780</hp>
+      <pesan>Abang Evan Ganteng</pesan>
       <flag>0</flag>
     </FCD_SMS>
   </soap:Body>
