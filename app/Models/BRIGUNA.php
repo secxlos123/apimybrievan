@@ -153,9 +153,9 @@ class BRIGUNA extends Model
                 "ibu"       => empty($customer_detail->mother_name) ? "" : $customer_detail->mother_name,
                 "email"     => empty($customer->email) ? "" : $customer->email,
                 "kontak"    => empty($customer->mobile_phone) ? "" : $customer->mobile_phone,
-                "kawin"        => empty($customer_detail->status) ? "" : $customer_detail->status,
-                "hist"         => "tidak",
-                "nama_bank"    => "",
+                "kawin"         => empty($customer_detail->status) ? "" : $customer_detail->status,
+                "hist"          => "tidak",
+                "nama_bank"     => "",
 				"nama_pasangan" => empty($customer->couple_name) ? "" : $customer->couple_name,
 				"no_ktp"        => empty($customer->identity) ? "" : $customer->identity,
 				"tmp_lahir_pasangan" => empty($customer->couple_birth_place_id) ? "" : $customer->couple_birth_place_id,
@@ -187,8 +187,8 @@ class BRIGUNA extends Model
                     'branch'    => $eform->branch_id,
                     'appname'   => 'MBR',
                     'jenis'     => 'BG',
-                    "expdate"   => '2999-12-31 60:60:60',
-                    "expdate_pimpinan"  => '2999-12-31 60:60:60',
+                    'expdate'   => '2099-12-31 12:00:50',
+                    'expdate_pimpinan'  => '2099-12-31 12:00:50',
                     'content'   => $content_insert_dropbox,
                     'status'    => '1',
                 ])
@@ -197,15 +197,16 @@ class BRIGUNA extends Model
             \Log::info($data_dropbox);
             // dd($data_dropbox);
             $data_dropbox['eform_id'] = $eform->id;
-            if( $data_dropbox['responseCode'] == "01" ) {
-                $briguna['ref_number_new'] = $data_dropbox['refno'];
-                $eforms = EForm::findOrFail($data_dropbox['eform_id']);
-                $base_request["ref_number"] = $data_dropbox['refno'];
-                $eforms->update($base_request);
-                return $briguna;
-            } else {
-                throw new \Exception( "Error Processing Request", 1 );
+            if (!empty($data_dropbox)) {
+                if( $data_dropbox['responseCode'] == "01" ) {
+                    $briguna['ref_number_new'] = $data_dropbox['refno'];
+                    $eforms = EForm::findOrFail($data_dropbox['eform_id']);
+                    $base_request["ref_number"] = $data_dropbox['refno'];
+                    $eforms->update($base_request);
+                    return $briguna;
+                }
             }
+            throw new \Exception( "Error Processing Request", 1 );
         } catch (Exception $e) {
             return $e;    
         }
