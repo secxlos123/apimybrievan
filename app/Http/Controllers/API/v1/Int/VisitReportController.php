@@ -49,7 +49,6 @@ class VisitReportController extends Controller
         // Get User Login
         $user_login = \RestwsHc::getUser();
 
-
         $eform = EForm::find($eform_id);
         @$notificationIsRead =  $this->userNotification->where('eform_id',$eform_id)
                                    ->whereNull('read_at')
@@ -59,25 +58,6 @@ class VisitReportController extends Controller
         }
      
         $usersModel = User::FindOrFail($eform->user_id);
-        $notificationToCustomer = $usersModel->notify(new LKNEFormCustomer($eform));     /*send LKN notification to Pinca*/
-
-        // Push Notification
-
-        // $branch_id  = $user_login['branch_id'];
-        // $data = $this->userServices->getPinca($branch_id);
-
-        // $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-        // $notificationBuilder->setBody('Data LKN berhasil dikirim')
-        //                     ->setSound('default');
-
-        // $notification = $notificationBuilder->build();
-        // $topic = new Topics();
-        // $topic->topic('testing')->orTopic('branch_'.$branch_id)->orTopic('pinca_'.$branch_id)->orTopic($data['pn']);
-
-        // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-        // $topicResponse->isSuccess();
-        // $topicResponse->shouldRetry();
-        // $topicResponse->error();
 
         $eform->update([
             'address' => $request->input('address')
@@ -87,6 +67,14 @@ class VisitReportController extends Controller
         ]);
 
         $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $data );
+        
+        $credentials = [
+            'data'        => $eform,
+            'user'        => $usersModel,
+            'credentials' => $user_login
+        ];
+
+        pushNotification($credentials, 'lknEForm');
 
         DB::commit();
         return response()->success( [

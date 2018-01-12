@@ -76,8 +76,12 @@ class KPR extends Model implements AuditableContract
             $usersModel = User::FindOrFail($eform->user_id);
             /*send notification to pinca (web)*/
             $usersModel->notify(new PengajuanKprNotification($eform)); 
-            
-            return $kpr;
+            $data = [
+                'kpr'   => $kpr,
+                'eform' => $eform,
+            ];
+
+            return $data;
         } catch (Exception $e) {
             return $e;
         }
