@@ -6,6 +6,7 @@ use App\Events\Customer\CustomerRegistered;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\CustomerDetail;
 use App\Models\User;
+use App\Models\EForm;
 use Sentinel;
 use DB;
 class Customer extends User
@@ -376,7 +377,7 @@ class Customer extends User
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
-            
+
             $startChart = date("01-m-Y",strtotime($startChart));
             $dateStart  = \DateTime::createFromFormat('d-m-Y', $startChart);
             $startChart = $dateStart->format('Y-m-d h:i:s');
@@ -447,6 +448,14 @@ class Customer extends User
      */
     public function verify( $data )
     {
+        if ( isset($data[ 'eform_id' ]) ) {
+            EForm::where( 'id', $data[ 'eform_id' ] )
+                ->update([
+                    'nik' => $data['nik']
+                ]);
+            unset($data['eform_id']);
+        }
+
         if( $data[ 'verify_status' ] == 'verify' ) {
             $data[ 'birth_date' ] = date( 'Y-m-d', strtotime( $data[ 'birth_date' ] ) );
 
@@ -459,7 +468,7 @@ class Customer extends User
             $data[ 'gender' ] = str_replace( 'Perempuan', 'P', $data[ 'gender' ] );
             $data[ 'gender' ] = str_replace( 'Laki-Laki', 'L', $data[ 'gender' ] );
             $data['emergency_contact'] = $data['emergency_mobile_phone'];
-            $this->update( array_except( $data, ['emergency_mobile_phone','form_id','email','verify_status', '_method'] ) );
+            $this->update( array_except( $data, ['emergency_mobile_phone','email','verify_status', '_method'] ) );
         } else if( $data[ 'verify_status' ] == 'verified' ) {
             $this->detail()->update( [
                 'is_verified' => true

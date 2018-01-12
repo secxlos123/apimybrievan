@@ -140,7 +140,7 @@ class EForm extends Model implements AuditableContract
         } elseif( $this->visit_report ) {
             return 'Prakarsa';
 
-        } elseif( $this->ao_id == null || $this->ao_id == '' ) {
+        } elseif( $this->ao_id != null || $this->ao_id != '' ) {
             return 'Disposisi Pengajuan';
 
         }
@@ -1013,7 +1013,7 @@ class EForm extends Model implements AuditableContract
             "tanggal_lahir_pemohon" => !( $customer_detail->birth_date ) ? '' : $customer_detail->birth_date,
             "program_value" => !( $lkn->program_list ) ? '' : $lkn->program_list,
             "project_value" => !( $lkn->project_list ) ? '' : $lkn->project_list,
-            "pihak_ketiga_value" => !( $developer ) ? '' : ( $developer->dev_id_bri ? $developer->dev_id_bri : '1' ),
+            "pihak_ketiga_value" => !( $developer ) ? '1' : ( $developer->dev_id_bri ? $developer->dev_id_bri : '1' ),
             "sub_pihak_ketiga_value" => '1'
         ];
         return $request;
@@ -1159,7 +1159,7 @@ class EForm extends Model implements AuditableContract
             "Rw_agunan" => !($otsInArea->rw) ? '0' : $otsInArea->rw,
             "Kelurahan_agunan"=> !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan"=> !($otsInArea->district) ? '0' : $otsInArea->district,
-            "Kabupaten_kotamadya_agunan" => !($otsInArea->city_id) ? '0' : $otsInArea->city_id,
+            "Kabupaten_kotamadya_agunan" => !($otsInArea->city) ? '0' : ( !($otsInArea->city->name) ? '0' : $otsInArea->city->name ),
             "Jarak_agunan" => !($otsInArea->distance) ? '0' : intval( $otsInArea->distance ),
             "Jarak_satuan_agunan" => !($otsInArea->unit_type_name) ? 'Kilometer' : $otsInArea->unit_type_name,
             "Jarak_dari_agunan" => !($otsInArea->distance_from) ? 'Pusat Kota' : $otsInArea->distance_from,
@@ -1213,7 +1213,7 @@ class EForm extends Model implements AuditableContract
             "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
-            // "Jarak_dari_agunan" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
+            "jarak_sarana_transportasi" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
             "Lain_lain_agunan_value" => '0',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
@@ -1279,8 +1279,8 @@ class EForm extends Model implements AuditableContract
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
             "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_bukti_kepemilikan_agunan_rt" => !($otsLetter->date) ? '0' : date('dmY', strtotime($otsLetter->date)),
-            "Tanggal_jatuh_tempo_agunan_rt"=> !($otsLetter->duration_land_authorization) ? '0' : date('dmY', strtotime($otsLetter->duration_land_authorization)),
+            "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsLetter->date),
+            "Tanggal_jatuh_tempo_agunan_rt"=> $this->reformatDate($otsLetter->duration_land_authorization),
             "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
             "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
             "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
@@ -1506,7 +1506,7 @@ class EForm extends Model implements AuditableContract
             return $dates[2].$dates[1].$dates[0];
         }
 
-        return '0';
+        return '01019999';
     }
 
     /**

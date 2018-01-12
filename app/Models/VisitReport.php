@@ -50,10 +50,12 @@ class VisitReport extends Model implements AuditableContract
             $mutation = Mutation::create( [
                 'visit_report_id' => $visit_report->id
             ] + $mutation_data );
-            foreach ( $mutation_data[ 'tables' ] as $key => $bank_statement_data ) {
-                BankStatement::create( [
-                    'mutation_id' => $mutation->id
-                ] + $bank_statement_data );
+            if (isset($mutation_data[ 'tables' ])) {
+                foreach ( $mutation_data[ 'tables' ] as $key => $bank_statement_data ) {
+                    BankStatement::create( [
+                        'mutation_id' => $mutation->id
+                    ] + $bank_statement_data );
+            }
             }
         }
 }

@@ -36,7 +36,7 @@ class CustomerEksController extends Controller
             'no_ref' => $eform->ref_number,
             'email' => $customer_data->email,
             'name' => $customer_data->fullname,
-            'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . 'eform/' . $eform->token,
+            'url' => env( 'MAIN_APP_URL', 'http://mybri.bri.co.id' ) . 'eform/' . $eform->token,
             'nik' => $customer->nik,
             'address'=> $customer->address,
             'city_id'=> $customer->city_id ? $customer->city->name : '',
