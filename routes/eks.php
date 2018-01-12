@@ -49,6 +49,16 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	});
 
 	/**
+	 * Route for customer for resend email
+	 */
+	Route::group([ 'prefix' => 'auth' ], function () {
+		/**
+		 * Route for customer for resend email
+		 */
+		Route::post( 'resend-email', 'AuthController@resendEmail' );
+	} );
+
+	/**
 	 * Route for customer or developer require authentication
 	 */
 	Route::group([ 'middleware' => [ 'api.auth' ] ], function () {
@@ -78,6 +88,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 			 * Route for customer for logout
 			 */
 			Route::delete( 'logout', 'AuthController@destroy' );
+
 		} );
 
 		/**
@@ -233,6 +244,6 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1' ], function() {
 		/**
 		 * Route for namespace API\v1\Eks
 		 */
-		
+
 	});
 });
