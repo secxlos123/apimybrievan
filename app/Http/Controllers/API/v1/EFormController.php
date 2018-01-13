@@ -678,7 +678,7 @@ class EFormController extends Controller
             ], 201 );
 
         } else {
-            DB::rollback();
+            DB::commit();
             return response()->success( [
                 'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform

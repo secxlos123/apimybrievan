@@ -367,7 +367,7 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataMaster', null]
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', null]
-            , ['InsertDataAgunanTanahRumahTinggal', null]
+            , ['InsertDataAgunan', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -405,7 +405,6 @@ class EForm extends Model implements AuditableContract
                             , 'message' => $set[ 'message' ]
                         );
                         \Log::info($return);
-                        $step++;
                         break;
                     }
                 }
@@ -414,7 +413,8 @@ class EForm extends Model implements AuditableContract
                 $step++;
             }
         }
-        $this->update(['clas_position' => $step]);
+        $this->clas_position = $step;
+        $this->save();
 
         if ($step == 10) {
             $this->update( [
@@ -890,7 +890,7 @@ class EForm extends Model implements AuditableContract
             "nik_pasangan" => !( $customer_detail->couple_nik ) ? '' : $customer_detail->couple_nik,
             "nama_pasangan" => !( $customer_detail->couple_name ) ? '' : $customer_detail->couple_name,
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '0' : $customer_detail->address_status_id,
-            "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
+            "telepon_pemohon" => !( $customer->phone ) ? '0' : substr($customer->phone, 0, 11),
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "nama_perusahaan" => !( $customer_work->company_name ) ? '' : $customer_work->company_name,
@@ -913,7 +913,7 @@ class EForm extends Model implements AuditableContract
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11 ),
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
@@ -949,7 +949,7 @@ class EForm extends Model implements AuditableContract
             "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
             "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
-            "telepon_pemohon" => !( $customer->phone ) ? '' : $customer->phone,
+            "telepon_pemohon" => !( $customer->phone ) ? '' : substr($customer->phone, 0 , 11),
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "jenis_pekerjaan_value" => !( $customer_work->type_id ) ? '' : $customer_work->type_id,
@@ -959,7 +959,7 @@ class EForm extends Model implements AuditableContract
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
             "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : $lkn->office_phone,
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11),
             'tujuan_membuka_rekening_value' => 'T2',
             'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012'),
 
@@ -1193,7 +1193,7 @@ class EForm extends Model implements AuditableContract
             "No_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->permit_number) ? '0' : $otsBuilding->permit_number,
             "Tanggal_ijin_mendirikan_bangunan_agunan" => $this->reformatDate($otsBuilding->permit_date),
             "Atas_nama_ijin_mendirikan_bangunan_agunan" => !($otsBuilding->on_behalf_of) ? '0' : $otsBuilding->on_behalf_of,
-            "Jenis_bangunan_agunan_value" => !($otsBuilding->type) ? '0' : $otsBuilding->type,
+            "Jenis_bangunan_agunan_value" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
             "Jumlah_bangunan_agunan" => !($otsBuilding->count) ? '0' : $otsBuilding->count,
             "Luas_bangunan_agunan" => !($otsBuilding->spacious) ? '0' : $otsBuilding->spacious,
             "Tahun_bangunan_agunan" => !($otsBuilding->year) ? '0' : $otsBuilding->year,
@@ -1273,7 +1273,7 @@ class EForm extends Model implements AuditableContract
             "Fid_agunan" => '0',
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
-            "Jenis_agunan_value_rt" => 'Rumah Tinggal',
+            "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
             "Status_agunan_value_agunan_rt" => 'Ditempati Sendiri',
             "Deskripsi_agunan_rt" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
