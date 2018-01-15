@@ -12,6 +12,8 @@ use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\Crm\apiPdmToken;
+use App\Models\Crm\Referral;
+use RestwsHc;
 use App\Models\User;
 
 use GuzzleHttp\Exception\GuzzleException;
@@ -220,5 +222,144 @@ class AccountController extends Controller
         $token = $apiPdmToken['access_token'];
         return $token;
       }
+    }
+
+    public function pemasar($pn, $branch, $auth){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->setHeaders([
+        'Authorization' => $auth
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
+    }
+
+    public function get_referral(Request $request)
+    {
+      $referral = Referral::all();
+      return response()->success( [
+          'message' => 'Sukses get data referral',
+          'contents' => $referral
+        ]);
+    }
+
+    public function get_referral_by_officer(Request $request)
+    {
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $referral = Referral::where('officer_ref', $pn)->get();
+      return response()->success( [
+          'message' => 'Sukses get data referral by officer',
+          'contents' => $referral
+        ]);
+    }
+
+    public function get_referral_by_branch(Request $request)
+    {
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $referral = [];
+      foreach (Referral::whereIn('officer_ref', $list_pn)->get() as $ref) {
+        $referral[]= [
+          "id"=> $ref->id,
+          "ref_id"=> $ref->ref_id,
+          "nik"=> $ref->nik,
+          "cif"=> $ref->cif,
+          "name"=> $ref->name,
+          "phone"=> $ref->phone,
+          "address"=> $ref->address,
+          "product_type"=> $ref->product_type,
+          "officer_ref"=> $ref->officer_ref,
+          "officer_name"=> array_key_exists($ref->officer_ref, $pemasar_name) ? $pemasar_name[$ref->officer_ref]:'',
+          "status"=> $ref->status,
+          "created_by"=> $ref->created_by,
+          "creator"=> array_key_exists($ref->created_by, $pemasar_name) ? $pemasar_name[$ref->created_by]:'',
+          "point"=> $ref->point,
+        ];
+      }
+
+      return response()->success( [
+          'message' => 'Sukses get data referral by officer',
+          'contents' => $referral
+        ]);
+    }
+
+    public function store_referral(Request $request)
+    {
+      $count = Referral::whereMonth('created_at', date('m'))->count() + 1;
+      $len = 4;
+      if(strlen($count) == $len) {
+        $num = $count;
+      } elseif( strlen($count) < $len ) {
+          $num = '0';
+          $x = $len - strlen($count);
+          for ($i=1; $i < $x ; $i++) {
+            $num .='0';
+          }
+          $num .= $count;
+      }
+
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $data['ref_id'] = date('ym').$branch.$num;
+      $data['nik'] = $request['nik'];
+      $data['name'] = $request['name'];
+      $data['phone'] = $request['phone'];
+      $data['address'] = $request['address'];
+      $data['product_type'] = $request['product_type'];
+      $data['officer_ref'] = $request['officer_ref'];
+      $data['status'] = $request['status'];
+      $data['created_by'] = $pn;
+      $data['point'] = $request['point'];
+
+      $save = Referral::create($data);
+      if ($save) {
+          return response()->success([
+              'message' => 'Data Referral berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Data Referral Tidak Dapat Ditambah.',
+      ], 500);
     }
 }

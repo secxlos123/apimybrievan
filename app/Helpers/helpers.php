@@ -409,7 +409,7 @@ if (! function_exists('pushNotification')) {
                 updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
                 verifyCustomer($credentials);
-            }
+            } 
         }
     }
 
@@ -797,4 +797,48 @@ if (! function_exists('pushNotification')) {
         $topicResponse->shouldRetry();
         $topicResponse->error();
     }
+
+    function collateralNotification($credentials){
+       $user_id= $credentials['user_id']; 
+       $bodyNotif= $credentials['bodyNotif']; 
+       $headerNotif= $credentials['headerNotif']; 
+       $id = $credentials['id']; 
+       $type= $credentials['type']; 
+       $slug = $credentials['slug']; 
+       $receiver = $credentials['receiver']; 
+
+        $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
+        $notificationBuilder->setBody($bodyNotif)
+                              ->setSound('default');
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $id,
+            'slug'     => $slug,
+            'type'     => $type,
+        ]);
+                              
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic = new Topics();
+        if($receiver=='staf_collateral'){   
+             $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
+        }else if ($receiver=='external'){  //send to external mobile apps
+             $topic->topic('testing')->andTopic('user_'.$user_id);
+        }else if ($receiver=='manager_collateral'){
+             $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
+        }
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error(); 
+    }
+
+    
+
+
 }

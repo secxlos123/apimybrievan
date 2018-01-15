@@ -366,8 +366,8 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
             , ['InsertIntoReviewer', 'nama_reviewer']
-            , ['InsertDataAgunanModel71', null]
-            , ['InsertDataAgunan', null]
+            , ['InsertDataAgunanModel71', 'id_model_71'] //jika tidak ada kasih 0
+            , ['InsertDataAgunan', 'Fid_agunan'] //jika tidak ada kasih 0
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -845,8 +845,10 @@ class EForm extends Model implements AuditableContract
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
+                if (!isset($this->additional_parameters[$value])) {
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
                 $this->save();
+                }
             }
             $return = array(
                 'status' => true
@@ -1154,6 +1156,7 @@ class EForm extends Model implements AuditableContract
 
         $request = $data + [
             //ots Area
+            "id_model_71" => (isset($this->additional_parameters['id_model_71']))? $this->additional_parameters['id_model_71'] : 0,
             "Lokasi_tanah_agunan" => !($otsInArea->location) ? '0' : $otsInArea->location,
             "Rt_agunan" => !($otsInArea->rt) ? '0' : $otsInArea->rt,
             "Rw_agunan" => !($otsInArea->rw) ? '0' : $otsInArea->rw,
@@ -1238,7 +1241,7 @@ class EForm extends Model implements AuditableContract
             "Penggunaan_bangunan_sesuai_optimal_agunan_value" => !($otsOther->optimal_building_use) ? '0' : $otsOther->optimal_building_use,
             //"Peruntukan_bangunan_agunan_value" => '0',//tidak ada di table
             "Peruntukan_tanah_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
-            "jarak_posisi_terhadap_jalan"=>!($otsInArea->distance_of_position) ? '0' : $this->reformatCurrency( $otsInArea->distance_of_position ),
+            "jarak_posisi_terhadap_jalan"=>!($otsInArea->distance_of_position) ? '0' : intval($otsInArea->distance_of_position),
             "Nama_debitur_agunan" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Biaya_sewa_agunan" => '0',//tidak ada di table
             "Hal_perludiketahui_bank_agunan" => !($otsOther->things_bank_must_know) ? '0' : $otsOther->things_bank_must_know,
@@ -1267,9 +1270,10 @@ class EForm extends Model implements AuditableContract
         $otsEnvironment = $collateral->otsEnvironment;
         $otsValuation = $collateral->otsValuation;
         $otsOther = $collateral->otsOther;
+        $otsNine = $collateral->otsNine;
 
         $request = $data + [
-            "Fid_agunan" => '0',
+            "Fid_agunan" => (isset($this->additional_parameters['Fid_agunan']))? $this->additional_parameters['Fid_agunan'] : '0',
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
@@ -1303,7 +1307,29 @@ class EForm extends Model implements AuditableContract
             "Nama_perusahaan_asuransi_agunan_rt" =>'IJK',//taidak
             "Nilai_asuransi_agunan_rt" => '0',//taidak
             "Eligibility_value_agunan_rt" => '0',//taidak
-            "Proyeksi_nilai_likuidasi_agunan_rt" => '0'//taidak
+            "Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
+            // Field Tambahan
+            "Pemecah_sertifikat_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date)?'':$this->reformatDate($otsNine->receipt_date),//string kosong apabila tidak di berikan
+            "Pemecah_sertifikat_status_value_agunan_rt"=>!($otsNine->certificate_status)? '' : ($otsNine->certificate_status == "Sudah Diberikan" ? '1' : '0'),
+            "Pemecah_sertifikat_keterangan_agunan_rt"=>!($otsNine->information)? '' : $otsNine->information,
+            "Dokumen_notaris_delevoper_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_notary)?'':$this->reformatDate($otsNine->receipt_date_notary),
+            "Dokumen_notaris_developer_status_value_agunan_rt"=>!($otsNine->notary_status)? '' : ($otsNine->notary_status == "Sudah Diberikan" ? '1' : '0'),
+            "Dokumen_notaris_developer_keterangan_agunan_rt"=>!($otsNine->information_notary)? '' : $otsNine->information_notary,
+            "Dok_take_over_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_takeover)?'':$this->reformatDate($otsNine->receipt_date_takeover),
+            "Dok_take_over_value_agunan_rt"=>!($otsNine->takeover_status)? '' : ($otsNine->takeover_status == "Sudah Diberikan" ? '1' : '0'),
+            "Dok_take_over_keterangan_agunan_rt"=>!($otsNine->information_takeover)? '' : $otsNine->information_takeover,
+            "Perjanjian_kredit_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_credit)?'':$this->reformatDate($otsNine->receipt_date_credit),
+            "Perjanjian_kredit_status_value_agunan_rt"=>!($otsNine->credit_status)? '' : ($otsNine->credit_status == "Sudah Diberikan" ? '1' : '0'),
+            "Perjanjian_kredit_keterangan_agunan_rt"=>!($otsNine->information_credit)? '' : $otsNine->information_credit,
+            "Skmht_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_skmht)?'':$this->reformatDate($otsNine->receipt_date_skmht),
+            "Skmht_status_value_agunan_rt"=>!($otsNine->skmht_status)? '' : ($otsNine->skmht_status == "Sudah Diberikan" ? '1' : '0'),
+            "Skmht_keterangan_agunan_rt"=>!($otsNine->information_skmht)? '' : $otsNine->information_skmht,
+            "Imb_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_imb)?'':$this->reformatDate($otsNine->receipt_date_imb),
+            "Imb_status_value_agunan_rt"=>!($otsNine->imb_status)? '' : ($otsNine->imb_status == "Sudah Diberikan" ? '1' : '0'),
+            "Imb_keterangan_agunan_rt"=>!($otsNine->information_imb)? '' : $otsNine->information_imb,
+            "Shgb_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_shgb)?'':$this->reformatDate($otsNine->receipt_date_shgb),
+            "Shgb_status_value_agunan_rt"=>!($otsNine->shgb_status)? '' : ($otsNine->shgb_status == "Sudah Diberikan" ? '1' : '0'),
+            "Shgb_keterangan_agunan_rt"=>!($otsNine->information_shgb)? '' : $otsNine->information_shgb
         ];
         return $request;
     }

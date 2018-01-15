@@ -238,6 +238,18 @@ class CreateOts extends FormRequest
         'nine.skmht_status' => 'required',
         'nine.imb_status' => 'required',
         'nine.shgb_status' => 'required',
+        'nine.receipt_date_notary'=>'',
+        'nine.information_notary'=>'',
+        'nine.receipt_date_takeover'=>'',
+        'nine.information_takeover'=>'',
+        'nine.receipt_date_credit'=>'',
+        'nine.information_credit'=>'',
+        'nine.receipt_date_skmht'=>'',
+        'nine.information_skmht'=>'',
+        'nine.receipt_date_imb'=>'',
+        'nine.information_imb'=>'',
+        'nine.receipt_date_shgb'=>'',
+        'nine.information_shgb' =>''
       ];
     }
 

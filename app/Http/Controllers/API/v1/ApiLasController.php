@@ -407,6 +407,14 @@ class ApiLasController extends Controller
 
     public function putusan($data) {
         if (!empty($data)) {
+            if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
+                $eform = EForm::findOrFail($data['eform_id']);
+                $base_request['pinca_name'] = $data['pinca_name'];
+                $base_request['pinca_position'] = $data['pinca_position'];
+                $eform->update($base_request);
+                \Log::info("-------- update table eforms sukses---------");
+            }
+
             $ApiLas  = new ApiLas();
             $conten_putusan = [
                 "id_aplikasi" => $data['id_aplikasi'],
@@ -787,18 +795,21 @@ class ApiLasController extends Controller
                                 "kecamatan_dom"             => $request['kecamatan_domisili'],
                                 "kota"                      => $request['propinsi'],
                                 "kota_dom"                  => $request['propinsi_domisili'],
-                                "perjanjian_pisah_harta"    => $request['perjanjian_pisah_harta']
+                                "perjanjian_pisah_harta"  => $request['perjanjian_pisah_harta'],
+                                "trans_normal_harian"     => $request['transaksi_normal_harian'],
+                                "pernah_pinjam"             => $request['pernah_pinjam'],
+                                "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'] 
 							];
 
 							$briguna = BRIGUNA::where("eform_id","=",$eform_id);
                             $eform   = EForm::findOrFail($eform_id);
                             $base_request["branch_id"] = $request['kantor_cabang_id'];
                             $eform->update($base_request);
-                            \Log::info("-------- update table eforms ---------");
-                            \Log::info($eform);
+                            \Log::info("-------- update table eforms sukses---------");
+                            // \Log::info($eform);
 							$briguna->update($params);
-                            \Log::info("-------- update table briguna ---------");
-                            \Log::info($briguna);
+                            \Log::info("-------- update table briguna sukses---------");
+                            // \Log::info($briguna);
 	                        $result = [
                                 'code'         => $kirim['statusCode'], 
                                 'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
