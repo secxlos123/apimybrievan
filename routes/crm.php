@@ -13,6 +13,15 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post( 'account/leads_detail', 'AccountController@detail')->name('crm.account_detail');
   Route::post( 'account/existing_fo', 'AccountController@existingFo')->name('crm.existing_fo');
   Route::post( 'account/test', 'AccountController@getBranchKanwil');
+  Route::get( 'account/get_referral', 'AccountController@get_referral');
+  Route::get( 'account/get_referral_by_officer', 'AccountController@get_referral_by_officer');
+  Route::post( 'account/get_referral_by_branch', 'AccountController@get_referral_by_branch');
+  Route::post( 'account/store_referral', 'AccountController@store_referral');
+
+  // route customer group
+  Route::get( 'account/customer_group', 'customerGroupController@index');
+  // route  store customer group
+  Route::post( 'account/customer_group', 'customerGroupController@store');
 
   // route customer
   Route::get( 'account/customer', 'CustomerController@index')->name('crm.customer');
@@ -61,4 +70,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post('/marketing/by_branch', 'MarketingController@by_branch');
 
   Route::get('/activity/deleteAll', 'marketingActivityController@deleteAll');
+
+  //marketing Map
+  Route::get('/marketing_map', 'marketingMapController@index');
+  //marketing store Map
+  Route::post('/marketing_map', 'marketingMapController@store');
 });
