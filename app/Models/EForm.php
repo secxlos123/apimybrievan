@@ -1303,7 +1303,29 @@ class EForm extends Model implements AuditableContract
             "Nama_perusahaan_asuransi_agunan_rt" =>'IJK',//taidak
             "Nilai_asuransi_agunan_rt" => '0',//taidak
             "Eligibility_value_agunan_rt" => '0',//taidak
-            "Proyeksi_nilai_likuidasi_agunan_rt" => '0'//taidak
+            "Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
+            // Field Tambahan
+            "Pemecah_sertifikat_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date)?'':$this->reformatDate($otsNine->receipt_date),//string kosong apabila tidak di berikan
+            "Pemecah_sertifikat_status_value_agunan_rt"=>!($otsNine->certificate_status)? '' : ($otsNine->certificate_status == "Sudah Diberikan" ? '1' : '0'),
+            "Pemecah_sertifikat_keterangan_agunan_rt"=>!($otsNine->information)? '' : $otsNine->information,
+            "Dokumen_notaris_delevoper_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_notary)?'':$this->reformatDate($otsNine->receipt_date_notary),
+            "Dokumen_notaris_developer_status_value_agunan_rt"=>!($otsNine->notary_status)? '' : ($otsNine->notary_status == "Sudah Diberikan" ? '1' : '0'),
+            "Dokumen_notaris_developer_keterangan_agunan_rt"=>!($otsNine->information_notary)? '' : $otsNine->information_notary,
+            "Dok_take_over_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_takeover)?'':$this->reformatDate($otsNine->receipt_date_takeover),
+            "Dok_take_over_value_agunan_rt"=>!($otsNine->takeover_status)? '' : ($otsNine->takeover_status == "Sudah Diberikan" ? '1' : '0'),
+            "Dok_take_over_keterangan_agunan_rt"=>!($otsNine->information_takeover)? '' : $otsNine->information_takeover,
+            "Perjanjian_kredit_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_credit)?'':$this->reformatDate($otsNine->receipt_date_credit),
+            "Perjanjian_kredit_status_value_agunan_rt"=>!($otsNine->credit_status)? '' : ($otsNine->credit_status == "Sudah Diberikan" ? '1' : '0'),
+            "Perjanjian_kredit_keterangan_agunan_rt"=>!($otsNine->information_credit)? '' : $otsNine->information_credit,
+            "Skmht_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_skmht)?'':$this->reformatDate($otsNine->receipt_date_skmht),
+            "Skmht_status_value_agunan_rt"=>!($otsNine->skmht_status)? '' : ($otsNine->skmht_status == "Sudah Diberikan" ? '1' : '0'),
+            "Skmht_keterangan_agunan_rt"=>!($otsNine->information_skmht)? '' : $otsNine->information_skmht,
+            "Imb_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_imb)?'':$this->reformatDate($otsNine->receipt_date_imb),
+            "Imb_status_value_agunan_rt"=>!($otsNine->imb_status)? '' : ($otsNine->imb_status == "Sudah Diberikan" ? '1' : '0'),
+            "Imb_keterangan_agunan_rt"=>!($otsNine->information_imb)? '' : $otsNine->information_imb,
+            "Shgb_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_shgb)?'':$this->reformatDate($otsNine->receipt_date_shgb),
+            "Shgb_status_value_agunan_rt"=>!($otsNine->shgb_status)? '' : ($otsNine->shgb_status == "Sudah Diberikan" ? '1' : '0'),
+            "Shgb_keterangan_agunan_rt"=>!($otsNine->information_shgb)? '' : $otsNine->information_shgb
         ];
         return $request;
     }
