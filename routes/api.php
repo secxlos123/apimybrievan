@@ -52,6 +52,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'kanwil-list', 'KanwilController@index' );
 		Route::get( 'kemendagri', 'CustomerController@kemendagri' );
 		Route::get( 'customer-bri', 'CustomerController@customer' );
+		Route::get( 'insurance-list', 'CompanyInsurance@index' );
+		Route::get( 'appraiser-list', 'IndependentAppraiser@index' );
 
 		Route::resource( 'eforms', 'EFormController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
