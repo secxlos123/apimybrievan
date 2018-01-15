@@ -799,24 +799,22 @@ if (! function_exists('pushNotification')) {
     }
 
     function collateralNotification($credentials){
-       $staff_id= $credentials['staff_id']; 
-       $headerNotif= $credentials['headerNotif']; 
+       $user_id= $credentials['user_id']; 
        $bodyNotif= $credentials['bodyNotif']; 
+       $headerNotif= $credentials['headerNotif']; 
+       $id = $credentials['id']; 
        $type= $credentials['type']; 
-       $collateralId = $credentials['collateralId']; 
+       $slug = $credentials['slug']; 
        $receiver = $credentials['receiver']; 
-       $dataUser = UserServices::where('pn',$staff_id)->first();
-       $branch_id = $dataUser['branch_id'];
-  
-        // notif disposisi ke staff colleteral
+
         $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
         $notificationBuilder->setBody($bodyNotif)
                               ->setSound('default');
 
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
-            'id'       => $collateralId,
-            'slug'     => $collateralId,
+            'id'       => $id,
+            'slug'     => $slug,
             'type'     => $type,
         ]);
                               
@@ -824,7 +822,11 @@ if (! function_exists('pushNotification')) {
         $data         = $dataBuilder->build();
         $topic = new Topics();
         if($receiver=='staf_collateral'){   
-            $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$staff_id);
+             $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
+        }else if ($receiver=='external'){
+             $topic->topic('testing')->andTopic('user_'.$user_id);
         }
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
@@ -832,7 +834,7 @@ if (! function_exists('pushNotification')) {
         $topicResponse->error(); 
     }
 
-
+    
 
 
 }
