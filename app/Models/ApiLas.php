@@ -32,7 +32,8 @@ class ApiLas extends Model
 
     public function eform_briguna() {
         $eforms = DB::table('eforms')
-                 ->select('eforms.ref_number','eforms.created_at','briguna.id','briguna.id_aplikasi',
+                 ->select('eforms.ref_number','eforms.created_at', 'eforms.ao_id',
+                    'eforms.ao_name','eforms.ao_position','briguna.id','briguna.id_aplikasi',
                     'briguna.request_amount','briguna.Plafond_usulan','briguna.is_send',
                     'briguna.eform_id','briguna.tp_produk','customer_details.nik',
                     'customer_details.birth_date','customer_details.address',
