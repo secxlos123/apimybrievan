@@ -825,8 +825,12 @@ if (! function_exists('pushNotification')) {
              $dataUser  = UserServices::where('pn',$user_id)->first();
              $branch_id = $dataUser['branch_id'];
              $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
-        }else if ($receiver=='external'){
+        }else if ($receiver=='external'){  //send to external mobile apps
              $topic->topic('testing')->andTopic('user_'.$user_id);
+        }else if ($receiver=='manager_collateral'){
+             $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
         }
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
