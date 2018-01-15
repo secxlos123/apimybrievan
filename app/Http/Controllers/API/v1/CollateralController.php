@@ -265,6 +265,19 @@ class CollateralController extends Controller
     {
       $this->request->request->add(['status' => Collateral::STATUS[1]]);
       $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff'));
+       // notif disposisi ke staff colleteral
+        $dataInput = $this->request->all();
+        $staff_id = $dataInput['staff_id'];
+        $credentials = [
+            'collateralId' => $collateralId,
+            'staff_id' => $staff_id,
+            'headerNotif' => 'Collateral Notification',
+            'bodyNotif' => 'Penugasan Staff Collateral',
+            'type' => 'collateral',
+            'receiver' => 'staf_collateral' 
+        ];
+      // Call the helper of push notification function
+        collateralNotification($credentials);
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
