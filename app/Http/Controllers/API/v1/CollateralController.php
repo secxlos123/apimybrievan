@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\OtsEnvironment;
 use App\Models\OtsAnotherData;
 use App\Models\OtsBuildingDesc;
+use App\Models\UserServices;
 use App\Http\Controllers\Controller;
 use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
@@ -253,25 +254,50 @@ class CollateralController extends Controller
       }
      
       if ($action === 'approve') {
-         $bodyNotif = 'approval collateral';
+          $bodyNotif = 'approval collateral';
+          $type = 'collateral_ots_'.$action;
+          $developer_id = $collateral['developer_id'];
+          $dataDeveloper = Developer::where('id',$developer_id)->first();
+          $user_id = $dataDeveloper->user_id;
+            $receiver = 'external';
       }else if ($action === 'reject') {
-         $bodyNotif = 'reject collateral';
+         $pn = $this->request->header('pn');
+         $dataUser  = UserServices::where('pn',$pn)->first();
+         $role = $dataUser['role'];
+         if($role=='collateral-appraisal'){
+            $bodyNotif = 'menolak menilai agunan';
+            $type = 'collateral_ots_'.$action;
+            $receiver = 'manager_collateral';
+            if(!empty($collateral['approved_by'])){
+             $user_id  = $collateral['approved_by'];  
+            }else{
+              $user_id = 'kosong';
+            }
+         }else if ($role=='collateral'){
+            $bodyNotif = 'reject collateral';
+            $type = 'collateral_'.$action;
+            $receiver = 'external';  // send to external apps
+            $developer_id = $collateral['developer_id'];
+            $dataDeveloper = Developer::where('id',$developer_id)->first();
+            $user_id = $dataDeveloper->user_id;
+         }
+         
       }
-
-      $developer_id = $collateral['developer_id'];
-      $dataDeveloper = Developer::where('id',$developer_id)->first();
-      $user_id = $dataDeveloper->user_id;
-
+ 
       $credentials = [
             'headerNotif' => 'Collateral Notification',
             'bodyNotif' => $bodyNotif,
             'id' => $collateralId,
-            'type' => 'collateral_'.$action,
+            'type' => $type,
             'slug' => $collateralId,
             'user_id' => $user_id,
-            'receiver' => 'external',
+            'receiver' => $receiver,
       ];
-      collateralNotification($credentials);
+      if($user_id !='kosong') {  // tidak kirim notif
+        collateralNotification($credentials);
+      }elseif ($receiver=='external') {
+         collateralNotification($credentials);
+      }
 
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
