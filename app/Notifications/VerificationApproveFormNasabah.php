@@ -62,6 +62,7 @@ class VerificationApproveFormNasabah extends Notification
             'nik' => $this->eForm->nik,
             'ref_number' => $this->eForm->ref_number,
             'branch_id' => $this->eForm->branch_id,
+            'type_module' => 'eform',
             'created_at' => $this->eForm->created_at,
         ];
     }

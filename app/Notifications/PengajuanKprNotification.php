@@ -32,7 +32,6 @@ class PengajuanKprNotification extends Notification
      */
     public function via($notifiable)
     {
-        //return ['database'];
         return [NotificationsDbChannel::class];
     }
 
@@ -44,10 +43,7 @@ class PengajuanKprNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        /*return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');*/
+        //
     }
 
     /**
@@ -67,6 +63,7 @@ class PengajuanKprNotification extends Notification
             'nik' => $this->eForm->nik,
             'ref_number' => $this->eForm->ref_number,
             'branch_id' => $data->branch_id,
+            'type_module' => 'eform',
             'created_at' => $this->eForm->created_at,
         ];
     }

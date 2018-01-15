@@ -14,6 +14,8 @@ class UserNotification extends Model
 	 *
 	 * @var array
 	 */
+	public $incrementing = false;
+
 	protected $casts = [
 		'id' => 'string',
 		'data' => 'array',
@@ -44,7 +46,7 @@ class UserNotification extends Model
 	}
 
 	public function getSubject($status_eform, $ref_number, $user_id) {
-		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&ids=' . $this->eform_id;
+		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&ids=' . $this->eform_id.'&type=eform';
 		if ($user_id) {
 			$url = 'eform?ids=' . $this->eform_id;
 		} else {
@@ -100,6 +102,11 @@ class UserNotification extends Model
 		case 'App\Notifications\PropertyNotification':
 			$subjectNotif = ['message' => 'Proyek Baru',
 				'url' => '',
+			];
+			break;
+		case 'App\Notifications\NewSchedulerCustomer':
+			$subjectNotif = ['message' => 'Schedule Baru',
+				'url' => '/schedule?ids=' . $this->notifiable_id.'&type=schedule',
 			];
 			break;
 		default:
@@ -173,7 +180,7 @@ class UserNotification extends Model
 		if (@$role == 'customer') {
 			$query->where('notifications.notifiable_id', @$user_id);
 
-			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
 				$query->unreads();
 			}
 

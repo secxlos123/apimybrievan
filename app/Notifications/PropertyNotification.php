@@ -32,7 +32,6 @@ class PropertyNotification extends Notification
      */
     public function via($notifiable)
     {
-        // return ['mail'];
         return [NotificationsDbChannel::class];
     }
 
@@ -76,7 +75,7 @@ class PropertyNotification extends Notification
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
             'name' => $this->prop->name,
-            // 'prop_name' => $this->prop->nik,
+            'type_module' => 'property',
         ];
     }
 }

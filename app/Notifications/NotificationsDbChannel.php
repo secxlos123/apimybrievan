@@ -24,19 +24,22 @@ class NotificationsDbChannel
             return $notifiable->routeNotificationFor('database')->create([
                 'id' => $notification->id,
                 'branch_id'=> $data['prop_id'],
+                'role_name'=> 'customer',
                 'type' => get_class($notification),
                 'data' => $data,
                 'read_at' => null,
+                'type_module'=> $data['type_module'],
                 ]);
         }else{
             return $notifiable->routeNotificationFor('database')->create([
                 'id' => $notification->id,
                 'branch_id'=> $data['branch_id'],
-                //'role_name'=> $data['role'],
+                'role_name'=> 'customer',
                 'eform_id'=> $data['eform_id'],
                 'type' => get_class($notification),
                 'data' => $data,
                 'read_at' => null,
+                'type_module'=> $data['type_module'],
                 ]);
         }
     }

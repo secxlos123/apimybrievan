@@ -702,6 +702,11 @@ class User extends Authenticatable implements AuditableContract, UserResolver
         return $this->hasMany('App\Models\UserNotification', 'notifiable_id');
     }
 
+    public function related()
+    {
+        return $this->morphTo();
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -8,14 +8,29 @@ use App\Http\Requests\API\v1\Appointment\StatusRequest;
 use App\Http\Requests\API\v1\Appointment\CreateRequest;
 use App\Http\Requests\API\v1\Appointment\UpdateRequest;
 use App\Models\Appointment;
+use App\Models\User;
+use App\Models\UserServices;
+use App\Models\UserNotification;
+use App\Notifications\NewSchedulerCustomer;
+
 use Illuminate\Http\Request;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
 use FCM;
+
+
 class AppointmentController extends Controller
 {
+    public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
+    {
+        $this->userServices = new UserServices;
+        $this->user = $user;
+        $this->userservices = $userservices;
+        $this->userNotification = $userNotification;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -78,20 +93,18 @@ class AppointmentController extends Controller
         $postTaken = ['title', 'appointment_date', 'user_id', 'ao_id', 'eform_id', 'ref_number', 'address', 'latitude', 'longitude', 'guest_name', 'desc', 'status'];
         $save = Appointment::create($request->only($postTaken));
         if ($save) {
+            $notificationIsRead =  $this->userNotification->where('eform_id',$save->eform_id)
+                                       ->whereNull('read_at')
+                                       ->first();
+            if(@$notificationIsRead){
+                $notificationIsRead->markAsRead();
+            }
+
+            $usersModel = User::FindOrFail($save->user_id);     /*send notification*/
+            $usersModel->notify(new NewSchedulerCustomer($save));
+
             // Push Notification
-
-            // $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
-            // $notificationBuilder->setBody('Anda memiliki schedule baru.')
-            //                     ->setSound('default');
-
-            // $notification = $notificationBuilder->build();
-            // $topic = new Topics();
-            // $topic->topic('user_'.$save['user_id']);
-
-            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-            // $topicResponse->isSuccess();
-            // $topicResponse->shouldRetry();
-            // $topicResponse->error();
+            /*{}*/
 
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',
@@ -144,6 +157,8 @@ class AppointmentController extends Controller
     public function update(Request $request, $type, $id)
     {
         $data = Appointment::find($id);
+        // \Log::info($data);
+        // die();
         if ($data) {
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
 
