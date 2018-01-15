@@ -32,11 +32,13 @@ class ApiLas extends Model
 
     public function eform_briguna() {
         $eforms = DB::table('eforms')
-                 ->select('eforms.ref_number','eforms.created_at','briguna.id','briguna.id_aplikasi',
-                    'briguna.request_amount','briguna.Plafond_usulan','briguna.is_send',
-                    'briguna.eform_id','briguna.tp_produk','customer_details.nik',
-                    'customer_details.birth_date','customer_details.address',
-                    'customer_details.mother_name',
+                 ->select('eforms.ref_number','eforms.created_at','eforms.ao_id',
+                    'eforms.ao_name','eforms.ao_position','eforms.pinca_name',
+                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
+                    'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
+                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
+                    'customer_details.nik','customer_details.birth_date',
+                    'customer_details.address','customer_details.mother_name',
                     'users.first_name','users.mobile_phone','users.gender'
                    )
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
@@ -53,7 +55,7 @@ class ApiLas extends Model
     public function insertDataDebtPerorangan($data) {
         \Log::info("parameter data debitur perorangan masuk");
         try {
-            $content_las_debt = [
+            /*$content_las_debt = [
                 "tp_produk"             => $data['tp_produk'],
                 "uid"                   => $data['uid'],
                 "kode_cabang"           => $data['kode_cabang'],
@@ -133,11 +135,11 @@ class ApiLas extends Model
                 "penghasilan_per_bulan" => $data['penghasilan_per_bulan'],
                 "usia_mpp"              => $data['usia_mpp'],
                 "id_instansi"           => $data['id_instansi']
-            ];
+            ];*/
             // print_r($content_las_debt);exit();
             $insertDebitur = AsmxLas::setEndpoint('insertDataDebtPerorangan')
                 ->setBody([
-                    'JSONData' => json_encode($content_las_debt),
+                    'JSONData' => json_encode($data),
                     'flag_sp' => 1
                 ])->post('form_params');
 
@@ -164,7 +166,7 @@ class ApiLas extends Model
     public function insertPrescoringBriguna($data) {
         \Log::info("parameter data prescoring masuk");
         try {
-            $content_las_prescoring = [
+            /*$content_las_prescoring = [
                 "Fid_aplikasi"              => $data['Fid_aplikasi'],
                 "Fid_cif_las"               => $data['Fid_cif_las'],
                 "Tgl_perkiraan_pensiun"     => '07122039',
@@ -193,10 +195,10 @@ class ApiLas extends Model
                 "Tp_produk"                 => "1",
                 "Briguna_smart"             => "0",
                 "Kelengkapan_dokumen"       => "1"
-            ];
+            ];*/
             $insertPrescoring = AsmxLas::setEndpoint('insertPrescoringBriguna')
                 ->setBody([
-                    'JSON' => json_encode($content_las_prescoring)
+                    'JSON' => json_encode($data)
                 ])->post('form_params');
 
             return $insertPrescoring;
@@ -208,7 +210,7 @@ class ApiLas extends Model
     public function insertDataKreditBriguna($data) {
         \Log::info("parameter data kredit masuk");
         try {
-            $content_insertKreditBriguna = [
+            /*$content_insertKreditBriguna = [
                 "Fid_aplikasi"                     => !isset($data['Fid_aplikasi']) ? "" : $data['Fid_aplikasi'],
                 "Cif_las"                          => !isset($data['Cif_las']) ? "" : $data['Cif_las'],
                 "Tp_produk"                        => !isset($data['Tp_produk']) ? "" : $data['Tp_produk'],
@@ -268,11 +270,11 @@ class ApiLas extends Model
                 "Status_takeover"                  => !isset($data['Status_takeover']) ? "" : $data['Status_takeover'],
                 "Bank_asal_takeover"               => !isset($data['Bank_asal_takeover']) ? "" : $data['Bank_asal_takeover'],
                 "Data2"                            => !isset($data['Data2']) ? "" : $data['Data2']
-            ];
+            ];*/
 
             $insertKreditBriguna = AsmxLas::setEndpoint('insertDataKreditBriguna')
                 ->setBody([
-                    'JSON' => json_encode($content_insertKreditBriguna)
+                    'JSON' => json_encode($data)
                 ])->post('form_params');
 
             return $insertKreditBriguna;

@@ -22,7 +22,19 @@ class OtsNine extends Model implements AuditableContract
 		  	'credit_status',
 		  	'skmht_status',
 		  	'imb_status',
-		  	'shgb_status'
+		  	'shgb_status',
+		  	'receipt_date_notary',
+		  	'information_notary',
+		  	'receipt_date_takeover',
+		  	'information_takeover',
+		  	'receipt_date_credit',
+		  	'information_credit',
+		  	'receipt_date_skmht',
+		  	'information_skmht',
+		  	'receipt_date_imb',
+		  	'information_imb',
+		  	'receipt_date_shgb',
+		  	'information_shgb'
 		  ];
 
 		   /**

@@ -100,13 +100,18 @@ class AccountController extends Controller
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
 
+      // return response()->success([
+      //   'message' => 'Under Maintenance',
+      //   'contents' => []
+      // ])
+
       // if ( count(apiPdmToken::all()) > 0 ) {
       //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // } else {
       //   $this->gen_token();
       //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // }
-      //
+
       // if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
       //   $token = $apiPdmToken['access_token'];
       //   $listExisting = $this->getExistingByFo($data, $token);
@@ -127,6 +132,7 @@ class AccountController extends Controller
       //       'contents' => $listExisting['data']
       //   ]);
       // }
+
       $client = new Client();
       $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [

@@ -19,7 +19,7 @@ use App\Http\Requests\API\v1\Collateral\CreateOtsDoc;
 use App\Models\Property;
 use App\Models\EForm;
 use App\Models\VisitReport;
-
+use App\Models\Developer;
 class CollateralController extends Controller
 {
     /**
@@ -70,7 +70,7 @@ class CollateralController extends Controller
       $user = \RestwsHc::getUser();
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
-      $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id)->where('is_approved',true);
+      $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int) $this->request->header('pn'));
       }
@@ -213,6 +213,7 @@ class CollateralController extends Controller
      */
     public function changeStatus(ChangeStatusRequest $request, $eks, $action, $collateralId)
     {
+       
       \DB::beginTransaction();
       $developer_id = env('DEVELOPER_KEY',1);
       $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
@@ -250,6 +251,28 @@ class CollateralController extends Controller
         $collateral->save();
         \DB::commit();
       }
+     
+      if ($action === 'approve') {
+         $bodyNotif = 'approval collateral';
+      }else if ($action === 'reject') {
+         $bodyNotif = 'reject collateral';
+      }
+
+      $developer_id = $collateral['developer_id'];
+      $dataDeveloper = Developer::where('id',$developer_id)->first();
+      $user_id = $dataDeveloper->user_id;
+
+      $credentials = [
+            'headerNotif' => 'Collateral Notification',
+            'bodyNotif' => $bodyNotif,
+            'id' => $collateralId,
+            'type' => 'collateral_'.$action,
+            'slug' => $collateralId,
+            'user_id' => $user_id,
+            'receiver' => 'external',
+      ];
+      collateralNotification($credentials);
+
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
@@ -265,6 +288,21 @@ class CollateralController extends Controller
     {
       $this->request->request->add(['status' => Collateral::STATUS[1]]);
       $this->collateral->where('status', Collateral::STATUS[0])->findOrFail($collateralId)->update($this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff'));
+       // notif disposisi ke staff colleteral
+        $dataInput = $this->request->all();
+        $staff_id = $dataInput['staff_id'];
+        $credentials = [
+            'slug' => $collateralId,
+            'id' => $collateralId,
+            'user_id' => $staff_id,
+            'headerNotif' => 'Collateral Notification',
+            'bodyNotif' => 'Penugasan Staff Collateral',
+            'type' => 'collateral_disposition',
+            'receiver' => 'staf_collateral' 
+        ];
+ 
+      // Call the helper of push notification function
+        collateralNotification($credentials);
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
