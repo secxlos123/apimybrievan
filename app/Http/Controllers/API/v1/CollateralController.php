@@ -89,6 +89,14 @@ class CollateralController extends Controller
       return $this->makeResponse(
         $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
       );
+    
+      $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
+      $id_manager_collateral= $collateral->approved_by;
+      $collateral_id= $collateral->id;
+      $typeKpr = 'Developer';
+      if(!empty($id_manager_collateral)){
+        $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);   
+      }
     }
 
     /**
@@ -107,6 +115,13 @@ class CollateralController extends Controller
       return $this->makeResponse(
         $data
       );
+      
+     $colleteral_id = $nonkerjasama['collaterals_id'];
+     $id_manager_collateral = $nonkerjasama['approved_by'];
+     $typeKpr = 'Non Kerja Sama';
+     if(!empty($id_manager_collateral)){
+        $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);   
+     } 
     }
 
     /**
@@ -372,6 +387,23 @@ class CollateralController extends Controller
       \DB::beginTransaction();
       try {
             $store = $this->collateral->findOrFail($collateralId);
+            
+            $user_id= $store['approved_by'];
+            if(!empty($user_id)){
+                
+               $credentials = [
+                'headerNotif' => 'Collateral Notification',
+                'bodyNotif' => 'Collateral Checklist ',
+                'id' => $collateralId,
+                'type' => 'collateral_checklist',
+                'slug' => $collateralId,
+                'user_id' => $user_id,
+                'receiver' => 'manager_collateral',
+                ];
+               
+              collateralNotification($credentials);
+            }
+        
             $data = $store->otsDoc()->updateOrCreate(['collateral_id'=>$collateralId],$request->all());
             \DB::commit();
         return response()->success([
@@ -398,5 +430,19 @@ class CollateralController extends Controller
       return $this->makeResponse(
         $this->collateral->with('otsDoc')->findOrFail($collateralId)
       );
+    }
+    
+    public function sendNotifOTS($user_id,$collateral_id,$typeKpr){
+        $credentials = [
+            'headerNotif' => 'Collateral Notification',
+            'bodyNotif' => 'OTS menilai anggunan '.$typeKpr,
+            'id' => $collateral_id,
+            'type' => 'collateral_ots',
+            'slug' => $collateral_id,
+            'user_id' => $user_id,
+            'receiver' => 'manager_collateral',
+      ];
+        
+        collateralNotification($credentials);
     }
 }
