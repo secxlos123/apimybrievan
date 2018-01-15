@@ -17,8 +17,7 @@ use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
-use FCM;
-
+use LaravelFCM\Facades\FCM;
 if (! function_exists('csv_to_array')) {
 
     /**
@@ -598,36 +597,64 @@ if (! function_exists('pushNotification')) {
             $topicResponse->shouldRetry();
             $topicResponse->error();
         }else{
-            $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-            $notificationBuilder->setBody('Pengajuan KPR Baru')
-                                ->setSound('default');
-            // Get data from notifications table
-            $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
-                                            ->orderBy('created_at', 'desc')->first();
+            $user_login = \RestwsHc::getUser();
+            if($user_login['role'] == 'staff'){
+                $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                $notificationBuilder->setBody('Pengajuan KPR Baru')
+                                    ->setSound('default');
+                // Get data from notifications table
+                $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                                                ->orderBy('created_at', 'desc')->first();
 
-            $dataBuilder = new PayloadDataBuilder();
-            $dataBuilder->addData([
-                'id'   => $notificationData['id'],
-                'slug' => $dataUser['data']->id,
-                'type' => 'eform',
-            ]);
+                $dataBuilder = new PayloadDataBuilder();
+                $dataBuilder->addData([
+                    'id'   => $notificationData['id'],
+                    'slug' => $dataUser['data']->id,
+                    'type' => 'eform',
+                ]);
 
-            $notification = $notificationBuilder->build();
-            $data         = $dataBuilder->build();
-            $topic        = new Topics();
+                $notification = $notificationBuilder->build();
+                $data         = $dataBuilder->build();
+                $topic        = new Topics();
 
-            $topic->topic('testing')->andTopic(function($condition) use ($dataUser) {
-                // send to user
-                $condition->topic('user_'.$dataUser['data']->user_id);
-            })->andTopic(function($condition) use ($dataUser){
-                // send to pinca
-                  $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
-            });
+                $topic->topic('testing')->andTopic(function($condition) use ($dataUser) {
+                    // send to user
+                    $condition->topic('user_'.$dataUser['data']->user_id);
+                })->andTopic(function($condition) use ($dataUser){
+                    // send to pinca
+                    $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
+                });
 
-            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
-            $topicResponse->isSuccess();
-            $topicResponse->shouldRetry();
-            $topicResponse->error();
+                $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+                $topicResponse->isSuccess();
+                $topicResponse->shouldRetry();
+                $topicResponse->error();
+            }else if($user_login['role'] == 'ao'){
+                $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                $notificationBuilder->setBody('Pengajuan KPR Baru')
+                                    ->setSound('default');
+                // Get data from notifications table
+                $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                                                ->orderBy('created_at', 'desc')->first();
+
+                $dataBuilder = new PayloadDataBuilder();
+                $dataBuilder->addData([
+                    'id'   => $notificationData['id'],
+                    'slug' => $dataUser['data']->id,
+                    'type' => 'eform',
+                ]);
+
+                $notification = $notificationBuilder->build();
+                $data         = $dataBuilder->build();
+                $topic        = new Topics();
+
+                $topic->topic('testing')->orTopic('branch_'.$dataUser['data']->branch_id)->orTopic('pinca');
+
+                $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+                $topicResponse->isSuccess();
+                $topicResponse->shouldRetry();
+                $topicResponse->error();
+            }
         }
     }
 

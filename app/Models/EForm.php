@@ -681,7 +681,6 @@ class EForm extends Model implements AuditableContract
                         'expired_date' => Carbon::now()->addMonths(1)
                     ] );
                     $returnStatus = "EForm berhasil di Rekontes.";
-
                 } else {
                     $returnStatus = "EForm sudah pernah di Rekontes.";
 
