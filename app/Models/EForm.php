@@ -476,10 +476,6 @@ class EForm extends Model implements AuditableContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
-            $sort = ['created_at', 'asc'];
-        }
-
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if( $request->has( 'status' ) ) {
                 if( $request->status == 'Submit' ) {
@@ -565,8 +561,10 @@ class EForm extends Model implements AuditableContract
                     $eform = $eform->select([
                             'eforms.*'
                             , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
-                        ])
-                        ->orderBy('new_order', 'asc');
+                        ]);
+                    if ( $sort[0] != "action" ) {
+                        $eform = $eform->orderBy('new_order', 'asc');
+                    }
 
                 }
 
@@ -593,6 +591,10 @@ class EForm extends Model implements AuditableContract
                 $eform = $eform->where('eforms.product_type', $request->input('product'));
 
             }
+        }
+
+        if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
+            $sort[0] = 'created_at';
         }
 
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);

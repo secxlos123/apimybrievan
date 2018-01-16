@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use App\Exceptions\ApiAuthorizationException;
+use Illuminate\Support\Facades\Mail;
 
 use DB;
 
@@ -48,6 +49,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // send email if error
+        if ( ENV("APP_ENV") == "production" ) {
+            Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
+            {
+                $message->subject("API myBRI Error Exception");
+                $message->from("error@mybri.bri.co.id", 'Error Exception');
+                $message->to("rachmat.ramadhan@wgs.co.id");
+            });
+        }
+
         \DB::rollback();
         if( $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ) {
             return response()->error( [
