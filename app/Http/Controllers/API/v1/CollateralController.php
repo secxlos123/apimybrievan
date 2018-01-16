@@ -86,10 +86,7 @@ class CollateralController extends Controller
      */
     public function show($type, $developerId, $propertyId)
     {
-      return $this->makeResponse(
-        $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
-      );
-
+      // send notification to mobile
       $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
       $id_manager_collateral= $collateral->approved_by;
       $collateral_id= $collateral->id;
@@ -97,6 +94,12 @@ class CollateralController extends Controller
       if(!empty($id_manager_collateral)){
         $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);
       }
+      //end notification
+
+      return $this->makeResponse(
+        $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
+      );
+
     }
 
     /**
@@ -112,16 +115,19 @@ class CollateralController extends Controller
       $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
       unset($visitreport['id']);
       $data = array_merge($ots,$nonkerjasama,$visitreport);
-      return $this->makeResponse(
-        $data
-      );
 
+      // send notification to mobile
      $colleteral_id = $nonkerjasama['collaterals_id'];
      $id_manager_collateral = $nonkerjasama['approved_by'];
      $typeKpr = 'Non Kerja Sama';
      if(!empty($id_manager_collateral)){
         $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
      }
+     //end notification
+
+      return $this->makeResponse(
+        $data
+      );
     }
 
     /**
@@ -144,21 +150,7 @@ class CollateralController extends Controller
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateral->id)
       );
-      //notification mobile sen to manager collateral
-      $collateral_id =$collateral->id;
-      if(!empty($collateral->approved_by)){
-         $user_id = $collateral->approved_by; //id manager collateral
-         $credentials = [
-            'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => 'Form Penilaian Agunan',
-            'id' => $collateral_id,
-            'type' => 'collateral_penilaian_agunan',
-            'slug' => $collateral_id,
-            'user_id' => $user_id,
-            'receiver' => 'manager_collateral',
-        ];
-        collateralNotification($credentials);
-      }
+      
     }
 
     /**
@@ -216,6 +208,24 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
+
+      //notification mobile sen to manager collateral  
+      $collateral_id =$collateralId;
+      if(!empty($collateral->approved_by)){
+         $user_id = $collateral->approved_by; //id manager collateral
+         $credentials = [
+            'headerNotif' => 'Collateral Notification',
+            'bodyNotif' => 'Form Penilaian Agunan',
+            'id' => $collateral_id,
+            'type' => 'collateral_penilaian_agunan',
+            'slug' => $collateral_id,
+            'user_id' => $user_id,
+            'receiver' => 'manager_collateral',
+        ];
+        collateralNotification($credentials); 
+      }
+      //end notif
+
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
