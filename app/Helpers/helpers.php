@@ -409,6 +409,8 @@ if (! function_exists('pushNotification')) {
                 updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
                 verifyCustomer($credentials);
+            }else if ($type =='general'){
+                collateralNotification($credentials);
             } 
         }
     }

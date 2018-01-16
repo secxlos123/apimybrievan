@@ -177,7 +177,7 @@ class BRIGUNA extends Model
                 "npwp"      => "",
                 "mitra"     => empty($data['mitra_name']) ? "" : $data['mitra_name'],
                 "nip"       => empty($data['nip']) ? "" : $data['nip'],
-                "email_atasan"     => "csbcan57@gmail.com",
+                "email_atasan"     => "",
                 "status_pekerjaan" => empty($data['job_type']) ? "" : $data['job_type'],
                 "uker"      => empty($eform->branch) ? "" : $eform->branch_id.';'.$eform->branch
             ];

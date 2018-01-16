@@ -18,22 +18,23 @@
                 </ul>
         </div>
 	@endif
-	{{ Form::open(array('url' => 'post-apk', 'enctype' => 'multipart/form-data')) }}
+	<form action="{{url('post-apk')}}" enctype="multipart/form-data" id="form" method="POST">
+	{{ csrf_field() }}
 	<div class="row">
 		<div class="col-md-5 col-md-offset-1">
          	<div class="form-group">
-	         	{!! Form::label('eksternal', 'APK Eksternal') !!}
-	         	{{ Form::file('apkEks') }}
+	         	<label>APK Eksternal</label>
+        		<input type="file" name="apkEks">
          	</div>
          	<div class="form-group">
-	         	{!! Form::label('version', 'APK Eksternal Version') !!}
-	         	{!! Form::select('versionEks', [
-                    '00' => 'Development',
-                    '01' => 'Production'
-                ]) !!}
+	         	<label>APK Eksternal Version</label>
+                <select name="versionInt">
+                	<option value="00">Development</option>
+                	<option value="01">Production</option>
+                </select>
          	</div>
          	<div class="form-group">
-	         	{!! Form::label('version', 'APK Eksternal Version Number') !!}
+	         	<label>APK Eksternal Version Number</label>
 	         	<select name="versionNumEks">
 	         		<?php for ($i=1; $i <= 1000; $i++) { ?>
 	         			@if (strlen($i) == 1)
@@ -51,18 +52,18 @@
         </div>
         <div class="col-md-5">
         	<div class="form-group">
-        		{!! Form::label('internal', 'APK Internal') !!}
-        		{{ Form::file('apkInt') }}
+        		<label>APK Internal</label>
+        		<input type="file" name="apkInt">
         	</div>
         	<div class="form-group">
-	         	{!! Form::label('version', 'APK Internal Version') !!}
-	         	{!! Form::select('versionInt', [
-                    '00' => 'Development',
-                    '01' => 'Production'
-                ]) !!}
+	         	<label>APK Internal Version</label>
+                <select name="versionInt">
+                	<option value="00">Development</option>
+                	<option value="01">Production</option>
+                </select>
          	</div>
          	<div class="form-group">
-	         	{!! Form::label('version', 'APK Internal Version Number') !!}
+	         	<label>APK Internal Version Number</label>
 	         	<select name="versionNumInt">
 	         		<?php for ($i=1; $i <= 1000; $i++) { ?>
 		         		@if (strlen($i) == 1)
@@ -81,7 +82,7 @@
 	</div>
 	<button type="submit">submit</button>
 
-	{{ Form::close() }}
+	</form>
 
 	<script type="text/javascript" src="{!! asset('js/jquery.min.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/bootstrap.min.js') !!}"></script>
