@@ -157,28 +157,29 @@ class BRIGUNA extends Model
                 "hist"          => "tidak",
                 "nama_bank"     => "",
 				"nama_pasangan" => empty($customer->couple_name) ? "" : $customer->couple_name,
-				"no_ktp"        => empty($customer->identity) ? "" : $customer->identity,
+				"nik_pasangan"        => empty($customer->couple_nik) ? "" : $customer->couple_nik,
 				"tmp_lahir_pasangan" => empty($customer->couple_birth_place_id) ? "" : $customer->couple_birth_place_id,
 				"tgl_lahir_pasangan" => empty($customer->couple_birth_date) ? "" : $customer->couple_birth_date,
 				"ibu_pasangan"     => empty($customer->mother_name) ? "" : $customer->mother_name,
 				"kelamin_pasangan" => empty($couple_gender) ? "" : $couple_gender,
-				"alamat_pasangan"  => "",
+				"alamat_pasangan"  => empty($customer_detail->address) ? "" : $customer_detail->address,
                 "alamat"    => empty($customer_detail->address) ? "" : $customer_detail->address,
                 "kodepos"   => empty($kodepos) ? "" : $kodepos,
                 "provinsi"  => empty($kabupaten) ? "" : $kabupaten,
                 "kabupaten" => empty($kabupaten) ? "" : $kabupaten,
                 "kecamatan" => empty($kecamatan) ? "" : $kecamatan,
                 "kelurahan" => empty($kelurahan) ? "" : $kelurahan,
-                "jenis"     => 'karya',
+                "jenis"     => 'Karya',
                 "amount"    => empty($customer_detail->loan_installment) ? "" : $customer_detail->loan_installment,
                 "tujuan"    => empty($eform->tujuan_penggunaan) ? "" : $eform->tujuan_penggunaan,
                 "agunan"    => empty($eform->mitra) ? "" : $eform->mitra,
                 "jangka"    => empty($briguna->year) ? "" : $briguna->year,
-                "npwp"      => empty($customer_detail->npwp) ? "" : $customer_detail->npwp,
+                "npwp"      => "",
                 "mitra"     => empty($data['mitra_name']) ? "" : $data['mitra_name'],
                 "nip"       => empty($data['nip']) ? "" : $data['nip'],
                 "email_atasan"     => "csbcan57@gmail.com",
-                "status_pekerjaan" => empty($data['job_type']) ? "" : $data['job_type']
+                "status_pekerjaan" => empty($data['job_type']) ? "" : $data['job_type'],
+                "uker"      => empty($eform->branch) ? "" : $eform->branch_id.';'.$eform->branch
             ];
 
             $postData = [
@@ -187,8 +188,8 @@ class BRIGUNA extends Model
                     'branch'    => $eform->branch_id,
                     'appname'   => 'MBR',
                     'jenis'     => 'BG',
-                    'expdate'   => '2099-12-31 12:00:50',
-                    'expdate_pimpinan'  => '2099-12-31 12:00:50',
+                    'expdate'   => '2099-12-31 00:00:00',
+                    'expdate_pimpinan' => '2099-12-31 00:00:00',
                     'content'   => $content_insert_dropbox,
                     'status'    => '1',
                 ])
@@ -208,7 +209,7 @@ class BRIGUNA extends Model
             }
             throw new \Exception( "Error Processing Request", 1 );
         } catch (Exception $e) {
-            return $e;    
+            return $e;
         }
         // End insert
         

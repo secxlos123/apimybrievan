@@ -209,7 +209,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
         'uses'  => 'NotificationController@summary'
     ]);
 
-    Route::get('users/notification/read/{id}/{type}', [
+    Route::get('users/notification/read/{slug}/{type}', [
         'as'    => 'api.user.read_notification',
         'uses'  => 'NotificationController@read'
     ]);

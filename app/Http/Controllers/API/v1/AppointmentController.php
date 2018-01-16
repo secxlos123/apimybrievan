@@ -23,12 +23,13 @@ use FCM;
 
 class AppointmentController extends Controller
 {
-    public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
+    public function __construct(User $user, UserServices $userservices, UserNotification $userNotification, Appointment $appointment)
     {
         $this->userServices = new UserServices;
         $this->user = $user;
         $this->userservices = $userservices;
         $this->userNotification = $userNotification;
+        $this->appointment = $appointment;
     }
 
     /**
@@ -92,8 +93,10 @@ class AppointmentController extends Controller
     {
         $postTaken = ['title', 'appointment_date', 'user_id', 'ao_id', 'eform_id', 'ref_number', 'address', 'latitude', 'longitude', 'guest_name', 'desc', 'status'];
         $save = Appointment::create($request->only($postTaken));
+        // $save = $request->only($postTaken);
         if ($save) {
-            $notificationIsRead =  $this->userNotification->where('eform_id',$save->eform_id)
+            $typeModule = getTypeModule(Appointment::class);
+            $notificationIsRead =  $this->userNotification->where( 'slug', $save->eform_id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
             if(@$notificationIsRead){
@@ -105,6 +108,12 @@ class AppointmentController extends Controller
 
             // Push Notification
             /*{}*/
+            $credentials = [
+                'data'  => $save,
+            ];
+
+            // Call the helper of push notification function
+            pushNotification($credentials, 'createSchedule');
 
             return response()->success([
                 'message' => 'Data schedule User berhasil ditambah.',
@@ -157,25 +166,26 @@ class AppointmentController extends Controller
     public function update(Request $request, $type, $id)
     {
         $data = Appointment::find($id);
-        // \Log::info($data);
-        // die();
         if ($data) {
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
 
-            // Push Notification
+            $typeModule = getTypeModule(Appointment::class);
+            $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();
+            if(@$notificationIsRead){
+                $notificationIsRead->markAsRead();
+            }
 
-            // $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
-            // $notificationBuilder->setBody('Schedule anda telah di update.')
-            //                     ->setSound('default');
+            $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
+            $usersModel->notify(new NewSchedulerCustomer($save));
 
-            // $notification = $notificationBuilder->build();
-            // $topic = new Topics();
-            // $topic->topic('stagging')->andTopic('user_'.$Update['user_id']);
+            $credentials = [
+                'data'  => $Update,
+            ];
 
-            // $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
-            // $topicResponse->isSuccess();
-            // $topicResponse->shouldRetry();
-            // $topicResponse->error();
+            // Call the helper of push notification function
+            pushNotification($credentials, 'updateSchedule');
 
             return response()->success([
                 'message' => 'Data schedule User berhasil Dirubah.',

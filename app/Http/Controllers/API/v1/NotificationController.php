@@ -63,13 +63,14 @@ class NotificationController extends Controller
     }
 
     
-    public function read($id, $type)
+    public function read(Request $request,$slug, $type)
     {
+        $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : 0 ;
         $notification = $this->userNotification
-            ->where( 'notifiable_id', $id)->where( 'type_module', $type)
-            ->whereNull('read_at')->firstOrFail();
+            ->where( 'slug', $slug)->where( 'type_module', $type)->whereNull('read_at')
+            ->firstOrFail();
        
-        if($notification) $notification->markAsRead();    
+        if($notification) $notification->markAsRead($is_read);    
         return  response()->success( [
             'message' => 'Sukses',
             'contents' => $notification

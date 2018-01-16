@@ -62,6 +62,8 @@ class NewSchedulerCustomer extends Notification
     public function toDatabase($notifiable)
     {
         $data = EForm::findOrFail($this->appointment->eform_id);
+        $typeModule = getTypeModule(Appointment::class);
+        
         return [
             'appointment_id' => $this->appointment->id,
             'eform_id' => $this->appointment->eform_id,
@@ -70,7 +72,8 @@ class NewSchedulerCustomer extends Notification
             'nik' => $data->nik,
             'ref_number' => $data->ref_number,
             'branch_id' => $data->branch_id,
-            'type_module' => 'schedule',
+            'slug' => $this->appointment->id,
+            'type_module' => $typeModule,
             'created_at' => $this->appointment->created_at,
         ];
     }

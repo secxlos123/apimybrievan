@@ -2,6 +2,22 @@
 
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserNotification;
+use App\Notifications\ApproveEFormCustomer;
+use App\Notifications\RejectEFormCustomer;
+use App\Notifications\VerificationApproveFormNasabah;
+use App\Notifications\VerificationRejectFormNasabah;
+use App\Notifications\CreateScheduleNotification;
+use App\Notifications\UpdateScheduleNotification;
+use App\Notifications\LKNEFormCustomer;
+use App\Notifications\VerificationDataNasabah;
+use App\Models\UserServices;
+use App\Models\User;
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\PayloadDataBuilder;
+use LaravelFCM\Message\PayloadNotificationBuilder;
+use LaravelFCM\Message\Topics;
+// use FCM;
 
 if (! function_exists('csv_to_array')) {
 
@@ -357,5 +373,430 @@ if (! function_exists('get_loan_history')) {
         }
 
         return $data;
+    }
+}
+
+if (! function_exists('getTypeModule')) {
+
+    /**
+     * Convert csv file to array.
+     *
+     * @param  string $file path to file
+     * @param  array $headers
+     * @param  string $delimiter
+     *
+     * @return array
+     */
+    function getTypeModule($module)
+    {
+        
+        switch ($module) {
+            case 'App\Models\Appointment':
+                $typeModule = 'schedule';
+                break;
+            case 'App\Models\EForm':
+                $typeModule = 'eform';
+                break;
+            default:
+                $typeModule = 'Type undefined';
+                break;
+        }
+        return $typeModule;
+    }
+}
+
+if (! function_exists('pushNotification')) {
+
+    /**
+     * Convert csv file to array.
+     *
+     * @param  string $file path to file
+     * @param  array $headers
+     * @param  string $delimiter
+     *
+     * @return array
+     */
+    function pushNotification($credentials, $type)
+    {
+        if(env('PUSH_NOTIFICATION', false)){
+            if($type == 'disposition'){
+                disposition($credentials);
+            }else if($type == 'createEForm'){
+                createEForm($credentials);
+            }else if($type == 'approveEForm'){
+                approveEForm($credentials);
+            }else if($type == 'rejectEForm'){
+                rejectEForm($credentials);
+            }else if($type == 'approveKPR'){
+                approveKPR($credentials);
+            }else if($type == 'rejectKPR'){
+                rejectKPR($credentials);
+            }else if($type == 'lknEForm'){
+                lknEForm($credentials);
+            }else if($type == 'createSchedule'){
+                createSchedule($credentials);
+            }else if($type == 'updateSchedule'){
+                updateSchedule($credentials);
+            }else if($type == 'verifyCustomer'){
+                verifyCustomer($credentials);
+            }
+        }
+    }
+
+    function verifyCustomer($credentials){
+        $dataUser = $credentials['data'];
+
+        $userModel  = User::FindOrFail($dataUser['user_id']);
+        $userModel->notify(new VerificationDataNasabah($dataUser));
+
+        $notificationBuilder = new PayloadNotificationBuilder('Verify Notification');
+        $notificationBuilder->setBody('Silahkan Verifikasi Data Anda.')
+                            ->setSound('default');
+
+        $notificationData = UserNotification::where('eform_id', $dataUser['id'])
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $dataUser['id'],
+            'type'     => 'schedule',
+        ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function updateSchedule($credentials){
+        $dataUser = $credentials['data'];
+
+        $userModel  = User::FindOrFail($dataUser['user_id']);
+        $userModel->notify(new UpdateScheduleNotification($dataUser));
+
+        $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
+        $notificationBuilder->setBody('Schedule anda telah di update.')
+                            ->setSound('default');
+
+        $notificationData = UserNotification::where('eform_id', $dataUser['eform_id'])
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $dataUser['eform_id'],
+            'type'     => 'schedule',
+        ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function createSchedule($credentials){
+        $dataUser = $credentials['data'];
+
+        $userModel  = User::FindOrFail($dataUser['user_id']);
+        $userModel->notify(new CreateScheduleNotification($dataUser));
+
+        $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
+        $notificationBuilder->setBody('Anda memiliki schedule baru.')
+                            ->setSound('default');
+
+
+        $notificationData = UserNotification::where('eform_id', $dataUser['eform_id'])
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $dataUser['eform_id'],
+            'type'     => 'schedule',
+        ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing');
+        // topic('user_'.$save['user_id']);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function lknEForm($credentials){
+        $data         = $credentials;
+        $userLogin    = $data['credentials'];
+        $branch_id    = $userLogin['branch_id'];
+        $userModel    = $data['user'];
+        $userNotif    = new UserNotification;
+
+        $userModel->notify(new LKNEFormCustomer($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Data LKN berhasil dikirim')
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $data['data']->id,
+            'type'     => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic = new Topics();
+        $topic->topic('testing')->orTopic('branch_'.$branch_id)->orTopic('pinca');
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+
+    }
+
+    function disposition($credentials){
+        $data      = $credentials['eform'];
+        $aoId      = $credentials['ao_id'];
+        $userNotif = new UserNotification;
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('E-Form berhasil di disposisi')
+                            ->setSound('default');
+        // Get data from notifications table
+        $notificationData = $userNotif->where('eform_id', $data->id)
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $data->id,
+            'type'     => 'eform',
+        ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic = new Topics();
+        $topic->topic('testing')->orTopic('ao_'.$aoId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function createEForm($credentials){
+        $dataUser = $credentials;
+        $user     = $dataUser['request']->user();
+        if($user != null){
+            $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            $notificationBuilder->setBody('Pengajuan KPR Baru')
+                                ->setSound('default');
+            // Get data from notifications table
+            $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                                            ->orderBy('created_at', 'desc')->first();
+
+            $dataBuilder = new PayloadDataBuilder();
+            $dataBuilder->addData([
+                'id'   => $notificationData['id'],
+                'slug' => $dataUser['data']->id,
+                'type' => 'eform',
+            ]);
+
+            $notification = $notificationBuilder->build();
+            $data         = $dataBuilder->build();
+            $topic        = new Topics();
+
+            $topic->topic('testing')->orTopic('branch_'.$dataUser['data']->branch_id)->orTopic('pinca');
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+        }else{
+            $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+            $notificationBuilder->setBody('Pengajuan KPR Baru')
+                                ->setSound('default');
+            // Get data from notifications table
+            $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                                            ->orderBy('created_at', 'desc')->first();
+
+            $dataBuilder = new PayloadDataBuilder();
+            $dataBuilder->addData([
+                'id'   => $notificationData['id'],
+                'slug' => $dataUser['data']->id,
+                'type' => 'eform',
+            ]);
+
+            $notification = $notificationBuilder->build();
+            $data         = $dataBuilder->build();
+            $topic        = new Topics();
+
+            $topic->topic('testing')->andTopic(function($condition) use ($dataUser) {
+                // send to user
+                $condition->topic('user_'.$dataUser['data']->user_id);
+            })->andTopic(function($condition) use ($dataUser){
+                // send to pinca
+                  $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
+            });
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+        }
+    }
+
+    function approveEForm($credentials){
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+        $userNotif = new UserNotification;
+
+        $userModel->notify(new ApproveEFormCustomer($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Pengajuan anda telah di Setujui.')
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic('testing')->andTopic('user_'.$userId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function rejectEForm($credentials){
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+        $userNotif = new UserNotification;
+
+        $userModel->notify(new RejectEFormCustomer($data['data']));
+        
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Pengajuan anda telah di Ditolak.')
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic('testing')->andTopic('user_'.$userId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function approveKPR($credentials){
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $credentials['user'];
+        $userNotif = new UserNotification;
+
+        $userModel->notify(new VerificationApproveFormNasabah($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Pengajuan KPR telah di Setujui.')
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $data['data']->id,
+            'type'     => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic('testing')->andTopic('user_'.$userId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function rejectKPR($credentials){
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+        $userNotif = new UserNotification;
+
+        $userModel->notify(new VerificationRejectFormNasabah($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Pengajuan KPR di Ditolak.')
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData['id'],
+            'slug'     => $data['data']->id,
+            'type'     => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic('testing')->andTopic('user_'.$userId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
     }
 }
