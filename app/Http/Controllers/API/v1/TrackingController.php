@@ -136,11 +136,11 @@ class TrackingController extends Controller
                                 elseif($request->input('status') == "Dispose")
                                 {
                                     $item->whereNotNull('eforms.ao_id');
-                                    $item->whereNotNull('eforms.ao_name');
-                                    $item->whereNotNull('eforms.ao_position');
+                                    $item->whereNull('eforms.ao_name');
+                                    $item->whereNull('eforms.ao_position');
                                     $item->where('eforms.is_approved', 'false');
                                     $item->where('eforms.status_eform', NULL);
-                                    $item->whereNull('visit_reports.created_at');
+                                    //$item->whereNull('visit_reports.created_at');
                                 }
                                 elseif($request->input('status') == "Rekomend")
                                 {
