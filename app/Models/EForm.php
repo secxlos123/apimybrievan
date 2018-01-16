@@ -594,7 +594,7 @@ class EForm extends Model implements AuditableContract
         }
 
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
-            $sort = ['created_at', 'asc'];
+            $sort[0] = 'created_at';
         }
 
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
