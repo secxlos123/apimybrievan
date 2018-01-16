@@ -226,7 +226,7 @@ class CollateralController extends Controller
             'user_id' => $user_id,
             'receiver' => 'manager_collateral',
         ];
-        collateralNotification($credentials); 
+         pushNotification($credentials,'general');
       }
     }
       //end notif
@@ -340,9 +340,9 @@ class CollateralController extends Controller
             'receiver' => $receiver,
       ];
       if($user_id !='kosong') {  // tidak kirim notif
-        collateralNotification($credentials);
+         pushNotification($credentials,'general');
       }elseif ($receiver=='external') {
-         collateralNotification($credentials);
+          pushNotification($credentials,'general');
       }
     }
 
@@ -387,7 +387,7 @@ class CollateralController extends Controller
         ];
 
       // Call the helper of push notification function
-        collateralNotification($credentials);
+         pushNotification($credentials,'general');
       }
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
@@ -446,7 +446,7 @@ class CollateralController extends Controller
                 'receiver' => 'manager_collateral',
                 ];
 
-              collateralNotification($credentials);
+               pushNotification($credentials,'general');
             }
 
             $data = $store->otsDoc()->updateOrCreate(['collateral_id'=>$collateralId],$request->all());
@@ -488,6 +488,6 @@ class CollateralController extends Controller
             'receiver' => 'manager_collateral',
       ];
 
-        collateralNotification($credentials);
+         pushNotification($credentials,'general');
     }
 }
