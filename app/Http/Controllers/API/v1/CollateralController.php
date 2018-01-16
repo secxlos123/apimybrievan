@@ -341,7 +341,7 @@ class CollateralController extends Controller
 
       $baseRequest = $this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff');
 
-      $user = getUser();
+      $user = \RestwsHc::getUser();
       $baseRequest['manager_id'] = $user['pn'];
       $baseRequest['manager_name'] = $user['name'];
 
