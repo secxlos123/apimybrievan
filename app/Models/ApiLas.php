@@ -39,11 +39,12 @@ class ApiLas extends Model
                     'briguna.is_send','briguna.eform_id','briguna.tp_produk',
                     'customer_details.nik','customer_details.birth_date',
                     'customer_details.address','customer_details.mother_name',
-                    'users.first_name','users.mobile_phone','users.gender'
+                    'users.first_name','users.last_name','users.mobile_phone','users.gender'
                    )
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
                  ->join('users', 'users.id', '=', 'eforms.user_id') 
+                 ->orderBy('eforms.created_at', 'desc')
                  ->get();
         $eforms = $eforms->toArray();
         $eforms = json_decode(json_encode($eforms), True);
