@@ -116,6 +116,8 @@ class CollateralController extends Controller
       unset($visitreport['id']);
       $data = array_merge($ots,$nonkerjasama,$visitreport);
 
+      if(env('PUSH_NOTIFICATION', false))
+      {
       // send notification to mobile
      $colleteral_id = $nonkerjasama['collaterals_id'];
      $id_manager_collateral = $nonkerjasama['approved_by'];
@@ -123,6 +125,7 @@ class CollateralController extends Controller
      if(!empty($id_manager_collateral)){
         $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
      }
+      }
      //end notification
 
       return $this->makeResponse(
@@ -208,7 +211,8 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-
+      if(env('PUSH_NOTIFICATION', false))
+      {
       //notification mobile sen to manager collateral  
       $collateral_id =$collateralId;
       if(!empty($collateral->approved_by)){
@@ -224,6 +228,7 @@ class CollateralController extends Controller
         ];
         collateralNotification($credentials); 
       }
+    }
       //end notif
 
         return $this->makeResponse(
@@ -292,7 +297,8 @@ class CollateralController extends Controller
         $collateral->save();
         \DB::commit();
       }
-
+      if(env('PUSH_NOTIFICATION', false))
+      {
       if ($action === 'approve') {
           $bodyNotif = 'approval collateral';
           $type = 'collateral_ots_'.$action;
@@ -338,6 +344,7 @@ class CollateralController extends Controller
       }elseif ($receiver=='external') {
          collateralNotification($credentials);
       }
+    }
 
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
@@ -364,6 +371,8 @@ class CollateralController extends Controller
         ->findOrFail( $collateralId )
           ->update( $baseRequest );
 
+      if(env('PUSH_NOTIFICATION', false))
+      {
        // notif disposisi ke staff colleteral
         $dataInput = $this->request->all();
         $staff_id = $dataInput['staff_id'];
@@ -379,6 +388,7 @@ class CollateralController extends Controller
 
       // Call the helper of push notification function
         collateralNotification($credentials);
+      }
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
