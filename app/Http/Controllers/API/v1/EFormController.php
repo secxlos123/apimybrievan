@@ -419,11 +419,11 @@ class EFormController extends Controller
                         ])
                     ])->post('form_params');
 
-                    if ( $login['responseCode'] == '00' ) {
-                        foreach ($login['responseData'] as $branch) {
-                            if ( $branch['branch'] == $request->input('branch_id') ) {
-                                $baseProperty['region_id'] = $branch['region'];
-                                $baseProperty['region_name'] = $branch['rgdesc'];
+                    if ( $getKanwil['responseCode'] == '00' ) {
+                        foreach ($getKanwil['responseData'] as $kanwil) {
+                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                                $baseProperty['region_id'] = $kanwil['region'];
+                                $baseProperty['region_name'] = $kanwil['rgdesc'];
                             }
                         }
                     }
