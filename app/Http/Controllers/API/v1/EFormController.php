@@ -353,7 +353,7 @@ class EFormController extends Controller
 
         if ( $request->product_type == 'briguna' ) {
 
-                    \Log::info("=======================================================");
+            \Log::info("=======================================================");
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
@@ -394,19 +394,41 @@ class EFormController extends Controller
                 $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
 
                 if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
-                    $property =  Property::create([
-                        'developer_id'=>$baseRequest['developer'],
-                        'prop_id_bri'=>'1',
-                        'name'=>$developer_name,
-                        'pic_name'=>'BRI',
-                        'pic_phone'=>'-',
-                        'address'=>$baseRequest['home_location'],
-                        'category'=>'3',
-                        'latitude'=>'0',
-                        'longitude'=>'0',
-                        'description'=>'-',
-                        'facilities'=>'-'
-                    ]);
+
+                    $baseProperty = array(
+                        'developer_id' => $baseRequest['developer'],
+                        'prop_id_bri' => '1',
+                        'name' => $developer_name,
+                        'pic_name' => 'BRI',
+                        'pic_phone' => '-',
+                        'address' => $baseRequest['home_location'],
+                        'category' => '3',
+                        'latitude' => '0',
+                        'longitude' => '0',
+                        'description' => '-',
+                        'facilities' => '-'
+                    );
+
+                    $getKanwil = \RestwsHc::setBody([
+                        'request' => json_encode([
+                            'requestMethod' => 'get_list_uker_from_cabang',
+                            'requestData' => [
+                                'app_id' => 'mybriapi'
+                                , 'branch_code' => $request->input('branch_id')
+                            ]
+                        ])
+                    ])->post('form_params');
+
+                    if ( $getKanwil['responseCode'] == '00' ) {
+                        foreach ($getKanwil['responseData'] as $kanwil) {
+                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                                $baseProperty['region_id'] = $kanwil['region'];
+                                $baseProperty['region_name'] = $kanwil['rgdesc'];
+                            }
+                        }
+                    }
+
+                    $property =  Property::create( $baseProperty );
                     $baseRequest['property'] = $property->id;
                     $baseRequest['property_name'] = $developer_name;
                     \Log::info('=================== Insert Property===========');
