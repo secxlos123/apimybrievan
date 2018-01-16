@@ -144,6 +144,21 @@ class CollateralController extends Controller
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateral->id)
       );
+      //notification mobile sen to manager collateral  
+      $collateral_id =$collateral->id;
+      if(!empty($collateral->approved_by)){
+         $user_id = $collateral->approved_by; //id manager collateral
+         $credentials = [
+            'headerNotif' => 'Collateral Notification',
+            'bodyNotif' => 'Form Penilaian Agunan',
+            'id' => $collateral_id,
+            'type' => 'collateral_penilaian_agunan',
+            'slug' => $collateral_id,
+            'user_id' => $user_id,
+            'receiver' => 'manager_collateral',
+        ];
+        collateralNotification($credentials); 
+      } 
     }
 
     /**
