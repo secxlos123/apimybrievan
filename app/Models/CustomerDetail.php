@@ -374,6 +374,10 @@ class CustomerDetail extends Model implements AuditableContract
      */
     public function getListDebitur($params)
     {
+        $credentials = \RestwsHc::getUser();
+        $pn          = $credentials['pn'];
+        $aoId        = substr('00000000'.$pn, -8);
+
         $name = empty($params['name']) ? '' : $params['name'];
         $nik  = empty($params['nik']) ? '' : $params['nik'];
         $city = empty($params['city_id']) ? false : $params['city_id'];
@@ -383,8 +387,8 @@ class CustomerDetail extends Model implements AuditableContract
                     return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
                                  ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
                 })
-                ->whereHas('eform', function($query){
-                    return $query->where('is_approved', true);
+                ->whereHas('eform', function($query) use ($aoId){
+                    return $query->where('status_eform', "Approval1")->where('ao_id', $aoId);
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){

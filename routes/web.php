@@ -3,6 +3,8 @@
 use App\Mail\Register;
 use App\Mail\VerificationEFormCustomer;
 use App\Events\Customer\CustomerVerify;
+use Illuminate\Http\Request;
+// use App\Models\ApkLogs;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +94,49 @@ Route::get('/logout', function () {
 Route::get( '/getbidangpekerjaan', function() {
 	$cek = \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
 	dd( $cek );
+} );
+
+Route::get( '/uploads-apk', function() {
+	print_r(ini_get('post_max_size'));
+	// $data['int_prod'] = ApkLogs::where('apk_type', '=', 'eks')->where('version_type', '=', 'prod')->orderBy();
+	return view('uploads-apk.form');
+} )->name('uploads-apk');
+
+Route::post( '/post-apk', function(Request $request) {
+
+		if (isset($request->apkEks) && $request->apkEks) {
+			$destinationPath = 'uploads/apk/eks';
+			$fileEks = $request->apkEks;
+			$fileName = 'eks'.$request->versionEks.$request->versionNumEks.'.apk';
+			$fileEks->move($destinationPath,$fileName);
+
+			// $insertEks = new ApkLogs();
+			// $insertEks->apk_type = 'eks';
+			// $insertEks->version_type = ($request->versionEks == 01) ? 'prod' : 'dev';
+			// $insertEks->version_number = $request->versionNumEks;
+			// $insertEks->file_name = $fileName;
+			// $insertEks->save();
+
+			\Session::flash('status', 'apk eksternal berhasil disimpan');
+
+		}
+		if (isset($request->apkInt) && $request->apkInt) {
+			$destinationPath = 'uploads/apk/int';
+			$fileInt = $request->apkInt;
+			$fileName = 'int'.$request->versionInt.$request->versionNumInt.'.apk';
+			$fileInt->move($destinationPath,$fileName);
+
+			// $insertInt = new ApkLogs();
+			// $insertInt->apk_type = 'int';
+			// $insertInt->version_type = ($request->versionInt == 01) ? 'prod' : 'dev';
+			// $insertInt->version_number = $request->versionNumInt;
+			// $insertInt->file_name = $fileName;
+			// $insertInt->save();
+
+			\Session::flash('status', 'apk internal berhasil disimpan');
+		}
+		return redirect()->route('uploads-apk');
+
 } );
 
 Route::get( '/seteform', function() {
