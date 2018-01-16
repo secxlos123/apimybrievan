@@ -791,9 +791,9 @@ class EFormController extends Controller
         DB::beginTransaction();
 
         try {
-            if ( $request->has('ref_number') && $request->has('status') ) {
+            if ( $request->has('fid_aplikasi') && $request->has('status') ) {
                 $updateCLAS = EForm::updateCLAS(
-                    $request->input('ref_number')
+                    $request->input('fid_aplikasi')
                     , $request->input('status')
                 );
 
@@ -801,7 +801,10 @@ class EFormController extends Controller
                     \DB::commit();
 
                     // Push Notification
-                    $data = EForm::where('ref_number', $request->input('ref_number'))->first();
+                    $data = EForm::where(
+                            DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                            , $request->input('fid_aplikasi')
+                        )->first();
 
                     $notificationIsRead =  $this->userNotification->where('eform_id',$data['id'])
                                                    ->whereNull('read_at')
