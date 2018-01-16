@@ -86,16 +86,6 @@ class CollateralController extends Controller
      */
     public function show($type, $developerId, $propertyId)
     {
-      // send notification to mobile
-      $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
-      $id_manager_collateral= $collateral->approved_by;
-      $collateral_id= $collateral->id;
-      $typeKpr = 'Developer';
-      if(!empty($id_manager_collateral)){
-        $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);
-      }
-      //end notification
-
       return $this->makeResponse(
         $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
       );
@@ -115,18 +105,6 @@ class CollateralController extends Controller
       $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
       unset($visitreport['id']);
       $data = array_merge($ots,$nonkerjasama,$visitreport);
-
-      if(env('PUSH_NOTIFICATION', false))
-      {
-      // send notification to mobile
-     $colleteral_id = $nonkerjasama['collaterals_id'];
-     $id_manager_collateral = $nonkerjasama['approved_by'];
-     $typeKpr = 'Non Kerja Sama';
-     if(!empty($id_manager_collateral)){
-        $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
-     }
-      }
-     //end notification
 
       return $this->makeResponse(
         $data
@@ -490,4 +468,61 @@ class CollateralController extends Controller
 
          pushNotification($credentials,'general');
     }
+
+     /**
+     * Show detail Notif mobiel ots non index
+     * @param  string $type
+     * @param  integer $id
+     * @return \Illuminate\Http\Response
+     */
+    public function NotifOtsNonindex($type, $developerId, $propertyId)
+    {
+      $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()->toArray();
+      $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
+      $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
+      unset($visitreport['id']);
+      $data = array_merge($ots,$nonkerjasama,$visitreport);
+
+      if(env('PUSH_NOTIFICATION', false))
+      {
+      // send notification to mobile
+     $colleteral_id = $nonkerjasama['collaterals_id'];
+     $id_manager_collateral = $nonkerjasama['approved_by'];
+     $typeKpr = 'Non Kerja Sama';
+     if(!empty($id_manager_collateral)){
+        $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
+     }
+      }
+     //end notification
+
+      return $this->makeResponse(
+        $data
+      );
+    }
+
+
+     /**
+     * Show detail Notif mobiel ots  index
+     * @param  string $type
+     * @param  integer $id
+     * @return \Illuminate\Http\Response
+     */
+    public function NotifOts($type, $developerId, $propertyId)
+    {
+      // send notification to mobile
+      $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
+      $id_manager_collateral= $collateral->approved_by;
+      $collateral_id= $collateral->id;
+      $typeKpr = 'Developer';
+      if(!empty($id_manager_collateral)){
+        $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);
+      }
+      //end notification
+
+      return $this->makeResponse(
+        $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
+      );
+
+    }
+
 }
