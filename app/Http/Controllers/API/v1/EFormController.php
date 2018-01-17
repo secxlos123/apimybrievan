@@ -392,6 +392,8 @@ class EFormController extends Controller
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
 				}else{
+					
+            $dataEform =  EForm::where('nik', $request->nik)->get();
                 return response()->error( [
                     'message' => 'User sedang dalam pengajuan',
                     'contents' => $dataEform
