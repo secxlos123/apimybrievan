@@ -14,9 +14,16 @@ use App\Models\EformBriguna;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use Asmx;
+// use Artisaninweb\SoapWrapper\SoapWrapper;
 
 class ApiLasController extends Controller
 {
+    protected $soapWrapper;
+
+    public function __construct(SoapWrapper $soapWrapper) {
+        $this->soapWrapper = $soapWrapper;
+    }
+
     public function index(Request $request) {        
     	// print_r($request);exit();
     	$ApiLas  = new ApiLas();
@@ -373,25 +380,33 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryJenisPekerjaan':
-                /*$client = new Client();
-                $data   = $client->request('POST', '10.35.65.165:1104/Service.asmx?wsdl',
-                    [
-                        'headers' =>
-                        [
-                            'Content-Type' => 'text/xml',
-                            'SOAPAction' => 'http://tempuri.org/inquiryJenisPekerjaan'
-                        ],
-                        'body' =>'<?xml version="1.0" encoding="utf-8"?>
-                            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                                <soap:Body>
-                                    <inquiryJenisPekerjaan xmlns="http://tempuri.org/">
-                                </soap:Body>
-                            </soap:Envelope>'
-                    ]
-                );
-                print_r($data);exit();*/
+                /*$result = false;
+                try{
+                    $client = new \SoapClient("http://10.35.65.165:1104/Service.asmx?wsdl");
+                    $resultclient = $client->inquirySekonTujuanPenggunaan();
+                    print_r($resultclient);exit();
+                    if($resultclient->inquirySekonTujuanPenggunaanResult){
+                        $datadetail=json_decode($resultclient->inquirySekonTujuanPenggunaanResult);
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            if(isset($datadetail->items)){
+                                $result = $datadetail->items;
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return($result);*/
                 $inquiry = $ApiLas->inquiryJenisPekerjaan();
-                $conten = $this->return_conten($inquiry);
+                $conten  = $this->return_conten($inquiry);
                 return $conten;
                 break;
 
@@ -475,7 +490,7 @@ class ApiLasController extends Controller
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        if ($inquiryUserLAS == '01') {
+        if ($inquiryUserLAS['statusCode'] == '01') {
             $uid  = $inquiryUserLAS['items'][0]['uid'];
             $uker = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
         } else {
