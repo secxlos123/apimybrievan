@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use AsmxLas;
 use DB;
+use Asmx;
 
 class ApiLas extends Model
 {
@@ -681,7 +682,7 @@ class ApiLas extends Model
 
     public function inquiryDati2() {
         try {
-            $inquiry = AsmxLas::setEndpoint('inquiryDati2')
+            $inquiry = Asmx::setEndpoint('GetDataKodePos')
                 ->post('form_params');
 
             return $inquiry;
