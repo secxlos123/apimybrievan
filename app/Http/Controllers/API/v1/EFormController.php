@@ -73,7 +73,7 @@ class EFormController extends Controller
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-          $urlx = URL:to('/');
+          $urlx = URL::to('/');
 		  $eform[0]['Url'] = $urlx.'uploads/';
         return response()->success( [
             'contents' => $eform
@@ -186,7 +186,7 @@ class EFormController extends Controller
 		  $eform[0]['customer']['schedule'] = [];
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
-          $urlx = URL:to('/');
+          $urlx = URL::to('/');
 
 		  $eform[0]['Url'] = $urlx.'uploads/';
 
