@@ -732,10 +732,10 @@ class ApiLasController extends Controller
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
-                                $error[0] = 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'];
+                                $error[0] = 'kirim '.$kirim['name'].' gagal, '.$kirim['statusDesc'];
                                 $pemutus = [
                                     'code' => $kirim['statusCode'], 
-                                    'descriptions' => 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'],
+                                    'descriptions' => 'kirim '.$kirim['name'].' gagal, '.$kirim['statusDesc'],
                                     'contents' => [
                                         'data' => $error
                                     ]
@@ -882,7 +882,7 @@ class ApiLasController extends Controller
                             $error = 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'];
                             $crs = [
                                 'code' => $hitung['statusCode'], 
-                                'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
+                                'descriptions' => 'hitung '.$hitung['name'].' gagal, '.$hitung['statusDesc'],
                                 'contents' => [
                                     'data' => $error
                                 ]
@@ -890,10 +890,10 @@ class ApiLasController extends Controller
                             return $crs;
                         }
                     } else {
-                        $error[0]  = 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'];
+                        $error[0]  = 'insert '.$insertKredit['name'].' gagal, '.$insertKredit['statusDesc'];
                         $insertKre = [
                             'code' => $insertKredit['statusCode'], 
-                            'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
+                            'descriptions' => 'insert '.$insertKredit['name'].' gagal, '.$insertKredit['statusDesc'],
                             'contents' => [
                                 'data' => $error
                             ]
@@ -901,10 +901,10 @@ class ApiLasController extends Controller
                         return $insertKre;
                     }
                 } else {
-                    $error[0] = 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'];
+                    $error[0] = 'insert '.$insertPrescoring['name'].' gagal, '.$insertPrescoring['statusDesc'];
                     $insertPres = [
                         'code' => $insertPrescoring['statusCode'], 
-                        'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
+                        'descriptions' => 'insert '.$insertPrescoring['name'].' gagal, '.$insertPrescoring['statusDesc'],
                         'contents' => [
                             'data' => $error
                         ]
@@ -913,10 +913,10 @@ class ApiLasController extends Controller
                     return $insertPres;
                 }
             } else {
-                $error[0] = 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'];
+                $error[0] = 'insert '.$insertPrescreening['name'].' gagal, '.$insertPrescreening['statusDesc'];
                 $insertPre = [
                     'code' => $insertPrescreening['statusCode'], 
-                    'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
+                    'descriptions' => 'insert '.$insertPrescreening['name'].' gagal, '.$insertPrescreening['statusDesc'],
                     'contents' => [
                         'data' => $error
                     ]
@@ -924,10 +924,10 @@ class ApiLasController extends Controller
                 return $insertPre;
             }
         } else {
-            $error[0] = 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'];
+            $error[0] = 'insert '.$insertDebitur['name'].' gagal, '.$insertDebitur['statusDesc'];
             $insertDebt = [
                 'code' => $insertDebitur['statusCode'], 
-                'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
+                'descriptions' => 'insert '.$insertDebitur['name'].' gagal, '.$insertDebitur['statusDesc'],
                 'contents' => [
                     'data' => $error
                 ]
