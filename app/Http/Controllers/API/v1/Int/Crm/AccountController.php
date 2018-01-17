@@ -70,6 +70,12 @@ class AccountController extends Controller
     public function detail(Request $request)
     {
       $cif = $request->input('cif');
+      if ($cif == '') {
+        return response()->success( [
+            'message' => 'Error! Cif tidak boleh kosong',
+            'contents' => []
+        ]);
+      }
       $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // $apiPdmToken = $apiPdmToken[0];
 
@@ -320,7 +326,20 @@ class AccountController extends Controller
 
     public function store_referral(Request $request)
     {
-      $count = Referral::whereMonth('created_at', date('m'))->count() + 1;
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $count = Referral::whereIn('created_by', $list_pn)->whereMonth('created_at', date('m'))->count() + 1;
       $len = 4;
       if(strlen($count) == $len) {
         $num = $count;
@@ -337,6 +356,7 @@ class AccountController extends Controller
       $branch = $request->header('branch');
       $data['ref_id'] = date('ym').$branch.$num;
       $data['nik'] = $request['nik'];
+      $data['cif'] = $request['cif'];
       $data['name'] = $request['name'];
       $data['phone'] = $request['phone'];
       $data['address'] = $request['address'];

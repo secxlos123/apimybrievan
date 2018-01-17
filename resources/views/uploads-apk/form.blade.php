@@ -28,7 +28,7 @@
          	</div>
          	<div class="form-group">
 	         	<label>APK Eksternal Version</label>
-                <select name="versionInt">
+                <select name="versionEks">
                 	<option value="00">Development</option>
                 	<option value="01">Production</option>
                 </select>
@@ -84,9 +84,49 @@
 
 	</form>
 
+	<div class="page-header">
+            <h1 class="text-center">List Routes</h1>
+        </div>
+        <div class="container">
+            <div class="table">
+            	<table id="table-apk" class="table-bordered table-condensed table-responsive" style="width: 100%;">
+            		<thead>
+        	    		<tr>
+        	    			<th>Tipe apk</th>
+        	    			<th>Version</th>
+        	    			<th>Name</th>
+        	    			<th>created at</th>
+        	    			<th>Action</th>
+        	    		</tr>
+            		</thead>
+            		<tbody>
+            			@foreach ($data as $key)
+        	    			<tr>
+        	    				<td>{{$key->version_type}}</td>
+        	    				<td>{{$key->version_number}}</td>
+        	    				<td>{{$key->file_name}}</td>
+        	    				<td>{{$key->created_at}}</td>
+        	    				<td></td>
+        	    			</tr>
+            			@endforeach
+            		</tbody>
+            	</table>
+            </div>
+        </div>
+
 	<script type="text/javascript" src="{!! asset('js/jquery.min.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/bootstrap.min.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/jquery.dataTables.min.js') !!}"></script>
     <script type="text/javascript" src="{!! asset('js/dataTables.bootstrap.js') !!}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#table-apk').dataTable({
+                lengthMenu: [
+                    [ 50, -1 ],
+                    [ '50', 'All' ]
+                ],
+            });
+        });
+    </script>
 </body>
 </html>

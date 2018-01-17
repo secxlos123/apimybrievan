@@ -50,12 +50,14 @@ class VisitReportController extends Controller
         $user_login = \RestwsHc::getUser();
 
         $eform = EForm::find($eform_id);
-        // @$notificationIsRead =  $this->userNotification->where('eform_id',$eform_id)
-        //                            ->whereNull('read_at')
-        //                            ->first();               
-        // if(@$notificationIsRead){
-        //     $notificationIsRead->markAsRead();
-        // }
+        
+        $typeModule = getTypeModule(EForm::class);
+        $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();                
+        if($notificationIsRead != NULL){
+            $notificationIsRead->markAsRead();
+        }
      
         $usersModel = User::FindOrFail($eform->user_id);
 
