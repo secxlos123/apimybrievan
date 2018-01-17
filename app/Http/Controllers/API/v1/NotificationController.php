@@ -9,15 +9,18 @@ use App\Models\UserNotification;
 use App\Http\Controllers\Controller;
 use Sentinel;
 use App\Models\EForm;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class NotificationController extends Controller
 {
 
-    public function __construct(EForm $eform, UserNotification $userNotification)
+    public function __construct(EForm $eform, User $user, UserNotification $userNotification)
     {
         $this->eform = $eform;
         $this->userNotification = $userNotification;
+        $this->user = $user;
     }
 
     public function index(Request $request)
@@ -60,14 +63,14 @@ class NotificationController extends Controller
     }
 
     
-    public function read($eform_id)
+    public function read(Request $request,$slug, $type)
     {
+        $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : 0 ;
         $notification = $this->userNotification
-            ->where('eform_id',$eform_id)
-            ->whereNull('read_at')
-            ->first();
-
-        if($notification) $notification->markAsRead();        
+            ->where( 'slug', $slug)->where( 'type_module', $type)->whereNull('read_at')
+            ->firstOrFail();
+       
+        if($notification) $notification->markAsRead($is_read);    
         return  response()->success( [
             'message' => 'Sukses',
             'contents' => $notification

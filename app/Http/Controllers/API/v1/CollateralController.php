@@ -86,16 +86,6 @@ class CollateralController extends Controller
      */
     public function show($type, $developerId, $propertyId)
     {
-      // send notification to mobile
-      $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
-      $id_manager_collateral= $collateral->approved_by;
-      $collateral_id= $collateral->id;
-      $typeKpr = 'Developer';
-      if(!empty($id_manager_collateral)){
-        $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);
-      }
-      //end notification
-
       return $this->makeResponse(
         $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
       );
@@ -115,18 +105,6 @@ class CollateralController extends Controller
       $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
       unset($visitreport['id']);
       $data = array_merge($ots,$nonkerjasama,$visitreport);
-
-      if(env('PUSH_NOTIFICATION', false))
-      {
-      // send notification to mobile
-     $colleteral_id = $nonkerjasama['collaterals_id'];
-     $id_manager_collateral = $nonkerjasama['approved_by'];
-     $typeKpr = 'Non Kerja Sama';
-     if(!empty($id_manager_collateral)){
-        $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
-     }
-      }
-     //end notification
 
       return $this->makeResponse(
         $data
@@ -215,8 +193,8 @@ class CollateralController extends Controller
       {
       //notification mobile sen to manager collateral  
       $collateral_id =$collateralId;
-      if(!empty($collateral->approved_by)){
-         $user_id = $collateral->approved_by; //id manager collateral
+      if(!empty($collateral->manager_id)){
+         $user_id = $collateral->manager_id; //id manager collateral
          $credentials = [
             'headerNotif' => 'Collateral Notification',
             'bodyNotif' => 'Form Penilaian Agunan',
@@ -275,8 +253,8 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-          if ($collateral->developer_id == $developer_id ) {
-              $eformdata = EForm::findOrFail($request->input('eform_id'));
+        $eformdata = EForm::findOrFail($request->input('eform_id'));
+          if ($collateral->developer_id == $developer_id && $eformdata->is_approved) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
               if ($sentclas['status']) {
                \DB::commit();
@@ -287,8 +265,6 @@ class CollateralController extends Controller
           }
           else
           {
-            $property->save();
-            $collateral->save();
             \DB::commit();
           }
       }
@@ -314,8 +290,8 @@ class CollateralController extends Controller
             $bodyNotif = 'menolak menilai agunan';
             $type = 'collateral_ots_'.$action;
             $receiver = 'manager_collateral';
-            if(!empty($collateral['approved_by'])){
-             $user_id  = $collateral['approved_by'];
+            if(!empty($collateral['manager_id'])){
+             $user_id  = $collateral['manager_id'];
             }else{
               $user_id = 'kosong';
             }
@@ -363,7 +339,7 @@ class CollateralController extends Controller
 
       $baseRequest = $this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff');
 
-      $user = getUser();
+      $user = \RestwsHc::getUser();
       $baseRequest['manager_id'] = $user['pn'];
       $baseRequest['manager_name'] = $user['name'];
 
@@ -433,7 +409,7 @@ class CollateralController extends Controller
       try {
             $store = $this->collateral->findOrFail($collateralId);
 
-            $user_id= $store['approved_by'];
+            $user_id= $store['manager_id'];
             if(!empty($user_id)){
 
                $credentials = [
@@ -490,4 +466,61 @@ class CollateralController extends Controller
 
          pushNotification($credentials,'general');
     }
+
+     /**
+     * Show detail Notif mobiel ots non index
+     * @param  string $type
+     * @param  integer $id
+     * @return \Illuminate\Http\Response
+     */
+    public function NotifOtsNonindex($type, $developerId, $propertyId)
+    {
+      $ots =  $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()->toArray();
+      $nonkerjasama = $this->collateral->GetDetails($developerId, $propertyId)->firstOrFail()->toArray();
+      $visitreport = VisitReport::where('eform_id',$nonkerjasama['eform_id'])->firstOrFail()->toArray();
+      unset($visitreport['id']);
+      $data = array_merge($ots,$nonkerjasama,$visitreport);
+
+      if(env('PUSH_NOTIFICATION', false))
+      {
+      // send notification to mobile
+     $colleteral_id = $nonkerjasama['collaterals_id'];
+     $id_manager_collateral = $nonkerjasama['manager_id'];
+     $typeKpr = 'Non Kerja Sama';
+     if(!empty($id_manager_collateral)){
+        $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
+     }
+      }
+     //end notification
+
+      return $this->makeResponse(
+        $data
+      );
+    }
+
+
+     /**
+     * Show detail Notif mobiel ots  index
+     * @param  string $type
+     * @param  integer $id
+     * @return \Illuminate\Http\Response
+     */
+    public function NotifOts($type, $developerId, $propertyId)
+    {
+      // send notification to mobile
+      $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
+      $id_manager_collateral= $collateral->manager_id;
+      $collateral_id= $collateral->id;
+      $typeKpr = 'Developer';
+      if(!empty($id_manager_collateral)){
+        $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);
+      }
+      //end notification
+
+      return $this->makeResponse(
+        $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
+      );
+
+    }
+
 }

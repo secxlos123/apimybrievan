@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
 use App\Models\EForm;
+
 class PengajuanKprNotification extends Notification
 {
     use Queueable;
@@ -32,7 +33,6 @@ class PengajuanKprNotification extends Notification
      */
     public function via($notifiable)
     {
-        //return ['database'];
         return [NotificationsDbChannel::class];
     }
 
@@ -44,10 +44,7 @@ class PengajuanKprNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        /*return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');*/
+        //
     }
 
     /**
@@ -60,6 +57,8 @@ class PengajuanKprNotification extends Notification
     public function toDatabase($notifiable)
     {
         $data = EForm::findOrFail($this->eForm->id);
+        $typeModule = getTypeModule(EForm::class);
+
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
@@ -67,6 +66,8 @@ class PengajuanKprNotification extends Notification
             'nik' => $this->eForm->nik,
             'ref_number' => $this->eForm->ref_number,
             'branch_id' => $data->branch_id,
+            'slug' => $this->eForm->id,
+            'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
         ];
     }

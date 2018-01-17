@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
+use App\Models\Property;
 
 class PropertyNotification extends Notification
 {
@@ -32,7 +33,6 @@ class PropertyNotification extends Notification
      */
     public function via($notifiable)
     {
-        // return ['mail'];
         return [NotificationsDbChannel::class];
     }
 
@@ -71,12 +71,15 @@ class PropertyNotification extends Notification
      */
     public function toDatabase($notifiable)
     {
+        $typeModule = getTypeModule(Property::class);
+
         return [
             'prop_id' => $this->prop->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
             'name' => $this->prop->name,
-            // 'prop_name' => $this->prop->nik,
+            'slug' => $this->prop->id,
+            'type_module' => $typeModule,
         ];
     }
 }
