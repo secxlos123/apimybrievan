@@ -354,6 +354,7 @@ class AccountController extends Controller
       $branch = $request->header('branch');
       $data['ref_id'] = date('ym').$branch.$num;
       $data['nik'] = $request['nik'];
+      $data['cif'] = $request['cif'];
       $data['name'] = $request['name'];
       $data['phone'] = $request['phone'];
       $data['address'] = $request['address'];
