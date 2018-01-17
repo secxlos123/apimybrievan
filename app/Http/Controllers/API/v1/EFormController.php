@@ -610,7 +610,7 @@ class EFormController extends Controller
         $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-        if(@$notificationIsRead){
+        if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
 
@@ -660,7 +660,7 @@ class EFormController extends Controller
             $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-            if(@$notificationIsRead){
+            if($notificationIsRead != NULL ){
                 $notificationIsRead->markAsRead();
             }
             if ($request->is_approved) {
@@ -736,12 +736,12 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
-                // $notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
-                //                            ->whereNull('read_at')
-                //                            ->first();
-                // if(@$notificationIsRead){
-                //     $notificationIsRead->markAsRead();
-                // }
+                $notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
+                                           ->whereNull('read_at')
+                                           ->first();
+                if($notificationIsRead != NULL){
+                    $notificationIsRead->markAsRead();
+                }
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
                 $credentials = [
