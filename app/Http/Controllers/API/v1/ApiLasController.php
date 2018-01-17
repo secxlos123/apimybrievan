@@ -11,6 +11,9 @@ use App\Models\ApiLas;
 use App\Models\EForm;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
+use Asmx;
 
 class ApiLasController extends Controller
 {
@@ -370,6 +373,23 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryJenisPekerjaan':
+                /*$client = new Client();
+                $data   = $client->request('POST', '10.35.65.165:1104/Service.asmx?wsdl',
+                    [
+                        'headers' =>
+                        [
+                            'Content-Type' => 'text/xml',
+                            'SOAPAction' => 'http://tempuri.org/inquiryJenisPekerjaan'
+                        ],
+                        'body' =>'<?xml version="1.0" encoding="utf-8"?>
+                            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                                <soap:Body>
+                                    <inquiryJenisPekerjaan xmlns="http://tempuri.org/">
+                                </soap:Body>
+                            </soap:Envelope>'
+                    ]
+                );
+                print_r($data);exit();*/
                 $inquiry = $ApiLas->inquiryJenisPekerjaan();
                 $conten = $this->return_conten($inquiry);
                 return $conten;
@@ -379,6 +399,18 @@ class ApiLasController extends Controller
                 $inquiry = $ApiLas->inquiryDati2();
                 $conten = $this->return_conten($inquiry);
                 return $conten;
+                break;
+
+            case 'inquiryKodePos':
+                $data_pos = Asmx::setEndpoint('GetDataKodePosBriguna')
+                ->setQuery([
+                    'search' => $data['search'],
+                    'limit' => $data['limit'],
+                    'page' => $data['page'],
+                    'sort' => $data['sort']
+                ])->post();
+                // print_r($data_pos);exit();
+                return $data_pos;
                 break;
 
     		default:
@@ -443,8 +475,14 @@ class ApiLasController extends Controller
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
         $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        $uid     = $inquiryUserLAS['items'][0]['uid'];
-        $uker    = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        if ($inquiryUserLAS == '01') {
+            $uid  = $inquiryUserLAS['items'][0]['uid'];
+            $uker = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        } else {
+            $uid = "";
+            $uker= "";
+        }
+        
         \Log::info($request);
         // print_r($uker);
         // print_r($request);exit();
