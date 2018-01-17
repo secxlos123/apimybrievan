@@ -38,8 +38,6 @@ class ServiceRestwsHc extends Client
                     'id_user' => request()->header( 'pn' )
                 ]
             ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
 
         if( ! empty( $get_user_info_service ) ) {
