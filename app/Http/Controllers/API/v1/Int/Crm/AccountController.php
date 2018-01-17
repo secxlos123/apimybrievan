@@ -233,8 +233,6 @@ class AccountController extends Controller
             'kode_branch' => $branch
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $auth
       ])->post('form_params');
 
       $list_fo = RestwsHc::setBody([
@@ -245,8 +243,6 @@ class AccountController extends Controller
             'kode_branch' => $branch
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $auth
       ])->post('form_params');
 
       $ao = $list_ao['responseData'];

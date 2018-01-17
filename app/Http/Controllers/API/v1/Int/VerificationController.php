@@ -174,11 +174,7 @@ class VerificationController extends Controller
                         , 'id_user' => $pn
                     ],
                 ])
-            ])
-            ->setHeaders([
-                'Authorization' => $authorization
-            ])
-            ->post( 'form_params' );
+            ])->post( 'form_params' );
 
         $keys = [
             'name' => 'namaLengkap'
@@ -225,11 +221,7 @@ class VerificationController extends Controller
                         , 'nik'     => $nik
                     ],
                 ])
-            ])
-            ->setHeaders([
-                'Authorization' => $authorization
-            ])
-            ->post( 'form_params' );
+            ])->post( 'form_params' );
 
         $keys = [
             'cif_number' => 'cifno'

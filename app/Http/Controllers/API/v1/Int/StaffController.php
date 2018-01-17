@@ -19,11 +19,7 @@ class StaffController extends Controller
                        'region'=> $request->input( 'region_id' )
                     ],
                 ])
-            ])
-    		->setHeaders([
-                'Authorization' => $request->header( 'Authorization' )
-            ])
-            ->post( 'form_params' );
+            ])->post( 'form_params' );
 
        	if ($get_staff['responseCode'] == '00' ) {
 

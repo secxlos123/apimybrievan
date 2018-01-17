@@ -180,8 +180,6 @@ class AuthController extends Controller
                     'id_user' => $request->header( 'pn' ),
                 ]
             ] )
-        ] )->setHeaders( [
-            'Authorization' => $request->header( 'Authorization' )
         ] )->post( 'form_params' );
 
         if( $logout_service[ 'responseCode' ] == '00' ) {

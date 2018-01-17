@@ -161,8 +161,6 @@ class ScoringController extends Controller
                     'tgl_lahir'=> $personal['birth_date']
                 ]
             ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
         \Log::info("==============dhn====================");
         \Log::info($dhn);
@@ -186,8 +184,6 @@ class ScoringController extends Controller
 		                    'tgl_lahir'=> $personal['couple_birth_date']
 		                ]
 		            ] )
-		        ] )->setHeaders( [
-		            'Authorization' => request()->header( 'Authorization' )
 		        ] )->post( 'form_params' );
 		        \Log::info("==============dhnPasangan====================");
 		        \Log::info($dhnPasangan);
@@ -241,8 +237,6 @@ class ScoringController extends Controller
                     'kode_branch'=> $data->branch_id
                 ]
             ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
          \Log::info($sicd);
 
@@ -265,8 +259,6 @@ class ScoringController extends Controller
 		                    'kode_branch'=> $data->branch_id
 		                ]
 		            ] )
-		        ] )->setHeaders( [
-		            'Authorization' => request()->header( 'Authorization' )
 		        ] )->post( 'form_params' );
 		        \Log::info("==============sicdPasangan====================");
 		        \Log::info($sicdPasangan);

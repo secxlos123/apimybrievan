@@ -25,9 +25,7 @@ class CustomerController extends Controller
     			],
     		])
     	])
-    	->setHeaders([
-    		'Authorization' => $request->header('Authorization')
-    	])->post('form_params');
+    	->post('form_params');
 
     	return response()->success(['contents' => $kemendagri]);
     }
