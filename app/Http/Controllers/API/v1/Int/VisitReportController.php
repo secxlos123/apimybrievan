@@ -52,7 +52,7 @@ class VisitReportController extends Controller
         $eform = EForm::find($eform_id);
         
         $typeModule = getTypeModule(EForm::class);
-        $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
+        $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();                
         if($notificationIsRead != NULL){
