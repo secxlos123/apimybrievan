@@ -344,6 +344,12 @@ class marketingActivityController extends Controller
 
         if($request['fu_result']=='Done' || $request['fu_result']=='Batal'){
           $marketing->update($updateMarketingStatus);
+
+          if($request['fu_result']=='Done') {
+            $referral = Referral::where('ref_id', $marketing->ref_id);
+            $referral_update['point'] = '2';
+            $referral->update($referral_update);
+          }
         }
 
         if ($save) {

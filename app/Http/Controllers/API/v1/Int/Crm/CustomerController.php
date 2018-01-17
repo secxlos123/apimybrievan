@@ -66,8 +66,6 @@ class CustomerController extends Controller
             'nik' => $request['nik']
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
       return response()->success([
@@ -97,8 +95,6 @@ class CustomerController extends Controller
               'nik' => $nik
             ],
           ])
-        ])->setHeaders([
-          'Authorization' => $request->header('Authorization')
         ])->post('form_params');
 
         return response()->success([
@@ -123,8 +119,6 @@ class CustomerController extends Controller
               'nik' => $nik
             ],
           ])
-        ])->setHeaders([
-          'Authorization' => $request->header('Authorization')
         ])->post('form_params');
 
         return response()->success([

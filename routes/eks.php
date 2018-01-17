@@ -237,7 +237,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1' ], function() {
 	        'uses'  => 'NotificationController@summary'
 	    ]);
 
-	    Route::get('users/notification/read/{eform_id}', [
+	    Route::get('users/notification/read/{slug}/{type}', [
 	        'as'    => 'api.user.read_notification.eks',
 	        'uses'  => 'NotificationController@read'
 	    ]);

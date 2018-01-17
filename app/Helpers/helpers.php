@@ -17,7 +17,7 @@ use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
-use FCM;
+use LaravelFCM\Facades\FCM;
 
 if (! function_exists('csv_to_array')) {
 
@@ -376,6 +376,35 @@ if (! function_exists('get_loan_history')) {
     }
 }
 
+if (! function_exists('getTypeModule')) {
+
+    /**
+     * Convert csv file to array.
+     *
+     * @param  string $file path to file
+     * @param  array $headers
+     * @param  string $delimiter
+     *
+     * @return array
+     */
+    function getTypeModule($module)
+    {
+        
+        switch ($module) {
+            case 'App\Models\Appointment':
+                $typeModule = 'schedule';
+                break;
+            case 'App\Models\EForm':
+                $typeModule = 'eform';
+                break;
+            default:
+                $typeModule = 'Type undefined';
+                break;
+        }
+        return $typeModule;
+    }
+}
+
 if (! function_exists('pushNotification')) {
 
     /**
@@ -410,7 +439,9 @@ if (! function_exists('pushNotification')) {
                 updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
                 verifyCustomer($credentials);
-            }
+            }else if ($type =='general'){
+                collateralNotification($credentials);
+            } 
         }
     }
 
@@ -598,36 +629,64 @@ if (! function_exists('pushNotification')) {
             $topicResponse->shouldRetry();
             $topicResponse->error();
         }else{
-            $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-            $notificationBuilder->setBody('Pengajuan KPR Baru')
-                                ->setSound('default');
-            // Get data from notifications table
-            $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
-                                            ->orderBy('created_at', 'desc')->first();
+            $user_login = \RestwsHc::getUser();
+            if($user_login['role'] == 'staff'){
+                $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                $notificationBuilder->setBody('Pengajuan KPR Baru')
+                                    ->setSound('default');
+                // Get data from notifications table
+                $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                                                ->orderBy('created_at', 'desc')->first();
 
-            $dataBuilder = new PayloadDataBuilder();
-            $dataBuilder->addData([
-                'id'   => $notificationData['id'],
-                'slug' => $dataUser['data']->id,
-                'type' => 'eform',
-            ]);
+                $dataBuilder = new PayloadDataBuilder();
+                $dataBuilder->addData([
+                    'id'   => $notificationData['id'],
+                    'slug' => $dataUser['data']->id,
+                    'type' => 'eform',
+                ]);
 
-            $notification = $notificationBuilder->build();
-            $data         = $dataBuilder->build();
-            $topic        = new Topics();
+                $notification = $notificationBuilder->build();
+                $data         = $dataBuilder->build();
+                $topic        = new Topics();
 
-            $topic->topic('testing')->andTopic(function($condition) use ($dataUser) {
-                // send to user
-                $condition->topic('user_'.$dataUser['data']->user_id);
-            })->andTopic(function($condition) use ($dataUser){
-                // send to pinca
-                  $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
-            });
+                $topic->topic('testing')->andTopic(function($condition) use ($dataUser) {
+                    // send to user
+                    $condition->topic('user_'.$dataUser['data']->user_id);
+                })->andTopic(function($condition) use ($dataUser){
+                    // send to pinca
+                    $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
+                });
 
-            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
-            $topicResponse->isSuccess();
-            $topicResponse->shouldRetry();
-            $topicResponse->error();
+                $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+                $topicResponse->isSuccess();
+                $topicResponse->shouldRetry();
+                $topicResponse->error();
+            }else if($user_login['role'] == 'ao'){
+                $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+                $notificationBuilder->setBody('Pengajuan KPR Baru')
+                                    ->setSound('default');
+                // Get data from notifications table
+                $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                                                ->orderBy('created_at', 'desc')->first();
+
+                $dataBuilder = new PayloadDataBuilder();
+                $dataBuilder->addData([
+                    'id'   => $notificationData['id'],
+                    'slug' => $dataUser['data']->id,
+                    'type' => 'eform',
+                ]);
+
+                $notification = $notificationBuilder->build();
+                $data         = $dataBuilder->build();
+                $topic        = new Topics();
+
+                $topic->topic('testing')->orTopic('branch_'.$dataUser['data']->branch_id)->orTopic('pinca');
+
+                $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+                $topicResponse->isSuccess();
+                $topicResponse->shouldRetry();
+                $topicResponse->error();
+            }
         }
     }
 
@@ -770,4 +829,48 @@ if (! function_exists('pushNotification')) {
         $topicResponse->shouldRetry();
         $topicResponse->error();
     }
+
+    function collateralNotification($credentials){
+       $user_id= $credentials['user_id']; 
+       $bodyNotif= $credentials['bodyNotif']; 
+       $headerNotif= $credentials['headerNotif']; 
+       $id = $credentials['id']; 
+       $type= $credentials['type']; 
+       $slug = $credentials['slug']; 
+       $receiver = $credentials['receiver']; 
+
+        $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
+        $notificationBuilder->setBody($bodyNotif)
+                              ->setSound('default');
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $id,
+            'slug'     => $slug,
+            'type'     => $type,
+        ]);
+                              
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic = new Topics();
+        if($receiver=='staf_collateral'){   
+             $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
+        }else if ($receiver=='external'){  //send to external mobile apps
+             $topic->topic('testing')->andTopic('user_'.$user_id);
+        }else if ($receiver=='manager_collateral'){
+             $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
+        }
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error(); 
+    }
+
+    
+
+
 }

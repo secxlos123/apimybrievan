@@ -8,14 +8,30 @@ use App\Http\Requests\API\v1\Appointment\StatusRequest;
 use App\Http\Requests\API\v1\Appointment\CreateRequest;
 use App\Http\Requests\API\v1\Appointment\UpdateRequest;
 use App\Models\Appointment;
+use App\Models\User;
+use App\Models\UserServices;
+use App\Models\UserNotification;
+use App\Notifications\NewSchedulerCustomer;
+
 use Illuminate\Http\Request;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
 use FCM;
+
+
 class AppointmentController extends Controller
 {
+    public function __construct(User $user, UserServices $userservices, UserNotification $userNotification, Appointment $appointment)
+    {
+        $this->userServices = new UserServices;
+        $this->user = $user;
+        $this->userservices = $userservices;
+        $this->userNotification = $userNotification;
+        $this->appointment = $appointment;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -79,6 +95,19 @@ class AppointmentController extends Controller
         $save = Appointment::create($request->only($postTaken));
         // $save = $request->only($postTaken);
         if ($save) {
+            $typeModule = getTypeModule(Appointment::class);
+            $notificationIsRead =  $this->userNotification->where( 'slug', $save->eform_id)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();
+            if(@$notificationIsRead){
+                $notificationIsRead->markAsRead();
+            }
+
+            $usersModel = User::FindOrFail($save->user_id);     /*send notification*/
+            $usersModel->notify(new NewSchedulerCustomer($save));
+
+            // Push Notification
+            /*{}*/
             $credentials = [
                 'data'  => $save,
             ];
@@ -139,6 +168,17 @@ class AppointmentController extends Controller
         $data = Appointment::find($id);
         if ($data) {
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
+
+            $typeModule = getTypeModule(Appointment::class);
+            $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();
+            if(@$notificationIsRead){
+                $notificationIsRead->markAsRead();
+            }
+
+            $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
+            $usersModel->notify(new NewSchedulerCustomer($save));
 
             $credentials = [
                 'data'  => $Update,

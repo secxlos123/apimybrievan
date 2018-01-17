@@ -19,25 +19,16 @@ class NotificationsDbChannel
     {
         \Log::info('==========================MASUK=================================================');
         $data = $notification->toDatabase($notifiable);
-        \Log::info($data);
-        if (isset($data['prop_id'])) {
-            return $notifiable->routeNotificationFor('database')->create([
-                'id' => $notification->id,
-                'branch_id'=> $data['prop_id'],
-                'type' => get_class($notification),
-                'data' => $data,
-                'read_at' => null,
-                ]);
-        }else{
-            return $notifiable->routeNotificationFor('database')->create([
-                'id' => $notification->id,
-                'branch_id'=> $data['branch_id'],
-                //'role_name'=> $data['role'],
-                'eform_id'=> $data['eform_id'],
-                'type' => get_class($notification),
-                'data' => $data,
-                'read_at' => null,
-                ]);
-        }
+        return $notifiable->routeNotificationFor('database')->create([
+            'id' => $notification->id,
+            'branch_id'=> $data['branch_id'],
+            'role_name'=> 'customer',
+            'slug'=> $data['slug'],
+            'type' => get_class($notification),
+            'data' => $data,
+            'read_at' => null,
+            'type_module'=> $data['type_module'],
+            'is_read' => null,
+            ]);
     }
 }

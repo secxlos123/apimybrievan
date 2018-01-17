@@ -92,6 +92,7 @@ class MarketingController extends Controller
           'nik'=> $marketing->nik,
           'cif'=> $marketing->cif,
           'status'=> $marketing->status,
+          'ref_id'=> $marketing->ref_id,
           'activities'=>$marketingActivity,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
           'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
@@ -99,7 +100,7 @@ class MarketingController extends Controller
 
       }
       return response()->success( [
-          'message' => 'Sukses',
+          'message' => 'Sukses get Marketing',
           'contents' => $marketings
         ]);
     }
@@ -174,13 +175,14 @@ class MarketingController extends Controller
           'nik'=> $marketing->nik,
           'cif'=> $marketing->cif,
           'status'=> $marketing->status,
+          'ref_id'=> $marketing->ref_id,
           'activities'=> $marketingActivity,
           'target_closing_date'=> date('Y-m-d', strtotime($marketing->target_closing_date)),
           'created_at' => date('m-Y', strtotime(str_replace('/', '-', $marketing->created_at)))
         ];
       }
       return response()->success( [
-          'message' => 'Sukses',
+          'message' => 'Sukses get marketing by Branch',
           'contents' => $marketings
         ]);
     }
@@ -221,6 +223,7 @@ class MarketingController extends Controller
       $data['nik'] = $request['nik'];
       $data['cif'] = $request['cif'];
       $data['status'] = $request['status'];
+      $data['ref_id'] = $request['ref_id'];
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
       $save = Marketing::create($data);
@@ -346,5 +349,5 @@ class MarketingController extends Controller
 
       return $result;
     }
-    
+
 }

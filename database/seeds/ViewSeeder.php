@@ -109,8 +109,9 @@ class ViewSeeder extends Seeder
               from users
               LEFT JOIN eforms ON eforms.user_id = users.id
               LEFT JOIN kpr ON kpr.eform_id = eforms.id
+              LEFT JOIN visit_reports ON visit_reports.eform_id = eforms.id
               LEFT JOIN collaterals ON collaterals.property_id = kpr.property_id
-              WHERE eforms.id is not null AND collaterals.id is not null
+              WHERE eforms.id is not null AND collaterals.id is not null AND visit_reports.id is not null
           ");
     }
 }
