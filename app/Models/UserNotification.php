@@ -36,7 +36,7 @@ class UserNotification extends Model
 	 *
 	 * @return void
 	 */
-	public function markAsRead($is_read) {
+	public function markAsRead($is_read = null) {
 		if (is_null($this->read_at)) {
 			$this->forceFill(['read_at' => $this->freshTimestamp(),
 								'is_read' => $is_read ])->save();
