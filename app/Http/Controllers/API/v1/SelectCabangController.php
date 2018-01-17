@@ -166,7 +166,8 @@ class SelectCabangController extends Controller
 
             //    if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
 					$countkey = strlen($branch['kode_uker']);
-					$kode_uker = '';
+					$kode_uker =$branch['kode_uker'];
+					//$kode_uker = '';
 					/* if($countkey=='1'){
 						$kode_uker = '0000'.$branch['kode_uker'];
 					}elseif($countkey=='2'){
