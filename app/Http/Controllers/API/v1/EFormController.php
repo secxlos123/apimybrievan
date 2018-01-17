@@ -378,24 +378,23 @@ class EFormController extends Controller
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
             
-			if($request->payroll=='BRI'){
+			if($baseRequest['Payroll']=='1'){
 				$SKPG = '0';	
-            if(!empty($request->SKPG)){
-                $SKPG = $request->SKPG;
-                $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
-                $baseRequest['SKPG'] = $SKPG;
-                /*----------------------------------*/
-            }
+				if(!empty($request->SKPG)){
+					$SKPG = $request->SKPG;
+					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+					$baseRequest['SKPG'] = $SKPG;
+					/*----------------------------------*/
+				}
 			}else{
 				if(!empty($request->SKPG)){
                 $SKPG = $request->SKPG;
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
-				}else{
-					
-            $dataEform =  EForm::where('nik', $request->nik)->get();
+			}else{
+				$dataEform =  EForm::where('nik', $request->nik)->get();
                 return response()->error( [
-                    'message' => 'User sedang dalam pengajuan',
+                    'message' => 'Payroll Non BRI SKPG harus ada',
                     'contents' => $dataEform
                 ], 422 );
 				}
