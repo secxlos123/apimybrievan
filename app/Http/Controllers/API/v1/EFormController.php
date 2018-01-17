@@ -377,13 +377,28 @@ class EFormController extends Controller
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
-            $SKPG = '';
-            if(!empty($request->SKPG)){
+            
+			if($baseRequest['Payroll']=='1'){
+				$SKPG = '0';	
+				if(!empty($request->SKPG)){
+					$SKPG = $request->SKPG;
+					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+					$baseRequest['SKPG'] = $SKPG;
+					/*----------------------------------*/
+				}
+			}else{
+				if(!empty($request->SKPG)){
                 $SKPG = $request->SKPG;
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
-                /*----------------------------------*/
-            }
+			}else{
+				$dataEform =  EForm::where('nik', $request->nik)->get();
+                return response()->error( [
+                    'message' => 'Payroll Non BRI SKPG harus ada',
+                    'contents' => $dataEform
+                ], 422 );
+				}
+			}
                 $kpr = BRIGUNA::create( $baseRequest );
                     \Log::info($kpr);
         } else {
