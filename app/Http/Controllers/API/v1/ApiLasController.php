@@ -18,11 +18,11 @@ use Asmx;
 
 class ApiLasController extends Controller
 {
-    protected $soapWrapper;
+    // protected $soapWrapper;
 
-    public function __construct(SoapWrapper $soapWrapper) {
-        $this->soapWrapper = $soapWrapper;
-    }
+    // public function __construct(SoapWrapper $soapWrapper) {
+    //     $this->soapWrapper = $soapWrapper;
+    // }
 
     public function index(Request $request) {        
     	// print_r($request);exit();
