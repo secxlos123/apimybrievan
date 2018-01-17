@@ -128,8 +128,6 @@ class DashboardController extends Controller
             'kode_branch' => $request->header('branch')
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
       $list_fo = RestwsHc::setBody([
@@ -140,8 +138,6 @@ class DashboardController extends Controller
             'kode_branch' => $request->header('branch')
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
       $ao = $list_ao['responseData'];
