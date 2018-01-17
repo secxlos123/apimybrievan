@@ -4,7 +4,7 @@ use App\Mail\Register;
 use App\Mail\VerificationEFormCustomer;
 use App\Events\Customer\CustomerVerify;
 use Illuminate\Http\Request;
-// use App\Models\ApkLogs;
+use App\Models\ApkLogs;
 
 /*
 |--------------------------------------------------------------------------
@@ -98,8 +98,14 @@ Route::get( '/getbidangpekerjaan', function() {
 
 Route::get( '/uploads-apk', function() {
 	print_r(ini_get('post_max_size'));
-	// $data['int_prod'] = ApkLogs::where('apk_type', '=', 'eks')->where('version_type', '=', 'prod')->orderBy();
-	return view('uploads-apk.form');
+	print_r(asset('uploads/apk/int/int000001.apk'));
+	if (file_exists(asset('uploads/apk/int/int000001.apk'))) {
+		print_r('aya');
+	}else{
+		print_r('euweuh');
+	}
+	$data = ApkLogs::all();
+	return view('uploads-apk.form', compact('data'));
 } )->name('uploads-apk');
 
 Route::post( '/post-apk', function(Request $request) {
@@ -110,12 +116,12 @@ Route::post( '/post-apk', function(Request $request) {
 			$fileName = 'eks'.$request->versionEks.$request->versionNumEks.'.apk';
 			$fileEks->move($destinationPath,$fileName);
 
-			// $insertEks = new ApkLogs();
-			// $insertEks->apk_type = 'eks';
-			// $insertEks->version_type = ($request->versionEks == 01) ? 'prod' : 'dev';
-			// $insertEks->version_number = $request->versionNumEks;
-			// $insertEks->file_name = $fileName;
-			// $insertEks->save();
+			$insertEks = new ApkLogs();
+			$insertEks->apk_type = 'eks';
+			$insertEks->version_type = ($request->versionEks == 01) ? 'prod' : 'dev';
+			$insertEks->version_number = $request->versionNumEks;
+			$insertEks->file_name = $fileName;
+			$insertEks->save();
 
 			\Session::flash('status', 'apk eksternal berhasil disimpan');
 
@@ -126,12 +132,12 @@ Route::post( '/post-apk', function(Request $request) {
 			$fileName = 'int'.$request->versionInt.$request->versionNumInt.'.apk';
 			$fileInt->move($destinationPath,$fileName);
 
-			// $insertInt = new ApkLogs();
-			// $insertInt->apk_type = 'int';
-			// $insertInt->version_type = ($request->versionInt == 01) ? 'prod' : 'dev';
-			// $insertInt->version_number = $request->versionNumInt;
-			// $insertInt->file_name = $fileName;
-			// $insertInt->save();
+			$insertInt = new ApkLogs();
+			$insertInt->apk_type = 'int';
+			$insertInt->version_type = ($request->versionInt == 01) ? 'prod' : 'dev';
+			$insertInt->version_number = $request->versionNumInt;
+			$insertInt->file_name = $fileName;
+			$insertInt->save();
 
 			\Session::flash('status', 'apk internal berhasil disimpan');
 		}
