@@ -379,13 +379,14 @@ class EFormController extends Controller
 			$baseRequest['id_foto'] = $id;
             
 			if($baseRequest['Payroll']=='1'){
-				$SKPG = '0';	
+				$SKPG = '';	
 				if(!empty($request->SKPG)){
 					$SKPG = $request->SKPG;
 					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
 					$baseRequest['SKPG'] = $SKPG;
 					/*----------------------------------*/
 				}
+				$baseRequest['SKPG'] = $SKPG;
 			}else{
 				if(!empty($request->SKPG)){
                 $SKPG = $request->SKPG;
