@@ -68,6 +68,12 @@ class AccountController extends Controller
     public function detail(Request $request)
     {
       $cif = $request->input('cif');
+      if ($cif == '') {
+        return response()->success( [
+            'message' => 'Error! Cif tidak boleh kosong',
+            'contents' => []
+        ]);
+      }
       $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // $apiPdmToken = $apiPdmToken[0];
 
