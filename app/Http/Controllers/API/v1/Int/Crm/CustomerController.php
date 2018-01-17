@@ -135,8 +135,8 @@ class CustomerController extends Controller
       $request_customer_officer = $client->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
         'headers' =>
         [
-          // 'Authorization' => 'Bearer '.$this->get_token()
-          'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
+          'Authorization' => 'Bearer '.$this->get_token()
+          // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
         ]
       ]);
       $customer_officer = json_decode($request_customer_officer->getBody()->getContents(), true);
