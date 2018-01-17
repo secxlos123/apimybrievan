@@ -253,8 +253,8 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-          if ($collateral->developer_id == $developer_id ) {
-              $eformdata = EForm::findOrFail($request->input('eform_id'));
+        $eformdata = EForm::findOrFail($request->input('eform_id'));
+          if ($collateral->developer_id == $developer_id && $eformdata->is_approved) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
               if ($sentclas['status']) {
                \DB::commit();
@@ -265,8 +265,6 @@ class CollateralController extends Controller
           }
           else
           {
-            $property->save();
-            $collateral->save();
             \DB::commit();
           }
       }
