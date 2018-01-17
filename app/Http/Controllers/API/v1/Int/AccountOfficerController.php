@@ -24,8 +24,6 @@ class AccountOfficerController extends Controller
                     'kode_branch' => $branch_id,
                 ]
             ] )
-        ] )->setHeaders( [
-            'Authorization' => request()->header( 'Authorization' )
         ] )->post( 'form_params' );
         $get_list_AO[ 'responseData' ] = array_map( function( $content ) {
             return [

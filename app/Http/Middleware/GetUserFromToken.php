@@ -20,10 +20,11 @@ class GetUserFromToken extends BaseMiddleware
         if( $request->segment( 3 ) == 'int' ) {
             $token = $request->header( 'Authorization' );
             $pn = $request->header( 'pn' );
+            $device = $request->header('Device-Id');
             if( ! empty( $token ) && ! empty( $pn ) ) {
                 $check_token = \RestwsHc::setHeaders( [
                     'Authorization' => $token,
-                    'device_id' => ''
+                    'Device-Id' => $device
                 ] )->setBody( [
                     'request' => json_encode( [
                     'requestMethod' => 'is_session_valid',

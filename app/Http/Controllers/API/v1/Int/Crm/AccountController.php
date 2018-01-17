@@ -70,6 +70,12 @@ class AccountController extends Controller
     public function detail(Request $request)
     {
       $cif = $request->input('cif');
+      if ($cif == '') {
+        return response()->success( [
+            'message' => 'Error! Cif tidak boleh kosong',
+            'contents' => []
+        ]);
+      }
       $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       // $apiPdmToken = $apiPdmToken[0];
 
@@ -233,8 +239,6 @@ class AccountController extends Controller
             'kode_branch' => $branch
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $auth
       ])->post('form_params');
 
       $list_fo = RestwsHc::setBody([
@@ -245,8 +249,6 @@ class AccountController extends Controller
             'kode_branch' => $branch
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $auth
       ])->post('form_params');
 
       $ao = $list_ao['responseData'];
