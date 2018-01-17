@@ -643,8 +643,6 @@ class EFormController extends Controller
      */
     public function approve( EFormRequest $request, $eform_id )
     {
-        DB::beginTransaction();
-
         $baseRequest = $request;
 
         // Get User Login
@@ -684,8 +682,6 @@ class EFormController extends Controller
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
             generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
-            DB::commit();
-
             $credentials = [
                 'data' => $data,
                 'user'  => $usersModel
@@ -702,7 +698,6 @@ class EFormController extends Controller
             ], 201 );
 
         } else {
-            DB::commit();
             return response()->success( [
                 'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
@@ -827,7 +822,7 @@ class EFormController extends Controller
 
                     // Push Notification
                     $data = EForm::where('ref_number', $request->input('ref_number'))->first();
-                    
+
                     $typeModule = getTypeModule(EForm::class);
                     $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
                                            ->whereNull('read_at')
