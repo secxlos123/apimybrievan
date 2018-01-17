@@ -736,12 +736,12 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
-                $notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
+                /*$notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
                                            ->whereNull('read_at')
                                            ->first();
                 if($notificationIsRead != NULL){
                     $notificationIsRead->markAsRead();
-                }
+                }*/
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
                 $credentials = [
