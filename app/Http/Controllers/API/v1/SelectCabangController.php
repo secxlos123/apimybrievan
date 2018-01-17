@@ -56,7 +56,7 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-                if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
+               // if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
 					if($countkey=='1'){
@@ -91,7 +91,7 @@ class SelectCabangController extends Controller
 						$offices[] = $mitra[$i];
 
 						}
-                }
+             //   }
             }
 		}
 
