@@ -377,13 +377,27 @@ class EFormController extends Controller
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
-            $SKPG = '';
+            
+			if($request->payroll=='BRI'){
+				$SKPG = '0';	
             if(!empty($request->SKPG)){
                 $SKPG = $request->SKPG;
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
                 /*----------------------------------*/
             }
+			}else{
+				if(!empty($request->SKPG)){
+                $SKPG = $request->SKPG;
+                $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+                $baseRequest['SKPG'] = $SKPG;
+				}else{
+                return response()->error( [
+                    'message' => 'User sedang dalam pengajuan',
+                    'contents' => $dataEform
+                ], 422 );
+				}
+			}
                 $kpr = BRIGUNA::create( $baseRequest );
                     \Log::info($kpr);
         } else {
