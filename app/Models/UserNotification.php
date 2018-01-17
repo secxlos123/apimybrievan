@@ -14,10 +14,13 @@ class UserNotification extends Model
 	 *
 	 * @var array
 	 */
+	public $incrementing = false;
+
 	protected $casts = [
 		'id' => 'string',
 		'data' => 'array',
 		'type' => 'string',
+		'type_module' => 'string',
 	];
 
 	public function scopeUnreads($query) {
@@ -33,9 +36,10 @@ class UserNotification extends Model
 	 *
 	 * @return void
 	 */
-	public function markAsRead() {
+	public function markAsRead($is_read = null) {
 		if (is_null($this->read_at)) {
-			$this->forceFill(['read_at' => $this->freshTimestamp()])->save();
+			$this->forceFill(['read_at' => $this->freshTimestamp(),
+								'is_read' => $is_read ])->save();
 		}
 	}
 
@@ -44,13 +48,16 @@ class UserNotification extends Model
 	}
 
 	public function getSubject($status_eform, $ref_number, $user_id) {
-		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&ids=' . $this->eform_id;
+
+		$typeModuleEform = getTypeModule(EForm::class);
+		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&slug=' . $this->slug.'&type='.$typeModuleEform;
 		if ($user_id) {
-			$url = 'eform?ids=' . $this->eform_id;
+			$url = 'eform?slug=' . $this->slug.'&type='.$typeModuleEform;
 		} else {
 			$url = $url;
 		}
 		switch ($this->type) {
+		/* eform  */
 		case 'App\Notifications\PengajuanKprNotification':
 			$subjectNotif = ['message' => 'Pengajuan KPR Baru',
 				'url' => $url,
@@ -94,12 +101,22 @@ class UserNotification extends Model
 			break;
 		case 'App\Notifications\VerificationDataNasabah':
 			$subjectNotif = ['message' => 'Verifikasi Pengajuan KPR',
-				'url' => env('MAIN_APP_URL', 'http://mybri.bri.co.id/') . 'verification?ref_number=' . $ref_number . '&ids=' . $this->eform_id,
+				'url' => env('MAIN_APP_URL', 'http://mybri.bri.co.id/') . 'verification?ref_number=' . $ref_number . '&slug=' . $this->slug,
 			];
 			break;
 		case 'App\Notifications\PropertyNotification':
-			$subjectNotif = ['message' => 'Proyek Baru',
+			$subjectNotif = ['message' => 'Proyek Data Baru',
 				'url' => '',
+			];
+			break;
+		case 'App\Notifications\NewSchedulerCustomer':
+			$subjectNotif = ['message' => 'Schedule Data Baru',
+				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+			];
+			break;
+		case 'App\Notifications\UpdateSchedulerCustomer':
+			$subjectNotif = ['message' => 'Update Data Schedule',
+				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
 			];
 			break;
 		default:
@@ -123,7 +140,7 @@ class UserNotification extends Model
 	}
 
 	public function getUnreads($branch_id, $role, $pn, $user_id) {
-		$query = $this->leftJoin('eforms', 'notifications.eform_id', '=', 'eforms.id')
+		$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
 			->where('eforms.branch_id', @$branch_id)
 			->Where('eforms.ao_id', @$pn)
 			->orderBy('notifications.created_at', 'DESC');
@@ -173,7 +190,11 @@ class UserNotification extends Model
 		if (@$role == 'customer') {
 			$query->where('notifications.notifiable_id', @$user_id);
 
-			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\UpdateSchedulerCustomer')) {
 				$query->unreads();
 			}
 
@@ -205,7 +226,7 @@ class UserNotification extends Model
 			}
 		}
 
-		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.eform_id', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
+		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 
 		return $query;
 		

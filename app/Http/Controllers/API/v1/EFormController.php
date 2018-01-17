@@ -73,7 +73,7 @@ class EFormController extends Controller
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-		  $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = env('APP_URL').'/uploads/';
         return response()->success( [
             'contents' => $eform
         ],200 );
@@ -185,7 +185,7 @@ class EFormController extends Controller
 		  $eform[0]['customer']['schedule'] = [];
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
-		  $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = env('APP_URL').'/uploads/';
 
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
@@ -353,7 +353,7 @@ class EFormController extends Controller
 
         if ( $request->product_type == 'briguna' ) {
 
-                    \Log::info("=======================================================");
+            \Log::info("=======================================================");
             /* BRIGUNA */
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
@@ -394,19 +394,41 @@ class EFormController extends Controller
                 $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
 
                 if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
-                    $property =  Property::create([
-                        'developer_id'=>$baseRequest['developer'],
-                        'prop_id_bri'=>'1',
-                        'name'=>$developer_name,
-                        'pic_name'=>'BRI',
-                        'pic_phone'=>'-',
-                        'address'=>$baseRequest['home_location'],
-                        'category'=>'3',
-                        'latitude'=>'0',
-                        'longitude'=>'0',
-                        'description'=>'-',
-                        'facilities'=>'-'
-                    ]);
+
+                    $baseProperty = array(
+                        'developer_id' => $baseRequest['developer'],
+                        'prop_id_bri' => '1',
+                        'name' => $developer_name,
+                        'pic_name' => 'BRI',
+                        'pic_phone' => '-',
+                        'address' => $baseRequest['home_location'],
+                        'category' => '3',
+                        'latitude' => '0',
+                        'longitude' => '0',
+                        'description' => '-',
+                        'facilities' => '-'
+                    );
+
+                    $getKanwil = \RestwsHc::setBody([
+                        'request' => json_encode([
+                            'requestMethod' => 'get_list_uker_from_cabang',
+                            'requestData' => [
+                                'app_id' => 'mybriapi'
+                                , 'branch_code' => $request->input('branch_id')
+                            ]
+                        ])
+                    ])->post('form_params');
+
+                    if ( $getKanwil['responseCode'] == '00' ) {
+                        foreach ($getKanwil['responseData'] as $kanwil) {
+                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                                $baseProperty['region_id'] = $kanwil['region'];
+                                $baseProperty['region_name'] = $kanwil['rgdesc'];
+                            }
+                        }
+                    }
+
+                    $property =  Property::create( $baseProperty );
                     $baseRequest['property'] = $property->id;
                     $baseRequest['property_name'] = $developer_name;
                     \Log::info('=================== Insert Property===========');
@@ -584,10 +606,11 @@ class EFormController extends Controller
 
         $eform->update( $baseRequest );
 
-        $notificationIsRead =  $this->userNotification->where('eform_id',$id)
+        $typeModule = getTypeModule(EForm::class);
+        $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-        if(@$notificationIsRead){
+        if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
 
@@ -620,8 +643,6 @@ class EFormController extends Controller
      */
     public function approve( EFormRequest $request, $eform_id )
     {
-        DB::beginTransaction();
-
         $baseRequest = $request;
 
         // Get User Login
@@ -635,10 +656,11 @@ class EFormController extends Controller
         if( $eform['status'] ) {
 
             $data =  EForm::findOrFail($eform_id);
-            $notificationIsRead =  $this->userNotification->where('eform_id',$eform_id)
-                                   ->whereNull('read_at')
-                                   ->first();
-            if(@$notificationIsRead){
+            $typeModule = getTypeModule(EForm::class);
+            $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();
+            if($notificationIsRead != NULL ){
                 $notificationIsRead->markAsRead();
             }
             if ($request->is_approved) {
@@ -660,8 +682,6 @@ class EFormController extends Controller
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
             generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
-            DB::commit();
-
             $credentials = [
                 'data' => $data,
                 'user'  => $usersModel
@@ -678,7 +698,6 @@ class EFormController extends Controller
             ], 201 );
 
         } else {
-            DB::commit();
             return response()->success( [
                 'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
@@ -716,12 +735,13 @@ class EFormController extends Controller
         $verify = EForm::verify( $token, $status );
         if( $verify['message'] ) {
             if ($verify['contents']) {
-                $notificationIsRead =  $this->userNotification->where('eform_id',$verify['contents']->id)
-                                                   ->whereNull('read_at')
-                                                   ->first();
-                if(@$notificationIsRead){
+                $typeModule = getTypeModule(EForm::class);
+                /*$notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
+                                           ->whereNull('read_at')
+                                           ->first();
+                if($notificationIsRead != NULL){
                     $notificationIsRead->markAsRead();
-                }
+                }*/
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
                 $credentials = [
@@ -791,9 +811,9 @@ class EFormController extends Controller
         DB::beginTransaction();
 
         try {
-            if ( $request->has('ref_number') && $request->has('status') ) {
+            if ( $request->has('fid_aplikasi') && $request->has('status') ) {
                 $updateCLAS = EForm::updateCLAS(
-                    $request->input('ref_number')
+                    $request->input('fid_aplikasi')
                     , $request->input('status')
                 );
 
@@ -803,12 +823,14 @@ class EFormController extends Controller
                     // Push Notification
                     $data = EForm::where('ref_number', $request->input('ref_number'))->first();
 
-                    $notificationIsRead =  $this->userNotification->where('eform_id',$data['id'])
-                                                   ->whereNull('read_at')
-                                                   ->first();
-                    if(@$notificationIsRead){
-                        $notificationIsRead->markAsRead();
-                    }
+                    $typeModule = getTypeModule(EForm::class);
+                    $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
+                                           ->whereNull('read_at')
+                                           ->first();
+                    $data = EForm::where(
+                            DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                            , $request->input('fid_aplikasi')
+                        )->first();
 
                     $usersModel  = User::FindOrFail($data['user_id']);
                     $status      = $updateCLAS['status'];

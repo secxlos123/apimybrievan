@@ -7,21 +7,23 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
+use App\Models\Appointment;
 use App\Models\EForm;
 
-class EFormPenugasanDisposisi extends Notification
+class NewSchedulerCustomer extends Notification
 {
     use Queueable;
 
-    public $eForm;
+    public $appointment;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($eForm)
+    public function __construct($appointment)
     {
-        $this->eForm   = $eForm;
+        $this->appointment   = $appointment;
     }
 
     /**
@@ -36,18 +38,15 @@ class EFormPenugasanDisposisi extends Notification
     }
 
     /**
-     * Get the database representation of the notification.
+     * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    /*public function toMail($notifiable)
+    public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
-    }*/
+       //
+    }
 
     /**
      * Get the array representation of the notification.
@@ -55,20 +54,27 @@ class EFormPenugasanDisposisi extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
+     public function toArray($notifiable)
+    {
+        //
+    }
+
     public function toDatabase($notifiable)
     {
-        $typeModule = getTypeModule(EForm::class);
+        $data = EForm::findOrFail($this->appointment->eform_id);
+        $typeModule = getTypeModule(Appointment::class);
         
         return [
-            'eform_id' => $this->eForm->id,
+            'appointment_id' => $this->appointment->id,
+            'eform_id' => $this->appointment->eform_id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'nik' => $this->eForm->nik,
-            'ref_number' => $this->eForm->ref_number,
-            'branch_id' => $this->eForm->branch_id,
-            'slug' => $this->eForm->id,
+            'nik' => $data->nik,
+            'ref_number' => $data->ref_number,
+            'branch_id' => $data->branch_id,
+            'slug' => $this->appointment->id,
             'type_module' => $typeModule,
-            'created_at' => $this->eForm->created_at,
+            'created_at' => $this->appointment->created_at,
         ];
     }
 }

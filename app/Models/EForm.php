@@ -288,7 +288,13 @@ class EForm extends Model implements AuditableContract
         if ( $request->is_approved ) {
             // di update kalo collateral udah jalan
             // ganti lgi, request by Mas Danu
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+            if( $eform->recontest ) {
+                $result = $eform->insertCoreBRI(11);
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
+                }
+
+            } else if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
@@ -366,8 +372,9 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataTujuanKredit', null]
             , ['InsertDataMaster', null]
             , ['InsertIntoReviewer', 'nama_reviewer']
-            , ['InsertDataAgunanModel71', 'id_model_71'] //jika tidak ada kasih 0
-            , ['InsertDataAgunan', 'Fid_agunan'] //jika tidak ada kasih 0
+            , ['InsertDataAgunanModel71', 'id_model_71']
+            , ['InsertDataAgunan', 'fid_agunan']
+            , ['InsertIntoAnalisaRecontest', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -396,7 +403,7 @@ class EForm extends Model implements AuditableContract
                 \Log::info(json_encode($sendRequest));
 
                 if ( $value[0] != 'InsertIntoReviewer' ) {
-                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1], $step );
 
                     if (!$set['status']) {
                         \Log::info('Error Step Ke -'.$step);
@@ -413,15 +420,12 @@ class EForm extends Model implements AuditableContract
                 $step++;
             }
         }
-        $this->clas_position = $step;
-        $this->save();
 
         if ($step == 10) {
-            $this->update( [
-                'is_approved' => true
-                , 'send_clas_date' => date("Y-m-d")
-            ] );
+            $this->is_approved = true;
+            $this->save();
         }
+
         return $return;
     }
 
@@ -475,10 +479,6 @@ class EForm extends Model implements AuditableContract
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
-
-        if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
-            $sort = ['created_at', 'asc'];
-        }
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if( $request->has( 'status' ) ) {
@@ -565,8 +565,10 @@ class EForm extends Model implements AuditableContract
                     $eform = $eform->select([
                             'eforms.*'
                             , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
-                        ])
-                        ->orderBy('new_order', 'asc');
+                        ]);
+                    if ( $sort[0] != "action" ) {
+                        $eform = $eform->orderBy('new_order', 'asc');
+                    }
 
                 }
 
@@ -593,6 +595,10 @@ class EForm extends Model implements AuditableContract
                 $eform = $eform->where('eforms.product_type', $request->input('product'));
 
             }
+        }
+
+        if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
+            $sort[0] = 'created_at';
         }
 
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
@@ -663,11 +669,15 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      */
-    public static function updateCLAS( $ref_number, $status )
+    public static function updateCLAS( $fid_aplikasi, $status )
     {
         $returnStatus = false;
         $statusEform = ( $status == 'Approval1' ? true : false );
-        $target = static::where('ref_number', $ref_number)->first();
+        $target = static::where(
+                DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                , $fid_aplikasi
+            )->first();
+
         if ($target) {
             $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
             $target->update([
@@ -825,7 +835,7 @@ class EForm extends Model implements AuditableContract
      * @param $value    Return Data From Bri
      * @return true|false Is Sent Success|Failed
      */
-    public function SentToBri($request, $endpoint, $value = null)
+    public function SentToBri($request, $endpoint, $value = null, $step)
     {
         $post_to_bri = Asmx::setEndpoint( $endpoint )
             ->setBody( [
@@ -845,16 +855,17 @@ class EForm extends Model implements AuditableContract
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
-                if (!isset($this->additional_parameters[$value])) {
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
-                $this->save();
-                }
             }
             $return = array(
                 'status' => true
                 , 'message' => ''
             );
         }
+
+        $this->clas_position = $step;
+        $this->send_clas_date = date("Y-m-d");
+        $this->save();
 
         return $return;
     }
@@ -1273,7 +1284,7 @@ class EForm extends Model implements AuditableContract
         $otsNine = $collateral->otsNine;
 
         $request = $data + [
-            "Fid_agunan" => (isset($this->additional_parameters['Fid_agunan']))? $this->additional_parameters['Fid_agunan'] : '0',
+            "Fid_agunan" => (isset($this->additional_parameters['fid_agunan']))? $this->additional_parameters['fid_agunan'] : '0',
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
@@ -1332,6 +1343,18 @@ class EForm extends Model implements AuditableContract
             "Shgb_keterangan_agunan_rt"=>!($otsNine->information_shgb)? '' : $otsNine->information_shgb
         ];
         return $request;
+    }
+
+    /**
+     * Generate Parameters for step 11.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function step11($data)
+    {
+        \Log::info("step11");
+        return $data;
     }
 
     public function user_notifications()

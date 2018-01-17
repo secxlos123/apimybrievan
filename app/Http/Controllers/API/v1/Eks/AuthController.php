@@ -105,7 +105,7 @@ class AuthController extends Controller
              $check = Sentinel::findByCredentials(['login' => $email]);
              if ($check) {
                 if (!$activation = Activation::completed($check)){
-                 return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
+                    return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
                 } else if ($check->is_banned) {
                     return response()->error(['message' => 'Maaf akun anda sedang di banned'], 401);
                 }
@@ -259,6 +259,25 @@ class AuthController extends Controller
         return response()->success( [
             'message' => 'Register Sukses',
             'contents' => $user
+        ], 201 );
+    }
+
+    /**
+     * check version for mobile
+     *
+     * @param AuthRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function versionCheck(Request $request)
+    {
+        if (isset($request->is_mobile)) {
+            if (!$request->mobile_version == env('m_version', 1)) {
+                return response()->error(['message' => 'Update APK anda dengan versi terbaru!'], 401);
+            }
+        }
+        return response()->success( [
+            'message' => 'APK sudah yang terbaru!',
+            'contents' => []
         ], 201 );
     }
 }

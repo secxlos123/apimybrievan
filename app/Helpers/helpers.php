@@ -18,6 +18,7 @@ use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
 use LaravelFCM\Facades\FCM;
+
 if (! function_exists('csv_to_array')) {
 
     /**
@@ -375,6 +376,35 @@ if (! function_exists('get_loan_history')) {
     }
 }
 
+if (! function_exists('getTypeModule')) {
+
+    /**
+     * Convert csv file to array.
+     *
+     * @param  string $file path to file
+     * @param  array $headers
+     * @param  string $delimiter
+     *
+     * @return array
+     */
+    function getTypeModule($module)
+    {
+        
+        switch ($module) {
+            case 'App\Models\Appointment':
+                $typeModule = 'schedule';
+                break;
+            case 'App\Models\EForm':
+                $typeModule = 'eform';
+                break;
+            default:
+                $typeModule = 'Type undefined';
+                break;
+        }
+        return $typeModule;
+    }
+}
+
 if (! function_exists('pushNotification')) {
 
     /**
@@ -409,6 +439,8 @@ if (! function_exists('pushNotification')) {
                 updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
                 verifyCustomer($credentials);
+            }else if ($type =='general'){
+                collateralNotification($credentials);
             } 
         }
     }
