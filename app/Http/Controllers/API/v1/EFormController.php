@@ -377,9 +377,9 @@ class EFormController extends Controller
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
-            
+
 			if($baseRequest['Payroll']=='1'){
-				$SKPG = '';	
+				$SKPG = '';
 				if(!empty($request->SKPG)){
 					$SKPG = $request->SKPG;
 					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
@@ -837,16 +837,15 @@ class EFormController extends Controller
                     \DB::commit();
 
                     // Push Notification
-                    $data = EForm::where('ref_number', $request->input('ref_number'))->first();
+                    $data = EForm::where(
+                        DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                        , $request->input('fid_aplikasi')
+                    )->first();
 
                     $typeModule = getTypeModule(EForm::class);
-                    $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
-                                           ->whereNull('read_at')
-                                           ->first();
-                    $data = EForm::where(
-                            DB::Raw("additional_parameters::json->>'fid_aplikasi'")
-                            , $request->input('fid_aplikasi')
-                        )->first();
+                    $notificationIsRead = $this->userNotification->where( 'slug', $data->id)->where( 'type_module',$typeModule)
+                       ->whereNull('read_at')
+                       ->first();
 
                     $usersModel  = User::FindOrFail($data['user_id']);
                     $status      = $updateCLAS['status'];
