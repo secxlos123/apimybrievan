@@ -200,8 +200,14 @@ class Collateral extends Model implements AuditableContract
 
                 if ($request->has('status')) $collaterals->where('status', $request->input('status'));
 
+                if ($request->has('search')) {
+                    $collaterals->Where('last_name', 'ilike', '%'.$request->input('search').'%')
+                    ->orWhere('first_name', 'ilike', '%'.$request->input('search').'%')
+                    ->orWhere('ref_number', 'ilike', '%'.$request->input('search').'%');
+                }
             })
             ->select('*')
+            ->where('developer_id',1)
             ->orderBy($sort[0], $sort[1]);
     }
 
