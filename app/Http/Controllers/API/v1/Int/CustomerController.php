@@ -206,7 +206,7 @@ class CustomerController extends Controller
                 'user' => $usersModel,
             ];
 
-            pushNotification($credentials, $status."KPR");
+            pushNotification($credentials, "approve KPR");
             $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
             generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
             event( new VerifyEForm( $verify['contents'] ) );
