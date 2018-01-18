@@ -215,17 +215,22 @@ class ApiLasController extends Controller
                     $pn      = substr('00000000'. $data, -8 );
                     $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
                     // print_r($inquiryUserLAS);exit();
-                    $uid = '0';
                     if ($inquiryUserLAS['statusCode'] == '01') {
-                        $uid = $inquiryUserLAS['items'][0]['uid'];  
-                    }
+                        $uid = $inquiryUserLAS['items'][0]['uid'];
 
-                    $inquiry = $ApiLas->inquiryListPutusan($uid);
-                    // if ($inquiry['statusCode'] == '01') {
+                        $inquiry = $ApiLas->inquiryListPutusan($uid);
                         $conten  = $this->return_conten($inquiry);
                         return $conten;
-                    // }
-                    // return $inquiry;
+                    } else {
+                        $error[0] = 'Gagal koneksi DB/Hasil inquiry kosong';
+                        return [
+                            'code' => 04, 
+                            'descriptions' => 'Gagal koneksi DB/Hasil inquiry kosong',
+                            'contents' => [
+                                'data' => $error
+                            ]
+                        ];
+                    }
                 }
                 $error[0] = 'Uknown request data';
                 return [
@@ -448,10 +453,10 @@ class ApiLasController extends Controller
     public function return_conten($respons){
         // $data = (array) $respons;
         $conten = [
-            'code'         => $data['statusCode'],
-            'descriptions' => $data['statusDesc'],
+            'code'         => $respons['statusCode'],
+            'descriptions' => $respons['statusDesc'],
             'contents' => [
-                'data' => $data['items']
+                'data' => $response['items']
             ]
         ];
         return $conten;
