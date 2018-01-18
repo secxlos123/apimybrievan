@@ -623,7 +623,7 @@ class EFormController extends Controller
         $eform->update( $baseRequest );
 
         $typeModule = getTypeModule(EForm::class);
-        $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
+        $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
         if($notificationIsRead != NULL){
