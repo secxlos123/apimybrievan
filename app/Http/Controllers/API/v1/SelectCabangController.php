@@ -56,7 +56,7 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-                if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
+               // if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
 					if($countkey=='1'){
@@ -91,7 +91,7 @@ class SelectCabangController extends Controller
 						$offices[] = $mitra[$i];
 
 						}
-                }
+             //   }
             }
 		}
 
@@ -164,20 +164,21 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-                if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
+            //    if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
 					$countkey = strlen($branch['kode_uker']);
-					$kode_uker = '';
-					if($countkey=='1'){
+					$kode_uker =$branch['kode_uker'];
+					//$kode_uker = '';
+					/* if($countkey=='1'){
 						$kode_uker = '0000'.$branch['kode_uker'];
 					}elseif($countkey=='2'){
 						$kode_uker = '000'.$branch['kode_uker'];
 					}elseif($countkey=='3'){
 						$kode_uker = '00'.$branch['kode_uker'];
-					}elseif($countkey=='1'){
+					}elseif($countkey=='4'){
 						$kode_uker = '0'.$branch['kode_uker'];
 					}else{
 						$kode_uker = $branch['kode_uker'];
-					}
+					} */
 						$nilaicount =0;
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
@@ -201,7 +202,7 @@ class SelectCabangController extends Controller
 						$offices[] = $mitra[$i];
 
 						}
-                }
+               // }
             }
 		}
 
