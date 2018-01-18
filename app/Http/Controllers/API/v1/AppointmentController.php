@@ -109,7 +109,11 @@ class AppointmentController extends Controller
             // Push Notification
             /*{}*/
             $credentials = [
-                'data'  => $save,
+                'data'  => [
+                    'user_id'    => $request->user_id,
+                    'ref_number' => $request->ref_number,
+                    'eform_id'   => $request->eform_id
+                ],
             ];
 
             // Call the helper of push notification function
@@ -178,7 +182,7 @@ class AppointmentController extends Controller
             }
 
             $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
-            $usersModel->notify(new NewSchedulerCustomer($save));
+            $usersModel->notify(new UpdateSchedulerCustomer($Update));
 
             $credentials = [
                 'data'  => $Update,
