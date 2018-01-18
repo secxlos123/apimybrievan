@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\CustomerRequest;
 use App\Events\Customer\CustomerVerify;
+use App\Events\EForm\VerifyEForm;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\EForm;
@@ -192,18 +193,35 @@ class CustomerController extends Controller
 				KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
 		}
 
-
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
-		DB::commit();
+		// DB::commit();
 		if( $request->verify_status == 'verify' ) {
-			event( new CustomerVerify( $customer, $eform ) );
-			$credentials = [
-				"data"    => $eform,
-			];
 
-			// Push Notification Helper
-			pushNotification($credentials, "verifyCustomer");
+			// handling remove verification
+			$verify = EForm::verify( $eform->token, 'approve' );
+			$usersModel  = User::FindOrFail($verify['contents']->user_id);
+
+            $credentials = [
+                'data' => $verify['contents'],
+                'user' => $usersModel,
+            ];
+
+            pushNotification($credentials, "approve KPR");
+            $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
+            generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+            event( new VerifyEForm( $verify['contents'] ) );
+
+			// else // uncomment function below
+
+			// event( new CustomerVerify( $customer, $eform ) );
+			// $credentials = [
+			// 	"data"    => $eform,
+			// ];
+			// pushNotification($credentials, "verifyCustomer");
+
+			// end
+
 
 			return response()->success( [
 				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',
