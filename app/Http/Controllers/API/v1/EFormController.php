@@ -73,7 +73,7 @@ class EFormController extends Controller
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
 		  $eform = $eform->toArray();
-		  $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = env('APP_URL').'/uploads/';
         return response()->success( [
             'contents' => $eform
         ],200 );
@@ -185,7 +185,7 @@ class EFormController extends Controller
 		  $eform[0]['customer']['schedule'] = [];
 		  $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
-		  $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = env('APP_URL').'/uploads/';
 
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
@@ -377,13 +377,29 @@ class EFormController extends Controller
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
-            $SKPG = '';
-            if(!empty($request->SKPG)){
+            
+			if($baseRequest['Payroll']=='1'){
+				$SKPG = '';	
+				if(!empty($request->SKPG)){
+					$SKPG = $request->SKPG;
+					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+					$baseRequest['SKPG'] = $SKPG;
+					/*----------------------------------*/
+				}
+				$baseRequest['SKPG'] = $SKPG;
+			}else{
+				if(!empty($request->SKPG)){
                 $SKPG = $request->SKPG;
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
-                /*----------------------------------*/
-            }
+			}else{
+				$dataEform =  EForm::where('nik', $request->nik)->get();
+                return response()->error( [
+                    'message' => 'Payroll Non BRI SKPG harus ada',
+                    'contents' => $dataEform
+                ], 422 );
+				}
+			}
                 $kpr = BRIGUNA::create( $baseRequest );
                     \Log::info($kpr);
         } else {
@@ -610,7 +626,7 @@ class EFormController extends Controller
         $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-        if(@$notificationIsRead){
+        if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
 
@@ -643,8 +659,6 @@ class EFormController extends Controller
      */
     public function approve( EFormRequest $request, $eform_id )
     {
-        DB::beginTransaction();
-
         $baseRequest = $request;
 
         // Get User Login
@@ -662,7 +676,7 @@ class EFormController extends Controller
             $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-            if(@$notificationIsRead){
+            if($notificationIsRead != NULL ){
                 $notificationIsRead->markAsRead();
             }
             if ($request->is_approved) {
@@ -684,8 +698,6 @@ class EFormController extends Controller
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
             generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
-            DB::commit();
-
             $credentials = [
                 'data' => $data,
                 'user'  => $usersModel
@@ -702,7 +714,6 @@ class EFormController extends Controller
             ], 201 );
 
         } else {
-            DB::commit();
             return response()->success( [
                 'message' => isset($eform['message']) ? $eform['message'] : 'Approval E-Form Gagal',
                 'contents' => $eform
@@ -741,12 +752,12 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
-                $notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
+                /*$notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
                                            ->whereNull('read_at')
                                            ->first();
-                if(@$notificationIsRead){
+                if($notificationIsRead != NULL){
                     $notificationIsRead->markAsRead();
-                }
+                }*/
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
                 $credentials = [

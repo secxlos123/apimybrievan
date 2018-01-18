@@ -253,8 +253,17 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-          if ($collateral->developer_id == $developer_id ) {
-              $eformdata = EForm::findOrFail($request->input('eform_id'));
+        if ($request->has('eform_id')) {
+            $eformdata = EForm::findOrFail($request->input('eform_id'));
+            $hasapprove = $eformdata->is_approved;
+        }
+        else
+        {
+          $hasapprove = false;
+        }
+        // $collateraldata = $this->collateral->withAll()->findOrFail($collateralId);
+        // generate_pdf('uploads/'. $eformdata->nik, 'collateral.pdf', view('pdf.collateral', compact('eformdata','collateraldata')));
+          if ($collateral->developer_id == $developer_id && $hasapprove) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
               if ($sentclas['status']) {
                \DB::commit();
@@ -265,8 +274,6 @@ class CollateralController extends Controller
           }
           else
           {
-            $property->save();
-            $collateral->save();
             \DB::commit();
           }
       }

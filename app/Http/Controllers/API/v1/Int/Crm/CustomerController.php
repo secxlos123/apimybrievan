@@ -66,8 +66,6 @@ class CustomerController extends Controller
             'nik' => $request['nik']
           ],
         ])
-      ])->setHeaders([
-        'Authorization' => $request->header('Authorization')
       ])->post('form_params');
 
       return response()->success([
@@ -97,8 +95,6 @@ class CustomerController extends Controller
               'nik' => $nik
             ],
           ])
-        ])->setHeaders([
-          'Authorization' => $request->header('Authorization')
         ])->post('form_params');
 
         return response()->success([
@@ -123,8 +119,6 @@ class CustomerController extends Controller
               'nik' => $nik
             ],
           ])
-        ])->setHeaders([
-          'Authorization' => $request->header('Authorization')
         ])->post('form_params');
 
         return response()->success([
@@ -142,15 +136,57 @@ class CustomerController extends Controller
         'headers' =>
         [
           'Authorization' => 'Bearer '.$this->get_token()
-          // 'Authorization' => 'Bearer 9fe282cc12ce8182e8abee820154825445b86be6'
+          // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
         ]
       ]);
       $customer_officer = json_decode($request_customer_officer->getBody()->getContents(), true);
 
-      // return $customer_officer;
+      $result = array_merge_recursive($customer_officer['data']['top'],$customer_officer['data']['bottom']);
+      // return $result;die();
+      foreach ($result as $key =>  $value) {
+        if($value['DELTA_SALDO'] < 0 || $value['DELTA_SALDO'] > 0){
+          if ( $value['DELTA_SALDO'] > 0) {
+            $customer ['top'][]=[
+              'POSISI_LAST_MONTH' => $value['POSISI_LAST_MONTH'],
+              'POSISI_1' => $value['POSISI_1'],
+              'NASABAH'=>$value['NASABAH'],
+              'NOREK' => $value['NOREK'],
+              'SALDO_AKHIR_BULAN'=> $value['SALDO_AKHIR_BULAN'],
+              'H-2'=> $value['H-2'],
+              'H-1'=> $value['H-1'],
+              'DELTA_SALDO'=> $value['DELTA_SALDO'],
+              'PERSONAL_NUMBER'=> $value['PERSONAL_NUMBER'],
+            ];
+          } else {
+            $customer ['bottom'][]=[
+              'POSISI_LAST_MONTH' => $value['POSISI_LAST_MONTH'],
+              'POSISI_1' => $value['POSISI_1'],
+              'NASABAH'=>$value['NASABAH'],
+              'NOREK' => $value['NOREK'],
+              'SALDO_AKHIR_BULAN'=> $value['SALDO_AKHIR_BULAN'],
+              'H-2'=> $value['H-2'],
+              'H-1'=> $value['H-1'],
+              'DELTA_SALDO'=> $value['DELTA_SALDO'],
+              'PERSONAL_NUMBER'=> $value['PERSONAL_NUMBER'],
+            ];
+          }
+        }
+      }
+
+      usort($customer['top'], function($a, $b) { //Sort the array using a user defined function
+          return $a['DELTA_SALDO'] >= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores
+      });
+
+      usort($customer['bottom'], function($a, $b) { //Sort the array using a user defined function
+          return $a['DELTA_SALDO'] <= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores
+      });
+
+      $data ['top']=array_slice($customer['top'],0,10,false);
+      $data ['bottom']=array_slice($customer['bottom'],0,10,false);
+
       return response()->success( [
           'message' => 'Get Customer by Officer success',
-          'contents' => $customer_officer["data"]
+          'contents' => $data
         ]);
     }
 

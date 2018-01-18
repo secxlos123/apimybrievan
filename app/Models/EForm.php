@@ -373,7 +373,7 @@ class EForm extends Model implements AuditableContract
             , ['InsertDataMaster', null]
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', 'id_model_71']
-            , ['InsertDataAgunan', 'Fid_agunan']
+            , ['InsertDataAgunan', 'fid_agunan']
             , ['InsertIntoAnalisaRecontest', null]
         ];
 
@@ -403,7 +403,7 @@ class EForm extends Model implements AuditableContract
                 \Log::info(json_encode($sendRequest));
 
                 if ( $value[0] != 'InsertIntoReviewer' ) {
-                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1], $step );
 
                     if (!$set['status']) {
                         \Log::info('Error Step Ke -'.$step);
@@ -421,14 +421,10 @@ class EForm extends Model implements AuditableContract
             }
         }
 
-        $this->clas_position = $step;
-        $this->send_clas_date = date("Y-m-d");
-
         if ($step == 10) {
             $this->is_approved = true;
+            $this->save();
         }
-
-        $this->save();
 
         return $return;
     }
@@ -839,7 +835,7 @@ class EForm extends Model implements AuditableContract
      * @param $value    Return Data From Bri
      * @return true|false Is Sent Success|Failed
      */
-    public function SentToBri($request, $endpoint, $value = null)
+    public function SentToBri($request, $endpoint, $value = null, $step)
     {
         $post_to_bri = Asmx::setEndpoint( $endpoint )
             ->setBody( [
@@ -859,16 +855,17 @@ class EForm extends Model implements AuditableContract
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
-                if (!isset($this->additional_parameters[$value])) {
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
-                $this->save();
-                }
             }
             $return = array(
                 'status' => true
                 , 'message' => ''
             );
         }
+
+        $this->clas_position = $step;
+        $this->send_clas_date = date("Y-m-d");
+        $this->save();
 
         return $return;
     }
@@ -1287,7 +1284,7 @@ class EForm extends Model implements AuditableContract
         $otsNine = $collateral->otsNine;
 
         $request = $data + [
-            "Fid_agunan" => (isset($this->additional_parameters['Fid_agunan']))? $this->additional_parameters['Fid_agunan'] : '0',
+            "Fid_agunan" => (isset($this->additional_parameters['fid_agunan']))? $this->additional_parameters['fid_agunan'] : '0',
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,

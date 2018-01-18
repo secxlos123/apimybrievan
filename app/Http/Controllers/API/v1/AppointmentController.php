@@ -99,7 +99,7 @@ class AppointmentController extends Controller
             $notificationIsRead =  $this->userNotification->where( 'slug', $save->eform_id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-            if(@$notificationIsRead){
+            if($notificationIsRead != NULL){
                 $notificationIsRead->markAsRead();
             }
 
@@ -177,7 +177,7 @@ class AppointmentController extends Controller
             $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-            if(@$notificationIsRead){
+            if($notificationIsRead != NULL){
                 $notificationIsRead->markAsRead();
             }
 
