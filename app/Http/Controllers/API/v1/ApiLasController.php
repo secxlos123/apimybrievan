@@ -11,18 +11,20 @@ use App\Models\ApiLas;
 use App\Models\EForm;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
 use Asmx;
 // use Artisaninweb\SoapWrapper\SoapWrapper;
 
 class ApiLasController extends Controller
 {
-    // protected $soapWrapper;
+    /*protected $soapWrapper;
 
-    // public function __construct(SoapWrapper $soapWrapper) {
-    //     $this->soapWrapper = $soapWrapper;
-    // }
+    public function __construct(SoapWrapper $soapWrapper) {
+        $this->soapWrapper = $soapWrapper;
+    }
+
+    function url() {
+        return config('restapi.asmx_las');
+    }*/
 
     public function index(Request $request) {        
     	// print_r($request);exit();
@@ -380,16 +382,18 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryJenisPekerjaan':
-                /*$result = false;
-                try{
-                    $client = new \SoapClient("http://10.35.65.165:1104/Service.asmx?wsdl");
-                    $resultclient = $client->inquirySekonTujuanPenggunaan();
-                    print_r($resultclient);exit();
-                    if($resultclient->inquirySekonTujuanPenggunaanResult){
-                        $datadetail=json_decode($resultclient->inquirySekonTujuanPenggunaanResult);
+                /*dd($this->url());
+                $result = false;
+                try {
+                    $client = new \SoapClient($this->url());
+                    $resultclient = $client->inquiryJenisPekerjaan();
+                    if($resultclient->inquiryJenisPekerjaanResult){
+                        $datadetail = json_decode($resultclient->inquiryJenisPekerjaanResult);
+
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
                             if(isset($datadetail->items)){
-                                $result = $datadetail->items;
+                                $result = $this->return_conten($datadetail);
                                 return $result;
                             }else{
                                 $result = false;
@@ -406,7 +410,7 @@ class ApiLasController extends Controller
                 }
                 return($result);*/
                 $inquiry = $ApiLas->inquiryJenisPekerjaan();
-                $conten  = $this->return_conten($inquiry);
+                $conten = $this->return_conten($inquiry);
                 return $conten;
                 break;
 
@@ -442,11 +446,12 @@ class ApiLasController extends Controller
     }
 
     public function return_conten($respons){
+        // $data = (array) $respons;
         $conten = [
-            'code'         => $respons['statusCode'],
-            'descriptions' => $respons['statusDesc'],
+            'code'         => $data['statusCode'],
+            'descriptions' => $data['statusDesc'],
             'contents' => [
-                'data' => $respons['items']
+                'data' => $data['items']
             ]
         ];
         return $conten;
