@@ -489,10 +489,10 @@ class EForm extends Model implements AuditableContract
                     $eform->has( 'visit_report' )->whereIsApproved( false );
 
                 } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
                     $eform->where('status_eform', $request->status);
@@ -531,6 +531,15 @@ class EForm extends Model implements AuditableContract
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
                     $eform->Where('eforms.prescreening_status', $prescreening);
+                }
+            } );
+        }
+
+        if ($request->has('name')) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
+                $name = $request->input('name');
+                if (strtolower($name) != 'all') {
+                    $eform->Where('eforms.ao_id', '000'.$request->input('name'));
                 }
             } );
         }
