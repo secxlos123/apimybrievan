@@ -456,7 +456,7 @@ class ApiLasController extends Controller
             'code'         => $respons['statusCode'],
             'descriptions' => $respons['statusDesc'],
             'contents' => [
-                'data' => $response['items']
+                'data' => $respons['items']
             ]
         ];
         return $conten;
