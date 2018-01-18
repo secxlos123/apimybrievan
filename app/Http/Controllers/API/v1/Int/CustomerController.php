@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\CustomerRequest;
 use App\Events\Customer\CustomerVerify;
+use App\Events\EForm\VerifyEForm;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\EForm;
