@@ -38,6 +38,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
 
+		Route::get('notification', 'NotificationController@unReadMobile');
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );

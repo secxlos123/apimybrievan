@@ -630,6 +630,11 @@ class EFormController extends Controller
             $notificationIsRead->markAsRead();
         }
 
+        $eform->message = [
+            'title' => "EForm Notification",
+            'body'  => "E-Form berhasil di disposisi"
+        ];
+
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
