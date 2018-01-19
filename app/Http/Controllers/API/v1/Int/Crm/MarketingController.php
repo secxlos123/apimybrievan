@@ -220,8 +220,8 @@ class MarketingController extends Controller
       $data['target'] = $request['target'];
       $data['account_id'] = $request['account_id'];
       $data['nama'] = $request['nama'];
-      $data['nik'] = $request['nik'];
-      $data['cif'] = $request['cif'];
+      $data['nik'] = ($request['nik'] == "") ? null : $request['nik'];
+      $data['cif'] = ($request['cif'] == "") ? null : $request['cif'];
       $data['status'] = $request['status'];
       $data['ref_id'] = $request['ref_id'];
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));

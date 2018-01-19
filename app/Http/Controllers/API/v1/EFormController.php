@@ -29,6 +29,7 @@ use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
 use DB;
+
 class EFormController extends Controller
 {
     public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
@@ -651,7 +652,7 @@ class EFormController extends Controller
     }
 
     /**
-     * Set E-Form AO disposition.
+     * Set E-Form Approve.
      *
      * @param integer $eform_id
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request
@@ -668,45 +669,65 @@ class EFormController extends Controller
             $baseRequest['pinca_position'] = $user_login['position'];
         }
 
-        $eform = EForm::approve( $eform_id, $baseRequest );
-        if( $eform['status'] ) {
+        $data = EForm::findOrFail($eform_id);
+        $currentStatus = $data->status_eform;
 
+        $eform = EForm::approve( $eform_id, $baseRequest );
+
+        if( $eform['status'] ) {
             $data =  EForm::findOrFail($eform_id);
             $typeModule = getTypeModule(EForm::class);
-            $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
+
+            $notificationIsRead = $this->userNotification
+                ->where( 'slug', $eform_id)
+                ->where( 'type_module',$typeModule)
+                ->whereNull('read_at')
+                ->first();
+
             if($notificationIsRead != NULL ){
                 $notificationIsRead->markAsRead();
             }
-            if ($request->is_approved) {
 
+            if ($request->is_approved) {
                 $usersModel = User::FindOrFail($data->user_id);
-                event( new Approved( $data ) );
+                // Recontest
+                if ( $currentStatus != 'Approval2' ) {
+                    event( new Approved( $data ) );
+
+                }
 
                 // $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
                 // $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
                 $responseMessage = 'E-form berhasil di approve.';
-            } else {
 
+            } else {
                 $usersModel = User::FindOrFail($data->user_id);
                 event( new RejectedEform( $data ) );
 
                 $responseMessage = 'E-form berhasil di reject.';
+
             }
 
-            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+            // Recontest
+            if ( $currentStatus == 'Approval2' ) {
+                $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
+                generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
 
-            $credentials = [
-                'data' => $data,
-                'user'  => $usersModel
-            ];
+            } else {
+                $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+                generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
 
-            $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
 
-            // Call the helper of push notification function
-            pushNotification($credentials, $status);
+                $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
+
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
+
+            }
 
             return response()->success( [
                 'message' => $responseMessage,
@@ -752,12 +773,17 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
-                /*$notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
-                                           ->whereNull('read_at')
-                                           ->first();
-                if($notificationIsRead != NULL){
+
+                $notificationIsRead =  $this->userNotification
+                    ->where( 'slug', $verify['contents']->id)
+                    ->where( 'type_module',$typeModule)
+                    ->whereNull('read_at')
+                    ->first();
+
+                if ( $notificationIsRead != NULL ) {
                     $notificationIsRead->markAsRead();
-                }*/
+                }
+
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
                 $credentials = [
@@ -769,11 +795,14 @@ class EFormController extends Controller
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
 
-					if($verify['contents']['product_type']=='briguna'){
-                    $detail = EForm::with( 'customer', 'briguna' )->where('id', $verify['contents']->id)->first();
-					}else{
-					$detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
-					}
+					if ( $verify['contents']['product_type'] == 'briguna' ){
+                        $detail = EForm::with( 'customer', 'briguna' )->where('id', $verify['contents']->id)->first();
+
+                    } else {
+					   $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
+
+                    }
+
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
                 }
                 event( new VerifyEForm( $verify['contents'] ) );
