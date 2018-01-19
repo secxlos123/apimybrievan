@@ -55,30 +55,32 @@ class UserDeveloper extends Model implements AuditableContract
     public function scopeGetLists($query, Request $request)
     {
 
-        $userdeveloperfill = $this->userdeveloperfill();
+       // $userdeveloperfill = $this->userdeveloperfill();
 
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-            ->leftJoin('users', 'user_developers.user_id', '=', 'users.id')
-            ->where(function ($developer) use (&$request, &$query) {
+                ->from('agen_developers_view_table')
+                ->where(function ($developer) use (&$request, &$query){
+                  
+                  /**
+                   * Query for search developers.
+                   */
+                  if ($request->has('search')){
+                        $developer->where(\DB::raw('LOWER(full_name)'), 'like', '%'.strtolower($request->input('search')).'%')
+                        ->orWhere(\DB::raw('LOWER(email)'), 'like', '%'.strtolower($request->input('search')).'%')
+                        ->orWhere(\DB::raw('LOWER(mobile_phone)'), 'like', '%'.strtolower($request->input('search')).'%');
+                    }
+                })
+                ->where(function ($developer) use ($request) {
 
-                /**
-                 * Query for search developers.
-                 */
-                if ($request->has('search')) $query->search($request);
-            })
-            ->where(function ($developer) use ($request) {
-
-                /**
-                 * Query for filter by admin developer id.
-                 */
+                 /**
+                  * Query for filter by admin developer id.
+                  */
                 $developer->where('admin_developer_id', $request->user()->id);
-
-            })
-            ->select(array_merge(['users.is_actived','users.first_name','users.last_name','users.email','users.last_login','users.mobile_phone', 'users.is_banned'],$userdeveloperfill))
-            // ->selectRaw('(select users.image from users where users.id = user_developers.user_id) as image')
-            ->orderBy('user_developers'.'.'.$sort[0], $sort[1]);
+                })
+                ->orderBy($sort[0], $sort[1]);
+            
     }
 
     /**
