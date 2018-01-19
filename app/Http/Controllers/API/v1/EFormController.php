@@ -308,7 +308,7 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         try {
-/*         $branchs = \RestwsHc::setBody([
+        $branchs = \RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',
                 'requestData'   => [
@@ -323,27 +323,35 @@ class EFormController extends Controller
             ])
         ])
         ->post('form_params');
- */
-		$data_new['branch']=$request->input('branch_id');
-		
-		      if ( count(apiPdmToken::all()) > 0 ) {
-				$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-			  } else {
-				$this->gen_token();
-				$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-			  }
-		      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-				$token = $apiPdmToken['access_token'];
-				$listExisting = $this->ListBranch($data_new, $token);
-				
-			  } else {
-				$briConnect = $this->gen_token();
-				$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-				
-				$token = $apiPdmToken['access_token'];
-				$listExisting = $this->ListBranch($data_new, $token);
 
-			  }
+        if ($request->product_type == 'briguna') {
+
+        $data_new['branch']=$request->input('branch_id');
+              if ( count(apiPdmToken::all()) > 0 ) {
+                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+              } else {
+                $this->gen_token();
+                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+              }
+              if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+                $token = $apiPdmToken['access_token'];
+                $listExisting = $this->ListBranch($data_new, $token);
+              } else {
+                $briConnect = $this->gen_token();
+                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+                $token = $apiPdmToken['access_token'];
+                $listExisting = $this->ListBranch($data_new, $token);
+
+              }
+            if ( $listExisting['success'] == '00' ) {
+                foreach ($listExisting['data'] as $branch) {
+                    if ( $branch['branch'] == $request->input('branch_id') ) {
+                        $baseRequest['branch'] = $branch['mbdesc'];
+
+                    }
+                }
+            }
+        }
         $baseRequest = $request->all();
 
         // Get User Login
@@ -357,17 +365,8 @@ class EFormController extends Controller
             $baseRequest['staff_name'] = $user_login['name'];
             $baseRequest['staff_position'] = $user_login['position'];
         }
-\Log::info($listExisting);
 
-        if ( $listExisting['success'] == '00' ) {
-            foreach ($listExisting['data'] as $branch) {
-                if ( $branch['branch'] == $request->input('branch_id') ) {
-                    $baseRequest['branch'] = $branch['mbdesc'];
 
-                }
-            }
-        }
-/* 
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
                 if ( $branch['kode_uker'] == $request->input('branch_id') ) {
@@ -375,7 +374,7 @@ class EFormController extends Controller
 
                 }
             }
-        } */
+        }
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
