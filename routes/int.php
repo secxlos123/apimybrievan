@@ -65,6 +65,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			Route::resource( 'visit-reports', 'VisitReportController', [
 				'only' => [ 'store' ]
 			] );
+			Route::resource( 'recontest', 'RecontestController', [
+				'only' => [ 'store' ]
+			] );
 			Route::group( [ 'prefix' => 'verification' ], function () {
 				Route::post( 'show', 'VerificationController@show' );
 				Route::get( 'resend', 'VerificationController@resend' );
