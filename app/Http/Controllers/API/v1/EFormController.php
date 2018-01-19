@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
-// use App\Events\EForm\Recontest;
 use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
@@ -692,10 +691,7 @@ class EFormController extends Controller
             if ($request->is_approved) {
                 $usersModel = User::FindOrFail($data->user_id);
                 // Recontest
-                if ( $currentStatus == 'Approval2' ) {
-                    // event( new Recontest( $data ) );
-
-                } else {
+                if ( $currentStatus != 'Approval2' ) {
                     event( new Approved( $data ) );
 
                 }
@@ -714,8 +710,8 @@ class EFormController extends Controller
 
             // Recontest
             if ( $currentStatus == 'Approval2' ) {
-                // $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
-                // generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+                $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
+                generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
 
             } else {
                 $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
