@@ -13,6 +13,7 @@ use App\Models\Crm\ActionActivity;
 
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
+use App\Models\Crm\Referral;
 
 class marketingActivityController extends Controller
 {
