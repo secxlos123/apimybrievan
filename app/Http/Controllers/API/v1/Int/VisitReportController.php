@@ -36,7 +36,8 @@ class VisitReportController extends Controller
      * @param  \App\Http\Requests\API\v1\VisitReportRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store( $eform_id, VisitReportRequest $request )
+    // public function store( $eform_id, VisitReportRequest $request )
+    public function store( $eform_id, Request $request )
     {
         DB::beginTransaction();
 
@@ -50,12 +51,13 @@ class VisitReportController extends Controller
         $user_login = \RestwsHc::getUser();
 
         $eform = EForm::find($eform_id);
-        // @$notificationIsRead =  $this->userNotification->where('eform_id',$eform_id)
-        //                            ->whereNull('read_at')
-        //                            ->first();               
-        // if(@$notificationIsRead){
-        //     $notificationIsRead->markAsRead();
-        // }
+        @$notificationIsRead =  $this->userNotification->where('slug',$eform_id)
+                                     ->where('type_module', 'eform')
+                                     ->whereNull('read_at')
+                                     ->first();
+        if(@$notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
      
         $usersModel = User::FindOrFail($eform->user_id);
 
@@ -64,10 +66,8 @@ class VisitReportController extends Controller
             , 'appointment_date' => $request->input('date')
             , 'ao_name' => $user_login['name']
             , 'ao_position' => $user_login['position']
-        ]);
-
+        ]);        
         $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $data );
-        
         $credentials = [
             'data'        => $eform,
             'user'        => $usersModel,

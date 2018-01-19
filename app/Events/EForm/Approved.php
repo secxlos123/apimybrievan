@@ -11,7 +11,6 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 use App\Models\EForm;
-use App\Models\User;
 
 class Approved
 {

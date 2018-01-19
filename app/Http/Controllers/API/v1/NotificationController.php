@@ -35,7 +35,7 @@ class NotificationController extends Controller
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
-        
+
         $ArrGetDataNotification = [];
         $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id);
         if($getDataNotification){

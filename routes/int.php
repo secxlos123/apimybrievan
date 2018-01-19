@@ -14,12 +14,17 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
+	Route::post('mitraall', 'mitra\ScoringProsesController@getallmitra');
 	Route::post('hapus_dir', 'dirrpcController@hapus_dir');
+	Route::post('hapus_detail_dir', 'dirrpcController@hapus_detail_dir');
+	Route::post('update_detail', 'dirrpcController@update_detail');
+	Route::post('add_detail', 'dirrpcController@add_detail');
 	Route::post('get_dir', 'dirrpcController@get_dir');
 	Route::post('get_dir_detail', 'dirrpcController@get_dir_detail');
 	Route::post( 'auth/login', 'AuthController@store' );
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
 	Route::post('getBranch', 'SelectUkerController@getBranch');
+
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
@@ -60,6 +65,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			Route::resource( 'visit-reports', 'VisitReportController', [
 				'only' => [ 'store' ]
 			] );
+			Route::resource( 'recontest', 'RecontestController', [
+				'only' => [ 'store' ]
+			] );
 			Route::group( [ 'prefix' => 'verification' ], function () {
 				Route::post( 'show', 'VerificationController@show' );
 				Route::get( 'resend', 'VerificationController@resend' );
@@ -72,6 +80,33 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 
 		Route::get( 'staff-list', 'StaffController@index' );
 
+				Route::resource( 'scorings', 'ScoringController', [
+			'except' => [ 'edit', 'create' ]
+		] );
+		 Route::resource( 'gimmick', 'GimmickController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'register_mitra', 'mitra\RegisterMitraController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'scoring_mitra', 'mitra\ScoringProsesController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'penilaian_kelayakan', 'mitra\PenilaianKelayakanController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'input_kolektif', 'mitra\eksternal\InputKolektifController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'hasil_scoring', 'mitra\HasilScoringController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'dirrpc', 'dirrpcController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'mitra_list', 'mitra\MitraListController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
 		] );

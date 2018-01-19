@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use File;
 
 class Recontest extends Model implements AuditableContract
 {
@@ -17,7 +18,7 @@ class Recontest extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'id', 'eform_id', 'purpose_of_visit', 'pros', 'cons', 'ao_recommendation', 'ao_recommended', 'pinca_recommendation', 'pinca_recommended', 'expired_date', 'documents'
+        'id', 'eform_id', 'purpose_of_visit', 'pros', 'cons', 'ao_recommendation', 'ao_recommended', 'pinca_recommendation', 'pinca_recommended', 'expired_date', 'documents', 'mutations'
     ];
 
     /**
@@ -39,7 +40,7 @@ class Recontest extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $casts = [ 'documents' => 'array' ];
+    protected $casts = [ 'documents' => 'array', 'mutations' => 'array' ];
 
     /**
      * The relation to EForm.
@@ -49,5 +50,71 @@ class Recontest extends Model implements AuditableContract
     public function eform()
     {
         return $this->belongsTo( EForm::class, 'eform_id' );
+    }
+
+    /**
+     * Generate array upload data
+     *
+     * @return void
+     **/
+    public function generateArrayData( $request, $field )
+    {
+        $return = array();
+        $eform = $this->eform;
+        $path = public_path( 'uploads/' . $eform->nik . '/' );
+
+        if ( !empty( $this->{$field} ) ) {
+            foreach ($this->{$field} as $key => $value) {
+                File::delete( $path . $value[ 'image' ] );
+            }
+        }
+
+        foreach ($request as $key => $data) {
+            $keyTarget = 'file';
+            $name = $key;
+            if ( $field == 'documents' ) {
+                $keyTarget = 'document';
+                $name = $data[ 'name' ];
+            }
+
+            $image = $this->globalSetImage( $eform, $path, ($name . '-' . $field), $data[ $keyTarget ] );
+            unset( $data[ $keyTarget ] );
+
+            if ( $image ) {
+                $data[ 'image' ] = $image;
+                $return[ $key ] = $data;
+            }
+        }
+
+        $this->{$field} = $return;
+        $this->save();
+    }
+
+    /**
+     * Global function for set image.
+     *
+     * @return string
+     */
+    public function globalSetImage( $eform, $path, $name, $image )
+    {
+        $filename = null;
+        if ( gettype($image) == 'object' ) {
+            $extension = 'png';
+
+            if ( !$image->getClientOriginalExtension() ) {
+                if ( $image->getMimeType() == 'image/jpg' ) {
+                    $extension = 'jpg';
+                } elseif ( $image->getMimeType() == 'image/jpeg' ) {
+                    $extension = 'jpeg';
+                }
+            } else {
+                $extension = $image->getClientOriginalExtension();
+            }
+
+            $filename = $eform->id . '-' . $name . '.' . $extension;
+            $image->move( $path, $filename );
+        }
+
+        return $filename;
     }
 }

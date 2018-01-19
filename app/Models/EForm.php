@@ -285,9 +285,8 @@ class EForm extends Model implements AuditableContract
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
+
         if ( $request->is_approved ) {
-            // di update kalo collateral udah jalan
-            // ganti lgi, request by Mas Danu
             if( $eform->recontest ) {
                 $result = $eform->insertCoreBRI(11);
                 if ($result['status']) {
@@ -299,22 +298,84 @@ class EForm extends Model implements AuditableContract
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
-            {
+
+            } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
                 }
-            }
-            else{
 
+            } else if ($eform->status_eform == 'Approval2' ) {
+                // Recontest
+                $result = $eform->insertCoreBRI(11);
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
+                }
+
+            } else {
                 $result = $eform->insertCoreBRI(8);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> false]);
                 }
+
             }
 
-            if ($result['status']) {
+            // Recontest
+            if ($eform->status_eform == 'Approval2' ) {
+                if ($result['status']) {
+                    $eform->update( [
+                        'pinca_position' => $request->pinca_position,
+                        'pinca_name' => $request->pinca_name,
+                        'is_approved' => $request->is_approved,
+                        'status_eform' => 'approved'
+                    ] );
+
+                    $eform->recontest->update( [
+                        'pinca_recommendation' => $request->recommendation,
+                        'pinca_recommended' => $request->recommended == "yes" ? true : false
+                    ] );
+                }
+
+            } else {
+                if ($result['status']) {
+                    $eform->update( [
+                        'pros' => $request->pros,
+                        'cons' => $request->cons,
+                        'pinca_position' => $request->pinca_position,
+                        'pinca_name' => $request->pinca_name,
+                        'recommendation' => $request->recommendation,
+                        'recommended' => $request->recommended == "yes" ? true : false,
+                        'is_approved' => $request->is_approved,
+                        'status_eform' => 'approved'
+                    ] );
+
+                    if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+                        PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
+                    }
+                }
+
+            }
+
+        } else {
+            // Recontest
+            if ($eform->status_eform == 'Approval2' ) {
+                $eform->update( [
+                    'pinca_position' => $request->pinca_position,
+                    'pinca_name' => $request->pinca_name,
+                    'is_approved' => $request->is_approved,
+                    'status_eform' => 'Rejected'
+                ] );
+
+                $eform->recontest->update( [
+                    'pinca_recommendation' => $request->recommendation,
+                    'pinca_recommended' => $request->recommended == "yes" ? true : false
+                ] );
+
+            } else {
+                if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+                    PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
+                }
+
                 $eform->update( [
                     'pros' => $request->pros,
                     'cons' => $request->cons,
@@ -323,29 +384,10 @@ class EForm extends Model implements AuditableContract
                     'recommendation' => $request->recommendation,
                     'recommended' => $request->recommended == "yes" ? true : false,
                     'is_approved' => $request->is_approved,
-                    'status_eform' => 'approved'
+                    'status_eform' => 'Rejected'
                 ] );
 
-                if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                    PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
-                }
             }
-
-        } else {
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
-            }
-
-            $eform->update( [
-                'pros' => $request->pros,
-                'cons' => $request->cons,
-                'pinca_position' => $request->pinca_position,
-                'pinca_name' => $request->pinca_name,
-                'recommendation' => $request->recommendation,
-                'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved,
-                'status_eform' => 'Rejected'
-            ] );
 
             $result['status'] = true;
 
@@ -374,7 +416,7 @@ class EForm extends Model implements AuditableContract
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', 'id_model_71']
             , ['InsertDataAgunan', 'fid_agunan']
-            , ['InsertIntoAnalisaRecontest', null]
+            , ['InsertIntoAnalisRecontest', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -403,7 +445,7 @@ class EForm extends Model implements AuditableContract
                 \Log::info(json_encode($sendRequest));
 
                 if ( $value[0] != 'InsertIntoReviewer' ) {
-                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1] );
+                    $set = $this->SentToBri( $sendRequest, $value[0], $value[1], $step );
 
                     if (!$set['status']) {
                         \Log::info('Error Step Ke -'.$step);
@@ -421,14 +463,10 @@ class EForm extends Model implements AuditableContract
             }
         }
 
-        $this->clas_position = $step;
-        $this->send_clas_date = date("Y-m-d");
-
         if ($step == 10) {
             $this->is_approved = true;
+            $this->save();
         }
-
-        $this->save();
 
         return $return;
     }
@@ -493,10 +531,10 @@ class EForm extends Model implements AuditableContract
                     $eform->has( 'visit_report' )->whereIsApproved( false );
 
                 } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
                     $eform->where('status_eform', $request->status);
@@ -535,6 +573,15 @@ class EForm extends Model implements AuditableContract
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
                     $eform->Where('eforms.prescreening_status', $prescreening);
+                }
+            } );
+        }
+
+        if ($request->has('name')) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
+                $name = $request->input('name');
+                if (strtolower($name) != 'all') {
+                    $eform->Where('eforms.ao_id', '000'.$request->input('name'));
                 }
             } );
         }
@@ -689,6 +736,7 @@ class EForm extends Model implements AuditableContract
                 , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
             ]);
 
+            // Recontest
             if ( $status == 'Approval2' ) {
                 if ( !$target->recontest ) {
                     $target->recontest()->create( [
@@ -839,7 +887,7 @@ class EForm extends Model implements AuditableContract
      * @param $value    Return Data From Bri
      * @return true|false Is Sent Success|Failed
      */
-    public function SentToBri($request, $endpoint, $value = null)
+    public function SentToBri($request, $endpoint, $value = null, $step)
     {
         $post_to_bri = Asmx::setEndpoint( $endpoint )
             ->setBody( [
@@ -860,13 +908,16 @@ class EForm extends Model implements AuditableContract
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
-                $this->save();
             }
             $return = array(
                 'status' => true
                 , 'message' => ''
             );
         }
+
+        $this->clas_position = $step + 1;
+        $this->send_clas_date = date("Y-m-d");
+        $this->save();
 
         return $return;
     }

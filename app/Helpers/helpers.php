@@ -389,7 +389,7 @@ if (! function_exists('getTypeModule')) {
      */
     function getTypeModule($module)
     {
-        
+
         switch ($module) {
             case 'App\Models\Appointment':
                 $typeModule = 'schedule';
@@ -441,7 +441,7 @@ if (! function_exists('pushNotification')) {
                 verifyCustomer($credentials);
             }else if ($type =='general'){
                 collateralNotification($credentials);
-            } 
+            }
         }
     }
 
@@ -455,13 +455,14 @@ if (! function_exists('pushNotification')) {
         $notificationBuilder->setBody('Silahkan Verifikasi Data Anda.')
                             ->setSound('default');
 
-        $notificationData = UserNotification::where('eform_id', $dataUser['id'])
+        $notificationData = UserNotification::where('slug', $dataUser['id'])
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
-            'slug'     => $dataUser['id'],
-            'type'     => 'schedule',
+            'slug'     => $dataUser['ref_number'],
+            'type'     => 'verify_account',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
@@ -477,27 +478,31 @@ if (! function_exists('pushNotification')) {
 
     function updateSchedule($credentials){
         $dataUser = $credentials['data'];
-
-        $userModel  = User::FindOrFail($dataUser['user_id']);
-        $userModel->notify(new UpdateScheduleNotification($dataUser));
+        $role     = $credentials['role'];
 
         $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
-        $notificationBuilder->setBody('Schedule anda telah di update.')
+        $notificationBuilder->setBody('Jadwal anda telah di update ! Silahkan cek jadwal anda.')
                             ->setSound('default');
 
-        $notificationData = UserNotification::where('eform_id', $dataUser['eform_id'])
+        $notificationData = UserNotification::where('slug', $dataUser['eform_id'])
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
-            'slug'     => $dataUser['eform_id'],
-            'type'     => 'schedule',
+            'slug'     => $dataUser['ref_number'],
+            'type'     => 'schedule_updated',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
 
         $topic = new Topics();
-        $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
+
+        if($role == 'customer'){
+            $topic->topic('testing')->andTopic('ao_'.$dataUser['ao_id']);
+        }else{
+            $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
+        }
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
@@ -508,28 +513,24 @@ if (! function_exists('pushNotification')) {
     function createSchedule($credentials){
         $dataUser = $credentials['data'];
 
-        $userModel  = User::FindOrFail($dataUser['user_id']);
-        $userModel->notify(new CreateScheduleNotification($dataUser));
-
         $notificationBuilder = new PayloadNotificationBuilder('Schedule Notification');
-        $notificationBuilder->setBody('Anda memiliki schedule baru.')
+        $notificationBuilder->setBody('Anda memiliki jadwal baru.')
                             ->setSound('default');
 
-
-        $notificationData = UserNotification::where('eform_id', $dataUser['eform_id'])
+        $notificationData = UserNotification::where('slug', $dataUser['eform_id'])
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
-            'slug'     => $dataUser['eform_id'],
-            'type'     => 'schedule',
+            'slug'     => $dataUser['ref_number'],
+            'type'     => 'schedule_created',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
 
         $topic = new Topics();
-        $topic->topic('testing');
-        // topic('user_'.$save['user_id']);
+        $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
@@ -551,13 +552,14 @@ if (! function_exists('pushNotification')) {
                             ->setSound('default');
 
         // Get data from notifications table
-        $notificationData = $userNotif->where('eform_id', $data['data']->id)
-                                        ->orderBy('created_at', 'desc')->first();
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                      ->where('type_module', 'eform')
+                                      ->orderBy('created_at', 'desc')->first();
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
             'slug'     => $data['data']->id,
-            'type'     => 'eform',
+            'type'     => 'eform_lkn',
         ]);
 
         $notification = $notificationBuilder->build();
@@ -576,25 +578,27 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials['eform'];
         $aoId      = $credentials['ao_id'];
         $userNotif = new UserNotification;
-
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
         $notificationBuilder->setBody('E-Form berhasil di disposisi')
                             ->setSound('default');
         // Get data from notifications table
-        $notificationData = $userNotif->where('eform_id', $data->id)
-                                        ->orderBy('created_at', 'desc')->first();
+        $notificationData = $userNotif->where('slug', $data->id)
+                                      ->where('type_module', 'eform')
+                                      ->orderBy('created_at', 'desc')->first();
+
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
-            'id'       => $notificationData['id'],
-            'slug'     => $data->id,
-            'type'     => 'eform',
+            'id'         => $notificationData['id'],
+            'slug'       => $data->ref_number,
+            'type'       => 'eform'
         ]);
-        $notification = $notificationBuilder->build();
-        $data         = $dataBuilder->build();
-        $topic = new Topics();
-        $topic->topic('testing')->orTopic('ao_'.$aoId);
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $notification = $notificationBuilder->build();
+        $payload         = $dataBuilder->build();
+        $topic = new Topics();
+        $topic->topic('testing')->andTopic('branch_012')->andTopic('ao_'.$aoId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
         $topicResponse->isSuccess();
         $topicResponse->shouldRetry();
         $topicResponse->error();
@@ -608,14 +612,15 @@ if (! function_exists('pushNotification')) {
             $notificationBuilder->setBody('Pengajuan KPR Baru')
                                 ->setSound('default');
             // Get data from notifications table
-            $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+            $notificationData = UserNotification::where('slug', $dataUser['data']->id)
+                                            ->where('type_module', 'eform')
                                             ->orderBy('created_at', 'desc')->first();
 
             $dataBuilder = new PayloadDataBuilder();
             $dataBuilder->addData([
                 'id'   => $notificationData['id'],
-                'slug' => $dataUser['data']->id,
-                'type' => 'eform',
+                'slug' => $dataUser['data']->ref_number,
+                'type' => 'eform_created',
             ]);
 
             $notification = $notificationBuilder->build();
@@ -635,14 +640,15 @@ if (! function_exists('pushNotification')) {
                 $notificationBuilder->setBody('Pengajuan KPR Baru')
                                     ->setSound('default');
                 // Get data from notifications table
-                $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                $notificationData = UserNotification::where('slug', $dataUser['data']->id)
+                                                ->where('type_module', 'eform')
                                                 ->orderBy('created_at', 'desc')->first();
 
                 $dataBuilder = new PayloadDataBuilder();
                 $dataBuilder->addData([
                     'id'   => $notificationData['id'],
-                    'slug' => $dataUser['data']->id,
-                    'type' => 'eform',
+                    'slug' => $dataUser['data']->ref_number,
+                    'type' => 'eform_created',
                 ]);
 
                 $notification = $notificationBuilder->build();
@@ -666,14 +672,15 @@ if (! function_exists('pushNotification')) {
                 $notificationBuilder->setBody('Pengajuan KPR Baru')
                                     ->setSound('default');
                 // Get data from notifications table
-                $notificationData = UserNotification::where('eform_id', $dataUser['data']->id)
+                $notificationData = UserNotification::where('slug', $dataUser['data']->id)
+                                                ->where('type_module', 'eform')
                                                 ->orderBy('created_at', 'desc')->first();
 
                 $dataBuilder = new PayloadDataBuilder();
                 $dataBuilder->addData([
                     'id'   => $notificationData['id'],
-                    'slug' => $dataUser['data']->id,
-                    'type' => 'eform',
+                    'slug' => $dataUser['data']->ref_number,
+                    'type' => 'eform_created',
                 ]);
 
                 $notification = $notificationBuilder->build();
@@ -703,14 +710,15 @@ if (! function_exists('pushNotification')) {
                             ->setSound('default');
 
         // Get data from notifications table
-        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
 
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
-            'slug' => $data['data']->id,
-            'type' => 'eform',
+            'slug' => $data['data']->ref_number,
+            'type' => 'eform_approved',
         ]);
 
         $notification = $notificationBuilder->build();
@@ -730,22 +738,24 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
         $userNotif = new UserNotification;
-
+        echo $data['data']->ref_number;
+        die();
         $userModel->notify(new RejectEFormCustomer($data['data']));
-        
+
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
         $notificationBuilder->setBody('Pengajuan anda telah di Ditolak.')
                             ->setSound('default');
 
         // Get data from notifications table
-        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
 
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
-            'slug' => $data['data']->id,
-            'type' => 'eform',
+            'slug' => $data['data']->ref_number,
+            'type' => 'eform_rejected',
         ]);
 
         $notification = $notificationBuilder->build();
@@ -773,14 +783,15 @@ if (! function_exists('pushNotification')) {
                             ->setSound('default');
 
         // Get data from notifications table
-        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
 
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
             'slug'     => $data['data']->id,
-            'type'     => 'eform',
+            'type'     => 'eform_kpr_approved',
         ]);
 
         $notification = $notificationBuilder->build();
@@ -808,14 +819,15 @@ if (! function_exists('pushNotification')) {
                             ->setSound('default');
 
         // Get data from notifications table
-        $notificationData = $userNotif->where('eform_id', $data['data']->id)
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
 
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
-            'slug'     => $data['data']->id,
-            'type'     => 'eform',
+            'slug'     => $data['data']->ref_number,
+            'type'     => 'eform_kpr_rejected',
         ]);
 
         $notification = $notificationBuilder->build();
@@ -831,13 +843,13 @@ if (! function_exists('pushNotification')) {
     }
 
     function collateralNotification($credentials){
-       $user_id= $credentials['user_id']; 
-       $bodyNotif= $credentials['bodyNotif']; 
-       $headerNotif= $credentials['headerNotif']; 
-       $id = $credentials['id']; 
-       $type= $credentials['type']; 
-       $slug = $credentials['slug']; 
-       $receiver = $credentials['receiver']; 
+       $user_id= $credentials['user_id'];
+       $bodyNotif= $credentials['bodyNotif'];
+       $headerNotif= $credentials['headerNotif'];
+       $id = $credentials['id'];
+       $type= $credentials['type'];
+       $slug = $credentials['slug'];
+       $receiver = $credentials['receiver'];
 
         $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
         $notificationBuilder->setBody($bodyNotif)
@@ -849,11 +861,11 @@ if (! function_exists('pushNotification')) {
             'slug'     => $slug,
             'type'     => $type,
         ]);
-                              
+
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
         $topic = new Topics();
-        if($receiver=='staf_collateral'){   
+        if($receiver=='staf_collateral'){
              $dataUser  = UserServices::where('pn',$user_id)->first();
              $branch_id = $dataUser['branch_id'];
              $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
@@ -867,10 +879,10 @@ if (! function_exists('pushNotification')) {
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
         $topicResponse->shouldRetry();
-        $topicResponse->error(); 
+        $topicResponse->error();
     }
 
-    
+
 
 
 }

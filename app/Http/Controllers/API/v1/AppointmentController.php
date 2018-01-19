@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Models\UserServices;
 use App\Models\UserNotification;
 use App\Notifications\NewSchedulerCustomer;
-
+use App\Notifications\UpdateSchedulerCustomer;
 use Illuminate\Http\Request;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
@@ -99,7 +99,7 @@ class AppointmentController extends Controller
             $notificationIsRead =  $this->userNotification->where( 'slug', $save->eform_id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-            if(@$notificationIsRead){
+            if($notificationIsRead != NULL){
                 $notificationIsRead->markAsRead();
             }
 
@@ -109,7 +109,11 @@ class AppointmentController extends Controller
             // Push Notification
             /*{}*/
             $credentials = [
-                'data'  => $save,
+                'data'  => [
+                    'user_id'    => $request->user_id,
+                    'ref_number' => $request->ref_number,
+                    'eform_id'   => $request->eform_id
+                ],
             ];
 
             // Call the helper of push notification function
@@ -173,15 +177,22 @@ class AppointmentController extends Controller
             $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
                                        ->whereNull('read_at')
                                        ->first();
-            if(@$notificationIsRead){
+            if($notificationIsRead != NULL){
                 $notificationIsRead->markAsRead();
             }
 
             $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
-            $usersModel->notify(new NewSchedulerCustomer($save));
+            $usersModel->notify(new UpdateSchedulerCustomer($Update));
+
+            if($type == 'int'){
+                $role = 'ao';
+            }else{
+                $role = 'customer';
+            }
 
             $credentials = [
                 'data'  => $Update,
+                'role'  => $role,
             ];
 
             // Call the helper of push notification function
