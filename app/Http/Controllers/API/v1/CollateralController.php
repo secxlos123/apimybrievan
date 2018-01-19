@@ -261,8 +261,6 @@ class CollateralController extends Controller
         {
           $hasapprove = false;
         }
-        // $collateraldata = $this->collateral->withAll()->findOrFail($collateralId);
-        // generate_pdf('uploads/'. $eformdata->nik, 'collateral.pdf', view('pdf.collateral', compact('eformdata','collateraldata')));
           if ($collateral->developer_id == $developer_id && $hasapprove) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
               if ($sentclas['status']) {
