@@ -23,7 +23,7 @@ Route::get('/routes', function () {
 });
 
 Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
-	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr' )
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr', 'recontest' )
 		->where('ref_number', $ref_number)->first();
 	$path = public_path('uploads/'.$detail->nik);
 	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
@@ -35,6 +35,9 @@ Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
     echo "<br/>";
 
    	echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+    echo "<br/>";
+
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
     echo "<br/>";
 	return $detail->nik;
 });
