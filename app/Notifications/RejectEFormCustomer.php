@@ -66,6 +66,7 @@ class RejectEFormCustomer extends Notification
             'ref_number' => $this->eForm->ref_number,
             'branch_id' => $this->eForm->branch_id,
             'created_at' => $this->eForm->created_at,
+            'message' => $this->eForm->message,
         ];
     }
 

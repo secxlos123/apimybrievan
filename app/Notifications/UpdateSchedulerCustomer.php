@@ -80,6 +80,7 @@ class UpdateSchedulerCustomer extends Notification
             'slug' => $this->appointment->id,
             'type_module' => $typeModule,
             'created_at' => $this->appointment->created_at,
+            'message' => $this->appointment->message,
         ];
     }
 }
