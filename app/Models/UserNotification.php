@@ -59,7 +59,7 @@ class UserNotification extends Model
 		switch ($this->type) {
 		/* eform  */
 		case 'App\Notifications\PengajuanKprNotification':
-			$subjectNotif = ['message' => 'Pengajuan KPR Baru',
+			$subjectNotif = ['message' => 'Pengajuan Aplikasi KPR Baru',
 				'url' => $url,
 			];
 			break;

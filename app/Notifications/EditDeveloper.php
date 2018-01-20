@@ -7,22 +7,22 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
-use App\Models\Property;
+use App\Models\Developer;
 
-class PropertyNotification extends Notification
+class EditDeveloper extends Notification
 {
     use Queueable;
 
-    public $prop;
+    public $dev;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($prop)
+    public function __construct($dev)
     {
-        $this->prop = $prop;
+        $this->dev   = $dev;
     }
 
     /**
@@ -44,10 +44,10 @@ class PropertyNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        // return (new MailMessage)
-        //             ->line('The introduction to the notification.')
-        //             ->action('Notification Action', url('/'))
-        //             ->line('Thank you for using our application!');
+        /*return (new MailMessage)
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');*/
     }
 
     /**
@@ -63,25 +63,19 @@ class PropertyNotification extends Notification
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function toDatabase($notifiable)
     {
-        $typeModule = getTypeModule(Property::class);
+        $typeModule = getTypeModule(Developer::class);
 
         return [
-            'prop_id' => $this->prop->id,
+            'developer_id' => $this->dev->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
             'branch_id' => 0,
             'role_name' => $notifiable->roles->first()->slug,
-            'name' => $this->prop->name,
-            'slug' => $this->prop->id,
+            'slug' => $this->dev->id,
             'type_module' => $typeModule,
+            'created_at' => $this->dev->created_at,
         ];
     }
 }

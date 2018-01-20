@@ -397,6 +397,12 @@ if (! function_exists('getTypeModule')) {
             case 'App\Models\EForm':
                 $typeModule = 'eform';
                 break;
+            case 'App\Models\Collateral':
+                $typeModule = 'collateral';
+                break;
+            case 'App\Models\UserDeveloper':
+                $typeModule = 'developer-sales';
+                break;
             default:
                 $typeModule = 'Type undefined';
                 break;

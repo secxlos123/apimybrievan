@@ -31,11 +31,27 @@ class NotificationController extends Controller
    
     public function unread(Request $request)
     {
-        $branch_id = ( request()->header( 'branch_id' ) != '' ) ? request()->header( 'branch_id' ) : 0 ;
+        if( request()->header( 'branch_id' ) != '' ){
+            $branch_id    = request()->header( 'branch_id' );
+        }elseif (request()->header( 'branchId' ) != '') {
+            $branch_id    = request()->header( 'branchId' );
+        }
+        else {
+            $branch_id    = 0;            
+        }
+
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
-    	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
-        
+    	
+        if( request()->header( 'user_id' ) != '' ){
+            $user_id    = request()->header( 'user_id' );
+        }elseif (request()->header( 'userId' ) != '') {
+            $user_id    = request()->header( 'userId' );
+        }
+        else {
+            $user_id    = 0;            
+        }
+
         $ArrGetDataNotification = [];
         $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id);
         if($getDataNotification){
@@ -65,7 +81,7 @@ class NotificationController extends Controller
     
     public function read(Request $request,$slug, $type)
     {
-        $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : null ;
+        $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : NULL ;
         $notification = $this->userNotification
             ->where( 'slug', $slug)->where( 'type_module', $type)->whereNull('read_at')
             ->firstOrFail();
