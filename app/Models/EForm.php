@@ -803,60 +803,56 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      */
-    public static function searchPrescreening( $eform )
+    public static function searchPrescreening( $eform, $position = 'search' )
     {
         $customer = $eform->customer;
-        // $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'nomer_id_pefindo' => $eform->nik
-        //             , 'nama_pefindo' => $customer->personal['name']
-        //             , 'tanggal_lahir_pefindo' => $customer->personal['birth_date']
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+        if ( $position == 'search' ) {
+            $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'nomer_id_pefindo' => $eform->nik
+                        , 'nama_pefindo' => $customer->personal['name']
+                        , 'tanggal_lahir_pefindo' => $customer->personal['birth_date']
+                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        // \Log::info($getPefindo);
+            return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : null;
 
-        // $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-        //             , 'tipesubject_pefindo' => 'individual'
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //             , 'nomer_id_pefindo' => $eform->nik
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+        } else if ( $position == 'data' ) {
+            $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+                        , 'tipesubject_pefindo' => 'individual'
+                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+                        , 'nomer_id_pefindo' => $eform->nik
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        // \Log::info($getReportPefindo);
+            if ( $getReportPefindo["code"] == "200" ) {
+
+            }
+
         // return $return['contents']['cip']['recordlist'][0]["score"];
+        } else if ( $position == 'pdf' ) {
+            $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+                        , 'tipesubject_pefindo' => 'individual'
+                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+                        , 'nomer_id_pefindo' => $eform->nik
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        // $getFilePefindo = Asmx::setEndpoint( 'GetPdfReport' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-        //             , 'tipesubject_pefindo' => 'individual'
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //             , 'nomer_id_pefindo' => $eform->nik
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+        }
 
-        // \Log::info($getFilePefindo);
 
-        // $eform = \App\Models\EForm::first();
-        // $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-        //             , 'tipesubject_pefindo' => 'individual'
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //             , 'nomer_id_pefindo' => $eform->nik
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+
         // return file_put_contents(public_path('uploads/test.zip'), base64_decode($getFilePefindo["contents"]));
         // return base64_decode($getFilePefindo["contents"]);
     }

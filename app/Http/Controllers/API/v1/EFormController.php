@@ -342,7 +342,7 @@ class EFormController extends Controller
                     unset($baseRequest[$base]);
                 }
             }
-            
+
             if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
@@ -532,6 +532,7 @@ class EFormController extends Controller
                     ], 422 );
                 }
             }
+        }
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
