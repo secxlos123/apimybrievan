@@ -267,7 +267,7 @@ class CreateOts extends FormRequest
         'ten.insurance' => 'required|in:Ya,Tidak',
         'ten.insurance_company' => 'required_if:ten.insurance,Ya',
         'ten.insurance_company_name' => 'required_if:ten.insurance,Ya',
-        'ten.insurance_value' => 'equired_if:ten.insurance,Ya',
+        'ten.insurance_value' => 'required_if:ten.insurance,Ya',
         'ten.eligibility' => 'required',
       ];
     }
