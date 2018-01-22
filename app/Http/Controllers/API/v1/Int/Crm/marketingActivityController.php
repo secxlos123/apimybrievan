@@ -482,7 +482,7 @@ class marketingActivityController extends Controller
 
        // return array_column($marketingActivity,'pn');die();
       return response()->success( [
-          'message' => 'Success get marketing Activity by branch',
+          'message' => 'Success get list Activity by Marketing',
           'contents' => $marketingActivity
         ]);
 
