@@ -308,50 +308,6 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         try {
-            $branchs = \RestwsHc::setBody([
-                'request' => json_encode([
-                    'requestMethod' => 'get_near_branch_v2',
-                    'requestData'   => [
-                        'app_id' => 'mybriapi',
-                        'kode_branch' => $request->input('branch_id'),
-                        'distance'    => 0,
-
-                        // if request latitude and longitude not present default latitude and longitude cimahi
-                        'latitude'  => 0,
-                        'longitude' => 0
-                    ]
-                ])
-            ])
-            ->post('form_params');
-
-            if ($request->product_type == 'briguna') {
-                $data_new['branch']=$request->input('branch_id');
-                if ( count(apiPdmToken::all()) > 0 ) {
-                    $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-                } else {
-                    $this->gen_token();
-                    $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-                }
-
-                if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-                    $token = $apiPdmToken['access_token'];
-                    $listExisting = $this->ListBranch($data_new, $token);
-                } else {
-                    $briConnect = $this->gen_token();
-                    $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-                    $token = $apiPdmToken['access_token'];
-                    $listExisting = $this->ListBranch($data_new, $token);
-                }
-
-                if ( $listExisting['success'] == '00' ) {
-                    foreach ($listExisting['data'] as $branch) {
-                        if ( $branch['branch'] == $request->input('branch_id') ) {
-                            $baseRequest['branch'] = $branch['mbdesc'];
-
-                        }
-                    }
-                }
-            }
             $baseRequest = $request->all();
 
             // Get User Login
@@ -364,14 +320,6 @@ class EFormController extends Controller
             } else {
                 $baseRequest['staff_name'] = $user_login['name'];
                 $baseRequest['staff_position'] = $user_login['position'];
-            }
-
-            if ( $branchs['responseCode'] == '00' ) {
-                foreach ($branchs['responseData'] as $branch) {
-                    if ( $branch['kode_uker'] == $request->input('branch_id') ) {
-                        $baseRequest['branch'] = $branch['unit_kerja'];
-                    }
-                }
             }
 
             if ( $request->product_type == 'kpr' ) {
@@ -394,103 +342,147 @@ class EFormController extends Controller
                     unset($baseRequest[$base]);
                 }
             }
-            \Log::info("=======================================================");
-            \Log::info($baseRequest);
-
+            
             if ( $request->product_type == 'briguna' ) {
-                \Log::info("=======================================================");
-                /* BRIGUNA */
-                $NPWP_nasabah = $request->NPWP_nasabah;
-                $KK = $request->KK;
-                $SLIP_GAJI = $request->SLIP_GAJI;
-                $SK_AWAL = $request->SK_AWAL;
-                $SK_AKHIR = $request->SK_AKHIR;
-                $REKOMENDASI = $request->REKOMENDASI;
+            \Log::info("=======================================================");
+            /* BRIGUNA */
+					$data_new['branch']=$request->input('branch_id');
+					  if ( count(apiPdmToken::all()) > 0 ) {
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  } else {
+						$this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  }
+					  if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+					  } else {
+						$briConnect = $this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
 
-                $id = date('YmdHis');
-                $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
-                $KK = $this->uploadimage($KK,$id,'KK');
-                $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
-                $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
-                $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
-                $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
+					  }
+					if ( $listExisting['success'] == '00' ) {
+						foreach ($listExisting['data'] as $branch) {
+							if ( $branch['branch'] == $request->input('branch_id') ) {
+								$baseRequest['branch'] = $branch['mbdesc'];
 
-                $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
-                $baseRequest['KK'] = $KK;
-                $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
-                $baseRequest['SK_AWAL'] = $SK_AWAL;
-                $baseRequest['SK_AKHIR'] = $SK_AKHIR;
-                $baseRequest['REKOMENDASI'] = $REKOMENDASI;
-    			$baseRequest['id_foto'] = $id;
+							}
+						}
+					}
+            $NPWP_nasabah = $request->NPWP_nasabah;
+            $KK = $request->KK;
+            $SLIP_GAJI = $request->SLIP_GAJI;
+            $SK_AWAL = $request->SK_AWAL;
+            $SK_AKHIR = $request->SK_AKHIR;
+            $REKOMENDASI = $request->REKOMENDASI;
 
-    			if($baseRequest['Payroll']=='1'){
-    				$SKPG = '';
-    				if(!empty($request->SKPG)){
-    					$SKPG = $request->SKPG;
-    					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
-    					$baseRequest['SKPG'] = $SKPG;
-    					/*----------------------------------*/
-    				}
-    				$baseRequest['SKPG'] = $SKPG;
-    			}else{
-    				if(!empty($request->SKPG)){
-                        $SKPG = $request->SKPG;
-                        $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
-                        $baseRequest['SKPG'] = $SKPG;
-        			}else{
-        				$dataEform =  EForm::where('nik', $request->nik)->get();
-                        return response()->error( [
-                            'message' => 'Payroll Non BRI SKPG harus ada',
-                            'contents' => $dataEform
-                        ], 422 );
-        			}
-    			}
+            $id = date('YmdHis');
+            $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
+            $KK = $this->uploadimage($KK,$id,'KK');
+            $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
+            $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+            $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+            $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
 
-                $kpr = BRIGUNA::create($baseRequest);
+            $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
+            $baseRequest['KK'] = $KK;
+            $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
+            $baseRequest['SK_AWAL'] = $SK_AWAL;
+            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+            $baseRequest['REKOMENDASI'] = $REKOMENDASI;
+			$baseRequest['id_foto'] = $id;
+
+			if($baseRequest['Payroll']=='1'){
+				$SKPG = '';
+				if(!empty($request->SKPG)){
+					$SKPG = $request->SKPG;
+					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+					$baseRequest['SKPG'] = $SKPG;
+					/*----------------------------------*/
+				}
+				$baseRequest['SKPG'] = $SKPG;
+			}else{
+				if(!empty($request->SKPG)){
+                $SKPG = $request->SKPG;
+                $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
+                $baseRequest['SKPG'] = $SKPG;
+			}else{
+				$dataEform =  EForm::where('nik', $request->nik)->get();
+                return response()->error( [
+                    'message' => 'Payroll Non BRI SKPG harus ada',
+                    'contents' => $dataEform
+                ], 422 );
+				}
+			}
+                $kpr = BRIGUNA::create( $baseRequest );
                 $return = [
-                    'message' => 'Data e-form briguna berhasil ditambahkan.',
+                    'message' => 'Data e-form berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
-                \Log::info($kpr);
-            } else {
-                $dataEform =  EForm::where('nik', $request->nik)->get();
-                // $dataEform = [];
-                if (count($dataEform) == 0) {
-                    $developer_id = env('DEVELOPER_KEY',1);
-                    $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+                    \Log::info($kpr);
+        } else {
+			        $branchs = \RestwsHc::setBody([
+					'request' => json_encode([
+						'requestMethod' => 'get_near_branch_v2',
+						'requestData'   => [
+							'app_id' => 'mybriapi',
+							'kode_branch' => $request->input('branch_id'),
+							'distance'    => 0,
 
-                    if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
+							// if request latitude and longitude not present default latitude and longitude cimahi
+							'latitude'  => 0,
+							'longitude' => 0
+						]
+					])
+				])
+				->post('form_params');
+				if ( $branchs['responseCode'] == '00' ) {
+					foreach ($branchs['responseData'] as $branch) {
+						if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+							$baseRequest['branch'] = $branch['unit_kerja'];
 
-                        $baseProperty = array(
-                            'developer_id' => $baseRequest['developer'],
-                            'prop_id_bri' => '1',
-                            'name' => $developer_name,
-                            'pic_name' => 'BRI',
-                            'pic_phone' => '-',
-                            'address' => $baseRequest['home_location'],
-                            'category' => '3',
-                            'latitude' => '0',
-                            'longitude' => '0',
-                            'description' => '-',
-                            'facilities' => '-'
-                        );
+						}
+					}
+				}
+            $dataEform =  EForm::where('nik', $request->nik)->get();
+            // $dataEform = [];
+            if (count($dataEform) == 0) {
+                $developer_id = env('DEVELOPER_KEY',1);
+                $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
 
-                        $getKanwil = \RestwsHc::setBody([
-                            'request' => json_encode([
-                                'requestMethod' => 'get_list_uker_from_cabang',
-                                'requestData' => [
-                                    'app_id' => 'mybriapi'
-                                    , 'branch_code' => $request->input('branch_id')
-                                ]
-                            ])
-                        ])->post('form_params');
+                if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
 
-                        if ( $getKanwil['responseCode'] == '00' ) {
-                            foreach ($getKanwil['responseData'] as $kanwil) {
-                                if ( $kanwil['branch'] == $request->input('branch_id') ) {
-                                    $baseProperty['region_id'] = $kanwil['region'];
-                                    $baseProperty['region_name'] = $kanwil['rgdesc'];
-                                }
+                    $baseProperty = array(
+                        'developer_id' => $baseRequest['developer'],
+                        'prop_id_bri' => '1',
+                        'name' => $developer_name,
+                        'pic_name' => 'BRI',
+                        'pic_phone' => '-',
+                        'address' => $baseRequest['home_location'],
+                        'category' => '3',
+                        'latitude' => '0',
+                        'longitude' => '0',
+                        'description' => '-',
+                        'facilities' => '-'
+                    );
+
+                    $getKanwil = \RestwsHc::setBody([
+                        'request' => json_encode([
+                            'requestMethod' => 'get_list_uker_from_cabang',
+                            'requestData' => [
+                                'app_id' => 'mybriapi'
+                                , 'branch_code' => $request->input('branch_id')
+                            ]
+                        ])
+                    ])->post('form_params');
+
+                    if ( $getKanwil['responseCode'] == '00' ) {
+                        foreach ($getKanwil['responseData'] as $kanwil) {
+                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                                $baseProperty['region_id'] = $kanwil['region'];
+                                $baseProperty['region_name'] = $kanwil['rgdesc'];
                             }
                         }
 

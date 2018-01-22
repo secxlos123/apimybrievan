@@ -32,6 +32,6 @@ class CreateDirrpc extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('dirrpc');
     }
 }
