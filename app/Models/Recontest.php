@@ -61,11 +61,12 @@ class Recontest extends Model implements AuditableContract
     {
         $return = array();
         $eform = $this->eform;
-        $path = public_path( 'uploads/' . $eform->nik . '/' );
+        $path = 'uploads/' . $eform->nik . '/';
+        $publicPath = public_path( $path );
 
         if ( !empty( $this->{$field} ) ) {
             foreach ($this->{$field} as $key => $value) {
-                File::delete( $path . $value[ 'image' ] );
+                File::delete( $publicPath . $value[ 'image_name' ] );
             }
         }
 
@@ -77,11 +78,12 @@ class Recontest extends Model implements AuditableContract
                 $name = $data[ 'name' ];
             }
 
-            $image = $this->globalSetImage( $eform, $path, ($name . '-' . $field), $data[ $keyTarget ] );
+            $image = $this->globalSetImage( $eform, $publicPath, ($name . '-' . $field), $data[ $keyTarget ] );
             unset( $data[ $keyTarget ] );
 
             if ( $image ) {
-                $data[ 'image' ] = $image;
+                $data[ 'image_name' ] = $image;
+                $data[ 'image' ] = $this->globalImageCheck( $publicPath . $image );
                 $return[ $key ] = $data;
             }
         }
@@ -116,5 +118,23 @@ class Recontest extends Model implements AuditableContract
         }
 
         return $filename;
+    }
+
+    /**
+     * Global function for check file.
+     *
+     * @return string
+     */
+    public function globalImageCheck( $filename )
+    {
+        $path =  'img/noimage.jpg';
+        if( ! empty( $filename ) ) {
+            $filename = 'uploads/' . $eform->nik . '/' . $filename;
+            if( \File::exists( public_path( $filename ) ) ) {
+                $path = $filename;
+            }
+        }
+
+        return url( $path );
     }
 }
