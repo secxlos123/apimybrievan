@@ -164,50 +164,40 @@ class SelectCabangController extends Controller
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
 
-             //   if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
-			if($branch['kode_uker']=='122'||$branch['kode_uker']=='329'||$branch['kode_uker']=='206'||$branch['kode_uker']=='356'||$branch['kode_uker']=='230'||$branch['kode_uker']=='953'){
-				$countkey = strlen($branch['kode_uker']);
-					$kode_uker =$branch['kode_uker'];
-					//$kode_uker = '';
-					/* if($countkey=='1'){
-						$kode_uker = '0000'.$branch['kode_uker'];
-					}elseif($countkey=='2'){
-						$kode_uker = '000'.$branch['kode_uker'];
-					}elseif($countkey=='3'){
-						$kode_uker = '00'.$branch['kode_uker'];
-					}elseif($countkey=='4'){
-						$kode_uker = '0'.$branch['kode_uker'];
-					}else{
-						$kode_uker = $branch['kode_uker'];
-					} */
-						$nilaicount =0;
-						$request['key'] = $kode_uker;
-						$mitra = Mitra::filter( $request )->get();
-						$mitra = $mitra->toArray();
-						$countmitra = count($mitra);
+                //if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) 
+				//{
+					$nilaicount = 0;
+
+					$countkey = strlen($branch['kode_uker']);
+					$kode_uker = $branch['kode_uker'];
+					
+					$nilaicount =0;
+					$request['key']=$kode_uker;
+					$mitra = Mitra::filter( $request )->get();
+					$mitra = $mitra->toArray();
+					$countmitra = count($mitra);
+						//$data_branch['kode_uker'] = $kode_uker;
 
 						for($i=0;$i<$countmitra;$i++){
-
+							if($branch['kode_uker']==$mitra[$i]['BRANCH_CODE']){
+								$mitra[$i]['alamat'] = $branch['alamat'];
+								$mitra[$i]['unit_induk'] = $branch['unit_induk'];
+								$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
+								$offices[] = $mitra[$i];
+							}
 //						$mitra[$i]['kanwil'] = $branch['kanwil'];
-						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
-						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
 //						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
 //						$mitra[$i]['dati2'] = $branch['dati2'];
 //						$mitra[$i]['dati1'] = $branch['dati1'];
-						$mitra[$i]['alamat'] = $branch['alamat'];
 //						$mitra[$i]['no_telp'] = $branch['no_telp'];
 //						$mitra[$i]['no_fax'] = $branch['no_fax'];
 //						$mitra[$i]['koordinat'] = $branch['koordinat'];
 //						$mitra[$i]['latitude'] = $branch['latitude'];
 //						$mitra[$i]['longitude'] = $branch['longitude'];
-						$offices[] = $mitra[$i];
-
 						}
-				}
-               // }
+                //}
             }
 		}
-
 			$offices = $this->aasort($offices,"NAMA_INSTANSI");
 			$countoffices = count($offices);
 			$i = 0;

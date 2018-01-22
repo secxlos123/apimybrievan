@@ -308,101 +308,69 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         try {
-        $branchs = \RestwsHc::setBody([
-            'request' => json_encode([
-                'requestMethod' => 'get_near_branch_v2',
-                'requestData'   => [
-                    'app_id' => 'mybriapi',
-                    'kode_branch' => $request->input('branch_id'),
-                    'distance'    => 0,
+            $baseRequest = $request->all();
 
-                    // if request latitude and longitude not present default latitude and longitude cimahi
-                    'latitude'  => 0,
-                    'longitude' => 0
-                ]
-            ])
-        ])
-        ->post('form_params');
+            // Get User Login
+            $user_login = \RestwsHc::getUser();
 
-        if ($request->product_type == 'briguna') {
+            if ($user_login['role'] === 'ao' ) {
+                $baseRequest['ao_id'] = $user_login['pn'];
+                $baseRequest['ao_name'] = $user_login['name'];
+                $baseRequest['ao_position'] = $user_login['position'];
+            } else {
+                $baseRequest['staff_name'] = $user_login['name'];
+                $baseRequest['staff_position'] = $user_login['position'];
+            }
 
-        $data_new['branch']=$request->input('branch_id');
-              if ( count(apiPdmToken::all()) > 0 ) {
-                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-              } else {
-                $this->gen_token();
-                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-              }
-              if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-                $token = $apiPdmToken['access_token'];
-                $listExisting = $this->ListBranch($data_new, $token);
-              } else {
-                $briConnect = $this->gen_token();
-                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-                $token = $apiPdmToken['access_token'];
-                $listExisting = $this->ListBranch($data_new, $token);
-
-              }
-            if ( $listExisting['success'] == '00' ) {
-                foreach ($listExisting['data'] as $branch) {
-                    if ( $branch['branch'] == $request->input('branch_id') ) {
-                        $baseRequest['branch'] = $branch['mbdesc'];
-
-                    }
+            if ( $request->product_type == 'kpr' ) {
+                if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+                    $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+                    $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
                 }
             }
-        }
-        $baseRequest = $request->all();
 
-        // Get User Login
-        $user_login = \RestwsHc::getUser();
+            $baseArray = array (
+                'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
+                , 'job_id' => 'work', 'job_name' => 'work_name'
+                , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
+                , 'citizenship_name' => 'citizenship'
+            );
 
-        if ($user_login['role'] === 'ao' ) {
-            $baseRequest['ao_id'] = $user_login['pn'];
-            $baseRequest['ao_name'] = $user_login['name'];
-            $baseRequest['ao_position'] = $user_login['position'];
-        } else {
-            $baseRequest['staff_name'] = $user_login['name'];
-            $baseRequest['staff_position'] = $user_login['position'];
-        }
-
-
-        if ( $branchs['responseCode'] == '00' ) {
-            foreach ($branchs['responseData'] as $branch) {
-                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
-                    $baseRequest['branch'] = $branch['unit_kerja'];
-
+            foreach ($baseArray as $target => $base) {
+                if ( isset($baseRequest[$base]) ) {
+                    $baseRequest[$target] = $baseRequest[$base];
+                    unset($baseRequest[$base]);
                 }
             }
-        }
 
-        if ( $request->product_type == 'kpr' ) {
-            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
-                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
-                $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
-            }
-        }
-
-        $baseArray = array (
-            'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
-            , 'job_id' => 'work', 'job_name' => 'work_name'
-            , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
-            , 'citizenship_name' => 'citizenship'
-        );
-
-        foreach ($baseArray as $target => $base) {
-            if ( isset($baseRequest[$base]) ) {
-                $baseRequest[$target] = $baseRequest[$base];
-                unset($baseRequest[$base]);
-            }
-        }
-        \Log::info("=======================================================");
-        \Log::info($baseRequest);
-
-        if ( $request->product_type == 'briguna' ) {
-
+            if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
+					$data_new['branch']=$request->input('branch_id');
+					  if ( count(apiPdmToken::all()) > 0 ) {
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  } else {
+						$this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  }
+					  if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+					  } else {
+						$briConnect = $this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+
+					  }
+					if ( $listExisting['success'] == '00' ) {
+						foreach ($listExisting['data'] as $branch) {
+							if ( $branch['branch'] == $request->input('branch_id') ) {
+								$baseRequest['branch'] = $branch['mbdesc'];
+
+							}
+						}
+					}
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
             $SLIP_GAJI = $request->SLIP_GAJI;
@@ -449,8 +417,35 @@ class EFormController extends Controller
 				}
 			}
                 $kpr = BRIGUNA::create( $baseRequest );
+                $return = [
+                    'message' => 'Data e-form berhasil ditambahkan.',
+                    'contents' => $kpr
+                ];
                     \Log::info($kpr);
         } else {
+			        $branchs = \RestwsHc::setBody([
+					'request' => json_encode([
+						'requestMethod' => 'get_near_branch_v2',
+						'requestData'   => [
+							'app_id' => 'mybriapi',
+							'kode_branch' => $request->input('branch_id'),
+							'distance'    => 0,
+
+							// if request latitude and longitude not present default latitude and longitude cimahi
+							'latitude'  => 0,
+							'longitude' => 0
+						]
+					])
+				])
+				->post('form_params');
+				if ( $branchs['responseCode'] == '00' ) {
+					foreach ($branchs['responseData'] as $branch) {
+						if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+							$baseRequest['branch'] = $branch['unit_kerja'];
+
+						}
+					}
+				}
             $dataEform =  EForm::where('nik', $request->nik)->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
@@ -490,57 +485,60 @@ class EFormController extends Controller
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
                             }
                         }
-                    }
 
-                    $property =  Property::create( $baseProperty );
-                    $baseRequest['property'] = $property->id;
-                    $baseRequest['property_name'] = $developer_name;
-                    \Log::info('=================== Insert Property===========');
-                    \Log::info($property);
-                    if ($property) {
-                        $propertyType = PropertyType::create([
-                            'property_id'=>$property->id,
-                            'name'=>$developer_name,
-                            'building_area'=>$baseRequest['building_area'],
-                            'price'=>$baseRequest['price'],
-                            'surface_area'=>$baseRequest['building_area'],
-                            'electrical_power'=>'-',
-                            'bathroom'=>0,
-                            'bedroom'=>0,
-                            'floors'=>0,
-                            'carport'=>0
-                        ]);
-                        \Log::info('=================== Insert Property type===========');
-                        \Log::info($propertyType);
-                        $baseRequest['property_type']= $propertyType->id;
-                        $baseRequest['property_type_name']= $developer_name;
-                        if ($propertyType) {
-                            $data = [
-                            'developer_id' => $developer_id,
-                            'property_id' => $property->id,
-                            'status' => Collateral::STATUS[0]
-                        ];
-                        $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
-                        \Log::info('=================== Insert Collateral===========');
-                        \Log::info($collateral);
+                        $property =  Property::create( $baseProperty );
+                        $baseRequest['property'] = $property->id;
+                        $baseRequest['property_name'] = $developer_name;
+                        \Log::info('=================== Insert Property===========');
+                        \Log::info($property);
+                        if ($property) {
+                            $propertyType = PropertyType::create([
+                                'property_id'=>$property->id,
+                                'name'=>$developer_name,
+                                'building_area'=>$baseRequest['building_area'],
+                                'price'=>$baseRequest['price'],
+                                'surface_area'=>$baseRequest['building_area'],
+                                'electrical_power'=>'-',
+                                'bathroom'=>0,
+                                'bedroom'=>0,
+                                'floors'=>0,
+                                'carport'=>0
+                            ]);
+                            \Log::info('=================== Insert Property type===========');
+                            \Log::info($propertyType);
+                            $baseRequest['property_type']= $propertyType->id;
+                            $baseRequest['property_type_name']= $developer_name;
+                            if ($propertyType) {
+                                $data = [
+                                'developer_id' => $developer_id,
+                                'property_id' => $property->id,
+                                'status' => Collateral::STATUS[0]
+                            ];
+                            $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
+                            \Log::info('=================== Insert Collateral===========');
+                            \Log::info($collateral);
+                            }
                         }
                     }
                 }
-                $kpr = KPR::create( $baseRequest );
-            } else {
-                return response()->error( [
-                    'message' => 'User sedang dalam pengajuan',
-                    'contents' => $dataEform
-                ], 422 );
+                    $kpr = KPR::create( $baseRequest );
+                    $return = [
+                        'message' => 'Data e-form berhasil ditambahkan.',
+                        'contents' => $kpr['kpr']
+                    ];
+                } else {
+                    return response()->error( [
+                        'message' => 'User sedang dalam pengajuan',
+                        'contents' => $dataEform
+                    ], 422 );
+                }
             }
-
-        }
             DB::commit();
-        } catch (Exception $e) {
+    } catch (Exception $e) {
             DB::rollback();
             return response()->error( [
-                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
-                ], 422 );
+                'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+            ], 422 );
         }
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
@@ -550,10 +548,7 @@ class EFormController extends Controller
             'request' => $request,
         ];
         pushNotification($credentials, 'createEForm');
-        return response()->success( [
-            'message' => 'Data e-form berhasil ditambahkan.',
-            'contents' => $kpr['kpr']
-        ], 201 );
+        return response()->success($return, 201);
     }
 
     /**

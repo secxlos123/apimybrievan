@@ -26,7 +26,8 @@ class OtsEight extends Model implements AuditableContract
 		  	'date_assessment',
 		  	'type_binding',
 		  	'binding_number',
-		  	'binding_value'
+		  	'binding_value',
+		  	'independent_appraiser_name'
 		  ];
 
 

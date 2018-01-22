@@ -23,8 +23,6 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::post('get_dir_detail', 'dirrpcController@get_dir_detail');
 	Route::post( 'auth/login', 'AuthController@store' );
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
-	Route::post('getBranch', 'SelectUkerController@getBranch');
-
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {

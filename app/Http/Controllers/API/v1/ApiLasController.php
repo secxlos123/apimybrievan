@@ -292,7 +292,7 @@ class ApiLasController extends Controller
                 break;
 
             case 'eformBriguna':
-                $inquiry = $ApiLas->eform_briguna();
+                $inquiry = $ApiLas->eform_briguna($data);
                 return $inquiry;
                 break;
 
