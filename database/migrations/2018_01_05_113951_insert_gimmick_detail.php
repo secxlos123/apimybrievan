@@ -29,6 +29,6 @@ class InsertGimmickDetail extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('gimmick_detail');
     }
 }

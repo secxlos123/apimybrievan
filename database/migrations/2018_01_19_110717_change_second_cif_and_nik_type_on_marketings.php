@@ -27,8 +27,8 @@ class ChangeSecondCifAndNikTypeOnMarketings extends Migration
      public function down()
      {
        Schema::table('marketings', function (Blueprint $table) {
-           $table->dropColumn('nik');
-           $table->dropColumn('cif');
+           $table->string('nik')->default('null')->change();
+           $table->string('cif')->default('null')->change();
        });
      }
 }
