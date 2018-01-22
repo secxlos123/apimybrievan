@@ -171,12 +171,12 @@ class SelectCabangController extends Controller
 						//$data_branch['kode_uker'] = $kode_uker;
 
 						for($i=0;$i<$countmitra;$i++){
-							if($branch['kode_uker']==$mitra[$i]['BRANCH_CODE']){
+							//if($branch['kode_uker']==$mitra[$i]['BRANCH_CODE']){
 								$mitra[$i]['alamat'] = $branch['alamat'];
 								$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 								$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
 								$offices[] = $mitra[$i];
-							}
+							//}
 //						$mitra[$i]['kanwil'] = $branch['kanwil'];
 //						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
 //						$mitra[$i]['dati2'] = $branch['dati2'];
