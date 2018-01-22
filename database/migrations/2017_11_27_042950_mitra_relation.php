@@ -32,10 +32,6 @@ class MitraRelation extends Migration
      */
     public function down()
     {
-        Schema::table('mitra_relation', function (Blueprint $table) {
-            $table->dropColumn([
-                'BRANCH_CODE','NAMA_INSTANSI','idMitrakerja','segmen','kode'
-            ]);
-        });
+        Schema::dropIfExists('mitra_relation');
     }
 }
