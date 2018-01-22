@@ -66,7 +66,9 @@ class Recontest extends Model implements AuditableContract
 
         if ( !empty( $this->{$field} ) ) {
             foreach ($this->{$field} as $key => $value) {
-                File::delete( $publicPath . $value[ 'image_name' ] );
+                if ( isset($value[ 'image_name' ]) ) {
+                    File::delete( $publicPath . $value[ 'image_name' ] );
+                }
             }
         }
 
@@ -83,7 +85,7 @@ class Recontest extends Model implements AuditableContract
 
             if ( $image ) {
                 $data[ 'image_name' ] = $image;
-                $data[ 'image' ] = $this->globalImageCheck( $publicPath . $image );
+                $data[ 'image' ] = $this->globalImageCheck( $path . $image );
                 $return[ $key ] = $data;
             }
         }
@@ -129,8 +131,7 @@ class Recontest extends Model implements AuditableContract
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $filename = 'uploads/' . $eform->nik . '/' . $filename;
-            if( \File::exists( public_path( $filename ) ) ) {
+            if( File::exists( public_path( $filename ) ) ) {
                 $path = $filename;
             }
         }

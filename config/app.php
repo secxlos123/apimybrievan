@@ -172,6 +172,7 @@ return [
         Cviebrock\EloquentSluggable\ServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         LaravelFCM\FCMServiceProvider::class,
+        ZanySoft\Zip\ZipServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -249,13 +250,14 @@ return [
         'Reminder'     => Cartalyst\Sentinel\Laravel\Facades\Reminder::class,
         'Sentinel'     => Cartalyst\Sentinel\Laravel\Facades\Sentinel::class,
         'Asmx'         => App\Classes\Client\Facades\Asmx::class,
-        'Brispot'         => App\Classes\Client\Facades\Brispot::class,
+        'Brispot'      => App\Classes\Client\Facades\Brispot::class,
         'RestwsHc'     => App\Classes\Client\Facades\RestwsHc::class,
         'AsmxLas'      => App\Classes\Client\Facades\AsmxLas::class,
         'DbwsRest'     => App\Classes\Client\Facades\DbwsRest::class,
         'PDF'          => Barryvdh\DomPDF\Facade::class,
         'FCM'          => LaravelFCM\Facades\FCM::class,
         'FCMGroup'     => LaravelFCM\Facades\FCMGroup::class, // Optional
+        'Zip'          => ZanySoft\Zip\ZipFacade::class,
 
     ],
 
