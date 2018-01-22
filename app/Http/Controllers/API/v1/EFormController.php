@@ -723,7 +723,7 @@ class EFormController extends Controller
 
         $data = EForm::findOrFail($eform_id);
         $currentStatus = $data->status_eform;
-
+        $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
         $eform = EForm::approve( $eform_id, $baseRequest );
 
         if( $eform['status'] ) {
@@ -745,16 +745,27 @@ class EFormController extends Controller
                 // Recontest
                 if ( $currentStatus != 'Approval2' ) {
                     event( new Approved( $data ) );
-
                 }
 
                 // $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
                 // $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
                 $responseMessage = 'E-form berhasil di approve.';
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
 
             } else {
                 $usersModel = User::FindOrFail($data->user_id);
                 event( new RejectedEform( $data ) );
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
 
                 $responseMessage = 'E-form berhasil di reject.';
 
@@ -764,21 +775,10 @@ class EFormController extends Controller
             if ( $currentStatus == 'Approval2' ) {
                 $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
-
             } else {
+                $usersModel = User::FindOrFail($data->user_id);
                 $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
-
-                $credentials = [
-                    'data' => $data,
-                    'user'  => $usersModel
-                ];
-
-                $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
-
-                // Call the helper of push notification function
-                pushNotification($credentials, $status);
-
             }
 
             return response()->success( [
@@ -842,7 +842,7 @@ class EFormController extends Controller
                     'data' => $verify['contents'],
                     'user' => $usersModel,
                 ];
-                pushNotification($credentials, $status."KPR");
+                pushNotification($credentials, $status."EForm");
 
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
