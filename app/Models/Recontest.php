@@ -85,7 +85,7 @@ class Recontest extends Model implements AuditableContract
 
             if ( $image ) {
                 $data[ 'image_name' ] = $image;
-                $data[ 'image' ] = $this->globalImageCheck( $publicPath . $image );
+                $data[ 'image' ] = $this->globalImageCheck( $path . $image );
                 $return[ $key ] = $data;
             }
         }
