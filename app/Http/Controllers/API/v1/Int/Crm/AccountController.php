@@ -76,7 +76,12 @@ class AccountController extends Controller
             'contents' => []
         ]);
       }
-      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      if (apiPdmToken::count() > 0) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $briConnect = $this->gen_token();
+        $apiPdmToken = apiPdmToken::get()->toArray();
+      }
       // $apiPdmToken = $apiPdmToken[0];
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
@@ -93,7 +98,8 @@ class AccountController extends Controller
         // $apiPdmToken = $apiPdmToken[0];
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
-
+        dd($detailByCif);
+        
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $detailByCif['data']['info'][0]
