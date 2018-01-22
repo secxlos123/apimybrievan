@@ -188,10 +188,10 @@ class CreateOts extends FormRequest
     {
       return [
         'seven.collateral_status' => 'required',
-        'seven.on_behalf_of' => '',
-        'seven.ownership_number' => '',
-        'seven.location' => '',
-        'seven.address_collateral' => '',
+        'seven.on_behalf_of' => 'required',
+        'seven.ownership_number' => 'required',
+        'seven.location' => 'required',
+        'seven.address_collateral' => 'required',
         'seven.description' => 'required',
         'seven.ownership_status' => 'required',
         'seven.date_evidence' => 'required|date',
@@ -232,7 +232,7 @@ class CreateOts extends FormRequest
     {
       return [
         'nine.certificate_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
-        'nine.receipt_date' => 'required_if:nine.certificate_status,Sudah Diberikan|date',
+        'nine.receipt_date' => 'required_if:nine.certificate_status,Sudah Diberikan',
         'nine.information' => 'required_if:nine.certificate_status,Sudah Diberikan',
         'nine.notary_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
         'nine.takeover_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
@@ -242,15 +242,15 @@ class CreateOts extends FormRequest
         'nine.shgb_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
         'nine.receipt_date_notary'=>'required_if:nine.notary_status,Sudah Diberikan|date',
         'nine.information_notary'=>'required_if:nine.notary_status,Sudah Diberikan',
-        'nine.receipt_date_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan|date',
+        'nine.receipt_date_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan',
         'nine.information_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan',
-        'nine.receipt_date_credit'=>'required_if:nine.credit_status,Sudah Diberikan|date',
+        'nine.receipt_date_credit'=>'required_if:nine.credit_status,Sudah Diberikan',
         'nine.information_credit'=>'required_if:nine.credit_status,Sudah Diberikan',
-        'nine.receipt_date_skmht'=>'required_if:nine.skmht_status,Sudah Diberikan|date',
+        'nine.receipt_date_skmht'=>'required_if:nine.skmht_status,Sudah Diberikan',
         'nine.information_skmht'=>'required_if:nine.skmht_status,Sudah Diberikan',
-        'nine.receipt_date_imb'=>'required_if:nine.imb_status,Sudah Diberikan|date',
+        'nine.receipt_date_imb'=>'required_if:nine.imb_status,Sudah Diberikan',
         'nine.information_imb'=>'required_if:nine.imb_status,Sudah Diberikan',
-        'nine.receipt_date_shgb'=>'required_if:nine.shgb_status,Sudah Diberikan|date',
+        'nine.receipt_date_shgb'=>'required_if:nine.shgb_status,Sudah Diberikan',
         'nine.information_shgb' =>'required_if:nine.shgb_status,Sudah Diberikan'
       ];
     }
