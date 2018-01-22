@@ -107,6 +107,7 @@ class EFormController extends Controller
 				$birth_place = json_decode(json_encode($birth_place), True);
 		return $birth_place;
 	}
+
 	public function show_bri( Request $request )
     {
 		$customer = DB::table('customer_details')
@@ -209,14 +210,19 @@ class EFormController extends Controller
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
-		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
-				if(!empty($customer[0]['couple_birth_place_id'])){
-					  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
-					  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
-				}else{
-					$eform[0]['customer']['personal']['couple_birth_place']  = null;
-				}
+            if(!empty($customer[0]['birth_place_id'])){
+                  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
+                  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
+            }else{
+                $eform[0]['customer']['personal']['birth_place']  = null;
+            }
+		  
+    		if(!empty($customer[0]['couple_birth_place_id'])){
+    			  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
+    			  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
+    		}else{
+    			$eform[0]['customer']['personal']['couple_birth_place']  = null;
+    		}
 		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
@@ -418,7 +424,7 @@ class EFormController extends Controller
 			}
                 $kpr = BRIGUNA::create( $baseRequest );
                 $return = [
-                    'message' => 'Data e-form berhasil ditambahkan.',
+                    'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
                     \Log::info($kpr);
