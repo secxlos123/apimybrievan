@@ -67,6 +67,14 @@ class CustomerController extends Controller
           ],
         ])
       ])->post('form_params');
+      // $str = '001231230123123';
+      // $m = substr($str, 0, -4).str_repeat('#', 4);
+      // dd($m);
+      $info = $customer_nik['responseData']['card_info'];
+      foreach ($info as $key => $value) {
+        $customer_nik['responseData']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
+      }
+      // dd($customer_nik['responseData']);
 
       return response()->success([
         'message' => 'Get Customer Detail by NIK success',

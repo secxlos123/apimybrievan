@@ -242,8 +242,8 @@ class CreateOts extends FormRequest
         'nine.shgb_status' => 'required',
         'nine.receipt_date_notary'=>'date',
         'nine.information_notary'=>'',
-        'nine.receipt_date_takeover'=>'',
-        'nine.information_takeover'=>'date',
+        'nine.receipt_date_takeover'=>'date',
+        'nine.information_takeover'=>'',
         'nine.receipt_date_credit'=>'date',
         'nine.information_credit'=>'',
         'nine.receipt_date_skmht'=>'date',
@@ -267,7 +267,7 @@ class CreateOts extends FormRequest
         'ten.insurance' => 'required|in:Ya,Tidak',
         'ten.insurance_company' => 'required_if:ten.insurance,Ya',
         'ten.insurance_company_name' => 'required_if:ten.insurance,Ya',
-        'ten.insurance_value' => 'equired_if:ten.insurance,Ya',
+        'ten.insurance_value' => 'required_if:ten.insurance,Ya',
         'ten.eligibility' => 'required',
       ];
     }
