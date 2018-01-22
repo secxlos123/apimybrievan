@@ -80,7 +80,7 @@ class Recontest extends Model implements AuditableContract
                 $name = $data[ 'name' ];
             }
 
-            $image = $this->globalSetImage( $eform, $public_path, ($name . '-' . $field), $data[ $keyTarget ] );
+            $image = $this->globalSetImage( $eform, $publicPath, ($name . '-' . $field), $data[ $keyTarget ] );
             unset( $data[ $keyTarget ] );
 
             if ( $image ) {
@@ -135,7 +135,7 @@ class Recontest extends Model implements AuditableContract
             \Log::info($filename);
             \Log::info(public_path( $filename ));
             \Log::info("recontest===================================================");
-            if( \File::exists( public_path( $filename ) ) ) {
+            if( File::exists( public_path( $filename ) ) ) {
                 $path = $filename;
             }
         }
