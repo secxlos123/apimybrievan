@@ -19,6 +19,8 @@ Route::post( 'urgent-function', 'RemovableController@run' );
  */
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
+		
+		Route::post('getBranch', 'SelectUkerController@getBranch');
 		Route::post('smsnotif', 'SentSMSNotifController@sentsms');
 		Route::post('select', 'SelectController@select');
 		Route::get('phpini', 'EFormController@php_ini');
