@@ -651,15 +651,22 @@ class CollateralController extends Controller
     }
     
     /*
-    * Shwo data notif
+    *  Show data notif
     */
-    public function notifCollateral($type ,$collateralId){
-        
-     $Collateral = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();     
+    public function notifCollateral($type ,$collateralId){  
+     $collateral = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();  
+     if($collateral)
+     {
+        $developer_id = $collateral->developer_id;
+        if($developer_id !=1)
+        { 
+          $collateral = $this->collateral->withAll()->where('id','=',$collateralId)->first();
+          $developer_id = $collateral['property']['developer_id']; 
+        } 
+     }  
      return response()->success( [
-        'contents' => $Collateral
-     ] );
-     
+        'contents' => $collateral
+     ] );     
     }
 
 }
