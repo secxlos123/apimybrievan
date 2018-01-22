@@ -87,7 +87,7 @@ class AccountController extends Controller
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
-
+        dd($detailByCif);
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $detailByCif['data']['info'][0]
@@ -98,8 +98,7 @@ class AccountController extends Controller
         // $apiPdmToken = $apiPdmToken[0];
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
-        dd($detailByCif);
-        
+
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $detailByCif['data']['info'][0]
