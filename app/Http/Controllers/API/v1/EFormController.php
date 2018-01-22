@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\EFormRequest;
-// use App\Events\EForm\Recontest;
 use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
@@ -30,6 +29,11 @@ use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
 use DB;
+use Brispot;
+use Cache;
+use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class EFormController extends Controller
 {
@@ -41,6 +45,19 @@ class EFormController extends Controller
         $this->userNotification = $userNotification;
     }
 
+	public function ListBranch($data, $token)
+    {
+      $client = new Client();
+	  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/branch/'.$data['branch'],
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	 return $listExisting;
+	}
     /**
      * Display a listing of the resource.
      *
@@ -307,6 +324,34 @@ class EFormController extends Controller
         ])
         ->post('form_params');
 
+        if ($request->product_type == 'briguna') {
+
+        $data_new['branch']=$request->input('branch_id');
+              if ( count(apiPdmToken::all()) > 0 ) {
+                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+              } else {
+                $this->gen_token();
+                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+              }
+              if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+                $token = $apiPdmToken['access_token'];
+                $listExisting = $this->ListBranch($data_new, $token);
+              } else {
+                $briConnect = $this->gen_token();
+                $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+                $token = $apiPdmToken['access_token'];
+                $listExisting = $this->ListBranch($data_new, $token);
+
+              }
+            if ( $listExisting['success'] == '00' ) {
+                foreach ($listExisting['data'] as $branch) {
+                    if ( $branch['branch'] == $request->input('branch_id') ) {
+                        $baseRequest['branch'] = $branch['mbdesc'];
+
+                    }
+                }
+            }
+        }
         $baseRequest = $request->all();
 
         // Get User Login
@@ -320,6 +365,7 @@ class EFormController extends Controller
             $baseRequest['staff_name'] = $user_login['name'];
             $baseRequest['staff_position'] = $user_login['position'];
         }
+
 
         if ( $branchs['responseCode'] == '00' ) {
             foreach ($branchs['responseData'] as $branch) {
@@ -632,6 +678,11 @@ class EFormController extends Controller
             $notificationIsRead->markAsRead();
         }
 
+        $eform->message = [
+            'title' => "EForm Notification",
+            'body'  => "E-Form berhasil di disposisi"
+        ];
+
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
@@ -692,10 +743,7 @@ class EFormController extends Controller
             if ($request->is_approved) {
                 $usersModel = User::FindOrFail($data->user_id);
                 // Recontest
-                if ( $currentStatus == 'Approval2' ) {
-                    // event( new Recontest( $data ) );
-
-                } else {
+                if ( $currentStatus != 'Approval2' ) {
                     event( new Approved( $data ) );
 
                 }
@@ -714,8 +762,8 @@ class EFormController extends Controller
 
             // Recontest
             if ( $currentStatus == 'Approval2' ) {
-                // $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
-                // generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+                $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
+                generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
 
             } else {
                 $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );

@@ -13,6 +13,7 @@ use App\Models\Crm\ActionActivity;
 
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
+use App\Models\Crm\Referral;
 
 class marketingActivityController extends Controller
 {
@@ -481,7 +482,7 @@ class marketingActivityController extends Controller
 
        // return array_column($marketingActivity,'pn');die();
       return response()->success( [
-          'message' => 'Success get marketing Activity by branch',
+          'message' => 'Success get list Activity by Marketing',
           'contents' => $marketingActivity
         ]);
 

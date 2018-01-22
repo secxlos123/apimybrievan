@@ -7,23 +7,24 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
-use App\Models\Appointment;
-use App\Models\EForm;
+use App\Models\Collateral;
 
-class UpdateSchedulerCustomer extends Notification
+class CollateralStafPenilaianAnggunan extends Notification
 {
     use Queueable;
-
-    public $appointment;
+    public $collateral;
+    public $branch_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($appointment)
+    public function __construct($collateral,$branch_id)
     {
-        $this->appointment   = $appointment;
+        $this->collateral  = $collateral;
+        $this->branch_id   = $branch_id;
+
     }
 
     /**
@@ -48,7 +49,7 @@ class UpdateSchedulerCustomer extends Notification
         /*return (new MailMessage)
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');*/
+                    ->line('Thank you for using our application!'); */
     }
 
     /**
@@ -57,30 +58,22 @@ class UpdateSchedulerCustomer extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
-    }
-
     public function toDatabase($notifiable)
     {
-        $data = EForm::findOrFail($this->appointment->eform_id);
-        $typeModule = getTypeModule(Appointment::class);
-        
+
+        $typeModule = getTypeModule(Collateral::class);
+ 
         return [
-            'appointment_id' => $this->appointment->id,
-            'eform_id' => $this->appointment->eform_id,
+            'collateral_id' => $this->collateral->id,
             'user_id' => $notifiable->id,
+            'developer_id' =>  $this->collateral->developer_id,
+            'property_id' =>  $this->collateral->property_id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'nik' => $data->nik,
-            'ref_number' => $data->ref_number,
-            'branch_id' => $data->branch_id,
-            'slug' => $this->appointment->id,
+            'branch_id' => $this->branch_id,    
+            'slug' => $this->collateral->id,
             'type_module' => $typeModule,
-            'created_at' => $this->appointment->created_at,
-            'message' => $this->appointment->message,
+            'created_at' => $this->collateral->created_at,
+            'role_name' => 'collateral'
         ];
     }
 }
