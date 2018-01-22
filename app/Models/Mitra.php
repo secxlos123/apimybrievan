@@ -27,7 +27,7 @@ class Mitra extends Authenticatable  {
 		
 						$key = $request->input('key');
 						
-						// $mitra->Where('BRANCH_CODE', $key);
+						 $mitra->Where('BRANCH_CODE', $key);
         } );
 			/* if(!$request->has( 'internal' )){
 				

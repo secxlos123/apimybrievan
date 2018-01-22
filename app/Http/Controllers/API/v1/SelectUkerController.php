@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Int;
+namespace App\Http\Controllers\API\v1;
 
 
 use Illuminate\Http\Request;
@@ -41,11 +41,11 @@ class SelectUkerController extends Controller
 		}
 	public function getBranch( Request $request )
 	{
-	    $data['branch'] = $request->header('branch');
+	//    $data['branch'] = $request->header('branch');
 	    $data['kode'] = $request->kode_kanwil;
 	    $data['keys'] = $request->keys;
       $data['pn'] = $request->header('pn');
-      // $apiPdmToken = $apiPdmToken[0];
+	  // $apiPdmToken = $apiPdmToken[0];
       // dd(count(apiPdmToken::all()));
       if ( count(apiPdmToken::all()) > 0 ) {
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
@@ -53,7 +53,7 @@ class SelectUkerController extends Controller
         $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       }
-
+return count(apiPdmToken::all());die();
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($data, $token);
