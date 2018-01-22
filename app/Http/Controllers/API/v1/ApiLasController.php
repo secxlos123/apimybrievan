@@ -536,7 +536,7 @@ class ApiLasController extends Controller
             "alamat"                => $request['alamat'],
             "alamat_usaha"          => $request['alamat_domisili'],
             "alamat_domisili"       => $request['alamat_domisili'],
-            "fixed_line"            => $request['no_tlp'],
+            "fixed_line"            => empty($request['no_tlp'])?"0":$request['no_tlp'],
             "no_hp"                 => $request['no_hp'],
             "lama_menetap"          => $request['lama_menetap'],
             "email"                 => $request['email'],
