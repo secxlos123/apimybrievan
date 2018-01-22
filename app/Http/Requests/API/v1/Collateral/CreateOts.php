@@ -207,19 +207,19 @@ class CreateOts extends FormRequest
     private function eightRules()
     {
       return [
-        'eight.liquidation_realization' => 'required',
-        'eight.fair_market' => '',
-        'eight.liquidation' => '',
-        'eight.fair_market_projection' => '',
-        'eight.liquidation_projection' => '',
-        'eight.njop' => 'required',
+        'eight.liquidation_realization' => 'required|numeric',
+        'eight.fair_market' => 'required|numeric',
+        'eight.liquidation' => 'required|numeric',
+        'eight.fair_market_projection' => 'required|numeric',
+        'eight.liquidation_projection' => 'required|numeric',
+        'eight.njop' => 'required|numeric',
         'eight.appraisal_by' => 'required|in:Bank,Lembaga Penilai',
         'eight.independent_appraiser' => 'required_if:eight.appraisal_by,Lembaga Penilai',
         'eight.independent_appraiser_name' => 'required_if:eight.appraisal_by,Lembaga Penilai',
         'eight.date_assessment' => 'required|date',
         'eight.type_binding' => 'required',
         'eight.binding_number' => 'required',
-        'eight.binding_value' => 'required',
+        'eight.binding_value' => 'required|numeric',
 
       ];
     }
