@@ -28,7 +28,8 @@ class AddedFieldNotification extends Migration
     public function down()
     {
         Schema::table('notifications', function (Blueprint $table) {
-            $table->dropColumn(['slug','type_module','is_read']);
+            $table->renameColumn('slug','eform_id')->default(0);
+            $table->dropColumn(['type_module','is_read']);
         });
     }
 }

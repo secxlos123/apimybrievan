@@ -398,6 +398,9 @@ if (! function_exists('getTypeModule')) {
             case 'App\Models\EForm':
                 $typeModule = 'eform';
                 break;
+            case 'App\Models\Collateral':
+                $typeModule = 'collateral'; 
+                break;
             default:
                 $typeModule = 'Type undefined';
                 break;
@@ -920,6 +923,12 @@ if (! function_exists('pushNotification')) {
              $dataUser  = UserServices::where('pn',$user_id)->first();
              $branch_id = $dataUser['branch_id'];
              $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
+        }else if($receiver =='ao'){
+            $dataUser  = UserServices::where('pn',$user_id)->first();
+             $branch_id = $dataUser['branch_id'];
+            $topic->topic('testing')->andTopic('branch_'.$branch_id)->andTopic('ao_'.$user_id);
+        }else{
+            $topic->topic('testing');
         }
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
