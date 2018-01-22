@@ -45,7 +45,8 @@ class ApiLas extends Model
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
                  ->join('users', 'users.id', '=', 'eforms.user_id')
-                 ->where('eforms.branch_id', '=', $branch)
+                 // ->where('eforms.branch_id', '=', $branch)
+                 ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branch))
                  ->orderBy('eforms.created_at', 'desc')
                  ->get();
         } else {
