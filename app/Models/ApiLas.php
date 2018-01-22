@@ -30,8 +30,9 @@ class ApiLas extends Model
         return $eforms;
     }
 
-    public function eform_briguna() {
-        $eforms = DB::table('eforms')
+    public function eform_briguna($branch = null) {
+        if (!empty($branch)) {
+            $eforms = DB::table('eforms')
                  ->select('eforms.ref_number','eforms.created_at','eforms.ao_id',
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name',
                     'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
@@ -43,9 +44,28 @@ class ApiLas extends Model
                    )
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
-                 ->join('users', 'users.id', '=', 'eforms.user_id') 
+                 ->join('users', 'users.id', '=', 'eforms.user_id')
+                 ->where('eforms.branch_id', '=', $branch)
                  ->orderBy('eforms.created_at', 'desc')
                  ->get();
+        } else {
+            $eforms = DB::table('eforms')
+                 ->select('eforms.ref_number','eforms.created_at','eforms.ao_id',
+                    'eforms.ao_name','eforms.ao_position','eforms.pinca_name',
+                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
+                    'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
+                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
+                    'customer_details.nik','customer_details.birth_date',
+                    'customer_details.address','customer_details.mother_name',
+                    'users.first_name','users.last_name','users.mobile_phone','users.gender'
+                   )
+                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
+                 ->join('users', 'users.id', '=', 'eforms.user_id')
+                 ->orderBy('eforms.created_at', 'desc')
+                 ->get();
+        }
+        
         $eforms = $eforms->toArray();
         $eforms = json_decode(json_encode($eforms), True);
         
