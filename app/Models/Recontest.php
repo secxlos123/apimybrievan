@@ -131,7 +131,6 @@ class Recontest extends Model implements AuditableContract
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            $filename = 'uploads/' . $eform->nik . '/' . $filename;
             if( \File::exists( public_path( $filename ) ) ) {
                 $path = $filename;
             }
