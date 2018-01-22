@@ -19,7 +19,8 @@ class OtsTen extends Model implements AuditableContract
 		  	'insurance',
 		  	'insurance_company',
 		  	'insurance_value',
-		  	'eligibility'
+		  	'eligibility',
+		  	'insurance_company_name'
 		  ];
 
 

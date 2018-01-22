@@ -125,20 +125,38 @@ class BRIGUNA extends Model
             $kabupaten = '';
             $kodepos   = '';
             $kelurahan = '';
+            $kecamatan_dom = '';
+            $kabupaten_dom = '';
+            $kodepos_dom   = '';
+            $kelurahan_dom = '';
 
             \Log::info($briguna);
             if (!empty($customer_detail->address)) {
                 $address = explode('=', $customer_detail->address);
                 // print_r($address);
-                    if (count($address) > 1) {
-                        $kel     = explode(' ', $address[1]);
-                        $kec     = explode(',', $address[2]);
-                        $kecamatan = $kec[0];
-                        $kabupaten = $kec[1];
-                        $kodepos   = $kec[2];
-                        $kelurahan = $kel[0];
-                    }
+                if (count($address) > 1) {
+                    $kel     = explode(' ', $address[1]);
+                    $kec     = explode(',', $address[2]);
+                    $kecamatan = $kec[0];
+                    $kabupaten = $kec[1];
+                    $kodepos   = $kec[2];
+                    $kelurahan = $kel[0];
                 }
+            }
+
+            if (!empty($customer_detail->current_address)) {
+                $address = explode('=', $customer_detail->current_address);
+                // print_r($address);
+                if (count($address) > 1) {
+                    $kel     = explode(' ', $address[1]);
+                    $kec     = explode(',', $address[2]);
+                    $kecamatan_dom = $kec[0];
+                    $kabupaten_dom = $kec[1];
+                    $kodepos_dom   = $kec[2];
+                    $kelurahan_dom = $kel[0];
+                }
+            }
+            
 			$couple_gender = 'L';
 			if($customer->gender=='L'){
 				$couple_gender = 'P';
@@ -169,6 +187,12 @@ class BRIGUNA extends Model
                 "kabupaten" => empty($kabupaten) ? "" : $kabupaten,
                 "kecamatan" => empty($kecamatan) ? "" : $kecamatan,
                 "kelurahan" => empty($kelurahan) ? "" : $kelurahan,
+                "alamat_dom"    => empty($customer_detail->current_address) ? "" : $customer_detail->current_address,
+                // "kodepos_dom"   => empty($kodepos) ? "" : $kodepos,
+                "provinsi_dom"  => empty($kabupaten_dom) ? "" : $kabupaten_dom,
+                "kabupaten_dom" => empty($kabupaten_dom) ? "" : $kabupaten_dom,
+                "kecamatan_dom" => empty($kecamatan_dom) ? "" : $kecamatan_dom,
+                "kelurahan_dom" => empty($kelurahan_dom) ? "" : $kelurahan_dom,
                 "jenis"     => 'Karya',
                 "amount"    => empty($customer_detail->loan_installment) ? "" : $customer_detail->loan_installment,
                 "tujuan"    => empty($eform->tujuan_penggunaan) ? "" : $eform->tujuan_penggunaan,
