@@ -131,10 +131,6 @@ class Recontest extends Model implements AuditableContract
     {
         $path =  'img/noimage.jpg';
         if( ! empty( $filename ) ) {
-            \Log::info("===================================================recontest");
-            \Log::info($filename);
-            \Log::info(public_path( $filename ));
-            \Log::info("recontest===================================================");
             if( File::exists( public_path( $filename ) ) ) {
                 $path = $filename;
             }

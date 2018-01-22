@@ -19,6 +19,7 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
+use Zip;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -799,7 +800,7 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
-     * Submit Prescreening.
+     * Search Prescreening.
      *
      * @return array
      */
@@ -833,10 +834,19 @@ class EForm extends Model implements AuditableContract
                 ->post( 'form_params' );
 
             if ( $getReportPefindo["code"] == "200" ) {
-
+                if ( isset( $getReportPefindo['contents']['cip'] ) ) {
+                    if ( isset( $getReportPefindo['contents']['cip']['recordlist'] ) ) {
+                        if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0] ) ) {
+                            if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0]["score"] ) ) {
+                                return $getReportPefindo['contents']['cip']['recordlist'][0]["score"];
+                            }
+                        }
+                    }
+                }
             }
 
-        // return $return['contents']['cip']['recordlist'][0]["score"];
+            return 0;
+
         } else if ( $position == 'pdf' ) {
             $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
                 ->setBody([
@@ -849,12 +859,23 @@ class EForm extends Model implements AuditableContract
                 ])
                 ->post( 'form_params' );
 
+            \Log::info("=============== pefindo pdf ========================");
+            \Log::info($getFilePefindo);
+            if ( $getFilePefindo["code"] == "200" ) {
+                $path = 'uploads/' . $eform->nik . '/pefindo.zip';
+                \Log::info($path);
+                $publicPath = public_path( $path );
+                \Log::info($publicPath);
+                file_put_contents( $publicPath, base64_decode($getFilePefindo["contents"]) );
+                $zip = Zip::open( $path );
+                \Log::info($zip);
+                $zip->extract( $publicPath );
+                File::delete( $publicPath );
+
+            }
+
         }
 
-
-
-        // return file_put_contents(public_path('uploads/test.zip'), base64_decode($getFilePefindo["contents"]));
-        // return base64_decode($getFilePefindo["contents"]);
     }
 
     /**
@@ -958,7 +979,7 @@ class EForm extends Model implements AuditableContract
             "lama_usaha" => $lama_usaha,
             "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
             "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
-            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
+            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '0' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
@@ -974,7 +995,7 @@ class EForm extends Model implements AuditableContract
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11 ),
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11 ),
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
@@ -1010,7 +1031,7 @@ class EForm extends Model implements AuditableContract
             "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
             "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
-            "telepon_pemohon" => !( $customer->phone ) ? '' : substr($customer->phone, 0 , 11),
+            "telepon_pemohon" => !( $customer->phone ) ? '0' : substr($customer->phone, 0 , 11),
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "jenis_pekerjaan_value" => !( $customer_work->type_id ) ? '' : $customer_work->type_id,
@@ -1020,7 +1041,7 @@ class EForm extends Model implements AuditableContract
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
             "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11),
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11),
             'tujuan_membuka_rekening_value' => 'T2',
             'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012'),
 
