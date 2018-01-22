@@ -149,9 +149,6 @@ class SelectCabangController extends Controller
 	public function index( Request $request )
 	{
 		        \Log::info($request->all());
-		$mitra = Mitra::filter( $request )->get();
-		$mitra = $mitra->toArray();
-		$countmitra = count($mitra);
         $branchs = $this->fetch($request);
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
@@ -169,10 +166,16 @@ class SelectCabangController extends Controller
 
                 //if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) 
 				//{
+					$nilaicount = 0;
+
 					$countkey = strlen($branch['kode_uker']);
-					$kode_uker = '';
+					$kode_uker = $branch['kode_uker'];
 					
-						$nilaicount =0;
+					$nilaicount =0;
+					$request['key']=$kode_uker;
+					$mitra = Mitra::filter( $request )->get();
+					$mitra = $mitra->toArray();
+					$countmitra = count($mitra);
 						//$data_branch['kode_uker'] = $kode_uker;
 
 						for($i=0;$i<$countmitra;$i++){
