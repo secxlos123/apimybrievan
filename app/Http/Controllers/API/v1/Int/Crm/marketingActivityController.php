@@ -341,20 +341,20 @@ class marketingActivityController extends Controller
 
         $save = MarketingActivityFollowup::create($followUp);
 
+
         $updateMarketingStatus['status'] = $request['fu_result'];
 
-        if($request['fu_result']=='Done' || $request['fu_result']=='Batal'){
+        if($request['fu_result']=='Done' || $request['fu_result']=='Batal' || $request['fu_result']=='On Progress'){
           $marketing->update($updateMarketingStatus);
 
-          if($request['fu_result']=='Done') {
-            if ($marketing->ref_id != 'null') {
-            $referral = Referral::where('ref_id', $marketing->ref_id);
-            $referral_update['point'] = '2';
-            $referral->update($referral_update);
-            }
-          }
+          // if($request['fu_result']=='Done') {
+          //   if ($marketing->ref_id != 'null') {
+          //     $referral = Referral::where('ref_id', $marketing->ref_id);
+          //     $referral_update['point'] = '2';
+          //     $referral->update($referral_update);
+          //   }
+          // }
         }
-
         if ($save) {
             return response()->success([
                 'message' => 'Data Tindakan berhasil ditambah.',
