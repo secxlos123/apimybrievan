@@ -66,7 +66,9 @@ class Recontest extends Model implements AuditableContract
 
         if ( !empty( $this->{$field} ) ) {
             foreach ($this->{$field} as $key => $value) {
-                File::delete( $publicPath . $value[ 'image_name' ] );
+                if ( isset($value[ 'image_name' ]) ) {
+                    File::delete( $publicPath . $value[ 'image_name' ] );
+                }
             }
         }
 
