@@ -520,6 +520,7 @@ class EFormController extends Controller
                             }
                         }
                     }
+                }
                     $kpr = KPR::create( $baseRequest );
                     $return = [
                         'message' => 'Data e-form berhasil ditambahkan.',
@@ -532,9 +533,8 @@ class EFormController extends Controller
                     ], 422 );
                 }
             }
-        }
             DB::commit();
-        } catch (Exception $e) {
+    } catch (Exception $e) {
             DB::rollback();
             return response()->error( [
                 'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
