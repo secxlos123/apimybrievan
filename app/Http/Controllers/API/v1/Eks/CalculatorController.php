@@ -47,6 +47,7 @@ class CalculatorController extends Controller
         $total       = $price;
 
         $plafond   = $price - $downPayment;
+        $plafonds  = $plafond;
         $n         = $term + 1;
         $returnVal = [];
 
@@ -80,7 +81,7 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "plafond"       => $plafond,
+                "plafond"       => $plafonds,
                 "uang_muka"     => $downPayment,
                 "suku_bunga"    => $rate."%",
                 "kredit_fix"    => $term." Bulan",
@@ -109,6 +110,7 @@ class CalculatorController extends Controller
         $total       = $price;
 
         $plafond   = $price - $downPayment;
+        $plafonds  = $plafond;
         $n         = $term + 1;
         $returnVal = [];
 
@@ -161,7 +163,7 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "plafond"       => $plafond,
+                "plafond"       => $plafonds,
                 "uang_muka"     => $downPayment,
                 "suku_bunga"    => $rate."%",
                 "kredit_fix"    => $term." Bulan",
@@ -192,6 +194,7 @@ class CalculatorController extends Controller
         $total       = $price;
 
         $plafond     = $price - $downPayment;
+        $plafonds    = $plafond;
         $n           = $fxflterm + 1;
         $returnVal   = [];
 
@@ -265,7 +268,7 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "plafond"             => $plafond,
+                "plafond"             => $plafonds,
                 "uang_muka"           => $downPayment,
                 "suku_bunga"          => $fxrate."%",
                 "suku_bunga_floating" => $flrate."%",
@@ -299,6 +302,7 @@ class CalculatorController extends Controller
         $total       = $price;
 
         $plafond     = $price - $downPayment;
+        $plafonds    = $plafond;
         $n           = $fxflflterm + 1;
         $returnVal   = [];
 
@@ -389,7 +393,7 @@ class CalculatorController extends Controller
         
         $rincian = [
             "rincian" => [
-                "plafond"             => $plafond,
+                "plafond"             => $plafonds,
                 "uang_muka"           => $downPayment,
                 "suku_bunga"          => $ffxrate."%",
                 "suku_bunga_floor"    => $ffloorrate."%",
