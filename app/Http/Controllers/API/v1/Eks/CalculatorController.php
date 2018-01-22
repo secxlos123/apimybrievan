@@ -45,9 +45,9 @@ class CalculatorController extends Controller
         $rate        = $params['rate'];
         $downPayment = $params['downPayment'];
         $total       = $price;
-        $uangMuka    = ($total * $downPayment) / 100;
 
-        $plafond   = $price - $uangMuka;
+        $plafond   = $price - $downPayment;
+        $plafonds  = $plafond;
         $n         = $term + 1;
         $returnVal = [];
 
@@ -81,13 +81,14 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "uang_muka"     => ($total * $downPayment) / 100,
+                "plafond"       => $plafonds,
+                "uang_muka"     => $downPayment,
                 "suku_bunga"    => $rate."%",
                 "kredit_fix"    => $term." Bulan",
                 "lama_pinjaman" => $term." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,
-            "pembayaran_pertama" => $uangMuka,
+            "pembayaran_pertama" => $downPayment,
         ];
 
         return response()->success([
@@ -107,9 +108,9 @@ class CalculatorController extends Controller
         $rate        = $params['rate'];
         $downPayment = $params['downPayment'];
         $total       = $price;
-        $uangMuka    = ($total * $downPayment) / 100;
 
-        $plafond   = $price - $uangMuka;
+        $plafond   = $price - $downPayment;
+        $plafonds  = $plafond;
         $n         = $term + 1;
         $returnVal = [];
 
@@ -162,13 +163,14 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "uang_muka"     => ($total * $downPayment) / 100,
+                "plafond"       => $plafonds,
+                "uang_muka"     => $downPayment,
                 "suku_bunga"    => $rate."%",
                 "kredit_fix"    => $term." Bulan",
                 "lama_pinjaman" => $term." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,
-            "pembayaran_pertama" => $uangMuka,
+            "pembayaran_pertama" => $downPayment,
         ];
 
         return response()->success([
@@ -190,9 +192,9 @@ class CalculatorController extends Controller
         $flrate      = $params['flrate'];
         $downPayment = $params['downPayment'];
         $total       = $price;
-        $uangMuka    = ($total * $downPayment) / 100;
 
-        $plafond     = $price - $uangMuka;
+        $plafond     = $price - $downPayment;
+        $plafonds    = $plafond;
         $n           = $fxflterm + 1;
         $returnVal   = [];
 
@@ -266,14 +268,15 @@ class CalculatorController extends Controller
 
         $rincian = [
             "rincian" => [
-                "uang_muka"           => ($total * $downPayment) / 100,
+                "plafond"             => $plafonds,
+                "uang_muka"           => $downPayment,
                 "suku_bunga"          => $fxrate."%",
                 "suku_bunga_floating" => $flrate."%",
                 "kredit_fix"          => $fxterm." Bulan",
                 "lama_pinjaman"       => $fxflterm." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,
-            "pembayaran_pertama" => $uangMuka,
+            "pembayaran_pertama" => $downPayment,
         ];
 
         return response()->success([
@@ -297,9 +300,9 @@ class CalculatorController extends Controller
         $ffloatlrate = $params['ffloatlrate'];
         $downPayment = $params['downPayment'];
         $total       = $price;
-        $uangMuka    = ($total * $downPayment) / 100;
 
-        $plafond     = $price - $uangMuka;
+        $plafond     = $price - $downPayment;
+        $plafonds    = $plafond;
         $n           = $fxflflterm + 1;
         $returnVal   = [];
 
@@ -390,7 +393,8 @@ class CalculatorController extends Controller
         
         $rincian = [
             "rincian" => [
-                "uang_muka"           => ($total * $downPayment) / 100,
+                "plafond"             => $plafonds,
+                "uang_muka"           => $downPayment,
                 "suku_bunga"          => $ffxrate."%",
                 "suku_bunga_floor"    => $ffloorrate."%",
                 "suku_bunga_floating" => $ffloatlrate."%",
@@ -399,7 +403,7 @@ class CalculatorController extends Controller
                 "lama_pinjaman"       => $fxflflterm." Bulan",
             ],
             "angsuran_perbulan"  => $angsuran,
-            "pembayaran_pertama" => $uangMuka,
+            "pembayaran_pertama" => $downPayment,
         ];
 
         return response()->success([

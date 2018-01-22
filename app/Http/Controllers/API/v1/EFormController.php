@@ -29,6 +29,11 @@ use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
 use DB;
+use Brispot;
+use Cache;
+use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class EFormController extends Controller
 {
@@ -40,6 +45,19 @@ class EFormController extends Controller
         $this->userNotification = $userNotification;
     }
 
+	public function ListBranch($data, $token)
+    {
+      $client = new Client();
+	  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/branch/'.$data['branch'],
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	 return $listExisting;
+	}
     /**
      * Display a listing of the resource.
      *
@@ -290,21 +308,6 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         try {
-        $branchs = \RestwsHc::setBody([
-            'request' => json_encode([
-                'requestMethod' => 'get_near_branch_v2',
-                'requestData'   => [
-                    'app_id' => 'mybriapi',
-                    'kode_branch' => $request->input('branch_id'),
-                    'distance'    => 0,
-
-                    // if request latitude and longitude not present default latitude and longitude cimahi
-                    'latitude'  => 0,
-                    'longitude' => 0
-                ]
-            ])
-        ])
-        ->post('form_params');
 
         $baseRequest = $request->all();
 
@@ -320,14 +323,7 @@ class EFormController extends Controller
             $baseRequest['staff_position'] = $user_login['position'];
         }
 
-        if ( $branchs['responseCode'] == '00' ) {
-            foreach ($branchs['responseData'] as $branch) {
-                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
-                    $baseRequest['branch'] = $branch['unit_kerja'];
 
-                }
-            }
-        }
 
         if ( $request->product_type == 'kpr' ) {
             if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
@@ -356,6 +352,31 @@ class EFormController extends Controller
 
             \Log::info("=======================================================");
             /* BRIGUNA */
+					$data_new['branch']=$request->input('branch_id');
+					  if ( count(apiPdmToken::all()) > 0 ) {
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  } else {
+						$this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  }
+					  if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+					  } else {
+						$briConnect = $this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+
+					  }
+					if ( $listExisting['success'] == '00' ) {
+						foreach ($listExisting['data'] as $branch) {
+							if ( $branch['branch'] == $request->input('branch_id') ) {
+								$baseRequest['branch'] = $branch['mbdesc'];
+
+							}
+						}
+					}
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
             $SLIP_GAJI = $request->SLIP_GAJI;
@@ -404,6 +425,29 @@ class EFormController extends Controller
                 $kpr = BRIGUNA::create( $baseRequest );
                     \Log::info($kpr);
         } else {
+			        $branchs = \RestwsHc::setBody([
+					'request' => json_encode([
+						'requestMethod' => 'get_near_branch_v2',
+						'requestData'   => [
+							'app_id' => 'mybriapi',
+							'kode_branch' => $request->input('branch_id'),
+							'distance'    => 0,
+
+							// if request latitude and longitude not present default latitude and longitude cimahi
+							'latitude'  => 0,
+							'longitude' => 0
+						]
+					])
+				])
+				->post('form_params');
+				if ( $branchs['responseCode'] == '00' ) {
+					foreach ($branchs['responseData'] as $branch) {
+						if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+							$baseRequest['branch'] = $branch['unit_kerja'];
+
+						}
+					}
+				}
             $dataEform =  EForm::where('nik', $request->nik)->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
@@ -630,6 +674,11 @@ class EFormController extends Controller
         if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
+
+        $eform->message = [
+            'title' => "EForm Notification",
+            'body'  => "E-Form berhasil di disposisi"
+        ];
 
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));

@@ -297,12 +297,14 @@ class EForm extends Model implements AuditableContract
                 $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
+                    generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
             } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
+                    generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
             } else if ($eform->status_eform == 'Approval2' ) {
@@ -1324,7 +1326,7 @@ class EForm extends Model implements AuditableContract
      */
     public function step10($data)
     {
-        \Log::info("step10");
+       \Log::info("step10");
         $kpr = $this->kpr;
         $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
         $otsInArea = $collateral->otsInArea;
@@ -1333,14 +1335,17 @@ class EForm extends Model implements AuditableContract
         $otsEnvironment = $collateral->otsEnvironment;
         $otsValuation = $collateral->otsValuation;
         $otsOther = $collateral->otsOther;
+        $otsSeven = $collateral->otsSeven;
+        $otsEight = $collateral->otsEight;
         $otsNine = $collateral->otsNine;
+        $otsTen = $collateral->otsTen;
 
         $request = $data + [
             "Fid_agunan" => (isset($this->additional_parameters['fid_agunan']))? $this->additional_parameters['fid_agunan'] : '0',
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
-            "Status_agunan_value_agunan_rt" => 'Ditempati Sendiri',
+            "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status)?'Ditempati Sendiri':$otsSeven->collateral_status,
             "Deskripsi_agunan_rt" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
@@ -1348,29 +1353,29 @@ class EForm extends Model implements AuditableContract
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
             "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsLetter->date),
             "Tanggal_jatuh_tempo_agunan_rt"=> $this->reformatDate($otsLetter->duration_land_authorization),
-            "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
-            "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
-            "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
-            "Lokasi_agunan_rt" =>!($otsInArea->location) ? '0' : $otsInArea->location,
-            "Nilai_pasar_wajar_agunan_rt"=>!($otsValuation->npw_all) ? '0' : $this->reformatCurrency( $otsValuation->npw_all ),
-            "Nilai_likuidasi_agunan_rt"=>!($otsValuation->nl_all) ? '0' : $this->reformatCurrency( $otsValuation->nl_all ),
-            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsValuation->pnpw_all) ? '0' : $this->reformatCurrency( $otsValuation->pnpw_all ),
-            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsValuation->pnl_all) ? '0' : $this->reformatCurrency( $otsValuation->pnl_all ),
-            "Nilai_likuidasi_saat_realisasi_agunan_rt"=>'0',
-            "Nilai_jual_obyek_pajak_agunan_rt" =>'0',// no pokok wajib pajak
-            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'bank',// bank and independent
-            "Penilai_independent_agunan_rt"=>'0',
-            "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsValuation->scoring_all_date),
-            "Jenis_pengikatan_value_agunan_rt" => '01',//!($otsOther->bond_type) ? '0' : $otsOther->bond_type,
+            "Alamat_agunan_rt" => !($otsSeven->address_collateral) ? '0': str_replace("'", "",$otsSeven->address_collateral),
+            "Kelurahan_agunan_rt" => !($otsSeven->village) ? '0' : $otsSeven->village,
+            "Kecamatan_agunan_rt" => !($otsSeven->districts) ? '0' : $otsSeven->districts,
+            "Lokasi_agunan_rt" =>!($otsSeven->location) ? '0' : $otsSeven->location,
+            "Nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market) ? '0' : $this->reformatCurrency( $otsEight->fair_market ),
+            "Nilai_likuidasi_agunan_rt"=>!($otsEight->liquidation) ? '0' : $this->reformatCurrency( $otsEight->liquidation ),
+            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market_projection) ? '0' : $this->reformatCurrency( $otsEight->fair_market_projection ),
+            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsEight->liquidation_projection) ? '0' : $this->reformatCurrency( $otsEight->liquidation_projection ),
+            "Nilai_likuidasi_saat_realisasi_agunan_rt"=>!($otsEight->liquidation_realization) ? '0' : $this->reformatCurrency( $otsEight->liquidation_realization ),
+            "Nilai_jual_obyek_pajak_agunan_rt" =>!($otsEight->njop) ? '0' : $this->reformatCurrency( $otsEight->njop ),// no pokok wajib pajak
+            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>!($otsEight->appraisal_by) ? 'bank' : $otsEight->appraisal_by,// bank and independent
+            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser) ? '0' : $otsEight->independent_appraiser,
+            "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsEight->date_assessment),
+            "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,//!($otsOther->bond_type) ? '0' : $otsOther->bond_type,
             "No_bukti_pengikatan_agunan_rt" => '0',//taidak
             "Nilai_pengikatan_agunan_rt" => '0',//taidak
-            "Paripasu_value_agunan_rt" => '0',//taidak
-            "Nilai_paripasu_agunan_bank_rt" => '0',//taidak
-            "Flag_asuransi_value_agunan_rt" => '0',//taidak
-            "Nama_perusahaan_asuransi_agunan_rt" =>'IJK',//taidak
-            "Nilai_asuransi_agunan_rt" => '0',//taidak
-            "Eligibility_value_agunan_rt" => '0',//taidak
-            "Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
+            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
+            "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
+            "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? '0':($otsTen->insurance == "ya")?"1":"0",//taidak
+            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
+            "Nilai_asuransi_agunan_rt" => !($otsTen->insurance_value) ? '0' : $this->reformatCurrency( $otsTen->insurance_value ),//taidak
+            "Eligibility_value_agunan_rt" => !($otsTen->eligibility)? '0' : $otsTen->eligibility,//taidak
+            //"Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
             // Field Tambahan
             "Pemecah_sertifikat_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date)?'':$this->reformatDate($otsNine->receipt_date),//string kosong apabila tidak di berikan
             "Pemecah_sertifikat_status_value_agunan_rt"=>!($otsNine->certificate_status)? '' : ($otsNine->certificate_status == "Sudah Diberikan" ? '1' : '0'),
