@@ -82,16 +82,21 @@ class AccountController extends Controller
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
       }
-      // $apiPdmToken = $apiPdmToken[0];
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
-        dd($detailByCif);
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $detailByCif['data']['info'][0]
-        ]);
+        if ($detailByCif['success'] == true) {
+          return response()->success( [
+              'message' => 'Sukses',
+              'contents' => $detailByCif['data']['info'][0]
+          ]);
+        } else {
+          return response()->success( [
+              'message' => 'CIF tidak di temukan',
+              'contents' => []
+          ]);
+        }
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();
