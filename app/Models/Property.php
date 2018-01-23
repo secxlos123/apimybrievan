@@ -421,6 +421,7 @@ class Property extends Model implements AuditableContract
                     return $query->whereNotIn('developers.dev_id_bri',['1'])
                         ->orWhereNull('developers.dev_id_bri');
                 })
+                ->where('properties.is_approved', '=', true)
                 ->limit($limit)
                 ->get();
 

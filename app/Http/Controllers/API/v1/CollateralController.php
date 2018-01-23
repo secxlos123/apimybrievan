@@ -669,4 +669,14 @@ class CollateralController extends Controller
      ] );     
     }
 
+    /*
+    *  Get Id collateral from property_id
+    */
+    public function getIdCollateral($type ,$property_id){  
+     $collateral = DB::table('collateral_view_table')->where('property_id', $property_id)->first();  
+     return response()->success( [
+        'contents' => $collateral
+     ] );     
+    }
+
 }
