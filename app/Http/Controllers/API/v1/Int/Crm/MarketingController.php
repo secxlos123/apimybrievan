@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Crm\Marketing\CreateRequest;
 // use App\Http\Request\API\v1\Crm\Marketing\UpdateRequest;
 use App\Models\Crm\Marketing;
+use App\Models\Crm\MarketingNote;
 use App\Models\Crm\MarketingActivity;
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
@@ -379,6 +380,37 @@ class MarketingController extends Controller
       }
 
       return $result;
+    }
+
+    // Marketing Notes
+    public function getNote(Request $request)
+    {
+      $marketing_id = $request['marketing_id'];
+      $marketing_note = MarketingNote::where('marketing_id', $marketing_id)->get();
+      return response()->success( [
+          'message' => 'Sukses get List Marketing Note',
+          'contents' => $marketing_note
+        ]);
+    }
+    
+    public function store_note(Request $request)
+    {
+      $data['marketing_id'] = $request['marketing_id'];
+      $data['pn'] = $request->header('pn');
+      $data['pn_name'] = $request['pn_name'];
+      $data['note'] = $request['note'];
+
+      $save = MarketingNote::create($data);
+      if ($save) {
+          return response()->success([
+              'message' => 'Marketing Notes berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Marketing Notes Tidak Dapat Ditambah.',
+      ], 500);
     }
 
 }
