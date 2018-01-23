@@ -53,6 +53,7 @@ class UserNotification extends Model
 		$typeModuleCollateral = getTypeModule(Collateral::class);
 		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&slug=' . $this->slug.'&type='.$typeModuleEform;
 		$internalurl = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/');
+		$externalurl =  env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
 		if ($user_id) {
 			$url = 'eform?slug=' . $this->slug.'&type='.$typeModuleEform;
 		} else {
@@ -142,31 +143,31 @@ class UserNotification extends Model
 			break;	
 		case 'App\Notifications\CollateraAODisposition':
 			$subjectNotif = ['message' => 'Penugasan AO Collateral',
-				'url' => $internalurl.'staff-collateral?collateral_id='.$this->slug. '&type=' . $typeModuleCollateral,
+				'url' => $internalurl.'staff-collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralOTS':
 			$subjectNotif = ['message' => 'OTS menilai anggunan',
-				'url' => '#',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\CollateralStafRejectOTS':
 			$subjectNotif = ['message' => 'menolak menilai agunan',
-				'url' => '#',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralStafPenilaianAnggunan':
 			$subjectNotif = ['message' => 'Form Penilaian Agunan',
-				'url' => '#',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralStafChecklist':
 			$subjectNotif = ['message' => 'Collateral Checklist',
-				'url' => '#',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
 			break;			

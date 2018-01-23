@@ -41,7 +41,7 @@ class SelectCabangController extends Controller
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
-		
+		return $branchs;die();
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
@@ -59,23 +59,14 @@ class SelectCabangController extends Controller
                // if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) {
 					$countkey = strlen($branch['kode_uker']);
 					$kode_uker = '';
-					if($countkey=='1'){
-						$kode_uker = '0000'.$branch['kode_uker'];
-					}elseif($countkey=='2'){
-						$kode_uker = '000'.$branch['kode_uker'];
-					}elseif($countkey=='3'){
-						$kode_uker = '00'.$branch['kode_uker'];
-					}elseif($countkey=='1'){
-						$kode_uker = '0'.$branch['kode_uker'];
-					}else{
-						$kode_uker = $branch['kode_uker'];
-					}
+					
 						$nilaicount =0;
 						$request['key'] = $kode_uker;
 						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
 						$countmitra = count($mitra);
 						for($i=0;$i<$countmitra;$i++){
+							if($mitra[$i]['BRANCH_CODE']==$branch['kode_uker']){
 //						$mitra[$i]['kanwil'] = $branch['kanwil'];
 						$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 						$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
@@ -89,6 +80,7 @@ class SelectCabangController extends Controller
 //						$mitra[$i]['latitude'] = $branch['latitude'];
 //						$mitra[$i]['longitude'] = $branch['longitude'];
 						$offices[] = $mitra[$i];
+					}
 
 						}
              //   }
@@ -150,7 +142,7 @@ class SelectCabangController extends Controller
 	{
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
-		$page = $request->get('page', 1); // Get the ?page=1 from the url
+     	$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
 		$nilaisampai = 0;
@@ -163,7 +155,7 @@ class SelectCabangController extends Controller
                     $search = strtoupper($request->input('name'));
                     $search = gettype( strpos($branch['unit_kerja'], $search) ) == 'integer';
                 }
-
+   
                 //if ( ( $search ) && (( $branch['jenis_uker'] == "KC" ) || ( $branch['jenis_uker'] == "KCP" ) || ( $branch['jenis_uker'] == "BRI UNIT" ) || ( $branch['jenis_uker'] == "KCK" ) )) 
 				//{
 					$nilaicount = 0;
@@ -179,12 +171,12 @@ class SelectCabangController extends Controller
 						//$data_branch['kode_uker'] = $kode_uker;
 
 						for($i=0;$i<$countmitra;$i++){
-							if($branch['kode_uker']==$mitra[$i]['BRANCH_CODE']){
+							//if($branch['kode_uker']==$mitra[$i]['BRANCH_CODE']){
 								$mitra[$i]['alamat'] = $branch['alamat'];
 								$mitra[$i]['unit_induk'] = $branch['unit_induk'];
 								$mitra[$i]['kanca_induk'] = $branch['kanca_induk'];
 								$offices[] = $mitra[$i];
-							}
+							//}
 //						$mitra[$i]['kanwil'] = $branch['kanwil'];
 //						$mitra[$i]['jenis_uker'] = $branch['jenis_uker'];
 //						$mitra[$i]['dati2'] = $branch['dati2'];
