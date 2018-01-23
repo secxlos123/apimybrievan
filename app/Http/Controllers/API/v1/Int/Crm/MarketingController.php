@@ -84,6 +84,7 @@ class MarketingController extends Controller
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
+          'pn_name' => $pemasar_name[$marketing->pn];
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
