@@ -826,7 +826,7 @@ if (! function_exists('pushNotification')) {
         $dataBuilder->addData([
             'id'       => $id,
             'slug'     => $slug,
-            'type'     => $type,
+            'type'     => 'collateral',
         ]);
 
         $notification = $notificationBuilder->build();

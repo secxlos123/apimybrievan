@@ -9,7 +9,7 @@ use App\Models\Property;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Notifications\PropertyNotification;
-
+use DB;
 class PropertyController extends Controller
 {
     /**
@@ -179,5 +179,16 @@ class PropertyController extends Controller
     {
         $properties = Property::nearby($request);
         return response()->success(['contents' => $properties]);
+    }
+
+    /*
+    *  Show data notif from manager collateral to admin developer
+    */
+    public function notifCollateral($prop_slug){  
+     $collateral = DB::table('developer_properties_view_table')->where('prop_slug', $prop_slug)->first();  
+     
+     return response()->success( [
+        'contents' => $collateral
+     ] );     
     }
 }
