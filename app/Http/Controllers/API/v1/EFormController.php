@@ -107,6 +107,7 @@ class EFormController extends Controller
 				$birth_place = json_decode(json_encode($birth_place), True);
 		return $birth_place;
 	}
+
 	public function show_bri( Request $request )
     {
 		$customer = DB::table('customer_details')
@@ -209,14 +210,19 @@ class EFormController extends Controller
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
-		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
-				if(!empty($customer[0]['couple_birth_place_id'])){
-					  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
-					  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
-				}else{
-					$eform[0]['customer']['personal']['couple_birth_place']  = null;
-				}
+            if(!empty($customer[0]['birth_place_id'])){
+                  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
+                  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
+            }else{
+                $eform[0]['customer']['personal']['birth_place']  = null;
+            }
+		  
+    		if(!empty($customer[0]['couple_birth_place_id'])){
+    			  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
+    			  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
+    		}else{
+    			$eform[0]['customer']['personal']['couple_birth_place']  = null;
+    		}
 		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
@@ -242,8 +248,9 @@ class EFormController extends Controller
      * @param  integer $eform_id
      * @return \Illuminate\Http\Response
      */
-    public function show( $type, $eform_id )
+    public function show(Request $request, $type, $eform_id )
     {
+        $recontest = (empty(request()->header('recontest')) ? false : true);
 		$eform = EForm::findOrFail($eform_id);
 		$data = $eform;
 		if($eform['product_type']=='briguna'){
@@ -257,11 +264,19 @@ class EFormController extends Controller
 
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-
-			return response()->success( [
+			// Check recontest or not
+            if($recontest){
+                $usersModel  = User::FindOrFail($eform->user_id);
+                $credentials = [
+                    'data' => $eform,
+                    'user' => $usersModel,
+                ];
+                pushNotification($credentials, "recontestEForm");
+            }
+            return response()->success([
 				'contents' => $eform
-			] );
-			}
+			]);
+		}
     }
 
     public function showIdsAndRefNumber( $ids, $ref_number )
@@ -418,7 +433,7 @@ class EFormController extends Controller
 			}
                 $kpr = BRIGUNA::create( $baseRequest );
                 $return = [
-                    'message' => 'Data e-form berhasil ditambahkan.',
+                    'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
                     \Log::info($kpr);
@@ -520,6 +535,7 @@ class EFormController extends Controller
                             }
                         }
                     }
+                }
                     $kpr = KPR::create( $baseRequest );
                     $return = [
                         'message' => 'Data e-form berhasil ditambahkan.',
@@ -532,9 +548,8 @@ class EFormController extends Controller
                     ], 422 );
                 }
             }
-        }
             DB::commit();
-        } catch (Exception $e) {
+    } catch (Exception $e) {
             DB::rollback();
             return response()->error( [
                 'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
@@ -672,12 +687,6 @@ class EFormController extends Controller
         if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
-
-        $eform->message = [
-            'title' => "EForm Notification",
-            'body'  => "E-Form berhasil di disposisi"
-        ];
-
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
@@ -718,7 +727,7 @@ class EFormController extends Controller
 
         $data = EForm::findOrFail($eform_id);
         $currentStatus = $data->status_eform;
-
+        $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
         $eform = EForm::approve( $eform_id, $baseRequest );
 
         if( $eform['status'] ) {
@@ -740,16 +749,27 @@ class EFormController extends Controller
                 // Recontest
                 if ( $currentStatus != 'Approval2' ) {
                     event( new Approved( $data ) );
-
                 }
 
                 // $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
                 // $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
                 $responseMessage = 'E-form berhasil di approve.';
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
 
             } else {
                 $usersModel = User::FindOrFail($data->user_id);
                 event( new RejectedEform( $data ) );
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
 
                 $responseMessage = 'E-form berhasil di reject.';
 
@@ -759,21 +779,10 @@ class EFormController extends Controller
             if ( $currentStatus == 'Approval2' ) {
                 $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
-
             } else {
+                $usersModel = User::FindOrFail($data->user_id);
                 $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
-
-                $credentials = [
-                    'data' => $data,
-                    'user'  => $usersModel
-                ];
-
-                $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
-
-                // Call the helper of push notification function
-                pushNotification($credentials, $status);
-
             }
 
             return response()->success( [
@@ -837,7 +846,7 @@ class EFormController extends Controller
                     'data' => $verify['contents'],
                     'user' => $usersModel,
                 ];
-                pushNotification($credentials, $status."KPR");
+                pushNotification($credentials, $status."EForm");
 
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();

@@ -69,10 +69,10 @@ class RecontestController extends Controller
         $credentials = [
             'data'        => $eform,
             'user'        => $usersModel,
-            'credentials' => $user_login
+            'request'     => $request,
         ];
 
-        pushNotification($credentials, 'recontestEForm');
+        pushNotification($credentials, 'createEForm');
 
         DB::commit();
         return response()->success( [
