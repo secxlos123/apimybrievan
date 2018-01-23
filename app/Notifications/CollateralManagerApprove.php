@@ -73,7 +73,7 @@ class CollateralManagerApprove extends Notification
             'slug' => $this->collateral->id,
             'type_module' => $typeModule,
             'created_at' => $this->collateral->created_at,
-            'role_name' => 'collateral'
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }

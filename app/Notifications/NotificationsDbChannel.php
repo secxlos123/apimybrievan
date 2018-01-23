@@ -22,7 +22,7 @@ class NotificationsDbChannel
         return $notifiable->routeNotificationFor('database')->create([
             'id' => $notification->id,
             'branch_id'=> $data['branch_id'],
-            'role_name'=> 'customer',
+            'role_name'=> $data['role_name'],
             'slug'=> $data['slug'],
             'type' => get_class($notification),
             'data' => $data,

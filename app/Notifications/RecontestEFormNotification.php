@@ -68,7 +68,8 @@ class RecontestEFormNotification extends Notification
             'branch_id' => $this->eForm->branch_id,
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
-            'created_at' => $this->eForm->created_at
+            'created_at' => $this->eForm->created_at,
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }

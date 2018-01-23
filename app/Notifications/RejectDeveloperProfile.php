@@ -7,23 +7,23 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
-use App\Models\Appointment;
-use App\Models\EForm;
+use App\Models\Developer;
+use App\Models\ApprovalDataChange;
 
-class NewSchedulerCustomer extends Notification
+class RejectDeveloperProfile extends Notification
 {
     use Queueable;
 
-    public $appointment;
+    public $dev;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($appointment)
+    public function __construct($dev)
     {
-        $this->appointment   = $appointment;
+        $this->dev   = $dev;
     }
 
     /**
@@ -45,7 +45,10 @@ class NewSchedulerCustomer extends Notification
      */
     public function toMail($notifiable)
     {
-       //
+        /*return (new MailMessage)
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');*/
     }
 
     /**
@@ -54,29 +57,30 @@ class NewSchedulerCustomer extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-     public function toArray($notifiable)
+    public function toArray($notifiable)
     {
-        //
+        return [
+            //
+        ];
     }
 
     public function toDatabase($notifiable)
     {
-        $data = EForm::findOrFail($this->appointment->eform_id);
-        $typeModule = getTypeModule(Appointment::class);
-        
+        $typeModule = getTypeModule(Developer::class);
+        $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->whereNull('approval_by')->first();
+
         return [
-            'appointment_id' => $this->appointment->id,
-            'eform_id' => $this->appointment->eform_id,
+            'developer_id' => $this->dev->id,
             'user_id' => $notifiable->id,
+            'approval_data_changes_id' => $approvalDataChange->id,
+            'city_id' => $approvalDataChange->city_id,            
+            'company_name' => $approvalDataChange->company_name,            
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'nik' => $data->nik,
-            'ref_number' => $data->ref_number,
-            'branch_id' => $data->branch_id,
-            'slug' => $this->appointment->id,
-            'type_module' => $typeModule,
-            'created_at' => $this->appointment->created_at,
-            'message' => $this->appointment->message,
+            'branch_id' => 0,
             'role_name' => $notifiable->roles->first()->slug,
+            'slug' => $this->dev->id,
+            'type_module' => $typeModule,
+            'created_at' => $this->dev->created_at,
         ];
     }
 }

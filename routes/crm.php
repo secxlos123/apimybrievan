@@ -6,8 +6,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   ] )->name('crm.index');
 
   // route reporting Crm
-  Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
-  Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
+  // Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
+  // Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
 
   //route $pemasar
   Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');
@@ -71,8 +71,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   ]);
 
   // Marketing Notes Route
-  Route::get('/marketing/note', 'MarketingController@getNote');
-  Route::post('/marketing/srore_note', 'MarketingController@store_note');
+  Route::post('/marketing/note', 'MarketingController@getNote');
+  Route::post('/marketing/store_note', 'MarketingController@store_note');
 
   // Route marketing by branch
   Route::post('/marketing/by_branch', 'MarketingController@by_branch');

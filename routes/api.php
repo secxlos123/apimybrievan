@@ -36,6 +36,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('SelectCabangInternal', 'SelectCabangController@getCabangMitraOpi');
 		Route::post('gimmick_list', 'Int\GimmickController@list_gimmick');
 		Route::post('GetView', 'ViewController@index');
+		Route::post('testertoken', 'EFormController@TestingBranch');
 
 		/* ------------*/
 
@@ -151,6 +152,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		 * @var [type]
 		 */
 		Route::group(['prefix' => 'approval-data-change/{approvalType}', 'as' => 'approval-data-change.'], function($router) {
+			Route::get( '/show-id/{id}', 'ApprovalDataChangeController@showByIds' );
 			Route::resource('', 'ApprovalDataChangeController', [
 				'only' => ['index', 'store', 'show', 'update'],
 				'parameters' => [
