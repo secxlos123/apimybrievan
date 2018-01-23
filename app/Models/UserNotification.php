@@ -119,6 +119,11 @@ class UserNotification extends Model
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
 			];
 			break;
+		case 'App\Notifications\EditDeveloper':
+			$subjectNotif = ['message' => 'Perbaharui Data Profile',
+				'url' => '/approval-data/developer?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+			];
+			break;
 		default:
 			$subjectNotif = ['message' => 'Type undefined',
 				'url' => '',
@@ -183,6 +188,10 @@ class UserNotification extends Model
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationRejectFormNasabah')) {
 				/*verifiy app*/
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
 				$query->unreads();
 			}
 		}

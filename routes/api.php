@@ -146,6 +146,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		 * @var [type]
 		 */
 		Route::group(['prefix' => 'approval-data-change/{approvalType}', 'as' => 'approval-data-change.'], function($router) {
+			Route::get( '/show-id/{id}', 'ApprovalDataChangeController@showByIds' );
 			Route::resource('', 'ApprovalDataChangeController', [
 				'only' => ['index', 'store', 'show', 'update'],
 				'parameters' => [

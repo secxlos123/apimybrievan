@@ -46,6 +46,14 @@ class ApprovalDataChangeController extends Controller
         );
     }
 
+    public function showByIds($type, $approvalType, $id )
+    {
+        $approvalDateChange = $this->approvalDateChange->where( 'id', (int)$id )->with('related')->with('city')->first();
+        return response()->success( [
+            'contents' => $approvalDateChange
+        ] );
+    }
+
     /**
      * Store a newly created resource in storage.
      *
