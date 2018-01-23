@@ -6,14 +6,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Notifications\NotificationsDbChannel;
 use App\Models\EForm;
 
-class EFormPenugasanDisposisi extends Notification
+class RecontestEFormNotification extends Notification
 {
     use Queueable;
 
     public $eForm;
+
     /**
      * Create a new notification instance.
      *
@@ -36,18 +36,18 @@ class EFormPenugasanDisposisi extends Notification
     }
 
     /**
-     * Get the database representation of the notification.
+     * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    /*public function toMail($notifiable)
+    public function toMail($notifiable)
     {
-        return (new MailMessage)
+        /*return (new MailMessage)
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
-    }*/
+                    ->line('Thank you for using our application!');*/
+    }
 
     /**
      * Get the array representation of the notification.
@@ -58,7 +58,7 @@ class EFormPenugasanDisposisi extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        
+
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
@@ -68,7 +68,7 @@ class EFormPenugasanDisposisi extends Notification
             'branch_id' => $this->eForm->branch_id,
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
-            'created_at' => $this->eForm->created_at,
+            'created_at' => $this->eForm->created_at
         ];
     }
 }
