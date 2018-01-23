@@ -214,7 +214,7 @@ class CreateOts extends FormRequest
         'eight.fair_market_projection' => 'required|numeric',
         'eight.liquidation_projection' => 'required|numeric',
         'eight.njop' => 'required|numeric',
-        'eight.appraisal_by' => 'required|in:Bank,independent',
+        'eight.appraisal_by' => 'required|in:bank,independent',
         'eight.independent_appraiser' => 'required_if:eight.appraisal_by,independent',
         'eight.independent_appraiser_name' => 'required_if:eight.appraisal_by,independent',
         'eight.date_assessment' => 'required|date',
