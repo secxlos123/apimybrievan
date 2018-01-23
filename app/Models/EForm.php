@@ -1372,7 +1372,7 @@ class EForm extends Model implements AuditableContract
             "Alamat_agunan_rt" => !($otsSeven->address_collateral) ? '0': str_replace("'", "",$otsSeven->address_collateral),
             "Kelurahan_agunan_rt" => !($otsSeven->village) ? '0' : $otsSeven->village,
             "Kecamatan_agunan_rt" => !($otsSeven->districts) ? '0' : $otsSeven->districts,
-            "Lokasi_agunan_rt" =>!($otsSeven->location) ? '0' : $otsSeven->location,
+            "Lokasi_agunan_rt" =>!($otsSeven->city) ? '0' : ( !($otsSeven->city->name) ? '0' : $otsSeven->city->name ),
             "Nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market) ? '0' : $this->reformatCurrency( $otsEight->fair_market ),
             "Nilai_likuidasi_agunan_rt"=>!($otsEight->liquidation) ? '0' : $this->reformatCurrency( $otsEight->liquidation ),
             "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market_projection) ? '0' : $this->reformatCurrency( $otsEight->fair_market_projection ),
