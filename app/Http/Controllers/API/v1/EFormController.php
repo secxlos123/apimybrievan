@@ -48,7 +48,13 @@ class EFormController extends Controller
 	public function ListBranch($data, $token)
     {
       $client = new Client();
-	  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/branch/'.$data['branch'],
+	  $host = env('APP_URL');
+	  if($host == 'api.dev.net'){
+		$url = 'http://172.18.44.182/bribranch/branch/';
+	}else{
+		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';  
+	  }
+	  $requestListExisting = $client->request('GET', $url.$data['branch'],
 				[
 				  'headers' =>
 				  [
