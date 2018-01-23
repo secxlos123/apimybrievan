@@ -51,6 +51,7 @@ class NotificationController extends Controller
         else {
             $user_id    = 0;            
         }
+    	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
 
         $ArrGetDataNotification = [];
         $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id);
@@ -92,5 +93,29 @@ class NotificationController extends Controller
             'contents' => $notification
         ], 200 );
 
+    }
+
+    public function unReadMobile(Request $req)
+    {
+        $limit    = (empty($req->limit) ? 0 : $req->limit);
+        $page     = (empty($req->page) ? 0 : $req->page);
+        $role     = (empty($req->role) ? 0 : $req->role);
+        $userId   = (empty($req->user_id) ? 0 : $req->user_id);
+        $branchId = (empty($req->branch_id) ? 0 : $req->branch_id);
+        $pn       = (empty($req->pn) ? 0 : $req->pn);
+        $getDataNotification =  $this->userNotification->getUnreadsMobile(
+                                    substr($branchId,-3), 
+                                    $role, '000'.$pn , 
+                                    $userId,
+                                    request()->segment(3)
+                                );
+        return  response()->success( [
+            'message' => 'Sukses',
+            'contents' => $getDataNotification
+        ], 200 );
+        // echo request()->segment(3);
+        // die();
+        // var_dump(json_encode($getDataNotification->get()->paginate()));
+        // die();
     }
 }

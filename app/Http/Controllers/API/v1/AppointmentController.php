@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Models\UserServices;
 use App\Models\UserNotification;
 use App\Notifications\NewSchedulerCustomer;
-
+use App\Notifications\UpdateSchedulerCustomer;
 use Illuminate\Http\Request;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
@@ -103,6 +103,11 @@ class AppointmentController extends Controller
                 $notificationIsRead->markAsRead();
             }
 
+            $save->message = [
+                'title'   => "Schedule Notification",
+                'message' => "Anda Memiliki Jadwal Baru."
+            ];
+
             $usersModel = User::FindOrFail($save->user_id);     /*send notification*/
             $usersModel->notify(new NewSchedulerCustomer($save));
 
@@ -181,11 +186,23 @@ class AppointmentController extends Controller
                 $notificationIsRead->markAsRead();
             }
 
+            $Update->message = [
+                'title'   => "Schedule Notification",
+                'message' => "Jadwal anda telah di update ! Silahkan cek jadwal anda."
+            ];
+
             $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
             $usersModel->notify(new UpdateSchedulerCustomer($Update));
 
+            if($type == 'int'){
+                $role = 'ao';
+            }else{
+                $role = 'customer';
+            }
+
             $credentials = [
                 'data'  => $Update,
+                'role'  => $role,
             ];
 
             // Call the helper of push notification function

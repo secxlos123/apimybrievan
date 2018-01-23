@@ -19,6 +19,8 @@ Route::post( 'urgent-function', 'RemovableController@run' );
  */
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
+		
+		Route::post('getBranch', 'SelectUkerController@getBranch');
 		Route::post('smsnotif', 'SentSMSNotifController@sentsms');
 		Route::post('select', 'SelectController@select');
 		Route::get('phpini', 'EFormController@php_ini');
@@ -38,6 +40,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
 
+		Route::get('notification', 'NotificationController@unReadMobile');
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );
@@ -120,7 +123,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		Route::get('collateral/nonindex/{developerId}/{propertyId}', ['as' => 'collateral.showNon', 'uses' => 'CollateralController@showNon']);
 		Route::get('collateral/notifotsnonindex/{developerId}/{propertyId}', ['as' => 'collateral.notifotsnonindex', 'uses' => 'CollateralController@NotifOtsNonindex']);	
-		Route::get('collateral/notifots/{developerId}/{propertyId}', ['as' => 'collateral.notifots', 'uses' => 'CollateralController@NotifOts']);	
+		Route::get('collateral/notifots/{developerId}/{propertyId}', ['as' => 'collateral.notifots', 'uses' => 'CollateralController@NotifOts']);
+                Route::get('collateral/collateralnotif/{collateralId}', ['as' => 'collateral.shownotif', 'uses' => 'CollateralController@notifCollateral']);
 
 		/**
 		 * Collateral ots routes

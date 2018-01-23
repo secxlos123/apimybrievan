@@ -29,6 +29,12 @@ use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
 use DB;
+use Brispot;
+use Cache;
+use App\Models\Crm\apiPdmToken;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
+
 class EFormController extends Controller
 {
     public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
@@ -39,6 +45,19 @@ class EFormController extends Controller
         $this->userNotification = $userNotification;
     }
 
+	public function ListBranch($data, $token)
+    {
+      $client = new Client();
+	  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/branch/'.$data['branch'],
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	 return $listExisting;
+	}
     /**
      * Display a listing of the resource.
      *
@@ -88,6 +107,7 @@ class EFormController extends Controller
 				$birth_place = json_decode(json_encode($birth_place), True);
 		return $birth_place;
 	}
+
 	public function show_bri( Request $request )
     {
 		$customer = DB::table('customer_details')
@@ -190,14 +210,19 @@ class EFormController extends Controller
 		  $eform[0]['nominal'] = $eform[0]['request_amount'];
 		  $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
 		  $eform[0]['kpr']['year'] = $eform[0]['year'];
-		  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
-		  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
-				if(!empty($customer[0]['couple_birth_place_id'])){
-					  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
-					  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
-				}else{
-					$eform[0]['customer']['personal']['couple_birth_place']  = null;
-				}
+            if(!empty($customer[0]['birth_place_id'])){
+                  $birth_place = $this->birth_place($customer[0]['birth_place_id']);
+                  $eform[0]['customer']['personal']['birth_place'] = $birth_place[0]['name'];
+            }else{
+                $eform[0]['customer']['personal']['birth_place']  = null;
+            }
+		  
+    		if(!empty($customer[0]['couple_birth_place_id'])){
+    			  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
+    			  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
+    		}else{
+    			$eform[0]['customer']['personal']['couple_birth_place']  = null;
+    		}
 		  $eform[0]['customer']['personal']['name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
         return response()->success( [
             'contents' => $eform[0]
@@ -289,72 +314,69 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         try {
-        $branchs = \RestwsHc::setBody([
-            'request' => json_encode([
-                'requestMethod' => 'get_near_branch_v2',
-                'requestData'   => [
-                    'app_id' => 'mybriapi',
-                    'kode_branch' => $request->input('branch_id'),
-                    'distance'    => 0,
+            $baseRequest = $request->all();
 
-                    // if request latitude and longitude not present default latitude and longitude cimahi
-                    'latitude'  => 0,
-                    'longitude' => 0
-                ]
-            ])
-        ])
-        ->post('form_params');
+            // Get User Login
+            $user_login = \RestwsHc::getUser();
 
-        $baseRequest = $request->all();
+            if ($user_login['role'] === 'ao' ) {
+                $baseRequest['ao_id'] = $user_login['pn'];
+                $baseRequest['ao_name'] = $user_login['name'];
+                $baseRequest['ao_position'] = $user_login['position'];
+            } else {
+                $baseRequest['staff_name'] = $user_login['name'];
+                $baseRequest['staff_position'] = $user_login['position'];
+            }
 
-        // Get User Login
-        $user_login = \RestwsHc::getUser();
-
-        if ($user_login['role'] === 'ao' ) {
-            $baseRequest['ao_id'] = $user_login['pn'];
-            $baseRequest['ao_name'] = $user_login['name'];
-            $baseRequest['ao_position'] = $user_login['position'];
-        } else {
-            $baseRequest['staff_name'] = $user_login['name'];
-            $baseRequest['staff_position'] = $user_login['position'];
-        }
-
-        if ( $branchs['responseCode'] == '00' ) {
-            foreach ($branchs['responseData'] as $branch) {
-                if ( $branch['kode_uker'] == $request->input('branch_id') ) {
-                    $baseRequest['branch'] = $branch['unit_kerja'];
-
+            if ( $request->product_type == 'kpr' ) {
+                if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
+                    $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
+                    $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
                 }
             }
-        }
 
-        if ( $request->product_type == 'kpr' ) {
-            if ($baseRequest['status_property'] != ENV('DEVELOPER_KEY', 1)) {
-                $baseRequest['developer'] = ENV('DEVELOPER_KEY', 1);
-                $baseRequest['developer_name'] = ENV('DEVELOPER_NAME', "Non Kerja Sama");
+            $baseArray = array (
+                'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
+                , 'job_id' => 'work', 'job_name' => 'work_name'
+                , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
+                , 'citizenship_name' => 'citizenship'
+            );
+
+            foreach ($baseArray as $target => $base) {
+                if ( isset($baseRequest[$base]) ) {
+                    $baseRequest[$target] = $baseRequest[$base];
+                    unset($baseRequest[$base]);
+                }
             }
-        }
 
-        $baseArray = array (
-            'job_type_id' => 'work_type', 'job_type_name' => 'work_type_name'
-            , 'job_id' => 'work', 'job_name' => 'work_name'
-            , 'job_field_id' => 'work_field', 'job_field_name' => 'work_field_name'
-            , 'citizenship_name' => 'citizenship'
-        );
-
-        foreach ($baseArray as $target => $base) {
-            if ( isset($baseRequest[$base]) ) {
-                $baseRequest[$target] = $baseRequest[$base];
-                unset($baseRequest[$base]);
-            }
-        }
-        \Log::info("=======================================================");
-        \Log::info($baseRequest);
-
-        if ( $request->product_type == 'briguna' ) {
-
+            if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
+					$data_new['branch']=$request->input('branch_id');
+					  if ( count(apiPdmToken::all()) > 0 ) {
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  } else {
+						$this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+					  }
+					  if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+					  } else {
+						$briConnect = $this->gen_token();
+						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+						$token = $apiPdmToken['access_token'];
+						$listExisting = $this->ListBranch($data_new, $token);
+
+					  }
+					if ( $listExisting['success'] == '00' ) {
+						foreach ($listExisting['data'] as $branch) {
+							if ( $branch['branch'] == $request->input('branch_id') ) {
+								$baseRequest['branch'] = $branch['mbdesc'];
+
+							}
+						}
+					}
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
             $SLIP_GAJI = $request->SLIP_GAJI;
@@ -377,9 +399,9 @@ class EFormController extends Controller
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
-            
+
 			if($baseRequest['Payroll']=='1'){
-				$SKPG = '';	
+				$SKPG = '';
 				if(!empty($request->SKPG)){
 					$SKPG = $request->SKPG;
 					$SKPG = $this->uploadimage($SKPG,$id,'SKPG');
@@ -401,8 +423,35 @@ class EFormController extends Controller
 				}
 			}
                 $kpr = BRIGUNA::create( $baseRequest );
+                $return = [
+                    'message' => 'Data e-form briguna berhasil ditambahkan.',
+                    'contents' => $kpr
+                ];
                     \Log::info($kpr);
         } else {
+			        $branchs = \RestwsHc::setBody([
+					'request' => json_encode([
+						'requestMethod' => 'get_near_branch_v2',
+						'requestData'   => [
+							'app_id' => 'mybriapi',
+							'kode_branch' => $request->input('branch_id'),
+							'distance'    => 0,
+
+							// if request latitude and longitude not present default latitude and longitude cimahi
+							'latitude'  => 0,
+							'longitude' => 0
+						]
+					])
+				])
+				->post('form_params');
+				if ( $branchs['responseCode'] == '00' ) {
+					foreach ($branchs['responseData'] as $branch) {
+						if ( $branch['kode_uker'] == $request->input('branch_id') ) {
+							$baseRequest['branch'] = $branch['unit_kerja'];
+
+						}
+					}
+				}
             $dataEform =  EForm::where('nik', $request->nik)->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
@@ -442,57 +491,60 @@ class EFormController extends Controller
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
                             }
                         }
-                    }
 
-                    $property =  Property::create( $baseProperty );
-                    $baseRequest['property'] = $property->id;
-                    $baseRequest['property_name'] = $developer_name;
-                    \Log::info('=================== Insert Property===========');
-                    \Log::info($property);
-                    if ($property) {
-                        $propertyType = PropertyType::create([
-                            'property_id'=>$property->id,
-                            'name'=>$developer_name,
-                            'building_area'=>$baseRequest['building_area'],
-                            'price'=>$baseRequest['price'],
-                            'surface_area'=>$baseRequest['building_area'],
-                            'electrical_power'=>'-',
-                            'bathroom'=>0,
-                            'bedroom'=>0,
-                            'floors'=>0,
-                            'carport'=>0
-                        ]);
-                        \Log::info('=================== Insert Property type===========');
-                        \Log::info($propertyType);
-                        $baseRequest['property_type']= $propertyType->id;
-                        $baseRequest['property_type_name']= $developer_name;
-                        if ($propertyType) {
-                            $data = [
-                            'developer_id' => $developer_id,
-                            'property_id' => $property->id,
-                            'status' => Collateral::STATUS[0]
-                        ];
-                        $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
-                        \Log::info('=================== Insert Collateral===========');
-                        \Log::info($collateral);
+                        $property =  Property::create( $baseProperty );
+                        $baseRequest['property'] = $property->id;
+                        $baseRequest['property_name'] = $developer_name;
+                        \Log::info('=================== Insert Property===========');
+                        \Log::info($property);
+                        if ($property) {
+                            $propertyType = PropertyType::create([
+                                'property_id'=>$property->id,
+                                'name'=>$developer_name,
+                                'building_area'=>$baseRequest['building_area'],
+                                'price'=>$baseRequest['price'],
+                                'surface_area'=>$baseRequest['building_area'],
+                                'electrical_power'=>'-',
+                                'bathroom'=>0,
+                                'bedroom'=>0,
+                                'floors'=>0,
+                                'carport'=>0
+                            ]);
+                            \Log::info('=================== Insert Property type===========');
+                            \Log::info($propertyType);
+                            $baseRequest['property_type']= $propertyType->id;
+                            $baseRequest['property_type_name']= $developer_name;
+                            if ($propertyType) {
+                                $data = [
+                                'developer_id' => $developer_id,
+                                'property_id' => $property->id,
+                                'status' => Collateral::STATUS[0]
+                            ];
+                            $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
+                            \Log::info('=================== Insert Collateral===========');
+                            \Log::info($collateral);
+                            }
                         }
                     }
                 }
-                $kpr = KPR::create( $baseRequest );
-            } else {
-                return response()->error( [
-                    'message' => 'User sedang dalam pengajuan',
-                    'contents' => $dataEform
-                ], 422 );
+                    $kpr = KPR::create( $baseRequest );
+                    $return = [
+                        'message' => 'Data e-form berhasil ditambahkan.',
+                        'contents' => $kpr['kpr']
+                    ];
+                } else {
+                    return response()->error( [
+                        'message' => 'User sedang dalam pengajuan',
+                        'contents' => $dataEform
+                    ], 422 );
+                }
             }
-
-        }
             DB::commit();
-        } catch (Exception $e) {
+    } catch (Exception $e) {
             DB::rollback();
             return response()->error( [
-                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
-                ], 422 );
+                'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+            ], 422 );
         }
         $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
         $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
@@ -502,10 +554,7 @@ class EFormController extends Controller
             'request' => $request,
         ];
         pushNotification($credentials, 'createEForm');
-        return response()->success( [
-            'message' => 'Data e-form berhasil ditambahkan.',
-            'contents' => $kpr['kpr']
-        ], 201 );
+        return response()->success($return, 201);
     }
 
     /**
@@ -630,6 +679,11 @@ class EFormController extends Controller
             $notificationIsRead->markAsRead();
         }
 
+        $eform->message = [
+            'title' => "EForm Notification",
+            'body'  => "E-Form berhasil di disposisi"
+        ];
+
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
@@ -651,7 +705,7 @@ class EFormController extends Controller
     }
 
     /**
-     * Set E-Form AO disposition.
+     * Set E-Form Approve.
      *
      * @param integer $eform_id
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request
@@ -668,45 +722,65 @@ class EFormController extends Controller
             $baseRequest['pinca_position'] = $user_login['position'];
         }
 
+        $data = EForm::findOrFail($eform_id);
+        $currentStatus = $data->status_eform;
+        $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
         $eform = EForm::approve( $eform_id, $baseRequest );
-        if( $eform['status'] ) {
 
+        if( $eform['status'] ) {
             $data =  EForm::findOrFail($eform_id);
             $typeModule = getTypeModule(EForm::class);
-            $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
+
+            $notificationIsRead = $this->userNotification
+                ->where( 'slug', $eform_id)
+                ->where( 'type_module',$typeModule)
+                ->whereNull('read_at')
+                ->first();
+
             if($notificationIsRead != NULL ){
                 $notificationIsRead->markAsRead();
             }
-            if ($request->is_approved) {
 
+            if ($request->is_approved) {
                 $usersModel = User::FindOrFail($data->user_id);
-                event( new Approved( $data ) );
+                // Recontest
+                if ( $currentStatus != 'Approval2' ) {
+                    event( new Approved( $data ) );
+                }
 
                 // $responseName = ($data->additional_parameters['nama_reviewer']) ? $data->additional_parameters['nama_reviewer'] : '';
                 // $responseMessage = 'E-form berhasil di approve oleh ' . $responseName . '.';
                 $responseMessage = 'E-form berhasil di approve.';
-            } else {
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
 
+            } else {
                 $usersModel = User::FindOrFail($data->user_id);
                 event( new RejectedEform( $data ) );
+                $credentials = [
+                    'data' => $data,
+                    'user'  => $usersModel
+                ];
+                // Call the helper of push notification function
+                pushNotification($credentials, $status);
 
                 $responseMessage = 'E-form berhasil di reject.';
+
             }
 
-            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
-
-            $credentials = [
-                'data' => $data,
-                'user'  => $usersModel
-            ];
-
-            $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
-
-            // Call the helper of push notification function
-            pushNotification($credentials, $status);
+            // Recontest
+            if ( $currentStatus == 'Approval2' ) {
+                $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
+                generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+            } else {
+                $usersModel = User::FindOrFail($data->user_id);
+                $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+                generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+            }
 
             return response()->success( [
                 'message' => $responseMessage,
@@ -752,28 +826,36 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
-                /*$notificationIsRead =  $this->userNotification->where( 'slug', $verify['contents']->id)->where( 'type_module',$typeModule)
-                                           ->whereNull('read_at')
-                                           ->first();
-                if($notificationIsRead != NULL){
+
+                $notificationIsRead =  $this->userNotification
+                    ->where( 'slug', $verify['contents']->id)
+                    ->where( 'type_module',$typeModule)
+                    ->whereNull('read_at')
+                    ->first();
+
+                if ( $notificationIsRead != NULL ) {
                     $notificationIsRead->markAsRead();
-                }*/
+                }
+
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
                 $credentials = [
                     'data' => $verify['contents'],
                     'user' => $usersModel,
                 ];
-                pushNotification($credentials, $status."KPR");
+                pushNotification($credentials, $status."EForm");
 
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
 
-					if($verify['contents']['product_type']=='briguna'){
-                    $detail = EForm::with( 'customer', 'briguna' )->where('id', $verify['contents']->id)->first();
-					}else{
-					$detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
-					}
+					if ( $verify['contents']['product_type'] == 'briguna' ){
+                        $detail = EForm::with( 'customer', 'briguna' )->where('id', $verify['contents']->id)->first();
+
+                    } else {
+					   $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
+
+                    }
+
                     generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
                 }
                 event( new VerifyEForm( $verify['contents'] ) );
@@ -837,16 +919,15 @@ class EFormController extends Controller
                     \DB::commit();
 
                     // Push Notification
-                    $data = EForm::where('ref_number', $request->input('ref_number'))->first();
+                    $data = EForm::where(
+                        DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                        , $request->input('fid_aplikasi')
+                    )->first();
 
                     $typeModule = getTypeModule(EForm::class);
-                    $notificationIsRead =  $this->userNotification->where( 'slug', $eform_id)->where( 'type_module',$typeModule)
-                                           ->whereNull('read_at')
-                                           ->first();
-                    $data = EForm::where(
-                            DB::Raw("additional_parameters::json->>'fid_aplikasi'")
-                            , $request->input('fid_aplikasi')
-                        )->first();
+                    $notificationIsRead = $this->userNotification->where( 'slug', $data->id)->where( 'type_module',$typeModule)
+                       ->whereNull('read_at')
+                       ->first();
 
                     $usersModel  = User::FindOrFail($data['user_id']);
                     $status      = $updateCLAS['status'];

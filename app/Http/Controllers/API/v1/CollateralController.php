@@ -21,6 +21,16 @@ use App\Models\Property;
 use App\Models\EForm;
 use App\Models\VisitReport;
 use App\Models\Developer;
+use App\Models\User;
+use App\Models\UserNotification;
+use App\Notifications\CollateralDisposition;
+use App\Notifications\CollateralOTS;
+use App\Notifications\CollateralStafRejectOTS;
+use App\Notifications\CollateralStafPenilaianAnggunan;
+use App\Notifications\CollateralStafChecklist;
+use App\Notifications\CollateralManagerRejected;
+use App\Notifications\CollateralManagerApprove;
+use App\Notifications\CollateraAODisposition;
 class CollateralController extends Controller
 {
     /**
@@ -189,24 +199,40 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-      if(env('PUSH_NOTIFICATION', false))
-      {
-      //notification mobile sen to manager collateral  
-      $collateral_id =$collateralId;
-      if(!empty($collateral->manager_id)){
-         $user_id = $collateral->manager_id; //id manager collateral
-         $credentials = [
-            'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => 'Form Penilaian Agunan',
-            'id' => $collateral_id,
-            'type' => 'collateral_penilaian_agunan',
-            'slug' => $collateral_id,
-            'user_id' => $user_id,
-            'receiver' => 'manager_collateral',
-        ];
-         pushNotification($credentials,'general');
-      }
-    }
+        if(env('PUSH_NOTIFICATION', false))
+        {
+            //notification mobile sen to manager collateral  
+            $collateral_id =$collateralId;
+            $dataCollateral = Collateral::find($collateralId);
+            if(!empty($dataCollateral->manager_id))
+            {
+             $manager_id = $dataCollateral->manager_id; //id manager collateral
+             //* 
+             //insert data from notifications table
+             $developer_id = $dataCollateral->developer_id;
+             $user_id = Developer::find($developer_id)->user_id;
+             $usersModel = User::find($user_id);
+             $dataUser  = UserServices::where('pn',$manager_id)->first();
+             $branch_id = $dataUser['branch_id'];
+             $usersModel->notify(new CollateralStafPenilaianAnggunan($dataCollateral,$branch_id));
+             $userNotif = new UserNotification; 
+             // Get data from notifications table
+             $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
+                                            ->orderBy('created_at', 'desc')->first();
+             $id = $notificationData['id'];                            
+             //*/ 
+             $credentials = [
+                'headerNotif' => 'Collateral Notification',
+                'bodyNotif' => 'Form Penilaian Agunan',
+                'id' => $id,
+                'type' => 'collateral_penilaian_agunan',
+                'slug' => $collateral_id,
+                'user_id' => $user_id,
+                'receiver' => 'manager_collateral',
+             ];
+             pushNotification($credentials,'general'); 
+            }
+        }
       //end notif
 
         return $this->makeResponse(
@@ -253,7 +279,7 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-        if ($request->has('eform_id')) {
+        if ($request->has('eform_id') && $request->input('eform_id') != false ) {
             $eformdata = EForm::findOrFail($request->input('eform_id'));
             $hasapprove = $eformdata->is_approved;
         }
@@ -261,8 +287,6 @@ class CollateralController extends Controller
         {
           $hasapprove = false;
         }
-        // $collateraldata = $this->collateral->withAll()->findOrFail($collateralId);
-        // generate_pdf('uploads/'. $eformdata->nik, 'collateral.pdf', view('pdf.collateral', compact('eformdata','collateraldata')));
           if ($collateral->developer_id == $developer_id && $hasapprove) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
               if ($sentclas['status']) {
@@ -282,54 +306,90 @@ class CollateralController extends Controller
         $collateral->save();
         \DB::commit();
       }
-      if(env('PUSH_NOTIFICATION', false))
-      {
-      if ($action === 'approve') {
-          $bodyNotif = 'approval collateral';
-          $type = 'collateral_ots_'.$action;
-          $developer_id = $collateral['developer_id'];
-          $dataDeveloper = Developer::where('id',$developer_id)->first();
-          $user_id = $dataDeveloper->user_id;
-            $receiver = 'external';
-      }else if ($action === 'reject') {
-         $pn = $this->request->header('pn');
-         $dataUser  = UserServices::where('pn',$pn)->first();
-         $role = $dataUser['role'];
-         if($role=='collateral-appraisal'){
-            $bodyNotif = 'menolak menilai agunan';
-            $type = 'collateral_ots_'.$action;
-            $receiver = 'manager_collateral';
-            if(!empty($collateral['manager_id'])){
-             $user_id  = $collateral['manager_id'];
-            }else{
-              $user_id = 'kosong';
+       if(env('PUSH_NOTIFICATION', false))
+       {  
+            $pn = $this->request->header('pn');
+            $collateral = Collateral::find($collateralId);
+            $developer_id = $collateral->developer_id;
+            $user_id = Developer::find($developer_id)->user_id;
+            $usersModel = User::find($user_id);
+            $dataUser  = UserServices::where('pn',$pn)->first();
+            $branch_id = $dataUser['branch_id'];
+            if ($action === 'approve') 
+            { 
+                $bodyNotif = 'approval collateral';
+                $type = 'collateral_manager_approving';
+                $developer_id = $collateral['developer_id'];
+                $dataDeveloper = Developer::where('id',$developer_id)->first();
+                $user_id = $dataDeveloper->user_id;
+                $receiver = 'external';
+                //insert data from notifications table     
+                $usersModel->notify(new CollateralManagerApprove($collateral,$branch_id));
+                $userNotif = new UserNotification; 
+                // Get data from notifications table
+                $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
+                                                  ->orderBy('created_at', 'desc')->first();
             }
-         }else if ($role=='collateral'){
-            $bodyNotif = 'reject collateral';
-            $type = 'collateral_'.$action;
-            $receiver = 'external';  // send to external apps
-            $developer_id = $collateral['developer_id'];
-            $dataDeveloper = Developer::where('id',$developer_id)->first();
-            $user_id = $dataDeveloper->user_id;
-         }
+            else if ($action === 'reject') 
+            {
+                $role = $dataUser['role'];
+                if ($role=='collateral')  //reject penilaian anggunan 
+                {
+                   $bodyNotif = 'reject collateral';
+                   $type = 'collateral_'.$action;
+                   $receiver = 'external';  // send to external apps
+                   $developer_id = $collateral['developer_id'];
+                   $dataDeveloper = Developer::where('id',$developer_id)->first();
+                   $user_id = $dataDeveloper->user_id;
+                   //insert data from notifications table      
+                   $usersModel->notify(new CollateralManagerRejected($collateral,$branch_id));
+                   $userNotif = new UserNotification; 
+                   // Get data from notifications table
+                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')
+                                                   ->orderBy('created_at', 'desc')->first();
+                }
+                else  //reject untuk staf collateral dan ao
+                {
+                   $bodyNotif = 'menolak menilai agunan';
+                   $type = 'collateral_ots_'.$action;
+                   $receiver = 'manager_collateral';
+                   if ($role=='ao')
+                   {
+                    $receiver = 'ao';                      
+                   }
+                   if(!empty($collateral['manager_id']))
+                   {
+                    $user_id  = $collateral['manager_id'];
+                    //* 
+                    //insert data from notifications table     
+                     $usersModel->notify(new CollateralStafRejectOTS($collateral,$branch_id));
 
-      }
-
-      $credentials = [
-            'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => $bodyNotif,
-            'id' => $collateralId,
-            'type' => $type,
-            'slug' => $collateralId,
-            'user_id' => $user_id,
-            'receiver' => $receiver,
-      ];
-      if($user_id !='kosong') {  // tidak kirim notif
-         pushNotification($credentials,'general');
-      }elseif ($receiver=='external') {
-          pushNotification($credentials,'general');
-      }
-    }
+                     $userNotif = new UserNotification; 
+                    // Get data from notifications table
+                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
+                                                   ->orderBy('created_at', 'desc')->first();
+                   }
+                   else
+                   {
+                     $user_id = 'kosong';
+                   }
+                }
+            }
+            if($user_id !='kosong') 
+            {  // tidak kirim notif
+              $id = $notificationData['id'];                            
+              $credentials = [
+                  'headerNotif' => 'Collateral Notification',
+                  'bodyNotif' => $bodyNotif,
+                  'id' => $id,
+                  'type' => $type,
+                  'slug' => $collateralId,
+                  'user_id' => $user_id,
+                  'receiver' => $receiver,
+                ];
+              pushNotification($credentials,'general');
+            } 
+        }
 
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
@@ -358,21 +418,43 @@ class CollateralController extends Controller
 
       if(env('PUSH_NOTIFICATION', false))
       {
-       // notif disposisi ke staff colleteral
+        // notif disposisi ke staff colleteral
         $dataInput = $this->request->all();
         $staff_id = $dataInput['staff_id'];
+        //* 
+        //insert data from notifications table collateral disposition
+        $type = 'collateral_disposition';
+        $dataCollateral = Collateral::find($collateralId);
+        $developer_id = $dataCollateral->developer_id;
+        $user_id = Developer::find($developer_id)->user_id;
+        $usersModel = User::find($user_id);
+        $dataUser  = UserServices::where('pn',$staff_id)->first();
+        $branch_id = $dataUser['branch_id'];
+        if($dataUser['role'] == 'ao')
+        {
+          $usersModel->notify(new CollateraAODisposition($dataCollateral,$branch_id));
+          $receiver ='ao';
+        }else
+        {
+          $usersModel->notify(new CollateralDisposition($dataCollateral,$branch_id));          
+          $receiver ='staf_collateral';
+        }
+        $userNotif = new UserNotification; 
+        $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
+                                        ->orderBy('created_at', 'desc')->first();
+        $id = $notificationData['id'];                            
+        //*/  
         $credentials = [
             'slug' => $collateralId,
-            'id' => $collateralId,
+            'id' => $id,
             'user_id' => $staff_id,
             'headerNotif' => 'Collateral Notification',
             'bodyNotif' => 'Penugasan Staff Collateral',
             'type' => 'collateral_disposition',
-            'receiver' => 'staf_collateral'
+            'receiver' => $receiver,
         ];
-
-      // Call the helper of push notification function
-         pushNotification($credentials,'general');
+        // Call the helper of push notification function
+        pushNotification($credentials,'general');
       }
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
@@ -418,20 +500,38 @@ class CollateralController extends Controller
       try {
             $store = $this->collateral->findOrFail($collateralId);
 
-            $user_id= $store['manager_id'];
-            if(!empty($user_id)){
+            $manager_id= $store['manager_id'];
+            if(env('PUSH_NOTIFICATION', false))
+            {
+                if(!empty($manager_id))
+                {
+                    //* 
+                    //insert data from notifications table
+                    $dataCollateral = Collateral::find($collateralId);
+                    $developer_id = $dataCollateral->developer_id;
+                    $user_id = Developer::find($developer_id)->user_id;
+                    $usersModel = User::FindOrFail($user_id);
+                    $dataUser  = UserServices::where('pn',$manager_id)->first();
+                    $branch_id = $dataUser['branch_id'];
 
-               $credentials = [
-                'headerNotif' => 'Collateral Notification',
-                'bodyNotif' => 'Collateral Checklist ',
-                'id' => $collateralId,
-                'type' => 'collateral_checklist',
-                'slug' => $collateralId,
-                'user_id' => $user_id,
-                'receiver' => 'manager_collateral',
-                ];
-
-               pushNotification($credentials,'general');
+                    $usersModel->notify(new CollateralStafChecklist($dataCollateral,$branch_id));
+                    $userNotif = new UserNotification; 
+                    // Get data from notifications table
+                    $notificationData = $userNotif->where('slug', $collateralId)
+                                                    ->orderBy('created_at', 'desc')->first();
+                    $id = $notificationData['id'];                            
+                    //*/ 
+                     $credentials = [
+                      'headerNotif' => 'Collateral Notification',
+                      'bodyNotif' => 'Collateral Checklist ',
+                      'id' => $id,
+                      'type' => 'collateral_checklist',
+                      'slug' => $collateralId,
+                      'user_id' => $user_id,
+                      'receiver' => 'manager_collateral',
+                      ];
+                     pushNotification($credentials,'general');
+                }
             }
 
             $data = $store->otsDoc()->updateOrCreate(['collateral_id'=>$collateralId],$request->all());
@@ -462,21 +562,41 @@ class CollateralController extends Controller
       );
     }
 
-    public function sendNotifOTS($user_id,$collateral_id,$typeKpr){
+    public function sendNotifOTS($collateral_id,$typeKpr){
+        $dataCollateral = Collateral::find($collateral_id);
+        $id_manager_collateral = $dataCollateral->manager_id;
+        //* 
+        //insert data from notifications table
+        $type = 'collateral_ots';
+        $developer_id = $dataCollateral->developer_id;
+        $user_id = Developer::find($developer_id)->user_id;
+        $usersModel = User::FindOrFail($user_id);
+        $dataUser  = UserServices::where('pn',$id_manager_collateral)->first();
+        $branch_id = $dataUser['branch_id'];
+        $userNotif = new UserNotification; 
+        $usersModel->notify(new CollateralOTS($dataCollateral,$branch_id));
+        
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
+                                        ->orderBy('created_at', 'desc')->first();
+        $id = $notificationData['id'];                            
+        //*/ 
         $credentials = [
             'headerNotif' => 'Collateral Notification',
             'bodyNotif' => 'OTS menilai anggunan '.$typeKpr,
-            'id' => $collateral_id,
+            'id' => $id,
             'type' => 'collateral_ots',
             'slug' => $collateral_id,
-            'user_id' => $user_id,
+            'user_id' => $id_manager_collateral,
             'receiver' => 'manager_collateral',
-      ];
-
-         pushNotification($credentials,'general');
+        ];
+        if(!empty($id_manager_collateral))
+        {
+           pushNotification($credentials,'general');  
+        } 
     }
 
-     /**
+      /**
      * Show detail Notif mobiel ots non index
      * @param  string $type
      * @param  integer $id
@@ -493,14 +613,11 @@ class CollateralController extends Controller
       if(env('PUSH_NOTIFICATION', false))
       {
       // send notification to mobile
-     $colleteral_id = $nonkerjasama['collaterals_id'];
-     $id_manager_collateral = $nonkerjasama['manager_id'];
-     $typeKpr = 'Non Kerja Sama';
-     if(!empty($id_manager_collateral)){
-        $this->sendNotifOTS($id_manager_collateral, $colleteral_id,$typeKpr);
-     }
+        $colleteral_id = $nonkerjasama['collaterals_id'];
+        $typeKpr = 'Non Kerja Sama'; 
+        $this->sendNotifOTS($colleteral_id,$typeKpr);    
+      //end notification
       }
-     //end notification
 
       return $this->makeResponse(
         $data
@@ -518,11 +635,12 @@ class CollateralController extends Controller
     {
       // send notification to mobile
       $collateral = $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail();
-      $id_manager_collateral= $collateral->manager_id;
-      $collateral_id= $collateral->id;
-      $typeKpr = 'Developer';
-      if(!empty($id_manager_collateral)){
-        $this->sendNotifOTS($id_manager_collateral, $collateral_id,$typeKpr);
+
+       $collateral_id= $collateral->id;
+       $typeKpr = 'Developer';
+      if(env('PUSH_NOTIFICATION', false))
+      {
+        $this->sendNotifOTS($collateral_id,$typeKpr);  
       }
       //end notification
 
@@ -530,6 +648,25 @@ class CollateralController extends Controller
         $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
       );
 
+    }
+    
+    /*
+    *  Show data notif
+    */
+    public function notifCollateral($type ,$collateralId){  
+     $collateral = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();  
+     if($collateral)
+     {
+        $developer_id = $collateral->developer_id;
+        if($developer_id !=1)
+        { 
+          $collateral = $this->collateral->withAll()->where('id','=',$collateralId)->first();
+          $developer_id = $collateral['property']['developer_id']; 
+        } 
+     }  
+     return response()->success( [
+        'contents' => $collateral
+     ] );     
     }
 
 }

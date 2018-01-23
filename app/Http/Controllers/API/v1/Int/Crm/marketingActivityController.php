@@ -13,6 +13,7 @@ use App\Models\Crm\ActionActivity;
 
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
+use App\Models\Crm\Referral;
 
 class marketingActivityController extends Controller
 {
@@ -36,7 +37,7 @@ class marketingActivityController extends Controller
 
       // print_r($pemasar_name);
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->with('marketing')->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->where('desc', '!=', 'first')->orwhere('pn_join', $pn)->with('marketing')->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
 
@@ -64,6 +65,7 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama' => $activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
           'desc' => $activity->desc,
@@ -100,7 +102,7 @@ class marketingActivityController extends Controller
 
       // print_r($pemasar);
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->orwhere('pn_join', $pn)->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->where('desc', '!=', 'first')->orwhere('pn_join', $pn)->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
 
@@ -340,18 +342,20 @@ class marketingActivityController extends Controller
 
         $save = MarketingActivityFollowup::create($followUp);
 
+
         $updateMarketingStatus['status'] = $request['fu_result'];
 
-        if($request['fu_result']=='Done' || $request['fu_result']=='Batal'){
+        if($request['fu_result']=='Done' || $request['fu_result']=='Batal' || $request['fu_result']=='On Progress'){
           $marketing->update($updateMarketingStatus);
 
-          if($request['fu_result']=='Done') {
-            $referral = Referral::where('ref_id', $marketing->ref_id);
-            $referral_update['point'] = '2';
-            $referral->update($referral_update);
-          }
+          // if($request['fu_result']=='Done') {
+          //   if ($marketing->ref_id != 'null') {
+          //     $referral = Referral::where('ref_id', $marketing->ref_id);
+          //     $referral_update['point'] = '2';
+          //     $referral->update($referral_update);
+          //   }
+          // }
         }
-
         if ($save) {
             return response()->success([
                 'message' => 'Data Tindakan berhasil ditambah.',
@@ -405,7 +409,7 @@ class marketingActivityController extends Controller
       }
 
       $marketingActivity = [];
-      foreach (MarketingActivity::whereIn('pn', $list_pn)->get() as $activity) {
+      foreach (MarketingActivity::where('desc', '!=', 'first')->whereIn('pn', $list_pn)->with('marketing')->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $marketingActivity[]= [
@@ -421,6 +425,7 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama'=>$activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
           'desc' => $activity->desc,
@@ -481,7 +486,7 @@ class marketingActivityController extends Controller
 
        // return array_column($marketingActivity,'pn');die();
       return response()->success( [
-          'message' => 'Success get marketing Activity by branch',
+          'message' => 'Success get list Activity by Marketing',
           'contents' => $marketingActivity
         ]);
 

@@ -19,6 +19,7 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
+use Zip;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -285,9 +286,8 @@ class EForm extends Model implements AuditableContract
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
+
         if ( $request->is_approved ) {
-            // di update kalo collateral udah jalan
-            // ganti lgi, request by Mas Danu
             if( $eform->recontest ) {
                 $result = $eform->insertCoreBRI(11);
                 if ($result['status']) {
@@ -298,23 +298,87 @@ class EForm extends Model implements AuditableContract
                 $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
+                    generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
-            } elseif($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null )
-            {
+
+            } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> true]);
+                    generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
-            }
-            else{
 
+            } else if ($eform->status_eform == 'Approval2' ) {
+                // Recontest
+                $result = $eform->insertCoreBRI(11);
+                if ($result['status']) {
+                    $eform->kpr()->update(['is_sent'=> true]);
+                }
+
+            } else {
                 $result = $eform->insertCoreBRI(8);
                 if ($result['status']) {
                     $eform->kpr()->update(['is_sent'=> false]);
                 }
+
             }
 
-            if ($result['status']) {
+            // Recontest
+            if ($eform->status_eform == 'Approval2' ) {
+                if ($result['status']) {
+                    $eform->update( [
+                        'pinca_position' => $request->pinca_position,
+                        'pinca_name' => $request->pinca_name,
+                        'is_approved' => $request->is_approved,
+                        'status_eform' => 'approved'
+                    ] );
+
+                    $eform->recontest->update( [
+                        'pinca_recommendation' => $request->recommendation,
+                        'pinca_recommended' => $request->recommended == "yes" ? true : false
+                    ] );
+                }
+
+            } else {
+                if ($result['status']) {
+                    $eform->update( [
+                        'pros' => $request->pros,
+                        'cons' => $request->cons,
+                        'pinca_position' => $request->pinca_position,
+                        'pinca_name' => $request->pinca_name,
+                        'recommendation' => $request->recommendation,
+                        'recommended' => $request->recommended == "yes" ? true : false,
+                        'is_approved' => $request->is_approved,
+                        'status_eform' => 'approved'
+                    ] );
+
+                    if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+                        PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
+                    }
+                }
+
+            }
+
+        } else {
+            // Recontest
+            if ($eform->status_eform == 'Approval2' ) {
+                $eform->update( [
+                    'pinca_position' => $request->pinca_position,
+                    'pinca_name' => $request->pinca_name,
+                    'is_approved' => $request->is_approved,
+                    'status_eform' => 'Rejected'
+                ] );
+
+                $eform->recontest->update( [
+                    'pinca_recommendation' => $request->recommendation,
+                    'pinca_recommended' => $request->recommended == "yes" ? true : false
+                ] );
+
+            } else {
+                if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+                    PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
+                }
+
                 $eform->update( [
                     'pros' => $request->pros,
                     'cons' => $request->cons,
@@ -323,29 +387,10 @@ class EForm extends Model implements AuditableContract
                     'recommendation' => $request->recommendation,
                     'recommended' => $request->recommended == "yes" ? true : false,
                     'is_approved' => $request->is_approved,
-                    'status_eform' => 'approved'
+                    'status_eform' => 'Rejected'
                 ] );
 
-                if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                    PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
-                }
             }
-
-        } else {
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
-            }
-
-            $eform->update( [
-                'pros' => $request->pros,
-                'cons' => $request->cons,
-                'pinca_position' => $request->pinca_position,
-                'pinca_name' => $request->pinca_name,
-                'recommendation' => $request->recommendation,
-                'recommended' => $request->recommended == "yes" ? true : false,
-                'is_approved' => $request->is_approved,
-                'status_eform' => 'Rejected'
-            ] );
 
             $result['status'] = true;
 
@@ -374,7 +419,7 @@ class EForm extends Model implements AuditableContract
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', 'id_model_71']
             , ['InsertDataAgunan', 'fid_agunan']
-            , ['InsertIntoAnalisaRecontest', null]
+            , ['InsertIntoAnalisRecontest', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -489,10 +534,10 @@ class EForm extends Model implements AuditableContract
                     $eform->has( 'visit_report' )->whereIsApproved( false );
 
                 } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
                 } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
                     $eform->where('status_eform', $request->status);
@@ -531,6 +576,15 @@ class EForm extends Model implements AuditableContract
                 $prescreening = $request->input('prescreening');
                 if (strtolower($prescreening) != 'all') {
                     $eform->Where('eforms.prescreening_status', $prescreening);
+                }
+            } );
+        }
+
+        if ($request->has('name')) {
+            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
+                $name = $request->input('name');
+                if (strtolower($name) != 'all') {
+                    $eform->Where('eforms.ao_id', '000'.$request->input('name'));
                 }
             } );
         }
@@ -685,6 +739,7 @@ class EForm extends Model implements AuditableContract
                 , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
             ]);
 
+            // Recontest
             if ( $status == 'Approval2' ) {
                 if ( !$target->recontest ) {
                     $target->recontest()->create( [
@@ -745,66 +800,82 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
-     * Submit Prescreening.
+     * Search Prescreening.
      *
      * @return array
      */
-    public static function searchPrescreening( $eform )
+    public static function searchPrescreening( $eform, $position = 'search' )
     {
         $customer = $eform->customer;
-        // $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'nomer_id_pefindo' => $eform->nik
-        //             , 'nama_pefindo' => $customer->personal['name']
-        //             , 'tanggal_lahir_pefindo' => $customer->personal['birth_date']
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+        if ( $position == 'search' ) {
+            $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'nomer_id_pefindo' => $eform->nik
+                        , 'nama_pefindo' => $customer->personal['name']
+                        , 'tanggal_lahir_pefindo' => $customer->personal['birth_date']
+                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        // \Log::info($getPefindo);
+            return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : null;
 
-        // $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-        //             , 'tipesubject_pefindo' => 'individual'
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //             , 'nomer_id_pefindo' => $eform->nik
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+        } else if ( $position == 'data' ) {
+            $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+                        , 'tipesubject_pefindo' => 'individual'
+                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+                        , 'nomer_id_pefindo' => $eform->nik
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        // \Log::info($getReportPefindo);
-        // return $return['contents']['cip']['recordlist'][0]["score"];
+            if ( $getReportPefindo["code"] == "200" ) {
+                if ( isset( $getReportPefindo['contents']['cip'] ) ) {
+                    if ( isset( $getReportPefindo['contents']['cip']['recordlist'] ) ) {
+                        if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0] ) ) {
+                            if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0]["score"] ) ) {
+                                return $getReportPefindo['contents']['cip']['recordlist'][0]["score"];
+                            }
+                        }
+                    }
+                }
+            }
 
-        // $getFilePefindo = Asmx::setEndpoint( 'GetPdfReport' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-        //             , 'tipesubject_pefindo' => 'individual'
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //             , 'nomer_id_pefindo' => $eform->nik
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
+            return 0;
 
-        // \Log::info($getFilePefindo);
+        } else if ( $position == 'pdf' ) {
+            $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
+                        , 'tipesubject_pefindo' => 'individual'
+                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
+                        , 'nomer_id_pefindo' => $eform->nik
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        // $eform = \App\Models\EForm::first();
-        // $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
-        //     ->setBody([
-        //         'Request' => json_encode( array(
-        //             'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-        //             , 'tipesubject_pefindo' => 'individual'
-        //             , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-        //             , 'nomer_id_pefindo' => $eform->nik
-        //         ) )
-        //     ])
-        //     ->post( 'form_params' );
-        // return file_put_contents(public_path('uploads/test.zip'), base64_decode($getFilePefindo["contents"]));
-        // return base64_decode($getFilePefindo["contents"]);
+            \Log::info("=============== pefindo pdf ========================");
+            \Log::info($getFilePefindo);
+            if ( $getFilePefindo["code"] == "200" ) {
+                $path = 'uploads/' . $eform->nik . '/pefindo.zip';
+                \Log::info($path);
+                $publicPath = public_path( $path );
+                \Log::info($publicPath);
+                file_put_contents( $publicPath, base64_decode($getFilePefindo["contents"]) );
+                $zip = Zip::open( $path );
+                \Log::info($zip);
+                $zip->extract( $publicPath );
+                File::delete( $publicPath );
+
+            }
+
+        }
+
     }
 
     /**
@@ -855,6 +926,7 @@ class EForm extends Model implements AuditableContract
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
+                $this->clas_position = $step + 1;
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
             }
             $return = array(
@@ -862,8 +934,6 @@ class EForm extends Model implements AuditableContract
                 , 'message' => ''
             );
         }
-
-        $this->clas_position = $step;
         $this->send_clas_date = date("Y-m-d");
         $this->save();
 
@@ -909,7 +979,7 @@ class EForm extends Model implements AuditableContract
             "lama_usaha" => $lama_usaha,
             "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
             "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
-            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
+            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '0' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
@@ -925,7 +995,7 @@ class EForm extends Model implements AuditableContract
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11 ),
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11 ),
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
@@ -961,7 +1031,7 @@ class EForm extends Model implements AuditableContract
             "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
             "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
-            "telepon_pemohon" => !( $customer->phone ) ? '' : substr($customer->phone, 0 , 11),
+            "telepon_pemohon" => !( $customer->phone ) ? '0' : substr($customer->phone, 0 , 11),
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "jenis_pekerjaan_value" => !( $customer_work->type_id ) ? '' : $customer_work->type_id,
@@ -971,7 +1041,7 @@ class EForm extends Model implements AuditableContract
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
             "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11),
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11),
             'tujuan_membuka_rekening_value' => 'T2',
             'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012'),
 
@@ -1272,7 +1342,7 @@ class EForm extends Model implements AuditableContract
      */
     public function step10($data)
     {
-        \Log::info("step10");
+       \Log::info("step10");
         $kpr = $this->kpr;
         $collateral = Collateral::WithAll()->where('property_id',$kpr->property_id)->firstOrFail();
         $otsInArea = $collateral->otsInArea;
@@ -1281,14 +1351,17 @@ class EForm extends Model implements AuditableContract
         $otsEnvironment = $collateral->otsEnvironment;
         $otsValuation = $collateral->otsValuation;
         $otsOther = $collateral->otsOther;
+        $otsSeven = $collateral->otsSeven;
+        $otsEight = $collateral->otsEight;
         $otsNine = $collateral->otsNine;
+        $otsTen = $collateral->otsTen;
 
         $request = $data + [
             "Fid_agunan" => (isset($this->additional_parameters['fid_agunan']))? $this->additional_parameters['fid_agunan'] : '0',
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
-            "Status_agunan_value_agunan_rt" => 'Ditempati Sendiri',
+            "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status)?'Ditempati Sendiri':$otsSeven->collateral_status,
             "Deskripsi_agunan_rt" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
             "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
@@ -1296,29 +1369,29 @@ class EForm extends Model implements AuditableContract
             "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
             "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsLetter->date),
             "Tanggal_jatuh_tempo_agunan_rt"=> $this->reformatDate($otsLetter->duration_land_authorization),
-            "Alamat_agunan_rt" => !($kpr->home_location) ? '0': str_replace("'", "",$kpr->home_location),
-            "Kelurahan_agunan_rt" => !($otsInArea->sub_district) ? '0' : $otsInArea->sub_district,
-            "Kecamatan_agunan_rt" => !($otsInArea->district) ? '0' : $otsInArea->district,
-            "Lokasi_agunan_rt" =>!($otsInArea->location) ? '0' : $otsInArea->location,
-            "Nilai_pasar_wajar_agunan_rt"=>!($otsValuation->npw_all) ? '0' : $this->reformatCurrency( $otsValuation->npw_all ),
-            "Nilai_likuidasi_agunan_rt"=>!($otsValuation->nl_all) ? '0' : $this->reformatCurrency( $otsValuation->nl_all ),
-            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsValuation->pnpw_all) ? '0' : $this->reformatCurrency( $otsValuation->pnpw_all ),
-            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsValuation->pnl_all) ? '0' : $this->reformatCurrency( $otsValuation->pnl_all ),
-            "Nilai_likuidasi_saat_realisasi_agunan_rt"=>'0',
-            "Nilai_jual_obyek_pajak_agunan_rt" =>'0',// no pokok wajib pajak
-            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>'bank',// bank and independent
-            "Penilai_independent_agunan_rt"=>'0',
-            "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsValuation->scoring_all_date),
-            "Jenis_pengikatan_value_agunan_rt" => '01',//!($otsOther->bond_type) ? '0' : $otsOther->bond_type,
+            "Alamat_agunan_rt" => !($otsSeven->address_collateral) ? '0': str_replace("'", "",$otsSeven->address_collateral),
+            "Kelurahan_agunan_rt" => !($otsSeven->village) ? '0' : $otsSeven->village,
+            "Kecamatan_agunan_rt" => !($otsSeven->districts) ? '0' : $otsSeven->districts,
+            "Lokasi_agunan_rt" =>!($otsSeven->location) ? '0' : $otsSeven->location,
+            "Nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market) ? '0' : $this->reformatCurrency( $otsEight->fair_market ),
+            "Nilai_likuidasi_agunan_rt"=>!($otsEight->liquidation) ? '0' : $this->reformatCurrency( $otsEight->liquidation ),
+            "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market_projection) ? '0' : $this->reformatCurrency( $otsEight->fair_market_projection ),
+            "Proyeksi_nilai_likuidasi_agunan_rt" => !($otsEight->liquidation_projection) ? '0' : $this->reformatCurrency( $otsEight->liquidation_projection ),
+            "Nilai_likuidasi_saat_realisasi_agunan_rt"=>!($otsEight->liquidation_realization) ? '0' : $this->reformatCurrency( $otsEight->liquidation_realization ),
+            "Nilai_jual_obyek_pajak_agunan_rt" =>!($otsEight->njop) ? '0' : $this->reformatCurrency( $otsEight->njop ),// no pokok wajib pajak
+            "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>!($otsEight->appraisal_by) ? 'bank' : $otsEight->appraisal_by,// bank and independent
+            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser_name) ? '0' : $otsEight->independent_appraiser_name,
+            "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsEight->date_assessment),
+            "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => '0',//taidak
             "Nilai_pengikatan_agunan_rt" => '0',//taidak
-            "Paripasu_value_agunan_rt" => '0',//taidak
-            "Nilai_paripasu_agunan_bank_rt" => '0',//taidak
-            "Flag_asuransi_value_agunan_rt" => '0',//taidak
-            "Nama_perusahaan_asuransi_agunan_rt" =>'IJK',//taidak
-            "Nilai_asuransi_agunan_rt" => '0',//taidak
-            "Eligibility_value_agunan_rt" => '0',//taidak
-            "Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
+            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
+            "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
+            "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
+            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company_name)?"IJK":$otsTen->insurance_company_name,//taidak
+            "Nilai_asuransi_agunan_rt" => !($otsTen->insurance_value) ? '0' : $this->reformatCurrency( $otsTen->insurance_value ),//taidak
+            "Eligibility_value_agunan_rt" => !($otsTen->eligibility)? '0' : $otsTen->eligibility,//taidak
+            //"Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
             // Field Tambahan
             "Pemecah_sertifikat_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date)?'':$this->reformatDate($otsNine->receipt_date),//string kosong apabila tidak di berikan
             "Pemecah_sertifikat_status_value_agunan_rt"=>!($otsNine->certificate_status)? '' : ($otsNine->certificate_status == "Sudah Diberikan" ? '1' : '0'),

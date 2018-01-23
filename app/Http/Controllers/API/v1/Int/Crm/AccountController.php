@@ -76,17 +76,27 @@ class AccountController extends Controller
             'contents' => []
         ]);
       }
-      $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      // $apiPdmToken = $apiPdmToken[0];
+      if (apiPdmToken::count() > 0) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $briConnect = $this->gen_token();
+        $apiPdmToken = apiPdmToken::get()->toArray();
+      }
 
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $detailByCif = $this->byCif($cif, $token);
-
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $detailByCif['data']['info'][0]
-        ]);
+        if ($detailByCif['success'] == true) {
+          return response()->success( [
+              'message' => 'Sukses',
+              'contents' => $detailByCif['data']['info'][0]
+          ]);
+        } else {
+          return response()->success( [
+              'message' => 'CIF tidak di temukan',
+              'contents' => []
+          ]);
+        }
       } else {
         $briConnect = $this->gen_token();
         $apiPdmToken = apiPdmToken::get()->toArray();

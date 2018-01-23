@@ -220,14 +220,16 @@ class MarketingController extends Controller
       $data['target'] = $request['target'];
       $data['account_id'] = $request['account_id'];
       $data['nama'] = $request['nama'];
-      $data['nik'] = $request['nik'];
-      $data['cif'] = $request['cif'];
+      $data['nik'] = ($request['nik'] == "") ? null : $request['nik'];
+      $data['cif'] = ($request['cif'] == "") ? null : $request['cif'];
       $data['status'] = $request['status'];
       $data['ref_id'] = $request['ref_id'];
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
       $save = Marketing::create($data);
       if ($save) {
+          $this->first_activity($request->header('pn'), $save->id, $request);
+
           return response()->success([
               'message' => 'Data Marketing berhasil ditambah.',
               'contents' => collect($save)->merge($request->all()),
@@ -239,6 +241,31 @@ class MarketingController extends Controller
       ], 500);
     }
 
+    public function first_activity($pn, $id, $request)
+    {
+      $data['pn'] = $pn;
+      // $data['pn_name'] = $request['pn_name'];
+      $data['object_activity'] = "Create Marketing ".$request['activity_type'];
+      $data['action_activity'] = "Create Marketing ".$request['activity_type'];
+      $data['start_date'] = date('Y-m-d H:i:s');
+      $data['end_date'] = date('Y-m-d H:i:s');
+
+      if(isset($request['longitude']) && isset($request['latitude']) ){
+        $data['longitude'] = $request['longitude'];
+        $data['latitude'] = $request['latitude'];
+      }else{
+        $data['longitude'] = 'unset';
+        $data['latitude'] = 'unset';
+      }
+
+      $data['address'] = 'null';
+      $data['marketing_id'] = $id;
+      $data['pn_join'] = ($request['pn_join']!='' ? $request['pn_join'] : 'null');
+      // $data['join_name'] = $request['join_name'];
+      $data['desc'] = 'first';
+
+      $first_activity = MarketingActivity::create($data);
+    }
     /**
      * Display the specified resource.
      *

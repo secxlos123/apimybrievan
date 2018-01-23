@@ -50,7 +50,10 @@ class UserNotification extends Model
 	public function getSubject($status_eform, $ref_number, $user_id) {
 
 		$typeModuleEform = getTypeModule(EForm::class);
+		$typeModuleCollateral = getTypeModule(Collateral::class);
 		$url = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/') . 'eform?ref_number=' . $ref_number . '&slug=' . $this->slug.'&type='.$typeModuleEform;
+		$internalurl = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/');
+		$externalurl =  env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
 		if ($user_id) {
 			$url = 'eform?slug=' . $this->slug.'&type='.$typeModuleEform;
 		} else {
@@ -61,72 +64,138 @@ class UserNotification extends Model
 		case 'App\Notifications\PengajuanKprNotification':
 			$subjectNotif = ['message' => 'Pengajuan Aplikasi KPR Baru',
 				'url' => $url,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\EFormPenugasanDisposisi':
 			$subjectNotif = ['message' => 'Disposisi Pengajuan',
 				'url' => $url,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\ApproveEFormCustomer':
 			if ($status_eform == 'approved') {
 				$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Setujui',
 					'url' => $url,
+					'url_mobile' => '#',
 				];
 			} else {
 				$subjectNotif = ['message' => 'Customer Telah Menyetujui Form KPR',
 					'url' => $url,
+					'url_mobile' => '#',
 				];
 			}
 			break;
 		case 'App\Notifications\RejectEFormCustomer':
 			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Tolak',
 				'url' => $url,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\LKNEFormCustomer':
 			$subjectNotif = ['message' => 'Prakarsa LKN',
 				'url' => $url,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\VerificationApproveFormNasabah':
 			$subjectNotif = ['message' => 'Customer Telah Menyetujui Form KPR',
 				'url' => $url,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\VerificationRejectFormNasabah':
 			$subjectNotif = ['message' => 'Customer Telah Menolak Form KPR',
 				'url' => $url,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\VerificationDataNasabah':
 			$subjectNotif = ['message' => 'Verifikasi Pengajuan KPR',
 				'url' => env('MAIN_APP_URL', 'http://mybri.bri.co.id/') . 'verification?ref_number=' . $ref_number . '&slug=' . $this->slug,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\PropertyNotification':
 			$subjectNotif = ['message' => 'Proyek Data Baru',
 				'url' => '',
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\NewSchedulerCustomer':
 			$subjectNotif = ['message' => 'Schedule Data Baru',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\UpdateSchedulerCustomer':
 			$subjectNotif = ['message' => 'Update Data Schedule',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\EditDeveloper':
 			$subjectNotif = ['message' => 'Perbaharui Data Profile',
 				'url' => '/approval-data/developer?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
 			];
 			break;
+		
+		//collateral notif
+		case 'App\Notifications\CollateralDisposition':
+			$subjectNotif = ['message' => 'Penugasan Staff Collateral',
+				'url' => '#',
+				'url_mobile' => '#',
+			];
+			break;	
+		case 'App\Notifications\CollateraAODisposition':
+			$subjectNotif = ['message' => 'Penugasan AO Collateral',
+				'url' => $internalurl.'staff-collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
+				'url_mobile' => '#',
+			];
+			break;	
+		case 'App\Notifications\CollateralOTS':
+			$subjectNotif = ['message' => 'OTS menilai anggunan',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\CollateralStafRejectOTS':
+			$subjectNotif = ['message' => 'menolak menilai agunan',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
+				'url_mobile' => '#',
+			];
+			break;	
+		case 'App\Notifications\CollateralStafPenilaianAnggunan':
+			$subjectNotif = ['message' => 'Form Penilaian Agunan',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
+				'url_mobile' => '#',
+			];
+			break;	
+		case 'App\Notifications\CollateralStafChecklist':
+			$subjectNotif = ['message' => 'Collateral Checklist',
+				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
+				'url_mobile' => '#',
+			];
+			break;			
+		case 'App\Notifications\CollateralManagerRejected':
+			$subjectNotif = ['message' => 'reject collateral',
+				'url' => '#',
+				'url_mobile' => '#',
+			];
+			break;	
+		case 'App\Notifications\CollateralManagerApprove':
+			$subjectNotif = ['message' => 'Approved collateral',
+				'url' => '#',
+				'url_mobile' => '#',
+			];
+			break;
+				
+>>>>>>> d62b65f3be4cc70cc754b8cee491cb23f490e7b7
 		default:
 			$subjectNotif = ['message' => 'Type undefined',
 				'url' => '',
+				'url_mobile' => '#',
 			];
 			break;
 		}
@@ -142,6 +211,44 @@ class UserNotification extends Model
 	public function getNotifications($branch_name) {
 		return $this->where('role_name', $branch_name)->orderBy('created_at', 'DESC');
 
+	}
+
+	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $type) 
+	{
+		if ($type == "eks") {
+			$query = $this->select();
+			$query->where('notifications.notifiable_id', @$user_id);
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\UpdateSchedulerCustomer')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
+				/*is is_approved*/
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
+				/*is rejected*/
+				$query->unreads();
+				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+					$query->unreads()->where('notifications.notifiable_id', @$user_id);
+				}
+			}
+			return $query->paginate();
+		}else{
+
+		}
+	}
+
+	protected function getTestAttribute()
+	{
+		var_dump(json_encode($this));
+		die();
 	}
 
 	public function getUnreads($branch_id, $role, $pn, $user_id) {
@@ -190,8 +297,12 @@ class UserNotification extends Model
 				/*verifiy app*/
 				$query->unreads();
 			}
+<<<<<<< HEAD
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
+=======
+                        if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
+>>>>>>> d62b65f3be4cc70cc754b8cee491cb23f490e7b7
 				$query->unreads();
 			}
 		}
@@ -226,13 +337,42 @@ class UserNotification extends Model
 		}
 
 		if (@$role == 'collateral-appraisal') {
-			$query->whereNull('notifications.created_at');
-		}
+                    if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralDisposition')) {
+                            $query->unreads();
+                    }
+                }
 
 		if (@$role == 'collateral') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PropertyNotification')) {
 				$query->unreads();
 			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralOTS')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafPenilaianAnggunan')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafRejectOTS')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafChecklist')) {
+				$query->unreads();
+			}
+
+		}
+
+		if (@$role == 'developer') {
+			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerRejected')) {
+				$query->unreads();
+			}
+			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerApprove')) {
+				$query->unreads();
+			}
+
 		}
 
 		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');

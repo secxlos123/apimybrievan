@@ -57,7 +57,7 @@ class Controller extends BaseController
         return $token;
       }
     }
-    
+
     public function gen_token()
     {
       $client = new Client();

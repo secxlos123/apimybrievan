@@ -52,11 +52,11 @@ class CreateOts extends FormRequest
         'area.longtitude' => 'required',
         'area.district' => 'required',
         'area.sub_district' => 'required',
-        'area.rt' => 'required',
-        'area.rw' => 'required',
-        'area.zip_code' => 'required',
-        'area.distance' => 'required',
-        'area.unit_type' => 'required',
+        'area.rt' => 'required|numeric',
+        'area.rw' => 'required|numeric',
+        'area.zip_code' => 'required|numeric',
+        'area.distance' => 'required|numeric',
+        'area.unit_type' => 'required|numeric',
         'area.distance_from' => 'required',
         'area.position_from_road' => 'required',
         'area.ground_type' => 'required',
@@ -87,7 +87,7 @@ class CreateOts extends FormRequest
         'letter.number' => 'required',
         'letter.date' => 'required|date',
         'letter.on_behalf_of' => 'required',
-        'letter.duration_land_authorization' => '',
+        'letter.duration_land_authorization' => 'date',
         'letter.bpn_name' => 'required'
       ];
     }
@@ -126,20 +126,20 @@ class CreateOts extends FormRequest
     {
       return [
         'valuation.scoring_land_date' => 'required|date',
-        'valuation.npw_land' => 'required',
-        'valuation.nl_land' => 'required',
-        'valuation.pnpw_land' => 'required',
-        'valuation.pnl_land' => 'required',
+        'valuation.npw_land' => 'required|numeric',
+        'valuation.nl_land' => 'required|numeric',
+        'valuation.pnpw_land' => 'required|numeric',
+        'valuation.pnl_land' => 'required|numeric',
         'valuation.scoring_building_date' => 'required|date',
-        'valuation.npw_building' => 'required',
-        'valuation.nl_building' => 'required',
-        'valuation.pnpw_building' => 'required',
-        'valuation.pnl_building' => 'required',
+        'valuation.npw_building' => 'required|numeric',
+        'valuation.nl_building' => 'required|numeric',
+        'valuation.pnpw_building' => 'required|numeric',
+        'valuation.pnl_building' => 'required|numeric',
         'valuation.scoring_all_date' => 'required|date',
-        'valuation.npw_all' => 'required',
-        'valuation.nl_all' => 'required',
-        'valuation.pnpw_all' => 'required',
-        'valuation.pnl_all' => 'required'
+        'valuation.npw_all' => 'required|numeric',
+        'valuation.nl_all' => 'required|numeric',
+        'valuation.pnpw_all' => 'required|numeric',
+        'valuation.pnl_all' => 'required|numeric'
       ];
     }
 
@@ -188,13 +188,13 @@ class CreateOts extends FormRequest
     {
       return [
         'seven.collateral_status' => 'required',
-        'seven.on_behalf_of' => '',
-        'seven.ownership_number' => '',
-        'seven.location' => '',
-        'seven.address_collateral' => '',
+        'seven.on_behalf_of' => 'required',
+        'seven.ownership_number' => 'required',
+        'seven.location' => 'required',
+        'seven.address_collateral' => 'required',
         'seven.description' => 'required',
         'seven.ownership_status' => 'required',
-        'seven.date_evidence' => 'required',
+        'seven.date_evidence' => 'required|date',
         'seven.village' => 'required',
         'seven.districts' => 'required'
       ];
@@ -207,18 +207,20 @@ class CreateOts extends FormRequest
     private function eightRules()
     {
       return [
-        'eight.liquidation_realization' => 'required',
-        'eight.fair_market' => '',
-        'eight.liquidation' => '',
-        'eight.fair_market_projection' => '',
-        'eight.liquidation_projection' => '',
-        'eight.njop' => 'required',
-        'eight.appraisal_by' => 'required',
-        'eight.independent_appraiser' => '',
-        'eight.date_assessment' => 'required',
+        'eight.liquidation_realization' => 'required|numeric',
+        'eight.fair_market' => 'required|numeric',
+        'eight.liquidation' => 'required|numeric',
+        'eight.fair_market_projection' => 'required|numeric',
+        'eight.liquidation_projection' => 'required|numeric',
+        'eight.njop' => 'required|numeric',
+        'eight.appraisal_by' => 'required|in:Bank,Lembaga Penilai',
+        'eight.independent_appraiser' => 'required_if:eight.appraisal_by,Lembaga Penilai',
+        'eight.independent_appraiser_name' => 'required_if:eight.appraisal_by,Lembaga Penilai',
+        'eight.date_assessment' => 'required|date',
         'eight.type_binding' => 'required',
         'eight.binding_number' => 'required',
-        'eight.binding_value' => 'required',
+        'eight.binding_value' => 'required|numeric',
+
       ];
     }
 
@@ -229,27 +231,27 @@ class CreateOts extends FormRequest
     private function nineRules()
     {
       return [
-        'nine.certificate_status' => 'required',
-        'nine.receipt_date' => '',
-        'nine.information' => '',
-        'nine.notary_status' => '',
-        'nine.takeover_status' => '',
-        'nine.credit_status' => 'required',
-        'nine.skmht_status' => 'required',
-        'nine.imb_status' => 'required',
-        'nine.shgb_status' => 'required',
-        'nine.receipt_date_notary'=>'',
-        'nine.information_notary'=>'',
-        'nine.receipt_date_takeover'=>'',
-        'nine.information_takeover'=>'',
-        'nine.receipt_date_credit'=>'',
-        'nine.information_credit'=>'',
-        'nine.receipt_date_skmht'=>'',
-        'nine.information_skmht'=>'',
-        'nine.receipt_date_imb'=>'',
-        'nine.information_imb'=>'',
-        'nine.receipt_date_shgb'=>'',
-        'nine.information_shgb' =>''
+        'nine.certificate_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.receipt_date' => 'required_if:nine.certificate_status,Sudah Diberikan',
+        'nine.information' => 'required_if:nine.certificate_status,Sudah Diberikan',
+        'nine.notary_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.takeover_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.credit_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.skmht_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.imb_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.shgb_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
+        'nine.receipt_date_notary'=>'required_if:nine.notary_status,Sudah Diberikan|date',
+        'nine.information_notary'=>'required_if:nine.notary_status,Sudah Diberikan',
+        'nine.receipt_date_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan',
+        'nine.information_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan',
+        'nine.receipt_date_credit'=>'required_if:nine.credit_status,Sudah Diberikan',
+        'nine.information_credit'=>'required_if:nine.credit_status,Sudah Diberikan',
+        'nine.receipt_date_skmht'=>'required_if:nine.skmht_status,Sudah Diberikan',
+        'nine.information_skmht'=>'required_if:nine.skmht_status,Sudah Diberikan',
+        'nine.receipt_date_imb'=>'required_if:nine.imb_status,Sudah Diberikan',
+        'nine.information_imb'=>'required_if:nine.imb_status,Sudah Diberikan',
+        'nine.receipt_date_shgb'=>'required_if:nine.shgb_status,Sudah Diberikan',
+        'nine.information_shgb' =>'required_if:nine.shgb_status,Sudah Diberikan'
       ];
     }
 
@@ -261,10 +263,11 @@ class CreateOts extends FormRequest
     {
       return [
         'ten.paripasu' => 'required',
-        'ten.paripasu_bank' => '',
-        'ten.insurance' => '',
-        'ten.insurance_company' => '',
-        'ten.insurance_value' => '',
+        'ten.paripasu_bank' => 'numeric',
+        'ten.insurance' => 'required|in:Ya,Tidak',
+        'ten.insurance_company' => 'required_if:ten.insurance,Ya',
+        'ten.insurance_company_name' => 'required_if:ten.insurance,Ya',
+        'ten.insurance_value' => 'required_if:ten.insurance,Ya|numeric',
         'ten.eligibility' => 'required',
       ];
     }
