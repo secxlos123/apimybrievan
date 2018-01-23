@@ -71,8 +71,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   ]);
 
   // Marketing Notes Route
-  Route::get('/marketing/note', 'MarketingController@getNote');
-  Route::post('/marketing/srore_note', 'MarketingController@store_note');
+  Route::post('/marketing/note', 'MarketingController@getNote');
+  Route::post('/marketing/store_note', 'MarketingController@store_note');
 
   // Route marketing by branch
   Route::post('/marketing/by_branch', 'MarketingController@by_branch');

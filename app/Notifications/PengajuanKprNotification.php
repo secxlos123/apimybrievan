@@ -69,6 +69,8 @@ class PengajuanKprNotification extends Notification
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
+            'message' => $this->eForm->message,
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }

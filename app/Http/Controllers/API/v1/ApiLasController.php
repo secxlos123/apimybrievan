@@ -1179,11 +1179,11 @@ class ApiLasController extends Controller
             "propinsi_domisili"     => $request['propinsi_domisili'],
             "kota_usaha"            => $request['kabupaten_domisili'],
             "propinsi_usaha"        => $request['propinsi_domisili'],
+            "tp_produk"             => $request['tp_produk'],
             "nama_debitur_2"        => "",
             "nama_debitur_3"        => "",
             "nama_debitur_4"        => "",
             "sumber_utama"          => "1", // hardcode gaji dari mybri
-            "tp_produk"             => "1", // hardcode dari las
             "cif_las"               => "0", // hardcode debitur baru
             "expired_ktp"           => "31122899", // hardcode
             "kategori_portofolio"   => "175", // hardcode las
@@ -1250,8 +1250,8 @@ class ApiLasController extends Controller
                     "Payroll"                   => $request['pembayaran_gaji'],
                     "Gaji_bersih_per_bulan"     => $request['Gaji_bersih_per_bulan'],
                     "Maksimum_angsuran"         => $request['Maksimum_angsuran'],
+                    "Tp_produk"                 => $request['tp_produk'],
                     "Angsuran_lainnya"          => "0",                    
-                    "Tp_produk"                 => "1",
                     "Briguna_smart"             => "0",
                     "Kelengkapan_dokumen"       => "1"
                 ];
@@ -1299,8 +1299,8 @@ class ApiLasController extends Controller
                         "Sumber_aplikasi"              => $request['Sumber_aplikasi'],
                         "Sektor_ekonomi_lbu"           => $request['Sektor_ekonomi_lbu'],
                         "Maksimum_plafond"             => $request['Maksimum_plafond'],
+                        "Tp_produk"                    => $request['tp_produk'],
                         "Plafon_induk"                 => "0", // hardcode las
-                        "Tp_produk"                    => "1", // hardcode las
                         "Id_kredit"                    => "0", // hardcode las
                         "Baru_perpanjangan"            => "0", // hardcode las
                         "Jenis_fasilitas"              => "0605", // hardcode las
@@ -1365,7 +1365,7 @@ class ApiLasController extends Controller
                             $params   = [
                                 "uid"                       => $uid, // inquiry user las
                                 "uid_pemrakarsa"            => $uker, // inquiry user las
-                                "tp_produk"                 => "1", // hardcode dari las
+                                "tp_produk"                 => $request['tp_produk'],
                                 "id_aplikasi"             => $insertDebitur['items'][0]->ID_APLIKASI,
                                 "cif_las"                   => $insertDebitur['items'][0]->CIF_LAS,
                                 "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
@@ -1657,7 +1657,7 @@ class ApiLasController extends Controller
 
     function hitungCRSBrigunaKarya($params) {
         try {
-            $parameter['id_Aplikasi'] = !isset($params['id_aplikasi']) ? "" : $params['id_aplikasi'];
+            $parameter['id_Aplikasi'] = $params;
             $client = $this->client();
             $resultclient = $client->hitungCRSBrigunaKarya($parameter);
             // print_r($resultclient);exit();
