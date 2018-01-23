@@ -27,9 +27,9 @@ class CompanyInsurance extends Controller
         $insurance = $insurance_service[ 'contents' ];
         $insurance[ 'data' ] = array_map( function( $content ) {
             return [
-                'id' => $content[ 'id_perusahaan_asuransi' ],
+                'id' => $content[ 'desc3' ],
                 'name' => $content[ 'desc2' ],
-                'code' => $content[ 'desc3' ]
+                'code' => $content[ 'id_perusahaan_asuransi' ]
             ];
         }, $insurance[ 'data' ] );
         return response()->success( [

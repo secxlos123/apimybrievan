@@ -180,17 +180,26 @@ class CustomerController extends Controller
           }
         }
       }
+      $data=[];
 
-      usort($customer['top'], function($a, $b) { //Sort the array using a user defined function
-          return $a['DELTA_SALDO'] >= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores
-      });
+      if(array_key_exists('top', $customer) && $customer['top'] != null){
+        usort($customer['top'], function($a, $b) { //Sort the array using a user defined function
+            return $a['DELTA_SALDO'] >= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores
+        });
+        $data ['top']=array_slice($customer['top'],0,10,false);
+      }else{
+        $data['top']=[];
+      }
 
-      usort($customer['bottom'], function($a, $b) { //Sort the array using a user defined function
-          return $a['DELTA_SALDO'] <= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores
-      });
+      if(array_key_exists('bottom', $customer) && $customer['bottom'] != null){
+        usort($customer['bottom'], function($a, $b) { //Sort the array using a user defined function
+            return $a['DELTA_SALDO'] <= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores
+        });
+        $data ['bottom']=array_slice($customer['bottom'],0,10,false);
+      }else{
+        $data['bottom']=[];
+      }
 
-      $data ['top']=array_slice($customer['top'],0,10,false);
-      $data ['bottom']=array_slice($customer['bottom'],0,10,false);
 
       return response()->success( [
           'message' => 'Get Customer by Officer success',

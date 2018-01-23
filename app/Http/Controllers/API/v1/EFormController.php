@@ -118,12 +118,19 @@ class EFormController extends Controller
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
 
-
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
+		  
+		$mitra_relation = DB::table('mitra')
+						 ->select('mitra.*')
+						 ->where('mitra.idMitrakerja', $eform[0]['mitra_id'])
+						 ->get();
+				$mitra_relation = $mitra_relation->toArray();
+				$mitra_relation = json_decode(json_encode($mitra_relation), True);
 		  $eform = $eform->toArray();
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
+		  $eform[0]['mitra'] = $mitra_relation[0];
 		  //-----------work---------------------------
 		  $work = [
 					"type_id"=> $customer[0]['job_type_id'],
@@ -216,7 +223,7 @@ class EFormController extends Controller
             }else{
                 $eform[0]['customer']['personal']['birth_place']  = null;
             }
-		  
+
     		if(!empty($customer[0]['couple_birth_place_id'])){
     			  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
     			  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];
@@ -248,8 +255,9 @@ class EFormController extends Controller
      * @param  integer $eform_id
      * @return \Illuminate\Http\Response
      */
-    public function show( $type, $eform_id )
+    public function show(Request $request, $type, $eform_id )
     {
+        $recontest = (empty(request()->header('recontest')) ? false : true);
 		$eform = EForm::findOrFail($eform_id);
 		$data = $eform;
 		if($eform['product_type']=='briguna'){
@@ -263,11 +271,19 @@ class EFormController extends Controller
 
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-
-			return response()->success( [
+			// Check recontest or not
+            if($recontest){
+                $usersModel  = User::FindOrFail($eform->user_id);
+                $credentials = [
+                    'data' => $eform,
+                    'user' => $usersModel,
+                ];
+                pushNotification($credentials, "recontestEForm");
+            }
+            return response()->success([
 				'contents' => $eform
-			] );
-			}
+			]);
+		}
     }
 
     public function showIdsAndRefNumber( $ids, $ref_number )
@@ -678,12 +694,6 @@ class EFormController extends Controller
         if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
-
-        $eform->message = [
-            'title' => "EForm Notification",
-            'body'  => "E-Form berhasil di disposisi"
-        ];
-
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 

@@ -12,6 +12,7 @@ use App\Models\EForm;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class NotificationController extends Controller
 {
@@ -28,7 +29,7 @@ class NotificationController extends Controller
        //
     }
 
-   
+
     public function unread(Request $request)
     {
         if( request()->header( 'branch_id' ) != '' ){
@@ -52,9 +53,32 @@ class NotificationController extends Controller
             $user_id    = 0;            
         }
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
+        $userId = (!empty($request->user_id) ? $request->user_id : 0);
+        $branchId = (!empty($request->branch_id) ? $request->branch_id : 0);
+        $limit = (!empty($request->limit) ? $request->limit : 10);
+        $mobile = false;
+
+        if ($role == "customer") {
+            if (empty($userId)) {
+                $user_id = $user_id;
+            } else {
+                $mobile = true;
+                $user_id = $userId;
+            }
+        } else {
+            if (empty($branchId)) {
+                $branch_id = $branch_id;
+            } else {
+                $mobile = true;
+                $branch_id = $branchId;
+            }
+        }
 
         $ArrGetDataNotification = [];
-        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3), $role, '000'.$pn , $user_id);
+        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3),
+                                                                    $role,
+                                                                    '000'.$pn,
+                                                                    $user_id);
         if($getDataNotification){
             foreach ($getDataNotification->get() as $value) {
                 $ArrGetDataNotification[] = [
@@ -73,49 +97,36 @@ class NotificationController extends Controller
                                     ];
             }
         }
+        // Mobile set pagination of arrays
+        if($mobile){
+            $currentPage = LengthAwarePaginator::resolveCurrentPage();
+            $itemCollection = collect($ArrGetDataNotification);
+            $perPage = $limit;
+            $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+            $data = new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+            $data->setPath($request->url());
+        }else{
+            $data = $ArrGetDataNotification;
+        }
+
     	return  response()->success( [
             'message' => 'Sukses',
-            'contents' => $ArrGetDataNotification
+            'contents' => $data
         ], 200 );
     }
 
-    
+
     public function read(Request $request,$slug, $type)
     {
         $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : NULL ;
         $notification = $this->userNotification
             ->where( 'slug', $slug)->where( 'type_module', $type)->whereNull('read_at')
             ->firstOrFail();
-       
-        if($notification) $notification->markAsRead($is_read);    
+
+        if($notification) $notification->markAsRead($is_read);
         return  response()->success( [
             'message' => 'Sukses',
             'contents' => $notification
         ], 200 );
-
-    }
-
-    public function unReadMobile(Request $req)
-    {
-        $limit    = (empty($req->limit) ? 0 : $req->limit);
-        $page     = (empty($req->page) ? 0 : $req->page);
-        $role     = (empty($req->role) ? 0 : $req->role);
-        $userId   = (empty($req->user_id) ? 0 : $req->user_id);
-        $branchId = (empty($req->branch_id) ? 0 : $req->branch_id);
-        $pn       = (empty($req->pn) ? 0 : $req->pn);
-        $getDataNotification =  $this->userNotification->getUnreadsMobile(
-                                    substr($branchId,-3), 
-                                    $role, '000'.$pn , 
-                                    $userId,
-                                    request()->segment(3)
-                                );
-        return  response()->success( [
-            'message' => 'Sukses',
-            'contents' => $getDataNotification
-        ], 200 );
-        // echo request()->segment(3);
-        // die();
-        // var_dump(json_encode($getDataNotification->get()->paginate()));
-        // die();
     }
 }

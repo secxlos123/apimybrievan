@@ -279,7 +279,7 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-        if ($request->has('eform_id') && $request->input('eform_id') != false ) {
+        if ( $request->eform_id ) {
             $eformdata = EForm::findOrFail($request->input('eform_id'));
             $hasapprove = $eformdata->is_approved;
         }
@@ -664,6 +664,16 @@ class CollateralController extends Controller
           $developer_id = $collateral['property']['developer_id']; 
         } 
      }  
+     return response()->success( [
+        'contents' => $collateral
+     ] );     
+    }
+
+    /*
+    *  Get Id collateral from property_id
+    */
+    public function getIdCollateral($type ,$property_id){  
+     $collateral = DB::table('collateral_view_table')->where('property_id', $property_id)->first();  
      return response()->success( [
         'contents' => $collateral
      ] );     

@@ -228,7 +228,7 @@ class BRIGUNA extends Model
                     $eforms = EForm::findOrFail($data_dropbox['eform_id']);
                     $base_request["ref_number"] = $data_dropbox['refno'];
                     $eforms->update($base_request);
-                    return $briguna;
+                    return $eform;
                 }
             }
             throw new \Exception( "Error Processing Request", 1 );

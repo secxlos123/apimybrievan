@@ -9,7 +9,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
 use App\Models\EForm;
 
-
 class ApproveEFormCustomer extends Notification
 {
     use Queueable;
