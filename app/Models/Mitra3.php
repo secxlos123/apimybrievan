@@ -17,7 +17,7 @@ class Mitra3 extends Authenticatable  {
 	 *
 	 * @var string
 	 */
-	protected $table = 'mitra_relation';
+	protected $table = 'mitra';
 	
 	  public function scopeFilter( $query, Request $request )
     {
@@ -36,7 +36,7 @@ class Mitra3 extends Authenticatable  {
 				$mitra->orderBy($request->input('sort'), 'ASC');
 				$mitra = $mitra->select([
                     '*',
-                     \DB::Raw(" case when mitra_relation.kode is not null then 2 else 1 end as new_order ")
+                     \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
                 ]);
 		
         \Log::info($mitra->toSql());

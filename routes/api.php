@@ -124,7 +124,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('collateral/nonindex/{developerId}/{propertyId}', ['as' => 'collateral.showNon', 'uses' => 'CollateralController@showNon']);
 		Route::get('collateral/notifotsnonindex/{developerId}/{propertyId}', ['as' => 'collateral.notifotsnonindex', 'uses' => 'CollateralController@NotifOtsNonindex']);	
 		Route::get('collateral/notifots/{developerId}/{propertyId}', ['as' => 'collateral.notifots', 'uses' => 'CollateralController@NotifOts']);
-                Route::get('collateral/collateralnotif/{collateralId}', ['as' => 'collateral.shownotif', 'uses' => 'CollateralController@notifCollateral']);
+        Route::get('collateral/collateralnotif/{collateralId}', ['as' => 'collateral.shownotif', 'uses' => 'CollateralController@notifCollateral']);
+        Route::get('collateral/getIdCollateral/{property_id}', ['as' => 'collateral.getIdCollateral', 'uses' => 'CollateralController@getIdCollateral']);        
 
 		/**
 		 * Collateral ots routes
