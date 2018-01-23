@@ -145,7 +145,7 @@ class SelectCabangController extends Controller
 			$mitra = Mitra3::filter( $request )->paginate($limit);
 			//$mitra = $mitra->toArray();
         return response()->success([
-            'contents' => $mitra[0],
+            'contents' => $mitra,
             'message' => 'Sukses'
         ]);
 		}
