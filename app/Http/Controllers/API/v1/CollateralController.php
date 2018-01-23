@@ -279,7 +279,7 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-        if ($request->has('eform_id') && $request->input('eform_id') != false ) {
+        if ( $request->eform_id ) {
             $eformdata = EForm::findOrFail($request->input('eform_id'));
             $hasapprove = $eformdata->is_approved;
         }
