@@ -140,6 +140,18 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\ApproveDeveloperProfile':
+			$subjectNotif = ['message' => 'Data Profile Telah Disetujui ',
+				'url' => '/dev/profile/personal?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\RejectDeveloperProfile':
+			$subjectNotif = ['message' => 'Data Profile Telah Disetujui ',
+				'url' => '/dev/profile/personal?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
 		
 		//collateral notif
 		case 'App\Notifications\CollateralDisposition':
@@ -190,8 +202,6 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
-				
->>>>>>> d62b65f3be4cc70cc754b8cee491cb23f490e7b7
 		default:
 			$subjectNotif = ['message' => 'Type undefined',
 				'url' => '',
@@ -297,12 +307,11 @@ class UserNotification extends Model
 				/*verifiy app*/
 				$query->unreads();
 			}
-<<<<<<< HEAD
-
 			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
-=======
-                        if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
->>>>>>> d62b65f3be4cc70cc754b8cee491cb23f490e7b7
+				$query->unreads();
+            }
+
+            if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
 				$query->unreads();
 			}
 		}
@@ -369,7 +378,16 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerRejected')) {
 				$query->unreads();
 			}
+			
 			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerApprove')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveDeveloperProfile')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectDeveloperProfile')) {
 				$query->unreads();
 			}
 

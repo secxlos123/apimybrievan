@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\ApprovalDataChange\CreateRequest;
 use App\Models\User;
 use App\Models\Developer;
+use App\Notifications\ApproveDeveloperProfile;
+use App\Notifications\RejectDeveloperProfile;
+use App\Models\UserNotification;
 
 class ApprovalDataChangeController extends Controller
 {
@@ -29,10 +32,12 @@ class ApprovalDataChangeController extends Controller
      * @param ApprovalDataChange $approvalDateChange
      * @param Request $request
      */
-    public function __construct(ApprovalDataChange $approvalDateChange, Request $request)
+    public function __construct(ApprovalDataChange $approvalDateChange, Request $request, UserNotification $userNotification)
     {
       $this->approvalDateChange = $approvalDateChange;
       $this->request = $request;
+      $this->userNotification = $userNotification;
+
     }
     /**
      * Display a listing of the resource.
@@ -184,6 +189,26 @@ class ApprovalDataChangeController extends Controller
      */
     public function changeStatus($type, $approvalType, $status, $id)
     {
+      $approvalDataChanges = ApprovalDataChange::FindOrFail($id);
+      $dev = Developer::FindOrFail( $approvalDataChanges->related_id);
+      $usersModel = User::FindOrFail($dev->user_id);     
+      
+      $typeModule = getTypeModule(Developer::class);
+      $notificationIsRead =  $this->userNotification->where('slug', $approvalDataChanges->related_id)->where( 'type_module',$typeModule)
+                                     ->whereNull('read_at')
+                                     ->first();
+      if($notificationIsRead != NULL){
+          $notificationIsRead->markAsRead();
+      }
+
+      if($status == 'approve'){
+        $usersModel->notify(new ApproveDeveloperProfile($dev));   /*send notification*/
+      }
+
+      if($status == 'reject'){
+        $usersModel->notify(new RejectDeveloperProfile($dev));   /*send notification*/        
+      }
+
       return $this->{$status}($approvalType, $id);
     }
 

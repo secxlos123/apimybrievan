@@ -81,6 +81,7 @@ class UpdateSchedulerCustomer extends Notification
             'type_module' => $typeModule,
             'created_at' => $this->appointment->created_at,
             'message' => $this->appointment->message,
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }

@@ -67,7 +67,7 @@ class EditDeveloper extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(Developer::class);
-        $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->whereNull('approval_by')->first()
+        $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->whereNull('approval_by')->first();
 
         return [
             'developer_id' => $this->dev->id,
