@@ -118,12 +118,19 @@ class EFormController extends Controller
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
 
-
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
+		  
+		$mitra_relation = DB::table('mitra')
+						 ->select('mitra.*')
+						 ->where('mitra.idMitrakerja', $eform[0]['mitra_id'])
+						 ->get();
+				$mitra_relation = $mitra_relation->toArray();
+				$mitra_relation = json_decode(json_encode($mitra_relation), True);
 		  $eform = $eform->toArray();
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
+		  $eform[0]['mitra'] = $mitra_relation[0];
 		  //-----------work---------------------------
 		  $work = [
 					"type_id"=> $customer[0]['job_type_id'],
