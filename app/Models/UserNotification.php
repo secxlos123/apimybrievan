@@ -70,7 +70,7 @@ class UserNotification extends Model
 		switch ($this->type) {
 		/* eform  */
 		case 'App\Notifications\PengajuanKprNotification':
-			$subjectNotif = ['message' => 'Pengajuan KPR Baru',
+			$subjectNotif = ['message' => 'Pengajuan Aplikasi KPR Baru',
 				'url' => $url,
 				'url_mobile' => '#',
 			];
@@ -142,6 +142,25 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\EditDeveloper':
+			$subjectNotif = ['message' => 'Perbaharui Data Profile',
+				'url' => '/approval-data/developer?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\ApproveDeveloperProfile':
+			$subjectNotif = ['message' => 'Data Profile Telah Disetujui ',
+				'url' => '/dev/profile/personal?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\RejectDeveloperProfile':
+			$subjectNotif = ['message' => 'Data Profile Telah Disetujui ',
+				'url' => '/dev/profile/personal?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
+		
 		case 'App\Notifications\RecontestEFormNotification':
 			$subjectNotif = ['message' => 'Pengajuan Anda Telah di Rekontest.',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
@@ -197,7 +216,6 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
-				
 		default:
 			$subjectNotif = ['message' => 'Type undefined',
 				'url' => '',
@@ -265,6 +283,10 @@ class UserNotification extends Model
 				/*verifiy app*/
 				$query->unreads();
 			}
+			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
+				$query->unreads();
+            }
+
             
             if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
 				$query->unreads();
@@ -338,7 +360,18 @@ class UserNotification extends Model
 				$query->where('notifications.notifiable_id', @$user_id);
 				$query->unreads();
 			}
+			
 			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerApprove')) {
+				$query->where('notifications.notifiable_id', @$user_id);
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveDeveloperProfile')) {
+				$query->where('notifications.notifiable_id', @$user_id);
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectDeveloperProfile')) {
 				$query->where('notifications.notifiable_id', @$user_id);
 				$query->unreads();
 			}

@@ -402,6 +402,15 @@ if (! function_exists('getTypeModule')) {
             case 'App\Models\Collateral':
                 $typeModule = 'collateral';
                 break;
+            case 'App\Models\Developer':
+                $typeModule = 'developer';
+                break;
+            case 'App\Models\UserDeveloper':
+                $typeModule = 'developer-sales';
+                break;
+            case 'App\Models\Property':
+                $typeModule = 'property';
+                break;
             default:
                 $typeModule = 'Type undefined';
                 break;
