@@ -72,7 +72,7 @@ class marketingActivityController extends Controller
           'ownership' => $ownership,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
-          'fu_result'=>$activity->fu_result
+          'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->get()
           ];
       }
 
@@ -137,7 +137,7 @@ class marketingActivityController extends Controller
           'ownership' => $ownership,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
-          'fu_result'=>$activity->fu_result
+          'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->get()
           ];
       }
 
@@ -434,7 +434,7 @@ class marketingActivityController extends Controller
           'address' => $activity->address,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
-          'fu_result'=>$activity->fu_result
+          'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->get()
           ];
       }
 
@@ -485,7 +485,7 @@ class marketingActivityController extends Controller
           'address' => $activity->address,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
-          'fu_result'=>$activity->fu_result
+          'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->get()
           ];
       }
 
@@ -548,7 +548,7 @@ class marketingActivityController extends Controller
           'address' => $activity->address,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
-          'fu_result'=>$activity->fu_result
+          'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->get()
         ];
       }
       // return $list;
