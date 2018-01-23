@@ -1286,7 +1286,7 @@ class EForm extends Model implements AuditableContract
             "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : intval( $otsBuilding->east_limit ),
             "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' :  $otsBuilding->east_limit_from ,
             "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : intval( $otsBuilding->south_limit ),
-            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_from) ? '0' : $otsBuilding->south_limit_form ,
+            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_from) ? '0' : $otsBuilding->south_limit_from ,
             "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : intval( $otsBuilding->west_limit ),
             "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' :  $otsBuilding->west_limit_from ,
             //otsEnvironment
