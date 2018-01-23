@@ -128,38 +128,66 @@ class ApiLasController extends Controller
                 break;
 
             case 'insertPrescreeningBriguna':
-                $insert = $ApiLas->insertPrescreeningBriguna($data);
+                // $insert = $ApiLas->insertPrescreeningBriguna($data);
+                $insert = $this->insertPrescreeningBriguna($data);
                 return $insert;
                 break;
         
             case 'insertPrescoringBriguna':
-                $insert = $ApiLas->insertPrescoringBriguna($data);
+                // $insert = $ApiLas->insertPrescoringBriguna($data);
+                $insert = $this->insertPrescoringBriguna($data);
                 return $insert;
                 break;
 
             case 'insertDataKreditBriguna':
-                $insert = $ApiLas->insertDataKreditBriguna($data);
+                // $insert = $ApiLas->insertDataKreditBriguna($data);
+                $insert = $this->insertDataKreditBriguna($data);
                 return $insert;
                 break;
 
-            case 'insertAgunanLainnya':
+            /*case 'insertAgunanLainnya':
                 $insert = $ApiLas->insertAgunanLainnya($data);
                 return $insert;
-                break;
+                break;*/
 
             case 'hitungCRSBrigunaKarya':
-                $hitung = $ApiLas->hitungCRSBrigunaKarya($data);
+                // $hitung = $ApiLas->hitungCRSBrigunaKarya($data);
+                $hitung = $this->hitungCRSBrigunaKarya($data);
                 return $hitung;
                 break;
 
             case 'kirimPemutus':
-                $kirim = $ApiLas->kirimPemutus($data);
+                // $kirim = $ApiLas->kirimPemutus($data);
+                $kirim = $this->kirimPemutus($data);
                 return $kirim;
                 break;
 
             case 'getStatusInterface':
-                $getData = $ApiLas->getStatusInterface($data);
-                return $getData;
+                // $getData = $ApiLas->getStatusInterface($data);
+                // return $getData;
+                try {
+                    $parameter['id_aplikasi'] = $data;
+                    $client = $this->client();
+                    $resultclient = $client->getStatusInterface($parameter);
+                    // print_r($resultclient);exit();
+                    if($resultclient->getStatusInterfaceResult){
+                        $datadetail = json_decode($resultclient->getStatusInterfaceResult);
+                        $dataResult = (array) $datadetail;
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            // getdata
+                            if(isset($datadetail->items)){
+                                $result = $dataResult;
+                                return $result;
+                            }
+                        }
+                        $result = $dataResult;
+                        return $result;
+                    }
+                    return "Error Exception";
+                }
+                catch(SoapFault $f){
+                    return "Error Exception";
+                }
                 break;
 
             case 'putusSepakat':
@@ -167,10 +195,9 @@ class ApiLasController extends Controller
                 return $putus;
                 break;
 
-            case 'inquiryHistoryDebiturPerorangan':
+            /*case 'inquiryHistoryDebiturPerorangan':
                 if (!empty($data)) {
                     $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
-                    
                     if ($inquiry['statusCode'] == '01') {
                         $result  = $inquiry['data'][0]['items'];
                         $result[0]['ID_KREDIT']  = $inquiry['data'][1]['items'][0]['id_kredit'];
@@ -197,54 +224,53 @@ class ApiLasController extends Controller
                         'data' => $error
                     ]
                 ];
-                break;
+                break;*/
 
             case 'inquiryListPutusan':
                 if (!empty($data)) {
                     $pn      = substr('00000000'. $data, -8 );
-                    $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-                    // print_r($inquiryUserLAS);exit();
-                    if ($inquiryUserLAS['statusCode'] == '01') {
-                        $uid = $inquiryUserLAS['items'][0]['uid'];
+                    $inquiryUserLAS = $this->loginLAS($pn);
 
+                    if ($inquiryUserLAS['code'] == '01') {
+                        $uid = $inquiryUserLAS['contents']['data'][0]->uid;
                         // $inquiry = $ApiLas->inquiryListPutusan($uid);
                         // $conten  = $this->return_conten($inquiry);
                         // return $conten;
 
-                        $parameter['uid'] = $data;
-                        // print_r($data);exit();
-                        $result = false;
+                        $parameter['uid'] = $uid;
                         try {
                             $client = $this->client();
-                            $resultclient = $client->inquiryListVerputADK($parameter);
+                            $resultclient = $client->inquiryListPutusan($parameter);
                             // print_r($resultclient);exit();
-                            if($resultclient->inquiryListVerputADKResult){
-                                $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
-
+                            if($resultclient->inquiryListPutusanResult){
+                                $datadetail = json_decode($resultclient->inquiryListPutusanResult);
                                 if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                                    
+                                    // getdata sukses
                                     if(isset($datadetail->items)){
                                         $result = $this->return_conten($datadetail);
                                         return $result;
-                                    }else{
-                                        $result = false;
                                     }
-                                }else{
-                                    $result = false;
                                 }
-                            }else{
-                                $result = false;
+                                $result = $this->return_conten($datadetail);
+                                return $result;
                             }
+                            $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                            return [
+                                'code' => 04, 
+                                'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                                'contents' => [
+                                    'data' => $error
+                                ]
+                            ];
                         }
                         catch(SoapFault $f){
-                            $result = false;
+                            return "Error Exception";
                         }
-                        return $result;
                     } else {
-                        $error[0] = 'Gagal koneksi DB/Hasil inquiry kosong';
+                        $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
                         return [
                             'code' => 04, 
-                            'descriptions' => 'Gagal koneksi DB/Hasil inquiry kosong',
+                            'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
                             'contents' => [
                                 'data' => $error
                             ]
@@ -259,7 +285,6 @@ class ApiLasController extends Controller
                         'data' => $error
                     ]
                 ];
-                // print_r($data);exit();
                 break;
 
             case 'inquiryListVerputADK':
@@ -270,8 +295,6 @@ class ApiLasController extends Controller
                     // return $conten;
 
                     $parameter['branch'] = $data;
-                    // print_r($data);exit();
-                    $result = false;
                     try {
                         $client = $this->client();
                         $resultclient = $client->inquiryListVerputADK($parameter);
@@ -280,24 +303,27 @@ class ApiLasController extends Controller
                             $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
 
                             if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                                
+                                // getdata sukses
                                 if(isset($datadetail->items)){
                                     $result = $this->return_conten($datadetail);
                                     return $result;
-                                }else{
-                                    $result = false;
                                 }
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
+                            $result = $this->return_conten($datadetail);
+                            return $result;
                         }
+                        $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                        return [
+                            'code' => 04, 
+                            'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                            'contents' => [
+                                'data' => $error
+                            ]
+                        ];
                     }
                     catch(SoapFault $f){
-                        $result = false;
+                        return "Error Exception";
                     }
-                    return $result;
                 }
 
                 $error[0] = 'Uknown request data';
@@ -308,7 +334,6 @@ class ApiLasController extends Controller
                         'data' => $error
                     ]
                 ];
-                // print_r($data);exit();
                 break;
 
             case 'inquiryPremiAJKO':
@@ -322,7 +347,7 @@ class ApiLasController extends Controller
                     ];
 
                     // $inquiry = $ApiLas->inquiryPremiAJKO($params);
-                    // // print_r($inquiry);exit();
+                    // print_r($inquiry);exit();
                     // if ($inquiry['statusCode'] == '01') {
                     //     $conten  = $this->return_conten($inquiry);
                     //     return $conten;
@@ -330,7 +355,6 @@ class ApiLasController extends Controller
                     // return $inquiry;
 
                     $parameter['JSONData'] = json_encode($params);
-                    $result = false;
                     try {
                         $client = $this->client();
                         $resultclient = $client->inquiryPremiAJKO($parameter);
@@ -339,24 +363,27 @@ class ApiLasController extends Controller
                             $datadetail = json_decode($resultclient->inquiryPremiAJKOResult);
 
                             if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                                
+                                // get data sukses
                                 if(isset($datadetail->items)){
                                     $result = $this->return_conten($datadetail);
                                     return $result;
-                                }else{
-                                    $result = false;
                                 }
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
+                            $result = $this->return_conten($datadetail);
+                            return $result;
                         }
+                        $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                        return [
+                            'code' => 04, 
+                            'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                            'contents' => [
+                                'data' => $error
+                            ]
+                        ];
                     }
                     catch(SoapFault $f){
-                        $result = false;
+                        return "Error Exception";
                     }
-                    return $result;
                 }
                 $error[0] = 'Uknown request data';
                 return [
@@ -366,7 +393,6 @@ class ApiLasController extends Controller
                         'data' => $error
                     ]
                 ];
-                // print_r($data);exit();
                 break;
 
             case 'eformBriguna':
@@ -378,33 +404,7 @@ class ApiLasController extends Controller
                 // $inquiry = $ApiLas->inquiryUserLAS($data);
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $pn['PN'] = $data;
-                $result = false;
-                try {
-                    $client = $this->client();
-                    $resultclient = $client->inquiryUserLAS($pn);
-                    // print_r($resultclient);exit();
-                    if($resultclient->inquiryUserLASResult){
-                        $datadetail = json_decode($resultclient->inquiryUserLASResult);
-
-                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
-                            if(isset($datadetail->items)){
-                                $result = $this->return_conten($datadetail);
-                                return $result;
-                            }else{
-                                $result = false;
-                            }
-                        }else{
-                            $result = false;
-                        }
-                    }else{
-                        $result = false;
-                    }
-                }
-                catch(SoapFault $f){
-                    $result = false;
-                }
+                $result = $this->loginLAS($data);
                 return $result;
                 break;
 
@@ -412,71 +412,72 @@ class ApiLasController extends Controller
                 // $inquiry = $ApiLas->inquiryInstansiBriguna();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryInstansiBriguna();
                     if($resultclient->inquiryInstansiBrigunaResult){
                         $datadetail = json_decode($resultclient->inquiryInstansiBrigunaResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquirySifatKredit':
                 // $inquiry = $ApiLas->inquirySifatKredit($data);
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquirySifatKredit();
                     if($resultclient->inquirySifatKreditResult){
                         $datadetail = json_decode($resultclient->inquirySifatKreditResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryGelar':
                 // $inquiry = $ApiLas->inquiryGelar();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryGelar();
@@ -484,444 +485,462 @@ class ApiLasController extends Controller
                         $datadetail = json_decode($resultclient->inquiryGelarResult);
 
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
                 
             case 'inquiryLoantype':
                 // $inquiry = $ApiLas->inquiryLoantype();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryLoantype();
                     if($resultclient->inquiryLoantypeResult){
                         $datadetail = json_decode($resultclient->inquiryLoantypeResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryJenisPenggunaan':
                 // $inquiry = $ApiLas->inquiryJenisPenggunaan();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryJenisPenggunaan();
                     if($resultclient->inquiryJenisPenggunaanResult){
                         $datadetail = json_decode($resultclient->inquiryJenisPenggunaanResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryJenisPenggunaanLBU':
                 // $inquiry = $ApiLas->inquiryJenisPenggunaanLBU();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryJenisPenggunaanLBU();
                     if($resultclient->inquiryJenisPenggunaanLBUResult){
                         $datadetail = json_decode($resultclient->inquiryJenisPenggunaanLBUResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquirySektorEkonomiLBU':
                 // $inquiry = $ApiLas->inquirySektorEkonomiLBU();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquirySektorEkonomiLBU();
                     if($resultclient->inquirySektorEkonomiLBUResult){
                         $datadetail = json_decode($resultclient->inquirySektorEkonomiLBUResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquirySifatKreditLBU':
                 // $inquiry = $ApiLas->inquirySifatKreditLBU();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquirySifatKreditLBU();
                     if($resultclient->inquirySifatKreditLBUResult){
                         $datadetail = json_decode($resultclient->inquirySifatKreditLBUResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryJenisKreditLBU':
                 // $inquiry = $ApiLas->inquiryJenisKreditLBU();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryJenisKreditLBU();
                     if($resultclient->inquiryJenisKreditLBUResult){
                         $datadetail = json_decode($resultclient->inquiryJenisKreditLBUResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryPromoBriguna':
                 // $inquiry = $ApiLas->inquiryPromoBriguna();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryPromoBriguna();
                     if($resultclient->inquiryPromoBrigunaResult){
                         $datadetail = json_decode($resultclient->inquiryPromoBrigunaResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryTujuanPenggunaan':
                 // $inquiry = $ApiLas->inquiryTujuanPenggunaan();
                 // $conten  = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryTujuanPenggunaan();
                     if($resultclient->inquiryTujuanPenggunaanResult){
                         $datadetail = json_decode($resultclient->inquiryTujuanPenggunaanResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryBidangUsaha':
                 // $inquiry = $ApiLas->inquiryBidangUsaha();
                 // $conten = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryBidangUsaha();
                     if($resultclient->inquiryBidangUsahaResult){
                         $datadetail = json_decode($resultclient->inquiryBidangUsahaResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                   return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryBank':
                 // $inquiry = $ApiLas->inquiryBank();
                 // $conten = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryBank();
                     if($resultclient->inquiryBankResult){
                         $datadetail = json_decode($resultclient->inquiryBankResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryHubunganBank':
                 // $inquiry = $ApiLas->inquiryHubunganBank();
                 // $conten = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryHubunganBank();
                     if($resultclient->inquiryHubunganBankResult){
                         $datadetail = json_decode($resultclient->inquiryHubunganBankResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryPekerjaan':
                 // $inquiry = $ApiLas->inquiryPekerjaan();
                 // $conten = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryPekerjaan();
                     if($resultclient->inquiryPekerjaanResult){
                         $datadetail = json_decode($resultclient->inquiryPekerjaanResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryJabatan':
                 // $inquiry = $ApiLas->inquiryJabatan();
                 // $conten = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryJabatan();
                     if($resultclient->inquiryJabatanResult){
                         $datadetail = json_decode($resultclient->inquiryJabatanResult);
-
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryJenisPekerjaan':
-                $result = false;
+                // $inquiry = $ApiLas->inquiryJenisPekerjaan();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryJenisPekerjaan();
@@ -929,34 +948,33 @@ class ApiLasController extends Controller
                         $datadetail = json_decode($resultclient->inquiryJenisPekerjaanResult);
 
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
-                // $inquiry = $ApiLas->inquiryJenisPekerjaan();
-                // $conten = $this->return_conten($inquiry);
-                // return $conten;
                 break;
 
             case 'inquiryDati2':
                 // $inquiry = $ApiLas->inquiryDati2();
                 // $conten = $this->return_conten($inquiry);
                 // return $conten;
-                $result = false;
                 try {
                     $client = $this->client();
                     $resultclient = $client->inquiryDati2();
@@ -964,24 +982,27 @@ class ApiLasController extends Controller
                         $datadetail = json_decode($resultclient->inquiryDati2Result);
 
                         if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                            
+                            // get data sukses
                             if(isset($datadetail->items)){
                                 $result = $this->return_conten($datadetail);
                                 return $result;
-                            }else{
-                                $result = false;
                             }
-                        }else{
-                            $result = false;
                         }
-                    }else{
-                        $result = false;
+                        $result = $this->return_conten($datadetail);
+                        return $result;
                     }
+                    $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 catch(SoapFault $f){
-                    $result = false;
+                    return "Error Exception";
                 }
-                return $result;
                 break;
 
             case 'inquiryKodePos':
@@ -1028,20 +1049,48 @@ class ApiLasController extends Controller
                 $base_request['pinca_name'] = $data['pinca_name'];
                 $base_request['pinca_position'] = $data['pinca_position'];
                 $eform->update($base_request);
-                \Log::info("-------- update table eforms sukses---------");
+                \Log::info("-------- putusan update table eforms sukses---------");
             }
 
-            $ApiLas  = new ApiLas();
-            $conten_putusan = [
+            // $ApiLas  = new ApiLas();
+            $conten_putusan['JSONData'] = json_encode([
                 "id_aplikasi" => $data['id_aplikasi'],
                 "uid"         => $data['uid'],
                 "flag_putusan"=> $data['flag_putusan'],
                 "catatan"     => empty($data['catatan'])? "":$data['catatan']
-            ];
+            ]);
 
-            $putus = $ApiLas->putusSepakat($conten_putusan);
-            \Log::info($putus);
-            return $putus;
+            // $putus = $ApiLas->putusSepakat($conten_putusan);
+            // return $putus;
+            try {
+                $client = $this->client();
+                $resultclient = $client->putusSepakat($conten_putusan);
+                if($resultclient->putusSepakatResult){
+                    $datadetail = json_decode($resultclient->putusSepakatResult);
+                    $dataResult = (array) $datadetail;
+                    if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                        // get data sukses
+                        if(isset($datadetail->items)){
+                            $result = $dataResult;
+                            return $result;
+                        }
+                    }
+                    $result = $dataResult;
+                    return $result;
+                    \Log::info($result);
+                }
+                $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                return [
+                    'code' => 04, 
+                    'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                    'contents' => [
+                        'data' => $error
+                    ]
+                ];
+            }
+            catch(SoapFault $f){
+                return "Error Exception";
+            }
         }        
 
         $error[0] = 'Uknown request data';
@@ -1058,18 +1107,17 @@ class ApiLasController extends Controller
         $ApiLas  = new ApiLas();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
-        $inquiryUserLAS = $ApiLas->inquiryUserLAS($pn);
-        if ($inquiryUserLAS['statusCode'] == '01') {
-            $uid  = $inquiryUserLAS['items'][0]['uid'];
-            $uker = substr($inquiryUserLAS['items'][0]['kode_cabang'], -5);
+        $inquiryUserLAS = $this->loginLAS($pn);
+        if ($inquiryUserLAS['code'] == '01') {
+            $uid  = $inquiryUserLAS['contents']['data'][0]->uid;
+            $uker = substr($inquiryUserLAS['contents']['data'][0]->kode_cabang, -5);
         } else {
             $uid = "";
             $uker= "";
         }
-        
         \Log::info($request);
         // print_r($uker);
-        // print_r($request);exit();
+        // print_r($request['tgl_lahir']);exit();
 
         // insert data debitur
         $content_las_debt = [
@@ -1154,13 +1202,14 @@ class ApiLasController extends Controller
             "ket_buka_rekening"     => "Pinjaman" // hardcode
         ];
         // print_r($content_las_debt);exit();
-        $insertDebitur = $ApiLas->insertDataDebtPerorangan($content_las_debt);
+        $insertDebitur = $this->insertDataDebtPerorangan($content_las_debt);
+        // print_r($insertDebitur);exit();
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // prescreening
             $content_prescreening = [
-                "Fid_aplikasi"           => $insertDebitur['items'][0]['ID_APLIKASI'],
+                "Fid_aplikasi"           => $insertDebitur['items'][0]->ID_APLIKASI,
                 "Ps_krd"                 => "0",
                 "Pks"                    => "0",
                 "Daftar_hitam_bi"        => "0",
@@ -1172,14 +1221,14 @@ class ApiLasController extends Controller
                 "Hasil_prescreening"     => "Diproses lebih lanjut"
             ];
 
-            $insertPrescreening = $ApiLas->insertPrescreeningBriguna($content_prescreening);
+            $insertPrescreening = $this->insertPrescreeningBriguna($content_prescreening);
             \Log::info("-------- masuk insert prescreening ---------");
             \Log::info($insertPrescreening);
             if ($insertPrescreening['statusCode'] == '01') {
                 // prescoring
                 $content_las_prescoring = [
-                    "Fid_aplikasi"              => $insertDebitur['items'][0]['ID_APLIKASI'],
-                    "Fid_cif_las"               => $insertDebitur['items'][0]['CIF_LAS'],
+                    "Fid_aplikasi"              => $insertDebitur['items'][0]->ID_APLIKASI,
+                    "Fid_cif_las"               => $insertDebitur['items'][0]->CIF_LAS,
                     "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                     "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
                     "Briguna_profesi"           => $request['Briguna_profesi'],
@@ -1207,7 +1256,7 @@ class ApiLasController extends Controller
                     "Kelengkapan_dokumen"       => "1"
                 ];
 
-                $insertPrescoring = $ApiLas->insertPrescoringBriguna($content_las_prescoring);
+                $insertPrescoring = $this->insertPrescoringBriguna($content_las_prescoring);
                 \Log::info("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
@@ -1216,8 +1265,8 @@ class ApiLasController extends Controller
                     // print_r($tgl_jatuh_tempo);exit();
                     // insert dataKredit
                     $content_insertKreditBriguna = [
-                        "Fid_aplikasi"                 => $insertDebitur['items'][0]['ID_APLIKASI'],
-                        "Cif_las"                      => $insertDebitur['items'][0]['CIF_LAS'],
+                        "Fid_aplikasi"                 => $insertDebitur['items'][0]->ID_APLIKASI,
+                        "Cif_las"                      => $insertDebitur['items'][0]->CIF_LAS,
                         "Pemrakarsa1"                  => $uid,
                         "Uker_pemrakarsa"              => $uker,
                         "Tanggal_jatuh_tempo"          => $tgl_jatuh_tempo,
@@ -1278,26 +1327,26 @@ class ApiLasController extends Controller
                         "Data2"                        => "" // kosongin aja
                     ];
 
-                    $insertKredit = $ApiLas->insertDataKreditBriguna($content_insertKreditBriguna);
+                    $insertKredit = $this->insertDataKreditBriguna($content_insertKreditBriguna);
                     \Log::info("-------- masuk insert kredit ---------");
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
-                        $hitung = $ApiLas->hitungCRSBrigunaKarya($insertDebitur['items'][0]['ID_APLIKASI']);
+                        $hitung = $this->hitungCRSBrigunaKarya($insertDebitur['items'][0]->ID_APLIKASI);
                         \Log::info("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
                             $override = 'Y';
-                            if ($hitung['items'][0]['cutoff'] == 'Y') {
+                            if ($hitung['items'][0]->cutoff == 'Y') {
                                 $override = 'N';
                             }
                             // Kirim Pemutus
                             $conten = [
-                                'id_aplikasi'   => $insertDebitur['items'][0]['ID_APLIKASI'],
+                                'id_aplikasi'   => $insertDebitur['items'][0]->ID_APLIKASI,
                                 'uid'           => $uid,
                                 'flag_override' => $override
                             ];
-                            $kirim = $ApiLas->kirimPemutus($conten);
+                            $kirim = $this->kirimPemutus($conten);
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
@@ -1317,8 +1366,8 @@ class ApiLasController extends Controller
                                 "uid"                       => $uid, // inquiry user las
                                 "uid_pemrakarsa"            => $uker, // inquiry user las
                                 "tp_produk"                 => "1", // hardcode dari las
-                                "id_aplikasi"             => $insertDebitur['items'][0]['ID_APLIKASI'],
-                                "cif_las"                   => $insertDebitur['items'][0]['CIF_LAS'],
+                                "id_aplikasi"             => $insertDebitur['items'][0]->ID_APLIKASI,
+                                "cif_las"                   => $insertDebitur['items'][0]->CIF_LAS,
                                 "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                                 "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
                                 "Briguna_profesi"           => $request['Briguna_profesi'],
@@ -1365,10 +1414,10 @@ class ApiLasController extends Controller
                                 "Sektor_ekonomi_lbu"        => $request['Sektor_ekonomi_lbu'],
                                 "id_Status_gelar"           => $request['status_gelar_id'],
                                 "Status_gelar"              => $request['status_gelar_name'],
-                                "score"                     => $hitung['items'][0]['score'],
-                                "grade"                     => $hitung['items'][0]['grade'],
-                                "cutoff"                    => $hitung['items'][0]['cutoff'],
-                                "definisi"                  => $hitung['items'][0]['definisi'],
+                                "score"                     => $hitung['items'][0]->score,
+                                "grade"                     => $hitung['items'][0]->grade,
+                                "cutoff"                    => $hitung['items'][0]->cutoff,
+                                "definisi"                  => $hitung['items'][0]->definisi,
                                 "NPWP_nasabah"              => $request['NPWP_nasabah'],
                                 "NIP"                       => $request['nip'],
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
@@ -1420,7 +1469,8 @@ class ApiLasController extends Controller
                                 "perjanjian_pisah_harta"  => $request['perjanjian_pisah_harta'],
                                 "trans_normal_harian"     => $request['transaksi_normal_harian'],
                                 "pernah_pinjam"             => $request['pernah_pinjam'],
-                                "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'] 
+                                "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'],
+                                "tgl_analisa"               => $request['tgl_analisa'] 
                             ];
 
                             $briguna = BRIGUNA::where("eform_id","=",$eform_id);
@@ -1437,21 +1487,21 @@ class ApiLasController extends Controller
                                 'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
                                 'contents'     => [
                                     'data' => [
-                                        'id_aplikasi' => $insertDebitur['items'][0]['ID_APLIKASI'],
-                                        'cif_las'     => $insertDebitur['items'][0]['CIF_LAS'],
-                                        'score'       => $hitung['items'][0]['score'],
-                                        'grade'       => $hitung['items'][0]['grade'],
-                                        'cutoff'      => $hitung['items'][0]['cutoff'],
-                                        'definisi'    => $hitung['items'][0]['definisi']
+                                        'id_aplikasi' => $insertDebitur['items'][0]->ID_APLIKASI,
+                                        'cif_las'     => $insertDebitur['items'][0]->CIF_LAS,
+                                        'score'       => $hitung['items'][0]->score,
+                                        'grade'       => $hitung['items'][0]->grade,
+                                        'cutoff'      => $hitung['items'][0]->cutoff,
+                                        'definisi'    => $hitung['items'][0]->definisi
                                     ]
                                 ]
                             ];
                             return $result;
                         } else {
-                            $error = 'hitung '.$hitung['name'].' gagal, '.$hitung['statusDesc'];
+                            $error = 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'];
                             $crs = [
                                 'code' => $hitung['statusCode'], 
-                                'descriptions' => 'hitung '.$hitung['name'].' gagal, '.$hitung['statusDesc'],
+                                'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
                                 'contents' => [
                                     'data' => $error
                                 ]
@@ -1470,10 +1520,10 @@ class ApiLasController extends Controller
                         return $insertKre;
                     }
                 } else {
-                    $error[0] = 'insert '.$insertPrescoring['name'].' gagal, '.$insertPrescoring['statusDesc'];
+                    $error[0] = 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'];
                     $insertPres = [
                         'code' => $insertPrescoring['statusCode'], 
-                        'descriptions' => 'insert '.$insertPrescoring['name'].' gagal, '.$insertPrescoring['statusDesc'],
+                        'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
                         'contents' => [
                             'data' => $error
                         ]
@@ -1535,6 +1585,204 @@ class ApiLasController extends Controller
             } catch (Exception $e) {
                 return $e;
             }
+        }
+    }
+
+    function loginLAS($params) {
+        $pn['PN'] = $params;
+        $result = false;
+        try {
+            $client = $this->client();
+            $resultclient = $client->inquiryUserLAS($pn);
+            if($resultclient->inquiryUserLASResult){
+                $datadetail = json_decode($resultclient->inquiryUserLASResult);
+
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    
+                    if(isset($datadetail->items)){
+                        $result = $this->return_conten($datadetail);
+                        return $result;
+                    }else{
+                        $result = $this->return_conten($datadetail);
+                    }
+                }else{
+                    $result = $this->return_conten($datadetail);
+                }
+            }
+            $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+            $result = [
+                'code' => 04, 
+                'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                'contents' => [
+                    'data' => $error
+                ]
+            ];
+        }
+        catch(SoapFault $f){
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    function kirimPemutus($params) {
+        try {
+            $parameter = [
+                'id_aplikasi'   => !isset($params['id_aplikasi']) ? "" : $params['id_aplikasi'],
+                'uid'           => !isset($params['uid']) ? "" : $params['uid'],
+                'flag_override' => !isset($params['flag_override'])? "" : $params['flag_override']
+            ];
+            $client = $this->client();
+            $resultclient = $client->kirimPemutus($parameter);
+            // print_r($resultclient);exit();
+            if($resultclient->kirimPemutusResult){
+                $datadetail = json_decode($resultclient->kirimPemutusResult);
+                $dataResult = (array) $datadetail;
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    // getdata
+                    if(isset($datadetail->items)){
+                        $result = $dataResult;
+                        return $result;
+                    }
+                }
+                $result = $dataResult;
+                return $result;
+            }
+            return "Error Exception";
+        }
+        catch(SoapFault $f){
+            return "Error Exception";
+        }
+    }
+
+    function hitungCRSBrigunaKarya($params) {
+        try {
+            $parameter['id_Aplikasi'] = !isset($params['id_aplikasi']) ? "" : $params['id_aplikasi'];
+            $client = $this->client();
+            $resultclient = $client->hitungCRSBrigunaKarya($parameter);
+            // print_r($resultclient);exit();
+            if($resultclient->hitungCRSBrigunaKaryaResult){
+                $datadetail = json_decode($resultclient->hitungCRSBrigunaKaryaResult);
+                $dataResult = (array) $datadetail;
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    // getdata
+                    if(isset($datadetail->items)){
+                        $result = $dataResult;
+                        return $result;
+                    }
+                }
+                $result = $dataResult;
+                return $result;
+            }
+            return "Error Exception";
+        }
+        catch(SoapFault $f){
+            return "Error Exception";
+        }
+    }
+    
+    function insertDataKreditBriguna($params) {
+        try {
+            $parameter['JSON'] = json_encode($params);
+            $client = $this->client();
+            $resultclient = $client->insertDataKreditBriguna($parameter);
+            // print_r($resultclient);exit();
+            if($resultclient->insertDataKreditBrigunaResult){
+                $datadetail = json_decode($resultclient->insertDataKreditBrigunaResult);
+                $dataResult = (array) $datadetail;
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    // getdata
+                    if(isset($datadetail->items)){
+                        $result = $dataResult;
+                        return $result;
+                    }
+                }
+                $result = $dataResult;
+                return $result;
+            }
+            return "Error Exception";
+        }
+        catch(SoapFault $f){
+            return "Error Exception";
+        }
+    }
+
+    function insertPrescoringBriguna($params) {
+        try {
+            $parameter['JSON'] = json_encode($params);
+            $client = $this->client();
+            $resultclient = $client->insertPrescoringBriguna($parameter);
+            // print_r($resultclient);exit();
+            if($resultclient->insertPrescoringBrigunaResult){
+                $datadetail = json_decode($resultclient->insertPrescoringBrigunaResult);
+                $dataResult = (array) $datadetail;
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    // getdata
+                    if(isset($datadetail->items)){
+                        $result = $dataResult;
+                        return $result;
+                    }
+                }
+                $result = $dataResult;
+                return $result;
+            }
+            return "Error Exception";
+        }
+        catch(SoapFault $f){
+            return "Error Exception";
+        }
+    }
+
+    function insertPrescreeningBriguna($params) {
+        try {
+            $parameter['JSON'] = json_encode($params);
+            $client = $this->client();
+            $resultclient = $client->insertPrescreeningBriguna($parameter);
+            // print_r($resultclient);exit();
+            if($resultclient->insertPrescreeningBrigunaResult){
+                $datadetail = json_decode($resultclient->insertPrescreeningBrigunaResult);
+                $dataResult = (array) $datadetail;
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    // getdata
+                    if(isset($datadetail->items)){
+                        $result = $dataResult;
+                        return $result;
+                    }
+                }
+                $result = $dataResult;
+                return $result;
+            }
+            return "Error Exception";
+        }
+        catch(SoapFault $f){
+            return "Error Exception";
+        }
+    }
+
+    function insertDataDebtPerorangan($params) {
+        try {
+            $parameter['JSONData'] = json_encode($params);
+            $parameter['flag_sp']  = 1;
+            $client = $this->client();
+            $resultclient = $client->insertDataDebtPerorangan($parameter);
+            // print_r($resultclient);exit();
+            if($resultclient->insertDataDebtPeroranganResult){
+                $datadetail = json_decode($resultclient->insertDataDebtPeroranganResult);
+                $dataResult = (array) $datadetail;
+                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    // getdata
+                    if(isset($datadetail->items)){
+                        $result = $dataResult;
+                        return $result;
+                    }
+                }
+                $result = $dataResult;
+                return $result;
+            }
+            return "Error Exception";
+        }
+        catch(SoapFault $f){
+            return "Error Exception";
         }
     }
 }
