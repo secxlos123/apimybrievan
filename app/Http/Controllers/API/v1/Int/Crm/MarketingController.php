@@ -57,11 +57,13 @@ class MarketingController extends Controller
             $ownership = 'main';
           }
 
+          $pnName = array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'';
+
           $marketingActivity[]= [
             'id' => $activity->id,
             'pn' => $activity->pn,
             'marketing_activity_type' => $activity->marketing->activity_type,
-            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
+            'pn_name' => $pnName,
             'object_activity' => $activity->object_activity,
             'action_activity' => $activity->action_activity,
             'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -79,12 +81,13 @@ class MarketingController extends Controller
             'followup'=> $followUp,
             'rescheduled'=> $rescheduled,
             ];
+
         }
 
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
-          'pn_name' => $pemasar_name[$marketing->pn],
+          'pn_name' => $pnName,
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
