@@ -216,7 +216,7 @@ class EFormController extends Controller
             }else{
                 $eform[0]['customer']['personal']['birth_place']  = null;
             }
-		  
+
     		if(!empty($customer[0]['couple_birth_place_id'])){
     			  $birth_place_couple = $this->birth_place($customer[0]['couple_birth_place_id']);
     			  $eform[0]['customer']['personal']['couple_birth_place'] = $birth_place_couple[0]['name'];

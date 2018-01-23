@@ -11,6 +11,7 @@ use App\Notifications\CreateScheduleNotification;
 use App\Notifications\UpdateScheduleNotification;
 use App\Notifications\LKNEFormCustomer;
 use App\Notifications\VerificationDataNasabah;
+use App\Notifications\RecontestEFormNotification;
 use App\Notifications\PengajuanKprNotification;
 use App\Models\UserServices;
 use App\Models\User;
@@ -439,6 +440,8 @@ if (! function_exists('pushNotification')) {
                 updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
                 verifyCustomer($credentials);
+            }else if($type == 'recontestEForm'){
+                recontestEForm($credentials);
             }else if ($type =='general'){
                 collateralNotification($credentials);
             }
@@ -463,6 +466,37 @@ if (! function_exists('pushNotification')) {
             'id'       => $notificationData['id'],
             'slug'     => $dataUser['ref_number'],
             'type'     => 'verification',
+        ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function recontestEForm($credentials){
+        $dataUser  = $credentials['data'];
+        $userModel = $credentials['user'];
+
+        $userModel->notify(new RecontestEFormNotification($dataUser));
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Pengajuan Anda Telah di Rekontest.')
+                            ->setSound('default');
+
+        $notificationData = UserNotification::where('slug', $dataUser->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData->id,
+            'slug'     => $dataUser['ref_number'],
+            'type'     => 'eform',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();

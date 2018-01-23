@@ -134,6 +134,12 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\RecontestEFormNotification':
+			$subjectNotif = ['message' => 'Pengajuan Anda Telah di Rekontest.',
+				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
 		//collateral notif
 		case 'App\Notifications\CollateralDisposition':
 			$subjectNotif = ['message' => 'Penugasan Staff Collateral',
@@ -259,6 +265,10 @@ class UserNotification extends Model
 
 		if (@$role == 'customer') {
 			$query->where('notifications.notifiable_id', @$user_id);
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RecontestEFormNotification')) {
+				$query->unreads();
+			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
 				$query->unreads();

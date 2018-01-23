@@ -41,14 +41,20 @@ class NotificationController extends Controller
         $limit = (!empty($request->limit) ? $request->limit : 10);
         $mobile = false;
 
-        if(empty($userId)){
-            $user_id = $user_id;
-        }else if(empty($branchId)){
-            $branch_id = $branch_id;
-        }else{
-            $mobile = true;
-            $user_id   = $userId;
-            $branch_id = $branchId;
+        if ($role == "customer") {
+            if (empty($userId)) {
+                $user_id = $user_id;
+            } else {
+                $mobile = true;
+                $user_id = $userId;
+            }
+        } else {
+            if (empty($branchId)) {
+                $branch_id = $branch_id;
+            } else {
+                $mobile = true;
+                $branch_id = $branchId;
+            }
         }
 
         $ArrGetDataNotification = [];
@@ -74,7 +80,7 @@ class NotificationController extends Controller
                                     ];
             }
         }
-        // Mobile need pagination
+        // Mobile set pagination of arrays
         if($mobile){
             $currentPage = LengthAwarePaginator::resolveCurrentPage();
             $itemCollection = collect($ArrGetDataNotification);

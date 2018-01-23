@@ -9,7 +9,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
 use App\Models\EForm;
 
-
 class ApproveEFormCustomer extends Notification
 {
     use Queueable;
@@ -71,7 +70,6 @@ class ApproveEFormCustomer extends Notification
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
-            'message' => $this->eForm->message,
         ];
     }
 }
