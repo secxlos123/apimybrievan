@@ -545,10 +545,6 @@ if (! function_exists('pushNotification')) {
         $userModel    = $data['user'];
         $userNotif    = new UserNotification;
 
-        $data['data']->message = [
-            'title' => "EForm Notification",
-            'body'  => "Data LKN berhasil dikirim"
-        ];
         $userModel->notify(new LKNEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
@@ -616,10 +612,6 @@ if (! function_exists('pushNotification')) {
             $notificationBuilder->setBody('Pengajuan KPR Baru')
                                 ->setSound('default');
             // Get data from notifications table
-            $dataUser['data']->message = [
-                'title' => "EForm Notification",
-                'body'  => "Pengajuan KPR Baru"
-            ];
             $usersModel = User::FindOrFail($dataUser['data']->user_id);
             $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
 
@@ -650,11 +642,6 @@ if (! function_exists('pushNotification')) {
                 $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
                 $notificationBuilder->setBody('Pengajuan KPR Baru')
                                     ->setSound('default');
-
-                $dataUser['data']->message = [
-                    'title' => "EForm Notification",
-                    'body'  => "Pengajuan KPR Baru"
-                ];
                 $usersModel = User::FindOrFail($dataUser['data']->user_id);
                 $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
                 // Get data from notifications table
@@ -690,10 +677,6 @@ if (! function_exists('pushNotification')) {
                 $notificationBuilder->setBody('Pengajuan KPR Baru')
                                     ->setSound('default');
                 // Get data from notifications table
-                $dataUser['data']->message = [
-                    'title' => "EForm Notification",
-                    'body'  => "Pengajuan KPR Baru"
-                ];
                 $usersModel = User::FindOrFail($dataUser['data']->user_id);
                 $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
 
@@ -727,12 +710,6 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
         $userNotif = new UserNotification;
-
-        $data['data']->message = [
-            'title' => "EForm Notification",
-            'body'  => "Pengajuan anda telah di Setujui."
-        ];
-
         $userModel->notify(new ApproveEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
@@ -768,12 +745,6 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
         $userNotif = new UserNotification;
-
-        $data['data']->message = [
-            'title' => "EForm Notification",
-            'body'  => "Pengajuan anda telah di Ditolak."
-        ];
-
         $userModel->notify(new RejectEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
