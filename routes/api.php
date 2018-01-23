@@ -33,6 +33,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectMitra', 'SelectMitraController@SelectMitra');
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		Route::post('SelectCabang', 'SelectCabangController@getCabangMitra');
+		Route::get('SelectCabangInternal', 'SelectCabangController@getCabangMitraOpi');
 		Route::post('gimmick_list', 'Int\GimmickController@list_gimmick');
 		Route::post('GetView', 'ViewController@index');
 
@@ -40,7 +41,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
 
-		Route::get('notification', 'NotificationController@unReadMobile');
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );

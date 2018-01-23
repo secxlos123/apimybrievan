@@ -102,12 +102,6 @@ class AppointmentController extends Controller
             if($notificationIsRead != NULL){
                 $notificationIsRead->markAsRead();
             }
-
-            $save->message = [
-                'title'   => "Schedule Notification",
-                'message' => "Anda Memiliki Jadwal Baru."
-            ];
-
             $usersModel = User::FindOrFail($save->user_id);     /*send notification*/
             $usersModel->notify(new NewSchedulerCustomer($save));
 
@@ -185,12 +179,6 @@ class AppointmentController extends Controller
             if($notificationIsRead != NULL){
                 $notificationIsRead->markAsRead();
             }
-
-            $Update->message = [
-                'title'   => "Schedule Notification",
-                'message' => "Jadwal anda telah di update ! Silahkan cek jadwal anda."
-            ];
-
             $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
             $usersModel->notify(new UpdateSchedulerCustomer($Update));
 
