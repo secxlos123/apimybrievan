@@ -12,19 +12,20 @@ use App\Models\EForm;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
 use Asmx;
-// use Artisaninweb\SoapWrapper\SoapWrapper;
+use Artisaninweb\SoapWrapper\SoapWrapper;
 
 class ApiLasController extends Controller
 {
-    /*protected $soapWrapper;
+    protected $soapWrapper;
 
     public function __construct(SoapWrapper $soapWrapper) {
-        $this->soapWrapper = $soapWrapper;
+        $this->soapWrapper = $soapWrapper;      
     }
 
-    function url() {
-        return config('restapi.asmx_las');
-    }*/
+    function client() {
+        $url = config('restapi.asmx_las');
+        return new \SoapClient($url);
+    }
 
     public function index(Request $request) {        
         // print_r($request);exit();
@@ -166,18 +167,6 @@ class ApiLasController extends Controller
                 return $putus;
                 break;
 
-            case 'inquiryInstansiBriguna':
-                $inquiry = $ApiLas->inquiryInstansiBriguna();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
-                break;
-
-            case 'inquirySifatKredit':
-                $inquiry = $ApiLas->inquirySifatKredit($data);
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
-                break;
-
             case 'inquiryHistoryDebiturPerorangan':
                 if (!empty($data)) {
                     $inquiry = $ApiLas->inquiryHistoryDebiturPerorangan($data);
@@ -218,9 +207,39 @@ class ApiLasController extends Controller
                     if ($inquiryUserLAS['statusCode'] == '01') {
                         $uid = $inquiryUserLAS['items'][0]['uid'];
 
-                        $inquiry = $ApiLas->inquiryListPutusan($uid);
-                        $conten  = $this->return_conten($inquiry);
-                        return $conten;
+                        // $inquiry = $ApiLas->inquiryListPutusan($uid);
+                        // $conten  = $this->return_conten($inquiry);
+                        // return $conten;
+
+                        $parameter['uid'] = $data;
+                        // print_r($data);exit();
+                        $result = false;
+                        try {
+                            $client = $this->client();
+                            $resultclient = $client->inquiryListVerputADK($parameter);
+                            // print_r($resultclient);exit();
+                            if($resultclient->inquiryListVerputADKResult){
+                                $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
+
+                                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                                    
+                                    if(isset($datadetail->items)){
+                                        $result = $this->return_conten($datadetail);
+                                        return $result;
+                                    }else{
+                                        $result = false;
+                                    }
+                                }else{
+                                    $result = false;
+                                }
+                            }else{
+                                $result = false;
+                            }
+                        }
+                        catch(SoapFault $f){
+                            $result = false;
+                        }
+                        return $result;
                     } else {
                         $error[0] = 'Gagal koneksi DB/Hasil inquiry kosong';
                         return [
@@ -245,10 +264,40 @@ class ApiLasController extends Controller
 
             case 'inquiryListVerputADK':
                 if (!empty($data)) {
-                    $kode_cabang = substr('00000',$data, -5);
-                    $inquiry = $ApiLas->inquiryListVerputADK($data);
-                    $conten  = $this->return_conten($inquiry);
-                    return $conten;
+                    // $kode_cabang = substr('00000',$data, -5);
+                    // $inquiry = $ApiLas->inquiryListVerputADK($data);
+                    // $conten  = $this->return_conten($inquiry);
+                    // return $conten;
+
+                    $parameter['branch'] = $data;
+                    // print_r($data);exit();
+                    $result = false;
+                    try {
+                        $client = $this->client();
+                        $resultclient = $client->inquiryListVerputADK($parameter);
+                        // print_r($resultclient);exit();
+                        if($resultclient->inquiryListVerputADKResult){
+                            $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
+
+                            if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                                
+                                if(isset($datadetail->items)){
+                                    $result = $this->return_conten($datadetail);
+                                    return $result;
+                                }else{
+                                    $result = false;
+                                }
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }
+                    catch(SoapFault $f){
+                        $result = false;
+                    }
+                    return $result;
                 }
 
                 $error[0] = 'Uknown request data';
@@ -272,13 +321,42 @@ class ApiLasController extends Controller
                         "rate"     => $data['rate']
                     ];
 
-                    $inquiry = $ApiLas->inquiryPremiAJKO($params);
-                    // print_r($inquiry);exit();
-                    if ($inquiry['statusCode'] == '01') {
-                        $conten  = $this->return_conten($inquiry);
-                        return $conten;
+                    // $inquiry = $ApiLas->inquiryPremiAJKO($params);
+                    // // print_r($inquiry);exit();
+                    // if ($inquiry['statusCode'] == '01') {
+                    //     $conten  = $this->return_conten($inquiry);
+                    //     return $conten;
+                    // }
+                    // return $inquiry;
+
+                    $parameter['JSONData'] = json_encode($params);
+                    $result = false;
+                    try {
+                        $client = $this->client();
+                        $resultclient = $client->inquiryPremiAJKO($parameter);
+                        // print_r($resultclient);exit();
+                        if($resultclient->inquiryPremiAJKOResult){
+                            $datadetail = json_decode($resultclient->inquiryPremiAJKOResult);
+
+                            if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                                
+                                if(isset($datadetail->items)){
+                                    $result = $this->return_conten($datadetail);
+                                    return $result;
+                                }else{
+                                    $result = false;
+                                }
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
                     }
-                    return $inquiry;
+                    catch(SoapFault $f){
+                        $result = false;
+                    }
+                    return $result;
                 }
                 $error[0] = 'Uknown request data';
                 return [
@@ -297,100 +375,555 @@ class ApiLasController extends Controller
                 break;
 
             case 'inquiryUserLAS':
-                $inquiry = $ApiLas->inquiryUserLAS($data);
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryUserLAS($data);
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $pn['PN'] = $data;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryUserLAS($pn);
+                    // print_r($resultclient);exit();
+                    if($resultclient->inquiryUserLASResult){
+                        $datadetail = json_decode($resultclient->inquiryUserLASResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
+                break;
+
+            case 'inquiryInstansiBriguna':
+                // $inquiry = $ApiLas->inquiryInstansiBriguna();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryInstansiBriguna();
+                    if($resultclient->inquiryInstansiBrigunaResult){
+                        $datadetail = json_decode($resultclient->inquiryInstansiBrigunaResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
+                break;
+
+            case 'inquirySifatKredit':
+                // $inquiry = $ApiLas->inquirySifatKredit($data);
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquirySifatKredit();
+                    if($resultclient->inquirySifatKreditResult){
+                        $datadetail = json_decode($resultclient->inquirySifatKreditResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryGelar':
-                $inquiry = $ApiLas->inquiryGelar();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryGelar();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryGelar();
+                    if($resultclient->inquiryGelarResult){
+                        $datadetail = json_decode($resultclient->inquiryGelarResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
                 
             case 'inquiryLoantype':
-                $inquiry = $ApiLas->inquiryLoantype();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryLoantype();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryLoantype();
+                    if($resultclient->inquiryLoantypeResult){
+                        $datadetail = json_decode($resultclient->inquiryLoantypeResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryJenisPenggunaan':
-                $inquiry = $ApiLas->inquiryJenisPenggunaan();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryJenisPenggunaan();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryJenisPenggunaan();
+                    if($resultclient->inquiryJenisPenggunaanResult){
+                        $datadetail = json_decode($resultclient->inquiryJenisPenggunaanResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryJenisPenggunaanLBU':
-                $inquiry = $ApiLas->inquiryJenisPenggunaanLBU();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryJenisPenggunaanLBU();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryJenisPenggunaanLBU();
+                    if($resultclient->inquiryJenisPenggunaanLBUResult){
+                        $datadetail = json_decode($resultclient->inquiryJenisPenggunaanLBUResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquirySektorEkonomiLBU':
-                $inquiry = $ApiLas->inquirySektorEkonomiLBU();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquirySektorEkonomiLBU();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquirySektorEkonomiLBU();
+                    if($resultclient->inquirySektorEkonomiLBUResult){
+                        $datadetail = json_decode($resultclient->inquirySektorEkonomiLBUResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquirySifatKreditLBU':
-                $inquiry = $ApiLas->inquirySifatKreditLBU();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquirySifatKreditLBU();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquirySifatKreditLBU();
+                    if($resultclient->inquirySifatKreditLBUResult){
+                        $datadetail = json_decode($resultclient->inquirySifatKreditLBUResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryJenisKreditLBU':
-                $inquiry = $ApiLas->inquiryJenisKreditLBU();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryJenisKreditLBU();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryJenisKreditLBU();
+                    if($resultclient->inquiryJenisKreditLBUResult){
+                        $datadetail = json_decode($resultclient->inquiryJenisKreditLBUResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryPromoBriguna':
-                $inquiry = $ApiLas->inquiryPromoBriguna();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryPromoBriguna();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryPromoBriguna();
+                    if($resultclient->inquiryPromoBrigunaResult){
+                        $datadetail = json_decode($resultclient->inquiryPromoBrigunaResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryTujuanPenggunaan':
-                $inquiry = $ApiLas->inquiryTujuanPenggunaan();
-                $conten  = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryTujuanPenggunaan();
+                // $conten  = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryTujuanPenggunaan();
+                    if($resultclient->inquiryTujuanPenggunaanResult){
+                        $datadetail = json_decode($resultclient->inquiryTujuanPenggunaanResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryBidangUsaha':
-                $inquiry = $ApiLas->inquiryBidangUsaha();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryBidangUsaha();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryBidangUsaha();
+                    if($resultclient->inquiryBidangUsahaResult){
+                        $datadetail = json_decode($resultclient->inquiryBidangUsahaResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryBank':
-                $inquiry = $ApiLas->inquiryBank();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryBank();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryBank();
+                    if($resultclient->inquiryBankResult){
+                        $datadetail = json_decode($resultclient->inquiryBankResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryHubunganBank':
-                $inquiry = $ApiLas->inquiryHubunganBank();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryHubunganBank();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryHubunganBank();
+                    if($resultclient->inquiryHubunganBankResult){
+                        $datadetail = json_decode($resultclient->inquiryHubunganBankResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryPekerjaan':
-                $inquiry = $ApiLas->inquiryPekerjaan();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryPekerjaan();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryPekerjaan();
+                    if($resultclient->inquiryPekerjaanResult){
+                        $datadetail = json_decode($resultclient->inquiryPekerjaanResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryJabatan':
-                $inquiry = $ApiLas->inquiryJabatan();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryJabatan();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryJabatan();
+                    if($resultclient->inquiryJabatanResult){
+                        $datadetail = json_decode($resultclient->inquiryJabatanResult);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryJenisPekerjaan':
-                /*dd($this->url());
                 $result = false;
                 try {
-                    $client = new \SoapClient($this->url());
+                    $client = $this->client();
                     $resultclient = $client->inquiryJenisPekerjaan();
                     if($resultclient->inquiryJenisPekerjaanResult){
                         $datadetail = json_decode($resultclient->inquiryJenisPekerjaanResult);
@@ -413,16 +946,42 @@ class ApiLasController extends Controller
                 catch(SoapFault $f){
                     $result = false;
                 }
-                return($result);*/
-                $inquiry = $ApiLas->inquiryJenisPekerjaan();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                return $result;
+                // $inquiry = $ApiLas->inquiryJenisPekerjaan();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
                 break;
 
             case 'inquiryDati2':
-                $inquiry = $ApiLas->inquiryDati2();
-                $conten = $this->return_conten($inquiry);
-                return $conten;
+                // $inquiry = $ApiLas->inquiryDati2();
+                // $conten = $this->return_conten($inquiry);
+                // return $conten;
+                $result = false;
+                try {
+                    $client = $this->client();
+                    $resultclient = $client->inquiryDati2();
+                    if($resultclient->inquiryDati2Result){
+                        $datadetail = json_decode($resultclient->inquiryDati2Result);
+
+                        if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                            
+                            if(isset($datadetail->items)){
+                                $result = $this->return_conten($datadetail);
+                                return $result;
+                            }else{
+                                $result = false;
+                            }
+                        }else{
+                            $result = false;
+                        }
+                    }else{
+                        $result = false;
+                    }
+                }
+                catch(SoapFault $f){
+                    $result = false;
+                }
+                return $result;
                 break;
 
             case 'inquiryKodePos':
@@ -451,12 +1010,12 @@ class ApiLasController extends Controller
     }
 
     public function return_conten($respons){
-        // $data = (array) $respons;
+        $data = (array) $respons;
         $conten = [
-            'code'         => $respons['statusCode'],
-            'descriptions' => $respons['statusDesc'],
+            'code'         => $data['statusCode'],
+            'descriptions' => $data['statusDesc'],
             'contents' => [
-                'data' => $respons['items']
+                'data' => $data['items']
             ]
         ];
         return $conten;
@@ -536,7 +1095,7 @@ class ApiLasController extends Controller
             "alamat"                => $request['alamat'],
             "alamat_usaha"          => $request['alamat_domisili'],
             "alamat_domisili"       => $request['alamat_domisili'],
-            "fixed_line"            => $request['no_tlp'],
+            "fixed_line"            => empty($request['no_tlp'])?"0":$request['no_tlp'],
             "no_hp"                 => $request['no_hp'],
             "lama_menetap"          => $request['lama_menetap'],
             "email"                 => $request['email'],
@@ -742,10 +1301,10 @@ class ApiLasController extends Controller
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
-                                $error[0] = 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'];
+                                $error[0] = $kirim['nama'].' gagal, '.$kirim['statusDesc'];
                                 $pemutus = [
                                     'code' => $kirim['statusCode'], 
-                                    'descriptions' => 'kirim '.$kirim['nama'].' gagal, '.$kirim['statusDesc'],
+                                    'descriptions' => $kirim['nama'].' gagal, '.$kirim['statusDesc'],
                                     'contents' => [
                                         'data' => $error
                                     ]
