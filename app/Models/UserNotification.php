@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Lang;
-
+use DB;
 class UserNotification extends Model
 {
 	protected $table = 'notifications';
@@ -58,6 +58,14 @@ class UserNotification extends Model
 			$url = 'eform?slug=' . $this->slug.'&type='.$typeModuleEform;
 		} else {
 			$url = $url;
+		}
+		$tipeNotif = $this->type;
+		if($tipeNotif == 'App\Notifications\CollateralManagerApprove' || $tipeNotif  == 'App\Notifications\CollateralManagerRejected'){
+			 $dataCollateral = Collateral::where('id',$this->slug)->first();
+			 $property_id = $dataCollateral->property_id;
+			 $dataProperty = DB::table('developer_properties_view_table')->where('prop_id', $property_id)->first();
+			 $slug = $dataProperty->prop_slug;  
+
 		}
 		switch ($this->type) {
 		/* eform  */
@@ -134,6 +142,12 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\RecontestEFormNotification':
+			$subjectNotif = ['message' => 'Pengajuan Anda Telah di Rekontest.',
+				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+				'url_mobile' => '#',
+			];
+			break;
 		//collateral notif
 		case 'App\Notifications\CollateralDisposition':
 			$subjectNotif = ['message' => 'Penugasan Staff Collateral',
@@ -173,13 +187,13 @@ class UserNotification extends Model
 			break;			
 		case 'App\Notifications\CollateralManagerRejected':
 			$subjectNotif = ['message' => 'reject collateral',
-				'url' => '#',
+				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralManagerApprove':
 			$subjectNotif = ['message' => 'Approved collateral',
-				'url' => '#',
+				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'url_mobile' => '#',
 			];
 			break;
@@ -260,6 +274,10 @@ class UserNotification extends Model
 		if (@$role == 'customer') {
 			$query->where('notifications.notifiable_id', @$user_id);
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RecontestEFormNotification')) {
+				$query->unreads();
+			}
+
 			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
 				$query->unreads();
 			}
@@ -317,9 +335,11 @@ class UserNotification extends Model
 
 		if (@$role == 'developer') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerRejected')) {
+				$query->where('notifications.notifiable_id', @$user_id);
 				$query->unreads();
 			}
 			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerApprove')) {
+				$query->where('notifications.notifiable_id', @$user_id);
 				$query->unreads();
 			}
 
