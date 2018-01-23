@@ -1380,7 +1380,7 @@ class EForm extends Model implements AuditableContract
             "Nilai_likuidasi_saat_realisasi_agunan_rt"=>!($otsEight->liquidation_realization) ? '0' : $this->reformatCurrency( $otsEight->liquidation_realization ),
             "Nilai_jual_obyek_pajak_agunan_rt" =>!($otsEight->njop) ? '0' : $this->reformatCurrency( $otsEight->njop ),// no pokok wajib pajak
             "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>!($otsEight->appraisal_by) ? 'bank' : $otsEight->appraisal_by,// bank and independent
-            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser_name) ? '0' : $otsEight->independent_appraiser_name,
+            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser) ? '0' : $otsEight->independent_appraiser,
             "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsEight->date_assessment),
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => '0',//taidak
@@ -1388,7 +1388,7 @@ class EForm extends Model implements AuditableContract
             "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
-            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company_name)?"IJK":$otsTen->insurance_company_name,//taidak
+            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
             "Nilai_asuransi_agunan_rt" => !($otsTen->insurance_value) ? '0' : $this->reformatCurrency( $otsTen->insurance_value ),//taidak
             "Eligibility_value_agunan_rt" => !($otsTen->eligibility)? '0' : $otsTen->eligibility,//taidak
             //"Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
