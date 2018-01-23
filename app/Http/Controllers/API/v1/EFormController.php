@@ -62,6 +62,8 @@ class EFormController extends Controller
 				  ]
 				]
 			  );
+			  
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 	 return $listExisting;
 	}
     /**
