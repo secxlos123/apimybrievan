@@ -197,7 +197,7 @@ class CustomerController extends Controller
         });
         $data ['bottom']=array_slice($customer['bottom'],0,10,false);
       }else{
-        $data['top']=[];
+        $data['bottom']=[];
       }
 
 
