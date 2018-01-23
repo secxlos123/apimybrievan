@@ -1286,7 +1286,7 @@ class EForm extends Model implements AuditableContract
             "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : intval( $otsBuilding->east_limit ),
             "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' :  $otsBuilding->east_limit_from ,
             "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : intval( $otsBuilding->south_limit ),
-            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' :  $otsBuilding->south_limit_form ,
+            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_from) ? '0' : $otsBuilding->south_limit_from ,
             "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : intval( $otsBuilding->west_limit ),
             "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' :  $otsBuilding->west_limit_from ,
             //otsEnvironment
@@ -1298,7 +1298,7 @@ class EForm extends Model implements AuditableContract
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
             "jarak_sarana_transportasi" => !($otsEnvironment->distance_from_transportation) ? '0' : intval( $otsEnvironment->distance_from_transportation ),
-            "Lain_lain_agunan_value" => '0',
+            "Lain_lain_agunan_value" => '-',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
             "Tanggal_penilaian_npw_tanah_agunan" => $this->reformatDate($otsValuation->scoring_land_date),
@@ -1383,8 +1383,8 @@ class EForm extends Model implements AuditableContract
             "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser) ? '0' : $otsEight->independent_appraiser,
             "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsEight->date_assessment),
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
-            "No_bukti_pengikatan_agunan_rt" => '0',//taidak
-            "Nilai_pengikatan_agunan_rt" => '0',//taidak
+            "No_bukti_pengikatan_agunan_rt" => !($otsEight->binding_number)?'0': $otsEight->binding_number,//taidak
+            "Nilai_pengikatan_agunan_rt" => !($otsEight->binding_value) ? '0' : $this->reformatCurrency( $otsEight->binding_value ),//taidak
             "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
