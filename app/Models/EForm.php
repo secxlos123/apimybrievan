@@ -19,6 +19,7 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
+use Zip;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -799,7 +800,7 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
-     * Submit Prescreening.
+     * Search Prescreening.
      *
      * @return array
      */
@@ -833,10 +834,19 @@ class EForm extends Model implements AuditableContract
                 ->post( 'form_params' );
 
             if ( $getReportPefindo["code"] == "200" ) {
-
+                if ( isset( $getReportPefindo['contents']['cip'] ) ) {
+                    if ( isset( $getReportPefindo['contents']['cip']['recordlist'] ) ) {
+                        if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0] ) ) {
+                            if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0]["score"] ) ) {
+                                return $getReportPefindo['contents']['cip']['recordlist'][0]["score"];
+                            }
+                        }
+                    }
+                }
             }
 
-        // return $return['contents']['cip']['recordlist'][0]["score"];
+            return 0;
+
         } else if ( $position == 'pdf' ) {
             $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
                 ->setBody([
@@ -849,12 +859,23 @@ class EForm extends Model implements AuditableContract
                 ])
                 ->post( 'form_params' );
 
+            \Log::info("=============== pefindo pdf ========================");
+            \Log::info($getFilePefindo);
+            if ( $getFilePefindo["code"] == "200" ) {
+                $path = 'uploads/' . $eform->nik . '/pefindo.zip';
+                \Log::info($path);
+                $publicPath = public_path( $path );
+                \Log::info($publicPath);
+                file_put_contents( $publicPath, base64_decode($getFilePefindo["contents"]) );
+                $zip = Zip::open( $path );
+                \Log::info($zip);
+                $zip->extract( $publicPath );
+                File::delete( $publicPath );
+
+            }
+
         }
 
-
-
-        // return file_put_contents(public_path('uploads/test.zip'), base64_decode($getFilePefindo["contents"]));
-        // return base64_decode($getFilePefindo["contents"]);
     }
 
     /**
@@ -905,6 +926,7 @@ class EForm extends Model implements AuditableContract
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
+                $this->clas_position = $step + 1;
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
             }
             $return = array(
@@ -912,8 +934,6 @@ class EForm extends Model implements AuditableContract
                 , 'message' => ''
             );
         }
-
-        $this->clas_position = $step + 1;
         $this->send_clas_date = date("Y-m-d");
         $this->save();
 
@@ -959,7 +979,7 @@ class EForm extends Model implements AuditableContract
             "lama_usaha" => $lama_usaha,
             "nama_keluarga" => !( $customer_contact->emergency_name ) ? '' : $customer_contact->emergency_name,
             "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
-            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '' : $customer_contact->emergency_contact,
+            "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '0' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
@@ -975,7 +995,7 @@ class EForm extends Model implements AuditableContract
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
             "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11 ),
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11 ),
             "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
         ];
 
@@ -1011,7 +1031,7 @@ class EForm extends Model implements AuditableContract
             "alamat_pemohon" => !( $customer_detail->address ) ? '' : substr($customer_detail->address, 0, 40),
             "status_tempat_tinggal_value" => !( $customer_detail->address_status_id ) ? '' : $customer_detail->address_status_id,
             "alamat_domisili" => !( $customer_detail->current_address ) ? '' : substr($customer_detail->current_address, 0, 40),
-            "telepon_pemohon" => !( $customer->phone ) ? '' : substr($customer->phone, 0 , 11),
+            "telepon_pemohon" => !( $customer->phone ) ? '0' : substr($customer->phone, 0 , 11),
             "hp_pemohon" => !( $customer->mobile_phone ) ? '' : $customer->mobile_phone,
             "email_pemohon" => !( $customer->email ) ? '' : $customer->email,
             "jenis_pekerjaan_value" => !( $customer_work->type_id ) ? '' : $customer_work->type_id,
@@ -1021,7 +1041,7 @@ class EForm extends Model implements AuditableContract
             "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
             'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
             "alamat_usaha" => !( $customer_work->office_address ) ? '' : $customer_work->office_address,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '' : substr($lkn->office_phone, 0, 11),
+            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11),
             'tujuan_membuka_rekening_value' => 'T2',
             'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012'),
 
@@ -1360,15 +1380,15 @@ class EForm extends Model implements AuditableContract
             "Nilai_likuidasi_saat_realisasi_agunan_rt"=>!($otsEight->liquidation_realization) ? '0' : $this->reformatCurrency( $otsEight->liquidation_realization ),
             "Nilai_jual_obyek_pajak_agunan_rt" =>!($otsEight->njop) ? '0' : $this->reformatCurrency( $otsEight->njop ),// no pokok wajib pajak
             "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>!($otsEight->appraisal_by) ? 'bank' : $otsEight->appraisal_by,// bank and independent
-            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser) ? '0' : $otsEight->independent_appraiser,
+            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser_name) ? '0' : $otsEight->independent_appraiser_name,
             "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsEight->date_assessment),
-            "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,//!($otsOther->bond_type) ? '0' : $otsOther->bond_type,
+            "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => '0',//taidak
             "Nilai_pengikatan_agunan_rt" => '0',//taidak
             "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
-            "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? '0':($otsTen->insurance == "ya")?"1":"0",//taidak
-            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
+            "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
+            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company_name)?"IJK":$otsTen->insurance_company_name,//taidak
             "Nilai_asuransi_agunan_rt" => !($otsTen->insurance_value) ? '0' : $this->reformatCurrency( $otsTen->insurance_value ),//taidak
             "Eligibility_value_agunan_rt" => !($otsTen->eligibility)? '0' : $otsTen->eligibility,//taidak
             //"Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
