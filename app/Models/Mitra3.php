@@ -26,12 +26,14 @@ class Mitra3 extends Authenticatable  {
         $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
 		
 						$BRANCH_CODE = $request->input('BRANCH_CODE');
-						
 						 $mitra->Where('BRANCH_CODE', $BRANCH_CODE);
+						$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
+
+//paging
         } );
 			
-				//$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
-				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
+	//			$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$request->input('search').')%');
+				$mitra->orderBy($request->input('sort'), 'ASC');
 				$mitra = $mitra->select([
                     '*',
                      \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")

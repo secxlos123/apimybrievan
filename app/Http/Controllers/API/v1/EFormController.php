@@ -45,17 +45,25 @@ class EFormController extends Controller
         $this->userNotification = $userNotification;
     }
 
-	public function ListBranch($data, $token)
+	public function ListBranch($data)
     {
       $client = new Client();
-	  $requestListExisting = $client->request('GET', 'http://api.briconnect.bri.co.id/bribranch/branch/'.$data['branch'],
+	  $host = env('APP_URL');
+	  if($host == 'http://api.dev.net/'){
+		$url = 'http://172.18.44.182/bribranch/branch/';
+	}else{
+		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';  
+	  }
+	  $requestListExisting = $client->request('GET', $url.$data['branch'],
 				[
 				  'headers' =>
 				  [
-					'Authorization' => 'Bearer '.$token
+					'Authorization' => 'Bearer '.$this->get_token()
 				  ]
 				]
 			  );
+			  
+      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 	 return $listExisting;
 	}
     /**
@@ -118,12 +126,19 @@ class EFormController extends Controller
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
 
-
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
+		  
+		$mitra_relation = DB::table('mitra')
+						 ->select('mitra.*')
+						 ->where('mitra.idMitrakerja', $eform[0]['mitra_id'])
+						 ->get();
+				$mitra_relation = $mitra_relation->toArray();
+				$mitra_relation = json_decode(json_encode($mitra_relation), True);
 		  $eform = $eform->toArray();
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
+		  $eform[0]['mitra'] = $mitra_relation[0];
 		  //-----------work---------------------------
 		  $work = [
 					"type_id"=> $customer[0]['job_type_id'],
@@ -248,8 +263,9 @@ class EFormController extends Controller
      * @param  integer $eform_id
      * @return \Illuminate\Http\Response
      */
-    public function show( $type, $eform_id )
+    public function show(Request $request, $type, $eform_id )
     {
+        $recontest = (empty(request()->header('recontest')) ? false : true);
 		$eform = EForm::findOrFail($eform_id);
 		$data = $eform;
 		if($eform['product_type']=='briguna'){
@@ -263,11 +279,19 @@ class EFormController extends Controller
 
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-
-			return response()->success( [
+			// Check recontest or not
+            if($recontest){
+                $usersModel  = User::FindOrFail($eform->user_id);
+                $credentials = [
+                    'data' => $eform,
+                    'user' => $usersModel,
+                ];
+                pushNotification($credentials, "recontestEForm");
+            }
+            return response()->success([
 				'contents' => $eform
-			] );
-			}
+			]);
+		}
     }
 
     public function showIdsAndRefNumber( $ids, $ref_number )
@@ -310,6 +334,28 @@ class EFormController extends Controller
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
+	 
+	  public function get_token()
+    {
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      }
+    }
+	
     public function store( EFormRequest $request )
     {
         DB::beginTransaction();
@@ -353,7 +399,8 @@ class EFormController extends Controller
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
-					  if ( count(apiPdmToken::all()) > 0 ) {
+						$listExisting = $this->ListBranch($data_new);
+/* 					  if ( count(apiPdmToken::all()) > 0 ) {
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 					  } else {
 						$this->gen_token();
@@ -367,8 +414,7 @@ class EFormController extends Controller
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 						$token = $apiPdmToken['access_token'];
 						$listExisting = $this->ListBranch($data_new, $token);
-
-					  }
+					  } */
 					if ( $listExisting['success'] == '00' ) {
 						foreach ($listExisting['data'] as $branch) {
 							if ( $branch['branch'] == $request->input('branch_id') ) {
@@ -489,6 +535,7 @@ class EFormController extends Controller
                             if ( $kanwil['branch'] == $request->input('branch_id') ) {
                                 $baseProperty['region_id'] = $kanwil['region'];
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
+                                }
                             }
                         }
 
@@ -525,7 +572,6 @@ class EFormController extends Controller
                             \Log::info($collateral);
                             }
                         }
-                    }
                 }
                     $kpr = KPR::create( $baseRequest );
                     $return = [
@@ -588,12 +634,6 @@ class EFormController extends Controller
         if($notificationIsRead != NULL){
             $notificationIsRead->markAsRead();
         }
-
-        $eform->message = [
-            'title' => "EForm Notification",
-            'body'  => "E-Form berhasil di disposisi"
-        ];
-
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 

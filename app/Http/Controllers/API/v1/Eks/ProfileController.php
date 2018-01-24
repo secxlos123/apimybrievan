@@ -12,7 +12,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\ThirdParty;
 use App\Models\Developer;
-
+use App\Notifications\EditDeveloper;
 
 class ProfileController extends Controller
 {
@@ -96,6 +96,10 @@ class ProfileController extends Controller
             if ($user->inRole('developer')) {
                 $dev = Developer::where(['user_id'=> $user->id])->firstOrFail();
                 $type = \App\Models\Developer::class;
+
+                $usersModel = User::FindOrFail($user->id);     
+                $usersModel->notify(new EditDeveloper($dev));   /*send notification*/
+
             } elseif ($user->inRole('others')) {
                $type = \App\Models\ThirdParty::class;
                $dev = $user; 

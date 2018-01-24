@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\Crm\Marketing\CreateRequest;
 // use App\Http\Request\API\v1\Crm\Marketing\UpdateRequest;
 use App\Models\Crm\Marketing;
+use App\Models\Crm\MarketingNote;
 use App\Models\Crm\MarketingActivity;
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
@@ -57,11 +58,13 @@ class MarketingController extends Controller
             $ownership = 'main';
           }
 
+          $pnName = array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'';
+
           $marketingActivity[]= [
             'id' => $activity->id,
             'pn' => $activity->pn,
             'marketing_activity_type' => $activity->marketing->activity_type,
-            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
+            'pn_name' => $pnName,
             'object_activity' => $activity->object_activity,
             'action_activity' => $activity->action_activity,
             'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -79,11 +82,13 @@ class MarketingController extends Controller
             'followup'=> $followUp,
             'rescheduled'=> $rescheduled,
             ];
+
         }
 
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
+          'pn_name' => $pnName,
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
@@ -215,6 +220,7 @@ class MarketingController extends Controller
     public function store(Request $request)
     {
       $data['pn'] = $request->header('pn');
+      $data['branch'] = $request->header('branch');
       $data['product_type'] = $request['product_type'];
       $data['activity_type'] = $request['activity_type'];
       $data['target'] = $request['target'];
@@ -375,6 +381,37 @@ class MarketingController extends Controller
       }
 
       return $result;
+    }
+
+    // Marketing Notes
+    public function getNote(Request $request)
+    {
+      $marketing_id = $request['marketing_id'];
+      $marketing_note = MarketingNote::where('marketing_id', $marketing_id)->get();
+      return response()->success( [
+          'message' => 'Sukses get List Marketing Note',
+          'contents' => $marketing_note
+        ]);
+    }
+
+    public function store_note(Request $request)
+    {
+      $data['marketing_id'] = $request['marketing_id'];
+      $data['pn'] = $request->header('pn');
+      $data['pn_name'] = $request->header('name');
+      $data['note'] = $request['note'];
+
+      $save = MarketingNote::create($data);
+      if ($save) {
+          return response()->success([
+              'message' => 'Marketing Notes berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Marketing Notes Tidak Dapat Ditambah.',
+      ], 500);
     }
 
 }

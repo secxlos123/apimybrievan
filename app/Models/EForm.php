@@ -418,7 +418,7 @@ class EForm extends Model implements AuditableContract
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', 'id_model_71']
             , ['InsertDataAgunan', 'fid_agunan']
-            , ['InsertIntoAnalisRecontest', null]
+            , ['UpdateStatusByAplikasi', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -568,8 +568,8 @@ class EForm extends Model implements AuditableContract
             if ($request->has('customer_name')){
                 $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
                     ->where( function( $eform ) use( $request, &$user ) {
-                        $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
-                            ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%');
+                        //$eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
+                        $eform->orWhere(\DB::raw("LOWER(concat(users.first_name,' ', users.last_name))"), "like", "%".strtolower($request->input('customer_name'))."%");
                     } );
             }
 
@@ -1181,10 +1181,10 @@ class EForm extends Model implements AuditableContract
             "Kewarganegaraan_pemohon" => !( $customer_detail->citizenship_id ) ? '0' : $customer_detail->citizenship_id,
             "Posisi_terhadap_jalan_agunan_value"=> !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
             "Posisi_terhadap_jalan_agunan" => !($otsInArea->position_from_road) ? '0' : $otsInArea->position_from_road,
-            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' : intval( $otsInArea->north_limit ),
-            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' : intval( $otsInArea->east_limit ),
-            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : intval( $otsInArea->south_limit ),
-            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' : intval( $otsInArea->west_limit ),
+            "Batas_utara_tanah_agunan" => !($otsInArea->north_limit) ? '0' :  $otsInArea->north_limit ,
+            "Batas_timur_tanah_agunan" => !($otsInArea->east_limit) ? '0' :  $otsInArea->east_limit ,
+            "Batas_selatan_tanah_agunan" => !($otsInArea->south_limit) ? '0' : $otsInArea->south_limit ,
+            "Batas_barat_tanah_agunan" => !($otsInArea->west_limit) ? '0' :  $otsInArea->west_limit ,
             "Keterangan_lain_agunan" => !($otsInArea->another_information) ? '0' : $otsInArea->another_information,
             "Bentuk_tanah_value" => !($otsInArea->ground_type) ? '0' : $otsInArea->ground_type,
             "Permukaan_tanah_agunan_value" => !($otsInArea->ground_level) ? '0' : $otsInArea->ground_level,
@@ -1213,23 +1213,23 @@ class EForm extends Model implements AuditableContract
             "Tahun_bangunan_agunan" => !($otsBuilding->year) ? '0' : $otsBuilding->year,
             "Uraian_bangunan_agunan" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
             "Batas_utara_bangunan_agunan" => !($otsBuilding->north_limit) ? '0' : intval( $otsBuilding->north_limit ),
-            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' : intval( $otsBuilding->north_limit_from ),
+            "Batas_utara_bangunan_agunan1" => !($otsBuilding->north_limit_from) ? '0' :  $otsBuilding->north_limit_from ,
             "Batas_timur_bangunan_agunan" => !($otsBuilding->east_limit) ? '0' : intval( $otsBuilding->east_limit ),
-            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' : intval( $otsBuilding->east_limit_from ),
+            "Batas_timur_bangunan_agunan1" => !($otsBuilding->east_limit_from) ? '0' :  $otsBuilding->east_limit_from ,
             "Batas_selatan_bangunan_agunan" => !($otsBuilding->south_limit) ? '0' : intval( $otsBuilding->south_limit ),
-            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_form) ? '0' : intval( $otsBuilding->south_limit_form ),
+            "Batas_selatan_bangunan_agunan1" => !($otsBuilding->south_limit_from) ? '0' : $otsBuilding->south_limit_from ,
             "Batas_barat_bangunan_agunan" => !($otsBuilding->west_limit) ? '0' : intval( $otsBuilding->west_limit ),
-            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' : intval( $otsBuilding->west_limit_from ),
+            "Batas_barat_bangunan_agunan1" => !($otsBuilding->west_limit_from) ? '0' :  $otsBuilding->west_limit_from ,
             //otsEnvironment
-            "Peruntukan_bangunan_agunan_value" => !($otsEnvironment->designated_land) ? '0' : $otsEnvironment->designated_land,
+            "Peruntukan_bangunan_agunan_value" => !($otsOther->building_exchange) ? '0' : $otsOther->building_exchange,
             "Fasilitas_umum_yang_ada_agunan_pln" => !($otsEnvironment->designated_pln) ? '0' : $otsEnvironment->designated_pln,
             "Fasilitas_umum_yang_ada_agunan_pam" => !($otsEnvironment->designated_pam) ? '0' : $otsEnvironment->designated_pam,
             "Fasilitas_umum_yang_ada_agunan_telepon" => !($otsEnvironment->designated_phone) ? '0' : $otsEnvironment->designated_phone,
             "Fasilitas_umum_yang_ada_agunan_telex" => !($otsEnvironment->designated_telex) ? '0' : $otsEnvironment->designated_telex,
             "Fasilitas_umum_lain_agunan" => !($otsEnvironment->other_designated) ? '0' : $otsEnvironment->other_designated,
             "Saran_transportasi_agunan" => !($otsEnvironment->transportation) ? '0' : $otsEnvironment->transportation,
-            "jarak_sarana_transportasi" => !($otsEnvironment->distance_from_transportation) ? '0' : $this->reformatCurrency( $otsEnvironment->distance_from_transportation ),
-            "Lain_lain_agunan_value" => '0',
+            "jarak_sarana_transportasi" => !($otsEnvironment->distance_from_transportation) ? '0' : intval( $otsEnvironment->distance_from_transportation ),
+            "Lain_lain_agunan_value" => '-',
             "Petunjuk_lain_agunan" => !($otsEnvironment->other_guide) ? '0' : $otsEnvironment->other_guide,
             //valuation
             "Tanggal_penilaian_npw_tanah_agunan" => $this->reformatDate($otsValuation->scoring_land_date),
@@ -1303,7 +1303,7 @@ class EForm extends Model implements AuditableContract
             "Alamat_agunan_rt" => !($otsSeven->address_collateral) ? '0': str_replace("'", "",$otsSeven->address_collateral),
             "Kelurahan_agunan_rt" => !($otsSeven->village) ? '0' : $otsSeven->village,
             "Kecamatan_agunan_rt" => !($otsSeven->districts) ? '0' : $otsSeven->districts,
-            "Lokasi_agunan_rt" =>!($otsSeven->location) ? '0' : $otsSeven->location,
+            "Lokasi_agunan_rt" =>!($otsSeven->city) ? '0' : ( !($otsSeven->city->name) ? '0' : $otsSeven->city->name ),
             "Nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market) ? '0' : $this->reformatCurrency( $otsEight->fair_market ),
             "Nilai_likuidasi_agunan_rt"=>!($otsEight->liquidation) ? '0' : $this->reformatCurrency( $otsEight->liquidation ),
             "Proyeksi_nilai_pasar_wajar_agunan_rt"=>!($otsEight->fair_market_projection) ? '0' : $this->reformatCurrency( $otsEight->fair_market_projection ),
@@ -1311,15 +1311,15 @@ class EForm extends Model implements AuditableContract
             "Nilai_likuidasi_saat_realisasi_agunan_rt"=>!($otsEight->liquidation_realization) ? '0' : $this->reformatCurrency( $otsEight->liquidation_realization ),
             "Nilai_jual_obyek_pajak_agunan_rt" =>!($otsEight->njop) ? '0' : $this->reformatCurrency( $otsEight->njop ),// no pokok wajib pajak
             "Penilaian_appraisal_dilakukan_oleh_value_agunan_rt"=>!($otsEight->appraisal_by) ? 'bank' : $otsEight->appraisal_by,// bank and independent
-            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser_name) ? '0' : $otsEight->independent_appraiser_name,
+            "Penilai_independent_agunan_rt"=>!($otsEight->independent_appraiser) ? '0' : $otsEight->independent_appraiser,
             "Tanggal_penilaian_terakhir_agunan_rt" => $this->reformatDate($otsEight->date_assessment),
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
-            "No_bukti_pengikatan_agunan_rt" => '0',//taidak
-            "Nilai_pengikatan_agunan_rt" => '0',//taidak
+            "No_bukti_pengikatan_agunan_rt" => !($otsEight->binding_number)?'0': $otsEight->binding_number,//taidak
+            "Nilai_pengikatan_agunan_rt" => !($otsEight->binding_value) ? '0' : $this->reformatCurrency( $otsEight->binding_value ),//taidak
             "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
-            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company_name)?"IJK":$otsTen->insurance_company_name,//taidak
+            "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
             "Nilai_asuransi_agunan_rt" => !($otsTen->insurance_value) ? '0' : $this->reformatCurrency( $otsTen->insurance_value ),//taidak
             "Eligibility_value_agunan_rt" => !($otsTen->eligibility)? '0' : $otsTen->eligibility,//taidak
             //"Proyeksi_nilai_likuidasi_agunan_rt" => '0',//taidak
@@ -1358,7 +1358,9 @@ class EForm extends Model implements AuditableContract
     public function step11($data)
     {
         \Log::info("step11");
-        return $data;
+        return $data + [
+            "fid_status" => '21'
+        ];
     }
 
     public function user_notifications()

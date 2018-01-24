@@ -18,6 +18,7 @@ class OtsSeven extends Model implements AuditableContract
 		  	'on_behalf_of',
 		  	'ownership_number',
 		  	'location',
+		  	'city_id',
 		  	'address_collateral',
 		  	'description',
 		  	'ownership_status',
@@ -25,6 +26,9 @@ class OtsSeven extends Model implements AuditableContract
 		  	'village',
 		  	'districts'
 		  ];
+		   protected $appends = [
+	      'city'
+	     ];
 
 
 			/**
@@ -35,4 +39,21 @@ class OtsSeven extends Model implements AuditableContract
 		  {
 		    return $this->belongsTo(Collateral::class, 'collateral_id');
 		  }
+
+		 /**
+	     * Relation with city
+	     * @return \Illuminate\Database\Eloquent\BelongsTo
+	     */
+	    public function city()
+	    {
+	        return $this->belongsTo(City::class, 'city_id');
+	    }
+	     /**
+	     * Get related city
+	     * @return
+	     */
+	    public function getCityAttribute()
+	    {
+	        return $this->city()->first();
+	    }
 }

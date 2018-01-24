@@ -28,7 +28,6 @@ class marketingActivityController extends Controller
       $branch = $request->header('branch');
       $auth = $request->header('Authorization');
       $pemasar = $this->pemasar($pn,$branch,$auth);
-
       if ($pemasar != null) {
         $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
       } else {
@@ -37,7 +36,7 @@ class marketingActivityController extends Controller
 
       // print_r($pemasar_name);
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->where('desc', '!=', 'first')->orwhere('pn_join', $pn)->with('marketing')->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->where('desc', '!=', 'first')->orwhere('pn_join', $pn)->with('marketing')->with('fu_result')->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
 
@@ -50,6 +49,8 @@ class marketingActivityController extends Controller
         }else {
           $ownership = 'main';
         }
+
+        $fu_result = MarketingActivityFollowup::where('activity_id',$activity->id)->first();
 
         $marketingActivity[]= [
           'id' => $activity->id,
@@ -65,13 +66,20 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama' => $activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
-          'desc' => $activity->desc,
+          'notes' => $activity->desc,
           'address' => $activity->address,
           'ownership' => $ownership,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
+          // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
+          'desc'=> $fu_result['desc'],
+          'fu_result'=> $fu_result['fu_result'],
+          'count_rekening'=> $fu_result['count_rekening'],
+          'amount'=> $fu_result['amount'],
+          'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
       }
 
@@ -98,10 +106,9 @@ class marketingActivityController extends Controller
       } else {
         $pemasar_name = [];
       }
-
       // print_r($pemasar);
       $marketingActivity = [];
-      foreach (MarketingActivity::where('pn', $pn)->where('desc', '!=', 'first')->orwhere('pn_join', $pn)->get() as $activity) {
+      foreach (MarketingActivity::where('pn', $pn)->where('desc', '!=', 'first')->orwhere('pn_join', $pn)->with('marketing')->with('fu_result')->get() as $activity) {
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
 
@@ -115,6 +122,7 @@ class marketingActivityController extends Controller
           $ownership = 'main';
         }
 
+        $fu_result = MarketingActivityFollowup::where('activity_id',$activity->id)->first();
         $marketingActivity[]= [
           'id' => $activity->id,
           'pn' => $activity->pn,
@@ -128,13 +136,20 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama' => $activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
-          'desc' => $activity->desc,
+          'notes' => $activity->desc,
           'address' => $activity->address,
           'ownership' => $ownership,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
+          // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
+          'desc'=> $fu_result['desc'],
+          'fu_result'=> $fu_result['fu_result'],
+          'count_rekening'=> $fu_result['count_rekening'],
+          'amount'=> $fu_result['amount'],
+          'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
       }
 
@@ -408,7 +423,8 @@ class marketingActivityController extends Controller
       }
 
       $marketingActivity = [];
-      foreach (MarketingActivity::where('desc', '!=', 'first')->whereIn('pn', $list_pn)->get() as $activity) {
+      foreach (MarketingActivity::where('desc', '!=', 'first')->whereIn('pn', $list_pn)->with('marketing')->with('fu_result')->get() as $activity) {
+        $fu_result = MarketingActivityFollowup::where('activity_id',$activity->id)->first();
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $marketingActivity[]= [
@@ -424,12 +440,19 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama'=>$activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
-          'desc' => $activity->desc,
+          'notes' => $activity->desc,
           'address' => $activity->address,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
+          // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
+          'desc'=> $fu_result['desc'],
+          'fu_result'=> $fu_result['fu_result'],
+          'count_rekening'=> $fu_result['count_rekening'],
+          'amount'=> $fu_result['amount'],
+          'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
       }
 
@@ -457,7 +480,8 @@ class marketingActivityController extends Controller
       }
 
       $marketingActivity = [];
-      foreach (MarketingActivity::where('marketing_id', $marketing_id)->get() as $activity) {
+      foreach (MarketingActivity::where('marketing_id', $marketing_id)->with('marketing')->with('fu_result')->get() as $activity) {
+                $fu_result = MarketingActivityFollowup::where('activity_id',$activity->id)->first();
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $marketingActivity[]= [
@@ -473,12 +497,19 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama' => $activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
-          'desc' => $activity->desc,
+          'notes' => $activity->desc,
           'address' => $activity->address,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
+          // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
+          'desc'=> $fu_result['desc'],
+          'fu_result'=> $fu_result['fu_result'],
+          'count_rekening'=> $fu_result['count_rekening'],
+          'amount'=> $fu_result['amount'],
+          'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
       }
 
@@ -518,7 +549,8 @@ class marketingActivityController extends Controller
          $marketing->id
         ];
       }
-      foreach (MarketingActivity::whereIn('marketing_id', $list)->orderBy('created_at', 'desc')->get() as $activity) {
+      foreach (MarketingActivity::whereIn('marketing_id', $list)->orderBy('created_at', 'desc')->with('marketing')->with('fu_result')->get() as $activity) {
+        $fu_result = MarketingActivityFollowup::where('activity_id',$activity->id)->first();
         $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
         $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
         $customerActivity[] = [
@@ -534,12 +566,19 @@ class marketingActivityController extends Controller
           'longitude' => $activity->longitude,
           'latitude' => $activity->latitude,
           'marketing_id' => $activity->marketing_id,
+          'nama' => $activity->marketing->nama,
           'pn_join' => $activity->pn_join,
           'join_name' => array_key_exists($activity->pn_join, $pemasar_name) ? $pemasar_name[$activity->pn_join]:'',
-          'desc' => $activity->desc,
+          'notes' => $activity->desc,
           'address' => $activity->address,
           'followup'=> $followUp,
           'rescheduled'=> $rescheduled,
+          // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
+          'desc'=> $fu_result['desc'],
+          'fu_result'=> $fu_result['fu_result'],
+          'count_rekening'=> $fu_result['count_rekening'],
+          'amount'=> $fu_result['amount'],
+          'target_commitment_date'=> $fu_result['target_commitment_date'],
         ];
       }
       // return $list;

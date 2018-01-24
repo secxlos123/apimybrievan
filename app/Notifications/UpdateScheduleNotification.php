@@ -69,6 +69,7 @@ class UpdateScheduleNotification extends Notification
             'ref_number' => $data->ref_number,
             'branch_id' => $data->branch_id,
             'created_at' => $data->created_at,
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }

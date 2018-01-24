@@ -66,7 +66,6 @@ class RejectEFormCustomer extends Notification
             'ref_number' => $this->eForm->ref_number,
             'branch_id' => $this->eForm->branch_id,
             'created_at' => $this->eForm->created_at,
-            'message' => $this->eForm->message,
         ];
     }
 
@@ -90,6 +89,7 @@ class RejectEFormCustomer extends Notification
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }

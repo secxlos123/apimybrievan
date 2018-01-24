@@ -11,6 +11,7 @@ use App\Notifications\CreateScheduleNotification;
 use App\Notifications\UpdateScheduleNotification;
 use App\Notifications\LKNEFormCustomer;
 use App\Notifications\VerificationDataNasabah;
+use App\Notifications\RecontestEFormNotification;
 use App\Notifications\PengajuanKprNotification;
 use App\Models\UserServices;
 use App\Models\User;
@@ -401,6 +402,15 @@ if (! function_exists('getTypeModule')) {
             case 'App\Models\Collateral':
                 $typeModule = 'collateral';
                 break;
+            case 'App\Models\Developer':
+                $typeModule = 'developer';
+                break;
+            case 'App\Models\UserDeveloper':
+                $typeModule = 'developer-sales';
+                break;
+            case 'App\Models\Property':
+                $typeModule = 'property';
+                break;
             default:
                 $typeModule = 'Type undefined';
                 break;
@@ -439,6 +449,8 @@ if (! function_exists('pushNotification')) {
                 updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
                 verifyCustomer($credentials);
+            }else if($type == 'recontestEForm'){
+                recontestEForm($credentials);
             }else if ($type =='general'){
                 collateralNotification($credentials);
             }
@@ -463,6 +475,37 @@ if (! function_exists('pushNotification')) {
             'id'       => $notificationData['id'],
             'slug'     => $dataUser['ref_number'],
             'type'     => 'verification',
+        ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+
+        $topic = new Topics();
+        $topic->topic('testing')->andTopic('user_'.$dataUser['user_id']);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function recontestEForm($credentials){
+        $dataUser  = $credentials['data'];
+        $userModel = $credentials['user'];
+
+        $userModel->notify(new RecontestEFormNotification($dataUser));
+
+        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
+        $notificationBuilder->setBody('Pengajuan Anda Telah di Rekontest.')
+                            ->setSound('default');
+
+        $notificationData = UserNotification::where('slug', $dataUser->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'       => $notificationData->id,
+            'slug'     => $dataUser['ref_number'],
+            'type'     => 'eform',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
@@ -545,10 +588,6 @@ if (! function_exists('pushNotification')) {
         $userModel    = $data['user'];
         $userNotif    = new UserNotification;
 
-        $data['data']->message = [
-            'title' => "EForm Notification",
-            'body'  => "Data LKN berhasil dikirim"
-        ];
         $userModel->notify(new LKNEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
@@ -616,10 +655,6 @@ if (! function_exists('pushNotification')) {
             $notificationBuilder->setBody('Pengajuan KPR Baru')
                                 ->setSound('default');
             // Get data from notifications table
-            $dataUser['data']->message = [
-                'title' => "EForm Notification",
-                'body'  => "Pengajuan KPR Baru"
-            ];
             $usersModel = User::FindOrFail($dataUser['data']->user_id);
             $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
 
@@ -650,11 +685,6 @@ if (! function_exists('pushNotification')) {
                 $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
                 $notificationBuilder->setBody('Pengajuan KPR Baru')
                                     ->setSound('default');
-
-                $dataUser['data']->message = [
-                    'title' => "EForm Notification",
-                    'body'  => "Pengajuan KPR Baru"
-                ];
                 $usersModel = User::FindOrFail($dataUser['data']->user_id);
                 $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
                 // Get data from notifications table
@@ -690,10 +720,6 @@ if (! function_exists('pushNotification')) {
                 $notificationBuilder->setBody('Pengajuan KPR Baru')
                                     ->setSound('default');
                 // Get data from notifications table
-                $dataUser['data']->message = [
-                    'title' => "EForm Notification",
-                    'body'  => "Pengajuan KPR Baru"
-                ];
                 $usersModel = User::FindOrFail($dataUser['data']->user_id);
                 $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
 
@@ -727,12 +753,6 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
         $userNotif = new UserNotification;
-
-        $data['data']->message = [
-            'title' => "EForm Notification",
-            'body'  => "Pengajuan anda telah di Setujui."
-        ];
-
         $userModel->notify(new ApproveEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
@@ -768,12 +788,6 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
         $userNotif = new UserNotification;
-
-        $data['data']->message = [
-            'title' => "EForm Notification",
-            'body'  => "Pengajuan anda telah di Ditolak."
-        ];
-
         $userModel->notify(new RejectEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
@@ -821,7 +835,7 @@ if (! function_exists('pushNotification')) {
         $dataBuilder->addData([
             'id'       => $id,
             'slug'     => $slug,
-            'type'     => $type,
+            'type'     => 'collateral',
         ]);
 
         $notification = $notificationBuilder->build();

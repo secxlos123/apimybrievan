@@ -34,6 +34,7 @@ class Property extends Model implements AuditableContract
     ];
 
     protected $appends = [
+      'category_name',
       'city',
       'propertyTypes',
       'propertyItems',
@@ -64,6 +65,33 @@ class Property extends Model implements AuditableContract
         return 'slug';
     }
 
+    /**
+     * Get the Name Category for Property.
+     *
+     * @return string
+     */
+    public function getCategoryNameAttribute()
+    {
+        switch ($this->category) {
+            case '0':
+                $name = "Rumah";
+                break;
+            case '1':
+                $name = "Rukan / Ruko";
+                break;
+            case '2':
+                $name = "Rusun" ;
+                break;
+            case '3':
+                $name = "Non Kerja Sama" ;
+                break;
+
+            default:
+                $name = "Tidak Terdaftar";
+                break;
+        }
+        return $name;
+    }
     /**
      * Get the route key for the model.
      *
@@ -421,6 +449,7 @@ class Property extends Model implements AuditableContract
                     return $query->whereNotIn('developers.dev_id_bri',['1'])
                         ->orWhereNull('developers.dev_id_bri');
                 })
+                ->where('properties.is_approved', '=', true)
                 ->limit($limit)
                 ->get();
 
