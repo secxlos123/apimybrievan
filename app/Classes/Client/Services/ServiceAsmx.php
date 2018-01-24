@@ -29,17 +29,17 @@ class ServiceAsmx extends Client
                 'query'    => $this->query,
                 $type      => $this->body
             ]);
+
             $xml = simplexml_load_string( $request->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA );
-            //pasring jika json tidak valid
-            if (!$this->isJSON($xml)) {
-                $pasrsingxml = str_replace('="','',str_replace('">','',$xml));
+
+            if ( $this->endpoint != "GetPdfReport" ) {
+                //parsing jika json tidak valid
+                if (!$this->isJSON($xml)) {
+                    $xml = str_replace('="','',str_replace('">','',$xml));
+                }
             }
-            else
-            {
-                $pasrsingxml = $xml;
-            }
-            $string_xml = json_decode( $pasrsingxml, true );
-            $response = $string_xml;
+
+            $response = json_decode( $xml, true );
         } catch (ClientException $e) {
             $body = $e->getResponse()->getBody();
             $response = json_decode($body->getContents(), true);

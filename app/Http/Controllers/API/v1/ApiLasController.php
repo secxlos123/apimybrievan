@@ -1115,7 +1115,6 @@ class ApiLasController extends Controller
             $uid = "";
             $uker= "";
         }
-        \Log::info($request);
         // print_r($uker);
         // print_r($request['tgl_lahir']);exit();
 

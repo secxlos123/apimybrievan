@@ -26,6 +26,9 @@ class OtsSeven extends Model implements AuditableContract
 		  	'village',
 		  	'districts'
 		  ];
+		   protected $appends = [
+	      'city'
+	     ];
 
 
 			/**
@@ -44,5 +47,13 @@ class OtsSeven extends Model implements AuditableContract
 	    public function city()
 	    {
 	        return $this->belongsTo(City::class, 'city_id');
+	    }
+	     /**
+	     * Get related city
+	     * @return
+	     */
+	    public function getCityAttribute()
+	    {
+	        return $this->city()->first();
 	    }
 }

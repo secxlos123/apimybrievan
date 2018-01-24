@@ -224,26 +224,45 @@
                 </tbody>
             </table>
 
-            <table class="full-width">
-                <tbody>
-                    <tr>
-                        <td class="title" colspan="2">Pefindo</td>
-                    </tr>
-                </tbody>
-            </table>
+            @if( $detail->pefindo_detail )
+                @foreach( json_decode($detail->pefindo_detail) as $key => $pefindoAll )
+                    @if( count($pefindoAll) > 1 )
+                        <table class="full-width">
+                            <tbody>
+                                <tr>
+                                    <td class="title" colspan="2">Pefindo {{ $key == 'individual' ? 'Calon Debitur' : 'Pasangan Calon Debitur' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="card-box-head"></div>
+                    @endif
 
-            <table>
-                <tbody>
-                    <tr>
-                        <td class="label">Score</td>
-                        <td class="break-word">: {{ $detail->pefindo_score }}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Hasil Pefindo</td>
-                        <td class="break-word">: <span class="{{ $detail->pefindo_color }}">{{ $detail->pefindo_color }}</span></td>
-                    </tr>
-                </tbody>
-            </table>
+                    @foreach( $pefindoAll as $index => $pefindo )
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="label"> Nama Lengkap </td>
+                                    <td class="break-word">: {{ $pefindo->FullName }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label"> NIK </td>
+                                    <td class="break-word">: {{ $pefindo->KTP }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label"> Tanggal Lahir </td>
+                                    <td class="break-word">: {{ $pefindo->DateOfBirth }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label"> Alamat </td>
+                                    <td class="break-word">: {{ $pefindo->Address }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <br/>
+                    @endforeach
+                @endforeach
+            @endif
 
             @if( $detail->dhn_detail )
                 @php( $dhnData = json_decode((string) $detail->dhn_detail) )

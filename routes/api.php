@@ -19,7 +19,7 @@ Route::post( 'urgent-function', 'RemovableController@run' );
  */
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
-		
+
 		Route::post('getBranch', 'SelectUkerController@getBranch');
 		Route::post('smsnotif', 'SentSMSNotifController@sentsms');
 		Route::post('select', 'SelectController@select');
@@ -103,13 +103,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::match(['put', 'patch'], 'status', 'AppointmentController@status')->name('schedule.status');
 		});
 
-		Route::post( 'eforms/prescreening', 'EFormController@postPrescreening' );
-		Route::post( 'eforms/submit-screening', 'EFormController@submitScreening' );
-
-		Route::resource( 'prescreening', 'PrescreeningController', [
-			'except' => [ 'edit', 'create', 'destroy' ]
-		] );
-
 		/**
 		 * Collateral routes
 		 */
@@ -123,7 +116,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('/collateral/{action}/{collateralId}', ['as' => 'collateral.change-status', 'uses' => 'CollateralController@changeStatus'])->where(['collateralId' => '[0-9]+','action' => '^(approve|reject)$']);
 		Route::get('collateral/nonindex', ['as' => 'collateral.indexNon', 'uses' => 'CollateralController@indexNon']);
 		Route::get('collateral/nonindex/{developerId}/{propertyId}', ['as' => 'collateral.showNon', 'uses' => 'CollateralController@showNon']);
-		Route::get('collateral/notifotsnonindex/{developerId}/{propertyId}', ['as' => 'collateral.notifotsnonindex', 'uses' => 'CollateralController@NotifOtsNonindex']);	
+		Route::get('collateral/notifotsnonindex/{developerId}/{propertyId}', ['as' => 'collateral.notifotsnonindex', 'uses' => 'CollateralController@NotifOtsNonindex']);
 		Route::get('collateral/notifots/{developerId}/{propertyId}', ['as' => 'collateral.notifots', 'uses' => 'CollateralController@NotifOts']);
         Route::get('collateral/collateralnotif/{collateralId}', ['as' => 'collateral.shownotif', 'uses' => 'CollateralController@notifCollateral']);
         Route::get('collateral/getIdCollateral/{property_id}', ['as' => 'collateral.getIdCollateral', 'uses' => 'CollateralController@getIdCollateral']);        
