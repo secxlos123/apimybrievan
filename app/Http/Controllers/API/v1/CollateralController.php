@@ -206,31 +206,33 @@ class CollateralController extends Controller
             $dataCollateral = Collateral::find($collateralId);
             if(!empty($dataCollateral->manager_id))
             {
-             $manager_id = $dataCollateral->manager_id; //id manager collateral
-             //* 
-             //insert data from notifications table
-             $developer_id = $dataCollateral->developer_id;
-             $user_id = Developer::find($developer_id)->user_id;
-             $usersModel = User::find($user_id);
-             $dataUser  = UserServices::where('pn',$manager_id)->first();
-             $branch_id = $dataUser['branch_id'];
-             $usersModel->notify(new CollateralStafPenilaianAnggunan($dataCollateral,$branch_id));
-             $userNotif = new UserNotification; 
-             // Get data from notifications table
-             $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
-                                            ->orderBy('created_at', 'desc')->first();
-             $id = $notificationData['id'];                            
-             //*/ 
-             $credentials = [
-                'headerNotif' => 'Collateral Notification',
-                'bodyNotif' => 'Form Penilaian Agunan',
-                'id' => $id,
-                'type' => 'collateral_penilaian_agunan',
-                'slug' => $collateral_id,
-                'user_id' => $user_id,
-                'receiver' => 'manager_collateral',
-             ];
-             pushNotification($credentials,'general'); 
+                $manager_id = $dataCollateral->manager_id; //id manager collateral
+                //* 
+                //insert data from notifications table
+                $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+                $eform_id = $getDataEform->eform_id; 
+                $eform = Eform::where('id',$eform_id)->first();
+                $user_id = $eform->user_id;
+                $usersModel = User::where('id',$user_id)->first();
+                $dataUser  = UserServices::where('pn',$manager_id)->first();
+                $branch_id = $dataUser['branch_id'];
+                $usersModel->notify(new CollateralStafPenilaianAnggunan($dataCollateral,$branch_id));
+                $userNotif = new UserNotification; 
+                // Get data from notifications table
+                $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
+                                               ->orderBy('created_at', 'desc')->first();
+                $id = $notificationData['id'];                            
+                //*/ 
+                $credentials = [
+                   'headerNotif' => 'Collateral Notification',
+                   'bodyNotif' => 'Form Penilaian Agunan',
+                   'id' => $id,
+                   'type' => 'collateral_penilaian_agunan',
+                   'slug' => $collateral_id,
+                   'user_id' => $user_id,
+                   'receiver' => 'manager_collateral',
+                ];
+                pushNotification($credentials,'general'); 
             }
         }
       //end notif
@@ -323,7 +325,7 @@ class CollateralController extends Controller
                 $dataDeveloper = Developer::where('id',$developer_id)->first();
                 $user_id = $dataDeveloper->user_id;
                 $receiver = 'external';
-                //insert data from notifications table     
+                //insert data from notifications table 
                 $usersModel->notify(new CollateralManagerApprove($collateral,$branch_id));
                 $userNotif = new UserNotification; 
                 // Get data from notifications table
@@ -361,8 +363,13 @@ class CollateralController extends Controller
                    {
                     $user_id  = $collateral['manager_id'];
                     //* 
-                    //insert data from notifications table     
-                     $usersModel->notify(new CollateralStafRejectOTS($collateral,$branch_id));
+                    //insert data from notifications table    
+                    $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+                    $eform_id = $getDataEform->eform_id; 
+                    $eform = Eform::where('id',$eform_id)->first(); 
+                    $user_id = $eform->user_id;
+                    $usersModel = User::where('id',$user_id)->first();
+                    $usersModel->notify(new CollateralStafRejectOTS($collateral,$branch_id));
 
                      $userNotif = new UserNotification; 
                     // Get data from notifications table
@@ -425,9 +432,11 @@ class CollateralController extends Controller
         //insert data from notifications table collateral disposition
         $type = 'collateral_disposition';
         $dataCollateral = Collateral::find($collateralId);
-        $developer_id = $dataCollateral->developer_id;
-        $user_id = Developer::find($developer_id)->user_id;
-        $usersModel = User::find($user_id);
+        $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+        $eform_id = $getDataEform->eform_id; 
+        $eform = Eform::where('id',$eform_id)->first();
+        $user_id = $eform->user_id;
+        $usersModel = User::where('id',$user_id)->first();
         $dataUser  = UserServices::where('pn',$staff_id)->first();
         $branch_id = $dataUser['branch_id'];
         if($dataUser['role'] == 'ao')
@@ -508,12 +517,13 @@ class CollateralController extends Controller
                     //* 
                     //insert data from notifications table
                     $dataCollateral = Collateral::find($collateralId);
-                    $developer_id = $dataCollateral->developer_id;
-                    $user_id = Developer::find($developer_id)->user_id;
-                    $usersModel = User::FindOrFail($user_id);
+                    $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+                    $eform_id = $getDataEform->eform_id; 
+                    $eform = Eform::where('id',$eform_id)->first();
+                    $user_id = $eform->user_id;
+                    $usersModel = User::where('id',$user_id)->first();
                     $dataUser  = UserServices::where('pn',$manager_id)->first();
                     $branch_id = $dataUser['branch_id'];
-
                     $usersModel->notify(new CollateralStafChecklist($dataCollateral,$branch_id));
                     $userNotif = new UserNotification; 
                     // Get data from notifications table
@@ -568,14 +578,15 @@ class CollateralController extends Controller
         //* 
         //insert data from notifications table
         $type = 'collateral_ots';
-        $developer_id = $dataCollateral->developer_id;
-        $user_id = Developer::find($developer_id)->user_id;
-        $usersModel = User::FindOrFail($user_id);
+        $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateral_id)->first();
+        $eform_id = $getDataEform->eform_id; 
+        $eform = Eform::where('id',$eform_id)->first(); 
+        $user_id = $eform->user_id;
+        $usersModel = User::where('id',$user_id)->first();
         $dataUser  = UserServices::where('pn',$id_manager_collateral)->first();
         $branch_id = $dataUser['branch_id'];
         $userNotif = new UserNotification; 
-        $usersModel->notify(new CollateralOTS($dataCollateral,$branch_id));
-        
+        $usersModel->notify(new CollateralOTS($dataCollateral,$branch_id));       
         // Get data from notifications table
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
@@ -618,7 +629,7 @@ class CollateralController extends Controller
         $this->sendNotifOTS($colleteral_id,$typeKpr);    
       //end notification
       }
-
+    
       return $this->makeResponse(
         $data
       );

@@ -67,6 +67,12 @@ class UserNotification extends Model
 			 $slug = $dataProperty->prop_slug;  
 
 		}
+
+		if($tipeNotif == 'App\Notifications\CollateralOTS' || $tipeNotif == 'App\Notifications\CollateralStafRejectOTS'){
+			$collateral = DB::table('collateral_view_table')->where('collaterals_id', $this->slug)->first();  
+			$collateralAppraisal = $collateral->staff_name;
+			$debitur = $collateral->first_name.' '.$collateral->last_name;
+		}
 		switch ($this->type) {
 		/* eform  */
 		case 'App\Notifications\PengajuanKprNotification':
@@ -181,13 +187,13 @@ class UserNotification extends Model
 			];
 			break;	
 		case 'App\Notifications\CollateralOTS':
-			$subjectNotif = ['message' => 'OTS menilai anggunan',
+			$subjectNotif = ['message' => 'Penilaian agunan debitur an. ['.$debitur.'] sedang dilakukan oleh ['.$collateralAppraisal.']',
 				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\CollateralStafRejectOTS':
-			$subjectNotif = ['message' => 'menolak menilai agunan',
+			$subjectNotif = ['message' => 'Collateral appraisal an ['.$collateralAppraisal.'] menolak permintaan penilaian, harap lakukan penugasan ke staff collateral lainnya',
 				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'url_mobile' => '#',
 			];
@@ -205,7 +211,7 @@ class UserNotification extends Model
 			];
 			break;			
 		case 'App\Notifications\CollateralManagerRejected':
-			$subjectNotif = ['message' => 'reject collateral',
+			$subjectNotif = ['message' => 'Reject collateral',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'url_mobile' => '#',
 			];
