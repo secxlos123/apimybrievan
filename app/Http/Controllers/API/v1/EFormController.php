@@ -535,6 +535,7 @@ class EFormController extends Controller
                             if ( $kanwil['branch'] == $request->input('branch_id') ) {
                                 $baseProperty['region_id'] = $kanwil['region'];
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
+                                }
                             }
                         }
 
@@ -571,7 +572,6 @@ class EFormController extends Controller
                             \Log::info($collateral);
                             }
                         }
-                    }
                 }
                     $kpr = KPR::create( $baseRequest );
                     $return = [
