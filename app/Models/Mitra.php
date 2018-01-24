@@ -38,7 +38,7 @@ class Mitra extends Authenticatable  {
 				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([
                     '*',
-                     \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
+                     \DB::Raw(" case when mitras.kode is not null then 2 else 1 end as new_order ")
                 ]);
 		
         \Log::info($mitra->toSql());

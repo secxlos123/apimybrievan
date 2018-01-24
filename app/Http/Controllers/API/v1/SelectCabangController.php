@@ -150,7 +150,6 @@ class SelectCabangController extends Controller
 	{
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
-		return $branchs;die();
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
