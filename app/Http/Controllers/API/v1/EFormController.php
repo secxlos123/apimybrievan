@@ -45,7 +45,7 @@ class EFormController extends Controller
         $this->userNotification = $userNotification;
     }
 
-	public function ListBranch($data, $token)
+	public function ListBranch($data)
     {
       $client = new Client();
 	  $host = env('APP_URL');
@@ -58,7 +58,7 @@ class EFormController extends Controller
 				[
 				  'headers' =>
 				  [
-					'Authorization' => 'Bearer '.$token
+					'Authorization' => 'Bearer '.$this->get_token()
 				  ]
 				]
 			  );
@@ -334,6 +334,28 @@ class EFormController extends Controller
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
+	 
+	  public function get_token()
+    {
+      if ( count(apiPdmToken::all()) > 0 ) {
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      }
+
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      } else {
+        $this->gen_token();
+        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+
+        $token = $apiPdmToken['access_token'];
+        return $token;
+      }
+    }
+	
     public function store( EFormRequest $request )
     {
         DB::beginTransaction();
@@ -377,7 +399,8 @@ class EFormController extends Controller
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
-					  if ( count(apiPdmToken::all()) > 0 ) {
+						$listExisting = $this->ListBranch($data_new);
+/* 					  if ( count(apiPdmToken::all()) > 0 ) {
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 					  } else {
 						$this->gen_token();
@@ -391,8 +414,7 @@ class EFormController extends Controller
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 						$token = $apiPdmToken['access_token'];
 						$listExisting = $this->ListBranch($data_new, $token);
-
-					  }
+					  } */
 					if ( $listExisting['success'] == '00' ) {
 						foreach ($listExisting['data'] as $branch) {
 							if ( $branch['branch'] == $request->input('branch_id') ) {
