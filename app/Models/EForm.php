@@ -419,7 +419,7 @@ class EForm extends Model implements AuditableContract
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', 'id_model_71']
             , ['InsertDataAgunan', 'fid_agunan']
-            , ['InsertIntoAnalisRecontest', null]
+            , ['UpdateStatusByAplikasi', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -1427,7 +1427,9 @@ class EForm extends Model implements AuditableContract
     public function step11($data)
     {
         \Log::info("step11");
-        return $data;
+        return $data + [
+            "fid_status" => '21'
+        ];
     }
 
     public function user_notifications()
