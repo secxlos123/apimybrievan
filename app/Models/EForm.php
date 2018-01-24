@@ -857,16 +857,18 @@ class EForm extends Model implements AuditableContract
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
             if ($value != null) {
-                $this->clas_position = $step + 1;
                 $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
             }
+
+            $this->clas_position = $step + 1;
+            $this->send_clas_date = date("Y-m-d");
+            $this->save();
+
             $return = array(
                 'status' => true
                 , 'message' => ''
             );
         }
-        $this->send_clas_date = date("Y-m-d");
-        $this->save();
 
         return $return;
     }
