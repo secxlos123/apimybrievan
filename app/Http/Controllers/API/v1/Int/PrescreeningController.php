@@ -154,7 +154,9 @@ class PrescreeningController extends Controller
             'tgl_lahir' => $personal['birth_date']
         );
 
-        $requestData['kode_branch'] = $eform->branch_id ?? ( $type == "sicd" );
+        if ( $type == "sicd" ) {
+            $requestData['kode_branch'] = $eform->branch_id;
+        }
 
         $defaultValue = ( $type == "sicd" ? ['bikole' => '-'] : ['warna' => 'Hijau'] );
 
@@ -220,7 +222,10 @@ class PrescreeningController extends Controller
         $pefindoCouple = array();
 
         try {
-            $pefindoCouple = $this->getPefindo( $eform, 'search', true ) ?? ( $personal['status_id'] == 2 );
+            if ( $personal['status_id'] == 2 ) {
+                $pefindoCouple = $this->getPefindo( $eform, 'search', true );
+
+            }
         } catch (Exception $e) {
             \Log::info("=====================data ".$type." pasangan salaaah====================");
             \Log::info($e);
