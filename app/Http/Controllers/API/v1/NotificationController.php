@@ -34,13 +34,14 @@ class NotificationController extends Controller
     {
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
+        $branch_id = ( request()->header( 'branch_id' ) != '' ) ? request()->header( 'branch_id' ) : '' ;
 
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
         $userId = (!empty($request->user_id) ? $request->user_id : 0);
         $branchId = (!empty($request->branch_id) ? $request->branch_id : 0);
         $limit = (!empty($request->limit) ? $request->limit : 10);
         $mobile = false;
-        $branch_id = 0 ;
+
         if ($role == "customer") {
             if (empty($userId)) {
                 $user_id = $user_id;
