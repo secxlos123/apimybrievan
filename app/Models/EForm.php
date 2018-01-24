@@ -558,8 +558,8 @@ class EForm extends Model implements AuditableContract
             if ($request->has('customer_name')){
                 $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
                     ->where( function( $eform ) use( $request, &$user ) {
-                        $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
-                            ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%');
+                        //$eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('customer_name')).'%')
+                        $eform->orWhere(\DB::raw("LOWER(concat(users.first_name,' ', users.last_name))"), "like", "%".strtolower($request->input('customer_name'))."%");
                     } );
             }
 
