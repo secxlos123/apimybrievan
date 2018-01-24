@@ -40,7 +40,7 @@ class NotificationController extends Controller
         $branchId = (!empty($request->branch_id) ? $request->branch_id : 0);
         $limit = (!empty($request->limit) ? $request->limit : 10);
         $mobile = false;
-
+        $branch_id = 0 ;
         if ($role == "customer") {
             if (empty($userId)) {
                 $user_id = $user_id;
