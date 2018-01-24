@@ -287,36 +287,23 @@ class EForm extends Model implements AuditableContract
         $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
 
         if ( $request->is_approved ) {
-            if( $eform->recontest ) {
-                $result = $eform->insertCoreBRI(11);
-                if ($result['status']) {
-                    $eform->kpr()->update(['is_sent'=> true]);
-                }
-
-            } else if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 $result = $eform->insertCoreBRI(10);
-                if ($result['status']) {
+                if ( $result['status'] ) {
                     $eform->kpr()->update(['is_sent'=> true]);
                     generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
             } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
-                if ($result['status']) {
+                if ( $result['status'] ) {
                     $eform->kpr()->update(['is_sent'=> true]);
                     generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
-            } else if ($eform->status_eform == 'Approval2' ) {
-                // Recontest
-                $result = $eform->insertCoreBRI(11);
-                if ($result['status']) {
-                    $eform->kpr()->update(['is_sent'=> true]);
-                }
-
             } else {
                 $result = $eform->insertCoreBRI(8);
-                if ($result['status']) {
+                if ( $result['status'] ) {
                     $eform->kpr()->update(['is_sent'=> false]);
                 }
 
@@ -324,7 +311,8 @@ class EForm extends Model implements AuditableContract
 
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                if ($result['status']) {
+                $result = insertRecontestBRI( '21' );
+                if ( $result['status'] ) {
                     $eform->update( [
                         'pinca_position' => $request->pinca_position,
                         'pinca_name' => $request->pinca_name,
@@ -339,7 +327,7 @@ class EForm extends Model implements AuditableContract
                 }
 
             } else {
-                if ($result['status']) {
+                if ( $result['status'] ) {
                     $eform->update( [
                         'pros' => $request->pros,
                         'cons' => $request->cons,
@@ -361,17 +349,20 @@ class EForm extends Model implements AuditableContract
         } else {
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                $eform->update( [
-                    'pinca_position' => $request->pinca_position,
-                    'pinca_name' => $request->pinca_name,
-                    'is_approved' => $request->is_approved,
-                    'status_eform' => 'Rejected'
-                ] );
+                $result = insertRecontestBRI( '0' );
+                if ( $result['status'] ) {
+                    $eform->update( [
+                        'pinca_position' => $request->pinca_position,
+                        'pinca_name' => $request->pinca_name,
+                        'is_approved' => $request->is_approved,
+                        'status_eform' => 'Rejected'
+                    ] );
 
-                $eform->recontest->update( [
-                    'pinca_recommendation' => $request->recommendation,
-                    'pinca_recommended' => $request->recommended == "yes" ? true : false
-                ] );
+                    $eform->recontest->update( [
+                        'pinca_recommendation' => $request->recommendation,
+                        'pinca_recommended' => $request->recommended == "yes" ? true : false
+                    ] );
+                }
 
             } else {
                 if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
@@ -389,9 +380,9 @@ class EForm extends Model implements AuditableContract
                     'status_eform' => 'Rejected'
                 ] );
 
-            }
+                $result['status'] = true;
 
-            $result['status'] = true;
+            }
 
         }
 
@@ -403,7 +394,7 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      */
-    public function insertCoreBRI($maxStep)
+    public function insertCoreBRI( $maxStep )
     {
         $this->traceLog();
 
@@ -418,7 +409,6 @@ class EForm extends Model implements AuditableContract
             , ['InsertIntoReviewer', 'nama_reviewer']
             , ['InsertDataAgunanModel71', 'id_model_71']
             , ['InsertDataAgunan', 'fid_agunan']
-            , ['UpdateStatusByAplikasi', null]
         ];
 
         $step = $this->clas_position ? (intval($this->clas_position) > 0 ? intval($this->clas_position) : 1) : 1;
@@ -471,6 +461,19 @@ class EForm extends Model implements AuditableContract
         }
 
         return $return;
+    }
+
+
+    public function insertRecontestBRI( $status )
+    {
+        return $this->SentToBri(
+            $this->additional_parameters + [
+                "fid_status" => $status
+            ]
+            , 'UpdateStatusByAplikasi'
+            , null
+            , 0
+        );
     }
 
     /**
@@ -856,13 +859,15 @@ class EForm extends Model implements AuditableContract
         \Log::info('============================================================================================');
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
-            if ($value != null) {
-                $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
-            }
+            if ( $endpoint != 'UpdateStatusByAplikasi' ) {
+                if ($value != null) {
+                    $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
+                }
 
-            $this->clas_position = $step + 1;
-            $this->send_clas_date = date("Y-m-d");
-            $this->save();
+                $this->clas_position = $step + 1;
+                $this->send_clas_date = date("Y-m-d");
+                $this->save();
+            }
 
             $return = array(
                 'status' => true
@@ -1349,20 +1354,6 @@ class EForm extends Model implements AuditableContract
             "Shgb_keterangan_agunan_rt"=>!($otsNine->information_shgb)? '' : $otsNine->information_shgb
         ];
         return $request;
-    }
-
-    /**
-     * Generate Parameters for step 11.
-     *
-     * @param array $data
-     * @return array $request
-     */
-    public function step11($data)
-    {
-        \Log::info("step11");
-        return $data + [
-            "fid_status" => '21'
-        ];
     }
 
     public function user_notifications()
