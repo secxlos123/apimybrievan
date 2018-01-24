@@ -38,7 +38,7 @@ class RecontestController extends Controller
     {
         DB::beginTransaction();
 
-        $data = $request->only(["pros", "cons"]);
+        $data = $request->only(["pros", "cons", "source", "income", "income_salary", "income_allowance", "source_income", "couple_salary", "couple_other_salary"]);
 
         $data['purpose_of_visit'] = "LKN Recontest";
         $data['ao_recommendation'] = $request->input("recommendation");

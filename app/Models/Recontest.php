@@ -18,7 +18,7 @@ class Recontest extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'id', 'eform_id', 'purpose_of_visit', 'pros', 'cons', 'ao_recommendation', 'ao_recommended', 'pinca_recommendation', 'pinca_recommended', 'expired_date', 'documents', 'mutations'
+        'id', 'eform_id', 'purpose_of_visit', 'pros', 'cons', 'ao_recommendation', 'ao_recommended', 'pinca_recommendation', 'pinca_recommended', 'expired_date', 'documents', 'mutations', 'source', 'income', 'income_salary', 'income_allowance', 'source_income', 'couple_salary', 'couple_other_salary'
     ];
 
     /**

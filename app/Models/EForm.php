@@ -19,7 +19,6 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
-use Zip;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -40,7 +39,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo'
     ];
 
     /**
@@ -510,6 +509,17 @@ class EForm extends Model implements AuditableContract
             );
 
             $schedule = Appointment::create($scheduleData);
+
+            /*
+            tombol screening di aksi (done)
+                kali belum verif => popup notif (done)
+                kalo udah verif => buka halaman screening (done)
+                kalo udh screening => cuma view (done)
+                pdf (done)
+
+            before: halaman screening
+                hit service 3x2 (done)
+            */
         } );
     }
 
@@ -797,85 +807,6 @@ class EForm extends Model implements AuditableContract
             'message' => $returnStatus
             , 'contents' => $target
         );
-    }
-
-    /**
-     * Search Prescreening.
-     *
-     * @return array
-     */
-    public static function searchPrescreening( $eform, $position = 'search' )
-    {
-        $customer = $eform->customer;
-        if ( $position == 'search' ) {
-            $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
-                ->setBody([
-                    'Request' => json_encode( array(
-                        'nomer_id_pefindo' => $eform->nik
-                        , 'nama_pefindo' => $customer->personal['name']
-                        , 'tanggal_lahir_pefindo' => $customer->personal['birth_date']
-                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-                    ) )
-                ])
-                ->post( 'form_params' );
-
-            return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : null;
-
-        } else if ( $position == 'data' ) {
-            $getReportPefindo = Asmx::setEndpoint( 'PefindoReportData' )
-                ->setBody([
-                    'Request' => json_encode( array(
-                        'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-                        , 'tipesubject_pefindo' => 'individual'
-                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-                        , 'nomer_id_pefindo' => $eform->nik
-                    ) )
-                ])
-                ->post( 'form_params' );
-
-            if ( $getReportPefindo["code"] == "200" ) {
-                if ( isset( $getReportPefindo['contents']['cip'] ) ) {
-                    if ( isset( $getReportPefindo['contents']['cip']['recordlist'] ) ) {
-                        if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0] ) ) {
-                            if ( isset( $getReportPefindo['contents']['cip']['recordlist'][0]["score"] ) ) {
-                                return $getReportPefindo['contents']['cip']['recordlist'][0]["score"];
-                            }
-                        }
-                    }
-                }
-            }
-
-            return 0;
-
-        } else if ( $position == 'pdf' ) {
-            $getFilePefindo = \Asmx::setEndpoint( 'GetPdfReport' )
-                ->setBody([
-                    'Request' => json_encode( array(
-                        'id_pefindo' => 2152216 // ada pas SmartSearchIndividual
-                        , 'tipesubject_pefindo' => 'individual'
-                        , 'alasan_pefindo' => 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name
-                        , 'nomer_id_pefindo' => $eform->nik
-                    ) )
-                ])
-                ->post( 'form_params' );
-
-            \Log::info("=============== pefindo pdf ========================");
-            \Log::info($getFilePefindo);
-            if ( $getFilePefindo["code"] == "200" ) {
-                $path = 'uploads/' . $eform->nik . '/pefindo.zip';
-                \Log::info($path);
-                $publicPath = public_path( $path );
-                \Log::info($publicPath);
-                file_put_contents( $publicPath, base64_decode($getFilePefindo["contents"]) );
-                $zip = Zip::open( $path );
-                \Log::info($zip);
-                $zip->extract( $publicPath );
-                File::delete( $publicPath );
-
-            }
-
-        }
-
     }
 
     /**
