@@ -83,7 +83,7 @@ class PrescreeningController extends Controller
 
         $this->dependencies( 'sicd', $eform );
         $this->dependencies( 'dhn', $eform );
-        $this->pefindo( $eform );
+        // $this->pefindo( $eform );
 
         return response()->success( [
             'message' => 'Data Screening e-form',
