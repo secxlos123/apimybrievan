@@ -284,7 +284,7 @@ class EForm extends Model implements AuditableContract
         $result['status'] = false;
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
+        $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->first();
 
         if ( $request->is_approved ) {
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
