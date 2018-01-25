@@ -220,6 +220,7 @@ class MarketingController extends Controller
     public function store(Request $request)
     {
       $data['pn'] = $request->header('pn');
+      $data['branch'] = $request->header('branch');
       $data['product_type'] = $request['product_type'];
       $data['activity_type'] = $request['activity_type'];
       $data['target'] = $request['target'];
@@ -392,12 +393,12 @@ class MarketingController extends Controller
           'contents' => $marketing_note
         ]);
     }
-    
+
     public function store_note(Request $request)
     {
       $data['marketing_id'] = $request['marketing_id'];
       $data['pn'] = $request->header('pn');
-      $data['pn_name'] = $request['pn_name'];
+      $data['pn_name'] = $request->header('name');
       $data['note'] = $request['note'];
 
       $save = MarketingNote::create($data);

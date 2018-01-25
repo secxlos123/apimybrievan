@@ -213,7 +213,7 @@ class CalculatorController extends Controller
                 $angsuranBunga = (($fxrate / 12) / 100) * $plafond;
                 $angsuranPokok = $angsuranTotFix - $angsuranBunga;
                 $angsuran      = round($angsuranBunga + $angsuranPokok);
-
+                $angsuranFixed = $angsuran;
                 $plafond -= (int)$angsuranPokok;
                 
                 $returnVal[$i] = [
@@ -254,6 +254,7 @@ class CalculatorController extends Controller
 
                 $plafond       -= $angsuranPokok;
                 $angsuran      =  round($angsuranBunga + $angsuranPokok);
+                $angsuranFloat = $angsuran;
 
                 $returnVal[$i] = [
                     "bulan"          => $i,
@@ -269,6 +270,8 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "plafond"             => $plafonds,
+                "angsuranFixed"       => $angsuranFixed,
+                "angsuranFloat"       => $angsuranFloat,
                 "uang_muka"           => $downPayment,
                 "suku_bunga"          => $fxrate."%",
                 "suku_bunga_floating" => $flrate."%",
@@ -322,7 +325,7 @@ class CalculatorController extends Controller
                 $angsuranPokok = $angsuranTotFix - $angsuranBunga;
                 $angsuran      = round($angsuranBunga + $angsuranPokok);
                 $plafond      -= $angsuranPokok;
-
+                $angsuranFixed = $angsuran;
                 $returnVal[$i] = [
                     "bulan"          => $i,
                     "sisa_pinjaman"  => round($plafond),
@@ -342,7 +345,7 @@ class CalculatorController extends Controller
 
             $plafond -= $angsuranPokok;
             $angsuran      = round($angsuranBunga + $angsuranPokok);
-
+            $angsuranFloor = $angsuran;
             $returnVal[$i] = [
                 "bulan"          => $i,
                 "sisa_pinjaman"  => round($plafond),
@@ -379,7 +382,7 @@ class CalculatorController extends Controller
                 $angsuranPokok = $angsuranTotFloat - $angsuranBunga;
                 $plafond -= $angsuranPokok;
                 $angsuran      = round($angsuranBunga + $angsuranPokok);
-          
+                $angsuranFloat = $angsuran;
                 $returnVal[$i] = [
                     "bulan"          => $i,
                     "sisa_pinjaman"  => round($plafond),
@@ -394,6 +397,9 @@ class CalculatorController extends Controller
         $rincian = [
             "rincian" => [
                 "plafond"             => $plafonds,
+                "angsuranFixed"       => round($angsuranFixed),
+                "angsuranFloat"       => round($angsuranFloat),
+                "angsuranFloor"       => round($angsuranFloor),
                 "uang_muka"           => $downPayment,
                 "suku_bunga"          => $ffxrate."%",
                 "suku_bunga_floor"    => $ffloorrate."%",

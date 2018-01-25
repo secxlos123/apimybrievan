@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>E-Recontest PDF</title>
+        <title>E-LKN Recontest PDF</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta content="" name="description" />
@@ -172,7 +172,7 @@
                     <tr>
                         <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
-                            <div class="color-orange">e-Recontest</div>
+                            <div class="color-orange">e-LKN Recontest</div>
                             <div class="color-blue">BRI</div>
                             <br/>
                             <img src="{{ asset('img/logo-mybri.png') }}">
@@ -237,6 +237,57 @@
                         </tbody>
                     </table>
                 @endforeach
+            @endif
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Data Keuangan</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
+                    @if ($detail->recontest['source'] == 'fixed')
+                        <tr>
+                            <td class="label">Gaji / THP per-Bulan :</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->recontest['income_salary']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tunjangan / Insentif Lain :</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->recontest['income_allowance']), 0, ",", ".") }}</td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td class="label">Penghasilan per-Bulan :</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->recontest['income']), 0, ",", ".") }}</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+
+            @if( $detail->recontest['source_income'] == "joint" )
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Keuangan pasangan</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="label">Gaji/ Pendapatan</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->recontest['couple_salary']), 0, ",", ".") }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Pendapatan Lain</td>
+                            <td class="break-word">: Rp. {{ number_format(round($detail->recontest['couple_other_salary']), 0, ",", ".") }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             @endif
 
             <table class="full-width">
@@ -335,6 +386,18 @@
                 </div>
                 <br/>
             </div>
+
+            <p>
+                <i>Catatan : LKN Recontest hanya menampilkan data yang mengalami perubahan, untuk data yang lain mengikuti LKN sebelumnya.<br/></i>
+                <br/>
+
+                @if( isset($detail->recontest['documents']) )
+                    Lampiran data pendukung recontest :<br/>
+                    @foreach( $detail->recontest['documents'] as $key => $documents )
+                        {{ $key+1 }}.) {{ $documents['name'] }}<br/>
+                    @endforeach
+                @endif
+            </p>
         </div>
 
     </body>

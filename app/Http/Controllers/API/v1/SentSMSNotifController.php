@@ -76,6 +76,8 @@ class SentSMSNotifController extends Controller
 			$message = "Yth. Bapak/Ibu ".$request['nama_cust'].". ".
 						"Kami informasikan kewajiban angsuran Anda telah melewati jatuh tempo sebesar Rp. ".$request['angsuran'].",-. ".
 						"Harap segera melakukan pembayaran. Terima kasih.";
+		}else{
+			$message = $request['message'];
 		}
 		return $message;
 	}
@@ -84,7 +86,14 @@ class SentSMSNotifController extends Controller
 		$data = $request->all();
 		$message = $this->message($data);
 		 $client = new Client();
-      $requestLeads = $client->request('POST', 'http://10.35.65.61:9997/Service.asmx',
+		 $url = '';
+		$host = env('APP_URL');
+	  if($host == 'http://api.dev.net/'){
+		$url = 'http://10.35.65.61:9997/';
+	}else{
+		$url = 'http://172.21.56.34:9994/';  
+	  }
+      $requestLeads = $client->request('POST', $url.'Service.asmx',
         [
           'headers' =>
           [
@@ -97,8 +106,8 @@ class SentSMSNotifController extends Controller
   <soap:Body>
     <FCD_SMS xmlns="http://tempuri.org/">
       <norek>0</norek>
-      <divisi>SIT</divisi>
-      <produk>Sms Dev</produk>
+      <divisi>'.$data['divisi'].'</divisi>
+      <produk>'.$data['produk'].'</produk>
       <fitur></fitur>
       <hp>'.$data['no_hp'].'</hp>
       <pesan>'.$message.'</pesan>

@@ -241,7 +241,7 @@ class CreateOts extends FormRequest
         'nine.skmht_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
         'nine.imb_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
         'nine.shgb_status' => 'required|in:Sudah Diberikan,Belum Diberikan',
-        'nine.receipt_date_notary'=>'required_if:nine.notary_status,Sudah Diberikan|date',
+        'nine.receipt_date_notary'=>'required_if:nine.notary_status,Sudah Diberikan',
         'nine.information_notary'=>'required_if:nine.notary_status,Sudah Diberikan',
         'nine.receipt_date_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan',
         'nine.information_takeover'=>'required_if:nine.takeover_status,Sudah Diberikan',

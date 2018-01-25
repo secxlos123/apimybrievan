@@ -121,21 +121,23 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 		'middleware' => ['api.auth']
 	], function () {
 
-		/**
-		 * Route For Prescreening
-		 */
-		Route::resource( 'prescreening', 'PrescreeningController', [
-			'except' => [ 'edit', 'create', 'destroy' ]
-		] );
-
 		Route::resource( 'GetView', 'ViewController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+
 
 	/**
 	 * Route group for namespace controller Int
 	 */
 	Route::group(['namespace' => 'Int'], function () {
+
+		/**
+		 * Route For Prescreening
+		 */
+		Route::resource( 'prescreening', 'PrescreeningController', [
+			'only' => [ 'index', 'store', 'update' ]
+		] );
+		Route::post( 'eforms/prescreening', 'PrescreeningController@show' );
 
 		/**
 		 * Route resource for RoleController
