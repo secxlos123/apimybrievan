@@ -129,6 +129,7 @@ class PrescreeningController extends Controller
         } else {
             $risk = $eform->ket_risk;
             $pdf = $eform->uploadscore;
+            $selected_pefindo = 0;
 
             $score = $eform->pefindo_score;
             $pefindoC = 'Kuning';
