@@ -14,13 +14,13 @@ class DatabaseSeeder extends Seeder
         // $this->call( UsersTableSeeder::class );
         //$this->call( MitraTableSeeder::class );
         //$this->call( KodeposTableSeeder::class );
-        $this->call(RolesTableSeeder::class);
-        $this->call(CityTableSeeder::class);
-        $this->call(UserDeveloper::class);
+        // $this->call(RolesTableSeeder::class);
+        // $this->call(CityTableSeeder::class);
+        // $this->call(UserDeveloper::class);
         // $this->call( DeveloperTableSeeder::class );
         $this->call(ViewSeeder::class);
-        $this->call(CrmTableSeeder::class);
-        $this->call(UserServicesTableSeeder::class);
+        // $this->call(CrmTableSeeder::class);
+        // $this->call(UserServicesTableSeeder::class);
         $this->call(FixAutoId::class);
 
     }
