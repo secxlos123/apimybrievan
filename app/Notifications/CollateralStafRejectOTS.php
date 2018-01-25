@@ -70,6 +70,8 @@ class CollateralStafRejectOTS extends Notification
             'type_module' => $typeModule,
             'created_at' => $this->collateral->created_at,
             'role_name' => $notifiable->roles->first()->slug,
+            'staff_name' => $this->collateral->staff_name,
+            'prop_slug' => $this->collateral->property->slug,
         ];
         return $data;
     }
