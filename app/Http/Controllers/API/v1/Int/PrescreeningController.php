@@ -268,7 +268,7 @@ class PrescreeningController extends Controller
                 $getPefindo = Asmx::setEndpoint( $endpoint )
                     ->setBody([
                         'Request' => json_encode( array(
-                            'id_pefindo' => 2152216 //$pefindoId
+                            'id_pefindo' => $pefindoId //2152216
                             , 'tipesubject_pefindo' => 'individual'
                             , 'alasan_pefindo' => $reason
                             , 'nomer_id_pefindo' => $sendNik
