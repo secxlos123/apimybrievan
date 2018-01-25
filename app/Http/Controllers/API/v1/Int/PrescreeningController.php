@@ -130,11 +130,6 @@ class PrescreeningController extends Controller
             , 'uploadscore' => $pdf
         ]);
 
-            $table->integer('pefindo_score')->default(0)->nullable();
-            $table->integer('is_screening')->default(0)->nullable();
-            $table->text('uploadscore')->nullable();
-            $table->text('ket_risk')->nullable();
-
         return response()->success( [
             'message' => 'Berhasil proses prescreening E-Form',
             'contents' => $eform
@@ -273,7 +268,7 @@ class PrescreeningController extends Controller
                 $getPefindo = Asmx::setEndpoint( $endpoint )
                     ->setBody([
                         'Request' => json_encode( array(
-                            'id_pefindo' => 2152216 //$pefindoId
+                            'id_pefindo' => $pefindoId //2152216
                             , 'tipesubject_pefindo' => 'individual'
                             , 'alasan_pefindo' => $reason
                             , 'nomer_id_pefindo' => $sendNik

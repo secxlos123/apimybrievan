@@ -65,10 +65,12 @@ class CollateralController extends Controller
       $user = \RestwsHc::getUser();
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
-      $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
+      $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int)$this->request->header('pn'));
       }
+      if ($this->request->has('status')) $data->where('status', $this->request->input('status'));
+      $data->orderBy('created_at', 'desc');
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 

@@ -284,7 +284,7 @@ class EForm extends Model implements AuditableContract
         $result['status'] = false;
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
-        $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->firstOrFail();
+        $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->first();
 
         if ( $request->is_approved ) {
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
@@ -301,7 +301,7 @@ class EForm extends Model implements AuditableContract
                     generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
-            } else {
+            } else if ( $eform->status_eform != 'Approval2' ) {
                 $result = $eform->insertCoreBRI(8);
                 if ( $result['status'] ) {
                     $eform->kpr()->update(['is_sent'=> false]);
@@ -311,7 +311,7 @@ class EForm extends Model implements AuditableContract
 
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                $result = insertRecontestBRI( '21' );
+                $result = $eform->insertRecontestBRI( '21' );
                 if ( $result['status'] ) {
                     $eform->update( [
                         'pinca_position' => $request->pinca_position,
@@ -349,7 +349,7 @@ class EForm extends Model implements AuditableContract
         } else {
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                $result = insertRecontestBRI( '0' );
+                $result = $eform->insertRecontestBRI( '0' );
                 if ( $result['status'] ) {
                     $eform->update( [
                         'pinca_position' => $request->pinca_position,
@@ -1323,7 +1323,7 @@ class EForm extends Model implements AuditableContract
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => !($otsEight->binding_number)?'0': $otsEight->binding_number,//taidak
             "Nilai_pengikatan_agunan_rt" => !($otsEight->binding_value) ? '0' : $this->reformatCurrency( $otsEight->binding_value ),//taidak
-            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? '0' : $this->reformatCurrency( $otsTen->paripasu ),//taidak
+            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'Tidak' : $otsTen->paripasu,//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
             "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
@@ -1375,7 +1375,7 @@ class EForm extends Model implements AuditableContract
     public function validateData( $variable )
     {
         if ( $variable ) {
-            return $this->reformatCurrency( $variable );
+            return $this->reformatCurrency( number_format($variable, 0, '', '') );
         }
         return '0';
     }
