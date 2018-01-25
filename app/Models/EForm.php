@@ -301,7 +301,7 @@ class EForm extends Model implements AuditableContract
                     generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
-            } else {
+            } else if ( $eform->status_eform != 'Approval2' ) {
                 $result = $eform->insertCoreBRI(8);
                 if ( $result['status'] ) {
                     $eform->kpr()->update(['is_sent'=> false]);
@@ -311,7 +311,7 @@ class EForm extends Model implements AuditableContract
 
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                $result = insertRecontestBRI( '21' );
+                $result = $eform->insertRecontestBRI( '21' );
                 if ( $result['status'] ) {
                     $eform->update( [
                         'pinca_position' => $request->pinca_position,
@@ -349,7 +349,7 @@ class EForm extends Model implements AuditableContract
         } else {
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                $result = insertRecontestBRI( '0' );
+                $result = $eform->insertRecontestBRI( '0' );
                 if ( $result['status'] ) {
                     $eform->update( [
                         'pinca_position' => $request->pinca_position,

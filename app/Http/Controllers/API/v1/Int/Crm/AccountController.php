@@ -150,7 +150,13 @@ class AccountController extends Controller
       // }
 
       $client = new Client();
-      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+      $host = env('APP_URL');
+  	  if($host == 'http://api.dev.net/'){
+  		$url = 'http://172.18.44.182/customer/saving/';
+  	}else{
+  		$url = 'http://api.briconnect.bri.co.id/customer/saving/';
+  	  }
+      $requestListExisting = $client->request('GET', $url.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
@@ -176,8 +182,15 @@ class AccountController extends Controller
 
     public function getExistingByFo($data, $token)
     {
+      $host = env('APP_URL');
+  	  if($host == 'http://api.dev.net/'){
+  		$url = 'http://172.18.44.182/customer/saving/';
+  	}else{
+  		$url = 'http://api.briconnect.bri.co.id/customer/saving/';
+  	  }
+
       $client = new Client();
-      $requestListExisting = $client->request('GET', 'http://172.18.44.182/customer/saving/'.$data['branch'].'/'.$data['pn'],
+      $requestListExisting = $client->request('GET', $url.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
