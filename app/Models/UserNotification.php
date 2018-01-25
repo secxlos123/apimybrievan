@@ -211,13 +211,13 @@ class UserNotification extends Model
 			];
 			break;			
 		case 'App\Notifications\CollateralManagerRejected':
-			$subjectNotif = ['message' => 'Reject collateral',
+			$subjectNotif = ['message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralManagerApprove':
-			$subjectNotif = ['message' => 'Approved collateral',
+			$subjectNotif = ['message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'url_mobile' => '#',
 			];
