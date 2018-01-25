@@ -23,36 +23,6 @@ class AccountController extends Controller
 {
     public function index(Request $request)
     {
-      // $client = new Client();
-      // $requestLeads = $client->request('POST', 'http://10.35.65.111/skpp_concept/restws_hc',
-      //   [
-      //     'headers' =>
-      //     [
-      //       'Content-Type' => 'application/x-www-form-urlencoded',
-      //       'Authorization' => request()->header( 'Authorization' )
-      //     ],
-      //     'form_params' =>
-      //       [
-      //           'request' => json_encode(
-      //               [
-      //                 "requestMethod" => "get_customer_leads",
-      //                 "requestData"=> [
-                        // "id_user" => request()->header( 'pn' ),
-                        // "kode_branch" => request()->header( 'branch' ), // 5 digit uker
-                        // "type_request" => "list",//$request->input('type_request'), // list or search
-                        // "type_usulan" => $request->input('type_usulan'), // kpr or kkb
-                        // "limit" => "10000",//$request->input('limit'),
-                        // "page" => "1",//$request->input('page'),
-                        // "order_by" => "nama",//$request->input('order_by'), // nama or amount
-                        // "search_value" => "0",//$request->input('search_value')
-      //                 ],
-      //               ]
-      //             )
-      //       ]
-      //   ]
-      // );
-      // $leads = json_decode($requestLeads->getBody()->getContents(), true);
-
       $sendRequest = array(
         "id_user" => request()->header( 'pn' ),
         "kode_branch" => request()->header( 'branch' ), // 5 digit uker
@@ -138,39 +108,6 @@ class AccountController extends Controller
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
 
-      // return response()->success([
-      //   'message' => 'Under Maintenance',
-      //   'contents' => []
-      // ])
-
-      // if ( count(apiPdmToken::all()) > 0 ) {
-      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      // } else {
-      //   $this->gen_token();
-      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      // }
-
-      // if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-      //   $token = $apiPdmToken['access_token'];
-      //   $listExisting = $this->getExistingByFo($data, $token);
-      //
-      //   return response()->success( [
-      //       'message' => 'Sukses',
-      //       'contents' => $listExisting['data']
-      //   ]);
-      // } else {
-      //   $briConnect = $this->gen_token();
-      //   $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      //
-      //   $token = $apiPdmToken['access_token'];
-      //   $listExisting = $this->getExistingByFo($data, $token);
-      //
-      //   return response()->success( [
-      //       'message' => 'Sukses',
-      //       'contents' => $listExisting['data']
-      //   ]);
-      // }
-
       $client = new Client();
       $host = env('APP_URL');
   	  if($host == 'http://api.dev.net/'){
@@ -252,27 +189,6 @@ class AccountController extends Controller
       $leads = json_decode($requestLeads->getBody()->getContents(), true);
 
       return $leads;
-    }
-
-    public function get_token()
-    {
-      if ( count(apiPdmToken::all()) > 0 ) {
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      }
-
-      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-        $token = $apiPdmToken['access_token'];
-        return $token;
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-
-        $token = $apiPdmToken['access_token'];
-        return $token;
-      }
     }
 
     public function pemasar($pn, $branch, $auth){
