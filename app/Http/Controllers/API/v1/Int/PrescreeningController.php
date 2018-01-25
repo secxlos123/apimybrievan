@@ -102,21 +102,49 @@ class PrescreeningController extends Controller
         $sicd = $sicdDetail->responseData[ $request->input('select_sicd') ];
         $dhn = $dhnDetail->responseData[ $request->input('select_dhn') ];
 
-        $individu = $pefindoDetail->individual[ $request->input('select_individual_pefindo') ];
-        $dataIndividu = $this->getPefindo( $eform, 'data', false, $individu->PefindoId );
-        $pdf = $this->getPefindo( $eform, 'pdf', false, $individu->PefindoId );
-        $pefindo = $this->getColorPefindo( $dataIndividu['score'], false, array(), $request->input('select_individual_pefindo'), $dataIndividu['reasonslist'] );
+        if ( $request->has('select_individual_pefindo') || $request->has('select_couple_pefindo') ) {
+            if ( $request->has('select_individual_pefindo') ) {
+                $individu = $pefindoDetail->individual[ $request->input('select_individual_pefindo') ];
+                $dataIndividu = $this->getPefindo( $eform, 'data', false, $individu->PefindoId );
+                $pdf = $this->getPefindo( $eform, 'pdf', false, $individu->PefindoId );
+                $pefindo = $this->getColorPefindo( $dataIndividu['score'], false, array(), $request->input('select_individual_pefindo'), $dataIndividu['reasonslist'] );
 
-        if ( $request->has('select_couple_pefindo') ) {
-            $couple = $pefindoDetail->couple[ $request->input('select_couple_pefindo') ];
-            $dataCouple = $this->getPefindo( $eform, 'data', true, $couple->PefindoId );
-            $pdf .= ',' . $this->getPefindo( $eform, 'pdf', true, $couple->PefindoId );
-            $pefindo = $this->getColorPefindo( $dataCouple['score'], true, $pefindo, $request->input('select_couple_pefindo'), $dataCouple['reasonslist'] );
-        }
+            }
 
-        $risk = array();
-        foreach ($pefindo['risk'] as $value) {
-            $risk[] = $value['description'];
+            if ( $request->has('select_couple_pefindo') ) {
+                $couple = $pefindoDetail->couple[ $request->input('select_couple_pefindo') ];
+                $dataCouple = $this->getPefindo( $eform, 'data', true, $couple->PefindoId );
+                $pdf .= ',' . $this->getPefindo( $eform, 'pdf', true, $couple->PefindoId );
+                $pefindo = $this->getColorPefindo( $dataCouple['score'], true, $pefindo, $request->input('select_couple_pefindo'), $dataCouple['reasonslist'] );
+            }
+
+            $risk = array();
+            foreach ($pefindo['risk'] as $value) {
+                $risk[] = $value['description'];
+            }
+
+            $risk = implode(', ', $risk);
+            $selected_pefindo = json_encode( array($pefindo['key'] => $pefindo['index']) );
+
+        } else {
+            $risk = $eform->ket_risk;
+            $pdf = $eform->uploadscore;
+
+            $score = $eform->pefindo_score;
+            $pefindoC = 'Kuning';
+            if ( $score >= 250 && $score <= 573 ) {
+                $pefindoC = 'Merah';
+
+            } elseif ( $score >= 677 && $score <= 900 ) {
+                $pefindoC = 'Hijau';
+
+            }
+
+            $pefindo = array(
+                'color' => $pefindoC
+                , 'score' => $score
+            );
+
         }
 
         $eform->update([
@@ -124,9 +152,9 @@ class PrescreeningController extends Controller
             , 'selected_sicd' => $request->input('select_sicd')
             , 'selected_dhn' => $request->input('select_dhn')
             , 'pefindo_score' => $pefindo['score']
-            , 'selected_pefindo' => json_encode( array($pefindo['key'] => $pefindo['index']) )
+            , 'selected_pefindo' => $selected_pefindo
             , 'is_screening' => 1
-            , 'ket_risk' => implode(', ', $risk)
+            , 'ket_risk' => $risk
             , 'uploadscore' => $pdf
         ]);
 
