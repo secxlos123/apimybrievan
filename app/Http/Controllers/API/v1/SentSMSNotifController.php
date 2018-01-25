@@ -106,8 +106,8 @@ class SentSMSNotifController extends Controller
   <soap:Body>
     <FCD_SMS xmlns="http://tempuri.org/">
       <norek>0</norek>
-      <divisi>SIT</divisi>
-      <produk>Sms Dev</produk>
+      <divisi>'.$data['divisi'].'</divisi>
+      <produk>'.$data['produk'].'</produk>
       <fitur></fitur>
       <hp>'.$data['no_hp'].'</hp>
       <pesan>'.$message.'</pesan>
