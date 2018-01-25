@@ -199,9 +199,7 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-        if(env('PUSH_NOTIFICATION', false))
-        {
-            //notification mobile sen to manager collateral  
+       \Log::info('=======notification web and mobile sent to manager collateral  ======');            
             $collateral_id =$collateralId;
             $dataCollateral = Collateral::find($collateralId);
             if(!empty($dataCollateral->manager_id))
@@ -234,7 +232,7 @@ class CollateralController extends Controller
                 ];
                 pushNotification($credentials,'general'); 
             }
-        }
+        
       //end notif
 
         return $this->makeResponse(
@@ -308,8 +306,7 @@ class CollateralController extends Controller
         $collateral->save();
         \DB::commit();
       }
-       if(env('PUSH_NOTIFICATION', false))
-       {  
+     \Log::info('=======notification web approve or reject collateral  ======');
             $pn = $this->request->header('pn');
             $collateral = Collateral::find($collateralId);
             $developer_id = $collateral->developer_id;
@@ -367,8 +364,8 @@ class CollateralController extends Controller
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
                     $eform_id = $getDataEform->eform_id; 
                     $eform = Eform::where('id',$eform_id)->first(); 
-                    $user_id = $eform->user_id;
-                    $usersModel = User::where('id',$user_id)->first();
+                    $id_nasabah = $eform->user_id;
+                    $usersModel = User::where('id',$id_nasabah)->first();
                     $usersModel->notify(new CollateralStafRejectOTS($collateral,$branch_id));
 
                      $userNotif = new UserNotification; 
@@ -396,7 +393,7 @@ class CollateralController extends Controller
                 ];
               pushNotification($credentials,'general');
             } 
-        }
+        //end Web notif
 
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
@@ -423,9 +420,7 @@ class CollateralController extends Controller
         ->findOrFail( $collateralId )
           ->update( $baseRequest );
 
-      if(env('PUSH_NOTIFICATION', false))
-      {
-        // notif disposisi ke staff colleteral
+       \Log::info('=======notif disposisi ke staff colleteral atau ao ======');
         $dataInput = $this->request->all();
         $staff_id = $dataInput['staff_id'];
         //* 
@@ -464,7 +459,7 @@ class CollateralController extends Controller
         ];
         // Call the helper of push notification function
         pushNotification($credentials,'general');
-      }
+      // }
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
@@ -510,8 +505,8 @@ class CollateralController extends Controller
             $store = $this->collateral->findOrFail($collateralId);
 
             $manager_id= $store['manager_id'];
-            if(env('PUSH_NOTIFICATION', false))
-            {
+//            if(env('PUSH_NOTIFICATION', false))
+//            {
                 if(!empty($manager_id))
                 {
                     //* 
@@ -542,7 +537,7 @@ class CollateralController extends Controller
                       ];
                      pushNotification($credentials,'general');
                 }
-            }
+//            }
 
             $data = $store->otsDoc()->updateOrCreate(['collateral_id'=>$collateralId],$request->all());
             \DB::commit();
@@ -621,14 +616,14 @@ class CollateralController extends Controller
       unset($visitreport['id']);
       $data = array_merge($ots,$nonkerjasama,$visitreport);
 
-      if(env('PUSH_NOTIFICATION', false))
-      {
+      // if(env('PUSH_NOTIFICATION', false))
+      // {
       // send notification to mobile
         $colleteral_id = $nonkerjasama['collaterals_id'];
         $typeKpr = 'Non Kerja Sama'; 
         $this->sendNotifOTS($colleteral_id,$typeKpr);    
       //end notification
-      }
+      // }
     
       return $this->makeResponse(
         $data
@@ -649,10 +644,10 @@ class CollateralController extends Controller
 
        $collateral_id= $collateral->id;
        $typeKpr = 'Developer';
-      if(env('PUSH_NOTIFICATION', false))
-      {
+      // if(env('PUSH_NOTIFICATION', false))
+      // {
         $this->sendNotifOTS($collateral_id,$typeKpr);  
-      }
+      // }
       //end notification
 
       return $this->makeResponse(
