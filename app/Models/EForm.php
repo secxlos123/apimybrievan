@@ -301,7 +301,7 @@ class EForm extends Model implements AuditableContract
                     generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
                 }
 
-            } else {
+            } else if ( $eform->status_eform != 'Approval2' ) {
                 $result = $eform->insertCoreBRI(8);
                 if ( $result['status'] ) {
                     $eform->kpr()->update(['is_sent'=> false]);
