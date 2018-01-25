@@ -1375,7 +1375,7 @@ class EForm extends Model implements AuditableContract
     public function validateData( $variable )
     {
         if ( $variable ) {
-            return $this->reformatCurrency( $variable );
+            return $this->reformatCurrency( number_format($variable, 0, '', '') );
         }
         return '0';
     }
