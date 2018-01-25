@@ -271,7 +271,7 @@ class CalculatorController extends Controller
             "rincian" => [
                 "plafond"             => $plafonds,
                 "angsuranFixed"       => $angsuranFixed,
-                "angsuranFloor"       => $angsuranFloor,
+                "angsuranFloat"       => $angsuranFloat,
                 "uang_muka"           => $downPayment,
                 "suku_bunga"          => $fxrate."%",
                 "suku_bunga_floating" => $flrate."%",
