@@ -349,7 +349,7 @@ class EForm extends Model implements AuditableContract
         } else {
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
-                $result = $this->insertRecontestBRI( '0' );
+                $result = $eform->insertRecontestBRI( '0' );
                 if ( $result['status'] ) {
                     $eform->update( [
                         'pinca_position' => $request->pinca_position,
