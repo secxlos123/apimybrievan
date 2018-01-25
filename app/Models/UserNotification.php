@@ -71,6 +71,7 @@ class UserNotification extends Model
 		/* eform  */
 		case 'App\Notifications\PengajuanKprNotification':
 			$subjectNotif = ['message' => 'Pengajuan Aplikasi KPR Baru',
+				'message_customer' => 'Selamat, pengajuan kredit anda sukses dilakukan. petugas BRI akan segera menghubungi no HP yang telah anda daftarkan',
 				'url' => $url,
 				'url_mobile' => '#',
 			];
@@ -295,6 +296,10 @@ class UserNotification extends Model
 
 		if (@$role == 'customer') {
 			$query->where('notifications.notifiable_id', @$user_id);
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
+				$query->whereNull('eforms.ao_id')->unreads();
+			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RecontestEFormNotification')) {
 				$query->unreads();
