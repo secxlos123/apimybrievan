@@ -535,6 +535,7 @@ class EFormController extends Controller
                             if ( $kanwil['branch'] == $request->input('branch_id') ) {
                                 $baseProperty['region_id'] = $kanwil['region'];
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
+                                }
                             }
                         }
 
@@ -571,7 +572,6 @@ class EFormController extends Controller
                             \Log::info($collateral);
                             }
                         }
-                    }
                 }
                     $kpr = KPR::create( $baseRequest );
                     $return = [
@@ -601,96 +601,6 @@ class EFormController extends Controller
         ];
         pushNotification($credentials, 'createEForm');
         return response()->success($return, 201);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function submitScreening( Request $request )
-    {
-        DB::beginTransaction();
-
-        if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
-            $eform = EForm::find( $request->input('eform_id') );
-
-            $calculate = array(
-                $request->input('pefindo', 'Hijau')
-                , $request->input('dhn', 'Hijau')
-                , $request->input('sicd', 'Hijau')
-            );
-
-            if ( in_array('Merah', $calculate) ) {
-                $result = '3';
-
-            } else if ( in_array('Kuning', $calculate) ) {
-                $result = '2';
-
-            } else {
-                $result = '1';
-
-            }
-
-            $eform->update( [
-                'prescreening_status' => $result
-                , 'selected_dhn' => $request->input('selected_dhn')
-                , 'selected_sicd' => $request->input('selected_sicd')
-            ] );
-
-            $eform = array();
-
-        } else {
-            $eform = EForm::findOrFail( $request->id );
-            $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
-
-        }
-
-        DB::commit();
-        return response()->success( [
-            'message' => 'Screening e-form berhasil disimpan.',
-            'contents' => $eform
-        ], 201 );
-    }
-
-    /**
-     * Get data for prescreening.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function postPrescreening( Request $request )
-    {
-        $data = EForm::findOrFail($request->eform);
-        $personal = $data->customer->personal;
-
-        $dhn = json_decode((string) $data->dhn_detail);
-        if ( !isset($dhn->responseData) ) {
-            $dhn = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"kategori":null,"keterangan":"","warna":"Hijau","result":""}]}');
-        }
-
-        $sicd = json_decode((string) $data->sicd_detail);
-        if ( !isset($sicd->responseData) ) {
-            $sicd = json_decode((string) '{"responseCode":"01","responseDesc":"","responseData":[{"status":null,"acctno":null,"cbal":null,"bikole":null,"result":null,"cif":null,"nama_debitur":null,"tgl_lahir":null,"alamat":null,"no_identitas":null}]}');
-        }
-
-        $html = '';
-
-        foreach (explode(',', $data->uploadscore) as $value) {
-            if ($value != '') {
-                $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
-            }
-        }
-
-        $data['uploadscore'] = $html;
-
-        return response()->success( [
-            'message' => 'Data Screening e-form',
-            'contents' => [
-                'eform' => $data
-                , 'dhn' => $dhn->responseData
-                , 'sicd' => $sicd->responseData
-            ]
-        ], 200 );
     }
 
     /**
