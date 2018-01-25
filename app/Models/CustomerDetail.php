@@ -303,6 +303,10 @@ class CustomerDetail extends Model implements AuditableContract
                 } elseif ( $image->getMimeType() == 'image/jpeg' ) {
                     $extension = 'jpeg';
                 }
+                elseif ( $image->getMimeType() == 'application/pdf' ) {
+                    $extension = 'pdf';
+                }
+
             } else {
                 $extension = $image->getClientOriginalExtension();
             }
