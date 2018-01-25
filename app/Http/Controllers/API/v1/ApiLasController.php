@@ -264,13 +264,20 @@ class ApiLasController extends Controller
                             ];
                         }
                         catch(SoapFault $f){
-                            return "Error Exception";
+                            $error[0] = 'Gagal Koneksi Jaringan';
+                            return [
+                                'code' => 04, 
+                                'descriptions' => 'Gagal Koneksi Jaringan',
+                                'contents' => [
+                                    'data' => $error
+                                ]
+                            ];
                         }
                     } else {
-                        $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+                        $error[0] = 'Hasil Inquiry Kosong / Anda belum memiliki user LAS';
                         return [
                             'code' => 04, 
-                            'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                            'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS',
                             'contents' => [
                                 'data' => $error
                             ]
@@ -322,7 +329,14 @@ class ApiLasController extends Controller
                         ];
                     }
                     catch(SoapFault $f){
-                        return "Error Exception";
+                        $error[0] = 'Gagal Koneksi Jaringan';
+                        return [
+                            'code' => 04, 
+                            'descriptions' => 'Gagal Koneksi Jaringan',
+                            'contents' => [
+                                'data' => $error
+                            ]
+                        ];
                     }
                 }
 
@@ -382,7 +396,14 @@ class ApiLasController extends Controller
                         ];
                     }
                     catch(SoapFault $f){
-                        return "Error Exception";
+                        $error[0] = 'Gagal Koneksi Jaringan';
+                        return [
+                            'code' => 04, 
+                            'descriptions' => 'Gagal Koneksi Jaringan',
+                            'contents' => [
+                                'data' => $error
+                            ]
+                        ];
                     }
                 }
                 $error[0] = 'Uknown request data';
@@ -437,7 +458,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -470,7 +498,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -504,7 +539,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
                 
@@ -537,7 +579,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -570,7 +619,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -603,7 +659,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -636,7 +699,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -669,7 +739,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -702,7 +779,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -735,7 +819,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -768,7 +859,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -801,7 +899,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                   return "Error Exception";
+                   $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -834,7 +939,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -867,7 +979,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -900,7 +1019,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -933,7 +1059,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -967,7 +1100,14 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 04, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
@@ -1001,20 +1141,39 @@ class ApiLasController extends Controller
                     ];
                 }
                 catch(SoapFault $f){
-                    return "Error Exception";
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 05, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
                 }
                 break;
 
             case 'inquiryKodePos':
-                $data_pos = Asmx::setEndpoint('GetDataKodePosBriguna')
-                ->setQuery([
-                    'search' => $data['search'],
-                    'limit' => $data['limit'],
-                    'page' => $data['page'],
-                    'sort' => $data['sort']
-                ])->post();
-                // print_r($data_pos);exit();
-                return $data_pos;
+                try {
+                    $data_pos = Asmx::setEndpoint('GetDataKodePosBriguna')
+                    ->setQuery([
+                        'search' => $data['search'],
+                        'limit' => $data['limit'],
+                        'page' => $data['page'],
+                        'sort' => $data['sort']
+                    ])->post();
+                    // print_r($data_pos);exit();
+                    return $data_pos;
+                    
+                } catch (Exception $e) {
+                    $error[0] = 'Gagal Koneksi Jaringan';
+                    return [
+                        'code' => 05, 
+                        'descriptions' => 'Gagal Koneksi Jaringan',
+                        'contents' => [
+                            'data' => $error
+                        ]
+                    ];
+                }
                 break;
 
             default:
@@ -1031,15 +1190,41 @@ class ApiLasController extends Controller
     }
 
     public function return_conten($respons){
-        $data = (array) $respons;
-        $conten = [
-            'code'         => $data['statusCode'],
-            'descriptions' => $data['statusDesc'],
-            'contents' => [
-                'data' => $data['items']
-            ]
-        ];
-        return $conten;
+        try {
+            $data = (array) $respons;
+
+            if (isset($data['items'])) {
+                // print_r('masuk');
+                $conten = [
+                    'code'         => $data['statusCode'],
+                    'descriptions' => $data['statusDesc'],
+                    'contents' => [
+                        'data' => $data['items']
+                    ]
+                ];
+            } else {
+                // print_r('tidak masuk');
+                $conten = [
+                    'code'         => $data['statusCode'],
+                    'descriptions' => $data['statusDesc'],
+                    'contents' => [
+                        'data' => []
+                    ]
+                ];
+            }
+            // exit();
+            
+            return $conten;
+        } catch (Exception $e) {
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'code' => 05, 
+                'descriptions' => 'Gagal Koneksi Jaringan',
+                'contents' => [
+                    'data' => $error
+                ]
+            ];
+        }
     }
 
     public function putusan($data) {
@@ -1089,7 +1274,14 @@ class ApiLasController extends Controller
                 ];
             }
             catch(SoapFault $f){
-                return "Error Exception";
+                $error[0] = 'Gagal Koneksi Jaringan';
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Gagal Koneksi Jaringan',
+                    'contents' => [
+                        'data' => $error
+                    ]
+                ];
             }
         }        
 
@@ -1582,8 +1774,16 @@ class ApiLasController extends Controller
                     'contents' => $briguna
                 ], 200 );
             } catch (Exception $e) {
-                return $e;
+                return response()->error( [
+                    'message' => 'Koneksi Gagal',
+                    'contents' => ''
+                ], 400 );
             }
+        } else {
+            return response()->error( [
+                    'message' => 'Request tidak ditemukan',
+                    'contents' => ''
+                ], 400 );
         }
     }
 
@@ -1595,33 +1795,34 @@ class ApiLasController extends Controller
             $resultclient = $client->inquiryUserLAS($pn);
             if($resultclient->inquiryUserLASResult){
                 $datadetail = json_decode($resultclient->inquiryUserLASResult);
-
                 if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    
                     if(isset($datadetail->items)){
                         $result = $this->return_conten($datadetail);
                         return $result;
-                    }else{
-                        $result = $this->return_conten($datadetail);
                     }
-                }else{
-                    $result = $this->return_conten($datadetail);
                 }
+                $result = $this->return_conten($datadetail);
+                return $result;
             }
-            $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
-            $result = [
+            $error[0] = 'Hasil Inquiry Kosong / Anda belum memiliki user LAS';
+            return [
                 'code' => 04, 
-                'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
+                'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS',
                 'contents' => [
                     'data' => $error
                 ]
             ];
         }
         catch(SoapFault $f){
-            $result = false;
-        }
-
-        return $result;
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'code' => 04, 
+                'descriptions' => 'Gagal Koneksi Jaringan',
+                'contents' => [
+                    'data' => $error
+                ]
+            ];
+        }        
     }
 
     function kirimPemutus($params) {
@@ -1647,10 +1848,24 @@ class ApiLasController extends Controller
                 $result = $dataResult;
                 return $result;
             }
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi DB';
+            return [
+                'statusCode' => 04, 
+                'statusDesc' => 'Gagal Koneksi DB',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
         catch(SoapFault $f){
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'statusCode' => 05, 
+                'statusDesc' => 'Gagal Koneksi Jaringan',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
     }
 
@@ -1673,10 +1888,24 @@ class ApiLasController extends Controller
                 $result = $dataResult;
                 return $result;
             }
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi DB';
+            return [
+                'statusCode' => 04, 
+                'statusDesc' => 'Gagal Koneksi DB',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
         catch(SoapFault $f){
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'statusCode' => 05, 
+                'statusDesc' => 'Gagal Koneksi Jaringan',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
     }
     
@@ -1699,10 +1928,24 @@ class ApiLasController extends Controller
                 $result = $dataResult;
                 return $result;
             }
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi DB';
+            return [
+                'statusCode' => 04, 
+                'statusDesc' => 'Gagal Koneksi DB',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
         catch(SoapFault $f){
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'statusCode' => 05, 
+                'statusDesc' => 'Gagal Koneksi Jaringan',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
     }
 
@@ -1725,10 +1968,24 @@ class ApiLasController extends Controller
                 $result = $dataResult;
                 return $result;
             }
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi DB';
+            return [
+                'statusCode' => 04, 
+                'statusDesc' => 'Gagal Koneksi DB',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
         catch(SoapFault $f){
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'statusCode' => 05, 
+                'statusDesc' => 'Gagal Koneksi Jaringan',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
     }
 
@@ -1751,10 +2008,24 @@ class ApiLasController extends Controller
                 $result = $dataResult;
                 return $result;
             }
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi DB';
+            return [
+                'statusCode' => 04, 
+                'statusDesc' => 'Gagal Koneksi DB',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
         catch(SoapFault $f){
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'statusCode' => 05, 
+                'statusDesc' => 'Gagal Koneksi Jaringan',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
     }
 
@@ -1778,10 +2049,24 @@ class ApiLasController extends Controller
                 $result = $dataResult;
                 return $result;
             }
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi DB';
+            return [
+                'statusCode' => 04, 
+                'statusDesc' => 'Gagal Koneksi DB',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
         catch(SoapFault $f){
-            return "Error Exception";
+            $error[0] = 'Gagal Koneksi Jaringan';
+            return [
+                'statusCode' => 05, 
+                'statusDesc' => 'Gagal Koneksi Jaringan',
+                'items' => [
+                    'data' => $error
+                ]
+            ];
         }
     }
 }
