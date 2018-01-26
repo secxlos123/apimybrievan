@@ -96,7 +96,8 @@ class SelectUkerController extends Controller
 				]
 			  );
 	  }elseif($data['keys']=='branch'){
-				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
+				//$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
+				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/branch/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
