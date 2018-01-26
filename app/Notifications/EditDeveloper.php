@@ -72,9 +72,9 @@ class EditDeveloper extends Notification
         return [
             'developer_id' => $this->dev->id,
             'user_id' => $notifiable->id,
-            'approval_data_changes_id' => $approvalDataChange->id,
-            'city_id' => $approvalDataChange->city_id,            
-            'company_name' => $approvalDataChange->company_name,            
+            'approval_data_changes_id' => !($approvalDataChange->id)? null : $approvalDataChange->id,
+            'city_id' => !($approvalDataChange->city_id)? null : $approvalDataChange->city_id,
+            'company_name' => !($approvalDataChange->company_name)? null : $approvalDataChange->company_name ,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
             'branch_id' => 0,
             'role_name' => $notifiable->roles->first()->slug,
