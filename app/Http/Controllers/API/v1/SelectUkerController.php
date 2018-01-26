@@ -53,7 +53,6 @@ class SelectUkerController extends Controller
         $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       }
-return count(apiPdmToken::all());die();
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($data, $token);
