@@ -77,6 +77,12 @@ class SelectUkerController extends Controller
 
 	public function ListBranch($data, $token)
     {
+		 $host = env('APP_URL');
+	  if($host == 'http://api.dev.net/'){
+		$urls = 'http://172.18.44.182/';
+	}else{
+		$urls = 'http://api.briconnect.bri.co.id/';  
+	  }
       $client = new Client();
 	 /*   $return =  Brispot::setEndpoint('region/v3')
 				->setHeaders([
@@ -87,7 +93,7 @@ class SelectUkerController extends Controller
 
             return $return; */
  	  if($data['keys']=='main'){
-			  $requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/region/v3/'.$data['kode'],
+			  $requestListExisting = $client->request('GET', $urls.'bribranch/region/v3/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
@@ -96,7 +102,7 @@ class SelectUkerController extends Controller
 				]
 			  );
 	  }elseif($data['keys']=='branch'){
-				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
+				$requestListExisting = $client->request('GET', $urls.'bribranch/mainbr/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
@@ -105,7 +111,7 @@ class SelectUkerController extends Controller
 				]
 			  );
 	  }elseif($data['keys']=='kanwil'){
-				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/region/v3',
+				$requestListExisting = $client->request('GET', $urls.'bribranch/region/v3',
 				[
 				  'headers' =>
 				  [
