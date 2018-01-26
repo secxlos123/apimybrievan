@@ -67,6 +67,12 @@ class ViewSeeder extends Seeder
               users.last_name,
               users.phone,
               users.mobile_phone,
+              users.gender,
+              users.email,
+              customer_details.mother_name,
+              customer_details.address,
+              customer_details.citizenship_name,
+              customer_details.dependent_amount,
               eforms.id AS eform_id,
               eforms.ref_number,
               eforms.ao_name,
@@ -74,6 +80,7 @@ class ViewSeeder extends Seeder
               eforms.appointment_date,
               eforms.product_type,
               eforms.is_approved,
+              eforms.nik,
               kpr.status_property,
               kpr.developer_id,
               kpr.property_id,
@@ -96,6 +103,11 @@ class ViewSeeder extends Seeder
               collaterals.status,
               collaterals.is_staff,
               collaterals.approved_by,
+              (select name from cities where cities.id = customer_details.birth_place_id) AS birthplace,
+              CASE WHEN customer_details.address_status::int = 0 THEN 'Milik Sendiri'
+                   WHEN customer_details.address_status::int = 1 THEN 'Milik Orang Tua/Mertua atau Rumah Dinas'
+                   WHEN customer_details.address_status::int = 3 THEN 'Tinggal di Rumah Kontrakan'
+                   ELSE 'Tidak Ada' END AS address_status,
               CASE WHEN kpr.status_property::int = 1 THEN 'Baru'
                    WHEN kpr.status_property::int = 2 THEN 'Secondary'
                    WHEN kpr.status_property::int = 3 THEN 'Refinancing'
@@ -110,6 +122,7 @@ class ViewSeeder extends Seeder
                    ELSE 'Tidak Ada' END AS kpr_type_property_name
 
               from users
+              LEFT JOIN customer_details ON customer_details.user_id = users.id
               LEFT JOIN eforms ON eforms.user_id = users.id
               LEFT JOIN kpr ON kpr.eform_id = eforms.id
               LEFT JOIN visit_reports ON visit_reports.eform_id = eforms.id
