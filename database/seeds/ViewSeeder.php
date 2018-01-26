@@ -108,6 +108,10 @@ class ViewSeeder extends Seeder
                    WHEN customer_details.address_status::int = 1 THEN 'Milik Orang Tua/Mertua atau Rumah Dinas'
                    WHEN customer_details.address_status::int = 3 THEN 'Tinggal di Rumah Kontrakan'
                    ELSE 'Tidak Ada' END AS address_status,
+              CASE WHEN customer_details.status::int = 1 THEN 'Belum Menikah'
+                   WHEN customer_details.status::int = 2 THEN 'Menikah'
+                   WHEN customer_details.status::int = 3 THEN 'Janda/Duda'
+                   ELSE 'Tidak Ada' END AS status_user,
               CASE WHEN kpr.status_property::int = 1 THEN 'Baru'
                    WHEN kpr.status_property::int = 2 THEN 'Secondary'
                    WHEN kpr.status_property::int = 3 THEN 'Refinancing'
