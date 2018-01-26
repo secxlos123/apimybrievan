@@ -230,24 +230,23 @@ class UserNotification extends Model
 		case 'App\Notifications\CollateralManagerRejected':
 			$subjectNotif = [
 			  'message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
-			  'message_customer' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
+			  'message_external' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
-				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralManagerApprove':
 			$subjectNotif = [
 			  'message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
-			  'message_customer' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
+			  'message_external' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
-				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;
 		default:
 			$subjectNotif = ['message' => 'Type undefined',
 				'url' => '',
+				'message_external' => '',
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
