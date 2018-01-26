@@ -35,12 +35,14 @@ class ApiLas extends Model
             $eforms = DB::table('eforms')
                  ->select('eforms.ref_number','eforms.created_at','eforms.ao_id',
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name',
-                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
+                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi','eforms.is_screening',
                     'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
                     'briguna.is_send','briguna.eform_id','briguna.tp_produk',
-                    'customer_details.nik','customer_details.birth_date',
+                    'briguna.tgl_analisa','briguna.tgl_putusan','briguna.cif',
+                    'customer_details.nik','customer_details.is_verified',
                     'customer_details.address','customer_details.mother_name',
-                    'users.first_name','users.last_name','users.mobile_phone','users.gender'
+                    'customer_details.birth_date','users.first_name','users.last_name',
+                    'users.mobile_phone','users.gender'
                    )
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
