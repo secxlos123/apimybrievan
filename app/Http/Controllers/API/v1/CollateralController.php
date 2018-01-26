@@ -65,10 +65,12 @@ class CollateralController extends Controller
       $user = \RestwsHc::getUser();
       \Log::info($user);
       $developer_id = env('DEVELOPER_KEY',1);
-      $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->orderBy('created_at', 'desc');
+      $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int)$this->request->header('pn'));
       }
+      if ($this->request->has('status')) $data->where('status', $this->request->input('status'));
+      $data->orderBy('created_at', 'desc');
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
@@ -201,7 +203,7 @@ class CollateralController extends Controller
         $collateral->save();
          if(env('PUSH_NOTIFICATION', false)) 
         {
-       \Log::info('=======notification web and mobile sent to manager collateral  ======');            
+            \Log::info('=======notification web and mobile sent to manager collateral  ======');            
             $collateral_id =$collateralId;
             $dataCollateral = Collateral::find($collateralId);
             if(!empty($dataCollateral->manager_id))
@@ -210,9 +212,13 @@ class CollateralController extends Controller
                 //* 
                 //insert data from notifications table
                 $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-                $eform_id = $getDataEform->eform_id; 
-                $eform = Eform::where('id',$eform_id)->first();
-                $user_id = $eform->user_id;
+                if($getDataEform){
+                  $eform_id = $getDataEform->eform_id; 
+                  $eform = Eform::where('id',$eform_id)->first();
+                  $user_id = $eform->user_id;
+                }else{
+                  $user_id = $collateral->developer_id;
+                }
                 $usersModel = User::where('id',$user_id)->first();
                 $dataUser  = UserServices::where('pn',$manager_id)->first();
                 $branch_id = $dataUser['branch_id'];
@@ -281,7 +287,7 @@ class CollateralController extends Controller
         $property->is_approved = true;
         $collateral->save();
         $property->save();
-        if ( $request->eform_id ) {
+        if ( $request->has('eform_id') && $request->eform_id != 'false' ) {
             $eformdata = EForm::findOrFail($request->input('eform_id'));
             $hasapprove = $eformdata->is_approved;
         }
@@ -310,11 +316,11 @@ class CollateralController extends Controller
       }
       if(env('PUSH_NOTIFICATION', false))
        {
-     \Log::info('=======notification web approve or reject collateral  ======');
+            \Log::info('=======notification web approve or reject collateral  ======');
             $pn = $this->request->header('pn');
-            $collateral = Collateral::find($collateralId);
-            $developer_id = $collateral->developer_id;
-            $user_id = Developer::find($developer_id)->user_id;
+            $collateral = Collateral::where('id',$collateralId)->first();
+            $developer_id =  $collateral->developer_id;
+            $user_id =  $developer_id;
             $usersModel = User::find($user_id);
             $dataUser  = UserServices::where('pn',$pn)->first();
             $branch_id = $dataUser['branch_id'];
@@ -322,9 +328,6 @@ class CollateralController extends Controller
             {
                 $bodyNotif = 'approval collateral';
                 $type = 'collateral_manager_approving';
-                $developer_id = $collateral['developer_id'];
-                $dataDeveloper = Developer::where('id',$developer_id)->first();
-                $user_id = $dataDeveloper->user_id;
                 $receiver = 'external';
                 //insert data from notifications table 
                 $usersModel->notify(new CollateralManagerApprove($collateral,$branch_id));
@@ -336,14 +339,11 @@ class CollateralController extends Controller
             else if ($action === 'reject') 
             {
                 $role = $dataUser['role'];
-                if ($role=='collateral')  //reject penilaian anggunan 
+                if ($role=='collateral')  //reject penilaian anggunan untuk developer
                 {
                    $bodyNotif = 'reject collateral';
                    $type = 'collateral_'.$action;
                    $receiver = 'external';  // send to external apps
-                   $developer_id = $collateral['developer_id'];
-                   $dataDeveloper = Developer::where('id',$developer_id)->first();
-                   $user_id = $dataDeveloper->user_id;
                    //insert data from notifications table      
                    $usersModel->notify(new CollateralManagerRejected($collateral,$branch_id));
                    $userNotif = new UserNotification; 
@@ -366,9 +366,13 @@ class CollateralController extends Controller
                     //* 
                     //insert data from notifications table    
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-                    $eform_id = $getDataEform->eform_id; 
-                    $eform = Eform::where('id',$eform_id)->first(); 
-                    $id_nasabah = $eform->user_id;
+                      if($getDataEform){
+                        $eform_id = $getDataEform->eform_id; 
+                        $eform = Eform::where('id',$eform_id)->first(); 
+                        $id_nasabah = $eform->user_id; 
+                      }else{
+                        $id_nasabah = $developer_id;
+                      }
                     $usersModel = User::where('id',$id_nasabah)->first();
                     $usersModel->notify(new CollateralStafRejectOTS($collateral,$branch_id));
 
@@ -426,17 +430,25 @@ class CollateralController extends Controller
           ->update( $baseRequest );
       if(env('PUSH_NOTIFICATION', false))
        {
-       \Log::info('=======notif disposisi ke staff colleteral atau ao ======');
+        \Log::info('=======notif disposisi ke staff colleteral atau ao ======');
         $dataInput = $this->request->all();
         $staff_id = $dataInput['staff_id'];
         //* 
         //insert data from notifications table collateral disposition
         $type = 'collateral_disposition';
-        $dataCollateral = Collateral::find($collateralId);
-        $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-        $eform_id = $getDataEform->eform_id; 
-        $eform = Eform::where('id',$eform_id)->first();
-        $user_id = $eform->user_id;
+        $dataCollateral = Collateral::where('id',$collateralId)->first();
+        $developer_id = $dataCollateral->developer_id;
+        $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();  //check data eform
+        if($getDataEform)
+        {
+          $eform_id = $getDataEform->eform_id; 
+          $eform = Eform::where('id',$eform_id)->first();
+          $user_id = $eform->user_id;
+        }else
+        {
+          $user_id= $developer_id; 
+        }
+
         $usersModel = User::where('id',$user_id)->first();
         $dataUser  = UserServices::where('pn',$staff_id)->first();
         $branch_id = $dataUser['branch_id'];
@@ -511,17 +523,21 @@ class CollateralController extends Controller
             $store = $this->collateral->findOrFail($collateralId);
 
             $manager_id= $store['manager_id'];
-            if(env('PUSH_NOTIFICATION', false))
+             if(env('PUSH_NOTIFICATION', false))
             {
                 if(!empty($manager_id))
                 {
                     //* 
                     //insert data from notifications table
-                    $dataCollateral = Collateral::find($collateralId);
+                    $dataCollateral = Collateral::where('id',$collateralId)->first();
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-                    $eform_id = $getDataEform->eform_id; 
-                    $eform = Eform::where('id',$eform_id)->first();
-                    $user_id = $eform->user_id;
+                    if($getDataEform){
+                      $eform_id = $getDataEform->eform_id; 
+                      $eform = Eform::where('id',$eform_id)->first();
+                      $user_id = $eform->user_id;            
+                    }else{
+                      $user_id = $dataCollateral->developer_id;
+                    }
                     $usersModel = User::where('id',$user_id)->first();
                     $dataUser  = UserServices::where('pn',$manager_id)->first();
                     $branch_id = $dataUser['branch_id'];
@@ -573,16 +589,22 @@ class CollateralController extends Controller
       );
     }
 
-    public function sendNotifOTS($collateral_id,$typeKpr){
+     public function sendNotifOTS($collateral_id,$typeKpr){
         $dataCollateral = Collateral::find($collateral_id);
         $id_manager_collateral = $dataCollateral->manager_id;
         //* 
         //insert data from notifications table
         $type = 'collateral_ots';
         $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateral_id)->first();
-        $eform_id = $getDataEform->eform_id; 
-        $eform = Eform::where('id',$eform_id)->first(); 
-        $user_id = $eform->user_id;
+        if($getDataEform){
+          $eform_id = $getDataEform->eform_id; 
+          $eform = Eform::where('id',$eform_id)->first(); 
+          $user_id = $eform->user_id;
+        }
+        else
+        {
+          $user_id =$dataCollateral->developer_id;
+        }
         $usersModel = User::where('id',$user_id)->first();
         $dataUser  = UserServices::where('pn',$id_manager_collateral)->first();
         $branch_id = $dataUser['branch_id'];
@@ -675,6 +697,9 @@ class CollateralController extends Controller
           $collateral = $this->collateral->withAll()->where('id','=',$collateralId)->first();
           $developer_id = $collateral['property']['developer_id']; 
         } 
+     }else{
+        $collateral = $this->collateral->withAll()->where('id','=',$collateralId)->first();
+        $developer_id = $collateral['property']['developer_id']; 
      }  
      return response()->success( [
         'contents' => $collateral
@@ -685,7 +710,7 @@ class CollateralController extends Controller
     *  Get Id collateral from property_id
     */
     public function getIdCollateral($type ,$property_id){  
-     $collateral = DB::table('collateral_view_table')->where('property_id', $property_id)->first();  
+     $collateral = Collateral::where('property_id', $property_id)->first();  
      return response()->success( [
         'contents' => $collateral
      ] );     

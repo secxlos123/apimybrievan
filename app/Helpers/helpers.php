@@ -411,6 +411,9 @@ if (! function_exists('getTypeModule')) {
             case 'App\Models\Property':
                 $typeModule = 'property';
                 break;
+            case 'App\Models\Scoring':
+                $typeModule = 'prescreening-scoring';
+                break;
             default:
                 $typeModule = 'Type undefined';
                 break;

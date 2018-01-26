@@ -263,12 +263,12 @@ class CreateOts extends FormRequest
     private function tenRules()
     {
       return [
-        'ten.paripasu' => 'required',
-        'ten.paripasu_bank' => 'numeric',
+        'ten.paripasu' => 'required|in:Ya,Tidak',
+        'ten.paripasu_bank' => 'required_if:ten.paripasu,Ya',
         'ten.insurance' => 'required|in:Ya,Tidak',
         'ten.insurance_company' => 'required_if:ten.insurance,Ya',
         'ten.insurance_company_name' => 'required_if:ten.insurance,Ya',
-        'ten.insurance_value' => 'required_if:ten.insurance,Ya|numeric',
+        'ten.insurance_value' => 'required_if:ten.insurance,Ya',
         'ten.eligibility' => 'required',
       ];
     }

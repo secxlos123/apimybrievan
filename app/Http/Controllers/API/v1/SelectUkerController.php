@@ -53,7 +53,6 @@ class SelectUkerController extends Controller
         $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       }
-return count(apiPdmToken::all());die();
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($data, $token);
@@ -97,7 +96,8 @@ return count(apiPdmToken::all());die();
 				]
 			  );
 	  }elseif($data['keys']=='branch'){
-				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
+				//$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
+				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/branch/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
