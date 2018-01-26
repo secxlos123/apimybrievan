@@ -61,17 +61,12 @@ class UserNotification extends Model
 		}
 		$tipeNotif = $this->type;
 		if($tipeNotif == 'App\Notifications\CollateralManagerApprove' || $tipeNotif  == 'App\Notifications\CollateralManagerRejected'){
-			 $dataCollateral = Collateral::where('id',$this->slug)->first();
-			 $property_id = $dataCollateral->property_id;
-			 $dataProperty = DB::table('developer_properties_view_table')->where('prop_id', $property_id)->first();
-			 $slug = $dataProperty->prop_slug;  
-
+			$slug = !empty($this->data['prop_slug']) ? $this->data['prop_slug'] : null;  
 		}
 
 		if($tipeNotif == 'App\Notifications\CollateralOTS' || $tipeNotif == 'App\Notifications\CollateralStafRejectOTS'){
-			$collateral = DB::table('collateral_view_table')->where('collaterals_id', $this->slug)->first();  
-			$collateralAppraisal = $collateral->staff_name;
-			$debitur = $collateral->first_name.' '.$collateral->last_name;
+				$collateralAppraisal =!empty($this->data['staff_name']) ? $this->data['staff_name'] : null;
+				$debitur = !empty($this->data['user_name']) ? $this->data['user_name'] : null;		
 		}
 		switch ($this->type) {
 		/* eform  */
@@ -233,14 +228,18 @@ class UserNotification extends Model
 			];
 			break;			
 		case 'App\Notifications\CollateralManagerRejected':
-			$subjectNotif = ['message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
+			$subjectNotif = [
+			  'message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
+			  'message_customer' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;	
 		case 'App\Notifications\CollateralManagerApprove':
-			$subjectNotif = ['message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
+			$subjectNotif = [
+			  'message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
+			  'message_customer' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'message_external' => '',
 				'url_mobile' => '#',

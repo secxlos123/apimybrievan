@@ -26,14 +26,6 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
       $customersInt = User::getCustomers( $request )->get();
-      // $customerData = Client::setEndpoint('customer')
-      //               ->setQuery(['limit' => 100])
-      //               ->setHeaders([
-      //                 "Authorization" => request()->header('Authorization'),
-      //                 "pn" => request()->header('branch')
-      //               ])->get();
-      // $customersEks = $customerData['contents']['data'];
-      // dd($customersEks);
       return response()->success( [
   			'message' => 'Sukses',
   			'contents' => $customersInt
@@ -41,40 +33,27 @@ class CustomerController extends Controller
 
     }
 
-    // public function test(Request $request)
-    // {
-    //   $customerData = Client::setEndpoint('customer')
-    //                 ->setHeaders([
-    //                   "Authorization" => request()->header('Authorization'),
-    //                   "pn" => request()->header('branch')
-    //                 ])->get();
-    //   $dataCustomer = $customerData['contents']['data'];
-    //
-    //   return response()->success( [
-  	// 		'message' => 'Sukses',
-  	// 		'contents' => $dataCustomer
-  	// 	], 200 );
-    // }
 
     public function customer_nik(Request $request)
     {
+      $sendRequest = array(
+        'app_id' => 'mybriapi',
+        'nik' => $request['nik']
+      );
+      if ( $request->header('Device-Id') ) {
+          $sendRequest['device_id'] = $request->header('Device-Id');
+      }
       $customer_nik = RestwsHc::setBody([
         'request' => json_encode([
           'requestMethod' => 'get_customer_profile_nik',
-          'requestData' => [
-            'app_id' => 'mybriapi',
-            'nik' => $request['nik']
-          ],
+          'requestData' => $sendRequest,
         ])
       ])->post('form_params');
-      // $str = '001231230123123';
-      // $m = substr($str, 0, -4).str_repeat('#', 4);
-      // dd($m);
+
       $info = $customer_nik['responseData']['card_info'];
       foreach ($info as $key => $value) {
         $customer_nik['responseData']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
       }
-      // dd($customer_nik['responseData']);
 
       return response()->success([
         'message' => 'Get Customer Detail by NIK success',
@@ -205,26 +184,5 @@ class CustomerController extends Controller
           'message' => 'Get Customer by Officer success',
           'contents' => $data
         ]);
-    }
-
-    public function get_token()
-    {
-      if ( count(apiPdmToken::all()) > 0 ) {
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-      }
-
-      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
-        $token = $apiPdmToken['access_token'];
-        return $token;
-      } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
-
-        $token = $apiPdmToken['access_token'];
-        return $token;
-      }
     }
 }

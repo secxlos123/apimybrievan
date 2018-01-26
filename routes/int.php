@@ -115,6 +115,17 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		} );
+
+	// route that require login session
+	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
+
+		/**
+		 * This Route For Auditrail
+		 */
+		Route::get('auditrail/pengajuan_kredit', 'AuditrailController@index');
+
+	} );
+
 	} );
 
 Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
