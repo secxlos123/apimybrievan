@@ -41,7 +41,7 @@ class ViewAuditrailSeeder extends Seeder
          	   , a.old_values
          	   , a.new_values
          	   , a.ip_address
-         	   , a.extra_params as action_location
+         	   , case when a.extra_params is null then (select extra_params from audits where id = a.id-2) else 'Null' end as action_location
          	   from audits a
 			   left join users b on b.id = a.user_id
 			   left join developers c on c.user_id = a.user_id
