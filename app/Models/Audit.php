@@ -222,4 +222,21 @@ class Audit extends Model implements AuditContract
                 ->orderBy($sort[0], $sort[1]);
             
     }
+    /*
+     save data action dan long lat before save
+    */
+     public static   function boot(  )
+    {
+        parent::boot();
+        self::created(function($model){
+           $request = request();
+           $extraParams = array(
+                'longitude' => number_format($request->header('long', env('DEF_LONG', '106.81350')), 5)
+                , 'latitude' => number_format($request->header('lat', env('DEF_LAT', '-6.21670')), 5)
+            );
+           $model->extra_params =  json_encode($extraParams);
+           $model->action = $request->header('auditaction', 'Undefined Action');
+           $model->save();
+        });   
+    }
 }
