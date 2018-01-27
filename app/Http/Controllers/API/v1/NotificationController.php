@@ -48,6 +48,7 @@ class NotificationController extends Controller
                                         'id' => $value->id,
                                         'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],
                                         'subject' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message'],
+                                        'subject_external' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external'],
                                         'type' => $value->type,
                                         'notifiable_id' => $value->notifiable_id,
                                         'notifiable_type' => $value->notifiable_type,
@@ -91,7 +92,7 @@ class NotificationController extends Controller
         $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : NULL ;
         $notification = $this->userNotification
             ->where( 'slug', $slug)->where( 'type_module', $type)->whereNull('read_at')
-            ->firstOrFail();
+            ->first();
 
         if($notification) $notification->markAsRead($is_read);
         return  response()->success( [

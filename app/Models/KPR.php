@@ -68,6 +68,9 @@ class KPR extends Model implements AuditableContract
             $data[ 'developer_id' ] = $data[ 'developer' ];
             $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
             $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
+            
+            $usersModel = User::FindOrFail($eform->user_id);
+            $usersModel->notify(new PengajuanKprNotification($eform)); /*notif Pengajuan Kredit Baru*/
 
             if ( isset($data[ 'property_item' ]) ) {
                 PropertyItem::setAvailibility( $data[ 'property_item' ], "book" );

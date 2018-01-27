@@ -53,7 +53,6 @@ class SelectUkerController extends Controller
         $this->gen_token();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       }
-return count(apiPdmToken::all());die();
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($data, $token);
@@ -78,6 +77,12 @@ return count(apiPdmToken::all());die();
 
 	public function ListBranch($data, $token)
     {
+		 $host = env('APP_URL');
+	  if($host == 'http://api.dev.net/'){
+		$urls = 'http://172.18.44.182/';
+	}else{
+		$urls = 'http://api.briconnect.bri.co.id/';  
+	  }
       $client = new Client();
 	 /*   $return =  Brispot::setEndpoint('region/v3')
 				->setHeaders([
@@ -88,7 +93,7 @@ return count(apiPdmToken::all());die();
 
             return $return; */
  	  if($data['keys']=='main'){
-			  $requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/region/v3/'.$data['kode'],
+			  $requestListExisting = $client->request('GET', $urls.'bribranch/region/v3/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
@@ -97,7 +102,7 @@ return count(apiPdmToken::all());die();
 				]
 			  );
 	  }elseif($data['keys']=='branch'){
-				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/mainbr/'.$data['kode'],
+				$requestListExisting = $client->request('GET', $urls.'bribranch/mainbr/'.$data['kode'],
 				[
 				  'headers' =>
 				  [
@@ -106,7 +111,7 @@ return count(apiPdmToken::all());die();
 				]
 			  );
 	  }elseif($data['keys']=='kanwil'){
-				$requestListExisting = $client->request('GET', 'http://172.18.44.182/bribranch/region/v3',
+				$requestListExisting = $client->request('GET', $urls.'bribranch/region/v3',
 				[
 				  'headers' =>
 				  [

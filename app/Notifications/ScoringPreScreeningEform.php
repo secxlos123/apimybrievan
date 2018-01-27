@@ -7,23 +7,23 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
-use App\Models\Developer;
-use App\Models\ApprovalDataChange;
+use App\Models\EForm;
+use App\Models\Scoring;
 
-class EditDeveloper extends Notification
+class ScoringPreScreeningEform extends Notification
 {
     use Queueable;
 
-    public $dev;
+    public $eForm;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($dev)
+    public function __construct($eForm)
     {
-        $this->dev   = $dev;
+        $this->eForm   = $eForm;
     }
 
     /**
@@ -66,21 +66,20 @@ class EditDeveloper extends Notification
 
     public function toDatabase($notifiable)
     {
-        $typeModule = getTypeModule(Developer::class);
-        $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->whereNull('approval_by')->first();
-
+        $typeModule = getTypeModule(Scoring::class);
+        
         return [
-            'developer_id' => $this->dev->id,
+            'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
-            'approval_data_changes_id' => !($approvalDataChange->id)? null : $approvalDataChange->id,
-            'city_id' => !($approvalDataChange->city_id)? null : $approvalDataChange->city_id,
-            'company_name' => !($approvalDataChange->company_name)? null : $approvalDataChange->company_name ,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'branch_id' => 0,
-            'role_name' => $notifiable->roles->first()->slug,
-            'slug' => $this->dev->id,
+            'nik' => $this->eForm->nik,
+            'ref_number' => $this->eForm->ref_number,
+            'branch_id' => $this->eForm->branch_id,
+            'slug' => $this->eForm->id,
             'type_module' => $typeModule,
-            'created_at' => $this->dev->created_at,
+            'created_at' => $this->eForm->created_at,
+            'message' => $this->eForm->message,
+            'role_name' => $notifiable->roles->first()->slug,
         ];
     }
 }
