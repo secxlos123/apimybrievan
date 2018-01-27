@@ -151,7 +151,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_appointment')
+                ->from('auditrail_type_one')
                 ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by tanggal aksi.
@@ -239,4 +239,322 @@ class Audit extends Model implements AuditContract
            $model->save();
         });   
     }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsAdmindev($query, Request $request)
+    {
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+        return $query
+                ->from('auditrail_admin_developer')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                       
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+               
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+      
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Perusahaan Mitra.
+                *
+                * @param $request->company_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('company_name')){
+                        $auditrail->where(\DB::raw('LOWER(company_name)'), 'like', '%'.strtolower($request->input('company_name')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for Auditrail Admin Developer
+                */
+
+                 $slug = 'developer';
+                 $action = 'undefined action';
+                 $auditrail->where('role', $slug);
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+            }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsLogin($query, Request $request)
+    {
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+        return $query
+                ->from('auditrail_admin_developer')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                       
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+               
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+      
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Perusahaan Mitra.
+                *
+                * @param $request->company_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('company_name')){
+                        $auditrail->where(\DB::raw('LOWER(company_name)'), 'like', '%'.strtolower($request->input('company_name')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for Auditrail Login
+                */
+
+                $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+            }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsAgenDev($query, Request $request)
+    {
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+        return $query
+                ->from('auditrail_admin_developer')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                       
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+               
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+      
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Perusahaan Mitra.
+                *
+                * @param $request->company_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('company_name')){
+                        $auditrail->where(\DB::raw('LOWER(company_name)'), 'like', '%'.strtolower($request->input('company_name')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for Auditrail Login
+                */
+
+                 $slug = 'developer-sales';
+                 $action = 'undefined action';
+                 $auditrail->where('role', $slug);
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'login');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+            }
+
+            /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsEdit($query, Request $request)
+    {
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+        return $query
+                ->from('auditrail_admin_developer')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                       
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+               
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+      
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Perusahaan Mitra.
+                *
+                * @param $request->company_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('company_name')){
+                        $auditrail->where(\DB::raw('LOWER(company_name)'), 'like', '%'.strtolower($request->input('company_name')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for Auditrail Login
+                */
+
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%p%');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%u%');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+            }
 }
