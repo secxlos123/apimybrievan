@@ -123,6 +123,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		 * This Route For Auditrail
 		 */
 		Route::get('auditrail/pengajuan_kredit', 'AuditrailController@index');
+		Route::get('auditrail/appointment', 'AuditrailController@auditAppointment');
 
 	} );
 

@@ -137,4 +137,89 @@ class Audit extends Model implements AuditContract
                 ->orderBy($sort[0], $sort[1]);
             
     }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsAppointment($query, Request $request)
+    {
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+        return $query
+                ->from('auditrail_appointment')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                   $appointment = 'app\models\appointment';
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                        $auditrail->where('auditable_type', $appointment);
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    $appointment = 'app\models\appointment';
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                        $auditrail->where('auditable_type', $appointment);
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+                    $appointment = 'app\models\appointment';
+
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+                        $auditrail->where('auditable_type', $appointment);
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by ref_number.
+                *
+                * @param $request->ref_number
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+                     $appointment = 'app\models\appointment';
+
+                  if ($request->has('ref_number')){
+                        $auditrail->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('ref_number')).'%');
+                        $auditrail->where('auditable_type', $appointment);
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for Auditrail Penjadwalan
+                */
+                 $appointment = 'app\models\appointment';
+
+                 $auditrail->where('auditable_type', $appointment);
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+            
+    }
 }
