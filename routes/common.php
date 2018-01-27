@@ -37,6 +37,8 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
         'as'    => 'api.user.read_notification.eks',
         'uses'  => 'NotificationController@read'
     ]);
+
+    Route::get('mobile/list-notification', 'NotificationController@unreadMobile');
 	/**
 	 * Route for namespace API\v1\Eks
 	 */

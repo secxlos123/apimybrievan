@@ -78,6 +78,7 @@ class RejectEFormCustomer extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
+        $message    = getMessage("eform_reject");
 
         return [
             'eform_id' => $this->eForm->id,
@@ -90,6 +91,7 @@ class RejectEFormCustomer extends Notification
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
             'role_name' => $notifiable->roles->first()->slug,
+            'message' => $message,
         ];
     }
 }
