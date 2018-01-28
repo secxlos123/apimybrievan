@@ -422,6 +422,72 @@ if (! function_exists('getTypeModule')) {
     }
 }
 
+if (! function_exists('getMessage')) {
+    function getMessage($type)
+    {
+        switch ($type) {
+            case 'eform_create':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan KPR Baru',
+                ];
+                break;
+            case 'eform_approve':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan anda telah di Setujui',
+                ];
+                break;
+            case 'eform_reject':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan anda telah di Tolak',
+                ];
+                break;
+            case 'eform_lkn':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Data LKN berhasil dikirim',
+                ];
+                break;
+            case 'eform_disposition':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Disposisi Pengajuan',
+                ];
+                break;
+            case 'eform_recontest':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan Anda Telah di Rekontest',
+                ];
+            case 'schedule_create':
+                $message = [
+                    'title'   => 'Schedule Notification',
+                    'message' => 'Anda memiliki jadwal baru',
+                ];
+            case 'schedule_update':
+                $message = [
+                    'title'   => 'Schedule Notification',
+                    'message' => 'Jadwal anda telah di update, Silahkan cek jadwal anda',
+                ];
+            case 'verify':
+                $message = [
+                    'title'   => 'Verify Notification',
+                    'message' => 'Silahkan Verifikasi Data Anda',
+                ];
+            default:
+                $message = ['message' => 'Type undefined',
+                    'url' => '',
+                    'url_mobile' => '#',
+                ];
+                break;
+        }
+
+        return $message;
+    }
+}
+
 if (! function_exists('pushNotification')) {
 
     /**
@@ -623,9 +689,11 @@ if (! function_exists('pushNotification')) {
     function disposition($credentials){
         $data      = $credentials['eform'];
         $aoId      = $credentials['ao_id'];
+        $message   = getMessage("eform_disposition");
+
         $userNotif = new UserNotification;
-        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-        $notificationBuilder->setBody('E-Form berhasil di disposisi')
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['message'])
                             ->setSound('default');
         // Get data from notifications table
         $notificationData = $userNotif->where('slug', $data->id)
@@ -642,7 +710,7 @@ if (! function_exists('pushNotification')) {
         $notification = $notificationBuilder->build();
         $payload         = $dataBuilder->build();
         $topic = new Topics();
-        $topic->topic('testing')->andTopic('branch_012')->andTopic('ao_'.$aoId);
+        $topic->topic('testing')->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
         $topicResponse->isSuccess();
