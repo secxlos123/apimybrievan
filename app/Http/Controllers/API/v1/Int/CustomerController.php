@@ -192,7 +192,21 @@ class CustomerController extends Controller
             }
 				KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
 		}
-
+		$zipcode = $this->getZipCode($request->zip_code);
+		$zipcodecurrent = $this->getZipCode($request->zip_code_current);
+		$zipcodeoffice = $this->getZipCode($request->zip_code_office);
+		if (count($zipcode)>0 && count($zipcodecurrent)>0 && count($zipcodeoffice)>0 ) {
+		$addzipext = array(	'kelurahan' => $zipcode['kelurahan'],
+							'kecamatan' => $zipcode['kecamatan'],
+							'kabupaten' => $zipcode['kabupaten'],
+							'kelurahan_current' => $zipcodecurrent['kelurahan'] ,
+							'kecamatan_current' => $zipcodecurrent['kecamatan'] ,
+							'kabupaten_current' => $zipcodecurrent['kabupaten'] ,
+							'kelurahan_office' => $zipcodeoffice['kelurahan'] ,
+							'kecamatan_office' => $zipcodeoffice['kecamatan'] ,
+							'kabupaten_office' => $zipcodeoffice['kabupaten'] );
+		$request->merge($addzipext);
+		}
 		$customer->verify( $request->except('join_income','developer','property','status_property', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
 		$eform = EForm::generateToken( $customer->personal['user_id'] );
 		// DB::commit();
@@ -259,5 +273,35 @@ class CustomerController extends Controller
 				'contents' => $data
 			]);
 		}
+	}
+	/**
+	 * [getZipCode description]
+	 * @param  [type] $value [description]
+	 * @author erwan.akse@wgs.co.id
+	 * @return [type]        [description]
+	 */
+	private function getZipCode($value)
+	{
+		$zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
+             'search' => $value,
+        ] )->post();
+        $datazip = array();
+        $zip_code_list = $zip_code_service[ 'contents' ];
+        if (count($zip_code_list['data'])>0) {
+        foreach ($zip_code_list['data'] as $key => $zipcode) {
+            	if ($zipcode['kode_pos'] == $value) {
+             		$zip_code_list[ 'data' ] = array_map( function( $content ) {
+		            return [
+		                'id' => $content[ 'kode_pos' ],
+		                'kabupaten'=> $content['dati2'],
+		                'kecamatan' => $content[ 'kecamatan' ],
+		                'kelurahan' => $content[ 'kelurahan' ]
+		            	];
+		        			}, $zip_code_list[ 'data' ] );
+		        }
+        	}
+        	$datazip = $zip_code_list['data'][0];
+		}
+		return $datazip;
 	}
 }
