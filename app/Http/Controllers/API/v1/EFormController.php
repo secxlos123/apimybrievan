@@ -418,7 +418,7 @@ class EFormController extends Controller
 					if ( $listExisting['success'] == '00' ) {
 						foreach ($listExisting['data'] as $branch) {
 							if ( $branch['branch'] == $request->input('branch_id') ) {
-								$baseRequest['branch'] = $branch['mbdesc'];
+								$baseRequest['branch'] = $branch['sbdesc'];
 
 							}
 						}

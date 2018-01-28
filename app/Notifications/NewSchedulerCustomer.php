@@ -63,7 +63,8 @@ class NewSchedulerCustomer extends Notification
     {
         $data = EForm::findOrFail($this->appointment->eform_id);
         $typeModule = getTypeModule(Appointment::class);
-        
+        $message    = getMessage("schedule_create");
+
         return [
             'appointment_id' => $this->appointment->id,
             'eform_id' => $this->appointment->eform_id,
@@ -75,8 +76,8 @@ class NewSchedulerCustomer extends Notification
             'slug' => $this->appointment->id,
             'type_module' => $typeModule,
             'created_at' => $this->appointment->created_at,
-            'message' => $this->appointment->message,
             'role_name' => $notifiable->roles->first()->slug,
+            'message' => $message,
         ];
     }
 }
