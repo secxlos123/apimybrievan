@@ -241,7 +241,7 @@ class ScoringController extends Controller
          \Log::info($sicd);
 
         if ($sicd['responseCode'] != '00') {
-            $sicd = ['responseData' => [['bikole' => '-']], 'responseCode' => '01'];
+            $sicd = ['responseData' => [["status" => null, "acctno" => null, "cbal" => null, "bikole" => null, "result" => null, "cif" => null, "nama_debitur" => null, "tgl_lahir" => null, "alamat" => null, "no_identitas" => null]], 'responseCode' => '01'];
 
         }
 
@@ -264,7 +264,7 @@ class ScoringController extends Controller
 		        \Log::info($sicdPasangan);
 
 		        if ($sicdPasangan['responseCode'] != '00') {
-		            $sicd['responseData'][] = ['bikole' => '-'];
+		            $sicd['responseData'][] = ["status" => null, "acctno" => null, "cbal" => null, "bikole" => null, "result" => null, "cif" => null, "nama_debitur" => null, "tgl_lahir" => null, "alamat" => null, "no_identitas" => null];
 
 		        } else {
 		        	$sicd['responseData'] = array_merge(

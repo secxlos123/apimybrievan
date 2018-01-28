@@ -34,8 +34,6 @@ class PrescreeningController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  string $type
-     * @param  integer $eform_id
      * @return \Illuminate\Http\Response
      */
     public function show( Request $request )
@@ -57,15 +55,7 @@ class PrescreeningController extends Controller
             $sicd = array($sicd->responseData[ intval($data->selected_sicd) ]);
         }
 
-        $html = '';
-
-        foreach (explode(',', $data->uploadscore) as $value) {
-            if ($value != '') {
-                $html .= asset('uploads/'.$data->nik.'/'.$value) . ',';
-            }
-        }
-
-        $data['uploadscore'] = $html;
+        $data['uploadscore'] = $this->generatePDFUrl( $data );
 
         return response()->success( [
             'message' => 'Data Screening e-form',
@@ -77,13 +67,25 @@ class PrescreeningController extends Controller
         ], 200 );
     }
 
+    /**
+     * Generate all depedencies.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function store( Request $request )
     {
         $eform = EForm::findOrFail( $request->input('eform') );
 
-        $this->dependencies( 'sicd', $eform );
-        $this->dependencies( 'dhn', $eform );
-        // $this->pefindo( $eform );
+        foreach ( array( 'sicd', 'dhn' ) as $key) {
+            if ( !$eform->{$key.'_detail'} ) {
+                $this->dependencies( $key, $eform );
+            }
+        }
+        // if ( !$eform->pefindo_detail ) {
+        //     $this->pefindo( $eform );
+        // }
+
+        $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
         return response()->success( [
             'message' => 'Data Screening e-form',
@@ -91,6 +93,11 @@ class PrescreeningController extends Controller
         ], 200 );
     }
 
+    /**
+     * Finalize prescreening data.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update( Request $request, $prescreening )
     {
         $eform = EForm::findOrFail( $prescreening );
@@ -159,12 +166,23 @@ class PrescreeningController extends Controller
             , 'uploadscore' => $pdf
         ]);
 
+        $message = 'Berhasil proses prescreening E-Form';
+        // auto approve for VIP
+        if ( $eform->is_clas_ready ) {
+            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+        }
+
         return response()->success( [
-            'message' => 'Berhasil proses prescreening E-Form',
+            'message' => $message,
             'contents' => $eform
         ], 200 );
     }
 
+    /**
+     * Collection all service data
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function dependencies( $type, $eform )
     {
         $personal = $eform->customer->personal;
@@ -182,7 +200,24 @@ class PrescreeningController extends Controller
             $requestData['kode_branch'] = $eform->branch_id;
         }
 
-        $defaultValue = ( $type == "sicd" ? ['bikole' => '-'] : ['warna' => 'Hijau'] );
+        $defaultValue = array(
+            'warna' => 'Hijau'
+        );
+
+        if ( $type == "sicd" ) {
+            $defaultValue = array(
+                "status" => null
+                , "acctno" => null
+                , "cbal" => null
+                , "bikole" => null
+                , "result" => null
+                , "cif" => null
+                , "nama_debitur" => null
+                , "tgl_lahir" => null
+                , "alamat" => null
+                , "no_identitas" => null
+            );
+        }
 
         $base = $this->getService( $endpoint, $requestData, false, array(), $defaultValue );
 
@@ -205,6 +240,11 @@ class PrescreeningController extends Controller
         ]);
     }
 
+    /**
+     * Hit service
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getService( $endpoint, $requestData, $couple = false, $base = array(), $defaultValue )
     {
         $return = RestwsHc::setBody( [
@@ -238,6 +278,11 @@ class PrescreeningController extends Controller
         return $base;
     }
 
+    /**
+     * Collection all pefindo service data
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function pefindo( $eform )
     {
         $personal = $eform->customer->personal;
@@ -266,6 +311,11 @@ class PrescreeningController extends Controller
         ]);
     }
 
+    /**
+     * Hit pefindo service
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getPefindo( $eform, $position = 'search', $couple = false, $pefindoId = null )
     {
         $customer = $eform->customer;
@@ -354,6 +404,11 @@ class PrescreeningController extends Controller
         }
     }
 
+    /**
+     * Change pefindo score to color
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getColorPefindo( $score, $couple = false, $prevData, $index, $risk )
     {
         $return = array(
@@ -383,6 +438,11 @@ class PrescreeningController extends Controller
         return $return;
     }
 
+    /**
+     * Change SICD collectible to color
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getColorSicd( $collect )
     {
         if ( $collect == 1 || $collect == '-' || $collect == null || $collect == '' ) {
@@ -396,6 +456,11 @@ class PrescreeningController extends Controller
         return 'Merah';
     }
 
+    /**
+     * Get prescreening final result
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getResult( $dhnC, $sicdC, $pefindoC )
     {
         $calculate = array($pefindoC, $dhnC, $sicdC);
@@ -408,5 +473,23 @@ class PrescreeningController extends Controller
 
         }
         return 1;
+    }
+
+    /**
+     * change image format
+     *
+     * @return string
+     **/
+    public function generatePDFUrl( $eform )
+    {
+        $html = '';
+
+        foreach (explode(',', $eform->uploadscore) as $value) {
+            if ($value != '') {
+                $html .= asset('uploads/'.$eform->nik.'/'.$value) . ',';
+            }
+        }
+
+        return $html;
     }
 }

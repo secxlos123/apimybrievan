@@ -52,7 +52,7 @@ class EFormController extends Controller
 	  if($host == 'http://api.dev.net/'){
 		$url = 'http://172.18.44.182/bribranch/branch/';
 	}else{
-		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';  
+		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
 	  }
 	  $requestListExisting = $client->request('GET', $url.$data['branch'],
 				[
@@ -62,7 +62,7 @@ class EFormController extends Controller
 				  ]
 				]
 			  );
-			  
+
       $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 	 return $listExisting;
 	}
@@ -128,7 +128,7 @@ class EFormController extends Controller
 
         \Log::info($request->all());
           $eform = EformBriguna::filter( $request )->get();
-		  
+
 		$mitra_relation = DB::table('mitra')
 						 ->select('mitra.*')
 						 ->where('mitra.idMitrakerja', $eform[0]['mitra_id'])
@@ -334,7 +334,7 @@ class EFormController extends Controller
      * @param  \App\Http\Requests\API\v1\EFormRequest  $request
      * @return \Illuminate\Http\Response
      */
-	 
+
 	  public function get_token()
     {
       if ( count(apiPdmToken::all()) > 0 ) {
@@ -355,7 +355,7 @@ class EFormController extends Controller
         return $token;
       }
     }
-	
+
     public function store( EFormRequest $request )
     {
         DB::beginTransaction();

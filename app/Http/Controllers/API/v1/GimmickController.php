@@ -31,7 +31,7 @@ class GimmickController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-	
+
 	 public function list_gimmick( Request $request )
     {
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
@@ -57,8 +57,8 @@ class GimmickController extends Controller
             'contents' => $eform
         ],200 );
     }
-	
-	
+
+
     public function mitra_relation( Request $request )
     {
         \Log::info($request->all());
@@ -117,7 +117,7 @@ class GimmickController extends Controller
      * @param  \App\Http\Requests\API\v1\GimmickRequest  $request
      * @return \Illuminate\Http\Response
      */
-	 
+
 	  function detailadd($data){
 		$array = [
 				'first_month'=>$data[0],
@@ -130,9 +130,9 @@ class GimmickController extends Controller
     public function store( GimmickRequest $request )
     {
          $baseRequest = $request->all();
-		
+
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
-		
+
 		$x = $baseRequest['gimmick']['countminus1'];
 		for($i=0;$i<=$x;$i++){
 			 $detaildata = $this->detailadd(json_decode($baseRequest['gimmick']['data'.$i]));
@@ -143,10 +143,10 @@ class GimmickController extends Controller
 
 	 public function save( GimmickRequest $request )
     {
-		
+
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
         $baseRequest = $request->all();
-		
+
 		//return $request->all();die();
         $gimmick = GIMMICK::create( $baseRequest['gimmick'] );
 		return $gimmick;
