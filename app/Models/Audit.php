@@ -732,4 +732,29 @@ class Audit extends Model implements AuditContract
                 })
                 ->orderBy($sort[0], $sort[1]);
             }
+
+    public function getuser(Request $request)
+    {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $useractivity = \DB::table('auditrail_admin_developer')
+                            ->select('user_id', 'username')
+                            ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                            ->whereNotNull('username')
+                            ->groupBy('user_id', 'username');
+                            //->orderBy($sort[0], $sort[1]);              
+                            
+        return $useractivity;
+    }
 }
