@@ -300,6 +300,7 @@ class CustomerController extends Controller
         $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
              'search' => $value,
         ] )->post();
+        \Log::info($zip_code_service);
         $datazip = array();
         $zip_code_list = $zip_code_service[ 'contents' ];
         if (count($zip_code_list['data'])>0) {
@@ -307,7 +308,6 @@ class CustomerController extends Controller
                 if ($zipcode['kode_pos'] == $value) {
                     $zip_code_list[ 'data' ] = array_map( function( $content ) {
                     return [
-                        'id' => $content[ 'kode_pos' ],
                         'kabupaten'=> $content['dati2'],
                         'kecamatan' => $content[ 'kecamatan' ],
                         'kelurahan' => $content[ 'kelurahan' ]
