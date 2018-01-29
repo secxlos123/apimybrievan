@@ -13,6 +13,7 @@
 
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
+	Route::post('getBranch', 'SelectUkerController@getBranch');
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
 	Route::post('mitraall', 'mitra\ScoringProsesController@getallmitra');
 	Route::post('hapus_dir', 'dirrpcController@hapus_dir');
@@ -128,6 +129,8 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/agendev', 'AuditrailController@auditAgendev');
 		Route::get('auditrail/login-logout', 'AuditrailController@auditLogin');
 		Route::get('auditrail/edit', 'AuditrailController@auditEdit');
+		Route::get('auditrail/collateral', 'AuditrailController@auditCollateral');
+		Route::get('auditrail/property', 'AuditrailController@auditProperty');
 
 	} );
 

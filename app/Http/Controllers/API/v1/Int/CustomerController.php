@@ -23,6 +23,7 @@ use LaravelFCM\Message\Topics;
 use FCM;
 use Sentinel;
 use DB;
+use Asmx;
 use App\Notifications\VerificationDataNasabah;
 
 
@@ -299,23 +300,26 @@ class CustomerController extends Controller
         $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
              'search' => $value,
         ] )->post();
+        \Log::info($zip_code_service);
         $datazip = array();
-        $zip_code_list = $zip_code_service[ 'contents' ];
+        $zip_code_list = $zip_code_service['contents'];
+		$zip_code_list['data'] = array_map(function ($content) {
+			return [
+				'id' => $content['kode_pos'],
+				'kabupaten' => $content['dati2'],
+				'kecamatan' => $content['kecamatan'],
+				'kelurahan' => $content['kelurahan'],
+			];
+		}, $zip_code_list['data']);
+		\Log::info($zip_code_list);
         if (count($zip_code_list['data'])>0) {
         foreach ($zip_code_list['data'] as $key => $zipcode) {
-                if ($zipcode['kode_pos'] == $value) {
-                    $zip_code_list[ 'data' ] = array_map( function( $content ) {
-                    return [
-                        'id' => $content[ 'kode_pos' ],
-                        'kabupaten'=> $content['dati2'],
-                        'kecamatan' => $content[ 'kecamatan' ],
-                        'kelurahan' => $content[ 'kelurahan' ]
-                        ];
-                            }, $zip_code_list[ 'data' ] );
+                if ($zipcode['id'] == $value) {
+                	$datazip = $zip_code_list['data'][0];
                 }
             }
-            $datazip = $zip_code_list['data'][0];
         }
+        \Log::info($datazip);
         return $datazip;
     }
 }
