@@ -302,21 +302,24 @@ class CustomerController extends Controller
         ] )->post();
         \Log::info($zip_code_service);
         $datazip = array();
-        $zip_code_list = $zip_code_service[ 'contents' ];
+        $zip_code_list = $zip_code_service['contents'];
+		$zip_code_list['data'] = array_map(function ($content) {
+			return [
+				'id' => $content['kode_pos'],
+				'kabupaten' => $content['dati2'],
+				'kecamatan' => $content['kecamatan'],
+				'kelurahan' => $content['kelurahan'],
+			];
+		}, $zip_code_list['data']);
+		\Log::info($zip_code_list);
         if (count($zip_code_list['data'])>0) {
         foreach ($zip_code_list['data'] as $key => $zipcode) {
-                if ($zipcode['kode_pos'] == $value) {
-                    $zip_code_list[ 'data' ] = array_map( function( $content ) {
-                    return [
-                        'kabupaten'=> $content['dati2'],
-                        'kecamatan' => $content[ 'kecamatan' ],
-                        'kelurahan' => $content[ 'kelurahan' ]
-                        ];
-                            }, $zip_code_list[ 'data' ] );
+                if ($zipcode['id'] == $value) {
+                	$datazip = $zip_code_list['data'][0];
                 }
             }
-            $datazip = $zip_code_list['data'][0];
         }
+        \Log::info($datazip);
         return $datazip;
     }
 }
