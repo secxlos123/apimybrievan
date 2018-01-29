@@ -60,6 +60,7 @@ class CollateralOTS extends Notification
     {
 
         $typeModule = getTypeModule(Collateral::class);
+        $message = getMessage('collateral_approve');
 
         return [
             'collateral_id' => $this->collateral->id,
@@ -74,6 +75,7 @@ class CollateralOTS extends Notification
             'role_name' => $notifiable->roles->first()->slug,
             'staff_name' => $this->collateral->staff_name,
             'prop_slug' => $this->collateral->property->slug,
+            'message' => $message,
         ];
     }
 }

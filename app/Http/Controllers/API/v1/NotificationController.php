@@ -100,4 +100,37 @@ class NotificationController extends Controller
             'contents' => $notification
         ], 200 );
     }
+
+    public function countNotification(Request $request, $type)
+    {
+        if ($type == "eks") {
+            $user   = $request->user();
+            $userID = $user->id;
+
+            if ($user->inRole('developer')) {
+                $role = "developer";
+            } else if ($user->inRole('customer')) {
+                $role = "customer";
+            }elseif ($user->inRole('others')) {
+                $role = "others";
+            }elseif ($user->inRole('developer-sales')) {
+                $role = "developer-sales";
+            }
+            $data = $this->userNotification->getUnreadsMobile(null, $role, null, $userID, null, true);
+        }else {
+            $user     = \RestwsHc::getUser();
+            $role     = $user['role'];
+            $branchID = substr($user['branch_id'], -3);
+            $pn       = "000".$user['pn'];
+
+            $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, null, true);
+        }
+
+        return response()->success([
+            'message' => 'Sukses',
+            'contents' => [
+                'unread_count' => $data,
+            ]
+        ], 200);
+    }
 }

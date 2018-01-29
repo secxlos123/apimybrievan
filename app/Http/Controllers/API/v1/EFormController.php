@@ -418,7 +418,7 @@ class EFormController extends Controller
 					if ( $listExisting['success'] == '00' ) {
 						foreach ($listExisting['data'] as $branch) {
 							if ( $branch['branch'] == $request->input('branch_id') ) {
-								$baseRequest['branch'] = $branch['sbdesc'];
+								$baseRequest['branch'] = $branch['mbdesc'];
 
 							}
 						}
@@ -537,6 +537,10 @@ class EFormController extends Controller
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
                                 }
                             }
+                        }
+                        else
+                        {
+                            $baseProperty['region_id'] = 'Q';
                         }
 
                         $property =  Property::create( $baseProperty );

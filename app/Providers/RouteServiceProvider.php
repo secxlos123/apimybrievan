@@ -74,6 +74,7 @@ class RouteServiceProvider extends ServiceProvider
                 require base_path('routes/api.php');
                 require base_path('routes/common.php');
                 require base_path('routes/crm.php');
+                require base_path('routes/kartukredit.php');
              });
     }
 }
