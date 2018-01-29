@@ -60,7 +60,7 @@ class UserNotification extends Model
 		
 		$url = $internalurl . 'eform?ref_number=' . $ref_number . '&slug=' . $this->slug.'&type='.$this->type_module;
 		if ($user_id) {
-			$url = $externalurl.'eform?slug=' . $this->slug.'&type='.$this->slug;
+			$url = $externalurl.'tracking/detail/'.$this->slug;
 		} else {
 			$url = $url;
 		}
@@ -352,12 +352,12 @@ class UserNotification extends Model
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
-				/*is rejected*/
 				$query->unreads();
-				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
-					$query->unreads()->where('notifications.notifiable_id', @$user_id);
-				}
 			}
+			
+			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+				$query->unreads();
+			}*/
 		}
 
 		if (@$role == 'staff') {
@@ -501,10 +501,11 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
 				/*is rejected*/
 				$query->unreads();
-				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
-					$query->unreads()->where('notifications.notifiable_id', @$user_id);
-				}
 			}
+			
+			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+				$query->unreads();
+			}*/
 		}
 
 		if (@$role == 'staff') {
