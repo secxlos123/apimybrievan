@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class ViewAuditrailSeeder extends Seeder
+class ViewAuditrailAppointmentSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,9 +11,9 @@ class ViewAuditrailSeeder extends Seeder
      */
     public function run()
     {
-        \DB::unprepared("DROP VIEW IF EXISTS auditrail_type_one");
-        \DB::unprepared("CREATE VIEW auditrail_type_one AS
-         select a.id
+        \DB::unprepared("DROP VIEW IF EXISTS auditrail_appointment");
+        \DB::unprepared("CREATE VIEW auditrail_appointment AS
+select a.id
 , a.created_at
 , case
 when event = 'created' and lower(auditable_type) = 'app\models\appointment' and slug = 'customer' then 'Penjadwalan baru via Eorm Nasabah'
@@ -32,6 +32,7 @@ when event = 'updated' and lower(auditable_type) = 'app\models\customerdetail' a
 when event = 'updated' and lower(auditable_type) = 'app\models\eform' and role = 'staff' then 'Disposisi'
 end as modul_name
 , a.action
+, a.extra_params
 , a.event
 , a.user_id
 , lower(a.auditable_type) as auditable_type
@@ -44,7 +45,15 @@ end as modul_name
 , a.old_values
 , a.new_values
 , a.ip_address
-, a.extra_params as action_loaction
+, case
+when event ='updated' and lower(auditable_type) = 'app\models\appointment' and right(a.url, 20) like '%eks/schedule%' and slug = 'customer' then (select extra_params from audits where id = a.id-2) 
+when event ='created' and right(a.url, 6) = 'eforms' and lower(auditable_type) = 'app\models\appointment' and slug = 'customer' then (select extra_params from audits where id = a.id-6)
+when right(a.url, 6) = 'eforms' and lower(auditable_type) = 'app\models\appointment' and slug = 'customer' then (select extra_params from audits where id = a.id-3)
+when right(a.url, 6) = 'eforms' and lower(auditable_type) = 'app\models\appointment' then (select extra_params from audits where id = a.id-5)
+when event = 'created' and lower(auditable_type) = 'app\models\appointment' then (select extra_params from audits where id = a.id-1)
+when event ='updated' and lower(auditable_type) = 'app\models\appointment' and old_values is not null then (select extra_params from audits where id = a.id-1)
+when event ='created' and right(a.url, 6) = 'eforms' and lower(auditable_type) = 'app\models\appointment' and slug = 'customer' then (select extra_params from audits where id = a.id-6)
+else 'Null' end as action_location
 from audits a
 left join users b on b.id = a.user_id
 left join developers c on c.user_id = a.user_id

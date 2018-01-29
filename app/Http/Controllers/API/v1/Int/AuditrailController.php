@@ -16,4 +16,52 @@ class AuditrailController extends Controller
 
         return response()->success(['contents' => $auditrail]);
     }
+
+    public function auditAppointment(Request $request)
+    {
+    	$limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsAppointment($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
+    public function auditAdmindev(Request $request)
+    {
+    	$limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsAdmindev($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
+    public function auditLogin(Request $request)
+    {
+    	$limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsLogin($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
+    public function auditAgendev(Request $request)
+    {
+    	$limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsAgenDev($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
+    public function auditEdit(Request $request)
+    {
+    	$limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsEdit($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
+    public function auditCollateral(Request $request)
+    {
+        $limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsCollateral($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
 }

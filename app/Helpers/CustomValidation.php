@@ -6,6 +6,7 @@ use App\Helpers\Traits\AvailableType;
 use App\Models\PropertyType;
 use App\Models\User;
 use Illuminate\Validation\Validator;
+use Asmx;
 
 class CustomValidation extends Validator
 {
@@ -53,6 +54,32 @@ class CustomValidation extends Validator
     public function validateAlphaSpaces($attribute, $value, $parameters)
     {
         return preg_match('/^[\pL\s]+$/u', $value);
+    }
+
+    /**
+     * This for check kode Pos
+     * 
+     * @param string $attribute
+     * @author erwan.akse@wgs.co.id
+     * @param mixed $value
+     * @param array $parameters
+     * @return boolean
+     */
+    public function validateKodePos($attribute, $value, $parameters)
+    {
+        $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
+             'search' => $value,
+        ] )->post();
+        $result = false;
+        $zip_code_list = $zip_code_service[ 'contents' ];
+        if (count($zip_code_list['data'])>0) {
+        foreach ($zip_code_list['data'] as $key => $zipcode) {
+            if ($zipcode['kode_pos'] == $value) {
+                $result = true;
+            }
+        }
+        }
+        return  $result;
     }
 
     /**

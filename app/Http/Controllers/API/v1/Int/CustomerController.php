@@ -23,131 +23,132 @@ use LaravelFCM\Message\Topics;
 use FCM;
 use Sentinel;
 use DB;
+use Asmx;
 use App\Notifications\VerificationDataNasabah;
 
 
 class CustomerController extends Controller
 {
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function index( Request $request )
-	{
-		$limit = $request->input( 'limit' ) ?: 10;
-		$customers = User::getCustomers( $request )->paginate( $limit );
-		return response()->success( [
-			'message' => 'Sukses',
-			'contents' => $customers
-		], 200 );
-	}
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index( Request $request )
+    {
+        $limit = $request->input( 'limit' ) ?: 10;
+        $customers = User::getCustomers( $request )->paginate( $limit );
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $customers
+        ], 200 );
+    }
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
-	 * @return \Illuminate\Http\Response
-	 */
-	public function store( CustomerRequest $request )
-	{
-		$data = $request->all();
-		$product_leads = '';
-		if ( isset($request->product_leads) ){
-			$product_leads = $request->product_leads;
-		}
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store( CustomerRequest $request )
+    {
+        $data = $request->all();
+        $product_leads = '';
+        if ( isset($request->product_leads) ){
+            $product_leads = $request->product_leads;
+        }
 
-		if ( $product_leads == '' || $product_leads == 'kpr' ){
-			DB::beginTransaction();
-			$customer = Customer::create( $request->all() );
+        if ( $product_leads == '' || $product_leads == 'kpr' ){
+            DB::beginTransaction();
+            $customer = Customer::create( $request->all() );
 
-			DB::commit();
-			return response()->success( [
-				'message' => 'Data nasabah berhasil ditambahkan.',
-				'contents' => $customer
-			], 201 );
+            DB::commit();
+            return response()->success( [
+                'message' => 'Data nasabah berhasil ditambahkan.',
+                'contents' => $customer
+            ], 201 );
 
-		} elseif ( $product_leads == 'briguna' ) {
-			$data['address'] = $data['alamat'].' rt '.$data['rt'].'/rw '.$data['rw'].', kelurahan='.
-								$data['kelurahan'].'kecamatan='.$data['kecamatan'].','.$data['kota'].' '.$data['kode_pos'];
+        } elseif ( $product_leads == 'briguna' ) {
+            $data['address'] = $data['alamat'].' rt '.$data['rt'].'/rw '.$data['rw'].', kelurahan='.
+                                $data['kelurahan'].'kecamatan='.$data['kecamatan'].','.$data['kota'].' '.$data['kode_pos'];
 
-			$data['address_domisili'] = $data['alamat_domisili'].' rt '.$data['rt_domisili'].'/rw '.
-								$data['rw_domisili'].', kelurahan='.$data['kelurahan_domisili'].'kecamatan='.$data['kecamatan_domisili'].','.$data['kota_domisili'].' '.$data['kode_pos_domisili'];
-			DB::beginTransaction();
-			$customer = Customer::create( $data );
+            $data['address_domisili'] = $data['alamat_domisili'].' rt '.$data['rt_domisili'].'/rw '.
+                                $data['rw_domisili'].', kelurahan='.$data['kelurahan_domisili'].'kecamatan='.$data['kecamatan_domisili'].','.$data['kota_domisili'].' '.$data['kode_pos_domisili'];
+            DB::beginTransaction();
+            $customer = Customer::create( $data );
 
-			DB::commit();
-			return response()->success( [
-				'message' => 'Data nasabah berhasil ditambahkan.',
-				'contents' => $data
-			], 201 );
+            DB::commit();
+            return response()->success( [
+                'message' => 'Data nasabah berhasil ditambahkan.',
+                'contents' => $data
+            ], 201 );
 
-		}
-	}
+        }
+    }
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
-	 * @param  int $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update( CustomerRequest $request, $id )
-	{
-		DB::beginTransaction();
-		$customer = Customer::findOrFail( $id );
-		$customer->update( $request->all() );
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update( CustomerRequest $request, $id )
+    {
+        DB::beginTransaction();
+        $customer = Customer::findOrFail( $id );
+        $customer->update( $request->all() );
 
-		DB::commit();
-		return response()->success( [
-			'message' => 'Data nasabah berhasil dirubah.',
-			'contents' => $customer
-		] );
-	}
+        DB::commit();
+        return response()->success( [
+            'message' => 'Data nasabah berhasil dirubah.',
+            'contents' => $customer
+        ] );
+    }
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  string  $type
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function show( $type, $id )
-	{
-		$customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $type
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $type, $id )
+    {
+        $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
-		if (count($customerDetail) > 0) {
-			$customer = Customer::findOrFail( $customerDetail->user_id );
-		} else {
-			$customer = Customer::findOrFail( $id );
-		}
-		return response()->success( [
-			'message' => 'Sukses',
-			'contents' => $customer
-		], 200 );
-	}
+        if (count($customerDetail) > 0) {
+            $customer = Customer::findOrFail( $customerDetail->user_id );
+        } else {
+            $customer = Customer::findOrFail( $id );
+        }
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $customer
+        ], 200 );
+    }
 
-	/**
-	 * Verify the specified resource in storage.
-	 *
-	 * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
-	 * @param  int $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function verify( CustomerRequest $request, $id )
-	{
-		//DB::beginTransaction();
-		$customer = Customer::findOrFail( $id );
-		$baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name');
+    /**
+     * Verify the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function verify( CustomerRequest $request, $id )
+    {
+        //DB::beginTransaction();
+        $customer = Customer::findOrFail( $id );
+        $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name');
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
         $baseRequest['ao_name'] = $user_login['name'];
         $baseRequest['ao_position'] = $user_login['position'];
 
-		if ($request->has('eform_id')) {
+        if ($request->has('eform_id')) {
 
-			$developer_id = env('DEVELOPER_KEY',1);
+            $developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
 
             if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)
@@ -190,17 +191,38 @@ class CustomerController extends Controller
                     $collateral = Collateral::updateOrCreate(['property_id' => $baseRequest['property']],$data);
                 }
             }
-				KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
-		}
+                KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
+        }
 
-		$customer->verify( $request->except('join_income','developer','property','status_property', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
-		$eform = EForm::generateToken( $customer->personal['user_id'] );
-		// DB::commit();
-		if( $request->verify_status == 'verify' ) {
+        $zipcode = $this->getZipCode($request->zip_code);
+        $zipcodecurrent = $this->getZipCode($request->zip_code_current);
+        $zipcodeoffice = $this->getZipCode($request->zip_code_office);
 
-			// handling remove verification
-			$verify = EForm::verify( $eform->token, 'approve' );
-			$usersModel  = User::FindOrFail($verify['contents']->user_id);
+        if ( count($zipcode) > 0 && count($zipcodecurrent) > 0 && count($zipcodeoffice) > 0 ) {
+            $addzipext = array(
+                'kelurahan' => $zipcode['kelurahan'],
+                'kecamatan' => $zipcode['kecamatan'],
+                'kabupaten' => $zipcode['kabupaten'],
+                'kelurahan_current' => $zipcodecurrent['kelurahan'] ,
+                'kecamatan_current' => $zipcodecurrent['kecamatan'] ,
+                'kabupaten_current' => $zipcodecurrent['kabupaten'] ,
+                'kelurahan_office' => $zipcodeoffice['kelurahan'] ,
+                'kecamatan_office' => $zipcodeoffice['kecamatan'] ,
+                'kabupaten_office' => $zipcodeoffice['kabupaten']
+            );
+            $request->merge($addzipext);
+        }
+
+        $customer->verify( $request->except('join_income','developer','property','status_property', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
+
+        $eform = EForm::generateToken( $customer->personal['user_id'] );
+        // DB::commit();
+
+        if( $request->verify_status == 'verify' ) {
+
+            // handling remove verification
+            $verify = EForm::verify( $eform->token, 'approve' );
+            $usersModel  = User::FindOrFail($verify['contents']->user_id);
 
             $credentials = [
                 'data' => $verify['contents'],
@@ -212,52 +234,92 @@ class CustomerController extends Controller
             generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
             event( new VerifyEForm( $verify['contents'] ) );
 
-			// else // uncomment function below
+            // else // uncomment function below
 
-			// event( new CustomerVerify( $customer, $eform ) );
-			// $credentials = [
-			// 	"data"    => $eform,
-			// ];
-			// pushNotification($credentials, "verifyCustomer");
+            // event( new CustomerVerify( $customer, $eform ) );
+            // $credentials = [
+            //  "data"    => $eform,
+            // ];
+            // pushNotification($credentials, "verifyCustomer");
+            // $message = 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.';
 
-			// end
+            // end
 
+            $message = 'Data nasabah telah di verifikasi';
+            // auto approve for VIP
+            if ( $detail->is_clas_ready ) {
+                $message .= ' dan ' . autoApproveForVIP( array(), $detail->id );
+            }
 
-			return response()->success( [
-				'message' => 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.',
-				'contents' => $customer
-			] );
-		} else if( $request->verify_status == 'verified' ) {
-			return response()->success( [
-				'message' => 'Data nasabah telah di verifikasi.',
-				'contents' => []
-			] );
-		}
-	}
+            return response()->success( [
+                'message' => $message,
+                'contents' => $customer
+            ] );
+        } else if( $request->verify_status == 'verified' ) {
+            return response()->success( [
+                'message' => 'Data nasabah telah di verifikasi.',
+                'contents' => []
+            ] );
+        }
+    }
 
-	public function listDebitur(Request $req)
-	{
-		$params   = $req->all();
-		$customer = new CustomerDetail;
-		$data 	  = $customer->getListDebitur($params);
-		return response()->success([
-			'contents' => $data
-		]);
-	}
+    public function listDebitur(Request $req)
+    {
+        $params   = $req->all();
+        $customer = new CustomerDetail;
+        $data     = $customer->getListDebitur($params);
+        return response()->success([
+            'contents' => $data
+        ]);
+    }
 
-	public function detailDebitur(Request $req)
-	{
-		$params   = $req->all();
-		if(empty($params['user_id'])){
-			return response()->error([
-				'message' => 'User ID is required !',
-			]);
-		}else{
-			$customer = new CustomerDetail;
-			$data 	  = $customer->getDetailDebitur($params);
-			return response()->success([
-				'contents' => $data
-			]);
-		}
-	}
+    public function detailDebitur(Request $req)
+    {
+        $params   = $req->all();
+        if(empty($params['user_id'])){
+            return response()->error([
+                'message' => 'User ID is required !',
+            ]);
+        }else{
+            $customer = new CustomerDetail;
+            $data     = $customer->getDetailDebitur($params);
+            return response()->success([
+                'contents' => $data
+            ]);
+        }
+    }
+
+    /**
+     * [getZipCode description]
+     * @param  [type] $value [description]
+     * @author erwan.akse@wgs.co.id
+     * @return [type]        [description]
+     */
+    private function getZipCode($value)
+    {
+        $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
+             'search' => $value,
+        ] )->post();
+        \Log::info($zip_code_service);
+        $datazip = array();
+        $zip_code_list = $zip_code_service['contents'];
+		$zip_code_list['data'] = array_map(function ($content) {
+			return [
+				'id' => $content['kode_pos'],
+				'kabupaten' => $content['dati2'],
+				'kecamatan' => $content['kecamatan'],
+				'kelurahan' => $content['kelurahan'],
+			];
+		}, $zip_code_list['data']);
+		\Log::info($zip_code_list);
+        if (count($zip_code_list['data'])>0) {
+        foreach ($zip_code_list['data'] as $key => $zipcode) {
+                if ($zipcode['id'] == $value) {
+                	$datazip = $zip_code_list['data'][0];
+                }
+            }
+        }
+        \Log::info($datazip);
+        return $datazip;
+    }
 }
