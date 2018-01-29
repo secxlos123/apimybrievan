@@ -44,7 +44,7 @@ end as modul_name
 , a.old_values
 , a.new_values
 , a.ip_address
-, a.extra_params as action_loaction
+, a.extra_params as action_location
 from audits a
 left join users b on b.id = a.user_id
 left join developers c on c.user_id = a.user_id
