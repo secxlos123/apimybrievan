@@ -527,6 +527,36 @@ if (! function_exists('getMessage')) {
                     'title'   => 'Schedule Notification',
                     'message' => 'Jadwal anda telah di update, Silahkan cek jadwal anda',
                 ];
+            case 'collateral_penilaian':
+                $message = [
+                    'title'   => 'Collateral Notification',
+                    'message' => 'Form Penilaian Agunan',
+                ];
+            case 'collateral_approve':
+                $message = [
+                    'title'   => 'Collateral Notification',
+                    'message' => 'Approval Collateral',
+                ];
+            case 'collateral_reject':
+                $message = [
+                    'title'   => 'Collateral Notification',
+                    'message' => 'Reject Collateral',
+                ];
+            case 'collateral_reject_penilaian':
+                $message = [
+                    'title'   => 'Collateral Notification',
+                    'message' => 'Penilaian Agunan Ditolak',
+                ];
+            case 'collateral_disposition':
+                $message = [
+                    'title'   => 'Collateral Notification',
+                    'message' => 'Penugasan Staff Collateral',
+                ];
+            case 'collateral_checklist':
+                $message = [
+                    'title'   => 'Collateral Notification',
+                    'message' => 'Collateral Checklist',
+                ];
             case 'verify':
                 $message = [
                     'title'   => 'Verify Notification',

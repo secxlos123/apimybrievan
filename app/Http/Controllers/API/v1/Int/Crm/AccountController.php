@@ -226,11 +226,42 @@ class AccountController extends Controller
 
     public function get_referral(Request $request)
     {
-      $referral = Referral::all();
+      $referrals = Referral::all();
       return response()->success( [
           'message' => 'Sukses get data referral',
+          'contents' => $referrals
+        ]);
+    }
+
+    public function detail_referral(Request $request)
+    {
+      $ref_id = $request['ref_id'];
+      $referral = Referral::where('ref_id', $ref_id)->get();
+
+      return response()->success( [
+          'message' => 'Sukses get detail referral',
           'contents' => $referral
         ]);
+    }
+
+    public function update_officer_ref(Request $request)
+    {
+      $ref_id = $request['ref_id'];
+      $referral = Referral::where('ref_id', $ref_id);
+
+      $data['officer_ref'] = $request['officer_ref'];
+      $data['officer_name'] = $request['officer_name'];
+
+      // return $data;die();
+
+      $update = $referral->update($data);
+
+      if ($update) {
+        return response()->success( [
+            'message' => 'Sukses update officer referral',
+            'contents' => $request
+          ]);
+      }
     }
 
     public function get_referral_by_officer(Request $request)
@@ -280,7 +311,7 @@ class AccountController extends Controller
       }
 
       return response()->success( [
-          'message' => 'Sukses get data referral by officer',
+          'message' => 'Sukses get data referral by branch',
           'contents' => $referral
         ]);
     }
@@ -288,6 +319,7 @@ class AccountController extends Controller
     public function store_referral(Request $request)
     {
       $pn = $request->header('pn');
+      $name = $request->header('name');
       $branch = $request->header('branch');
       $auth = $request->header('Authorization');
       $pemasar = $this->pemasar($pn,$branch,$auth);
@@ -322,10 +354,12 @@ class AccountController extends Controller
       $data['phone'] = $request['phone'];
       $data['address'] = $request['address'];
       $data['product_type'] = $request['product_type'];
-      $data['officer_ref'] = $request['officer_ref'];
+      // $data['officer_ref'] = $request['officer_ref'];
       $data['status'] = $request['status'];
       $data['created_by'] = $pn;
       $data['point'] = $request['point'];
+      $data['branch_id'] = $branch;
+      $data['creator_name'] = $name;
 
       $save = Referral::create($data);
       if ($save) {

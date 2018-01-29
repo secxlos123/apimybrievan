@@ -21,6 +21,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get( 'account/get_referral_by_officer', 'AccountController@get_referral_by_officer');
   Route::post( 'account/get_referral_by_branch', 'AccountController@get_referral_by_branch');
   Route::post( 'account/store_referral', 'AccountController@store_referral');
+  Route::post( 'account/detail_referral', 'AccountController@detail_referral');
+  Route::post( 'account/update_officer_referral', 'AccountController@update_officer_ref');
 
   // route customer group
   Route::get( 'account/customer_group', 'customerGroupController@index');

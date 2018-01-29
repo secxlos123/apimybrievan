@@ -59,6 +59,7 @@ class CollateralStafRejectOTS extends Notification
     {
 
         $typeModule = getTypeModule(Collateral::class);
+        $message    = getMessage('collateral_reject_penilaian');
         $data= [
             'collateral_id' => $this->collateral->id,
             'user_id' => $notifiable->id,
@@ -72,6 +73,7 @@ class CollateralStafRejectOTS extends Notification
             'role_name' => $notifiable->roles->first()->slug,
             'staff_name' => $this->collateral->staff_name,
             'prop_slug' => $this->collateral->property->slug,
+            'message' => $message,
         ];
         return $data;
     }

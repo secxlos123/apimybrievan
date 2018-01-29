@@ -73,4 +73,19 @@ class AuditrailController extends Controller
         return response()->success(['contents' => $auditrail]);
     }
 
+    public function auditUserActivity(Request $request, Audit $audit)
+    {
+        $limit = $request->input('limit') ?: 10;
+        $auditrail = $audit->getuser($request)->paginate($limit);;
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
+     public function auditUserActitiyDetail($id, Request $request){
+        $limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::GetListsDetailActivity($request, $id)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
 }
