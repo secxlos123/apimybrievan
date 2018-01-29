@@ -59,6 +59,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get( 'customer-bri', 'CustomerController@customer' );
 		Route::get( 'insurance-list', 'CompanyInsurance@index' );
 		Route::get( 'appraiser-list', 'IndependentAppraiser@index' );
+		Route::get( 'zipcode-list', 'ZipCodeController@index' );
 
 		Route::resource( 'eforms', 'EFormController', [
 			'except' => [ 'edit', 'create', 'destroy' ]

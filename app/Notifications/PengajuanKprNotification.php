@@ -58,6 +58,7 @@ class PengajuanKprNotification extends Notification
     {
         $data = EForm::findOrFail($this->eForm->id);
         $typeModule = getTypeModule(EForm::class);
+        $message    = getMessage("eform_create");
 
         return [
             'eform_id' => $this->eForm->id,
@@ -69,8 +70,8 @@ class PengajuanKprNotification extends Notification
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
-            'message' => $this->eForm->message,
             'role_name' => $notifiable->roles->first()->slug,
+            'message' => $message,
         ];
     }
 }
