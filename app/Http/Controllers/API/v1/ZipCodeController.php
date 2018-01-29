@@ -29,7 +29,6 @@ class ZipCodeController extends Controller {
 				'kelurahan' => $content['kelurahan'],
 			];
 		}, $zip_code_list['data']);
-		\Log::info($zip_code_list['data'][0]);
 		return response()->success([
 			'message' => 'Sukses',
 			'contents' => $zip_code_list,
