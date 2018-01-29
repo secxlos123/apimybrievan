@@ -21,6 +21,7 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
          	   , lower(a.auditable_type) as auditable_type
          	   , a.url
          	   , case when b.first_name is not null then concat(b.first_name,' ',b.last_name) else h.name end as username
+               , f.staff_name
          	   , case when e.slug is not null then e.slug else h.role end as role
          	   , c.company_name
          	   , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
@@ -36,5 +37,32 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
 			   left join collaterals f on f.developer_id = c.id
 			   left join eforms g on g.user_id = a.user_id
 			   left join user_services h on h.pn = a.user_id");
+
+        //this for table view auditrail collateral
+        \DB::unprepared("DROP VIEW IF EXISTS auditrail_collaterals");
+        \DB::unprepared("CREATE VIEW auditrail_collaterals AS
+         select a.id
+            , a.created_at
+            , a.action as modul_name
+            , a.event
+            , a.user_id
+            , lower(a.auditable_type) as auditable_type
+            , a.url
+            , h.name as username
+            , h.role as role
+            ,c.staff_name as staff_penilai
+            ,d.company_name as company_name
+            ,case when c.developer_id= '1' then 'Non Kerja Sama' when c.developer_id >1 then 'Kerja Sama' else '' end as developer 
+            , a.old_values
+            , a.new_values
+            , a.ip_address
+            , a.extra_params as action_loaction
+            from audits a
+            left join user_services h on h.pn = a.user_id
+            left join collaterals c on a.auditable_id = c.id
+            left join users s on c.developer_id = s.id 
+            left join developers d on d.user_id = s.id");
     }
+
+
 }

@@ -556,6 +556,100 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%p%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%u%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah unit property%');
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+            }
+
+            /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsCollateral($query, Request $request)
+    {
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+        return $query
+                ->from('auditrail_collaterals')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                       
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+               
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+      
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Perusahaan Mitra.
+                *
+                * @param $request->developer
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('developer')){
+                        $auditrail->where(\DB::raw('LOWER(developer)'), 'like', '%'.strtolower($request->input('developer')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->staff_penilai
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('staff_penilai')){
+                        $auditrail->where(\DB::raw('LOWER(staff_penilai)'), 'like', '%'.strtolower($request->input('staff_penilai')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for Auditrail Login
+                */
+               // $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%collateral%');
+                 $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%agu%');
+                 $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%col%');
+                 $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ung%');
+
                
                 })
                 ->orderBy($sort[0], $sort[1]);
