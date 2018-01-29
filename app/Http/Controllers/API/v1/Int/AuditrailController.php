@@ -64,4 +64,13 @@ class AuditrailController extends Controller
         \Log::info($auditrail);
         return response()->success(['contents' => $auditrail]);
     }
+
+    public function auditProperty(Request $request)
+    {
+        $limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsProperty($request)->paginate($limit);
+        \Log::info($auditrail);
+        return response()->success(['contents' => $auditrail]);
+    }
+
 }
