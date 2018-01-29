@@ -39,7 +39,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo', 'vip_sent'
     ];
 
     /**
@@ -47,7 +47,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -247,6 +247,22 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
+     * Get depedencies VIP CLAS status.
+     *
+     * @return string
+     */
+    public function getIsClasReadyAttribute()
+    {
+        if ( $this->is_visited && $this->customer->is_verified && $this->is_screening && !$this->vip_sent ) {
+            if ( $this->visit_report->use_reason == 13 ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Set user id information.
      *
      * @return string
@@ -259,9 +275,7 @@ class EForm extends Model implements AuditableContract
         $ref_number .= date( 'y' );
         $ref_number .= date( 'm' );
         $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] );
-        \Log::info($ref_number_check->get());
         $ref_number_check = $ref_number_check->max( 'ref_number' );
-        \Log::info($ref_number_check);
 
         if( count($ref_number_check) > 0 ) {
 
@@ -281,109 +295,85 @@ class EForm extends Model implements AuditableContract
     public static function approve( $eform_id, $request )
     {
         $eform = static::findOrFail( $eform_id );
-        $result['status'] = false;
         $developer_id = env('DEVELOPER_KEY',1);
         $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
         $collateral = Collateral::where('developer_id',$eform->kpr->developer_id)->where('property_id',$eform->kpr->property_id)->first();
 
+        // Default result value
+        $result = array(
+            'status' => false
+        );
+
+        // KPR value
+        $kprValue = array(
+            'is_sent'=> true
+        );
+
+        // Default value for update eform
+        $defaultValue = $eform->generateVIPData( $request );
+
+        // Approve function
         if ( $request->is_approved ) {
             if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 $result = $eform->insertCoreBRI(10);
-                if ( $result['status'] ) {
-                    $eform->kpr()->update(['is_sent'=> true]);
-                    generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
-                }
 
             } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
-                if ( $result['status'] ) {
-                    $eform->kpr()->update(['is_sent'=> true]);
-                    generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
-                }
 
-            } else if ( $eform->status_eform != 'Approval2' ) {
-                $result = $eform->insertCoreBRI(8);
-                if ( $result['status'] ) {
-                    $eform->kpr()->update(['is_sent'=> false]);
-                }
-
-            }
-
-            // Recontest
-            if ($eform->status_eform == 'Approval2' ) {
+            } else if ( $eform->status_eform == 'Approval2' ) {
+                // Recontest
                 $result = $eform->insertRecontestBRI( '21' );
-                if ( $result['status'] ) {
-                    $eform->update( [
-                        'pinca_position' => $request->pinca_position,
-                        'pinca_name' => $request->pinca_name,
-                        'is_approved' => $request->is_approved,
-                        'status_eform' => 'approved'
-                    ] );
-
-                    $eform->recontest->update( [
-                        'pinca_recommendation' => $request->recommendation,
-                        'pinca_recommended' => $request->recommended == "yes" ? true : false
-                    ] );
-                }
+                $kprValue = null;
 
             } else {
-                if ( $result['status'] ) {
-                    $eform->update( [
-                        'pros' => $request->pros,
-                        'cons' => $request->cons,
-                        'pinca_position' => $request->pinca_position,
-                        'pinca_name' => $request->pinca_name,
-                        'recommendation' => $request->recommendation,
-                        'recommended' => $request->recommended == "yes" ? true : false,
-                        'is_approved' => $request->is_approved,
-                        'status_eform' => 'approved'
-                    ] );
-
-                    if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                        PropertyItem::setAvailibility( $eform->kpr->property_item, "sold" );
-                    }
-                }
+                $result = $eform->insertCoreBRI(8);
+                $kprValue['is_sent'] = false;
 
             }
 
+            // VIP function
+            if ( !$eform->vip_sent ) {
+                if ( $eform->visit_report->use_reason == 13 ) {
+                    $result = $eform->insertAnalisVIPBRI(
+                        $eform->stepVIP(
+                            $eform->additional_parameters
+                        )
+                    );
+                }
+            }
+
+            $availableStatus = "sold";
+
         } else {
+            // Reject function
+            $defaultValue['status_eform'] = 'Rejected';
+            $availableStatus = "available";
+            $result['status'] = true;
+
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
                 $result = $eform->insertRecontestBRI( '0' );
-                if ( $result['status'] ) {
-                    $eform->update( [
-                        'pinca_position' => $request->pinca_position,
-                        'pinca_name' => $request->pinca_name,
-                        'is_approved' => $request->is_approved,
-                        'status_eform' => 'Rejected'
-                    ] );
-
-                    $eform->recontest->update( [
-                        'pinca_recommendation' => $request->recommendation,
-                        'pinca_recommended' => $request->recommended == "yes" ? true : false
-                    ] );
-                }
-
-            } else {
-                if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
-                    PropertyItem::setAvailibility( $eform->kpr->property_item, "available" );
-                }
-
-                $eform->update( [
-                    'pros' => $request->pros,
-                    'cons' => $request->cons,
-                    'pinca_position' => $request->pinca_position,
-                    'pinca_name' => $request->pinca_name,
-                    'recommendation' => $request->recommendation,
-                    'recommended' => $request->recommended == "yes" ? true : false,
-                    'is_approved' => $request->is_approved,
-                    'status_eform' => 'Rejected'
-                ] );
-
-                $result['status'] = true;
 
             }
 
+        }
+
+        // Success hit CLAS service
+        if ( $result['status'] ) {
+            if( $kprValue != null ) {
+                $eform->kpr()->update( $kprValue );
+
+            }
+
+            if( $eform->status_eform == 'Approval2' ) {
+                $eform->updateRecontest( $request );
+
+                $defaultValue = static::unsetRecontest( $defaultValue );
+            }
+
+            $eform->update($defaultValue);
+
+            $eform->setAvailibility( $availableStatus );
         }
 
         return $result;
@@ -463,8 +453,12 @@ class EForm extends Model implements AuditableContract
         return $return;
     }
 
-
-    public function insertRecontestBRI( $status )
+    /**
+     * Send to recontest service BRI
+     *
+     * @return array
+     **/
+    public function insertRecontestBRI( $params )
     {
         return $this->SentToBri(
             $this->additional_parameters + [
@@ -473,6 +467,101 @@ class EForm extends Model implements AuditableContract
             , 'UpdateStatusByAplikasi'
             , null
             , 0
+        );
+    }
+
+    /**
+     * Remove unused params for recontest
+     *
+     * @return void
+     **/
+    public static function unsetRecontest( $request )
+    {
+        unset($request['pros']);
+        unset($request['cons']);
+        unset($request['recommendation']);
+        unset($request['recommended']);
+
+        return $request;
+    }
+
+    /**
+     * Update recontest recommendation
+     *
+     * @return void
+     **/
+    public function updateRecontest( $request )
+    {
+        $this->recontest->update( [
+            'pinca_recommendation' => $request->recommendation,
+            'pinca_recommended' => $request->recommended == "yes" ? true : false
+        ] );
+    }
+
+    /**
+     * Update property status
+     *
+     * @return void
+     **/
+    public function setAvailibility( $status )
+    {
+        $developer_id = env('DEVELOPER_KEY',1);
+        $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+
+        if ($this->kpr->developer_id != $developer_id && $this->kpr->developer_name != $developer_name) {
+            PropertyItem::setAvailibility( $this->kpr->property_item, $status );
+        }
+    }
+
+    /**
+     * Send to analis VIP service BRI
+     *
+     * @return array
+     * @author
+     **/
+    public function insertAnalisVIPBRI( $data )
+    {
+        return $this->SentToBri(
+            $data
+            , 'InsertIntoAnalis'
+            , null
+            , 0
+        );
+    }
+
+    /**
+     * Send to analis VIP service BRI
+     *
+     * @return array
+     * @author
+     **/
+    public function generateVIPData( $request = null )
+    {
+        if ( !isset($request->auto_approve) ) {
+            return array(
+                'pros' => isset($request->pros) ? $request->pros : '',
+                'cons' => isset($request->cons) ? $request->cons : '',
+                'pinca_position' => $request->pinca_position,
+                'pinca_name' => $request->pinca_name,
+                'recommendation' => $request->recommendation,
+                'recommended' => $request->recommended == "yes" ? true : false,
+                'is_approved' => $request->is_approved,
+                'status_eform' => 'approved'
+            );
+
+        }
+
+        $visitReport = $this->visit_report;
+
+        return array(
+            'pros' => $visitReport->pros,
+            'cons' => $visitReport->cons,
+            'pinca_position' => $this->ao_position,
+            'pinca_name' => $this->ao_name,
+            'recommendation' => $visitReport->recommendation,
+            'recommended' => $visitReport->recommended,
+            'is_approved' => true,
+            'status_eform' => 'approved'
         );
     }
 
@@ -512,17 +601,6 @@ class EForm extends Model implements AuditableContract
             );
 
             $schedule = Appointment::create($scheduleData);
-
-            /*
-            tombol screening di aksi (done)
-                kali belum verif => popup notif (done)
-                kalo udah verif => buka halaman screening (done)
-                kalo udh screening => cuma view (done)
-                pdf (done)
-
-            before: halaman screening
-                hit service 3x2 (done)
-            */
         } );
     }
 
@@ -647,8 +725,6 @@ class EForm extends Model implements AuditableContract
                 $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
 
             }
-            \Log::info("===========================role===================================");
-            \Log::info($user['role']);
             if ( $user['role'] != 'ao' || $request->has('search')) {
                 if ( $request->has('search') ) {
                     $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
@@ -669,9 +745,6 @@ class EForm extends Model implements AuditableContract
         }
 
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
-
-        \Log::info($eform->toSql());
-        \Log::info($eform->getBindings());
 
         return $eform;
     }
@@ -771,7 +844,8 @@ class EForm extends Model implements AuditableContract
                 ]);
 
                 if ( $status != 'Approval2' ) {
-                    PropertyItem::setAvailibility( $target->kpr->property_item, $status == 'Approval1' ? "sold" : "available" );
+                    $target->setAvailibility( $status == 'Approval1' ? "sold" : "available" );
+
                 }
             }
         }
@@ -859,7 +933,7 @@ class EForm extends Model implements AuditableContract
         \Log::info('============================================================================================');
 
         if ( $post_to_bri[ 'code' ] == 200 ) {
-            if ( $endpoint != 'UpdateStatusByAplikasi' ) {
+            if ( $endpoint != 'UpdateStatusByAplikasi' && $endpoint != 'InsertIntoAnalis' ) {
                 if ($value != null) {
                     $this->additional_parameters += [ $value => $post_to_bri[ 'contents' ] ] ;
                 }
@@ -867,6 +941,11 @@ class EForm extends Model implements AuditableContract
                 $this->clas_position = $step + 1;
                 $this->send_clas_date = date("Y-m-d");
                 $this->save();
+
+            } else if ( $endpoint == 'InsertIntoAnalis' ) {
+                $this->vip_sent = true;
+                $this->save();
+
             }
 
             $return = array(
@@ -1272,7 +1351,7 @@ class EForm extends Model implements AuditableContract
         return $request;
     }
 
-     /**
+    /**
      * Generate Parameters for step 10.
      *
      * @param array $data
@@ -1352,6 +1431,23 @@ class EForm extends Model implements AuditableContract
             "Shgb_tanggal_penerimaan_agunan_rt"=>!($otsNine->receipt_date_shgb)?'':$this->reformatDate($otsNine->receipt_date_shgb),
             "Shgb_status_value_agunan_rt"=>!($otsNine->shgb_status)? '' : ($otsNine->shgb_status == "Sudah Diberikan" ? '1' : '0'),
             "Shgb_keterangan_agunan_rt"=>!($otsNine->information_shgb)? '' : $otsNine->information_shgb
+        ];
+        return $request;
+    }
+
+    /**
+     * Generate Parameters for step VIP.
+     *
+     * @param array $data
+     * @return array $request
+     */
+    public function stepVIP($data)
+    {
+        \Log::info("stepVIP");
+        $request = $data + [
+            "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
+            "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id,
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
         ];
         return $request;
     }

@@ -96,7 +96,10 @@ class CustomerRequest extends BaseRequest
                         'first_name'=>'',
                         'last_name'=>'',
                         'verify_status'=>'required|in:verify,verified',
-                        'gender'=>'required_if:verify_status,verify'
+                        'gender'=>'required_if:verify_status,verify',
+                        'zip_code' => 'required|kode_pos|numeric',
+                        'zip_code_current' => 'required|kode_pos|numeric',
+                        'zip_code_office' => 'required|kode_pos|numeric'
 
                         // 'verify_status' => 'required|in:verify,verified',
                         // 'cif_number' => '',

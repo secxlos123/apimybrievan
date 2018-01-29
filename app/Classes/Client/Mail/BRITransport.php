@@ -64,11 +64,11 @@ class BRITransport extends Transport
         /**
          * Wait for testing
          */
-        
+
         //\RestwsHc::setBody($this->payload($message))->post('form_params');
         \Log::info('=========================================sent data================');
-        $res = $this->client->post($this->url.'/send_emailv2', 
-        	  ['form_params' => [ 
+        $res = $this->client->post($this->url.'/send_emailv2',
+        	  ['form_params' => [
         	  	'headers' => ['Content-type' => 'application/x-www-form-urlencoded'] ,
         	  	'app_id'  => 'mybriapi',
         	  	'subject' => $message->getSubject(),
