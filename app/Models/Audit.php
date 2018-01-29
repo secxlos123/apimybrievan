@@ -550,6 +550,9 @@ class Audit extends Model implements AuditContract
                 * This query for Auditrail Login
                 */
 
+                 $user = 'app\models\user';
+
+                 $auditrail->where('auditable_type', $user);
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%p%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%u%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');

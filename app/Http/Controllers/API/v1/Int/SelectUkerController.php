@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\Int;
 
 
 use Illuminate\Http\Request;
@@ -56,7 +56,6 @@ class SelectUkerController extends Controller
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($data, $token);
-
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $listExisting
