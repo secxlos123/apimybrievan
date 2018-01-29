@@ -58,7 +58,7 @@ class EFormPenugasanDisposisi extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        
+        $message    = getMessage("eform_disposition");
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
@@ -69,8 +69,8 @@ class EFormPenugasanDisposisi extends Notification
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
-            'message' => $this->eForm->message,
             'role_name' => $notifiable->roles->first()->slug,
+            'message' => $message,
         ];
     }
 }
