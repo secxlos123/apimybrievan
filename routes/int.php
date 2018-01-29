@@ -130,6 +130,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/login-logout', 'AuditrailController@auditLogin');
 		Route::get('auditrail/edit', 'AuditrailController@auditEdit');
 		Route::get('auditrail/collateral', 'AuditrailController@auditCollateral');
+		Route::get('auditrail/property', 'AuditrailController@auditProperty');
 
 	} );
 

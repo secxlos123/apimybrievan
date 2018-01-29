@@ -23,6 +23,7 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
          	   , case when b.first_name is not null then concat(b.first_name,' ',b.last_name) else h.name end as username
                , f.staff_name
          	   , case when e.slug is not null then e.slug else h.role end as role
+         	   , i.name as project_name
          	   , c.company_name
          	   , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
          	   , a.old_values
@@ -36,7 +37,8 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
 			   left join roles e on e.id = d.role_id
 			   left join collaterals f on f.developer_id = c.id
 			   left join eforms g on g.user_id = a.user_id
-			   left join user_services h on h.pn = a.user_id");
+			   left join user_services h on h.pn = a.user_id
+			   left join properties i on i.developer_id = c.id");
 
         //this for table view auditrail collateral
         \DB::unprepared("DROP VIEW IF EXISTS auditrail_collaterals");
