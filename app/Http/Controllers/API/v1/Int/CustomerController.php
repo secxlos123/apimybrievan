@@ -129,7 +129,6 @@ class CustomerController extends Controller
 
 	/**
 	 * Verify the specified resource in storage.
-	 *
 	 * @param  \App\Http\Requests\API\v1\CustomerRequest  $request
 	 * @param  int $id
 	 * @return \Illuminate\Http\Response
