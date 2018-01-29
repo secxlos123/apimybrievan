@@ -65,7 +65,7 @@ class CollateralDisposition extends Notification
     {
 
         $typeModule = getTypeModule(Collateral::class);
-
+        $message    = getMessage('collateral_disposition');
         return [
             'collateral_id' => $this->collateral->id,
             'user_id' => $notifiable->id,
@@ -79,6 +79,7 @@ class CollateralDisposition extends Notification
             'role_name' => $notifiable->roles->first()->slug,
             'staff_name' => $this->collateral->staff_name,
             'prop_slug' => $this->collateral->property->slug,
+            'message' => $message,
         ];
     }
 }

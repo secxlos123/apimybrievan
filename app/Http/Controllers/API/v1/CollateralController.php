@@ -228,10 +228,11 @@ class CollateralController extends Controller
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
                                                ->orderBy('created_at', 'desc')->first();
                 $id = $notificationData['id'];
+                $message = getMessage('collateral_penilaian');
                 //*/
                 $credentials = [
-                   'headerNotif' => 'Collateral Notification',
-                   'bodyNotif' => 'Form Penilaian Agunan',
+                   'headerNotif' => $message['title'],
+                   'bodyNotif' => $message['message'],
                    'id' => $id,
                    'type' => 'collateral_penilaian_agunan',
                    'slug' => $collateral_id,
@@ -330,6 +331,7 @@ class CollateralController extends Controller
             if ($action === 'approve')
             {
                 $bodyNotif = 'approval collateral';
+                $status = 'collateral_approve';
                 $type = 'collateral_manager_approving';
                 $receiver = 'external';
                 //insert data from notifications table
@@ -345,6 +347,7 @@ class CollateralController extends Controller
                 if ($role=='collateral')  //reject penilaian anggunan untuk developer
                 {
                    $bodyNotif = 'reject collateral';
+                   $status    = 'collateral_reject';
                    $type = 'collateral_'.$action;
                    $receiver = 'external';  // send to external apps
                    //insert data from notifications table
@@ -357,6 +360,7 @@ class CollateralController extends Controller
                 else  //reject untuk staf collateral dan ao
                 {
                    $bodyNotif = 'menolak menilai agunan';
+                   $status = 'collateral_reject_penilaian';
                    $type = 'collateral_ots_'.$action;
                    $receiver = 'manager_collateral';
                    if ($role=='ao')
@@ -392,10 +396,11 @@ class CollateralController extends Controller
             }
             if($user_id !='kosong')
             {  // tidak kirim notif
+              $message = getMessage($status);
               $id = $notificationData['id'];
               $credentials = [
                   'headerNotif' => 'Collateral Notification',
-                  'bodyNotif' => $bodyNotif,
+                  'bodyNotif' => $message['message'],
                   'id' => $id,
                   'type' => $type,
                   'slug' => $collateralId,
@@ -468,13 +473,13 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
-        //*/
+        $message = getMessage('collateral_disposition');
         $credentials = [
             'slug' => $collateralId,
             'id' => $id,
             'user_id' => $staff_id,
             'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => 'Penugasan Staff Collateral',
+            'bodyNotif' => $message['message'],
             'type' => 'collateral_disposition',
             'receiver' => $receiver,
         ];
@@ -550,10 +555,11 @@ class CollateralController extends Controller
                     $notificationData = $userNotif->where('slug', $collateralId)
                                                     ->orderBy('created_at', 'desc')->first();
                     $id = $notificationData['id'];
+                    $message = getMessage('collateral_checklist');
                     //*/
                      $credentials = [
-                      'headerNotif' => 'Collateral Notification',
-                      'bodyNotif' => 'Collateral Checklist ',
+                      'headerNotif' => $message['title'],
+                      'bodyNotif' => $message['message'],
                       'id' => $id,
                       'type' => 'collateral_checklist',
                       'slug' => $collateralId,
@@ -617,10 +623,11 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
+        $message = getMessage('collateral_approve');
         //*/
         $credentials = [
-            'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => 'OTS menilai anggunan '.$typeKpr,
+            'headerNotif' => $message['title'],
+            'bodyNotif' => $message['message'],
             'id' => $id,
             'type' => 'collateral_ots',
             'slug' => $collateral_id,

@@ -58,7 +58,7 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
             , a.old_values
             , a.new_values
             , a.ip_address
-            , a.extra_params as action_loaction
+            , a.extra_params as action_location
             from audits a
             left join user_services h on h.pn = a.user_id
             left join collaterals c on a.auditable_id = c.id
