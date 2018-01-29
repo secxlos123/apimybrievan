@@ -123,7 +123,15 @@ class Customer extends User
             'birth_place' => $this->birth_place,
             'birth_date' => $this->detail ? $this->detail->birth_date : '',
             'address' => $this->detail ? $this->detail->address : '',
+            'zip_code' => $this->detail ? ($this->detail->zip_code ? $this->detail->zip_code : '00000') : '00000',
+            'kelurahan' => $this->detail ? ($this->detail->kelurahan ? $this->detail->kelurahan : 'kelurahan') : 'kelurahan',
+            'kecamatan' => $this->detail ? ($this->detail->kecamatan ? $this->detail->kecamatan : 'kecamatan') : 'kecamatan',
+            'kabupaten' => $this->detail ? ($this->detail->kabupaten ? $this->detail->kabupaten : 'kabupaten') : 'kabupaten',
             'current_address' => $this->detail ? $this->detail->current_address : '',
+            'zip_code_current' => $this->detail ? ($this->detail->zip_code_current ? $this->detail->zip_code_current : '00000' ) : '00000',
+            'kelurahan_current' => $this->detail ? ($this->detail->kelurahan_current ? $this->detail->kelurahan_current : 'kelurahan' ) : 'kelurahan',
+            'kecamatan_current' => $this->detail ? ($this->detail->kecamatan_current ? $this->detail->kecamatan_current : 'kecamatan' ) : 'kecamatan',
+            'kabupaten_current' => $this->detail ? ($this->detail->kabupaten_current ? $this->detail->kabupaten_current : 'kabupaten' ) : 'kabupaten',
             'city_id' => $this->detail ? $this->detail->city_id : '',
             'city' => $this->detail ? ($this->detail->city ? $this->detail->city->name : '') : '',
             'citizenship_id' => $this->detail ? $this->detail->citizenship_id : '',
@@ -167,7 +175,11 @@ class Customer extends User
             'position' => $this->detail ? $this->detail->position_name : '',
             'work_duration' => $this->detail ? $this->detail->work_duration : '',
             'work_duration_month' => $this->detail ? $this->detail->work_duration_month : '',
-            'office_address' => $this->detail ? $this->detail->office_address : ''
+            'office_address' => $this->detail ? $this->detail->office_address : '',
+            'zip_code_office' => $this->detail ? ($this->detail->zip_code_office ? $this->detail->zip_code_office : '00000') : '00000',
+            'kelurahan_office' => $this->detail ? ($this->detail->kelurahan_office ? $this->detail->kelurahan_office : 'kelurahan') : 'kelurahan',
+            'kecamatan_office' => $this->detail ? ($this->detail->kecamatan_office ? $this->detail->kecamatan_office : 'kecamatan') : 'kecamatan',
+            'kabupaten_office' => $this->detail ? ($this->detail->kabupaten_office ? $this->detail->kabupaten_office : 'kabupaten') : 'kabupaten'
         ];
     }
 
