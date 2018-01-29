@@ -104,10 +104,15 @@ class ViewSeeder extends Seeder
               collaterals.is_staff,
               collaterals.approved_by,
               (select name from cities where cities.id = customer_details.birth_place_id) AS birthplace,
+              (select region_id from properties where properties.id = kpr.property_id ) AS region_id,
               CASE WHEN customer_details.address_status::int = 0 THEN 'Milik Sendiri'
                    WHEN customer_details.address_status::int = 1 THEN 'Milik Orang Tua/Mertua atau Rumah Dinas'
                    WHEN customer_details.address_status::int = 3 THEN 'Tinggal di Rumah Kontrakan'
                    ELSE 'Tidak Ada' END AS address_status,
+              CASE WHEN customer_details.status::int = 1 THEN 'Belum Menikah'
+                   WHEN customer_details.status::int = 2 THEN 'Menikah'
+                   WHEN customer_details.status::int = 3 THEN 'Janda/Duda'
+                   ELSE 'Tidak Ada' END AS status_user,
               CASE WHEN kpr.status_property::int = 1 THEN 'Baru'
                    WHEN kpr.status_property::int = 2 THEN 'Secondary'
                    WHEN kpr.status_property::int = 3 THEN 'Refinancing'
