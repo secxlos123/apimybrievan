@@ -3,6 +3,7 @@
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserNotification;
+use App\Models\EForm;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
@@ -20,6 +21,7 @@ use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
 use LaravelFCM\Facades\FCM;
+use App\Events\EForm\Approved;
 
 if (! function_exists('csv_to_array')) {
 
@@ -419,6 +421,60 @@ if (! function_exists('getTypeModule')) {
                 break;
         }
         return $typeModule;
+    }
+}
+
+if (! function_exists('autoApproveForVIP')) {
+
+    /**
+     * Auto approve helper for VIP.
+     *
+     * @param  int $eform_id
+     *
+     * @return array
+     */
+    function autoApproveForVIP( $request, $eform_id )
+    {
+        if ( !isset( $request['is_approved'] ) ) {
+            $request['is_approved'] = true;
+            $request['auto_approve'] = true;
+        }
+
+        $response = EForm::approve( $eform_id, (object) $request );
+
+        if ( $response['status'] ) {
+            $data = EForm::find( $eform_id );
+            $typeModule = getTypeModule( EForm::class );
+
+            $notificationIsRead = UserNotification::where( 'slug', $eform_id )
+                ->where( 'type_module', $typeModule)
+                ->whereNull( 'read_at' )
+                ->first();
+
+            if ( $notificationIsRead != NULL ) {
+                $notificationIsRead->markAsRead();
+            }
+
+            $usersModel = User::Find( $data->user_id );
+            event( new Approved( $data ) );
+
+            // Call the helper of push notification function
+            pushNotification(
+                array(
+                    'data' => $data
+                    , 'user' => $usersModel
+                )
+                , 'approveEForm'
+            );
+
+            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->find( $eform_id );
+
+            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+
+            return 'E-Form VIP berhasil';
+        }
+
+        return isset($response['message']) ? $response['message'] : 'E-Form VIP gagal';
     }
 }
 
@@ -934,8 +990,4 @@ if (! function_exists('pushNotification')) {
         $topicResponse->shouldRetry();
         $topicResponse->error();
     }
-
-
-
-
 }

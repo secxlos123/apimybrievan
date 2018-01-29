@@ -41,7 +41,6 @@ class VisitReportController extends Controller
     {
         DB::beginTransaction();
 
-        \Log::info($request->all());
         $data = $request->all();
     	if (!isset($data['mutations'])){
             $data['mutations'] = array();
@@ -58,7 +57,7 @@ class VisitReportController extends Controller
         if(@$notificationIsRead){
             $notificationIsRead->markAsRead();
         }
-     
+
         $usersModel = User::FindOrFail($eform->user_id);
 
         $eform->update([
@@ -66,7 +65,7 @@ class VisitReportController extends Controller
             , 'appointment_date' => $request->input('date')
             , 'ao_name' => $user_login['name']
             , 'ao_position' => $user_login['position']
-        ]);        
+        ]);
         $visit_report = VisitReport::create( [ 'eform_id' => $eform_id ] + $data );
         $credentials = [
             'data'        => $eform,
@@ -77,8 +76,15 @@ class VisitReportController extends Controller
         pushNotification($credentials, 'lknEForm');
 
         DB::commit();
+
+        $message = 'Data LKN berhasil dikirim';
+        // auto approve for VIP
+        if ( $eform->is_clas_ready ) {
+            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+        }
+
         return response()->success( [
-            'message' => 'Data LKN berhasil dikirim',
+            'message' => $message,
             'contents' => $visit_report
         ], 201 );
     }
