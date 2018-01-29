@@ -8,8 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
 use App\Models\EForm;
+use App\Models\Scoring;
 
-class ApproveEFormCustomer extends Notification
+class ScoringPreScreeningEform extends Notification
 {
     use Queueable;
 
@@ -56,11 +57,17 @@ class ApproveEFormCustomer extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
+    public function toArray($notifiable)
+    {
+        return [
+            //
+        ];
+    }
+
     public function toDatabase($notifiable)
     {
-        $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_approve");
-
+        $typeModule = getTypeModule(Scoring::class);
+        
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
@@ -71,8 +78,8 @@ class ApproveEFormCustomer extends Notification
             'slug' => $this->eForm->id,
             'type_module' => $typeModule,
             'created_at' => $this->eForm->created_at,
+            'message' => $this->eForm->message,
             'role_name' => $notifiable->roles->first()->slug,
-            'message' => $message,
         ];
     }
 }

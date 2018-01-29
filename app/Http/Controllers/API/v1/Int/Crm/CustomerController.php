@@ -127,8 +127,19 @@ class CustomerController extends Controller
         ]
       ]);
       $customer_officer = json_decode($request_customer_officer->getBody()->getContents(), true);
+      if ($customer_officer['data']['top']) {
+        $top = $customer_officer['data']['top'];
+      }else {
+        $top = [];
+      }
+      if ($customer_officer['data']['bottom']) {
+        $bottom = $customer_officer['data']['bottom'];
+      }else {
+        $bottom = [];
+      }
 
-      $result = array_merge_recursive($customer_officer['data']['top'],$customer_officer['data']['bottom']);
+      // $result = array_merge_recursive($customer_officer['data']['top'],$customer_officer['data']['bottom']);
+      $result = array_merge_recursive($top,$bottom);
       // return $result;die();
       foreach ($result as $key =>  $value) {
         if($value['DELTA_SALDO'] < 0 || $value['DELTA_SALDO'] > 0){

@@ -35,28 +35,7 @@ class NotificationController extends Controller
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
         $branch_id = ( request()->header( 'branch_id' ) != '' ) ? request()->header( 'branch_id' ) : '' ;
-
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
-        $userId = (!empty($request->user_id) ? $request->user_id : 0);
-        $branchId = (!empty($request->branch_id) ? $request->branch_id : 0);
-        $limit = (!empty($request->limit) ? $request->limit : 10);
-        $mobile = false;
-
-        if ($role == "customer") {
-            if (empty($userId)) {
-                $user_id = $user_id;
-            } else {
-                $mobile = true;
-                $user_id = $userId;
-            }
-        } else {
-            if (empty($branchId)) {
-                $branch_id = $branch_id;
-            } else {
-                $mobile = true;
-                $branch_id = $branchId;
-            }
-        }
 
         $ArrGetDataNotification = [];
         $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3),
@@ -69,6 +48,7 @@ class NotificationController extends Controller
                                         'id' => $value->id,
                                         'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],
                                         'subject' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message'],
+                                        'subject_external' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external'],
                                         'type' => $value->type,
                                         'notifiable_id' => $value->notifiable_id,
                                         'notifiable_type' => $value->notifiable_type,
@@ -81,19 +61,26 @@ class NotificationController extends Controller
                                     ];
             }
         }
-        // Mobile set pagination of arrays
-        if($mobile){
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-            $itemCollection = collect($ArrGetDataNotification);
-            $perPage = $limit;
-            $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-            $data = new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-            $data->setPath($request->url());
-        }else{
-            $data = $ArrGetDataNotification;
-        }
-
     	return  response()->success( [
+            'message' => 'Sukses',
+            'contents' => $ArrGetDataNotification
+        ], 200 );
+    }
+
+    public function unreadMobile(Request $request)
+    {
+        $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
+        $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
+        $branch_id = ( request()->header( 'branchId' ) != '' ) ? request()->header( 'branchId' ) : '' ;
+        $user_id = ( request()->header( 'userId' ) != '' ) ? request()->header( 'userId' ) : 0 ;
+        $limit = (empty($request->limit) ? 10 : $request->limit);
+
+        $data = $this->userNotification->getUnreadsMobile(  substr($branch_id,-3), 
+                                                            $role, 
+                                                            '000'.$pn, 
+                                                            $user_id, 
+                                                            $limit);
+        return  response()->success( [
             'message' => 'Sukses',
             'contents' => $data
         ], 200 );
@@ -105,7 +92,7 @@ class NotificationController extends Controller
         $is_read = ( request()->header( 'is_read' ) != '' ) ? request()->header( 'is_read' ) : NULL ;
         $notification = $this->userNotification
             ->where( 'slug', $slug)->where( 'type_module', $type)->whereNull('read_at')
-            ->firstOrFail();
+            ->first();
 
         if($notification) $notification->markAsRead($is_read);
         return  response()->success( [

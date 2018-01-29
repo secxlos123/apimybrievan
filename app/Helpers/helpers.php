@@ -3,6 +3,7 @@
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserNotification;
+use App\Models\EForm;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
@@ -20,6 +21,7 @@ use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
 use LaravelFCM\Facades\FCM;
+use App\Events\EForm\Approved;
 
 if (! function_exists('csv_to_array')) {
 
@@ -411,11 +413,134 @@ if (! function_exists('getTypeModule')) {
             case 'App\Models\Property':
                 $typeModule = 'property';
                 break;
+            case 'App\Models\Scoring':
+                $typeModule = 'prescreening-scoring';
+                break;
             default:
                 $typeModule = 'Type undefined';
                 break;
         }
         return $typeModule;
+    }
+}
+
+if (! function_exists('autoApproveForVIP')) {
+
+    /**
+     * Auto approve helper for VIP.
+     *
+     * @param  int $eform_id
+     *
+     * @return array
+     */
+    function autoApproveForVIP( $request, $eform_id )
+    {
+        if ( !isset( $request['is_approved'] ) ) {
+            $request['is_approved'] = true;
+            $request['auto_approve'] = true;
+        }
+
+        $response = EForm::approve( $eform_id, (object) $request );
+
+        if ( $response['status'] ) {
+            $data = EForm::find( $eform_id );
+            $typeModule = getTypeModule( EForm::class );
+
+            $notificationIsRead = UserNotification::where( 'slug', $eform_id )
+                ->where( 'type_module', $typeModule)
+                ->whereNull( 'read_at' )
+                ->first();
+
+            if ( $notificationIsRead != NULL ) {
+                $notificationIsRead->markAsRead();
+            }
+
+            $usersModel = User::Find( $data->user_id );
+            event( new Approved( $data ) );
+
+            // Call the helper of push notification function
+            pushNotification(
+                array(
+                    'data' => $data
+                    , 'user' => $usersModel
+                )
+                , 'approveEForm'
+            );
+
+            $detail = EForm::with( 'visit_report.mutation.bankstatement' )->find( $eform_id );
+
+            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+
+            return 'E-Form VIP berhasil';
+        }
+
+        return isset($response['message']) ? $response['message'] : 'E-Form VIP gagal';
+    }
+}
+
+if (! function_exists('getMessage')) {
+    function getMessage($type)
+    {
+        switch ($type) {
+            case 'eform_create':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan KPR Baru',
+                ];
+                break;
+            case 'eform_approve':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan anda telah di Setujui',
+                ];
+                break;
+            case 'eform_reject':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan anda telah di Tolak',
+                ];
+                break;
+            case 'eform_lkn':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Data LKN berhasil dikirim',
+                ];
+                break;
+            case 'eform_disposition':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Disposisi Pengajuan',
+                ];
+                break;
+            case 'eform_recontest':
+                $message = [
+                    'title'   => 'EForm Notification',
+                    'message' => 'Pengajuan Anda Telah di Rekontest',
+                ];
+            case 'schedule_create':
+                $message = [
+                    'title'   => 'Schedule Notification',
+                    'message' => 'Anda memiliki jadwal baru',
+                ];
+            case 'schedule_update':
+                $message = [
+                    'title'   => 'Schedule Notification',
+                    'message' => 'Jadwal anda telah di update, Silahkan cek jadwal anda',
+                ];
+            case 'verify':
+                $message = [
+                    'title'   => 'Verify Notification',
+                    'message' => 'Silahkan Verifikasi Data Anda',
+                ];
+            default:
+                $message = ['message' => 'Type undefined',
+                    'url' => '',
+                    'url_mobile' => '#',
+                ];
+                break;
+        }
+
+        return $message;
     }
 }
 
@@ -620,9 +745,11 @@ if (! function_exists('pushNotification')) {
     function disposition($credentials){
         $data      = $credentials['eform'];
         $aoId      = $credentials['ao_id'];
+        $message   = getMessage("eform_disposition");
+
         $userNotif = new UserNotification;
-        $notificationBuilder = new PayloadNotificationBuilder('EForm Notification');
-        $notificationBuilder->setBody('E-Form berhasil di disposisi')
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['message'])
                             ->setSound('default');
         // Get data from notifications table
         $notificationData = $userNotif->where('slug', $data->id)
@@ -639,7 +766,7 @@ if (! function_exists('pushNotification')) {
         $notification = $notificationBuilder->build();
         $payload         = $dataBuilder->build();
         $topic = new Topics();
-        $topic->topic('testing')->andTopic('branch_012')->andTopic('ao_'.$aoId);
+        $topic->topic('testing')->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
         $topicResponse->isSuccess();
@@ -863,8 +990,4 @@ if (! function_exists('pushNotification')) {
         $topicResponse->shouldRetry();
         $topicResponse->error();
     }
-
-
-
-
 }
