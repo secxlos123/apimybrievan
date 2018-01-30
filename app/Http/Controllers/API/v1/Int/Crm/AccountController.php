@@ -226,7 +226,8 @@ class AccountController extends Controller
 
     public function get_referral(Request $request)
     {
-      $referrals = Referral::all();
+      $branch_id = $request->header('branch');
+      $referrals = Referral::where('branch_id', $branch_id)->get();
       return response()->success( [
           'message' => 'Sukses get data referral',
           'contents' => $referrals
