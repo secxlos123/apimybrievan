@@ -422,7 +422,7 @@ class UserNotification extends Model
 		
 	}
 
-	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit) {
+	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit, $count = null) {
 		$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
 			->where('eforms.branch_id', @$branch_id)
 			->Where('eforms.ao_id', @$pn)
@@ -566,7 +566,11 @@ class UserNotification extends Model
 
 		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 
-		return $query->paginate($limit);
+		if (empty($count)) {
+			return $query->paginate($limit);
+		}else {
+			return $query->get()->count();
+		}
 		
 	}
 }

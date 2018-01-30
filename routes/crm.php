@@ -21,6 +21,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get( 'account/get_referral_by_officer', 'AccountController@get_referral_by_officer');
   Route::post( 'account/get_referral_by_branch', 'AccountController@get_referral_by_branch');
   Route::post( 'account/store_referral', 'AccountController@store_referral');
+  Route::post( 'account/detail_referral', 'AccountController@detail_referral');
+  Route::post( 'account/update_officer_referral', 'AccountController@update_officer_ref');
 
   // route customer group
   Route::get( 'account/customer_group', 'customerGroupController@index');
@@ -80,7 +82,11 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get('/activity/deleteAll', 'marketingActivityController@deleteAll');
 
   //marketing Map
-  Route::get('/market_mapping', 'marketingMapController@index');
+  Route::get('/market_mapping', 'marketMappingController@index');
   //marketing store Map
-  Route::post('/marketing_map', 'marketingMapController@store');
+  Route::post('/market_mapping', 'marketMappingController@store');
+  //sotore Customer market mapping
+  // Route::post('/market_mapping/store_customer', 'marketMappingController@store_customer_map');
+  //get Customer market mapping
+  // Route::post('/market_mapping/customers', 'marketMappingController@get_customer_map');
 });

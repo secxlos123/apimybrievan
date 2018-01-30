@@ -62,7 +62,7 @@ class CollateralManagerApprove extends Notification
     {
 
         $typeModule = 'collateral_manager_approving';
-
+        $message    = getMessage('collateral_approve');
         return [
             'collateral_id' => $this->collateral->id,
             'user_id' => $notifiable->id,
@@ -76,6 +76,7 @@ class CollateralManagerApprove extends Notification
             'role_name' => $notifiable->roles->first()->slug,
             'staff_name' => $this->collateral->staff_name,
             'prop_slug' => $this->collateral->property->slug,
+            'message' => $message,
         ];
     }
 }

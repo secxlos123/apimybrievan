@@ -970,10 +970,19 @@ class EForm extends Model implements AuditableContract
         $customer_detail = (object) $customer->personal;
         $customer_work = (object) $customer->work;
         $customer_contact = (object) $customer->contact;
+        $customer_finance = (object) $customer->financial;
         $lkn = $this->visit_report;
         $year = !( $customer_work->work_duration ) ? 0 : $customer_work->work_duration;
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
+
+        if ( $lkn->use_reason == 13 ) {
+            $npwp = !( $lkn->npwp_number_masking ) ? '99.999.999.9-999.999' : $lkn->npwp_number_masking;
+
+        } else {
+            $npwp = !( $lkn->npwp_number ) ? '' : $lkn->npwp_number;
+
+        }
 
         $request = $data + [
             "nik_pemohon" => !( $this->nik ) ? '' : $this->nik,
@@ -998,22 +1007,23 @@ class EForm extends Model implements AuditableContract
             "hubungan_keluarga" => !( $customer_contact->emergency_relation ) ? '' : $customer_contact->emergency_relation,
             "telepon_keluarga" => !( $customer_contact->emergency_contact ) ? '0' : $customer_contact->emergency_contact,
             "nama_ibu" => !( $customer_detail->mother_name ) ? '' : $customer_detail->mother_name,
-            "npwp_pemohon" => !( $lkn->npwp_number ) ? '' : $lkn->npwp_number,
+            "npwp_pemohon" => $npwp,
             "cif" => !( $customer_detail->cif_number ) ? '' : $customer_detail->cif_number,
             "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
             "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_gelar_cif" => $this->reformatTitle( $lkn->title ),
-            "Kecamatan_cif" => 'kecamatan',
-            "Kelurahan_cif" => 'kelurahan',
-            "Kode_pos_cif" => '40000',
-            "Lokasi_dati_cif" => $this->reformatCity( $customer_detail->city ),
+            'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '40000' : $customer_detail->zip_code,
+            'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? 'kelurahan' : $customer_detail->kelurahan,
+            'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? 'kecamatan' : $customer_detail->kecamatan,
+            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->city ),
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
-            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts,
-            'agama_value_pemohon' => !( $lkn->religion ) ? '' : $lkn->religion,
-            'telepon_tempat_kerja' => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11 ),
-            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name
+            "agama_value_pemohon" => !( $lkn->religion ) ? '' : $lkn->religion,
+            "telepon_tempat_kerja" => !( $lkn->office_phone ) ? '0' : substr($lkn->office_phone, 0, 11 ),
+            "jenis_kpp_value" => !( $lkn->kpp_type_name ) ? '' : $lkn->kpp_type_name,
+            "jumlah_tanggungan" => !( $customer_finance->dependent_amount ) ? '0' : $customer_finance->dependent_amount,
+            "status_pinjam_bank_lain" => 'Tidak'
         ];
 
         return $request;
@@ -1062,22 +1072,22 @@ class EForm extends Model implements AuditableContract
             'tujuan_membuka_rekening_value' => 'T2',
             'sumber_utama_value' => !( $lkn->source ) ? '00099' : ($lkn->source == "fixed" ? '00011' : '00012'),
 
-            'Kode_pos_cif' => '40000',
-            'Kelurahan_cif' => 'kelurahan',
-            'Kecamatan_cif' => 'kecamatan',
+            'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '' : $customer_detail->zip_code,
+            'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? '' : $customer_detail->kelurahan,
+            'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? '' : $customer_detail->kecamatan,
             'Kota_cif' => $this->reformatCity( $customer_detail->city ),
             'Propinsi_cif' => 'propinsi',
 
-            'Kode_pos_domisili' => '40000',
-            'Kelurahan_domisili' => 'kelurahan',
-            'Kecamatan_domisili' => 'kecamatan',
-            'Kota_domisili' => $this->reformatCity( $customer_detail->city ),
+            'Kode_pos_domisili' => !( $customer_detail->zip_code_current ) ? '' : $customer_detail->zip_code_current,
+            'Kelurahan_domisili' => !( $customer_detail->kelurahan_current ) ? '' : $customer_detail->kelurahan_current,
+            'Kecamatan_domisili' => !( $customer_detail->kecamatan_current ) ? '' : $customer_detail->kecamatan_current,
+            'Kota_domisili' => $this->reformatCity( $customer_detail->kabupaten_current ),
             'Propinsi_domisili' => 'propinsi',
 
-            'Kode_pos_perusahaan' => '40000',
-            'Kelurahan_perusahaan' => 'kelurahan',
-            'Kecamatan_perusahaan' => 'kecamatan',
-            'Kota_perusahaan' => $this->reformatCity( $customer_detail->city ),
+            'Kode_pos_perusahaan' => !( $customer_work->zip_code_office ) ? '' : $customer_work->zip_code_office,
+            'Kelurahan_perusahaan' => !( $customer_work->kelurahan_office ) ? '' : $customer_work->kelurahan_office,
+            'Kecamatan_perusahaan' => !( $customer_work->kecamatan_office ) ? '' : $customer_work->kecamatan_office,
+            'Kota_perusahaan' => $this->reformatCity( $customer_work->kabupaten_office ),
             'Propinsi_perusahaan' => 'propinsi',
 
             'Alamat_surat_menyurat_value' => '1',
@@ -1175,7 +1185,8 @@ class EForm extends Model implements AuditableContract
             "kelonggaran_angsuran_kredit" => $maxInstallment - $loan,
             "suku_bunga_bulan" => number_format( $interest, 4 ),
             "maksimum_plafond" => $maxPlafond,
-            "angsuran_sesuai_jumlah_plafond" => $installment
+            "angsuran_sesuai_jumlah_plafond" => $installment,
+            "Pernah_pinjam_bank_lain_value" => !( $lkn->loan_history_accounts ) ? '' : $lkn->loan_history_accounts
         ];
 
         return $request;
@@ -1447,7 +1458,7 @@ class EForm extends Model implements AuditableContract
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id,
-            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
+            "kode_cabang" => '0206' //!( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
         ];
         return $request;
     }

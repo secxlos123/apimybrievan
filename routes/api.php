@@ -42,7 +42,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* ------------*/
 
 	Route::group( [ 'prefix' => '{type}', 'middleware' => 'api.auth' ], function () {
-
+		Route::get('mobile/count-notification', 'NotificationController@countNotification');
+		Route::get('mobile/list-notification', 'NotificationController@unreadMobile');
 		Route::get( 'positions', 'PositionController@index' );
 		Route::get( 'job-list', 'JobController@index' );
 		Route::get( 'job-field-list', 'JobFieldController@index' );

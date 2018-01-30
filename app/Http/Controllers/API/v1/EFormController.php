@@ -538,6 +538,10 @@ class EFormController extends Controller
                                 }
                             }
                         }
+                        else
+                        {
+                            $baseProperty['region_id'] = 'Q';
+                        }
 
                         $property =  Property::create( $baseProperty );
                         $baseRequest['property'] = $property->id;
