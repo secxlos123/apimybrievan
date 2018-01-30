@@ -335,6 +335,7 @@ class ScoringController extends Controller
         $dats['sicd_detail'] = json_encode($sicd);
         $dats['selected_sicd'] = $selected;
         $dats['selected_dhn'] = $selectedDHN;
+        $dats['is_screening'] = 1;
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
