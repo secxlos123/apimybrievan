@@ -35,7 +35,7 @@ class VerificationController extends Controller
                     'birth_place_id' => $customer->detail->birth_place_id,
                     'birth_place' => $customer->detail->birth_place_id ? $customer->detail->birth_place_city->name : '',
                     'birth_date' => $customer->detail->birth_date,
-                    'phone' => $customer->phone,
+                    'phone' => !($customer->phone) ? '0' : $customer->phone,
                     'mobile_phone' => $customer->mobile_phone,
                     'address' => $customer->detail->address,
                     'current_address' => $customer->detail->current_address,

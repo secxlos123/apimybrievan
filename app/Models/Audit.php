@@ -732,4 +732,110 @@ class Audit extends Model implements AuditContract
                 })
                 ->orderBy($sort[0], $sort[1]);
             }
+
+    public function getuser(Request $request)
+    {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $useractivity = \DB::table('auditrail_admin_developer')
+                            ->select('user_id', 'username')
+                            ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                            ->whereNotNull('username')
+                            ->groupBy('user_id', 'username');
+                            //->orderBy($sort[0], $sort[1]);              
+                            
+        return $useractivity;
+    }
+
+        /**
+     * Scope a query to get list detail activity.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsDetailActivity($query, Request $request, $id)
+    {
+
+
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+
+
+        return $query
+                ->from('auditrail_admin_developer')
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by tanggal aksi.
+                *
+                * @param $request->created_at
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if ($request->has('created_at')){
+                        $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                       
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama User.
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('username')){
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+               
+                    if($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+      
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Perusahaan Mitra.
+                *
+                * @param $request->company_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                if ($request->has('user_id')){
+                        $auditrail->where('user_id',$request->input('user_id'));
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query,&$id){
+                /**
+                * This query for Auditrail Admin Developer
+                */
+
+                 $action = 'undefined action';
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                 $auditrail->where('user_id', '=', $id);
+               
+                })
+                ->orderBy($sort[0], $sort[1]);
+  }
 }
