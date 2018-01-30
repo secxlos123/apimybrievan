@@ -259,7 +259,7 @@ class AccountController extends Controller
       if ($update) {
         return response()->success( [
             'message' => 'Sukses update officer referral',
-            'contents' => $request
+            'contents' => $referral
           ]);
       }
     }
