@@ -46,6 +46,11 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
     'only' => ['index', 'store']
   ] );
 
+  //route NewCustomer
+  Route::resource( 'new_customer', 'NewCustomerController', [
+    'only' => ['index', 'store']
+  ] );
+
   // Route create Activity by pinca
   Route::post('/activity_by_pinca', 'marketingActivityController@store_by_pinca');
 
