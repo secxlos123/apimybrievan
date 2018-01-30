@@ -50,7 +50,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_type_one')
+                ->from('auditrail_admin_developer')
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for search by field search ref_number.
@@ -59,11 +59,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
 
-                  $eform = 'app\\models\\eform';
+                 // $eform = 'app\\models\\eform';
                   
                   if ($request->has('search')){
                         $auditrail->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('search')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                       // $auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -74,11 +74,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
-                   $eform = 'app\\models\\eform';
+                   //$eform = 'app\\models\\eform';
 
                     if ($request->has('created_at')){
                         $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
-                        $auditrail->where('auditable_type', $eform);
+                       // $auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -89,11 +89,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
-                    $eform = 'app\\models\\eform';
+                    //$eform = 'app\\models\\eform';
 
                     if($request->has('username')){
                         $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                        //$auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -103,11 +103,11 @@ class Audit extends Model implements AuditContract
                 * @param $request->modul_name
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
-                    $eform = 'app\\models\\eform';
+                    //$eform = 'app\\models\\eform';
 
                     if($request->has('modul_name')){
                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                        //$auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
@@ -117,22 +117,22 @@ class Audit extends Model implements AuditContract
                 * @param $request->ref_number
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
-                    $eform = 'app\\models\\eform';
+                    //$eform = 'app\\models\\eform';
 
                   if ($request->has('ref_number')){
                         $auditrail->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('ref_number')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                        //$auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for Auditrail Pengajuan Kredit
                 */
-                 $eform = 'app\\models\\eform';
-                 $event = 'created';
+                 //$eform = 'app\\models\\eform';
+                 //$event = 'created';
 
-                 $auditrail->where('auditable_type', $eform);
-                 $auditrail->where('event', $event);
+                 $auditrail->where(\DB::raw('lower(modul_name)'), 'like', '%peng%');
+                 //$auditrail->where('event', $event);
                 })
                 ->orderBy($sort[0], $sort[1]);
             
