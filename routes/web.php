@@ -17,6 +17,22 @@ use App\Models\ApkLogs;
 |
 */
 
+Route::get('/get-restwshc', function() {
+	return \RestwsHc::setBody([
+        'request' => json_encode([
+            'requestMethod' => 'get_customer_profile_nik',
+            'requestData' => [
+                'app_id' => 'mybriapi'
+                , 'nik'     => '3518136206930002'
+            ],
+        ])
+    ])->post( 'form_params' );
+});
+
+Route::get('/get-asmx', function() {
+	return \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
+});
+
 Route::get('/routes', function () {
 	$routeCollection = Route::getRoutes();
 	return view('routes', compact('routeCollection'));

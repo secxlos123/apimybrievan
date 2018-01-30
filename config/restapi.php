@@ -33,8 +33,8 @@ return [
     | CLIENT_APIPDM
     |--------------------------------------------------------------------------
     */
-    // 'apipdm' => 'http://api.briconnect.bri.co.id',
-    'apipdm' => 'http://172.18.44.182',
+    'apipdm' => 'http://api.briconnect.bri.co.id',
+    // 'apipdm' => 'http://172.18.44.182',
     'pdm_client_id' => '3f60d2edcd0399e6ea25290fe4022e0af91e5016',
     'pdm_client_secret' => 'ef3d569a4a609c636e114ff9056b8c324e0f2e7a',
 ];
