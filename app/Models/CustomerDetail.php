@@ -414,7 +414,7 @@ class CustomerDetail extends Model implements AuditableContract
                 ->pluck('detailDebitur');
         return $data;
     }
-    
+
     /*
      * Mutator for detail debitur.
      *
