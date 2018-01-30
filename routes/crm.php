@@ -82,7 +82,11 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get('/activity/deleteAll', 'marketingActivityController@deleteAll');
 
   //marketing Map
-  Route::get('/market_mapping', 'marketingMapController@index');
+  Route::get('/market_mapping', 'marketMappingController@index');
   //marketing store Map
-  Route::post('/marketing_map', 'marketingMapController@store');
+  Route::post('/market_mapping', 'marketMappingController@store');
+  //sotore Customer market mapping
+  // Route::post('/market_mapping/store_customer', 'marketMappingController@store_customer_map');
+  //get Customer market mapping
+  // Route::post('/market_mapping/customers', 'marketMappingController@get_customer_map');
 });
