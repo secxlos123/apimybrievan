@@ -50,7 +50,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_admin_developer')
+                ->from('auditrail_type_two')
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for search by field search ref_number.
@@ -128,11 +128,12 @@ class Audit extends Model implements AuditContract
                 /**
                 * This query for Auditrail Pengajuan Kredit
                 */
-                 //$eform = 'app\\models\\eform';
+                 $eform = 'app\\models\\eform';
+                 //$eform = 'app\models\eform';
                  //$event = 'created';
 
-                 $auditrail->where(\DB::raw('lower(modul_name)'), 'like', '%peng%');
-                 //$auditrail->where('event', $event);
+                 //$auditrail->whereNotNull('modul_name');
+                 $auditrail->where(DB::raw('lower(auditable_type)'), $eform);
                 })
                 ->orderBy($sort[0], $sort[1]);
             
