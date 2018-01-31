@@ -20,4 +20,8 @@ class MarketMapping extends Model
     'pot_transaction'
   ];
 
+  // public function customers()
+  // {
+  //   return $this->hasMany('App\Models\Crm\MarketCustomerMapping');
+  // }
 }
