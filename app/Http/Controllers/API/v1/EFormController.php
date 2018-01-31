@@ -860,6 +860,7 @@ class EFormController extends Controller
     public function updateCLAS( Request $request )
     {
         $message = "EForm tidak ditemukan.";
+        $status  = $request->input('status');
         DB::beginTransaction();
 
         try {
@@ -884,13 +885,14 @@ class EFormController extends Controller
                        ->first();
 
                     $usersModel  = User::FindOrFail($data['user_id']);
-                    $status      = $updateCLAS['status'];
                     $credentials = [
                         'data'  => $data,
-                        'user'  => $usersModel
+                        'user'  => $usersModel,
+                        'clas'  => true,
                     ];
+
                     // Call the helper of push notification function
-                    pushNotification($credentials, ($status) ? 'approveEForm' : 'rejectEForm');
+                    pushNotification($credentials, ($status == "Approval1") ? 'approveEForm' : 'rejectEForm');
 
                     return response()->json([
                         "responseCode" => "01",

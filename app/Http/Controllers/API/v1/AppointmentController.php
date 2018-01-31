@@ -149,6 +149,24 @@ class AppointmentController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  \App\Appointment  $appointment
+     * @return \Illuminate\Http\Response
+     */
+    public function detail(Appointment $appointment,Request $request, $type, $id)
+    {
+        $appointment = $appointment->visibleColumn()
+        ->withEform()
+        ->where((new Appointment)->getTable() . '.id', $id)
+        ->first();
+
+        return response()->success([
+          'contents' => $appointment ? $appointment : (object)[]
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Appointment  $appointment
