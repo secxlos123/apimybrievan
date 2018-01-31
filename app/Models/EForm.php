@@ -709,7 +709,7 @@ class EForm extends Model implements AuditableContract
                 } else {
                     $eform = $eform->select([
                             'eforms.*'
-                            , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
+                            , \DB::Raw(" case when status_eform in ('Rejected') then 4 when status_eform in ('Approval2', 'Approval1', 'approved') then 3 when ao_id is not null then 2 else 1 end as new_order ")
                         ]);
                     if ( $sort[0] != "action" ) {
                         $eform = $eform->orderBy('new_order', 'asc');
@@ -1013,7 +1013,7 @@ class EForm extends Model implements AuditableContract
             'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '40000' : $customer_detail->zip_code,
             'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? 'kelurahan' : $customer_detail->kelurahan,
             'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? 'kecamatan' : $customer_detail->kecamatan,
-            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->city ),
+            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->kabupaten ),
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
