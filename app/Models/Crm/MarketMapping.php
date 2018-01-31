@@ -13,10 +13,15 @@ class MarketMapping extends Model
     'city',
     'longitude',
     'latitude',
+    'address',
     'pot_account',
     'pot_fund',
     'pot_loan',
     'pot_transaction'
   ];
 
+  // public function customers()
+  // {
+  //   return $this->hasMany('App\Models\Crm\MarketCustomerMapping');
+  // }
 }

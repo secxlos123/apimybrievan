@@ -193,9 +193,27 @@ class CollateralController extends Controller
         $otsOther = $collateral->otsOther()->create($dataother);
         if (count($dataother['image_area'])>0) {
           foreach ($dataother['image_area'] as $key => $value) {
-          \Log::info('======= data foreach ======');
-          \Log::info($value);
-          $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+            \Log::info('======= data foreach ======');
+            \Log::info($value);
+            $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+          }
+          $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+          if ( $collateralView ) {
+            $eform = EForm::find($collateralView->eform_id);
+            if ( $eform ) {
+              $paths = explode('/', $currentPath);
+              $filename = $paths[ count($paths) - 1 ];
+              copy(
+                  public_path( 'uploads/collateral/other/' . $filename )
+                  , public_path( 'uploads/' . $eform->nik . '/' . $image->image_data )
+                );
+              foreach( $otsOther->images as $image ) {
+                copy(
+                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $image->image_data )
+                  , public_path( 'uploads/' . $eform->nik . '/' . $image->image_data )
+                );
+              }
+            }
           }
         }
         $otsOther->save();
