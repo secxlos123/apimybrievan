@@ -90,7 +90,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   //sotore Customer market mapping
   Route::post('/market_mapping/store_mapping_customer', 'marketMappingController@store_mapping_customer');
   //get Customer mapping
-  Route::post('/market_mapping/customers', 'marketMappingController@customer_mapping');
+  Route::get('/market_mapping/customers', 'marketMappingController@customer_mapping');
   //get Customer by market
   Route::post('/market_mapping/customers_by_market', 'marketMappingController@customer_by_market');
 });
