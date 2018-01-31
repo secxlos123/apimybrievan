@@ -145,6 +145,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 
+	Route::post( 'eforms/submit-screening', 'EFormController@submitScreening' );
 
 	/**
 	 * Route group for namespace controller Int
