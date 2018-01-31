@@ -179,6 +179,7 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
+      $looping = 1;
       return DB::transaction(function() use($collateralId,$dataother) {
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->findOrFail($collateralId);
         $collateral->otsInArea()->create($this->request->area);
@@ -215,8 +216,10 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-         if(env('PUSH_NOTIFICATION', false))
-        {
+
+        if($looping==1){
+              if(env('PUSH_NOTIFICATION', false)){
+
             \Log::info('=======notification web and mobile sent to manager collateral  ======');
             $collateral_id =$collateralId;
             $dataCollateral = Collateral::find($collateralId);
@@ -255,9 +258,11 @@ class CollateralController extends Controller
                 ];
                 pushNotification($credentials,'general');
             }
+         }
+      //end notif    
         }
-      //end notif
-
+        $looping++;
+         \Log::info('=======notif web ulang ka  ======'.$looping);
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
