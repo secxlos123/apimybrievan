@@ -67,7 +67,7 @@ when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 
 when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 'developer' then 'Tambah Agen Developer'
 when event = 'created' and lower(auditable_type) = 'app\models\user' and slug is null then 'Register Nasabah'
 when event = 'updated' and lower(auditable_type) = 'app\models\customerdetail' and slug = 'customer' then 'Update Data Pribadi Nasabah'
-when event = 'updated' and lower(auditable_type) = 'app\\models\\eform' and role = 'staff' then 'Disposisi'
+when event = 'updated' and lower(auditable_type) = 'app\\models\\eform' and role = 'staff' then 'Disposisi' else a.action
 end as modul_name
 , a.action
 , a.event

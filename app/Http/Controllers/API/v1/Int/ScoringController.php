@@ -10,6 +10,7 @@ use App\Models\Scoring;
 use App\Models\EForm;
 use App\Models\User;
 use Sentinel;
+use File;
 use DB;
 
 class ScoringController extends Controller
