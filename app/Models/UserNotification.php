@@ -104,7 +104,21 @@ class UserNotification extends Model
 				];
 			}
 			break;
+		case 'App\Notifications\ApproveEFormCLAS':
+			$subjectNotif = ['message' => 'Permohonan anda telah di setujui',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
 		case 'App\Notifications\RejectEFormCustomer':
+			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Tolak',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\RejectEFormCLAS':
 			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Tolak',
 				'url' => $url,
 				'message_external' => '',
@@ -118,6 +132,13 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\LKNEFormCLAS':
+			$subjectNotif = ['message' => 'Prakarsa LKN',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;			
 		case 'App\Notifications\VerificationApproveFormNasabah':
 			$subjectNotif = ['message' => 'Customer Telah Menyetujui Form KPR',
 				'url' => $url,
@@ -288,6 +309,12 @@ class UserNotification extends Model
 					->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
+				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
+					->whereNotNull('visit_reports.created_at')
+					->unreads();
+			}
+
 		}
 
 		if (@$role == 'ao') {
@@ -351,7 +378,16 @@ class UserNotification extends Model
 				$query->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCLAS')) {
+				/*is is_approved*/
+				$query->unreads();
+			}
+
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
 				$query->unreads();
 			}
 			
@@ -439,6 +475,12 @@ class UserNotification extends Model
 					->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
+				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
+					->whereNotNull('visit_reports.created_at')
+					->unreads();
+			}
+
 		}
 
 		if (@$role == 'ao') {
@@ -498,7 +540,17 @@ class UserNotification extends Model
 				$query->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCLAS')) {
+				/*is is_approved*/
+				$query->unreads();
+			}
+
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
+				/*is rejected*/
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
 				/*is rejected*/
 				$query->unreads();
 			}

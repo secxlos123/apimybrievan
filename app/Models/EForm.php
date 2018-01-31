@@ -812,7 +812,6 @@ class EForm extends Model implements AuditableContract
     public static function updateCLAS( $fid_aplikasi, $status )
     {
         $returnStatus = false;
-        $statusEform = ( $status == 'Approval1' ? true : false );
         $target = static::where(
                 DB::Raw("additional_parameters::json->>'fid_aplikasi'")
                 , $fid_aplikasi
@@ -853,7 +852,6 @@ class EForm extends Model implements AuditableContract
         return array(
             'message' => $returnStatus,
             'contents' => $target,
-            'status' => $statusEform,
         );
     }
 
