@@ -202,9 +202,11 @@ class CollateralController extends Controller
             $eform = EForm::find($collateralView->eform_id);
             if ( $eform ) {
               foreach( $otsOther->images as $image ) {
+                $paths = explode('/', $image->image_data);
+                $filename = $paths[ count($paths) - 1 ];
                 copy(
-                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $image->image_data )
-                  , public_path( 'uploads/' . $eform->nik . '/' . $image->image_data )
+                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $filename )
+                  , public_path( 'uploads/' . $eform->nik . '/' . $filename )
                 );
               }
             }
