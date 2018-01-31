@@ -929,7 +929,22 @@ class EFormController extends Controller
                     ];
 
                     // Call the helper of push notification function
-                    pushNotification($credentials, ($status == "Approval1") ? 'approveEForm' : 'rejectEForm');
+                    $slug = 'CLASEForm';
+                    if ( $status == "Approval1" ) {
+                        $slug = 'approveEForm';
+
+                    } elseif ( $status == "Approval2" ) {
+                        $slug = 'recontestEForm';
+
+                    } elseif ( $status == "Rejected" ) {
+                        $slug = 'rejectEForm';
+
+                    } elseif ( $status == "Pencairan" ) {
+                        $slug = 'pencairanEForm';
+
+                    }
+
+                    pushNotification($credentials, $slug);
 
                     return response()->json([
                         "responseCode" => "01",
