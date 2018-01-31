@@ -105,7 +105,10 @@ class UserNotification extends Model
 			}
 			break;
 		case 'App\Notifications\ApproveEFormCLAS':
-			$subjectNotif = ['message' => 'Permohonan anda telah di setujui',
+			$getKPR = KPR::where('eform_id',$this->slug)->first();
+			$plafondKredit =  !($getKPR->request_amount) ? $getKPR->request_amount : 0;
+
+			$subjectNotif = ['message' => 'Selamat Permohonan KPR an. '.$this->data['user_name'].' no : '.$this->data['ref_number'].' telah disetujui sebesar RP. '.number_format($plafondKredit,2).' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI',
 				'url' => $url,
 				'message_external' => '',
 				'url_mobile' => '#',
@@ -119,14 +122,21 @@ class UserNotification extends Model
 			];
 			break;
 		case 'App\Notifications\RejectEFormCLAS':
-			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Tolak',
+			$subjectNotif = ['message' => 'Mohon maaf pengajuan KPR an. '.$this->data['user_name'].' no : '.$this->data['ref_number'].' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.',
 				'url' => $url,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\LKNEFormCustomer':
-			$subjectNotif = ['message' => 'Prakarsa LKN',
+			$subjectNotif = ['message' => 'Prakarsa LKN.',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\LKNEFormRecontest':
+			$subjectNotif = ['message' => 'LKN Recontest.',
 				'url' => $url,
 				'message_external' => '',
 				'url_mobile' => '#',
@@ -206,7 +216,7 @@ class UserNotification extends Model
 		
 		case 'App\Notifications\RecontestEFormNotification':
 			$subjectNotif = ['message' => 'Pengajuan Anda Telah di Rekontest.',
-				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+				'url' => $url,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
