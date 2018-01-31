@@ -396,7 +396,7 @@ class CustomerDetail extends Model implements AuditableContract
                     // Conditional when role is AO, get data by AO ID (PN)
                     return $query->when($role, function($query) use ($aoId){
                                     return $query->where('ao_id', $aoId);
-                                })->where('status_eform', "Approval1");
+                                })->where('status_eform', "Pencairan");
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
