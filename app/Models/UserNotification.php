@@ -310,8 +310,7 @@ class UserNotification extends Model
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
-				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
-					->whereNotNull('visit_reports.created_at')
+				$query->whereNotNull('visit_reports.created_at')
 					->unreads();
 			}
 
@@ -476,8 +475,7 @@ class UserNotification extends Model
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
-				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
-					->whereNotNull('visit_reports.created_at')
+				$query->whereNotNull('visit_reports.created_at')
 					->unreads();
 			}
 
