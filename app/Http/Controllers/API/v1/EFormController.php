@@ -912,4 +912,55 @@ class EFormController extends Controller
             "responseDesc" => $message
         ], 200 );
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function submitScreening( Request $request )
+    {
+        DB::beginTransaction();
+
+        if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
+            $eform = EForm::find( $request->input('eform_id') );
+
+            $calculate = array(
+                $request->input('pefindo', 'Hijau')
+                , $request->input('dhn', 'Hijau')
+                , $request->input('sicd', 'Hijau')
+            );
+
+            if ( in_array('Merah', $calculate) ) {
+                $result = '3';
+
+            } else if ( in_array('Kuning', $calculate) ) {
+                $result = '2';
+
+            } else {
+                $result = '1';
+
+            }
+
+            $eform->update( [
+                'prescreening_status' => $result
+                , 'selected_dhn' => $request->input('selected_dhn')
+                , 'selected_sicd' => $request->input('selected_sicd')
+            ] );
+
+            $eform = array();
+
+        } else {
+            $eform = EForm::findOrFail( $request->id );
+            $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
+
+        }
+
+        DB::commit();
+        return response()->success( [
+            'message' => 'Screening e-form berhasil disimpan.',
+            'contents' => $eform
+        ], 201 );
+    }
+
 }
