@@ -28,6 +28,7 @@ class marketMappingController extends Controller
       $data['city']= $request['city'];
       $data['longitude']= $request['longitude'];
       $data['latitude']= $request['latitude'];
+      $data['address']= $request['address'];
       $data['pot_account']= $request['pot_account'];
       $data['pot_fund']= $request['pot_fund'];
       $data['pot_loan']= $request['pot_loan'];
