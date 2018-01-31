@@ -426,25 +426,62 @@ class EFormController extends Controller
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
             $SLIP_GAJI = $request->SLIP_GAJI;
-            $SK_AWAL = $request->SK_AWAL;
-            $SK_AKHIR = $request->SK_AKHIR;
+//            $SK_AWAL = $request->SK_AWAL;
+//            $SK_AKHIR = $request->SK_AKHIR;
             $REKOMENDASI = $request->REKOMENDASI;
 
             $id = date('YmdHis');
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
-            $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
-            $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+//            $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+//            $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
             $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
             $baseRequest['KK'] = $KK;
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
-            $baseRequest['SK_AWAL'] = $SK_AWAL;
+//            $baseRequest['SK_AWAL'] = $SK_AWAL;
+//
             $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
+			
+			$SK_AWAL = '';
+			$SK_AKHIR = '';
+				
+			
+			if($baseRequest['baru_atau_perpanjang']=='1' && $baseRequest['kredit_take_over']=='0'){
+				if(!empty($request->SK_AWAL)){
+					$SK_AWAL = $request->SK_AWAL;
+					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+					$baseRequest['SK_AWAL'] = $SK_AWAL;
+					
+					$SK_AKHIR = $request->SK_AKHIR;
+					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+					/*----------------------------------*/
+				}else{
+					$dataEform =  EForm::where('nik', $request->nik)->get();
+					return response()->error( [
+						'message' => 'Baru Atau Perpanjangan Harus ada & Kredit Take Over harus Iya',
+						'contents' => $dataEform
+					], 422 );
+				}
+			}else{
+				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
+					$SK_AWAL = $request->SK_AWAL;
+					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+					$baseRequest['SK_AWAL'] = $SK_AWAL;
+					
+					$SK_AKHIR = $request->SK_AKHIR;
+					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+					/*----------------------------------*/
+				}
+				$baseRequest['SK_AWAL'] = $SK_AWAL;
+				$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+			}
 
 			if($baseRequest['Payroll']=='1'){
 				$SKPG = '';
@@ -460,7 +497,7 @@ class EFormController extends Controller
                 $SKPG = $request->SKPG;
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
-			}else{
+				}else{
 				$dataEform =  EForm::where('nik', $request->nik)->get();
                 return response()->error( [
                     'message' => 'Payroll Non BRI SKPG harus ada',
