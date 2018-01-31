@@ -134,6 +134,9 @@ class EForm extends Model implements AuditableContract
         } elseif ( $this->status_eform == 'Approval2' ) {
             return 'Rekontes Kredit';
 
+        } elseif ( $this->status_eform == 'Pencairan' ) {
+            return 'Pencairan';
+
         } elseif( $this->is_approved ) {
             return 'Proses CLF';
 
@@ -818,34 +821,40 @@ class EForm extends Model implements AuditableContract
             )->first();
 
         if ($target) {
-            $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
-            $target->update([
-                'is_approved' => ( $status == 'Approval1' ? true : false )
-                , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
-            ]);
-
-            // Recontest
-            if ( $status == 'Approval2' ) {
-                if ( !$target->recontest ) {
-                    $target->recontest()->create( [
-                        'expired_date' => Carbon::now()->addMonths(1)
-                    ] );
-                    $returnStatus = "EForm berhasil di Rekontes.";
-                } else {
-                    $returnStatus = "EForm sudah pernah di Rekontes.";
-
-                }
-            }
-
-            if ($target->kpr) {
-                $target->kpr->update([
-                    'is_sent' => ( $status == 'Approval1' ? true : false )
+            if ( $status != 'Pencairan' ) {
+                $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
+                $target->update([
+                    'is_approved' => ( $status == 'Approval1' ? true : false )
+                    , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
                 ]);
 
-                if ( $status != 'Approval2' ) {
-                    $target->setAvailibility( $status == 'Approval1' ? "sold" : "available" );
+                // Recontest
+                if ( $status == 'Approval2' ) {
+                    if ( !$target->recontest ) {
+                        $target->recontest()->create( [
+                            'expired_date' => Carbon::now()->addMonths(1)
+                        ] );
+                        $returnStatus = "EForm berhasil di Rekontes.";
+                    } else {
+                        $returnStatus = "EForm sudah pernah di Rekontes.";
 
+                    }
                 }
+
+                if ($target->kpr) {
+                    $target->kpr->update([
+                        'is_sent' => ( $status == 'Approval1' ? true : false )
+                    ]);
+
+                    if ( $status != 'Approval2' ) {
+                        $target->setAvailibility( $status == 'Approval1' ? "sold" : "available" );
+
+                    }
+                }
+            } else {
+                $target->update(['status_eform' => $status]);
+                $returnStatus = "EForm berhasil di cairkan.";
+
             }
         }
 
