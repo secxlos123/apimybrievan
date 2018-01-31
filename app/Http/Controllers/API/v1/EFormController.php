@@ -922,6 +922,8 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
 
+        $message = 'Screening e-form gagal di update.';
+
         if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
             $eform = EForm::find( $request->input('eform_id') );
 
@@ -948,17 +950,14 @@ class EFormController extends Controller
                 , 'selected_sicd' => $request->input('selected_sicd')
             ] );
 
-            $eform = array();
-
-        } else {
-            $eform = EForm::findOrFail( $request->id );
-            $eform->update( [ 'prescreening_status' => $request->prescreening_status ] );
-
+            $message = 'Screening e-form berhasil di update.';
         }
+
+        $eform = array();
 
         DB::commit();
         return response()->success( [
-            'message' => 'Screening e-form berhasil disimpan.',
+            'message' => $message,
             'contents' => $eform
         ], 201 );
     }
