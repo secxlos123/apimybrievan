@@ -354,40 +354,40 @@ class UserNotification extends Model
 		}
 
 		if (@$role == 'customer') {
-			$query->where('notifications.notifiable_id', @$user_id);
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				// $query->where('notifications.notifiable_id', @$user_id);
+				$query->whereNull('eforms.ao_id')->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RecontestEFormNotification')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\UpdateSchedulerCustomer')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
 				/*is is_approved*/
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCLAS')) {
 				/*is is_approved*/
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 			
 			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
