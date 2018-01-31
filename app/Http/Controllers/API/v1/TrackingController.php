@@ -116,7 +116,9 @@ class TrackingController extends Controller
                 , eforms.product_type as product_type
                 , eforms.ref_number as ref_number
                 , eforms.prescreening_status
-                , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                , case when eforms.is_approved = false and eforms.recommended = true or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
+                    when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
+                    when eforms.status_eform = 'Approval2' then 'Rekontes Kredit'
                     when eforms.is_approved = true then 'Proses CLF'
                     when visit_reports.id is not null then 'Prakarsa'
                     when eforms.ao_id is not null then 'Disposisi Pengajuan'
@@ -132,6 +134,9 @@ class TrackingController extends Controller
                                 if($request->input('status') == "Rejected")
                                 {
                                     $item->where('eforms.status_eform', 'Rejected');
+                                    $item->Orwhere('eforms.is_approved', false);
+                                    $item->where('eforms.recommended', true);
+
                                 }
                                 elseif($request->input('status') == "Dispose")
                                 {
@@ -166,6 +171,12 @@ class TrackingController extends Controller
                                     $item->where('eforms.is_approved', 'true');
                                     $item->where('eforms.recommended', 'true');
                                     $item->where('eforms.status_eform', 'Approval1');
+                                }
+                                elseif($request->input('status') == 'Approval2')
+                                {
+                                    $item->where('eforms.is_approved', 'true');
+                                    $item->where('eforms.recommended', 'true');
+                                    $item->where('eforms.status_eform', 'Approval2');   
                                 }
                         }
                     })

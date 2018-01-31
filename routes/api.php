@@ -96,6 +96,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource('schedule', 'AppointmentController',[
 			'only' => ['index','store', 'update']
 		]);
+		Route::get('schedule/{id}', ['as' => 'schedule.detail', 'uses' => 'AppointmentController@detail']);
 		/**
 		 * Route group for controller when uses trait ManageUserTrait
 		 */

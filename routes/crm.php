@@ -6,7 +6,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   ] )->name('crm.index');
 
   // route reporting Crm
-  // Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
+  Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
   // Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
 
   //route $pemasar
@@ -43,11 +43,6 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //route activity
   Route::resource( 'activity', 'marketingActivityController', [
-    'only' => ['index', 'store']
-  ] );
-
-  //route NewCustomer
-  Route::resource( 'new_customer', 'NewCustomerController', [
     'only' => ['index', 'store']
   ] );
 
@@ -90,8 +85,12 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get('/market_mapping', 'marketMappingController@index');
   //marketing store Map
   Route::post('/market_mapping', 'marketMappingController@store');
+  //detail Market
+  Route::post('/market_mapping/detail_market', 'marketMappingController@detail_market');
   //sotore Customer market mapping
-  // Route::post('/market_mapping/store_customer', 'marketMappingController@store_customer_map');
-  //get Customer market mapping
-  // Route::post('/market_mapping/customers', 'marketMappingController@get_customer_map');
+  Route::post('/market_mapping/store_mapping_customer', 'marketMappingController@store_mapping_customer');
+  //get Customer mapping
+  Route::get('/market_mapping/customers', 'marketMappingController@customer_mapping');
+  //get Customer by market
+  Route::post('/market_mapping/customers_by_market', 'marketMappingController@customer_by_market');
 });
