@@ -36,23 +36,21 @@ class CustomerController extends Controller
 
     public function customer_nik(Request $request)
     {
-      $sendRequest = array(
-        'app_id' => 'mybriapi',
-        'nik' => $request['nik']
-      );
-      if ( $request->header('Device-Id') ) {
-          $sendRequest['device_id'] = $request->header('Device-Id');
-      }
-      $customer_nik = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_customer_profile_nik',
-          'requestData' => $sendRequest,
-        ])
-      ])->post('form_params');
+      $nik = $request['nik'];
+      $client = new Client();
+      $customer_nik = $client->request('GET', config('restapi.apipdm').'/customer/profile/nik/'.$nik,[
+        'headers' =>
+        [
+          'Authorization' => 'Bearer '.$this->get_token()
+          // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
+        ]
+      ]);
 
-      $info = $customer_nik['responseData']['card_info'];
-      foreach ($info as $key => $value) {
-        $customer_nik['responseData']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
+      if(array_key_exists('card_info', $customer_nik['responseData'])){
+        $info = $customer_nik['responseData']['card_info'];
+        foreach ($info as $key => $value) {
+          $customer_nik['responseData']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
+        }
       }
 
       return response()->success([
