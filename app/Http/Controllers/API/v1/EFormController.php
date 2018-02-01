@@ -32,7 +32,7 @@ use App\Notifications\VerificationRejectFormNasabah;
 use DB;
 use Brispot;
 use Cache;
-use App\Models\apiPdmToken;
+use App\Models\ApiPdmTokensBriguna;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 
@@ -342,7 +342,7 @@ class EFormController extends Controller
       if ( count(apiPdmToken::all()) > 0 ) {
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       } else {
-        $this->gen_token();
+        $this->gen_token_briguna();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
       }
 
@@ -350,7 +350,7 @@ class EFormController extends Controller
         $token = $apiPdmToken['access_token'];
         return $token;
       } else {
-        $this->gen_token();
+        $this->gen_token_briguna();
         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 
         $token = $apiPdmToken['access_token'];
