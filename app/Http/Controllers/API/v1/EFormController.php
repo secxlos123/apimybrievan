@@ -54,7 +54,7 @@ class EFormController extends Controller
 	}else{
 		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
 	  }
-	  $requestListExisting = $client->request('GET', $url.$data['branch'],
+	  $requestListExisting = $client->request('GET', 'http://172.18.44.182/'.$data['branch'],
 				[
 				  'headers' =>
 				  [
@@ -400,6 +400,10 @@ class EFormController extends Controller
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
+						return response()->error( [
+						'message' => $listExisting,
+						'contents' => $listExisting
+					], 422 );die();
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 					  } else {
@@ -452,7 +456,7 @@ class EFormController extends Controller
 				
 			
 			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
-				if(!empty($request->SK_AWAL)){
+				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
 					$SK_AWAL = $request->SK_AWAL;
 					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
 					$baseRequest['SK_AWAL'] = $SK_AWAL;
