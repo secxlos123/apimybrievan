@@ -61,7 +61,7 @@ class CollateralStafPenilaianAnggunan extends Notification
     public function toDatabase($notifiable)
     {
 
-        $typeModule = getTypeModule(Collateral::class);
+        $typeModule = 'collateral_penilaian_ots';
         $message    = getMessage('collateral_penilaian');
         return [
             'collateral_id' => $this->collateral->id,

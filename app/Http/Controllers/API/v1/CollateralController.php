@@ -218,45 +218,52 @@ class CollateralController extends Controller
 
 
         if(env('PUSH_NOTIFICATION', false)){
-
-            \Log::info('=======notification web and mobile sent to manager collateral  ======');
-            $collateral_id =$collateralId;
-            $dataCollateral = Collateral::find($collateralId);
-            if(!empty($dataCollateral->manager_id))
+            //cek notif collateral
+            $aksiCollateral = 'collateral_penilaian_ots';
+            $cekNotifColltaeralOTS=UserNotification::where('slug',$collateralId)->where('type_module',$aksiCollateral)->first();
+            if(empty($cekNotifColltaeralOTS))
             {
-                $manager_id = $dataCollateral->manager_id; //id manager collateral
-                //*
-                //insert data from notifications table
-                $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-                if($getDataEform){
-                  $eform_id = $getDataEform->eform_id;
-                  $eform = Eform::where('id',$eform_id)->first();
-                  $user_id = $eform->user_id;
-                }else{
-                  $user_id = $collateral->developer_id;
-                }
-                $usersModel = User::where('id',$user_id)->first();
-                $dataUser  = UserServices::where('pn',$manager_id)->first();
-                $branch_id = $dataUser['branch_id'];
-                $usersModel->notify(new CollateralStafPenilaianAnggunan($dataCollateral,$branch_id));
-                $userNotif = new UserNotification;
-                // Get data from notifications table
-                $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
-                                               ->orderBy('created_at', 'desc')->first();
-                $id = $notificationData['id'];
-                $message = getMessage('collateral_penilaian');
-                //*/
-                $credentials = [
-                   'headerNotif' => $message['title'],
-                   'bodyNotif' => $message['message'],
-                   'id' => $id,
-                   'type' => 'collateral_penilaian_agunan',
-                   'slug' => $collateral_id,
-                   'user_id' => $user_id,
-                   'receiver' => 'manager_collateral',
-                ];
-                pushNotification($credentials,'general');
-            }
+              \Log::info('=======notification web and mobile sent to manager collateral  ======');
+              $collateral_id =$collateralId;
+              $dataCollateral = Collateral::find($collateralId);
+              if(!empty($dataCollateral->manager_id))
+              {
+                  $manager_id = $dataCollateral->manager_id; //id manager collateral
+                  //*
+                  //insert data from notifications table
+                  $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+                  if($getDataEform){
+                    $eform_id = $getDataEform->eform_id;
+                    $eform = Eform::where('id',$eform_id)->first();
+                    $user_id = $eform->user_id;
+                  }else{
+                    $user_id = $collateral->developer_id;
+                  }
+                  $usersModel = User::where('id',$user_id)->first();
+                  $dataUser  = UserServices::where('pn',$manager_id)->first();
+                  $branch_id = $dataUser['branch_id'];
+                  $usersModel->notify(new CollateralStafPenilaianAnggunan($dataCollateral,$branch_id));
+                  $userNotif = new UserNotification;
+                  // Get data from notifications table
+                  $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$aksiCollateral)
+                                                 ->orderBy('created_at', 'desc')->first();
+                  $id = $notificationData['id'];
+                  $message = getMessage('collateral_penilaian');
+                  //*/
+                  $credentials = [
+                     'headerNotif' => $message['title'],
+                     'bodyNotif' => $message['message'],
+                     'id' => $id,
+                     'type' => 'collateral_penilaian_agunan',
+                     'slug' => $collateral_id,
+                     'user_id' => $user_id,
+                     'receiver' => 'manager_collateral',
+                  ];
+                  pushNotification($credentials,'general');
+              }
+            }else{
+              \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
+            }             
          }
       //end notif
         return $this->makeResponse(
