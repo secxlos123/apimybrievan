@@ -451,7 +451,7 @@ class EFormController extends Controller
 			$SK_AKHIR = '';
 				
 			
-			if($baseRequest['baru_atau_perpanjang']=='1' && $baseRequest['kredit_take_over']=='0'){
+			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
 				if(!empty($request->SK_AWAL)){
 					$SK_AWAL = $request->SK_AWAL;
 					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
