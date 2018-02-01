@@ -252,6 +252,7 @@ class AccountController extends Controller
 
       $data['officer_ref'] = $request['officer_ref'];
       $data['officer_name'] = $request['officer_name'];
+      $data['status'] = $request['status'];
 
       // return $data;die();
 
