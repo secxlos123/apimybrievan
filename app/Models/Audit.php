@@ -736,6 +736,19 @@ class Audit extends Model implements AuditContract
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
                 * This query for Auditrail Login
                 */
                  $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%property%');
