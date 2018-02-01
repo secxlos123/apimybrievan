@@ -400,6 +400,10 @@ class EFormController extends Controller
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
+						return response()->error( [
+						'message' => $listExisting,
+						'contents' => $listExisting
+					], 422 );die();
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 					  } else {
