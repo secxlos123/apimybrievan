@@ -131,9 +131,13 @@ class Audit extends Model implements AuditContract
                  $eform = 'app\\models\\eform';
                  //$eform = 'app\models\eform';
                  //$event = 'created';
-
-                 //$auditrail->whereNotNull('modul_name');
-                 $auditrail->where(DB::raw('lower(auditable_type)'), $eform);
+ 
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'not like', '%collateral%');
                 })
                 ->orderBy($sort[0], $sort[1]);
             
@@ -235,6 +239,8 @@ class Audit extends Model implements AuditContract
                 'longitude' => number_format($request->header('long', env('DEF_LONG', '106.81350')), 5)
                 , 'latitude' => number_format($request->header('lat', env('DEF_LAT', '-6.21670')), 5)
             );
+            \Log::info("-------boot audit -------------");
+            \Log::info($model->auditable_type);
            $model->extra_params =  json_encode($extraParams);
            $model->action = $request->header('auditaction', 'Undefined Action');
            $model->save();

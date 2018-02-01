@@ -58,7 +58,7 @@ left join user_services h on h.pn = a.user_id");
         \DB::unprepared("CREATE VIEW auditrail_type_two AS
          select a.id
 , a.created_at
-, case
+/*, case
 when event = 'created' and lower(auditable_type) = 'app\\models\\eform' and slug = 'customer' then 'Tambah Eform via Nasabah' 
 when event = 'created' and lower(auditable_type) = 'app\\models\\eform' and slug = 'developer-sales' then 'Tambah Eform via AgenDev'
 when event = 'created' and lower(auditable_type) = 'app\\models\\eform' and role = 'ao' then 'Tambah Eform via AO'
@@ -68,8 +68,8 @@ when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 
 when event = 'created' and lower(auditable_type) = 'app\models\user' and slug is null then 'Register Nasabah'
 when event = 'updated' and lower(auditable_type) = 'app\models\customerdetail' and slug = 'customer' then 'Update Data Pribadi Nasabah'
 when event = 'updated' and lower(auditable_type) = 'app\\models\\eform' and role = 'staff' then 'Disposisi' else a.action
-end as modul_name
-, a.action
+end as modul_name*/
+, a.action as modul_name
 , a.event
 , a.user_id
 , lower(a.auditable_type) as auditable_type
@@ -91,6 +91,6 @@ left join roles e on e.id = d.role_id
 left join collaterals f on f.developer_id = c.id
 left join eforms g on g.user_id = a.user_id
 left join user_services h on h.pn = a.user_id
-join eforms i on i.id = a.auditable_id");
+left join eforms i on i.id = a.auditable_id");
     }
 }

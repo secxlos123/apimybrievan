@@ -179,6 +179,7 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
+      $looping = 1;
       return DB::transaction(function() use($collateralId,$dataother) {
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->findOrFail($collateralId);
         $collateral->otsInArea()->create($this->request->area);
@@ -201,16 +202,12 @@ class CollateralController extends Controller
           if ( $collateralView ) {
             $eform = EForm::find($collateralView->eform_id);
             if ( $eform ) {
-              $paths = explode('/', $currentPath);
-              $filename = $paths[ count($paths) - 1 ];
-              copy(
-                  public_path( 'uploads/collateral/other/' . $filename )
-                  , public_path( 'uploads/' . $eform->nik . '/' . $image->image_data )
-                );
               foreach( $otsOther->images as $image ) {
+                $paths = explode('/', $image->image_data);
+                $filename = $paths[ count($paths) - 1 ];
                 copy(
-                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $image->image_data )
-                  , public_path( 'uploads/' . $eform->nik . '/' . $image->image_data )
+                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $filename )
+                  , public_path( 'uploads/' . $eform->nik . '/' . $filename )
                 );
               }
             }
@@ -219,8 +216,10 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-         if(env('PUSH_NOTIFICATION', false))
-        {
+
+        if($looping==1){
+              if(env('PUSH_NOTIFICATION', false)){
+
             \Log::info('=======notification web and mobile sent to manager collateral  ======');
             $collateral_id =$collateralId;
             $dataCollateral = Collateral::find($collateralId);
@@ -259,9 +258,11 @@ class CollateralController extends Controller
                 ];
                 pushNotification($credentials,'general');
             }
+         }
+      //end notif    
         }
-      //end notif
-
+        $looping++;
+         \Log::info('=======notif web ulang ka  ======'.$looping);
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
