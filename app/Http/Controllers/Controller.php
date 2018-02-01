@@ -61,18 +61,10 @@ class Controller extends BaseController
     public function gen_token()
     {
       $client = new Client();
-	   $host = env('APP_URL');
-	  if($host == 'http://api.dev.net/'){
-		//$url = 'http://172.18.44.182/bribranch/branch/';
-		$client_id = '558ecf37e98319c9284e6f5e3afef74c720f20ec';
-		$client_secret = '2d6b857f59ffd065acc9cbd9d851d48b61846aac';
-		$url = config('restapi.apipdmdev');
-	}else{
-		$client_id = '3f60d2edcd0399e6ea25290fe4022e0af91e5016';
-		$client_secret = 'ef3d569a4a609c636e114ff9056b8c324e0f2e7a';
-		$url = config('restapi.apipdm');
-	  }
-	  
+	    $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
+		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
+
       $requestBriconnect = $client->request('POST', $url.'/oauth/token',
         [
           'form_params' =>
