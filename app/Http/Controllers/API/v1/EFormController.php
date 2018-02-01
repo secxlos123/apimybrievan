@@ -445,7 +445,7 @@ class EFormController extends Controller
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
 //            $baseRequest['SK_AWAL'] = $SK_AWAL;
 //
-            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+//            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
 			
