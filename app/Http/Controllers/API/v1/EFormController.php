@@ -54,7 +54,7 @@ class EFormController extends Controller
 	}else{
 		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
 	  }
-	  $requestListExisting = $client->request('GET', 'http://172.18.44.182/'.$data['branch'],
+	  $requestListExisting = $client->request('GET', $url.$data['branch'],
 				[
 				  'headers' =>
 				  [
@@ -400,10 +400,6 @@ class EFormController extends Controller
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
-						return response()->error( [
-						'message' => $listExisting,
-						'contents' => $listExisting
-					], 422 );die();
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
 						$apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
 					  } else {
