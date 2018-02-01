@@ -32,7 +32,7 @@ use App\Notifications\VerificationRejectFormNasabah;
 use DB;
 use Brispot;
 use Cache;
-use App\Models\Crm\apiPdmToken;
+use App\Models\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 
