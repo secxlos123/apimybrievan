@@ -50,11 +50,9 @@ class EFormController extends Controller
       $client = new Client();
 	  $host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
-		  return $host.'----1';
 		$url = 'http://172.18.44.182/bribranch/branch/';
 	}else{
 		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
-		return $host.'----2';
 	  }
 	  $requestListExisting = $client->request('GET', $url.$data['branch'],
 				[
