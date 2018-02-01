@@ -261,7 +261,7 @@ class AccountController extends Controller
       if ($update) {
         return response()->success( [
             'message' => 'Sukses update officer referral',
-            'contents' => $referral
+            'contents' => Referral::where('ref_id', $ref_id)->get()
           ]);
       }
     }

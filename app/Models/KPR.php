@@ -16,7 +16,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 class KPR extends Model implements AuditableContract
 {
     use Auditable;
-    
+
     /**
      * The table name.
      *
@@ -145,6 +145,21 @@ class KPR extends Model implements AuditableContract
         $down_payment =  ($dp / 100) * $price ;
 
         return $down_payment;
+    }
+
+    /**
+     * active KPR handling
+     *
+     * @return void
+     * @author
+     **/
+    public function getActiveKprAttribute()
+    {
+        if ( in_array($this->attributes['active_kpr'], array(1,2,3)) ) {
+            return $this->attributes['active_kpr'];
+        }
+
+        return 1;
     }
 
 }
