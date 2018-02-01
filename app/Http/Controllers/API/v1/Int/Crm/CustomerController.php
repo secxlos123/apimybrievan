@@ -38,7 +38,8 @@ class CustomerController extends Controller
     {
       $nik = $request['nik'];
       $client = new Client();
-      $customer_nik = $client->request('GET', config('restapi.apipdm').'/customer/profile/nik/'.$nik,[
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $customer_nik = $client->request('GET', $host.'/customer/profile/nik/'.$nik,[
         'headers' =>
         [
           'Authorization' => 'Bearer '.$this->get_token()
@@ -117,7 +118,8 @@ class CustomerController extends Controller
     public function customer_officer(Request $request)
     {
       $client = new Client();
-      $request_customer_officer = $client->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $request_customer_officer = $client->request('GET', $host.'/customer/officer/'.$request->header('pn'),[
         'headers' =>
         [
           'Authorization' => 'Bearer '.$this->get_token()
