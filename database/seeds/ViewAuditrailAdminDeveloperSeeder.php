@@ -21,10 +21,10 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
                , lower(a.auditable_type) as auditable_type
                , a.url
                , case when b.first_name is not null then concat(b.first_name,' ',b.last_name) else h.name end as username
-               , f.staff_name
+           , f.staff_name
                , case when e.slug is not null then e.slug else h.role end as role
                , i.name as project_name
-               , k.company_name
+               , case when k.company_name is not null then k.company_name else c.company_name end as company_name
                , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
                , a.old_values
                , a.new_values
