@@ -127,7 +127,7 @@ class PropertyController extends Controller
                 \DB::commit();
             } else {
                  \DB::rollBack();
-                $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}. ". $data['descriptions'];
+                $status = 'error'; $message = "Project {$property->name} Tidak Berhasil {$method}. ". $data['contents'];
                 $code = 422;
             }
         } catch (\Exception $e) {
