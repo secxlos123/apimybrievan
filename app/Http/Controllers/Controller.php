@@ -73,7 +73,7 @@ class Controller extends BaseController
 		$url = config('restapi.apipdm');
 	  }
 	  
-      $requestBriconnect = $client->request('POST', config('restapi.apipdm').'/oauth/token',
+      $requestBriconnect = $client->request('POST', $url.'/oauth/token',
         [
           'form_params' =>
           [
