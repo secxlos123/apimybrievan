@@ -725,12 +725,12 @@ class Audit extends Model implements AuditContract
                 /**
                 * This query for search by Nama Perusahaan Mitra.
                 *
-                * @param $request->developer
+                * @param $request->company_name
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
               
-                  if ($request->has('developer')){
-                        $auditrail->where(\DB::raw('LOWER(developer)'), 'like', '%'.strtolower($request->input('developer')).'%');
+                  if ($request->has('company_name')){
+                        $auditrail->where(\DB::raw('LOWER(company_name)'), 'like', '%'.strtolower($request->input('company_name')).'%');
             
                     }
                 })
