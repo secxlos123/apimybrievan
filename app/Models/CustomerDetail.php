@@ -203,11 +203,11 @@ class CustomerDetail extends Model implements AuditableContract
      */
     public function getAddressStatusAttribute( $value )
     {
-        if( $value == 0 ) {
+        if( $value == '0' ) {
             return 'Milik Sendiri';
-        } else if( $value == 1 ) {
+        } else if( $value == '1' ) {
             return 'Milik Orang Tua/Mertua atau Rumah Dinas';
-        } else if( $value == 3 ) {
+        } else if( $value == '3' ) {
             return 'Tinggal di Rumah Kontrakan';
         }
 

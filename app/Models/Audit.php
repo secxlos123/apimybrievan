@@ -139,7 +139,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
                  // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'not like', '%collateral%');
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             
     }
 
@@ -224,7 +225,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where('auditable_type', $appointment);
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             
     }
     /*
@@ -324,7 +326,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
     /**
@@ -337,7 +340,7 @@ class Audit extends Model implements AuditContract
     public function scopeGetListsLogin($query, Request $request)
     {
 
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
 
         return $query
                 ->from('auditrail_admin_developer')
@@ -401,7 +404,7 @@ class Audit extends Model implements AuditContract
                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
     /**
@@ -483,7 +486,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
             /**
@@ -566,7 +570,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah unit property%');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
             /**
@@ -631,7 +636,7 @@ class Audit extends Model implements AuditContract
                 */ 
               
                   if ($request->has('developer')){
-                        $auditrail->where(\DB::raw('LOWER(developer)'), 'like', '%'.strtolower($request->input('developer')).'%');
+                        $auditrail->where(\DB::raw('LOWER(developer)'), strtolower($request->input('developer')));
             
                     }
                 })
@@ -659,7 +664,8 @@ class Audit extends Model implements AuditContract
 
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
             /**
@@ -737,7 +743,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
     public function getuser(Request $request)
@@ -843,6 +850,7 @@ class Audit extends Model implements AuditContract
                  $auditrail->where('user_id', '=', $id);
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
   }
 }

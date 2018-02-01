@@ -45,17 +45,17 @@ class CustomerController extends Controller
           // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
         ]
       ]);
-
-      if(array_key_exists('card_info', $customer_nik['responseData'])){
-        $info = $customer_nik['responseData']['card_info'];
+      $body = json_decode($customer_nik->getBody()->getContents(), true);
+      if(array_key_exists('card_info', $body['data'])){
+        $info = $body['data']['card_info'];
         foreach ($info as $key => $value) {
-          $customer_nik['responseData']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
+          $body['data']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
         }
       }
 
       return response()->success([
         'message' => 'Get Customer Detail by NIK success',
-        'contents' => $customer_nik['responseData']
+        'contents' => $body['data']
       ]);
     }
 
