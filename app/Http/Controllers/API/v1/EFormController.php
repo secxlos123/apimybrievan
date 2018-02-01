@@ -54,7 +54,7 @@ class EFormController extends Controller
 	}else{
 		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
 	  }
-	  $requestListExisting = $client->request('GET', $url.$data['branch'],
+	  $requestListExisting = $client->request('GET', 'http://172.18.44.182/'.$data['branch'],
 				[
 				  'headers' =>
 				  [
