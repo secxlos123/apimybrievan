@@ -21,6 +21,7 @@ use App\Models\PropertyType;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
+use App\Models\Appointment;
 use App\Notifications\EFormPenugasanDisposisi;
 use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
@@ -679,7 +680,23 @@ class EFormController extends Controller
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
+        //add scheduleData in Disposisition
+        $scheduleData = array(
+                'title' => $eform->ref_number
+                , 'appointment_date' => $eform->appointment_date
+                , 'user_id' => $eform->user_id
+                , 'ao_id' => $eform->ao_id
+                , 'eform_id' => $eform->id
+                , 'ref_number' => $eform->ref_number
+                , 'address' => $eform->address
+                , 'latitude' => $eform->longitude
+                , 'longitude' => $eform->latitude
+                , 'desc' => '-'
+                , 'status' => 'waiting'
+            );
+        $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
         DB::commit();
+
 
         // Credentials for push notification helper
         $credentials = [
