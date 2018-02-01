@@ -259,7 +259,6 @@ class CollateralController extends Controller
             }
          }
       //end notif
-         \Log::info('=======notif web ulang ka  ======'.$looping);
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
