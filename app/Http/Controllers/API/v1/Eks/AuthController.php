@@ -28,7 +28,8 @@ class AuthController extends Controller
     public function register( AuthRequest $request )
     {
         DB::beginTransaction();
-
+        $email = strtolower($request->email);
+        $request->merge(['email'=>$email]);
         $baseData = $this->reArrangeRequest( $request->all() );
 
         $user = Sentinel::register( $baseData );

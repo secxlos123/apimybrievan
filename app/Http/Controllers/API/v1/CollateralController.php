@@ -202,9 +202,11 @@ class CollateralController extends Controller
             $eform = EForm::find($collateralView->eform_id);
             if ( $eform ) {
               foreach( $otsOther->images as $image ) {
+                $paths = explode('/', $image->image_data);
+                $filename = $paths[ count($paths) - 1 ];
                 copy(
-                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $image->image_data )
-                  , public_path( 'uploads/' . $eform->nik . '/' . $image->image_data )
+                  public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $filename )
+                  , public_path( 'uploads/' . $eform->nik . '/' . $filename )
                 );
               }
             }
@@ -213,8 +215,10 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-         if(env('PUSH_NOTIFICATION', false))
-        {
+
+
+        if(env('PUSH_NOTIFICATION', false)){
+
             \Log::info('=======notification web and mobile sent to manager collateral  ======');
             $collateral_id =$collateralId;
             $dataCollateral = Collateral::find($collateralId);
@@ -253,9 +257,8 @@ class CollateralController extends Controller
                 ];
                 pushNotification($credentials,'general');
             }
-        }
+         }
       //end notif
-
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
