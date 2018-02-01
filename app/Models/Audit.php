@@ -636,7 +636,7 @@ class Audit extends Model implements AuditContract
                 */ 
               
                   if ($request->has('developer')){
-                        $auditrail->where(\DB::raw('LOWER(developer)'), .strtolower($request->input('developer')));
+                        $auditrail->where(\DB::raw('LOWER(developer)'), strtolower($request->input('developer')));
             
                     }
                 })
