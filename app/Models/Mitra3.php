@@ -25,8 +25,10 @@ class Mitra3 extends Authenticatable  {
 	  $kode= '';
         $mitra = $query->where( function( $mitra ) use( $request, &$user ) {
 		
-						$BRANCH_CODE = $request->input('BRANCH_CODE');
-						 $mitra->Where('BRANCH_CODE', $BRANCH_CODE);
+						 if( $request->has( 'BRANCH_CODE' ) ) {
+		 						$BRANCH_CODE = $request->input('BRANCH_CODE');
+								$mitra->Where('BRANCH_CODE', $BRANCH_CODE);
+						 }
 						$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
 
 //paging
