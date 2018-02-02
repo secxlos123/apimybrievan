@@ -53,7 +53,7 @@ class AccountController extends Controller
       } else {
         return response()->success( [
             'message' => 'Gagal',
-            'contents' => $leads['responseDesc']
+            'contents' => []
           ]);
       }
 
