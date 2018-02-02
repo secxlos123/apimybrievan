@@ -6,25 +6,22 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Notifications\NotificationsDbChannel;
-use App\Models\Collateral;
+use App\Models\EForm;
 
-class CollateralStafPenilaianAnggunan extends Notification
+class ApproveEFormCLAS extends Notification
 {
     use Queueable;
-    public $collateral;
-    public $branch_id;
+
+    public $eForm;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($collateral,$branch_id)
+    public function __construct($eForm)
     {
-        $this->collateral  = $collateral;
-        $this->branch_id   = $branch_id;
-
+        $this->eForm   = $eForm;
     }
 
     /**
@@ -49,7 +46,7 @@ class CollateralStafPenilaianAnggunan extends Notification
         /*return (new MailMessage)
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!'); */
+                    ->line('Thank you for using our application!');*/
     }
 
     /**
@@ -60,22 +57,20 @@ class CollateralStafPenilaianAnggunan extends Notification
      */
     public function toDatabase($notifiable)
     {
+        $typeModule = getTypeModule(EForm::class);
+        $message    = getMessage("eform_approve_clas");
 
-        $typeModule = 'collateral_penilaian_ots';
-        $message    = getMessage('collateral_penilaian');
         return [
-            'collateral_id' => $this->collateral->id,
+            'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
-            'developer_id' =>  $this->collateral->developer_id,
-            'property_id' =>  $this->collateral->property_id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'branch_id' => $this->branch_id,    
-            'slug' => $this->collateral->id,
+            'nik' => $this->eForm->nik,
+            'ref_number' => $this->eForm->ref_number,
+            'branch_id' => $this->eForm->branch_id,
+            'slug' => $this->eForm->id,
             'type_module' => $typeModule,
-            'created_at' => $this->collateral->created_at,
+            'created_at' => $this->eForm->created_at,
             'role_name' => $notifiable->roles->first()->slug,
-            'staff_name' => $this->collateral->staff_name,
-            'prop_slug' => $this->collateral->property->slug,
             'message' => $message,
         ];
     }

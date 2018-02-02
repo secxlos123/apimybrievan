@@ -36,28 +36,27 @@ class CustomerController extends Controller
 
     public function customer_nik(Request $request)
     {
-      $sendRequest = array(
-        'app_id' => 'mybriapi',
-        'nik' => $request['nik']
-      );
-      if ( $request->header('Device-Id') ) {
-          $sendRequest['device_id'] = $request->header('Device-Id');
-      }
-      $customer_nik = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_customer_profile_nik',
-          'requestData' => $sendRequest,
-        ])
-      ])->post('form_params');
-
-      $info = $customer_nik['responseData']['card_info'];
-      foreach ($info as $key => $value) {
-        $customer_nik['responseData']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
+      $nik = $request['nik'];
+      $client = new Client();
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $customer_nik = $client->request('GET', $host.'/customer/profile/nik/'.$nik,[
+        'headers' =>
+        [
+          'Authorization' => 'Bearer '.$this->get_token()
+          // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
+        ]
+      ]);
+      $body = json_decode($customer_nik->getBody()->getContents(), true);
+      if(array_key_exists('card_info', $body['data'])){
+        $info = $body['data']['card_info'];
+        foreach ($info as $key => $value) {
+          $body['data']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
+        }
       }
 
       return response()->success([
         'message' => 'Get Customer Detail by NIK success',
-        'contents' => $customer_nik['responseData']
+        'contents' => $body['data']
       ]);
     }
 
@@ -119,7 +118,8 @@ class CustomerController extends Controller
     public function customer_officer(Request $request)
     {
       $client = new Client();
-      $request_customer_officer = $client->request('GET', config('restapi.apipdm').'/customer/officer/'.$request->header('pn'),[
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $request_customer_officer = $client->request('GET', $host.'/customer/officer/'.$request->header('pn'),[
         'headers' =>
         [
           'Authorization' => 'Bearer '.$this->get_token()

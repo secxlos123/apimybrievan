@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Lang;
 use DB;
+use App\Models\ApprovalDataChange;
+
 class UserNotification extends Model
 {
 	protected $table = 'notifications';
@@ -51,11 +53,14 @@ class UserNotification extends Model
 
 		$typeModuleEform = getTypeModule(EForm::class);
 		$typeModuleCollateral = getTypeModule(Collateral::class);
+		$approvalDataChange = ApprovalDataChange::where('related_id',$this->slug)->first();
+		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
 		$internalurl = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/');
 		$externalurl =  env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
+		
 		$url = $internalurl . 'eform?ref_number=' . $ref_number . '&slug=' . $this->slug.'&type='.$this->type_module;
 		if ($user_id) {
-			$url = $externalurl.'eform?slug=' . $this->slug.'&type='.$typeModuleEform;
+			$url = $externalurl.'tracking/detail/'.$this->slug;
 		} else {
 			$url = $url;
 		}
@@ -87,7 +92,7 @@ class UserNotification extends Model
 		case 'App\Notifications\ApproveEFormCustomer':
 			if ($status_eform == 'approved') {
 				$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Setujui',
-					'message_external' => '',
+					'message_external' => 'Permohonan KPR an. '.$this->data['user_name'].' no : '.$this->data['ref_number'].' dalam proses analisa oleh BRI.',
 					'url' => $url,
 					'url_mobile' => '#',
 				];
@@ -99,6 +104,16 @@ class UserNotification extends Model
 				];
 			}
 			break;
+		case 'App\Notifications\ApproveEFormCLAS':
+			$getKPR = KPR::where('eform_id',$this->slug)->first();
+			$plafondKredit =  !($getKPR->request_amount) ? $getKPR->request_amount : 0;
+
+			$subjectNotif = ['message' => 'Selamat Permohonan KPR an. '.$this->data['user_name'].' no : '.$this->data['ref_number'].' telah disetujui sebesar RP. '.number_format($plafondKredit,2).' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
 		case 'App\Notifications\RejectEFormCustomer':
 			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Tolak',
 				'url' => $url,
@@ -106,13 +121,41 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\RejectEFormCLAS':
+			$subjectNotif = ['message' => 'Mohon maaf pengajuan KPR an. '.$this->data['user_name'].' no : '.$this->data['ref_number'].' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
 		case 'App\Notifications\LKNEFormCustomer':
+			$subjectNotif = ['message' => 'Prakarsa LKN.',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\LKNEFormRecontest':
+			$subjectNotif = ['message' => 'LKN Recontest.',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\LKNEFormCLAS':
 			$subjectNotif = ['message' => 'Prakarsa LKN',
 				'url' => $url,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;
+		case 'App\Notifications\ScorePefindoPreScreening':
+			$subjectNotif = ['message' => 'Eform Pengajuan Telah Diisi Score Pefindo',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
+			break;			
 		case 'App\Notifications\VerificationApproveFormNasabah':
 			$subjectNotif = ['message' => 'Customer Telah Menyetujui Form KPR',
 				'url' => $url,
@@ -137,7 +180,7 @@ class UserNotification extends Model
 		case 'App\Notifications\PropertyNotification':
 			$subjectNotif = ['message' => 'Proyek Data Baru',
 				'url' => '',
-				'message_external' => '',
+				'message_external' => 'Terdapat permohohonan penilaian agunan baru dari '.$this->data['user_name'].' untuk Developer PKS BRI. Harap segera lakukan penilaian agunan sesuai ketentuan yang berlaku.',
 				'url_mobile' => '#',
 			];
 			break;
@@ -151,35 +194,36 @@ class UserNotification extends Model
 		case 'App\Notifications\UpdateSchedulerCustomer':
 			$subjectNotif = ['message' => 'Update Data Schedule',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'message_external' => 'Mohon maaf terjadi perubahan jadwal pertemuan dengan tenaga pemasar kami. Detail informasi dapat dilihat di fitur penjadwalan dalam aplikasi MyBRI.',
 				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\EditDeveloper':
 			$subjectNotif = ['message' => 'Perbaharui Data Profile',
-				'url' => '/approval-data/developer?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
+				'url' => '/approval-data/developer?related_id=' .@$approval_data_changes_id.'&slug=' . $this->slug.'&type='.$this->type_module,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\ApproveDeveloperProfile':
+
 			$subjectNotif = ['message' => 'Data Profile Telah Disetujui ',
-				'url' => '/dev/profile/personal?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'url' => '/dev/profile/personal?related_id=' .@$approval_data_changes_id.'&slug=' . $this->slug.'&type='.$this->type_module,
+				'message_external' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan.',
 				'url_mobile' => '#',
 			];
 			break;
 		case 'App\Notifications\RejectDeveloperProfile':
 			$subjectNotif = ['message' => 'Data Profile Telah Disetujui ',
-				'url' => '/dev/profile/personal?related_id=' .$this->data['approval_data_changes_id'].'&slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'url' => '/dev/profile/personal?related_id=' .@$approval_data_changes_id.'&slug=' . $this->slug.'&type='.$this->type_module,
+				'message_external' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
 				'url_mobile' => '#',
 			];
 			break;
 		
 		case 'App\Notifications\RecontestEFormNotification':
 			$subjectNotif = ['message' => 'Pengajuan Anda Telah di Rekontest.',
-				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
+				'url' => $url,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
@@ -247,7 +291,6 @@ class UserNotification extends Model
 			$subjectNotif = ['message' => 'Type undefined',
 				'url' => '',
 				'message_external' => '',
-				'message_external' => '',
 				'url_mobile' => '#',
 			];
 			break;
@@ -280,6 +323,11 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
 				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
 					->whereNotNull('visit_reports.created_at')
+					->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
+				$query->whereNotNull('visit_reports.created_at')
 					->unreads();
 			}
 
@@ -320,39 +368,52 @@ class UserNotification extends Model
             if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
 				$query->unreads();
 			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ScorePefindoPreScreening')) {
+				$query->unreads();
+			}
 		}
 
 		if (@$role == 'customer') {
-			$query->where('notifications.notifiable_id', @$user_id);
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				// $query->where('notifications.notifiable_id', @$user_id);
+				$query->whereNull('eforms.ao_id')->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RecontestEFormNotification')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\UpdateSchedulerCustomer')) {
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
 				/*is is_approved*/
-				$query->unreads();
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCLAS')) {
+				/*is is_approved*/
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
-				/*is rejected*/
-				$query->unreads();
-				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
-					$query->unreads()->where('notifications.notifiable_id', @$user_id);
-				}
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
+			}
+			
+			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+				$query->unreads();
+			}*/
 		}
 
 		if (@$role == 'staff') {
@@ -434,6 +495,11 @@ class UserNotification extends Model
 					->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
+				$query->whereNotNull('visit_reports.created_at')
+					->unreads();
+			}
+
 		}
 
 		if (@$role == 'ao') {
@@ -493,13 +559,24 @@ class UserNotification extends Model
 				$query->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCLAS')) {
+				/*is is_approved*/
+				$query->unreads();
+			}
+
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
 				/*is rejected*/
 				$query->unreads();
-				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
-					$query->unreads()->where('notifications.notifiable_id', @$user_id);
-				}
 			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
+				/*is rejected*/
+				$query->unreads();
+			}
+			
+			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
+				$query->unreads();
+			}*/
 		}
 
 		if (@$role == 'staff') {

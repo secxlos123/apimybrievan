@@ -38,21 +38,37 @@ class PrescreeningController extends Controller
      */
     public function show( Request $request )
     {
+        $user_login = \RestwsHc::getUser();
+
         $data = EForm::findOrFail($request->eform);
         $personal = $data->customer->personal;
 
         $dhn = json_decode((string) $data->dhn_detail);
         if ( !isset($dhn->responseData) ) {
             $dhn = json_decode((string) '[{"kategori":null,"keterangan":"","warna":"Hijau","result":""}]');
+
         } else {
-            $dhn = array($dhn->responseData[ intval($data->selected_dhn) ]);
+            if ( $user_login['role'] == 'ao' ) {
+                $dhn = $dhn->responseData;
+
+            } else {
+                $dhn = array($dhn->responseData[ intval($data->selected_dhn) ]);
+
+            }
         }
 
         $sicd = json_decode((string) $data->sicd_detail);
         if ( !isset($sicd->responseData) ) {
             $sicd = json_decode((string) '[{"status":null,"acctno":null,"cbal":null,"bikole":null,"result":null,"cif":null,"nama_debitur":null,"tgl_lahir":null,"alamat":null,"no_identitas":null}]');
+
         } else {
-            $sicd = array($sicd->responseData[ intval($data->selected_sicd) ]);
+            if ( $user_login['role'] == 'ao' ) {
+                $sicd = $sicd->responseData;
+
+            } else {
+                $sicd = array($sicd->responseData[ intval($data->selected_sicd) ]);
+
+            }
         }
 
         $data['uploadscore'] = $this->generatePDFUrl( $data );

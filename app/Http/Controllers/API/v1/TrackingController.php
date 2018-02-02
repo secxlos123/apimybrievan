@@ -68,7 +68,7 @@ class TrackingController extends Controller
                             $item->where('eforms.is_approved', $request->input('status'));
                     })
                     ->where(function($item) use (&$request){
-                        if ($request->has('search')){ 
+                        if ($request->has('search')){
                              $item->where(\DB::raw('LOWER(users.first_name)'), 'like', '%'.strtolower($request->input('search')).'%');
                             $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'like', '%'.strtolower($request->input('search')).'%');
                             $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'like', '%'.strtolower($request->input('search')).'%');
@@ -90,13 +90,13 @@ class TrackingController extends Controller
                                     foreach ($ao_id as $key => $value) {
                                         \Log::info("==========AO_ID=============");
                                         \Log::info($value->ao_id);
-                                        $item->Orwhere('eforms.ao_id',  'like','%'.$value->ao_id.'%');    
+                                        $item->Orwhere('eforms.ao_id',  'like','%'.$value->ao_id.'%');
                                     }
-                                    
+
                                 }
                                 elseif(strtolower($request->input('search')) == "pengajuan kredit")
                                 {
-                                    $item->Orwhere('eforms.ao_id',  NULL); 
+                                    $item->Orwhere('eforms.ao_id',  NULL);
                                 }
                             }
                     })
@@ -116,7 +116,9 @@ class TrackingController extends Controller
                 , eforms.product_type as product_type
                 , eforms.ref_number as ref_number
                 , eforms.prescreening_status
-                , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                , case when eforms.is_approved = false and eforms.recommended = true or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
+                    when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
+                    when eforms.status_eform = 'Approval2' then 'Rekontes Kredit'
                     when eforms.is_approved = true then 'Proses CLF'
                     when visit_reports.id is not null then 'Prakarsa'
                     when eforms.ao_id is not null then 'Disposisi Pengajuan'
@@ -126,12 +128,15 @@ class TrackingController extends Controller
                 ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
                 ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
                 ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
-                //->where( "eforms.ao_id", $request->header('pn') )
+                ->where( "eforms.ao_id", $request->header('pn') )
                 ->where(function($item) use (&$request){
                         if($request->has('status')){
                                 if($request->input('status') == "Rejected")
                                 {
                                     $item->where('eforms.status_eform', 'Rejected');
+                                    $item->Orwhere('eforms.is_approved', false);
+                                    $item->where('eforms.recommended', true);
+
                                 }
                                 elseif($request->input('status') == "Dispose")
                                 {
@@ -167,10 +172,16 @@ class TrackingController extends Controller
                                     $item->where('eforms.recommended', 'true');
                                     $item->where('eforms.status_eform', 'Approval1');
                                 }
+                                elseif($request->input('status') == 'Approval2')
+                                {
+                                    $item->where('eforms.is_approved', 'true');
+                                    $item->where('eforms.recommended', 'true');
+                                    $item->where('eforms.status_eform', 'Approval2');
+                                }
                         }
                     })
                     ->where(function($item) use (&$request){
-                        if ($request->has('search')){ 
+                        if ($request->has('search')){
                              $item->where(\DB::raw('LOWER(users.first_name)'), 'like', '%'.strtolower($request->input('search')).'%');
                             $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'like', '%'.strtolower($request->input('search')).'%');
                             $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'like', '%'.strtolower($request->input('search')).'%');
@@ -187,13 +198,13 @@ class TrackingController extends Controller
                                     foreach ($ao_id as $key => $value) {
                                         \Log::info("==========AO_ID=============");
                                         \Log::info($value->ao_id);
-                                        $item->Orwhere('eforms.ao_id',  'like','%'.$value->ao_id.'%');    
+                                        $item->Orwhere('eforms.ao_id',  'like','%'.$value->ao_id.'%');
                                     }
-                                    
+
                                 }
                                 elseif(strtolower($request->input('search')) == "pengajuan kredit")
                                 {
-                                    $item->Orwhere('eforms.ao_id',  NULL); 
+                                    $item->Orwhere('eforms.ao_id',  NULL);
                                 }
                                 elseif(strtolower($request->input('search')) == "disposisi pengajuan")
                                 {

@@ -50,7 +50,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_type_one')
+                ->from('auditrail_type_two')
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for search by field search ref_number.
@@ -59,11 +59,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
 
-                  $eform = 'app\\models\\eform';
+                 // $eform = 'app\\models\\eform';
                   
                   if ($request->has('search')){
                         $auditrail->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('search')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                       // $auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -74,11 +74,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
-                   $eform = 'app\\models\\eform';
+                   //$eform = 'app\\models\\eform';
 
                     if ($request->has('created_at')){
                         $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
-                        $auditrail->where('auditable_type', $eform);
+                       // $auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -89,11 +89,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
-                    $eform = 'app\\models\\eform';
+                    //$eform = 'app\\models\\eform';
 
                     if($request->has('username')){
                         $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                        //$auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -103,11 +103,11 @@ class Audit extends Model implements AuditContract
                 * @param $request->modul_name
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
-                    $eform = 'app\\models\\eform';
+                    //$eform = 'app\\models\\eform';
 
                     if($request->has('modul_name')){
                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                        //$auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
@@ -117,11 +117,11 @@ class Audit extends Model implements AuditContract
                 * @param $request->ref_number
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
-                    $eform = 'app\\models\\eform';
+                    //$eform = 'app\\models\\eform';
 
                   if ($request->has('ref_number')){
                         $auditrail->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('ref_number')).'%');
-                        $auditrail->where('auditable_type', $eform);
+                        //$auditrail->where('auditable_type', $eform);
                     }
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
@@ -129,12 +129,18 @@ class Audit extends Model implements AuditContract
                 * This query for Auditrail Pengajuan Kredit
                 */
                  $eform = 'app\\models\\eform';
-                 $event = 'created';
-
-                 $auditrail->where('auditable_type', $eform);
-                 $auditrail->where('event', $event);
+                 //$eform = 'app\models\eform';
+                 //$event = 'created';
+ 
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
+                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'not like', '%collateral%');
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             
     }
 
@@ -219,7 +225,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where('auditable_type', $appointment);
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             
     }
     /*
@@ -234,6 +241,8 @@ class Audit extends Model implements AuditContract
                 'longitude' => number_format($request->header('long', env('DEF_LONG', '106.81350')), 5)
                 , 'latitude' => number_format($request->header('lat', env('DEF_LAT', '-6.21670')), 5)
             );
+            \Log::info("-------boot audit -------------");
+            \Log::info($model->auditable_type);
            $model->extra_params =  json_encode($extraParams);
            $model->action = $request->header('auditaction', 'Undefined Action');
            $model->save();
@@ -317,7 +326,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
     /**
@@ -330,7 +340,7 @@ class Audit extends Model implements AuditContract
     public function scopeGetListsLogin($query, Request $request)
     {
 
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'desc'];
 
         return $query
                 ->from('auditrail_admin_developer')
@@ -394,7 +404,7 @@ class Audit extends Model implements AuditContract
                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
     /**
@@ -476,7 +486,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
             /**
@@ -559,7 +570,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah unit property%');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
             /**
@@ -624,7 +636,7 @@ class Audit extends Model implements AuditContract
                 */ 
               
                   if ($request->has('developer')){
-                        $auditrail->where(\DB::raw('LOWER(developer)'), 'like', '%'.strtolower($request->input('developer')).'%');
+                        $auditrail->where(\DB::raw('LOWER(developer)'), strtolower($request->input('developer')));
             
                     }
                 })
@@ -652,7 +664,8 @@ class Audit extends Model implements AuditContract
 
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
             /**
@@ -712,12 +725,25 @@ class Audit extends Model implements AuditContract
                 /**
                 * This query for search by Nama Perusahaan Mitra.
                 *
-                * @param $request->developer
+                * @param $request->company_name
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
               
-                  if ($request->has('developer')){
-                        $auditrail->where(\DB::raw('LOWER(developer)'), 'like', '%'.strtolower($request->input('developer')).'%');
+                  if ($request->has('company_name')){
+                        $auditrail->where(\DB::raw('LOWER(company_name)'), 'like', '%'.strtolower($request->input('company_name')).'%');
+            
+                    }
+                })
+                ->where(function ($auditrail) use (&$request, &$query){
+                /**
+                * This query for search by Nama Modul.
+                *
+                * @param $request->modul_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */ 
+              
+                  if ($request->has('modul_name')){
+                        $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
             
                     }
                 })
@@ -730,7 +756,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
             }
 
     public function getuser(Request $request)
@@ -836,6 +863,7 @@ class Audit extends Model implements AuditContract
                  $auditrail->where('user_id', '=', $id);
                
                 })
-                ->orderBy($sort[0], $sort[1]);
+                // ->orderBy($sort[0], $sort[1]);
+                ->orderBy('created_at', 'desc');
   }
 }

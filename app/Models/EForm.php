@@ -134,6 +134,9 @@ class EForm extends Model implements AuditableContract
         } elseif ( $this->status_eform == 'Approval2' ) {
             return 'Rekontes Kredit';
 
+        } elseif ( $this->status_eform == 'Pencairan' ) {
+            return 'Pencairan';
+
         } elseif( $this->is_approved ) {
             return 'Proses CLF';
 
@@ -709,7 +712,7 @@ class EForm extends Model implements AuditableContract
                 } else {
                     $eform = $eform->select([
                             'eforms.*'
-                            , \DB::Raw(" case when ao_id is not null then 2 else 1 end as new_order ")
+                            , \DB::Raw(" case when status_eform in ('Rejected') then 4 when status_eform in ('Approval2', 'Approval1', 'approved') then 3 when ao_id is not null then 2 else 1 end as new_order ")
                         ]);
                     if ( $sort[0] != "action" ) {
                         $eform = $eform->orderBy('new_order', 'asc');
@@ -812,48 +815,52 @@ class EForm extends Model implements AuditableContract
     public static function updateCLAS( $fid_aplikasi, $status )
     {
         $returnStatus = false;
-        $statusEform = ( $status == 'Approval1' ? true : false );
         $target = static::where(
                 DB::Raw("additional_parameters::json->>'fid_aplikasi'")
                 , $fid_aplikasi
             )->first();
 
         if ($target) {
-            $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
-            $target->update([
-                'is_approved' => ( $status == 'Approval1' ? true : false )
-                , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
-            ]);
-
-            // Recontest
-            if ( $status == 'Approval2' ) {
-                if ( !$target->recontest ) {
-                    $target->recontest()->create( [
-                        'expired_date' => Carbon::now()->addMonths(1)
-                    ] );
-                    $returnStatus = "EForm berhasil di Rekontes.";
-                } else {
-                    $returnStatus = "EForm sudah pernah di Rekontes.";
-
-                }
-            }
-
-            if ($target->kpr) {
-                $target->kpr->update([
-                    'is_sent' => ( $status == 'Approval1' ? true : false )
+            if ( $status != 'Pencairan' ) {
+                $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
+                $target->update([
+                    'is_approved' => ( $status == 'Approval1' ? true : false )
+                    , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
                 ]);
 
-                if ( $status != 'Approval2' ) {
-                    $target->setAvailibility( $status == 'Approval1' ? "sold" : "available" );
+                // Recontest
+                if ( $status == 'Approval2' ) {
+                    if ( !$target->recontest ) {
+                        $target->recontest()->create( [
+                            'expired_date' => Carbon::now()->addMonths(1)
+                        ] );
+                        $returnStatus = "EForm berhasil di Rekontes.";
+                    } else {
+                        $returnStatus = "EForm sudah pernah di Rekontes.";
 
+                    }
                 }
+
+                if ($target->kpr) {
+                    $target->kpr->update([
+                        'is_sent' => ( $status == 'Approval1' ? true : false )
+                    ]);
+
+                    if ( $status != 'Approval2' ) {
+                        $target->setAvailibility( $status == 'Approval1' ? "sold" : "available" );
+
+                    }
+                }
+            } else {
+                $target->update(['status_eform' => $status]);
+                $returnStatus = "EForm berhasil di cairkan.";
+
             }
         }
 
         return array(
             'message' => $returnStatus,
             'contents' => $target,
-            'status' => $statusEform,
         );
     }
 
@@ -1012,10 +1019,10 @@ class EForm extends Model implements AuditableContract
             "status_pisah_harta_pemohon" => !( $lkn->source_income ) ? '' : ($lkn->source_income == "Single Income" ? 'Tidak' : 'Pisah Harta'),
             "sektor_ekonomi_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_gelar_cif" => $this->reformatTitle( $lkn->title ),
-            'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '' : $customer_detail->zip_code,
-            'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? '' : $customer_detail->kelurahan,
-            'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? '' : $customer_detail->kecamatan,
-            'Kota_cif' => $this->reformatCity( $customer_detail->city ),
+            'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '40000' : $customer_detail->zip_code,
+            'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? 'kelurahan' : $customer_detail->kelurahan,
+            'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? 'kecamatan' : $customer_detail->kecamatan,
+            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->kabupaten ),
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
@@ -1685,8 +1692,9 @@ class EForm extends Model implements AuditableContract
         * @param  string $endChart
         * @return array
     */
-    public function getChartEForm($startChart, $endChart)
+    public function getChartEForm($startChart, $endChart, $user_id)
     {
+        $developer = Developer::select('id')->where('user_id', $user_id)->first();
         if(!empty($startChart) && !empty($endChart)){
             $startChart = date("01-m-Y",strtotime($startChart));
             $endChart   = date("t-m-Y", strtotime($endChart));
@@ -1726,6 +1734,11 @@ class EForm extends Model implements AuditableContract
                     DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
                     DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
                 )
+                ->with("kpr")
+                ->whereHas("kpr", function ($query) use ($developer) {
+                    return $query->join('properties', 'properties.id', 'property_id')
+                                 ->where('kpr.developer_id', $developer['id']);
+                })
                 ->when($filter, function ($query) use ($startChart, $endChart){
                     return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
                 })

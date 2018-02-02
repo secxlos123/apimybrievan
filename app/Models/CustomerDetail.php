@@ -203,11 +203,11 @@ class CustomerDetail extends Model implements AuditableContract
      */
     public function getAddressStatusAttribute( $value )
     {
-        if( $value == 0 ) {
+        if( $value == '0' ) {
             return 'Milik Sendiri';
-        } else if( $value == 1 ) {
+        } else if( $value == '1' ) {
             return 'Milik Orang Tua/Mertua atau Rumah Dinas';
-        } else if( $value == 3 ) {
+        } else if( $value == '3' ) {
             return 'Tinggal di Rumah Kontrakan';
         }
 
@@ -396,7 +396,7 @@ class CustomerDetail extends Model implements AuditableContract
                     // Conditional when role is AO, get data by AO ID (PN)
                     return $query->when($role, function($query) use ($aoId){
                                     return $query->where('ao_id', $aoId);
-                                })->where('status_eform', "Approval1");
+                                })->where('status_eform', "Pencairan");
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
@@ -414,7 +414,7 @@ class CustomerDetail extends Model implements AuditableContract
                 ->pluck('detailDebitur');
         return $data;
     }
-    
+
     /*
      * Mutator for detail debitur.
      *

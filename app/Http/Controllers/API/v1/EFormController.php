@@ -21,6 +21,7 @@ use App\Models\PropertyType;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
+use App\Models\Appointment;
 use App\Notifications\EFormPenugasanDisposisi;
 use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
@@ -50,7 +51,8 @@ class EFormController extends Controller
       $client = new Client();
 	  $host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
-		$url = 'http://172.18.44.182/bribranch/branch/';
+		//$url = 'http://172.18.44.182/bribranch/branch/';
+		$url = 'http://10.35.65.208:81/bribranch/branch/';
 	}else{
 		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
 	  }
@@ -314,7 +316,9 @@ class EFormController extends Controller
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
                 if ($image->getMimeType() == '.pdf') {
-                    $extension = '.pdf';
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
                 }else{
                     $extension = 'png';
                 }
@@ -426,25 +430,62 @@ class EFormController extends Controller
             $NPWP_nasabah = $request->NPWP_nasabah;
             $KK = $request->KK;
             $SLIP_GAJI = $request->SLIP_GAJI;
-            $SK_AWAL = $request->SK_AWAL;
-            $SK_AKHIR = $request->SK_AKHIR;
+//            $SK_AWAL = $request->SK_AWAL;
+//            $SK_AKHIR = $request->SK_AKHIR;
             $REKOMENDASI = $request->REKOMENDASI;
 
             $id = date('YmdHis');
             $NPWP_nasabah = $this->uploadimage($NPWP_nasabah,$id,'NPWP_nasabah');
             $KK = $this->uploadimage($KK,$id,'KK');
             $SLIP_GAJI = $this->uploadimage($SLIP_GAJI,$id,'SLIP_GAJI');
-            $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
-            $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+//            $SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+//            $SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
             $REKOMENDASI = $this->uploadimage($REKOMENDASI,$id,'REKOMENDASI');
 
             $baseRequest['NPWP_nasabah'] = $NPWP_nasabah;
             $baseRequest['KK'] = $KK;
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
-            $baseRequest['SK_AWAL'] = $SK_AWAL;
-            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+//            $baseRequest['SK_AWAL'] = $SK_AWAL;
+//
+//            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
+			
+			$SK_AWAL = '';
+			$SK_AKHIR = '';
+				
+			
+			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
+				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
+					$SK_AWAL = $request->SK_AWAL;
+					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+					$baseRequest['SK_AWAL'] = $SK_AWAL;
+					
+					$SK_AKHIR = $request->SK_AKHIR;
+					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+					/*----------------------------------*/
+				}else{
+					$dataEform =  EForm::where('nik', $request->nik)->get();
+					return response()->error( [
+						'message' => 'Baru Atau Perpanjangan Harus ada & Kredit Take Over harus Iya',
+						'contents' => $dataEform
+					], 422 );
+				}
+			}else{
+				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
+					$SK_AWAL = $request->SK_AWAL;
+					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+					$baseRequest['SK_AWAL'] = $SK_AWAL;
+					
+					$SK_AKHIR = $request->SK_AKHIR;
+					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+					/*----------------------------------*/
+				}
+				$baseRequest['SK_AWAL'] = $SK_AWAL;
+				$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+			}
 
 			if($baseRequest['Payroll']=='1'){
 				$SKPG = '';
@@ -460,7 +501,7 @@ class EFormController extends Controller
                 $SKPG = $request->SKPG;
                 $SKPG = $this->uploadimage($SKPG,$id,'SKPG');
                 $baseRequest['SKPG'] = $SKPG;
-			}else{
+				}else{
 				$dataEform =  EForm::where('nik', $request->nik)->get();
                 return response()->error( [
                     'message' => 'Payroll Non BRI SKPG harus ada',
@@ -641,7 +682,23 @@ class EFormController extends Controller
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
+        //add scheduleData in Disposisition
+        $scheduleData = array(
+                'title' => $eform->ref_number
+                , 'appointment_date' => $eform->appointment_date
+                , 'user_id' => $eform->user_id
+                , 'ao_id' => $eform->ao_id
+                , 'eform_id' => $eform->id
+                , 'ref_number' => $eform->ref_number
+                , 'address' => $eform->address
+                , 'latitude' => $eform->longitude
+                , 'longitude' => $eform->latitude
+                , 'desc' => '-'
+                , 'status' => 'waiting'
+            );
+        $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
         DB::commit();
+
 
         // Credentials for push notification helper
         $credentials = [
@@ -860,6 +917,7 @@ class EFormController extends Controller
     public function updateCLAS( Request $request )
     {
         $message = "EForm tidak ditemukan.";
+        $status  = $request->input('status');
         DB::beginTransaction();
 
         try {
@@ -884,13 +942,29 @@ class EFormController extends Controller
                        ->first();
 
                     $usersModel  = User::FindOrFail($data['user_id']);
-                    $status      = $updateCLAS['status'];
                     $credentials = [
                         'data'  => $data,
-                        'user'  => $usersModel
+                        'user'  => $usersModel,
+                        'clas'  => true,
                     ];
+
                     // Call the helper of push notification function
-                    pushNotification($credentials, ($status) ? 'approveEForm' : 'rejectEForm');
+                    $slug = 'CLASEForm';
+                    if ( $status == "Approval1" ) {
+                        $slug = 'approveEForm';
+
+                    } elseif ( $status == "Approval2" ) {
+                        $slug = 'recontestEForm';
+
+                    } elseif ( $status == "Rejected" ) {
+                        $slug = 'rejectEForm';
+
+                    } elseif ( $status == "Pencairan" ) {
+                        $slug = 'pencairanEForm';
+
+                    }
+
+                    pushNotification($credentials, $slug);
 
                     return response()->json([
                         "responseCode" => "01",
@@ -910,4 +984,54 @@ class EFormController extends Controller
             "responseDesc" => $message
         ], 200 );
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function submitScreening( Request $request )
+    {
+        DB::beginTransaction();
+
+        $message = 'Screening e-form gagal di update.';
+
+        if ( $request->has('selected_sicd') && $request->has('selected_dhn') ) {
+            $eform = EForm::find( $request->input('eform_id') );
+
+            $calculate = array(
+                $request->input('pefindo', 'Hijau')
+                , $request->input('dhn', 'Hijau')
+                , $request->input('sicd', 'Hijau')
+            );
+
+            if ( in_array('Merah', $calculate) ) {
+                $result = '3';
+
+            } else if ( in_array('Kuning', $calculate) ) {
+                $result = '2';
+
+            } else {
+                $result = '1';
+
+            }
+
+            $eform->update( [
+                'prescreening_status' => $result
+                , 'selected_dhn' => $request->input('selected_dhn')
+                , 'selected_sicd' => $request->input('selected_sicd')
+            ] );
+
+            $message = 'Screening e-form berhasil di update.';
+        }
+
+        $eform = array();
+
+        DB::commit();
+        return response()->success( [
+            'message' => $message,
+            'contents' => $eform
+        ], 201 );
+    }
+
 }

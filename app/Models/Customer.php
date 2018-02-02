@@ -22,7 +22,7 @@ class Customer extends User
      *
      * @var array
      */
-    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved' ];
+    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile' ];
 
     /**
      * Get information about register simple status.
@@ -264,12 +264,28 @@ class Customer extends User
     public function getIsApprovedAttribute()
     {
         $stat_approved = [];
-        $eform = $this->eforms()->select(['is_approved'])->get();
-        foreach ($eform as $key => $stat) {
-            \Log::info($stat->is_approved);
+        $eforms = $this->eforms()->select(['is_approved'])->get();
+        foreach ($eforms as $eform) {
             $stat_approved = [
-                'status' => $stat->is_approved
+                'status' => $eform->is_approved
             ];
+        }
+
+        return $stat_approved;
+    }
+
+    /**
+     * Get status is_approved for mobile.
+     *
+     * @return bool
+     */
+
+    public function getIsApprovedMobileAttribute()
+    {
+        $stat_approved = '';
+        $eforms = $this->eforms()->select(['is_approved'])->get();
+        foreach ($eforms as $eform) {
+            $stat_approved = $eform->is_approved;
         }
 
         return $stat_approved;

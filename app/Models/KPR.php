@@ -16,7 +16,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 class KPR extends Model implements AuditableContract
 {
     use Auditable;
-    
+
     /**
      * The table name.
      *
@@ -68,9 +68,6 @@ class KPR extends Model implements AuditableContract
             $data[ 'developer_id' ] = $data[ 'developer' ];
             $data[ 'property_id' ] = isset($data[ 'property' ]) ? $data[ 'property' ] : null;
             $kpr = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
-            
-            $usersModel = User::FindOrFail($eform->user_id);
-            $usersModel->notify(new PengajuanKprNotification($eform)); /*notif Pengajuan Kredit Baru*/
 
             if ( isset($data[ 'property_item' ]) ) {
                 PropertyItem::setAvailibility( $data[ 'property_item' ], "book" );
@@ -148,6 +145,21 @@ class KPR extends Model implements AuditableContract
         $down_payment =  ($dp / 100) * $price ;
 
         return $down_payment;
+    }
+
+    /**
+     * active KPR handling
+     *
+     * @return void
+     * @author
+     **/
+    public function getActiveKprAttribute()
+    {
+        if ( in_array($this->attributes['active_kpr'], array(1,2,3)) ) {
+            return $this->attributes['active_kpr'];
+        }
+
+        return 1;
     }
 
 }

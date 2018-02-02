@@ -53,7 +53,7 @@ class AccountController extends Controller
       } else {
         return response()->success( [
             'message' => 'Gagal',
-            'contents' => $leads['responseDesc']
+            'contents' => []
           ]);
       }
 
@@ -226,7 +226,8 @@ class AccountController extends Controller
 
     public function get_referral(Request $request)
     {
-      $referrals = Referral::all();
+      $branch_id = $request->header('branch');
+      $referrals = Referral::where('branch_id', $branch_id)->get();
       return response()->success( [
           'message' => 'Sukses get data referral',
           'contents' => $referrals
@@ -251,6 +252,7 @@ class AccountController extends Controller
 
       $data['officer_ref'] = $request['officer_ref'];
       $data['officer_name'] = $request['officer_name'];
+      $data['status'] = $request['status'];
 
       // return $data;die();
 
@@ -259,7 +261,7 @@ class AccountController extends Controller
       if ($update) {
         return response()->success( [
             'message' => 'Sukses update officer referral',
-            'contents' => $request
+            'contents' => Referral::where('ref_id', $ref_id)->get()
           ]);
       }
     }

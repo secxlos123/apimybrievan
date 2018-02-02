@@ -106,6 +106,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		 Route::resource( 'mitra_list', 'mitra\MitraListController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+		Route::resource( 'list_pekerja', 'mitra\MitraListController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		Route::resource( 'scorings', 'ScoringController', [
 			'except' => [ 'edit', 'create' ]
 		] );
@@ -145,6 +148,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 
+	Route::post( 'eforms/submit-screening', 'EFormController@submitScreening' );
 
 	/**
 	 * Route group for namespace controller Int
