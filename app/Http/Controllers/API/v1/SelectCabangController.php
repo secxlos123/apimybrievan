@@ -132,8 +132,9 @@ class SelectCabangController extends Controller
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
 	        \Log::info($request->all());
 				
-			$mitra = Mitra3::filter( $request )->get();
-			$mitra = $mitra->toArray();
+			$limit = $request->input( 'limit' ) ?: 10;
+			$mitra = Mitra3::filter( $request )->paginate($limit);
+			//$mitra = $mitra->toArray();
         return response()->success([
             'contents' => $mitra,
             'message' => 'Sukses'
