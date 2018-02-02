@@ -21,6 +21,7 @@ use App\Models\PropertyType;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
+use App\Models\Appointment;
 use App\Notifications\EFormPenugasanDisposisi;
 use App\Notifications\PengajuanKprNotification;
 use App\Models\UserNotification;
@@ -50,7 +51,8 @@ class EFormController extends Controller
       $client = new Client();
 	  $host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
-		$url = 'http://172.18.44.182/bribranch/branch/';
+		//$url = 'http://172.18.44.182/bribranch/branch/';
+		$url = 'http://10.35.65.208:81/bribranch/branch/';
 	}else{
 		$url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
 	  }
@@ -314,7 +316,9 @@ class EFormController extends Controller
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
                 if ($image->getMimeType() == '.pdf') {
-                    $extension = '.pdf';
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
                 }else{
                     $extension = 'png';
                 }
@@ -443,7 +447,7 @@ class EFormController extends Controller
             $baseRequest['SLIP_GAJI'] = $SLIP_GAJI;
 //            $baseRequest['SK_AWAL'] = $SK_AWAL;
 //
-            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
+//            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
 			
@@ -451,8 +455,8 @@ class EFormController extends Controller
 			$SK_AKHIR = '';
 				
 			
-			if($baseRequest['baru_atau_perpanjang']=='1' && $baseRequest['kredit_take_over']=='0'){
-				if(!empty($request->SK_AWAL)){
+			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
+				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
 					$SK_AWAL = $request->SK_AWAL;
 					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
 					$baseRequest['SK_AWAL'] = $SK_AWAL;
@@ -678,7 +682,23 @@ class EFormController extends Controller
         $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
         $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
+        //add scheduleData in Disposisition
+        $scheduleData = array(
+                'title' => $eform->ref_number
+                , 'appointment_date' => $eform->appointment_date
+                , 'user_id' => $eform->user_id
+                , 'ao_id' => $eform->ao_id
+                , 'eform_id' => $eform->id
+                , 'ref_number' => $eform->ref_number
+                , 'address' => $eform->address
+                , 'latitude' => $eform->longitude
+                , 'longitude' => $eform->latitude
+                , 'desc' => '-'
+                , 'status' => 'waiting'
+            );
+        $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
         DB::commit();
+
 
         // Credentials for push notification helper
         $credentials = [

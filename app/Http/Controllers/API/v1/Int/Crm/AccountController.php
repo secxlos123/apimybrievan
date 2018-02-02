@@ -252,6 +252,7 @@ class AccountController extends Controller
 
       $data['officer_ref'] = $request['officer_ref'];
       $data['officer_name'] = $request['officer_name'];
+      $data['status'] = $request['status'];
 
       // return $data;die();
 
@@ -260,7 +261,7 @@ class AccountController extends Controller
       if ($update) {
         return response()->success( [
             'message' => 'Sukses update officer referral',
-            'contents' => $referral
+            'contents' => Referral::where('ref_id', $ref_id)->get()
           ]);
       }
     }
