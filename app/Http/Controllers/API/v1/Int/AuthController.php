@@ -43,11 +43,10 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
 
         $data = $login[ 'responseData' ];
-
+        // print_r($login);exit();
         \Log::info($login);
 
         if( $login[ 'responseCode' ] == '00' ) {
-
             if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                 $role = 'ao';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
@@ -65,6 +64,17 @@ class AuthController extends Controller
                 $role = 'staff';
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
+            // new role
+            } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
+                $role = 'wapincasus';
+            } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
+                $role = 'pincasus';
+            } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
+                $role = 'pinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
+                $role = 'wapinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
+                $role = 'cs';
             // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
                 $adk = explode(' ', $data['posisi']);
