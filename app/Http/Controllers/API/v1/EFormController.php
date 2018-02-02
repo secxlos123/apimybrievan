@@ -316,7 +316,9 @@ class EFormController extends Controller
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
                 if ($image->getMimeType() == '.pdf') {
-                    $extension = '.pdf';
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
                 }else{
                     $extension = 'png';
                 }
