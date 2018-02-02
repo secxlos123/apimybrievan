@@ -1692,8 +1692,9 @@ class EForm extends Model implements AuditableContract
         * @param  string $endChart
         * @return array
     */
-    public function getChartEForm($startChart, $endChart)
+    public function getChartEForm($startChart, $endChart, $user_id)
     {
+        $developer = Developer::select('id')->where('user_id', $user_id)->first();
         if(!empty($startChart) && !empty($endChart)){
             $startChart = date("01-m-Y",strtotime($startChart));
             $endChart   = date("t-m-Y", strtotime($endChart));
@@ -1733,6 +1734,11 @@ class EForm extends Model implements AuditableContract
                     DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
                     DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
                 )
+                ->with("kpr")
+                ->whereHas("kpr", function ($query) use ($developer) {
+                    return $query->join('properties', 'properties.id', 'property_id')
+                                 ->where('kpr.developer_id', $developer['id']);
+                })
                 ->when($filter, function ($query) use ($startChart, $endChart){
                     return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
                 })
