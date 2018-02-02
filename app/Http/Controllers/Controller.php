@@ -65,7 +65,7 @@ class Controller extends BaseController
 		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
 		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
 
-      $requestBriconnect = $client->request('POST', $url.'/oauth/token',
+      $requestBriconnect = $client->request('POST', $host.'/oauth/token',
         [
           'form_params' =>
           [
