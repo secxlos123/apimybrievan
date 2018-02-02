@@ -399,6 +399,11 @@ class EFormController extends Controller
                 }
             }
 
+            if ($request->product_type == 'kkd'){
+                \Log::info("========================KARTU_KREDIT========================"); 
+                
+            }
+
             if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */

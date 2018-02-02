@@ -5,15 +5,18 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\v1\Int\Crm\CustomerController;
+use App\Http\Controllers\API\v1\EFormController;
 
 class KartuKreditController extends Controller{
 	
 	public function example(){
 
-		return response()->json([
-                'name' => 'Abigail',
-                'state' => 'CA'
-            ]);
+		// return response()->json([
+  //               'name' => 'Abigail',
+  //               'state' => 'CA'
+  //           ]);
+		$ef = new EFormController();
+		
 	}
 
 	public function getNiks(Request $request){
@@ -34,6 +37,7 @@ class KartuKreditController extends Controller{
 
 		return response;
 	}
+
 
 	public function getNikFromMyBriDb($nik){
 			//cek nik di database nasabah
