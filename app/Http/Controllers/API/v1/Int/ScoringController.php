@@ -12,6 +12,7 @@ use App\Models\User;
 use Sentinel;
 use File;
 use DB;
+use App\Notifications\ScorePefindoPreScreening;
 
 class ScoringController extends Controller
 {
@@ -370,6 +371,20 @@ class ScoringController extends Controller
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+        }
+
+        if(env('PUSH_NOTIFICATION', false)){
+            if($eform){
+                $typeModule = getTypeModule(Scoring::class);
+                $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
+                                               ->whereNull('read_at')
+                                               ->first();
+                if($notificationIsRead){
+                    $notificationIsRead->markAsRead();
+                }
+                $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
+                $usersModel->notify(new ScorePefindoPreScreening($eform));                
+            }
         }
 
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));

@@ -148,6 +148,13 @@ class UserNotification extends Model
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
+			break;
+		case 'App\Notifications\ScorePefindoPreScreening':
+			$subjectNotif = ['message' => 'Eform Pengajuan Telah Diisi Score Pefindo',
+				'url' => $url,
+				'message_external' => '',
+				'url_mobile' => '#',
+			];
 			break;			
 		case 'App\Notifications\VerificationApproveFormNasabah':
 			$subjectNotif = ['message' => 'Customer Telah Menyetujui Form KPR',
@@ -359,6 +366,10 @@ class UserNotification extends Model
 
             
             if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ScorePefindoPreScreening')) {
 				$query->unreads();
 			}
 		}
