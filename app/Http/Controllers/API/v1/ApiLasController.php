@@ -1770,15 +1770,18 @@ class ApiLasController extends Controller
         if (!empty($response)) {
             try {
                 // if (isset($response['uploadfoto'])) {
-                //     $image  = $response;
-                //     $detail = EForm::findOrFail($response['eform_id']);
+                //     $image   = $response;
+                //     $id_foto = date('YmdHis');
+                //     $detail  = EForm::findOrFail($response['eform_id']);
                 //     $this->removeAllImage($detail);
-                //     $filename = $this->uploadimage($image, $response['eform_id']);
+                //     $filename = $this->uploadimage($image, $response['eform_id'], $id_foto);
                 //     $data['uploadfoto'] = $filename;
                 //     \Log::info($filename);
                 //     print_r($request->all());exit();
+
                 //     $data_update = [
                 //         'is_verified' => $response['is_verified'],
+                //         'id_foto'     => $id_foto;
                 //         'catatan_ktp' => empty($response['catatan_ktp'])? '' : $response['catatan_ktp'],
                 //     ];
                 //     $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
@@ -2094,12 +2097,12 @@ class ApiLasController extends Controller
         }
     }
 
-    function uploadimage($image, $id) {
-        $eform = EForm::where('id', $id)->first();
+    function uploadimage($image, $id, $id_foto) {
         if (isset($image['identity']) || isset($image['couple_identity'])) {
-            $path  = public_path('uploads/'.$eform->user_id.'/');
-        } else {
+            $eform = EForm::where('id', $id)->first();
             $path  = public_path('uploads/'.$eform->nik.'/');
+        } else {
+            $path  = public_path('uploads/'.$id_foto.'/');
         }
         
         $filename = null;
@@ -2107,6 +2110,8 @@ class ApiLasController extends Controller
             if (!$image->getClientOriginalExtension()) {
                 if ($image->getMimeType() == '.pdf') {
                     $extension = '.pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
                 }else{
                     $extension = 'png';
                 }
@@ -2115,9 +2120,10 @@ class ApiLasController extends Controller
             }
             // log::info('image = '.$image->getMimeType());
             if (isset($image['identity']) || isset($image['couple_identity'])) {
-                $filename = $eform->user_id . '-foto.' . $extension;
+                $eform = EForm::where('id', $id)->first();
+                $filename = $eform->user_id.'-foto.'.$extension;
             } else {
-                $filename = $eform->nik . '-foto.' . $extension;
+                $filename = $id_foto.'-foto.'.$extension;
             }
             $image->move( $path, $filename );
         }
