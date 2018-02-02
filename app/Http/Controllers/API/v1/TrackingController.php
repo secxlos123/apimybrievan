@@ -28,6 +28,8 @@ class TrackingController extends Controller
                     , developers.company_name as developer_name
                     , kpr.property_item_name as property_name
                     , eforms.product_type as product_type
+                    , date(eforms.created_at) as tanggal_pengajuan
+                    , kpr.request_amount as jumlah_pengajuan
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
                         when visit_reports.id is not null then 'Proses Analisa Pengajuan'
@@ -52,6 +54,8 @@ class TrackingController extends Controller
                     , kpr.request_amount as nominal
                     , eforms.product_type as product_type
                     , eforms.ref_number as ref_number
+                    , date(eforms.created_at) as tanggal_pengajuan
+                    , kpr.request_amount as jumlah_pengajuan
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
                         when visit_reports.id is not null then 'Proses Analisa Pengajuan'
@@ -116,6 +120,8 @@ class TrackingController extends Controller
                 , eforms.product_type as product_type
                 , eforms.ref_number as ref_number
                 , eforms.prescreening_status
+                , date(eforms.created_at) as tanggal_pengajuan
+                , kpr.request_amount as jumlah_pengajuan
                 , case when eforms.is_approved = false and eforms.recommended = true or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
                     when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                     when eforms.status_eform = 'Approval2' then 'Rekontes Kredit'
