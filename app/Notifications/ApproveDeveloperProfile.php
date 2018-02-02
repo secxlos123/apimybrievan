@@ -69,7 +69,7 @@ class ApproveDeveloperProfile extends Notification
         $typeModule = getTypeModule(Developer::class);
         $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->whereNull('approval_by')->first();
         if(empty($approvalDataChange)){
-            $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->first();  \log::info("ubah data approve kosong".$this->dev->id);
+            $approvalDataChange = ApprovalDataChange::where('related_id',$this->dev->id)->first();
         }
         return [
             'developer_id' => $this->dev->id,
