@@ -56,6 +56,24 @@ class ServiceRestwsHc extends Client
                     if( in_array( strtolower($get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
                         $role = str_replace(' ', '-', strtolower($get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]));
                     }
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 5 ] ) ) {
+                    $role = 'pincasus';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 11 ] ) ) {
+                    $role = 'wapincasus';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 3 ] ) ) {
+                    $role = 'pinwil';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 9 ] ) ) {
+                    $role = 'wapinwil';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 66, 71, 75 ] ) ) {
+                    $role = 'cs';
+                // hilfm adk tambah filter posisi
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [58, 61] ) ) {
+                    $adk = explode(' ', $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]);
+                    // print_r($adk);
+                    // print_r($data);exit();
+                    if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                        $role = 'adk';
+                    }
                 } else {
                     $role = 'staff';
                 }

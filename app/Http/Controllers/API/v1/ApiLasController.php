@@ -12,6 +12,7 @@ use App\Models\EForm;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
 use Asmx;
+use File;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 
 class ApiLasController extends Controller
@@ -1763,16 +1764,39 @@ class ApiLasController extends Controller
     }
 
     public function update_briguna(Request $request) {
+        \Log::info($request->all());
         // print_r($request->all());exit();
         $response = $request->all();
         if (!empty($response)) {
             try {
-                $briguna = BRIGUNA::where("eform_id","=",$response['eform_id']);
-                $briguna->update($response);
-                return response()->success( [
-                    'message' => 'Sukses',
-                    'contents' => $briguna
-                ], 200 );
+                // if (isset($response['uploadfoto'])) {
+                //     $image  = $response;
+                //     $detail = EForm::findOrFail($response['eform_id']);
+                //     $this->removeAllImage($detail);
+                //     $filename = $this->uploadimage($image, $response['eform_id']);
+                //     $data['uploadfoto'] = $filename;
+                //     \Log::info($filename);
+                //     print_r($request->all());exit();
+                //     $data_update = [
+                //         'is_verified' => $response['is_verified'],
+                //         'catatan_ktp' => empty($response['catatan_ktp'])? '' : $response['catatan_ktp'],
+                //     ];
+                //     $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
+                //     $briguna->update($data_update);
+                //     $message = [
+                //         'message' => 'Sukses update eforms dan briguna',
+                //         'contents' => $briguna
+                //     ];
+                // } else {
+                    $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
+                    $briguna->update($response);
+                    $message = [
+                        'message' => 'Sukses update briguna',
+                        'contents' => $briguna
+                    ];
+                // }
+
+                return response()->success($message, 200);
             } catch (Exception $e) {
                 return response()->error( [
                     'message' => 'Koneksi Gagal',
@@ -2067,6 +2091,45 @@ class ApiLasController extends Controller
                     'data' => $error
                 ]
             ];
+        }
+    }
+
+    function uploadimage($image, $id) {
+        $eform = EForm::where('id', $id)->first();
+        if (isset($image['identity']) || isset($image['couple_identity'])) {
+            $path  = public_path('uploads/'.$eform->user_id.'/');
+        } else {
+            $path  = public_path('uploads/'.$eform->nik.'/');
+        }
+        
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = '.pdf';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            // log::info('image = '.$image->getMimeType());
+            if (isset($image['identity']) || isset($image['couple_identity'])) {
+                $filename = $eform->user_id . '-foto.' . $extension;
+            } else {
+                $filename = $eform->nik . '-foto.' . $extension;
+            }
+            $image->move( $path, $filename );
+        }
+        return $filename;
+    }
+
+    function removeAllImage($eform) {
+        $path = public_path('uploads/'.$eform->nik.'/');
+        foreach (explode(',', $eform->uploadfoto) as $image) {
+            if ( ! empty( $image ) ) {
+                File::delete( $path . $image );
+            }
         }
     }
 }
