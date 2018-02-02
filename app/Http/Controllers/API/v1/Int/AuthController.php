@@ -43,7 +43,7 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
 
         $data = $login[ 'responseData' ];
-        print_r($login);exit();
+        // print_r($login);exit();
         \Log::info($login);
 
         if( $login[ 'responseCode' ] == '00' ) {
