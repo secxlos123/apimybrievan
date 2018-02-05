@@ -61,9 +61,9 @@ class Controller extends BaseController
     public function gen_token()
     {
       $client = new Client();
-	    $host = (env('APP_URL') == 'http://api.dev.net')? config('restapi.apipdmdev'):config('restapi.apipdm');
-		  $client_id = (env('APP_URL') == 'http://api.dev.net')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
-		  $client_secret = (env('APP_URL') == 'http://api.dev.net')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
+	    $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
+		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
 
       $requestBriconnect = $client->request('POST', $host.'/oauth/token',
         [
