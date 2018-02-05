@@ -21,5 +21,7 @@ class Referral extends Model
     'creator_name',
     'officer_name',
     'branch_id',
+    'longitude',
+    'latitude'
     ];
 }
