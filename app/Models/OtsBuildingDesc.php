@@ -33,6 +33,8 @@ class OtsBuildingDesc extends Model implements AuditableContract
       'west_limit_from'
     ];
 
+    protected $appends = ['type_name'];
+
     /**
      * Relation with collateral
      * @return \Illuminate\Database\Eloquent\BelongsTo
@@ -40,5 +42,23 @@ class OtsBuildingDesc extends Model implements AuditableContract
     public function collateral()
     {
       return $this->belongsTo(Collateral::class, 'collateral_id');
+    }
+
+    /**
+     * Get type name
+     *
+     * @return string
+     */
+    public function getTypeNameAttribute( )
+    {
+        if ( $this->type == 4 ) {
+            return 'Properti Komersial';
+
+        } else if ( $this->type == 3 ) {
+            return 'Tanah Dan Rumah Tinggal';
+
+        }
+
+        return '-';
     }
 }
