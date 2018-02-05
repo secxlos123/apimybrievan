@@ -45,17 +45,25 @@ class ServiceRestwsHc extends Client
 
                 if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                     $role = 'ao';
-                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 21, 49, 50, 51 ] ) ) {
+                // } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 21, 49, 50, 51 ] ) ) {
+                //     $role = 'mp';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 21, 50 ] ) ) {
                     $role = 'mp';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 49, 51 ] ) ) {
+                    $role = 'amp';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 44 ] ) ) {
                     $role = 'fo';
-                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 5, 11, 12, 14, 19 ] ) ) {
+                // } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 5, 11, 12, 14, 19 ] ) ) {
+                //     $role = 'pinca';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 12, 14 ] ) ) {
                     $role = 'pinca';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 59 ] ) ) {
                     $role = 'prescreening';
                     if( in_array( strtolower($get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
                         $role = str_replace(' ', '-', strtolower($get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]));
                     }
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 19 ] ) ) {
+                    $role = 'pincapem';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 5 ] ) ) {
                     $role = 'pincasus';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 11 ] ) ) {
