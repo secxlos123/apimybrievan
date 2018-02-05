@@ -688,7 +688,7 @@
                     </tr>
                     <tr>
                         <td class="label">Nama Kantor Anggaran/BPN</td>
-                        <td class="break-word">: {{ $collateral->otsLetter->letter_bpn_name?$collateral->otsLetter->letter_bpn_name:'-' }} </td>
+                        <td class="break-word">: {{ $collateral->otsLetter->bpn_name?$collateral->otsLetter->bpn_name:'-' }} </td>
                     </tr>
                 </tbody>
             </table>
@@ -717,7 +717,7 @@
                     </tr>
                     <tr>
                         <td class="label">Jenis Bangunan</td>
-                        <td class="break-word">: {{ $collateral->otsBuilding->type }}</td>
+                        <td class="break-word">: {{ $collateral->otsBuilding->type_name }}</td>
                     </tr>
                     <tr>
                         <td class="label">Jumlah Bangunan</td>
@@ -851,7 +851,7 @@
                     </tr>
                     <tr>
                         <td class="label">Lokasi</td>
-                        <td class="break-word">: {{ $collateral->otsSeven->location }}</td>
+                        <td class="break-word">: {{ ($collateral->otsSeven->city) ? $collateral->otsSeven->city->name : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="label">Alamat Agunan</td>
@@ -929,7 +929,7 @@
                     </tr>
                     <tr>
                         <td class="label">Jenis Pengikatan</td>
-                        <td class="break-word">: {{ $collateral->otsEight->type_binding }}</td>
+                        <td class="break-word">: {{ $collateral->otsEight->type_binding_name }}</td>
                     </tr>
                     {{-- <tr>
                         <td class="label">No. Bukti Pengikatan</td>
@@ -964,11 +964,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >DOKUMEN NOTARIS DEVELOPER</td>
                     </tr>
@@ -1098,7 +1098,7 @@
                     @if ($collateral->otsTen->insurance == "Ya")
                     <tr>
                         <td class="label">Nama Perusahaan Asuransi</td>
-                        <td class="break-word">: {{ $collateral->otsTen->insurance_company  }}</td>
+                        <td class="break-word">: {{ $collateral->otsTen->insurance_company_name  }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Asuransi</td>

@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 class OtsEight extends Model implements AuditableContract
 {
 		use Auditable;
-   
+
 			/**
 		   * The fillable columns
 		   * @var [type]
@@ -30,6 +30,8 @@ class OtsEight extends Model implements AuditableContract
 		  	'independent_appraiser_name'
 		  ];
 
+    protected $appends = ['type_binding_name'];
+
 
 
 		   /**
@@ -40,4 +42,43 @@ class OtsEight extends Model implements AuditableContract
 		  {
 		    return $this->belongsTo(Collateral::class, 'collateral_id');
 		  }
+
+    /**
+     * Get type binding name
+     *
+     * @return string
+     */
+    public function getTypeBindingNameAttribute( )
+    {
+        if ( $this->type_binding == "01" ) {
+            return "Hak Tanggungan";
+
+        } else if ( $this->type_binding == "02" ) {
+            return "Gadai";
+
+        } else if ( $this->type_binding == "03" ) {
+            return "Feduciare Elgendom Overdracht";
+
+        } else if ( $this->type_binding == "04" ) {
+            return "SKMHT (Surat Kuasa Memberikan Hak Tanggungan)";
+
+        } else if ( $this->type_binding == "05" ) {
+            return "Cessie";
+
+        } else if ( $this->type_binding == "06" ) {
+            return "Belum Diikat";
+
+        } else if ( $this->type_binding == "09" ) {
+            return "Lain-lain";
+
+        } else if ( $this->type_binding == "10" ) {
+            return "Fidusia Dengan UU";
+
+        } else if ( $this->type_binding == "11" ) {
+            return "Fidusia Dengan PJ.08";
+
+        }
+
+        return "-";
+    }
 }
