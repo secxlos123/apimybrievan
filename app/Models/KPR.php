@@ -38,7 +38,7 @@ class KPR extends Model implements AuditableContract
      */
     protected $fillable = [ 'status_property', 'eform_id', 'developer_id', 'property_id', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','is_sent' ];
 
-    protected $appends = ['status_property_name','kpr_type_property_name','down_payment'];
+    protected $appends = ['status_property_name','kpr_type_property_name','down_payment', 'active_kpr_preview'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -160,6 +160,21 @@ class KPR extends Model implements AuditableContract
         }
 
         return 1;
+    }
+
+    /**
+     * active KPR preview
+     *
+     * @return void
+     * @author
+     **/
+    public function getActiveKprPreviewAttribute()
+    {
+        if ( $this->attributes['active_kpr'] == 3 ) {
+            return '> 2';
+        }
+
+        return $this->attributes['active_kpr'];
     }
 
 }
