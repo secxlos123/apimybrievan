@@ -734,6 +734,7 @@ class EForm extends Model implements AuditableContract
 
                 }
             }
+            $eform = $eform->where('response_status', 'approve');
         }
 
         if ( $request->has('product') ) {
