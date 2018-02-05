@@ -1692,7 +1692,7 @@ class EForm extends Model implements AuditableContract
         * @param  string $endChart
         * @return array
     */
-    public function getChartEForm($startChart, $endChart, $user_id)
+    public function getChartEForm($startChart, $endChart, $user_id = null)
     {
         $developer = Developer::select('id')->where('user_id', $user_id)->first();
         if(!empty($startChart) && !empty($endChart)){
