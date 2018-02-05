@@ -1230,6 +1230,7 @@ class ApiLasController extends Controller
 
     public function putusan($data) {
         if (!empty($data)) {
+            // update table eforms
             if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
                 $eform = EForm::findOrFail($data['eform_id']);
                 $base_request['pinca_name'] = $data['pinca_name'];
@@ -1240,10 +1241,10 @@ class ApiLasController extends Controller
 
             // $ApiLas  = new ApiLas();
             $conten_putusan['JSONData'] = json_encode([
-                "id_aplikasi" => $data['id_aplikasi'],
-                "uid"         => $data['uid'],
-                "flag_putusan"=> $data['flag_putusan'],
-                "catatan"     => empty($data['catatan'])? "":$data['catatan']
+                "id_aplikasi" => !isset($data['id_aplikasi'])? "":$data['id_aplikasi'],
+                "uid"         => !isset($data['uid'])? "":$data['uid'],
+                "flag_putusan"=> !isset($data['flag_putusan'])? "":$data['flag_putusan'],
+                "catatan"     => !isset($data['catatan'])? "":$data['catatan']
             ]);
 
             // $putus = $ApiLas->putusSepakat($conten_putusan);
@@ -1254,10 +1255,24 @@ class ApiLasController extends Controller
                 if($resultclient->putusSepakatResult){
                     $datadetail = json_decode($resultclient->putusSepakatResult);
                     $dataResult = (array) $datadetail;
+                    // print_r($data);exit();
                     if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
                         // get data sukses
                         if(isset($datadetail->items)){
                             $result = $dataResult;
+                            // update table briguna
+                            if (isset($data['is_send'])) {
+                                $data_briguna = [
+                                    'is_send'         => !isset($data['is_send'])? "":$data['is_send'],
+                                    'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
+                                    'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
+                                ];
+
+                                $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
+                                $briguna->update($data_briguna);
+                                \Log::info("-------- putusan update table briguna sukses---------");
+                            }
+
                             return $result;
                         }
                     }
