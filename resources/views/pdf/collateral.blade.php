@@ -322,7 +322,7 @@
                     </tr>
                     <tr>
                         <td class="label">KPR Aktif ke</td>
-                        <td class="break-word">: {{ $eform->kpr['active_kpr'] }}</td>
+                        <td class="break-word">: {{ $eform->kpr['active_kpr_preview'] }}</td>
                     </tr>
                     <tr>
                         <td class="label">Uang Muka</td>
@@ -387,7 +387,7 @@
                 </tbody>
             </table>
 
-                
+
                 <table class="full-width">
                     <tbody>
                         <tr>
@@ -586,7 +586,7 @@
                     </tr>
                     <tr>
                         <td class="label">Jarak</td>
-                        <td class="break-word">: {{ intval($collateral->otsInArea->distance) }} 
+                        <td class="break-word">: {{ intval($collateral->otsInArea->distance) }}
                             @if ($collateral->otsInArea->unit_type == 1)
                             Kilometer
                             @else
