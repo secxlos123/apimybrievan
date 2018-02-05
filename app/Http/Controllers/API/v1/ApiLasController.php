@@ -1764,40 +1764,75 @@ class ApiLasController extends Controller
     }
 
     public function update_briguna(Request $request) {
-        \Log::info($request->all());
-        // print_r($request->all());exit();
+        // \Log::info($request->all());
         $response = $request->all();
         if (!empty($response)) {
             try {
-                // if (isset($response['uploadfoto'])) {
-                //     $image   = $response;
-                //     $id_foto = date('YmdHis');
-                //     $detail  = EForm::findOrFail($response['eform_id']);
-                //     $this->removeAllImage($detail);
-                //     $filename = $this->uploadimage($image, $response['eform_id'], $id_foto);
-                //     $data['uploadfoto'] = $filename;
-                //     \Log::info($filename);
-                //     print_r($request->all());exit();
+                $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
+                $briguna->update($response);
+                $message = [
+                    'message' => 'Sukses update briguna',
+                    'contents' => $briguna
+                ];
 
-                //     $data_update = [
-                //         'is_verified' => $response['is_verified'],
-                //         'id_foto'     => $id_foto;
-                //         'catatan_ktp' => empty($response['catatan_ktp'])? '' : $response['catatan_ktp'],
-                //     ];
-                //     $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
-                //     $briguna->update($data_update);
-                //     $message = [
-                //         'message' => 'Sukses update eforms dan briguna',
-                //         'contents' => $briguna
-                //     ];
-                // } else {
+                return response()->success($message, 200);
+            } catch (Exception $e) {
+                return response()->error( [
+                    'message' => 'Koneksi Gagal',
+                    'contents' => ''
+                ], 400 );
+            }
+        } else {
+            return response()->error( [
+                    'message' => 'Request tidak ditemukan',
+                    'contents' => ''
+                ], 400 );
+        }
+    }
+
+    public function update_foto_briguna(Request $request) {
+        \Log::info($request->all());
+        $response = $request->all();
+        if (!empty($response)) {
+            try {
+                if (isset($response['uploadfoto'])) {
+                    $image   = $response;
+                    $id_foto = date('YmdHis');
+                    $detail  = EForm::findOrFail($response['eform_id']);
+                    // $this->removeAllImage($detail);
+                    $filename = $this->uploadimage($image, $response['eform_id'], $id_foto);
+                    \Log::info($filename);
+                    $data_briguna = array_slice($response, 0,3);
+                    if (isset($image['identity'])) {
+                        $data_eform   = ['identity' => $filename];
+                        $detail->update($data_eform);
+                    } else if (isset($image['couple_identity'])) {
+                        $data_eform   = ['couple_identity' => $filename];
+                        $detail->update($data_eform);
+                    } else if (isset($image['NPWP_nasabah'])) {
+                        $data_briguna['id_foto'] = $id_foto;
+                        $data_briguna['NPWP_nasabah'] = $filename;
+                    } else if (isset($image['SLIP_GAJI'])) {
+                        $data_briguna['id_foto']   = $id_foto;
+                        $data_briguna['SLIP_GAJI'] = $filename;
+                    }
+                    \Log::info($data_briguna);
+                    print_r($image);exit();
+                    $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
+                    $briguna->update($data_briguna);
+                    
+                    $message = [
+                        'message' => 'Sukses update eforms dan briguna',
+                        'contents' => $briguna
+                    ];
+                } else {
                     $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
                     $briguna->update($response);
                     $message = [
                         'message' => 'Sukses update briguna',
                         'contents' => $briguna
                     ];
-                // }
+                }
 
                 return response()->success($message, 200);
             } catch (Exception $e) {
