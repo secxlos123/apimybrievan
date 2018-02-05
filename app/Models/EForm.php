@@ -1694,7 +1694,7 @@ class EForm extends Model implements AuditableContract
     */
     public function getChartEForm($startChart, $endChart, $user_id = null)
     {
-        $developer = Developer::select('id')->where('user_id', $user_id)->first();
+        $filter = false;
         if(!empty($startChart) && !empty($endChart)){
             $startChart = date("01-m-Y",strtotime($startChart));
             $endChart   = date("t-m-Y", strtotime($endChart));
@@ -1706,6 +1706,7 @@ class EForm extends Model implements AuditableContract
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
             $filter = true;
+
         }else if(empty($startChart) && !empty($endChart)){
             $now        = new \DateTime();
             $startChart = $now->format('Y-m-d h:i:s');
@@ -1715,6 +1716,7 @@ class EForm extends Model implements AuditableContract
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
             $filter = true;
+
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
@@ -1724,32 +1726,33 @@ class EForm extends Model implements AuditableContract
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
             $filter = true;
-        }else{
-            $filter = false;
+
         }
 
         $data = Eform::select(
-                    DB::raw("count(eforms.id) as value"),
-                    DB::raw("to_char(eforms.created_at, 'TMMonth YYYY') as month"),
-                    DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
-                    DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
-                )
-                ->with("kpr");
+                DB::raw("count(eforms.id) as value"),
+                DB::raw("to_char(eforms.created_at, 'TMMonth YYYY') as month"),
+                DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
+                DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
+            )
+            ->with("kpr");
 
         if ( $user_id ) {
+            $developer = Developer::select('id')->where('user_id', $user_id)->first();
             $data = $data->whereHas("kpr", function ($query) use ($developer) {
-                    return $query->join('properties', 'properties.id', 'property_id')
-                                 ->where('kpr.developer_id', $developer['id']);
-                })
-
+                return $query->join('properties', 'properties.id', 'property_id')
+                    ->where('kpr.developer_id', $developer['id']);
+            });
         }
-                $data = $data->when($filter, function ($query) use ($startChart, $endChart){
-                    return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
-                })
-                ->groupBy('month', 'month2', 'order')
-                ->orderBy("order", "asc")
-                ->get()
-                ->pluck("chart");
+
+        $data = $data->when($filter, function ($query) use ($startChart, $endChart){
+                return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
+            })
+            ->groupBy('month', 'month2', 'order')
+            ->orderBy("order", "asc")
+            ->get()
+            ->pluck("chart");
+
         return $data;
     }
 
