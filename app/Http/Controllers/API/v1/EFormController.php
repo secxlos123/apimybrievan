@@ -77,12 +77,18 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
           $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
-		  $briguna = $eform->delete();
-          $eform = EForm::where('eform_id', $request->id )->findOrFail();
-		  $eform = $eform->delete();
-        return response()->success( [
-            'contents' => 'Hapus berhasil'
-        ],200 );
+		  if($briguna->is_send==null || $briguna->is_send=='' || empty($briguna->is_send)){
+			  return response()->success( [
+					'contents' => 'Hapus Gagal'
+				],200 );  
+		  }else{
+				$briguna = $eform->delete();
+				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
+				  $eform = $eform->delete();
+				return response()->success( [
+					'contents' => 'Hapus berhasil'
+				],200 );  
+		  }
     }
     public function index( Request $request )
     {
