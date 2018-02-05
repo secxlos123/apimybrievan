@@ -981,11 +981,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_notary)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_notary  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >DOKUMEN TAKE OVER</td>
                     </tr>
@@ -998,11 +998,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_takeover)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_takeover  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >PERJANJIAN KREDIT</td>
                     </tr>
@@ -1015,11 +1015,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_credit)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_credit  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >SKMHT</td>
                     </tr>
@@ -1032,11 +1032,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_skmht)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_skmht  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >IMB</td>
                     </tr>
@@ -1049,11 +1049,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_imb)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_imb  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >SHGB</td>
                     </tr>
@@ -1066,11 +1066,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_shgb)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_shgb  }}</td>
                     </tr>
-                    @endif
                 </tbody>
             </table>
 
