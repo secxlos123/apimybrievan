@@ -28,7 +28,7 @@ class AddLatitudeLongitudeToReferrall extends Migration
     {
         Schema::table('referrals', function (Blueprint $table) {
             $table->dropColumn('longitude');
-            $table->dropColumn('latitude');
+            $table->dropColumn('latitude'); 
         });
     }
 }
