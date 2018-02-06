@@ -572,6 +572,7 @@ class Audit extends Model implements AuditContract
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%u%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah unit property%');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%agunan%');
                
                 })
                 // ->orderBy($sort[0], $sort[1]);
