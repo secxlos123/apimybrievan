@@ -41,7 +41,7 @@ class AuditRailHandler
                     , 'auditable_id' =>$auditable_id
                     , 'auditable_type' => Audit::class
                     , 'old_values' => (object) array()
-                    , 'new_values' => $request->except('long','lat','password','_method')
+                    , 'new_values' => $request->except('long','lat','password','_method','password_confirmation','_token','old_password')
                     , 'url' => $request->fullUrl()
                     , 'ip_address' => $request->ip()
                     , 'user_agent' => $request->header('User-Agent')
