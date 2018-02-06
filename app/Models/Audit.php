@@ -402,6 +402,7 @@ class Audit extends Model implements AuditContract
                 */
 
                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
+                $auditrail->whereNotNull(\DB::raw('LOWER(username)'));
                
                 })
                 ->orderBy('created_at', 'desc');
@@ -563,7 +564,10 @@ class Audit extends Model implements AuditContract
 
                  $user = 'app\models\user';
 
-                 $auditrail->where('auditable_type', $user);
+                // $auditrail->where('auditable_type', $user);
+                 $auditrail->whereNotNull(\DB::raw('LOWER(username)'));
+                 $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
+                 $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%p%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%u%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
