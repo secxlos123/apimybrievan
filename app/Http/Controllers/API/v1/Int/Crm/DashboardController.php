@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1\Int\Crm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use RestwsHc;
+use RestwsSm;
 
 
 use App\Models\Crm\ProductType;
@@ -152,6 +153,20 @@ class DashboardController extends Controller
       return response()->success([
         'contents' => $result
       ]);
+    }
+
+    public function sales_kit(Request $request)
+    {
+      $pn = $request->header('pn');
+      $auth = $request->header('Authorization');
+      $sales_kit = RestwsSm::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'salesKit',
+          'requestData' => [
+            'user' => $pn,
+          ],
+        ])
+      ])->post('form_params');
     }
 
 }
