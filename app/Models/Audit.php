@@ -758,6 +758,7 @@ class Audit extends Model implements AuditContract
                 */
                  $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%property%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined action%');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%col%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
                
                 })
