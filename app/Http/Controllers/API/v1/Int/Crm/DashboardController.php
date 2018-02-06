@@ -167,6 +167,8 @@ class DashboardController extends Controller
           ],
         ])
       ])->post('form_params');
+
+      return $sales_kit;
     }
 
 }
