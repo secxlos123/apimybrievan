@@ -1230,20 +1230,12 @@ class ApiLasController extends Controller
 
     public function putusan($data) {
         if (!empty($data)) {
-            if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
-                $eform = EForm::findOrFail($data['eform_id']);
-                $base_request['pinca_name'] = $data['pinca_name'];
-                $base_request['pinca_position'] = $data['pinca_position'];
-                $eform->update($base_request);
-                \Log::info("-------- putusan update table eforms sukses---------");
-            }
-
             // $ApiLas  = new ApiLas();
             $conten_putusan['JSONData'] = json_encode([
-                "id_aplikasi" => $data['id_aplikasi'],
-                "uid"         => $data['uid'],
-                "flag_putusan"=> $data['flag_putusan'],
-                "catatan"     => empty($data['catatan'])? "":$data['catatan']
+                "id_aplikasi" => !isset($data['id_aplikasi'])? "":$data['id_aplikasi'],
+                "uid"         => !isset($data['uid'])? "":$data['uid'],
+                "flag_putusan"=> !isset($data['flag_putusan'])? "":$data['flag_putusan'],
+                "catatan"     => !isset($data['catatan'])? "":$data['catatan']
             ]);
 
             // $putus = $ApiLas->putusSepakat($conten_putusan);
@@ -1254,12 +1246,34 @@ class ApiLasController extends Controller
                 if($resultclient->putusSepakatResult){
                     $datadetail = json_decode($resultclient->putusSepakatResult);
                     $dataResult = (array) $datadetail;
+                    // print_r($data);exit();
                     if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                        // get data sukses
-                        if(isset($datadetail->items)){
-                            $result = $dataResult;
-                            return $result;
+                        // update table eforms
+                        if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
+                            $eform = EForm::findOrFail($data['eform_id']);
+                            $base_request['pinca_name'] = $data['pinca_name'];
+                            $base_request['pinca_position'] = $data['pinca_position'];
+                            $eform->update($base_request);
+                            \Log::info("-------- putusan update table eforms sukses---------");
+
+                            $data_briguna = [
+                                'is_send'         => !isset($data['is_send'])? "":$data['is_send'],
+                                'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
+                                'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
+                            ];
+                        } else {
+                            $data_briguna = [
+                                'is_send'        => !isset($data['is_send'])? "":$data['is_send'],
+                                // 'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
+                                // 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
+                            ];
                         }
+                        // update table briguna
+                        $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
+                        $briguna->update($data_briguna);
+                        \Log::info("-------- putusan update table briguna sukses---------");
+                        $result = $dataResult;
+                        return $result;
                     }
                     $result = $dataResult;
                     return $result;
@@ -1900,15 +1914,7 @@ class ApiLasController extends Controller
             if($resultclient->kirimPemutusResult){
                 $datadetail = json_decode($resultclient->kirimPemutusResult);
                 $dataResult = (array) $datadetail;
-                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    // getdata
-                    if(isset($datadetail->items)){
-                        $result = $dataResult;
-                        return $result;
-                    }
-                }
-                $result = $dataResult;
-                return $result;
+                return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
@@ -1940,15 +1946,7 @@ class ApiLasController extends Controller
             if($resultclient->hitungCRSBrigunaKaryaResult){
                 $datadetail = json_decode($resultclient->hitungCRSBrigunaKaryaResult);
                 $dataResult = (array) $datadetail;
-                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    // getdata
-                    if(isset($datadetail->items)){
-                        $result = $dataResult;
-                        return $result;
-                    }
-                }
-                $result = $dataResult;
-                return $result;
+                return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
@@ -1980,15 +1978,7 @@ class ApiLasController extends Controller
             if($resultclient->insertDataKreditBrigunaResult){
                 $datadetail = json_decode($resultclient->insertDataKreditBrigunaResult);
                 $dataResult = (array) $datadetail;
-                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    // getdata
-                    if(isset($datadetail->items)){
-                        $result = $dataResult;
-                        return $result;
-                    }
-                }
-                $result = $dataResult;
-                return $result;
+                return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
@@ -2020,15 +2010,7 @@ class ApiLasController extends Controller
             if($resultclient->insertPrescoringBrigunaResult){
                 $datadetail = json_decode($resultclient->insertPrescoringBrigunaResult);
                 $dataResult = (array) $datadetail;
-                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    // getdata
-                    if(isset($datadetail->items)){
-                        $result = $dataResult;
-                        return $result;
-                    }
-                }
-                $result = $dataResult;
-                return $result;
+                return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
@@ -2060,15 +2042,7 @@ class ApiLasController extends Controller
             if($resultclient->insertPrescreeningBrigunaResult){
                 $datadetail = json_decode($resultclient->insertPrescreeningBrigunaResult);
                 $dataResult = (array) $datadetail;
-                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    // getdata
-                    if(isset($datadetail->items)){
-                        $result = $dataResult;
-                        return $result;
-                    }
-                }
-                $result = $dataResult;
-                return $result;
+                return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
@@ -2101,15 +2075,7 @@ class ApiLasController extends Controller
             if($resultclient->insertDataDebtPeroranganResult){
                 $datadetail = json_decode($resultclient->insertDataDebtPeroranganResult);
                 $dataResult = (array) $datadetail;
-                if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
-                    // getdata
-                    if(isset($datadetail->items)){
-                        $result = $dataResult;
-                        return $result;
-                    }
-                }
-                $result = $dataResult;
-                return $result;
+                return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
