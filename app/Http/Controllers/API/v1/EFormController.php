@@ -82,7 +82,7 @@ class EFormController extends Controller
 					'contents' => 'Hapus Gagal'
 				],200 );  
 		  }else{
-				$briguna = $eform->delete();
+				$briguna = $briguna->delete();
 				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
 				  $eform = $eform->delete();
 				return response()->success( [
