@@ -867,10 +867,10 @@ class Audit extends Model implements AuditContract
                   $action = 'undefined action';
                 // $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
                 // $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
-                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
-                 $auditrail->where('user_id', '=', $id);
-                 $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
-                 $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
+                 // $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                 // $auditrail->where('user_id', '=', $id);
+                 // $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
+                 // $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
                  $auditrail->where('user_id', '=', $id);
                

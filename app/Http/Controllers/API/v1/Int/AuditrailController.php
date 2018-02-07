@@ -133,7 +133,9 @@ class AuditrailController extends Controller
         		foreach ($table_created_at as $key => $value) {
         		$data[] = $table = \DB::table('auditrail_admin_developer')
         				->select(\DB::raw('*'))
-        				->where('user_id', $value->user_id)->first();	
+        				->where('user_id', $value->user_id)
+        				->orderBy('created_at', 'desc')
+        				->first();	
         			}
 		}else{
 			$data = [];
