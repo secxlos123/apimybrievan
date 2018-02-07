@@ -1831,6 +1831,9 @@ class ApiLasController extends Controller
                     } else if (isset($image['SLIP_GAJI'])) {
                         $data_briguna['id_foto']   = $id_foto;
                         $data_briguna['SLIP_GAJI'] = $filename;
+                    } else if (isset($image['SKPG'])) {
+                        $data_briguna['id_foto']   = $id_foto;
+                        $data_briguna['SKPG'] = $filename;
                     }
                     \Log::info($data_briguna);
                     // print_r($image);exit();

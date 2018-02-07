@@ -91,12 +91,13 @@ class AuthController extends Controller
                 $role = 'collateral';
             // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
-                $adk = explode(' ', $data['posisi']);
+                // $adk = explode(' ', $data['posisi']);
                 // print_r($adk);
                 // print_r($data);exit();
-                if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
-                    $role = 'adk';
-                }
+                // if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    // $role = 'adk';
+                // }
+                $role = 'adk';
             } else {
                 // $request->headers->set( 'pn', $pn );
                 // $this->destroy( $request );
