@@ -1819,7 +1819,9 @@ class ApiLasController extends Controller
                     $data_briguna = array_slice($response, 0,3);
                     if (isset($image['identity'])) {
                         $data_eform   = ['identity' => $filename];
+                        \Log::info($data_eform);
                         $detail->update($data_eform);
+                        \Log::info($detail);
                     } else if (isset($image['couple_identity'])) {
                         $data_eform   = ['couple_identity' => $filename];
                         $detail->update($data_eform);
@@ -1831,10 +1833,10 @@ class ApiLasController extends Controller
                         $data_briguna['SLIP_GAJI'] = $filename;
                     }
                     \Log::info($data_briguna);
-                    print_r($image);exit();
+                    // print_r($image);exit();
                     $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
                     $briguna->update($data_briguna);
-                    
+                    \Log::info($briguna);
                     $message = [
                         'message' => 'Sukses update eforms dan briguna',
                         'contents' => $briguna
@@ -2105,19 +2107,19 @@ class ApiLasController extends Controller
         } else {
             $path  = public_path('uploads/'.$id_foto.'/');
         }
-        
+        $data_image = $image['uploadfoto'];
         $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
+        if ($data_image) {
+            if (!$data_image->getClientOriginalExtension()) {
+                if ($data_image->getMimeType() == '.pdf') {
                     $extension = '.pdf';
-                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                }elseif($data_image->getMimeType() == '.jpg'||$data_image->getMimeType() == '.jpeg'){
                     $extension = 'jpg';
                 }else{
                     $extension = 'png';
                 }
             }else{
-                $extension = $image->getClientOriginalExtension();
+                $extension = $data_image->getClientOriginalExtension();
             }
             // log::info('image = '.$image->getMimeType());
             if (isset($image['identity']) || isset($image['couple_identity'])) {
@@ -2126,7 +2128,7 @@ class ApiLasController extends Controller
             } else {
                 $filename = $id_foto.'-foto.'.$extension;
             }
-            $image->move( $path, $filename );
+            $data_image->move( $path, $filename );
         }
         return $filename;
     }
