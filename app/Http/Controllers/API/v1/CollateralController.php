@@ -70,6 +70,12 @@ class CollateralController extends Controller
         $data->where('staff_id',(int)$this->request->header('pn'));
       }
       if ($this->request->has('status')) $data->where('status', $this->request->input('status'));
+      $request = $this->request;
+      if ($this->request->has('search'))
+        $data->whereHas('property',function($property) use ($request)
+        {
+          $property->where('name','ilike','%'.$request->input('search').'%');
+        });
       $data->orderBy('created_at', 'desc');
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }

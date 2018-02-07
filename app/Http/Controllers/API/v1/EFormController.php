@@ -82,7 +82,7 @@ class EFormController extends Controller
 					'contents' => 'Hapus Gagal'
 				],200 );  
 		  }else{
-				$briguna = $eform->delete();
+				$briguna = $briguna->delete();
 				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
 				  $eform = $eform->delete();
 				return response()->success( [
@@ -545,7 +545,7 @@ class EFormController extends Controller
 						}
 					}
 				}
-            $dataEform =  EForm::where('nik', $request->nik)->get();
+            $dataEform =  EForm::where('nik', $request->nik)->where('product_type','kpr')->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);

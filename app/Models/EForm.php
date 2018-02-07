@@ -256,10 +256,12 @@ class EForm extends Model implements AuditableContract
      */
     public function getIsClasReadyAttribute()
     {
-        if ( $this->is_visited && $this->customer->is_verified && $this->is_screening && !$this->vip_sent ) {
-            if ( $this->visit_report ) {
-                if ( $this->visit_report->use_reason == 13 ) {
-                    return true;
+        if ( $this->customer ) {
+            if ( $this->is_visited && $this->customer->is_verified && $this->is_screening && !$this->vip_sent ) {
+                if ( $this->visit_report ) {
+                    if ( $this->visit_report->use_reason == 13 ) {
+                        return true;
+                    }
                 }
             }
         }
@@ -276,7 +278,7 @@ class EForm extends Model implements AuditableContract
     {
         $this->attributes[ 'user_id' ] = $value;
         $customer = $this->customer;
-        $ref_number = strtoupper( substr( $customer->first_name, 0, 3 ) );
+        $ref_number = strtoupper( substr( $customer->first_name.$customer->last_name.'XXX', 0, 3 ) );
         $ref_number .= date( 'y' );
         $ref_number .= date( 'm' );
         $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] );
