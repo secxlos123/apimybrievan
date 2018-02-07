@@ -200,13 +200,10 @@ class CustomerController extends Controller
 
         if ( count($zipcode) > 0 && count($zipcodecurrent) > 0 && count($zipcodeoffice) > 0 ) {
             $addzipext = array(
-                'kelurahan' => $zipcode['kelurahan'],
                 'kecamatan' => $zipcode['kecamatan'],
                 'kabupaten' => $zipcode['kabupaten'],
-                'kelurahan_current' => $zipcodecurrent['kelurahan'] ,
                 'kecamatan_current' => $zipcodecurrent['kecamatan'] ,
                 'kabupaten_current' => $zipcodecurrent['kabupaten'] ,
-                'kelurahan_office' => $zipcodeoffice['kelurahan'] ,
                 'kecamatan_office' => $zipcodeoffice['kecamatan'] ,
                 'kabupaten_office' => $zipcodeoffice['kabupaten']
             );
@@ -308,7 +305,6 @@ class CustomerController extends Controller
 				'id' => $content['kode_pos'],
 				'kabupaten' => $content['dati2'],
 				'kecamatan' => $content['kecamatan'],
-				'kelurahan' => $content['kelurahan'],
 			];
 		}, $zip_code_list['data']);
 		\Log::info($zip_code_list);

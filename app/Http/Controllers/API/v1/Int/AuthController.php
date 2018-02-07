@@ -75,6 +75,10 @@ class AuthController extends Controller
                 $role = 'wapincasus';
             } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
                 $role = 'cs';
+            } else if( in_array( intval($data[ 'hilfm' ]), [65] ) ) {
+                $role = 'teller';
+            } else if( in_array( intval($data[ 'hilfm' ]), [54] ) ) {
+                $role = 'spvadk';
             // end new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
@@ -87,12 +91,13 @@ class AuthController extends Controller
                 $role = 'collateral';
             // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
-                $adk = explode(' ', $data['posisi']);
+                // $adk = explode(' ', $data['posisi']);
                 // print_r($adk);
                 // print_r($data);exit();
-                if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
-                    $role = 'adk';
-                }
+                // if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    // $role = 'adk';
+                // }
+                $role = 'adk';
             } else {
                 // $request->headers->set( 'pn', $pn );
                 // $this->destroy( $request );

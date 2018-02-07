@@ -74,14 +74,19 @@ class ServiceRestwsHc extends Client
                     $role = 'wapinwil';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 66, 71, 75 ] ) ) {
                     $role = 'cs';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 65 ] ) ) {
+                    $role = 'teller';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 54 ] ) ) {
+                    $role = 'spvadk';
                 // hilfm adk tambah filter posisi
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [58, 61] ) ) {
-                    $adk = explode(' ', $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]);
+                    // $adk = explode(' ', $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ]);
                     // print_r($adk);
                     // print_r($data);exit();
-                    if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
-                        $role = 'adk';
-                    }
+                    $role = 'adk';
+                    // if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    //     $role = 'adk';
+                    // }
                 } else {
                     $role = 'staff';
                 }

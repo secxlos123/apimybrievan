@@ -63,7 +63,7 @@ class ProfileController extends Controller
 
             if ($profile) {
                 return response()->success( [
-                'message' => 'Data nasabah berhasil dirubah.',
+                'message' => 'Perubahan data sedang dalam proses Modernisasi Staff Bussiness Relations BRI.',
                 'contents' => $profile
                 ],200 );
             }else
@@ -97,12 +97,12 @@ class ProfileController extends Controller
                 $dev = Developer::where(['user_id'=> $user->id])->first();
                 $type = \App\Models\Developer::class;
 
-                //$usersModel = User::FindOrFail($user->id);     
+                //$usersModel = User::FindOrFail($user->id);
                 //$usersModel->notify(new EditDeveloper($dev));   /*send notification*/
 
             } elseif ($user->inRole('others')) {
                $type = \App\Models\ThirdParty::class;
-               $dev = $user; 
+               $dev = $user;
             }
 
             $request->merge(['related_id' => $dev->id,
@@ -113,7 +113,7 @@ class ProfileController extends Controller
 
             if ($temp) {
                 return response()->success( [
-                'message' => 'Data Profile berhasil dirubah.',
+                'message' => 'Perubahan data sedang dalam proses Modernisasi Staff Bussiness Relations BRI.',
                 'contents' => $temp
                 ] );
             }

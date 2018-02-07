@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API\v1\Int\Crm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use RestwsHc;
+use RestwsSm;
+use DB;
 
 
+use App\Models\Crm\RestBrispot;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\Status;
@@ -152,6 +155,47 @@ class DashboardController extends Controller
       return response()->success([
         'contents' => $result
       ]);
+    }
+
+    public function sales_kit(Request $request)
+    {
+      // $pn = $request->header('pn');
+      // $auth = $request->header('Authorization');
+      // $sales_kit = RestwsSm::setBody([
+      //   'request' => json_encode([
+      //     'requestMethod' => 'salesKit',
+      //     'requestData' => [
+      //       'user' => $pn,
+      //     ],
+      //   ])
+      // ])->post('form_params');
+      //
+      // return $sales_kit;
+
+      $db_ext = new RestBrispot;
+      $db_ext->setConnection('mysql2');
+      $sales_kit = $db_ext->all();
+      return $db_ext;die();
+      $sales_kit = $db_ext->table('saleskit_sme')->get();
+      return response()->success([
+        'message' => 'Sukses',
+        'contents' => $sales_kit
+      ]);
+    }
+
+    public function salesKit(Request $request)
+    {
+      $host = 'http://10.35.65.111';
+      $user = 'root';
+      $password = 'P@ssw0rd';
+      $db = 'brispot';
+      $table = 'saleskit_sme';
+
+      $dbh = new PDO("mysql:host=$host;dbname=$db", $user, $password);
+      $sql = "select * from sales_kit ";
+      $sales_kit = mysql_query($sql);
+
+
     }
 
 }

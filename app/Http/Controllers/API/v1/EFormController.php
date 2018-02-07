@@ -545,7 +545,7 @@ class EFormController extends Controller
 						}
 					}
 				}
-            $dataEform =  EForm::where('nik', $request->nik)->get();
+            $dataEform =  EForm::where('nik', $request->nik)->where('product_type','kpr')->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
