@@ -257,8 +257,10 @@ class EForm extends Model implements AuditableContract
     public function getIsClasReadyAttribute()
     {
         if ( $this->is_visited && $this->customer->is_verified && $this->is_screening && !$this->vip_sent ) {
-            if ( $this->visit_report->use_reason == 13 ) {
-                return true;
+            if ( $this->visit_report ) {
+                if ( $this->visit_report->use_reason == 13 ) {
+                    return true;
+                }
             }
         }
 
