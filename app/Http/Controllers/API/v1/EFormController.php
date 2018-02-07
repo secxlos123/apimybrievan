@@ -901,10 +901,6 @@ class EFormController extends Controller
         $eform = EForm::findOrFail($request->eform_id);
 		if($eform->product_type=='briguna'){
 			try{
-				  $briguna = BRIGUNA::where('eform_id', $request->eform_id )->findOrFail();
-				  $briguna = $briguna->delete();
-				  $eform = EForm::where('id', $request->eform_id )->findOrFail();
-				  $eform = $eform->delete();
 					User::destroy($eform->user_id);
 				  DB::commit();
 				return response()->success( [
