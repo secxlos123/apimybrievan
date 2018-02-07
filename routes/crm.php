@@ -105,5 +105,5 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post('/map/activity', 'MapController@activity_map');
 
   //sales kit
-  Route::post( '/sales_kit', 'DashboardController@sales_kit');
+  Route::get( '/sales_kit', 'DashboardController@sales_kit');
 });

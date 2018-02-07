@@ -159,43 +159,12 @@ class DashboardController extends Controller
 
     public function sales_kit(Request $request)
     {
-      // $pn = $request->header('pn');
-      // $auth = $request->header('Authorization');
-      // $sales_kit = RestwsSm::setBody([
-      //   'request' => json_encode([
-      //     'requestMethod' => 'salesKit',
-      //     'requestData' => [
-      //       'user' => $pn,
-      //     ],
-      //   ])
-      // ])->post('form_params');
-      //
-      // return $sales_kit;
-
       $db_ext = new RestBrispot;
       $db_ext->setConnection('mysql2');
       $sales_kit = $db_ext->all();
-      return $db_ext;die();
-      $sales_kit = $db_ext->table('saleskit_sme')->get();
       return response()->success([
-        'message' => 'Sukses',
+        'message' => 'Sukses get Sales Kit',
         'contents' => $sales_kit
       ]);
     }
-
-    public function salesKit(Request $request)
-    {
-      $host = 'http://10.35.65.111';
-      $user = 'root';
-      $password = 'P@ssw0rd';
-      $db = 'brispot';
-      $table = 'saleskit_sme';
-
-      $dbh = new PDO("mysql:host=$host;dbname=$db", $user, $password);
-      $sql = "select * from sales_kit ";
-      $sales_kit = mysql_query($sql);
-
-
-    }
-
 }
