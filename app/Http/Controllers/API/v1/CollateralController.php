@@ -74,7 +74,7 @@ class CollateralController extends Controller
       if ($this->request->has('search'))
         $data->whereHas('property',function($property) use ($request)
         {
-          $property->where('name',$request->input('search'));
+          $property->where('name','ilike','%'.$request->input('search').'%');
         });
       $data->orderBy('created_at', 'desc');
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
