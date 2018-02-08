@@ -509,7 +509,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_admin_developer')
+                ->from('auditrail_profile_edit')
                 ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by tanggal aksi.
