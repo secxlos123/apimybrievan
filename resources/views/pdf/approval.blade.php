@@ -338,10 +338,6 @@
                     @endif
 
                     <tr>
-                        <td class="label">Jenis Properti</td>
-                        <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
-                    </tr>
-                    <tr>
                         <td class="label">Jenis KPP</td>
                         <td class="break-word">: {{ $detail->visit_report['kpp_type_name'] }}</td>
                     </tr>
