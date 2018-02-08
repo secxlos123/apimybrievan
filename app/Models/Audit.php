@@ -324,7 +324,7 @@ class Audit extends Model implements AuditContract
                  $action = ['undefined action','login','logout'];
                  $auditrail->where('role', $slug);
                  $auditrail->wherenotin(\DB::raw('LOWER(modul_name)'), $action);
-                 $auditrail->orwhereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev']);
+                 $auditrail->orwhereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev']);
                 })
                 // ->orderBy($sort[0], $sort[1]);
                 ->orderBy('created_at', 'desc');
