@@ -1426,7 +1426,7 @@ class EForm extends Model implements AuditableContract
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => !($otsEight->binding_number)?'0': $otsEight->binding_number,//taidak
             "Nilai_pengikatan_agunan_rt" => !($otsEight->binding_value) ? '0' : $this->reformatCurrency( $otsEight->binding_value ),//taidak
-            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'Tidak' : $otsTen->paripasu,//taidak
+            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'false' : ($otsTen->paripasu == 'Ya' ? 'true':'false' ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
             "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
