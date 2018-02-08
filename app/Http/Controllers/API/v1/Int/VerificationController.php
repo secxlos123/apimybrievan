@@ -79,8 +79,17 @@ class VerificationController extends Controller
                     'emergency_contact'=> $customer->detail->emergency_contact,
                     'emergency_relation'=> $customer->detail->emergency_relation,
                     'zip_code'=> $customer->detail->zip_code,
+                    'kelurahan' => $customer->detail->kelurahan,
+                    'kecamatan' => $customer->detail->kecamatan,
+                    'kabupaten' => $customer->detail->kabupaten,
                     'zip_code_current'=> $customer->detail->zip_code_current,
+                    'kelurahan_current' => $customer->detail->kelurahan_current,
+                    'kecamatan_current' => $customer->detail->kecamatan_current,
+                    'kabupaten_current' => $customer->detail->kabupaten_current,
                     'zip_code_office'=> $customer->detail->zip_code_office,
+                    'kelurahan_office' => $customer->detail->kelurahan_office,
+                    'kecamatan_office' => $customer->detail->kecamatan_office,
+                    'kabupaten_office' => $customer->detail->kabupaten_office,
                     'source_income' => $customer->financial ? ($customer->financial['source_income'] ? $customer->financial['source_income'] : 'single') : 'single'
                 ]
                 , 'kpr' => $eform->kpr

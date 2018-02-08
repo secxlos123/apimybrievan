@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use RestwsHc;
 use RestwsSm;
+use DB;
 
 
+use App\Models\Crm\RestBrispot;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\Status;
@@ -157,16 +159,12 @@ class DashboardController extends Controller
 
     public function sales_kit(Request $request)
     {
-      $pn = $request->header('pn');
-      $auth = $request->header('Authorization');
-      $sales_kit = RestwsSm::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'salesKit',
-          'requestData' => [
-            'user' => $pn,
-          ],
-        ])
-      ])->post('form_params');
+      $db_ext = new RestBrispot;
+      $db_ext->setConnection('mysql2');
+      $sales_kit = $db_ext->all();
+      return response()->success([
+        'message' => 'Sukses get Sales Kit',
+        'contents' => $sales_kit
+      ]);
     }
-
 }

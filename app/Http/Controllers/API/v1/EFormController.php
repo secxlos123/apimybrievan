@@ -82,7 +82,7 @@ class EFormController extends Controller
 					'contents' => 'Hapus Gagal'
 				],200 );  
 		  }else{
-				$briguna = $eform->delete();
+				$briguna = $briguna->delete();
 				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
 				  $eform = $eform->delete();
 				return response()->success( [
@@ -899,19 +899,34 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if ($eform->kpr->is_sent == false ) {
-          User::destroy($eform->user_id);
-          DB::commit();
-        return response()->success( [
-            'message' => 'Hapus User Berhasil',
-        ], 200 );
-      }else
-      {
-        DB::rollback();
-        return response()->error( [
-            'message' => 'User Tidak Dapat Dihapus',
-        ], 422 );
-      }
+		if($eform->product_type=='briguna'){
+			try{
+					User::destroy($eform->user_id);
+				  DB::commit();
+				return response()->success( [
+					'message' => 'Hapus User Berhasil',
+				], 200 );
+			} catch (\Exception $e) {
+					DB::rollback();
+					return response()->error( [
+						'message' => 'User Tidak Dapat Dihapus',
+					], 422 );
+			}
+		}else{
+			if ($eform->kpr->is_sent == false ) {
+			  User::destroy($eform->user_id);
+			  DB::commit();
+			return response()->success( [
+				'message' => 'Hapus User Berhasil',
+			], 200 );
+		  }else
+		  {
+			DB::rollback();
+			return response()->error( [
+				'message' => 'User Tidak Dapat Dihapus',
+			], 422 );
+		  }
+		}
     }
 
     /**

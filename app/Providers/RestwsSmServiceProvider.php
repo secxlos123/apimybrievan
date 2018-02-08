@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Classes\Client\Services\ServiceRestwsHc;
+use App\Classes\Client\Services\ServiceRestwsSm;
 use GuzzleHttp\Client as HttpClient;
 
 class RestwsSmServiceProvider extends ServiceProvider

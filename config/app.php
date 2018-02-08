@@ -190,7 +190,8 @@ return [
         App\Providers\BRIMailServiceProvider::class,
         App\Providers\AsmxLasServiceProvider::class,
         App\Providers\DbwsRestServiceProvider::class,
-        OwenIt\Auditing\AuditingServiceProvider::class
+        OwenIt\Auditing\AuditingServiceProvider::class,
+        App\Providers\RestwsSmServiceProvider::class
 
     ],
 
@@ -258,6 +259,7 @@ return [
         'FCM'          => LaravelFCM\Facades\FCM::class,
         'FCMGroup'     => LaravelFCM\Facades\FCMGroup::class, // Optional
         'Zip'          => ZanySoft\Zip\ZipFacade::class,
+        'RestwsSm'     => App\Classes\Client\Facades\RestwsSm::class,
 
     ],
 
