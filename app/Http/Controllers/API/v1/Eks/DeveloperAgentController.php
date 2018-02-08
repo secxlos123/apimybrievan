@@ -69,8 +69,9 @@ class DeveloperAgentController extends Controller
         list($first_name, $last_name) = name_separator($request->input('name'));
         $request->merge( compact( 'role_id', 'first_name', 'last_name','mobile_phone' ) );
 
+        $email = strtolower($request->input('email'));
         $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
-        $request->merge(['password' => bcrypt($password)]);
+        $request->merge(['email' => $email , 'password' => bcrypt($password)]);
         $user = User::create($request->all());
         $activation = Activation::create($user);
         Activation::complete($user, $activation->code);
