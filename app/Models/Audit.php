@@ -327,9 +327,11 @@ class Audit extends Model implements AuditContract
 
                  $slug = 'developer';
                  $action = ['undefined action','login','logout'];
-                 $auditrail->where('role', $slug);
-                 $auditrail->wherenotin(\DB::raw('LOWER(modul_name)'), $action);
-                 $auditrail->orwhereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev']);
+                 // $auditrail->where('role', $slug);
+                $model_type = 'app\\models\\audit';
+                $auditrail->where('auditable_type', '!=', $model_type);
+                 //
+                $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen']);
                 })
                 // ->orderBy($sort[0], $sort[1]);
                 ->orderBy('created_at', 'desc');
