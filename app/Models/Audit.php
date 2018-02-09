@@ -136,6 +136,8 @@ class Audit extends Model implements AuditContract
                  $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
                  $auditrail->where('auditable_type', '!=', $appointment);
                  $auditrail->where('auditable_type', '!=', $propertyItem);
+                 $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '%[]]%');
+                 $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '%[]%');
 
                  // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
                  // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
@@ -161,7 +163,7 @@ class Audit extends Model implements AuditContract
 
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
-        return $query
+        $schedule = $query
                 ->from('auditrail_type_one')
                 ->where(function ($auditrail) use ($request) {
                /**
@@ -171,11 +173,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
-                   $appointment = 'app\models\appointment';
+                  // $appointment = 'app\models\appointment';
 
                     if ($request->has('created_at')){
                         $auditrail->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
-                        $auditrail->where('auditable_type', $appointment);
+                  //      $auditrail->where('auditable_type', $appointment);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -186,11 +188,11 @@ class Audit extends Model implements AuditContract
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
-                    $appointment = 'app\models\appointment';
+                  //  $appointment = 'app\models\appointment';
 
                     if($request->has('username')){
                         $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
-                        $auditrail->where('auditable_type', $appointment);
+                  //      $auditrail->where('auditable_type', $appointment);
                     }
                 })
                 ->where(function ($auditrail) use ($request) {
@@ -200,11 +202,11 @@ class Audit extends Model implements AuditContract
                 * @param $request->modul_name
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
-                    $appointment = 'app\models\appointment';
+                  //  $appointment = 'app\models\appointment';
 
                     if($request->has('modul_name')){
                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'like', '%'.strtolower($request->input('modul_name')).'%');
-                        $auditrail->where('auditable_type', $appointment);
+                  //      $auditrail->where('auditable_type', $appointment);
                     }
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
@@ -214,24 +216,31 @@ class Audit extends Model implements AuditContract
                 * @param $request->ref_number
                 * @return \Illuminate\Database\Eloquent\Builder
                 */ 
-                     $appointment = 'app\models\appointment';
+                  //   $appointment = 'app\models\appointment';
 
                   if ($request->has('ref_number')){
                         $auditrail->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('ref_number')).'%');
-                        $auditrail->where('auditable_type', $appointment);
+                  //      $auditrail->where('auditable_type', $appointment);
                     }
                 })
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for Auditrail Penjadwalan
                 */
-                 $appointment = 'app\models\appointment';
+                 $appointment = 'app\\models\\appointment';
 
                  $auditrail->where('auditable_type', $appointment);
                
                 })
                 // ->orderBy($sort[0], $sort[1]);
                 ->orderBy('created_at', 'desc');
+
+                \Log::info("==================START-QUERY AUDITRAIL APPOINTMENT===================");
+                \Log::info($schedule->toSql());
+                \Log::info(json_encode($schedule->getBindings()));
+                \Log::info("===========================END-QUERY==================================");
+
+                return $schedule;
             
     }
     /*
