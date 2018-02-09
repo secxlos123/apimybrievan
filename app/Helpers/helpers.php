@@ -652,7 +652,7 @@ if (! function_exists('pushNotification')) {
         $userModel->notify(new VerificationDataNasabah($dataUser));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['message'])
+        $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
 
         $notificationData = UserNotification::where('slug', $dataUser['id'])
@@ -684,7 +684,7 @@ if (! function_exists('pushNotification')) {
         $userModel->notify(new RecontestEFormNotification($dataUser));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['message'])
+        $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
 
         $notificationData = UserNotification::where('slug', $dataUser->id)
@@ -714,7 +714,7 @@ if (! function_exists('pushNotification')) {
         $message  = getMessage("schedule_update");
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['message'])
+        $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
 
         $notificationData = UserNotification::where('slug', $dataUser['eform_id'])
@@ -750,7 +750,7 @@ if (! function_exists('pushNotification')) {
         $appointmentId = $appointment->id;
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['message'])
+        $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
 
         $notificationData = UserNotification::where('slug', $dataUser['eform_id'])
@@ -787,7 +787,7 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new LKNEFormRecontest($data['data']));
 
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
 
             // Get data from notifications table
@@ -818,7 +818,7 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new LKNEFormCustomer($data['data']));
 
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
 
             // Get data from notifications table
@@ -851,7 +851,7 @@ if (! function_exists('pushNotification')) {
 
         $userNotif = new UserNotification;
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['message'])
+        $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
         // Get data from notifications table
         $notificationData = $userNotif->where('slug', $data->id)
@@ -868,7 +868,8 @@ if (! function_exists('pushNotification')) {
         $notification = $notificationBuilder->build();
         $payload         = $dataBuilder->build();
         $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+        $topic->topic('staging')->andTopic('user_97');
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
         $topicResponse->isSuccess();
@@ -883,7 +884,7 @@ if (! function_exists('pushNotification')) {
 
         if($user != null){
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
             // Get data from notifications table
             $usersModel = User::FindOrFail($dataUser['data']->user_id);
@@ -914,7 +915,7 @@ if (! function_exists('pushNotification')) {
             $user_login = \RestwsHc::getUser();
             if($user_login['role'] == 'staff'){
                 $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-                $notificationBuilder->setBody($message['message'])
+                $notificationBuilder->setBody($message['body'])
                                     ->setSound('default');
                 $usersModel = User::FindOrFail($dataUser['data']->user_id);
                 $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
@@ -948,7 +949,7 @@ if (! function_exists('pushNotification')) {
                 $topicResponse->error();
             }else if($user_login['role'] == 'ao'){
                 $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-                $notificationBuilder->setBody($message['message'])
+                $notificationBuilder->setBody($message['body'])
                                     ->setSound('default');
                 // Get data from notifications table
                 $usersModel = User::FindOrFail($dataUser['data']->user_id);
@@ -990,7 +991,7 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new ApproveEFormCLAS($data['data']));
 
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
 
             // Get data from notifications table
@@ -1021,7 +1022,7 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new ApproveEFormCustomer($data['data']));
 
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
 
             // Get data from notifications table
@@ -1061,7 +1062,7 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new RejectEFormCLAS($data['data']));
 
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
 
             // Get data from notifications table
@@ -1093,7 +1094,7 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new RejectEFormCustomer($data['data']));
 
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['message'])
+            $notificationBuilder->setBody($message['body'])
                                 ->setSound('default');
 
             // Get data from notifications table
