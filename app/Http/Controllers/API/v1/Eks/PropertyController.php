@@ -8,6 +8,7 @@ use App\Http\Requests\API\v1\Property\CreateRequest;
 use App\Models\Property;
 use App\Models\Collateral;
 use App\Models\User;
+use App\Models\KPR;
 use App\Notifications\PropertyNotification;
 use DB;
 class PropertyController extends Controller
@@ -190,5 +191,14 @@ class PropertyController extends Controller
      return response()->success( [
         'contents' => $collateral
      ] );     
+    }
+
+    public function getListPropertyAgenDev(Request $req)
+    {
+        $kpr         = new KPR;
+        $credentials = $req->user();
+        $userId      = $req->header('userId');
+        $data        = $kpr->getListPropertyAgenDev($userId, $credentials['id']);
+        return response()->success(['contents' => $data]);
     }
 }

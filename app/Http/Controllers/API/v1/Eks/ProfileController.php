@@ -63,13 +63,13 @@ class ProfileController extends Controller
 
             if ($profile) {
                 return response()->success( [
-                'message' => 'Perubahan data sedang dalam proses Modernisasi Staff Bussiness Relations BRI.',
+                'message' => 'Data nasabah berhasil diubah.',
                 'contents' => $profile
                 ],200 );
             }else
             {
                 return response()->success( [
-                'message' => 'Data nasabah Tidak Dapat dirubah.'
+                'message' => 'Data nasabah Tidak Dapat diubah.'
                 ],422 );
             }
 
@@ -121,7 +121,7 @@ class ProfileController extends Controller
 
 
 
-        return response()->error(['message' => 'Data profile Tidak Dapat Diirubah.'],422);
+        return response()->error(['message' => 'Data profile Tidak Dapat Diubah.'],422);
     }
 
     /**

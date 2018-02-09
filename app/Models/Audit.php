@@ -129,14 +129,19 @@ class Audit extends Model implements AuditContract
                 * This query for Auditrail Pengajuan Kredit
                 */
                  $eform = 'app\\models\\eform';
-                 //$eform = 'app\models\eform';
-                 //$event = 'created';
- 
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
+                 $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah'];
+                 $appointment = 'app\\models\\appointment';
+                 $propertyItem = 'app\\models\\propertyitem';
+                 $auditrail->whereNotNull('username');
+                 $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
+                 $auditrail->where('auditable_type', '!=', $appointment);
+                 $auditrail->where('auditable_type', '!=', $propertyItem);
+
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
                  // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'not like', '%collateral%');
                 })
                 // ->orderBy($sort[0], $sort[1]);
@@ -321,10 +326,12 @@ class Audit extends Model implements AuditContract
                 */
 
                  $slug = 'developer';
-                 $action = 'undefined action';
-                 $auditrail->where('role', $slug);
-                 $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
-               
+                 $action = ['undefined action','login','logout'];
+                 // $auditrail->where('role', $slug);
+                $model_type = 'app\\models\\audit';
+                $auditrail->where('auditable_type', '!=', $model_type);
+                 //
+                $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen']);
                 })
                 // ->orderBy($sort[0], $sort[1]);
                 ->orderBy('created_at', 'desc');
@@ -504,7 +511,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_admin_developer')
+                ->from('auditrail_profile_edit')
                 ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by tanggal aksi.
@@ -686,7 +693,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_admin_developer')
+                ->from('auditrail_property')
                 ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by tanggal aksi.
@@ -758,8 +765,8 @@ class Audit extends Model implements AuditContract
                 */
                  $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%property%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined action%');
-                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%col%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
+                 $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%col%');
                
                 })
                 // ->orderBy($sort[0], $sort[1]);
@@ -770,7 +777,7 @@ class Audit extends Model implements AuditContract
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
         $useractivity = \DB::table('auditrail_admin_developer')
-                            ->select('user_id', 'username')
+                            ->select('user_id', 'username', 'ip_address')
                             ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by Nama User.
@@ -785,7 +792,7 @@ class Audit extends Model implements AuditContract
                     }
                 })
                             ->whereNotNull('username')
-                            ->groupBy('user_id', 'username');
+                            ->groupBy('user_id', 'username', 'ip_address');
                             //->orderBy($sort[0], $sort[1]);              
                             
         return $useractivity;
@@ -864,7 +871,13 @@ class Audit extends Model implements AuditContract
                 * This query for Auditrail Admin Developer
                 */
 
-                 $action = 'undefined action';
+                  $action = 'undefined action';
+                // $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
+                // $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
+                 // $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                 // $auditrail->where('user_id', '=', $id);
+                 // $auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
+                 // $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%log%');
                  $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
                  $auditrail->where('user_id', '=', $id);
                
