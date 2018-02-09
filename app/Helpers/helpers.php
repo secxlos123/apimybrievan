@@ -488,116 +488,116 @@ if (! function_exists('getMessage')) {
         switch ($type) {
             case 'eform_create':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Pengajuan KPR Baru',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan KPR Baru',
                 ];
                 break;
             case 'eform_approve':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Pengajuan anda telah di Setujui',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah di Setujui',
                 ];
                 break;
             case 'eform_approve_clas':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Pengajuan anda telah di Setujui',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah di Setujui',
                 ];
                 break;
             case 'eform_reject':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Pengajuan anda telah di Tolak',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah di Tolak',
                 ];
                 break;
             case 'eform_reject_clas':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Pengajuan anda telah di Tolak',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah di Tolak',
                 ];
                 break;
             case 'eform_lkn_recontest':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Data LKN Recontest berhasil dikirim',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Data LKN Recontest berhasil dikirim',
                 ];
                 break;
             case 'eform_lkn':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Data LKN berhasil dikirim',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Data LKN berhasil dikirim',
                 ];
                 break;
             case 'eform_disposition':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Disposisi Pengajuan',
+                    'title'=> 'EForm Notification (Testing)',
+                    'body' => 'Disposisi Pengajuan (Mohon Abaikan)',
                 ];
                 break;
             case 'eform_recontest':
                 $message = [
-                    'title'   => 'EForm Notification',
-                    'message' => 'Pengajuan Anda Telah di Rekontest',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan Anda Telah di Rekontest',
                 ];
                 break;
             case 'schedule_create':
                 $message = [
-                    'title'   => 'Schedule Notification',
-                    'message' => 'Anda memiliki jadwal baru',
+                    'title'=> 'Schedule Notification',
+                    'body' => 'Anda memiliki jadwal baru',
                 ];
                 break;
             case 'schedule_update':
                 $message = [
-                    'title'   => 'Schedule Notification',
-                    'message' => 'Jadwal anda telah di update, Silahkan cek jadwal anda',
+                    'title'=> 'Schedule Notification',
+                    'body' => 'Jadwal anda telah di update, Silahkan cek jadwal anda',
                 ];
                 break;
             case 'collateral_penilaian':
                 $message = [
-                    'title'   => 'Collateral Notification',
-                    'message' => 'Form Penilaian Agunan',
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Form Penilaian Agunan',
                 ];
                 break;
             case 'collateral_approve':
                 $message = [
-                    'title'   => 'Collateral Notification',
-                    'message' => 'Approval Collateral',
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Approval Collateral',
                 ];
                 break;
             case 'collateral_reject':
                 $message = [
-                    'title'   => 'Collateral Notification',
-                    'message' => 'Reject Collateral',
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Reject Collateral',
                 ];
                 break;
             case 'collateral_reject_penilaian':
                 $message = [
-                    'title'   => 'Collateral Notification',
-                    'message' => 'Penilaian Agunan Ditolak',
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Penilaian Agunan Ditolak',
                 ];
                 break;
             case 'collateral_disposition':
                 $message = [
-                    'title'   => 'Collateral Notification',
-                    'message' => 'Penugasan Staff Collateral',
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Penugasan Staff Collateral',
                 ];
                 break;
             case 'collateral_checklist':
                 $message = [
-                    'title'   => 'Collateral Notification',
-                    'message' => 'Collateral Checklist',
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Collateral Checklist',
                 ];
                 break;
             case 'verify':
                 $message = [
-                    'title'   => 'Verify Notification',
-                    'message' => 'Silahkan Verifikasi Data Anda',
+                    'title'=> 'Verify Notification',
+                    'body' => 'Silahkan Verifikasi Data Anda',
                 ];
                 break;
             default:
                 $message = [
-                    'title'   => "undefined",
-                    'message' => 'Type undefined',
+                    'title'=> "undefined",
+                    'body' => 'Type undefined',
                 ];
                 break;
         }
