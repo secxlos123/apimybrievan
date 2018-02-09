@@ -1694,7 +1694,7 @@ class ApiLasController extends Controller
 							$path = public_path( 'uploads/' . $briguna[0]['id_foto'] . '/' );
 							unlink($path.'/'.$briguna[0]['NPWP_nasabah']);
 							$NPWP_nasabah = $this->uploadimages($request['NPWP_nasabah'],$briguna[0]['id_foto'],'NPWP_nasabah');
-							$params['NPWP_nasabah']=>$NPWP_nasabah;
+							$params['NPWP_nasabah']=$NPWP_nasabah;
 							$briguna->update($params);
 							
                             \Log::info("-------- update table briguna sukses---------");
