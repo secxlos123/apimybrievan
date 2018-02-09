@@ -1693,7 +1693,7 @@ class ApiLasController extends Controller
 							//------------hapus file----------------------------------
 							$path = public_path( 'uploads/' . $briguna[0]['id_foto'] . '/' );
 							unlink($path.'/'.$briguna[0]['NPWP_nasabah']);
-							$NPWP_nasabah = $this->uploadimage($request->NPWP_nasabah,$briguna[0]['id_foto'],'NPWP_nasabah');
+							$NPWP_nasabah = $this->uploadimage($request['NPWP_nasabah'],$briguna[0]['id_foto'],'NPWP_nasabah');
 							$params['NPWP_nasabah'=>$NPWP_nasabah];
 							$briguna->update($params);
 							
