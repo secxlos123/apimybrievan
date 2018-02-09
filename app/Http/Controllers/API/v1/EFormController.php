@@ -629,6 +629,15 @@ class EFormController extends Controller
                         'message' => 'Data e-form berhasil ditambahkan.',
                         'contents' => $kpr['kpr']
                     ];
+
+                    $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+                    $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
+                    $credentials = [
+                        'data'    => $kpr['eform'],
+                        'request' => $request,
+                    ];
+                    pushNotification($credentials, 'createEForm');
                 } else {
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
@@ -643,14 +652,6 @@ class EFormController extends Controller
                 'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
             ], 422 );
         }
-        $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
-        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
-
-        $credentials = [
-            'data'    => $kpr['eform'],
-            'request' => $request,
-        ];
-        pushNotification($credentials, 'createEForm');
         return response()->success($return, 201);
     }
 

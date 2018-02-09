@@ -21,5 +21,7 @@ class DeleteAllViewSeeder extends Seeder
         \DB::unprepared("DROP VIEW IF EXISTS developers_view_table");
         \DB::unprepared("DROP VIEW IF EXISTS developer_properties_view_table");
         \DB::unprepared("DROP VIEW IF EXISTS collateral_view_table");
+        \DB::unprepared("DROP VIEW IF EXISTS auditrail_property");
+        \DB::unprepared("DROP VIEW IF EXISTS auditrail_profile_edit");
     }
 }
