@@ -223,7 +223,7 @@ class ViewController extends Controller
 			if(!empty($view['div'])){
 			$form .= '<div class="'.$view['div_class'].'">';
 			}
-			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'">
+			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"'.$view['etc'].'>
 						'.$view['value'].'</select>';
 			if(!empty($view['div'])){
 			$form .= '</div>';
@@ -244,8 +244,9 @@ class ViewController extends Controller
 			$x = count($radio);
 			for($i=0;$i<$x;$i++){
 				$radios = explode(",",$radio[$i]);
-				$form .= '<input type="radio" name="'.$view['id_table'].'" value="'.$radios['0'].'">'.$radios['1'];
+				$form .= '<input type="radio" name="'.$view['id_table'].'" value="'.$radios['0'].'"'.$view['etc'].'>'.$radios['1'];
 			}
+			
 /* 			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'">
 						'.$view['value'].'</select>'; */
 			if(!empty($view['div'])){
