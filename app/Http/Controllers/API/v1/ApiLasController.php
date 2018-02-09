@@ -1685,15 +1685,16 @@ class ApiLasController extends Controller
                             ];
 							
                             $briguna = BRIGUNA::where("eform_id","=",$eform_id);
+							$brigunas = $briguna->get();
 							$eform   = EForm::findOrFail($eform_id);
                             $base_request["branch_id"] = $request['kantor_cabang_id'];
                             $eform->update($base_request);
                             \Log::info("-------- update table eforms sukses---------");
                             // \Log::info($eform);
 							//------------hapus file----------------------------------
-							$path = public_path( 'uploads/' . $briguna[0]['id_foto'] . '/' );
-							unlink($path.'/'.$briguna[0]['NPWP_nasabah']);
-							$NPWP_nasabah = $this->uploadimages($request['NPWP_nasabah'],$briguna[0]['id_foto'],'NPWP_nasabah');
+							$path = public_path( 'uploads/' . $brigunas[0]['id_foto'] . '/' );
+							unlink($path.'/'.$brigunas[0]['NPWP_nasabah']);
+							$NPWP_nasabah = $this->uploadimages($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
 							$params['NPWP_nasabah']=$NPWP_nasabah;
 							$briguna->update($params);
 							
