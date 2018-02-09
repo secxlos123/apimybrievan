@@ -129,14 +129,19 @@ class Audit extends Model implements AuditContract
                 * This query for Auditrail Pengajuan Kredit
                 */
                  $eform = 'app\\models\\eform';
-                 //$eform = 'app\models\eform';
-                 //$event = 'created';
- 
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
-                 $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
+                 $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah'];
+                 $appointment = 'app\\models\\appointment';
+                 $propertyItem = 'app\\models\\propertyitem';
+                 $auditrail->whereNotNull('username');
+                 $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
+                 $auditrail->where('auditable_type', '!=', $appointment);
+                 $auditrail->where('auditable_type', '!=', $propertyItem);
+
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
+                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
                  // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'not like', '%collateral%');
                 })
                 // ->orderBy($sort[0], $sort[1]);
@@ -504,7 +509,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_admin_developer')
+                ->from('auditrail_profile_edit')
                 ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by tanggal aksi.
