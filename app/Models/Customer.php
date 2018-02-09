@@ -356,7 +356,7 @@ class Customer extends User
         CustomerDetail::create( $customer_data );
         // send mail notification
         $customer = static::find( $user->id );
-        event( new CustomerRegistered( $customer, $password ,'5') );
+     //   event( new CustomerRegistered( $customer, $password ,'5') );
 
         return $customer;
     }
