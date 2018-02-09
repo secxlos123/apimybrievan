@@ -267,7 +267,7 @@ class Audit extends Model implements AuditContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
-                ->from('auditrail_admin_developer')
+                ->from('auditrail_new_admin_dev')
                 ->where(function ($auditrail) use ($request) {
                /**
                 * This query for search by tanggal aksi.
@@ -330,7 +330,8 @@ class Audit extends Model implements AuditContract
                  // $auditrail->where('role', $slug);
                 $model_type = 'app\\models\\audit';
                 $auditrail->where('auditable_type', '!=', $model_type);
-                 //
+                //$auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
+                $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
                 $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen']);
                 })
                 // ->orderBy($sort[0], $sort[1]);
