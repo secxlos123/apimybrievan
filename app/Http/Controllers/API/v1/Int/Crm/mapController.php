@@ -37,14 +37,29 @@ class MapController extends Controller
 
     public function activity_map(Request $request)
     {
-      $activity_map = [];
-      foreach (MarketingActivity::where('desc', '!=', 'first')->with('marketing')->get() as $activity) {
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $pemasar = $this->pemasar($pn,$branch);
 
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $activity_map = [];
+      foreach (MarketingActivity::where('desc', '!=', 'first')->whereIn('pn', $list_pn)->with('marketing')->get() as $activity) {
+        $officer1 = array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'';
+        $officer2 = array_key_exists($activity->pn_join, $pemasar_name) ? ' ,'.$pemasar_name[$activity->pn_join]:'';
+        $officer = $officer1.$officer2;
         $activity_map[]= [
           'id' => $activity->id,
           'nama' => $activity->marketing->nama,
           'pn' => $activity->pn,
           'pn_join' => $activity->pn_join,
+          'officer_name' => $officer,
           'marketing_activity_type' => $activity->marketing->activity_type,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
           'start_time' => date('H:i', strtotime($activity->start_date)),
@@ -69,7 +84,7 @@ class MapController extends Controller
     }
 
 
-    public function pemasar($pn, $branch, $auth){
+    public function pemasar($pn, $branch){
       $list_ao = RestwsHc::setBody([
         'request' => json_encode([
           'requestMethod' => 'get_list_tenaga_pemasar',

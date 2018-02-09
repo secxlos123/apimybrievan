@@ -1683,14 +1683,20 @@ class ApiLasController extends Controller
                                 "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'],
                                 "tgl_analisa"               => $request['tgl_analisa'] 
                             ];
-
+							
                             $briguna = BRIGUNA::where("eform_id","=",$eform_id);
-                            $eform   = EForm::findOrFail($eform_id);
+							$eform   = EForm::findOrFail($eform_id);
                             $base_request["branch_id"] = $request['kantor_cabang_id'];
                             $eform->update($base_request);
                             \Log::info("-------- update table eforms sukses---------");
                             // \Log::info($eform);
-                            $briguna->update($params);
+							//------------hapus file----------------------------------
+							$path = public_path( 'uploads/' . $briguna[0]['id_foto'] . '/' );
+							unlink($path.'/'.$briguna[0]['NPWP_nasabah']);
+							$NPWP_nasabah = $this->uploadimage($request->NPWP_nasabah,$briguna[0]['id_foto'],'NPWP_nasabah');
+							$params['NPWP_nasabah'=>$NPWP_nasabah];
+							$briguna->update($params);
+							
                             \Log::info("-------- update table briguna sukses---------");
                             // \Log::info($briguna);
                             $result = [
@@ -1807,6 +1813,33 @@ class ApiLasController extends Controller
                     'contents' => ''
                 ], 400 );
         }
+    }
+
+    public function uploadimage($image,$id,$atribute) {
+        //$eform = EForm::findOrFail($id);
+        $path = public_path( 'uploads/' . $id . '/' );
+
+        if ( ! empty( $this->attributes[ $atribute ] ) ) {
+            File::delete( $path . $this->attributes[ $atribute ] );
+        }
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            // log::info('image = '.$image->getMimeType());
+            $filename = $id . '-'.$atribute.'.' . $extension;
+            $image->move( $path, $filename );
+        }
+        return $filename;
     }
 
     public function update_foto_briguna(Request $request) {
