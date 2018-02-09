@@ -68,11 +68,11 @@ class VisitReportRequest extends BaseRequest
             'family_card' => 'required_unless:use_reason,13|mimes:jpg,jpeg,png,gif,svg,pdf',
             'offering_letter' => 'required_unless:use_reason,13|mimes:jpg,jpeg,png,gif,svg,pdf',
             'photo_with_customer' => 'required_unless:use_reason,13|mimes:jpg,jpeg,png,gif,svg,pdf',
+            'building_tax' => 'required_unless:use_reason,13|mimes:jpg,jpeg,png,gif,svg,pdf',
 
             'marrital_certificate' => 'mimes:jpg,jpeg,png,gif,svg,pdf',
             'divorce_certificate' => 'mimes:jpg,jpeg,png,gif,svg,pdf',
             'down_payment' => 'mimes:jpg,jpeg,png,gif,svg,pdf',
-            'building_tax' => 'mimes:jpg,jpeg,png,gif,svg,pdf',
             'license_of_practice'=>'mimes:jpeg,png,jpg,zip,pdf',
             'other_document'=>'mimes:jpeg,png,jpg,zip,pdf',
 

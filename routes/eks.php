@@ -68,7 +68,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 			Route for dashboard developer [Top 5 User List and Chart]
 		**/
 		Route::post('get-data-dashboard-developer', 'DashboardController@dashboard');
-
+		Route::get('get-list-property-agen-dev', 'PropertyController@getListPropertyAgenDev');
 		/**
 		 * Route for customer for register simple, complete and logout
 		 */

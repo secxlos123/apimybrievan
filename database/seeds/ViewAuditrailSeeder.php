@@ -76,7 +76,8 @@ end as modul_name*/
 , a.url
 , case when b.first_name is not null then concat(b.first_name,' ',b.last_name) else h.name end as username
 , case when e.slug is not null then e.slug else h.role end as role
-, case when g.ref_number is not null then g.ref_number else i.ref_number end as ref_number
+/*, case when g.ref_number is not null then g.ref_number else i.ref_number end as ref_number */
+, i.ref_number as ref_number
 , c.company_name
 , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
 , a.old_values
@@ -91,6 +92,6 @@ left join roles e on e.id = d.role_id
 left join collaterals f on f.developer_id = c.id
 left join eforms g on g.user_id = a.user_id
 left join user_services h on h.pn = a.user_id
-left join eforms i on i.id = a.auditable_id");
+ join eforms i on i.id = a.auditable_id");
     }
 }
