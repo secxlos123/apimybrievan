@@ -1028,7 +1028,7 @@ class EForm extends Model implements AuditableContract
             'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '40000' : $customer_detail->zip_code,
             'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? 'kelurahan' : $customer_detail->kelurahan,
             'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? 'kecamatan' : $customer_detail->kecamatan,
-            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->kabupaten ),
+            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->city ),
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
@@ -1426,7 +1426,7 @@ class EForm extends Model implements AuditableContract
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => !($otsEight->binding_number)?'0': $otsEight->binding_number,//taidak
             "Nilai_pengikatan_agunan_rt" => !($otsEight->binding_value) ? '0' : $this->reformatCurrency( $otsEight->binding_value ),//taidak
-            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'Tidak' : $otsTen->paripasu,//taidak
+            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'false' : ($otsTen->paripasu == 'Ya' ? 'true':'false' ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
             "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
@@ -1750,6 +1750,14 @@ class EForm extends Model implements AuditableContract
                     ->where('kpr.developer_id', $developer['id']);
             });
         }
+        $user = \RestwsHc::getUser();
+        if (count($user)>0) {
+            if ($user['role'] == 'ao') {
+                $data->where('ao_id',$user['pn']);
+            }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
+                $data->where('branch_id',intval($user['branch_id']));
+            }
+        }
 
         $data = $data->when($filter, function ($query) use ($startChart, $endChart){
                 return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
@@ -1815,8 +1823,18 @@ class EForm extends Model implements AuditableContract
         }else{
             $filter = false;
         }
+        $user = \RestwsHc::getUser();
+        $data = EForm::select();
 
-        $data = EForm::when($filter, function($query) use ($startList, $endList){
+        if (count($user)>0) {
+            if ($user['role'] == 'ao') {
+                $data->where('ao_id',$user['pn']);
+            }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
+                $data->where('branch_id',intval($user['branch_id']));
+            }
+        }
+
+        $data = $data->when($filter, function($query) use ($startList, $endList){
                     return $query->whereBetween('eforms.created_at', [$startList, $endList]);
                 })
                 ->orderBy('created_at', 'desc')

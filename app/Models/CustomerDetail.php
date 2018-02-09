@@ -406,12 +406,15 @@ class CustomerDetail extends Model implements AuditableContract
         return $data;
     }
 
-    public function getDetailDebitur($params)
+    public function getDetailDebitur($params, $mobile)
     {
         $data = CustomerDetail::with('user', 'city', 'eform')
                 ->where('user_id', $params['user_id'])
-                ->get()
-                ->pluck('detailDebitur');
+                ->when($mobile, function($query){
+                    return $query->first();
+                }, function($query){
+                    return $query->get()->pluck('detailDebitur');
+                });
         return $data;
     }
 

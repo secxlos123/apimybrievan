@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
 use App\Models\EForm;
+use App\Models\Customer;
+use App\Models\CustomerDetail;
 use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
 use Asmx;
@@ -1815,7 +1817,8 @@ class ApiLasController extends Controller
                 if (isset($response['uploadfoto'])) {
                     $image   = $response;
                     $id_foto = date('YmdHis');
-                    $detail  = EForm::findOrFail($response['eform_id']);
+                    $data_eforms  = EForm::where('id',$response['eform_id'])->first();
+                    $detail  = CustomerDetail::where('user_id',$data_eforms['user_id'])->first();
                     // $this->removeAllImage($detail);
                     $filename = $this->uploadimage($image, $response['eform_id'], $id_foto);
                     \Log::info($filename);
@@ -1829,15 +1832,28 @@ class ApiLasController extends Controller
                         $data_eform   = ['couple_identity' => $filename];
                         $detail->update($data_eform);
                     } else if (isset($image['NPWP_nasabah'])) {
-                        $data_briguna['id_foto'] = $id_foto;
+                        $data_briguna['id_foto'] = $detail['user_id'];
                         $data_briguna['NPWP_nasabah'] = $filename;
                     } else if (isset($image['SLIP_GAJI'])) {
-                        $data_briguna['id_foto']   = $id_foto;
+                        $data_briguna['id_foto']   = $detail['user_id'];
                         $data_briguna['SLIP_GAJI'] = $filename;
+                    } else if (isset($image['KK'])) {
+                        $data_briguna['id_foto'] = $detail['user_id'];
+                        $data_briguna['KK'] = $filename;
+                    } else if (isset($image['SK_AWAL'])) {
+                        $data_briguna['id_foto'] = $detail['user_id'];
+                        $data_briguna['SK_AWAL'] = $filename;
+                    } else if (isset($image['SK_AKHIR'])) {
+                        $data_briguna['id_foto']  = $detail['user_id'];
+                        $data_briguna['SK_AKHIR'] = $filename;
+                    } else if (isset($image['REKOMENDASI'])) {
+                        $data_briguna['id_foto']  = $detail['user_id'];
+                        $data_briguna['REKOMENDASI'] = $filename;
                     } else if (isset($image['SKPG'])) {
-                        $data_briguna['id_foto']   = $id_foto;
+                        $data_briguna['id_foto']   = $detail['user_id'];
                         $data_briguna['SKPG'] = $filename;
                     }
+
                     \Log::info($data_briguna);
                     // print_r($image);exit();
                     $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
@@ -2107,18 +2123,18 @@ class ApiLasController extends Controller
     }
 
     function uploadimage($image, $id, $id_foto) {
+        $eform = EForm::where('id', $id)->first();
         if (isset($image['identity']) || isset($image['couple_identity'])) {
-            $eform = EForm::where('id', $id)->first();
             $path  = public_path('uploads/'.$eform->nik.'/');
         } else {
-            $path  = public_path('uploads/'.$id_foto.'/');
+            $path  = public_path('uploads/'.$eform->user_id.'/');
         }
         $data_image = $image['uploadfoto'];
         $filename = null;
         if ($data_image) {
             if (!$data_image->getClientOriginalExtension()) {
                 if ($data_image->getMimeType() == '.pdf') {
-                    $extension = '.pdf';
+                    $extension = 'pdf';
                 }elseif($data_image->getMimeType() == '.jpg'||$data_image->getMimeType() == '.jpeg'){
                     $extension = 'jpg';
                 }else{
@@ -2128,12 +2144,11 @@ class ApiLasController extends Controller
                 $extension = $data_image->getClientOriginalExtension();
             }
             // log::info('image = '.$image->getMimeType());
-            if (isset($image['identity']) || isset($image['couple_identity'])) {
-                $eform = EForm::where('id', $id)->first();
-                $filename = $eform->user_id.'-foto.'.$extension;
-            } else {
-                $filename = $id_foto.'-foto.'.$extension;
-            }
+            // if (isset($image['identity']) || isset($image['couple_identity'])) {
+            //     $filename = $eform->nik.'-'.$id_foto.'.'.$extension;
+            // } else {
+                $filename = $eform->user_id.'-'.$id_foto.'.'.$extension;
+            // }
             $data_image->move( $path, $filename );
         }
         return $filename;

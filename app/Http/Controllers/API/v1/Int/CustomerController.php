@@ -272,14 +272,16 @@ class CustomerController extends Controller
 
     public function detailDebitur(Request $req)
     {
-        $params   = $req->all();
+        $mobile = (empty($req->header('mobile')) ? false : true);
+        $params = $req->all();
+
         if(empty($params['user_id'])){
             return response()->error([
                 'message' => 'User ID is required !',
             ]);
         }else{
             $customer = new CustomerDetail;
-            $data     = $customer->getDetailDebitur($params);
+            $data     = $customer->getDetailDebitur($params, $mobile);
             return response()->success([
                 'contents' => $data
             ]);
