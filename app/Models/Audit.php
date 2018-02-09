@@ -341,7 +341,7 @@ class Audit extends Model implements AuditContract
                 $auditrail->where('auditable_type', '!=', $model_type);
                 //$auditrail->where(\DB::raw('LOWER(old_values)'), 'not like', '[]');
                 $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
-                $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen']);
+                $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen','tambah unit property']);
                 })
                 // ->orderBy($sort[0], $sort[1]);
                 ->orderBy('created_at', 'desc');
