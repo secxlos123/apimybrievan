@@ -1407,6 +1407,9 @@ class ApiLasController extends Controller
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
         ];
+		\Log::info("-------- content_las_debt ---------");
+		\Log::info($content_las_debt);
+        
         // print_r($content_las_debt);exit();
         $insertDebitur = $this->insertDataDebtPerorangan($content_las_debt);
         // print_r($insertDebitur);exit();
