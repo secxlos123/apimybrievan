@@ -1750,6 +1750,14 @@ class EForm extends Model implements AuditableContract
                     ->where('kpr.developer_id', $developer['id']);
             });
         }
+        $user = \RestwsHc::getUser();
+        if (count($user)>0) {
+            if ($user['role'] == 'ao') {
+                $data->where('ao_id',$user['pn']);
+            }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
+                $data->where('branch_id',intval($user['branch_id']));
+            }
+        }
 
         $data = $data->when($filter, function ($query) use ($startChart, $endChart){
                 return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
@@ -1815,8 +1823,18 @@ class EForm extends Model implements AuditableContract
         }else{
             $filter = false;
         }
+        $user = \RestwsHc::getUser();
+        $data = EForm::select();
 
-        $data = EForm::when($filter, function($query) use ($startList, $endList){
+        if (count($user)>0) {
+            if ($user['role'] == 'ao') {
+                $data->where('ao_id',$user['pn']);
+            }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
+                $data->where('branch_id',intval($user['branch_id']));
+            }
+        }
+
+        $data = $data->when($filter, function($query) use ($startList, $endList){
                     return $query->whereBetween('eforms.created_at', [$startList, $endList]);
                 })
                 ->orderBy('created_at', 'desc')
