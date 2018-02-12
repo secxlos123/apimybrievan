@@ -179,6 +179,66 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
                left join eforms g on g.user_id = a.user_id
                left join user_services h on h.pn = a.user_id");
 
+        \DB::unprepared("DROP VIEW IF EXISTS auditrail_new_admin_dev");
+        \DB::unprepared("CREATE VIEW auditrail_new_admin_dev AS
+         select a.id
+               , a.created_at 
+               , a.action as modul_name
+               , a.event
+               , a.user_id
+               , lower(a.auditable_type) as auditable_type
+               , a.url
+               , case when b.first_name is not null then concat(b.first_name,' ',b.last_name) else h.name end as username
+           , f.staff_name
+               , case when e.slug is not null then e.slug else h.role end as role
+               /*, i.name as project_name */
+                , case when k.company_name is not null then k.company_name when m.company_name is not null then m.company_name when n.company_name is not null then n.company_name else c.company_name end as company_name
+               , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
+               , a.old_values
+               , a.new_values
+               , a.ip_address
+               , a.extra_params as action_location
+               from audits a
+                join users b on b.id = a.user_id
+               left join developers c on c.user_id = a.user_id
+               left join user_developers j on j.user_id = b.id
+               left join developers k on k.user_id = j.admin_developer_id
+               left join role_users d on d.user_id = a.user_id
+               left join roles e on e.id = d.role_id
+               left join collaterals f on f.developer_id = c.id
+               left join eforms g on g.user_id = a.user_id
+               left join user_services h on h.pn = a.user_id
+             /*   join properties i on i.developer_id = c.id */
+               left join developers m on m.user_id = a.auditable_id
+               left join developers n on n.id = a.auditable_id");
+
+        \DB::unprepared("DROP VIEW IF EXISTS auditrail_pengajuankredit");
+        \DB::unprepared("CREATE VIEW auditrail_pengajuankredit AS
+         select a.id
+              , a.created_at
+              , a.modul_name
+              , a.event
+              , a.user_id
+              , a.auditable_type
+              , a.url
+              , a.username
+              , a.role
+              , a.ref_number
+              , a.company_name
+              , a.developer
+              , a.old_values
+              , a.new_values
+              , a.ip_address
+              , a.action_location
+              , b.id as eform_id
+              , b.branch_id
+              , d.region_name
+              , d.region_id 
+        from auditrail_type_two a 
+        join eforms b on b.ref_number = a.ref_number
+        join kpr c on c.eform_id = b.id
+        join properties d on d.id = c.property_id");
+
     }
 
 

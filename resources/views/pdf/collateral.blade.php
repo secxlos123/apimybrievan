@@ -489,19 +489,19 @@
                     </tr>
                     <tr>
                         <td class="label">NPW Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->npw_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->npw_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">NL Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->nl_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->nl_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNPW Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnpw_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnpw_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNL Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnl_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnl_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Tanggal Penilaian NPW Bangunan</td>
@@ -509,19 +509,19 @@
                     </tr>
                     <tr>
                         <td class="label">NPW Bangunan</td>
-                        <td class="break-word">: Rp.  {{ number_format(str_replace('.','',$collateral->otsValuation->npw_building )) }}</td>
+                        <td class="break-word">: Rp.  {{ number_format((int) str_replace('.','',$collateral->otsValuation->npw_building )) }}</td>
                     </tr>
                     <tr>
                         <td class="label">NL Bangunan</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->nl_building)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->nl_building)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNPW Bangunan</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnpw_building)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnpw_building)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNL Bangunan</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnl_building)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnl_building)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Tanggal Penilaian NPW Tanah & Bangunan</td>
@@ -529,19 +529,19 @@
                     </tr>
                     <tr>
                         <td class="label">NPW Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->npw_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->npw_all))}}</td>
                     </tr>
                     <tr>
                         <td class="label">NL Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->nl_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->nl_all))}}</td>
                     </tr>
                     <tr>
                         <td class="label">PNPW Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->pnpw_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->pnpw_all))}}</td>
                     </tr>
                     <tr>
                         <td class="label">PNL Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->pnl_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->pnl_all))}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -891,27 +891,27 @@
                 <tbody>
                     <tr>
                         <td class="label">Nilai Likuiditas saat Realisasi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->liquidation_realization )) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->liquidation_realization )) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Pasar Wajar</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->fair_market)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->fair_market)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Likuidasi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->liquidation)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->liquidation)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Proyeksi Nilai Pasar Wajar</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->fair_market_projection)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->fair_market_projection)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Proyeksi Nilai Likuidasi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->liquidation_projection)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->liquidation_projection)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Jual Objek Pajak (NJOP)</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->njop)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->njop)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Penilaian Dilakukan Oleh</td>
@@ -1089,7 +1089,7 @@
                     </tr>
                     <tr>
                         <td class="label">Nilai Paripasu Agunan Bank</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsTen->paripasu_bank )) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsTen->paripasu_bank )) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Flag Asuransi</td>
@@ -1102,7 +1102,7 @@
                     </tr>
                     <tr>
                         <td class="label">Nilai Asuransi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsTen->insurance_value )) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsTen->insurance_value )) }}</td>
                     </tr>
                     @endif
                     <tr>
