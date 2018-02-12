@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\EForm;
+use App\Models\Customer;
+use App\Models\CustomerDetail;
 use App\Models\Audit;
 use DB;
 
@@ -161,6 +164,27 @@ class AuditrailController extends Controller
         $auditrail = Audit::GetListsDetailActivity($request, $id)->paginate($limit);
         \Log::info($auditrail);
         return response()->success(['contents' => $auditrail]);
+    }
+
+    public function show( $id )
+    {
+        $eform2 = Eform::where('nik', '=', $id)->first();
+       // dd($eform->id);
+        $eform_id = $eform2->id;
+
+        $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
+     //     dd($eform);              
+        // $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
+
+        // if (count($customerDetail) > 0) {
+        //     $customer = Customer::findOrFail( $customerDetail->user_id );
+        // } else {
+        //     $customer = Customer::findOrFail( $id );
+        // }
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $eform,
+        ], 200 );
     }
 
 }
