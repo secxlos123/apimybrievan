@@ -34,7 +34,7 @@ class BRIGUNA extends Model
         'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan','mitra',
         'tujuan_penggunaan','NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
         'SK_AKHIR','REKOMENDASI','SKPG',
-        'eform_id','tujuan_penggunaan_id','mitra_id','jenis_pinjaman_id','year',
+        'eform_id','tujuan_penggunaan_id','mitra_id','jenis_pinjaman_id','year','is_send',
 		'request_amount', 'angsuran_usulan', 'maksimum_plafond',
 		'uid','uid_pemrakarsa','tp_produk','id_aplikasi','cif_las',
 		'Tgl_perkiraan_pensiun','Sifat_suku_bunga','Briguna_profesi',
