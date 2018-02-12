@@ -45,7 +45,7 @@ class VisitReport extends Model implements AuditableContract
      */
     public static function create( $data ) {
 	if ( isset($data['mutations']) ){
-        $visit_report = ( new static )->newQuery()->updateOrCreate( [ 'eform_id' => $eform_id ],$data );
+        $visit_report = ( new static )->newQuery()->updateOrCreate( [ 'eform_id' => $data['eform_id']],$data );
         foreach ( $data[ 'mutations' ] as $key => $mutation_data ) {
             $mutation = Mutation::updateOrCreate( ['visit_report_id' => $visit_report->id]
                 ,[ 'visit_report_id' => $visit_report->id ] + $mutation_data );
