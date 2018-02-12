@@ -187,4 +187,31 @@ class AuditrailController extends Controller
         ], 200 );
     }
 
+    public function getNik(Request $request)
+    {
+        $getNik = \DB::table('eforms')
+                    ->selectRaw("eforms.nik, concat(users.first_name, ' ', users.last_name) as nama_pemohon")
+                    ->leftJoin("users", "users.id", "=", "eforms.user_id")
+                    ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Nama Customer or Nik Customer .
+                *
+                * @param $request->username
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('search')){
+                        $auditrail->where(\DB::raw('LOWER(nik)'), 'like', '%'.strtolower($request->input('search')).'%');
+                        $auditrail->Orwhere(\DB::raw("concat(lower(users.first_name), ' ', lower(users.last_name))"), 'like', '%'.strtolower($request->input('search')).'%');
+                  
+                        }
+                    })
+                    ->paginate( $request->input( 'limit' ) ?: 10 );
+                    \Log::info($getNik);
+                    return response()->success( [
+                        'message' => 'Sukses',
+                        'contents' => $getNik
+                        ], 200 );
+    }
+
 }
