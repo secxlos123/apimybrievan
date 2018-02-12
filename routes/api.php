@@ -20,6 +20,8 @@ Route::post( 'urgent-function', 'RemovableController@run' );
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
 
+		Route::post('hapusbriguna', 'EFormController@hapuseform');
+		Route::post('get_token', 'EFormController@get_token');
 		Route::post('getBranch', 'SelectUkerController@getBranch');
 		Route::post('smsnotif', 'SentSMSNotifController@sentsms');
 		Route::post('select', 'SelectController@select');
@@ -85,6 +87,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('api_las/index', 'ApiLasController@index');
 		Route::post('api_las/briguna', 'ApiLasController@show_briguna');
 		Route::post('api_las/update', 'ApiLasController@update_briguna');
+		Route::post('api_las/update_foto', 'ApiLasController@update_foto_briguna');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]

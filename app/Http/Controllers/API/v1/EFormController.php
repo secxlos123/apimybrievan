@@ -77,12 +77,18 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
           $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
-		  $briguna = $eform->delete();
-          $eform = EForm::where('eform_id', $request->id )->findOrFail();
-		  $eform = $eform->delete();
-        return response()->success( [
-            'contents' => 'Hapus berhasil'
-        ],200 );
+		  if($briguna->is_send==null || $briguna->is_send=='' || empty($briguna->is_send)){
+			  return response()->success( [
+					'contents' => 'Hapus Gagal'
+				],200 );  
+		  }else{
+				$briguna = $briguna->delete();
+				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
+				  $eform = $eform->delete();
+				return response()->success( [
+					'contents' => 'Hapus berhasil'
+				],200 );  
+		  }
     }
     public function index( Request $request )
     {
@@ -628,6 +634,15 @@ class EFormController extends Controller
                         'message' => 'Data e-form berhasil ditambahkan.',
                         'contents' => $kpr['kpr']
                     ];
+
+                    $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+                    $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
+                    $credentials = [
+                        'data'    => $kpr['eform'],
+                        'request' => $request,
+                    ];
+                    pushNotification($credentials, 'createEForm');
                 } else {
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
@@ -642,14 +657,6 @@ class EFormController extends Controller
                 'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
             ], 422 );
         }
-        $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
-        $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
-
-        $credentials = [
-            'data'    => $kpr['eform'],
-            'request' => $request,
-        ];
-        pushNotification($credentials, 'createEForm');
         return response()->success($return, 201);
     }
 
@@ -898,19 +905,34 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if ($eform->kpr->is_sent == false ) {
-          User::destroy($eform->user_id);
-          DB::commit();
-        return response()->success( [
-            'message' => 'Hapus User Berhasil',
-        ], 200 );
-      }else
-      {
-        DB::rollback();
-        return response()->error( [
-            'message' => 'User Tidak Dapat Dihapus',
-        ], 422 );
-      }
+		if($eform->product_type=='briguna'){
+			try{
+					User::destroy($eform->user_id);
+				  DB::commit();
+				return response()->success( [
+					'message' => 'Hapus User Berhasil',
+				], 200 );
+			} catch (\Exception $e) {
+					DB::rollback();
+					return response()->error( [
+						'message' => 'User Tidak Dapat Dihapus',
+					], 422 );
+			}
+		}else{
+			if ($eform->kpr->is_sent == false ) {
+			  User::destroy($eform->user_id);
+			  DB::commit();
+			return response()->success( [
+				'message' => 'Hapus User Berhasil',
+			], 200 );
+		  }else
+		  {
+			DB::rollback();
+			return response()->error( [
+				'message' => 'User Tidak Dapat Dihapus',
+			], 422 );
+		  }
+		}
     }
 
     /**

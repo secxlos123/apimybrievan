@@ -94,7 +94,8 @@ class Controller extends BaseController
     public function byCif($cif, $token)
     {
       $client = new Client();
-      $requestLeadsDetail = $client->request('GET', config('restapi.apipdm').'/customer/details/'.$cif,
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $requestLeadsDetail = $client->request('GET', $host.'/customer/details/'.$cif,
         [
           'headers' =>
           [

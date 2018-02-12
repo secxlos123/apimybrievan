@@ -322,7 +322,7 @@
                     </tr>
                     <tr>
                         <td class="label">KPR Aktif ke</td>
-                        <td class="break-word">: {{ $eform->kpr['active_kpr'] }}</td>
+                        <td class="break-word">: {{ $eform->kpr['active_kpr_preview'] }}</td>
                     </tr>
                     <tr>
                         <td class="label">Uang Muka</td>
@@ -387,7 +387,7 @@
                 </tbody>
             </table>
 
-                
+
                 <table class="full-width">
                     <tbody>
                         <tr>
@@ -489,19 +489,19 @@
                     </tr>
                     <tr>
                         <td class="label">NPW Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->npw_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->npw_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">NL Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->nl_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->nl_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNPW Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnpw_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnpw_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNL Tanah</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnl_land)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnl_land)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Tanggal Penilaian NPW Bangunan</td>
@@ -509,19 +509,19 @@
                     </tr>
                     <tr>
                         <td class="label">NPW Bangunan</td>
-                        <td class="break-word">: Rp.  {{ number_format(str_replace('.','',$collateral->otsValuation->npw_building )) }}</td>
+                        <td class="break-word">: Rp.  {{ number_format((int) str_replace('.','',$collateral->otsValuation->npw_building )) }}</td>
                     </tr>
                     <tr>
                         <td class="label">NL Bangunan</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->nl_building)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->nl_building)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNPW Bangunan</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnpw_building)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnpw_building)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">PNL Bangunan</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsValuation->pnl_building)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsValuation->pnl_building)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Tanggal Penilaian NPW Tanah & Bangunan</td>
@@ -529,19 +529,19 @@
                     </tr>
                     <tr>
                         <td class="label">NPW Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->npw_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->npw_all))}}</td>
                     </tr>
                     <tr>
                         <td class="label">NL Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->nl_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->nl_all))}}</td>
                     </tr>
                     <tr>
                         <td class="label">PNPW Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->pnpw_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->pnpw_all))}}</td>
                     </tr>
                     <tr>
                         <td class="label">PNL Tanah & Bangunan</td>
-                        <td class="break-word">: Rp. {{number_format(str_replace('.','',$collateral->otsValuation->pnl_all))}}</td>
+                        <td class="break-word">: Rp. {{number_format((int) str_replace('.','',$collateral->otsValuation->pnl_all))}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -586,7 +586,7 @@
                     </tr>
                     <tr>
                         <td class="label">Jarak</td>
-                        <td class="break-word">: {{ intval($collateral->otsInArea->distance) }} 
+                        <td class="break-word">: {{ intval($collateral->otsInArea->distance) }}
                             @if ($collateral->otsInArea->unit_type == 1)
                             Kilometer
                             @else
@@ -688,7 +688,7 @@
                     </tr>
                     <tr>
                         <td class="label">Nama Kantor Anggaran/BPN</td>
-                        <td class="break-word">: {{ $collateral->otsLetter->letter_bpn_name?$collateral->otsLetter->letter_bpn_name:'-' }} </td>
+                        <td class="break-word">: {{ $collateral->otsLetter->bpn_name?$collateral->otsLetter->bpn_name:'-' }} </td>
                     </tr>
                 </tbody>
             </table>
@@ -717,7 +717,7 @@
                     </tr>
                     <tr>
                         <td class="label">Jenis Bangunan</td>
-                        <td class="break-word">: {{ $collateral->otsBuilding->type }}</td>
+                        <td class="break-word">: {{ $collateral->otsBuilding->type_name }}</td>
                     </tr>
                     <tr>
                         <td class="label">Jumlah Bangunan</td>
@@ -851,7 +851,7 @@
                     </tr>
                     <tr>
                         <td class="label">Lokasi</td>
-                        <td class="break-word">: {{ $collateral->otsSeven->location }}</td>
+                        <td class="break-word">: {{ ($collateral->otsSeven->city) ? $collateral->otsSeven->city->name : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="label">Alamat Agunan</td>
@@ -891,27 +891,27 @@
                 <tbody>
                     <tr>
                         <td class="label">Nilai Likuiditas saat Realisasi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->liquidation_realization )) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->liquidation_realization )) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Pasar Wajar</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->fair_market)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->fair_market)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Likuidasi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->liquidation)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->liquidation)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Proyeksi Nilai Pasar Wajar</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->fair_market_projection)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->fair_market_projection)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Proyeksi Nilai Likuidasi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->liquidation_projection)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->liquidation_projection)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Jual Objek Pajak (NJOP)</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsEight->njop)) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsEight->njop)) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Penilaian Dilakukan Oleh</td>
@@ -929,7 +929,7 @@
                     </tr>
                     <tr>
                         <td class="label">Jenis Pengikatan</td>
-                        <td class="break-word">: {{ $collateral->otsEight->type_binding }}</td>
+                        <td class="break-word">: {{ $collateral->otsEight->type_binding_name }}</td>
                     </tr>
                     {{-- <tr>
                         <td class="label">No. Bukti Pengikatan</td>
@@ -964,11 +964,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >DOKUMEN NOTARIS DEVELOPER</td>
                     </tr>
@@ -981,11 +981,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_notary)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_notary  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >DOKUMEN TAKE OVER</td>
                     </tr>
@@ -998,11 +998,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_takeover)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_takeover  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >PERJANJIAN KREDIT</td>
                     </tr>
@@ -1015,11 +1015,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_credit)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_credit  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >SKMHT</td>
                     </tr>
@@ -1032,11 +1032,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_skmht)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_skmht  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >IMB</td>
                     </tr>
@@ -1049,11 +1049,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_imb)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_imb  }}</td>
                     </tr>
-                    @endif
                     <tr>
                         <td class="label" >SHGB</td>
                     </tr>
@@ -1066,11 +1066,11 @@
                         <td class="label">Tanggal Penelitian</td>
                         <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsNine->receipt_date_shgb)) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="label">Keterangan</td>
                         <td class="break-word">: {{ $collateral->otsNine->information_shgb  }}</td>
                     </tr>
-                    @endif
                 </tbody>
             </table>
 
@@ -1089,7 +1089,7 @@
                     </tr>
                     <tr>
                         <td class="label">Nilai Paripasu Agunan Bank</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsTen->paripasu_bank )) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsTen->paripasu_bank )) }}</td>
                     </tr>
                     <tr>
                         <td class="label">Flag Asuransi</td>
@@ -1098,11 +1098,11 @@
                     @if ($collateral->otsTen->insurance == "Ya")
                     <tr>
                         <td class="label">Nama Perusahaan Asuransi</td>
-                        <td class="break-word">: {{ $collateral->otsTen->insurance_company  }}</td>
+                        <td class="break-word">: {{ $collateral->otsTen->insurance_company_name  }}</td>
                     </tr>
                     <tr>
                         <td class="label">Nilai Asuransi</td>
-                        <td class="break-word">: Rp. {{ number_format(str_replace('.','',$collateral->otsTen->insurance_value )) }}</td>
+                        <td class="break-word">: Rp. {{ number_format((int) str_replace('.','',$collateral->otsTen->insurance_value )) }}</td>
                     </tr>
                     @endif
                     <tr>

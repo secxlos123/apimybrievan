@@ -200,13 +200,10 @@ class CustomerController extends Controller
 
         if ( count($zipcode) > 0 && count($zipcodecurrent) > 0 && count($zipcodeoffice) > 0 ) {
             $addzipext = array(
-                'kelurahan' => $zipcode['kelurahan'],
                 'kecamatan' => $zipcode['kecamatan'],
                 'kabupaten' => $zipcode['kabupaten'],
-                'kelurahan_current' => $zipcodecurrent['kelurahan'] ,
                 'kecamatan_current' => $zipcodecurrent['kecamatan'] ,
                 'kabupaten_current' => $zipcodecurrent['kabupaten'] ,
-                'kelurahan_office' => $zipcodeoffice['kelurahan'] ,
                 'kecamatan_office' => $zipcodeoffice['kecamatan'] ,
                 'kabupaten_office' => $zipcodeoffice['kabupaten']
             );
@@ -275,14 +272,16 @@ class CustomerController extends Controller
 
     public function detailDebitur(Request $req)
     {
-        $params   = $req->all();
+        $mobile = (empty($req->header('mobile')) ? false : true);
+        $params = $req->all();
+
         if(empty($params['user_id'])){
             return response()->error([
                 'message' => 'User ID is required !',
             ]);
         }else{
             $customer = new CustomerDetail;
-            $data     = $customer->getDetailDebitur($params);
+            $data     = $customer->getDetailDebitur($params, $mobile);
             return response()->success([
                 'contents' => $data
             ]);
@@ -308,7 +307,6 @@ class CustomerController extends Controller
 				'id' => $content['kode_pos'],
 				'kabupaten' => $content['dati2'],
 				'kecamatan' => $content['kecamatan'],
-				'kelurahan' => $content['kelurahan'],
 			];
 		}, $zip_code_list['data']);
 		\Log::info($zip_code_list);

@@ -109,13 +109,8 @@ class AccountController extends Controller
       $data['pn'] = $request->header('pn');
 
       $client = new Client();
-      $host = env('APP_URL');
-  	  if($host == 'http://api.dev.net/'){
-  		$url = 'http://172.18.44.182/customer/saving/';
-  	}else{
-  		$url = 'http://api.briconnect.bri.co.id/customer/saving/';
-  	  }
-      $requestListExisting = $client->request('GET', $url.$data['branch'].'/'.$data['pn'],
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $requestListExisting = $client->request('GET', $host.'/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
@@ -141,15 +136,9 @@ class AccountController extends Controller
 
     public function getExistingByFo($data, $token)
     {
-      $host = env('APP_URL');
-  	  if($host == 'http://api.dev.net/'){
-  		$url = 'http://172.18.44.182/customer/saving/';
-  	}else{
-  		$url = 'http://api.briconnect.bri.co.id/customer/saving/';
-  	  }
-
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
       $client = new Client();
-      $requestListExisting = $client->request('GET', $url.$data['branch'].'/'.$data['pn'],
+      $requestListExisting = $client->request('GET', $host.'/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [
           'headers' =>
           [
@@ -362,6 +351,8 @@ class AccountController extends Controller
       $data['point'] = $request['point'];
       $data['branch_id'] = $branch;
       $data['creator_name'] = $name;
+      $data['longitude'] = $request['longitude'];
+      $data['latitude'] = $request['latitude']; 
 
       $save = Referral::create($data);
       if ($save) {

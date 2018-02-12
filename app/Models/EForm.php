@@ -256,9 +256,13 @@ class EForm extends Model implements AuditableContract
      */
     public function getIsClasReadyAttribute()
     {
-        if ( $this->is_visited && $this->customer->is_verified && $this->is_screening && !$this->vip_sent ) {
-            if ( $this->visit_report->use_reason == 13 ) {
-                return true;
+        if ( $this->customer ) {
+            if ( $this->is_visited && $this->customer->is_verified && $this->is_screening && !$this->vip_sent ) {
+                if ( $this->visit_report ) {
+                    if ( $this->visit_report->use_reason == 13 ) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -274,7 +278,8 @@ class EForm extends Model implements AuditableContract
     {
         $this->attributes[ 'user_id' ] = $value;
         $customer = $this->customer;
-        $ref_number = strtoupper( substr( $customer->first_name, 0, 3 ) );
+        $name = preg_replace("/[^A-Za-z]/", '',$customer->first_name.$customer->last_name.'XXX');
+        $ref_number = strtoupper( substr( $name, 0, 3 ) );
         $ref_number .= date( 'y' );
         $ref_number .= date( 'm' );
         $ref_number_check = static::whereRaw( 'ref_number ILIKE ?', [ $ref_number . '%' ] );
@@ -734,6 +739,7 @@ class EForm extends Model implements AuditableContract
 
                 }
             }
+            $eform = $eform->where('response_status', 'approve');
         }
 
         if ( $request->has('product') ) {
@@ -1022,7 +1028,7 @@ class EForm extends Model implements AuditableContract
             'Kode_pos_cif' => !( $customer_detail->zip_code ) ? '40000' : $customer_detail->zip_code,
             'Kelurahan_cif' => !( $customer_detail->kelurahan ) ? 'kelurahan' : $customer_detail->kelurahan,
             'Kecamatan_cif' => !( $customer_detail->kecamatan ) ? 'kecamatan' : $customer_detail->kecamatan,
-            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->kabupaten ),
+            'lokasi_dati_cif' => $this->reformatCity( $customer_detail->city ),
             "Usia_mpp" => !( $lkn->age_of_mpp ) ? '' : $lkn->age_of_mpp,
             "Bidang_usaha_value" => !( $lkn->economy_sector ) ? '' : $lkn->economy_sector,
             "Status_kepegawaian_value" => !( $lkn->employment_status ) ? '' : $lkn->employment_status,
@@ -1397,12 +1403,12 @@ class EForm extends Model implements AuditableContract
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
             "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status)?'Ditempati Sendiri':$otsSeven->collateral_status,
-            "Deskripsi_agunan_rt" => !($otsBuilding->description) ? '0' : $otsBuilding->description,
+            "Deskripsi_agunan_rt" => !($otsSeven->description) ? '0' : $otsSeven->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
-            "Nama_pemilik_agunan_rt" => !($otsLetter->on_behalf_of) ? '0' : $otsLetter->on_behalf_of,
-            "Status_bukti_kepemilikan_value_agunan_rt" => !($otsLetter->authorization_land) ? '0' : $otsLetter->authorization_land,
-            "Nomor_bukti_kepemilikan_agunan_rt" => !($otsLetter->number) ? '0' : $otsLetter->number,
-            "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsLetter->date),
+            "Nama_pemilik_agunan_rt" => !($otsSeven->on_behalf_of) ? '0' : $otsSeven->on_behalf_of,
+            "Status_bukti_kepemilikan_value_agunan_rt" => !($otsSeven->ownership_status) ? '0' : $otsSeven->ownership_status,
+            "Nomor_bukti_kepemilikan_agunan_rt" => !($otsSeven->ownership_number) ? '0' : $otsSeven->ownership_number,
+            "Tanggal_bukti_kepemilikan_agunan_rt" => $this->reformatDate($otsSeven->date_evidence),
             "Tanggal_jatuh_tempo_agunan_rt"=> $this->reformatDate($otsLetter->duration_land_authorization),
             "Alamat_agunan_rt" => !($otsSeven->address_collateral) ? '0': str_replace("'", "",$otsSeven->address_collateral),
             "Kelurahan_agunan_rt" => !($otsSeven->village) ? '0' : $otsSeven->village,
@@ -1420,7 +1426,7 @@ class EForm extends Model implements AuditableContract
             "Jenis_pengikatan_value_agunan_rt" => !($otsEight->type_binding)?'0':$otsEight->type_binding,
             "No_bukti_pengikatan_agunan_rt" => !($otsEight->binding_number)?'0': $otsEight->binding_number,//taidak
             "Nilai_pengikatan_agunan_rt" => !($otsEight->binding_value) ? '0' : $this->reformatCurrency( $otsEight->binding_value ),//taidak
-            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'Tidak' : $otsTen->paripasu,//taidak
+            "Paripasu_value_agunan_rt" => !($otsTen->paripasu) ? 'false' : ($otsTen->paripasu == 'Ya' ? 'true':'false' ),//taidak
             "Nilai_paripasu_agunan_bank_rt" => !($otsTen->paripasu_bank) ? '0' : $this->reformatCurrency( $otsTen->paripasu_bank ),//taidak
             "Flag_asuransi_value_agunan_rt" => !($otsTen->insurance)? 'Tidak': $otsTen->insurance,//taidak
             "Nama_perusahaan_asuransi_agunan_rt" =>!($otsTen->insurance_company)?"IJK":$otsTen->insurance_company,//taidak
@@ -1692,9 +1698,9 @@ class EForm extends Model implements AuditableContract
         * @param  string $endChart
         * @return array
     */
-    public function getChartEForm($startChart, $endChart, $user_id)
+    public function getChartEForm($startChart, $endChart, $user_id = null)
     {
-        $developer = Developer::select('id')->where('user_id', $user_id)->first();
+        $filter = false;
         if(!empty($startChart) && !empty($endChart)){
             $startChart = date("01-m-Y",strtotime($startChart));
             $endChart   = date("t-m-Y", strtotime($endChart));
@@ -1706,6 +1712,7 @@ class EForm extends Model implements AuditableContract
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
             $filter = true;
+
         }else if(empty($startChart) && !empty($endChart)){
             $now        = new \DateTime();
             $startChart = $now->format('Y-m-d h:i:s');
@@ -1715,6 +1722,7 @@ class EForm extends Model implements AuditableContract
             $endChart = $dateEnd->format('Y-m-d h:i:s');
 
             $filter = true;
+
         }else if(empty($endChart) && !empty($startChart)){
             $now      = new \DateTime();
             $endChart = $now->format('Y-m-d h:i:s');
@@ -1724,28 +1732,41 @@ class EForm extends Model implements AuditableContract
             $startChart = $dateStart->format('Y-m-d h:i:s');
 
             $filter = true;
-        }else{
-            $filter = false;
+
         }
 
         $data = Eform::select(
-                    DB::raw("count(eforms.id) as value"),
-                    DB::raw("to_char(eforms.created_at, 'TMMonth YYYY') as month"),
-                    DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
-                    DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
-                )
-                ->with("kpr")
-                ->whereHas("kpr", function ($query) use ($developer) {
-                    return $query->join('properties', 'properties.id', 'property_id')
-                                 ->where('kpr.developer_id', $developer['id']);
-                })
-                ->when($filter, function ($query) use ($startChart, $endChart){
-                    return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
-                })
-                ->groupBy('month', 'month2', 'order')
-                ->orderBy("order", "asc")
-                ->get()
-                ->pluck("chart");
+                DB::raw("count(eforms.id) as value"),
+                DB::raw("to_char(eforms.created_at, 'TMMonth YYYY') as month"),
+                DB::raw("to_char(eforms.created_at, 'MM YYYY') as month2"),
+                DB::raw("to_char(eforms.created_at, 'YYYY MM') as order")
+            )
+            ->with("kpr");
+
+        if ( $user_id ) {
+            $developer = Developer::select('id')->where('user_id', $user_id)->first();
+            $data = $data->whereHas("kpr", function ($query) use ($developer) {
+                return $query->join('properties', 'properties.id', 'property_id')
+                    ->where('kpr.developer_id', $developer['id']);
+            });
+        }
+        $user = \RestwsHc::getUser();
+        if (count($user)>0) {
+            if ($user['role'] == 'ao') {
+                $data->where('ao_id',$user['pn']);
+            }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
+                $data->where('branch_id',intval($user['branch_id']));
+            }
+        }
+
+        $data = $data->when($filter, function ($query) use ($startChart, $endChart){
+                return $query->whereBetween('eforms.created_at', [$startChart, $endChart]);
+            })
+            ->groupBy('month', 'month2', 'order')
+            ->orderBy("order", "asc")
+            ->get()
+            ->pluck("chart");
+
         return $data;
     }
 
@@ -1802,8 +1823,18 @@ class EForm extends Model implements AuditableContract
         }else{
             $filter = false;
         }
+        $user = \RestwsHc::getUser();
+        $data = EForm::select();
 
-        $data = EForm::when($filter, function($query) use ($startList, $endList){
+        if (count($user)>0) {
+            if ($user['role'] == 'ao') {
+                $data->where('ao_id',$user['pn']);
+            }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
+                $data->where('branch_id',intval($user['branch_id']));
+            }
+        }
+
+        $data = $data->when($filter, function($query) use ($startList, $endList){
                     return $query->whereBetween('eforms.created_at', [$startList, $endList]);
                 })
                 ->orderBy('created_at', 'desc')

@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API\v1\Int\Crm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use RestwsHc;
+use RestwsSm;
+use DB;
 
 
+use App\Models\Crm\RestBrispot;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\ActivityType;
 use App\Models\Crm\Status;
@@ -154,4 +157,14 @@ class DashboardController extends Controller
       ]);
     }
 
+    public function sales_kit(Request $request)
+    {
+      $db_ext = new RestBrispot;
+      $db_ext->setConnection('mysql2');
+      $sales_kit = $db_ext->all();
+      return response()->success([
+        'message' => 'Sukses get Sales Kit',
+        'contents' => $sales_kit
+      ]);
+    }
 }

@@ -49,12 +49,37 @@ class AuthController extends Controller
         if( $login[ 'responseCode' ] == '00' ) {
             if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                 $role = 'ao';
-            } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
+            // } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
+            //     $role = 'mp';
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 50 ] ) ) {
                 $role = 'mp';
+            // new role
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 49, 51 ] ) ) {
+                $role = 'amp';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 44 ] ) ) {
                 $role = 'fo';
-            } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
+            // } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
+            //     $role = 'pinca';
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 12, 14 ] ) ) {
                 $role = 'pinca';
+            // new role
+            } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
+                $role = 'pinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
+                $role = 'wapinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [19] ) ) {
+                $role = 'pincapem';
+            } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
+                $role = 'pincasus';
+            } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
+                $role = 'wapincasus';
+            } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
+                $role = 'cs';
+            } else if( in_array( intval($data[ 'hilfm' ]), [65] ) ) {
+                $role = 'teller';
+            } else if( in_array( intval($data[ 'hilfm' ]), [54] ) ) {
+                $role = 'spvadk';
+            // end new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
                 if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
@@ -64,25 +89,15 @@ class AuthController extends Controller
                 $role = 'staff';
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
-            // new role
-            } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
-                $role = 'wapincasus';
-            } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
-                $role = 'pincasus';
-            } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
-                $role = 'pinwil';
-            } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
-                $role = 'wapinwil';
-            } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
-                $role = 'cs';
             // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
-                $adk = explode(' ', $data['posisi']);
+                // $adk = explode(' ', $data['posisi']);
                 // print_r($adk);
                 // print_r($data);exit();
-                if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
-                    $role = 'adk';
-                }
+                // if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    // $role = 'adk';
+                // }
+                $role = 'adk';
             } else {
                 // $request->headers->set( 'pn', $pn );
                 // $this->destroy( $request );
