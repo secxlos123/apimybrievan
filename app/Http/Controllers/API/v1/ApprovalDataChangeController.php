@@ -194,12 +194,7 @@ class ApprovalDataChangeController extends Controller
       $usersModel = User::FindOrFail($dev->user_id);     
       
       $typeModule = getTypeModule(Developer::class);
-      $notificationIsRead =  $this->userNotification->where('slug', $approvalDataChanges->related_id)->where( 'type_module',$typeModule)
-                                     ->whereNull('read_at')
-                                     ->first();
-      if($notificationIsRead != NULL){
-          $notificationIsRead->markAsRead();
-      }
+      notificationIsRead($approvalDataChanges->related_id, $typeModule);
 
       if($status == 'approve'){
         $usersModel->notify(new ApproveDeveloperProfile($dev));   /*send notification*/
