@@ -137,6 +137,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/property', 'AuditrailController@auditProperty');
 		Route::get('auditrail/useractivity', 'AuditrailController@auditUserActivity');
 		Route::get('auditrail/activity_detail/{user_id}', 'AuditrailController@auditUserActitiyDetail');
+		Route::get('auditrail/customers/{nik}', 'AuditrailController@show');
 	} );
 
 	} );
