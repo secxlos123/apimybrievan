@@ -406,7 +406,7 @@
                         </tr>
                     @endif
 
-                    @if( $detail->kpr['developer'] == env('DEVELOPER_id','1') )
+                    @if( $detail->kpr['developer_id'] == env('DEVELOPER_id','1') )
                         <tr>
                             <td class="label">Jenis Properti</td>
                             <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
