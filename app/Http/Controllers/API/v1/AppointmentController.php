@@ -138,9 +138,14 @@ class AppointmentController extends Controller
     public function show(Appointment $appointment, Request $request, $id)
     {
       $appointment = $appointment->visibleColumn()
-        ->withEform()
-        ->customer($request->user()->id, $request->month, $request->year)
-        ->where((new Appointment)->getTable() . '.id', $id)
+        ->withEform();
+        if ($request->has('month') || $request->has('year')) {
+            $appointment->customer($request->user()->id, $request->month, $request->year);
+        }else
+        {
+        $appointment->where('eforms.user_id',$request->user()->id);
+        }
+        $appointment = $appointment->where((new Appointment)->getTable() . '.id', $id)
         ->first();
 
         return response()->success([
