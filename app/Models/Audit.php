@@ -699,17 +699,55 @@ class Audit extends Model implements AuditContract
                   
                     }
                 })
+                 ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by Region id.
+                *
+                * @param $request->region_id
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('region_id')){
+                        $auditrail->where(\DB::raw('LOWER(region_id)'), 'like', '%'.strtolower($request->input('region_id')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by region name.
+                *
+                * @param $request->region_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('region_name')){
+                        $auditrail->where(\DB::raw('LOWER(region_name)'), 'like', '%'.strtolower($request->input('region_name')).'%');
+                  
+                    }
+                })
+                ->where(function ($auditrail) use ($request) {
+               /**
+                * This query for search by manager name.
+                *
+                * @param $request->manager_name
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('manager_name')){
+                        $auditrail->where(\DB::raw('LOWER(manager_name)'), 'like', '%'.strtolower($request->input('manager_name')).'%');
+                  
+                    }
+                }) 
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for Auditrail Login
                 */
-                $model_type = 'app\models\collateral';
-               // $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%collateral%');
-                 // $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%agu%');
-                 // $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%col%');
-                 // $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ung%');
-                $auditrail->where('auditable_type', '=', $model_type);
-                $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+                           
+               $model_type = ['app\models\collateral','app\models\otsdoc'];
+               $auditrail->wherein('auditable_type', $model_type);
+               $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+               $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
+               $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
 
                
                 })
