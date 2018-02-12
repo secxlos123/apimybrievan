@@ -776,10 +776,10 @@ if (! function_exists('pushNotification')) {
 
     function lknEForm($credentials){
         $data      = $credentials;
-        $userLogin = $data['credentials'];
         $branch_id = $userLogin['branch_id'];
 
         if (!empty($data['recontest'])) {
+            $userLogin = $data['credentials'];
             $message   = getMessage("eform_lkn_recontest");
             $userModel = $data['user'];
             $userNotif = new UserNotification;
@@ -1112,7 +1112,7 @@ if (! function_exists('pushNotification')) {
             $data         = $dataBuilder->build();
             $topic        = new Topics();
 
-            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_97');
 
             $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
             $topicResponse->isSuccess();
