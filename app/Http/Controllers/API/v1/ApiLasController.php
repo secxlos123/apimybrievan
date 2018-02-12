@@ -38,7 +38,6 @@ class ApiLasController extends Controller
         $data    = '';
         if (!empty($respons['requestData'])) {
             $data = $respons['requestData'];
-            // print_r($data);exit();
         }
         
         switch ($method) {
@@ -1621,12 +1620,12 @@ class ApiLasController extends Controller
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
                                 "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
                                 "Jabatan_atasan"            => empty($request['jabatan_atasan'])?"":$request['jabatan_atasan'],
-                                "KK"                        => $request['KK'],
-                                "SLIP_GAJI"                 => $request['SLIP_GAJI'],
-                                "SK_AWAL"                   => $request['SK_AWAL'],
-                                "SK_AKHIR"                  => $request['SK_AKHIR'],
-                                "REKOMENDASI"               => $request['REKOMENDASI'],
-                                "SKPG"                      => $request['SKPG'],
+                                // "KK"                        => $request['KK'],
+                                // "SLIP_GAJI"                 => $request['SLIP_GAJI'],
+                                // "SK_AWAL"                   => $request['SK_AWAL'],
+                                // "SK_AKHIR"                  => $request['SK_AKHIR'],
+                                // "REKOMENDASI"               => $request['REKOMENDASI'],
+                                // "SKPG"                      => $request['SKPG'],
                                 "request_amount"            => $request['Permohonan_kredit'],
                                 "mitra_id"                  => $request['mitra_id'],
                                 "mitra"                     => $request['mitra_name'],
@@ -1678,13 +1677,27 @@ class ApiLasController extends Controller
                             //------------hapus file----------------------------------
                             $brigunas = $briguna->get();
                             $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah'],'NPWP_nasabah');
-                            \Log::info($npwp);
+                            $kk   = $this->datafoto($request['KK'],$brigunas[0]['id_foto'],$brigunas[0]['KK'],'KK');
+                            $gaji = $this->datafoto($request['SLIP_GAJI'],$brigunas[0]['id_foto'],$brigunas[0]['SLIP_GAJI'],'SLIP_GAJI');
+                            $skpg = $this->datafoto($request['SKPG'],$brigunas[0]['id_foto'],$brigunas[0]['SKPG'],'SKPG');
+                            $sk_awal = $this->datafoto($request['SK_AWAL'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AWAL'],'SK_AWAL');
+                            $sk_akhir = $this->datafoto($request['SK_AKHIR'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AKHIR'],'SK_AKHIR');
+                            $rekomend = $this->datafoto($request['REKOMENDASI'],$brigunas[0]['id_foto'],$brigunas[0]['REKOMENDASI'],'REKOMENDASI');
+
+                            $param_briguna['NPWP_nasabah'] = $npwp;
+                            $param_briguna['KK']           = $kk;
+                            $param_briguna['SLIP_GAJI']    = $gaji;
+                            $param_briguna['SKPG']         = $skpg;
+                            $param_briguna['SK_AWAL']      = $sk_awal;
+                            $param_briguna['SK_AKHIR']     = $sk_akhir;
+                            $param_briguna['REKOMENDASI']  = $rekomend;
+                            \Log::info($param_briguna);
                             // $npwp = substr($request['NPWP_nasabah'], -4);
                             // if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
                             //     $param_briguna['NPWP_nasabah'] = $request['NPWP_nasabah'];
                             // } else {
                             //     unlink($path.'/'.$brigunas[0]['NPWP_nasabah']);
-                            //     $upload_file = $this->uploadimages($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
+                            //     $upload_file = $this->updateimage($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
                             //     $param_briguna['NPWP_nasabah'] = $upload_file;
                             // }
 
@@ -1762,11 +1775,11 @@ class ApiLasController extends Controller
         $path = public_path( 'uploads/' . $id_foto . '/' );
         $npwp = substr($request, -4);
         if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
-            $params[$field] = $request;
+            $params = $request;
         } else {
             unlink($path.'/'.$exist_field);
-            $upload_file = $this->uploadimages($request,$id_foto,$field);
-            $params[$field] = $upload_file;
+            $upload_file = $this->updateimage($request,$id_foto,$field);
+            $params = $upload_file;
         }
         return $params;
     }
@@ -1810,32 +1823,6 @@ class ApiLasController extends Controller
                     'contents' => ''
                 ], 400 );
         }
-    }
-
-    function uploadimages($image,$id,$atribute) {
-        $path = public_path( 'uploads/' . $id . '/' );
-
-        if ( ! empty( $this->attributes[ $atribute ] ) ) {
-            File::delete( $path . $this->attributes[ $atribute ] );
-        }
-        $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = 'pdf';
-                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
-                    $extension = 'jpg';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
-            // log::info('image = '.$image->getMimeType());
-            $filename = $id . '-'.$atribute.'.' . $extension;
-            $image->move( $path, $filename );
-        }
-        return $filename;
     }
 
     public function update_foto_briguna(Request $request) {
@@ -2160,6 +2147,31 @@ class ApiLasController extends Controller
             
             $filename = $eform->user_id.'-'.$id_foto.'.'.$extension;
             $data_image->move( $path, $filename );
+        }
+        return $filename;
+    }
+
+    function updateimage($image, $id, $atribute) {
+        $path = public_path( 'uploads/' . $id . '/' );
+        if (!empty($this->attributes[ $atribute ])) {
+            File::delete($path.$this->attributes[$atribute]);
+        }
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg' || $image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+
+            $filename = $id . '-'.$atribute.'.' . $extension;
+            $image->move( $path, $filename );
         }
         return $filename;
     }
