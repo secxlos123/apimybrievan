@@ -1677,15 +1677,16 @@ class ApiLasController extends Controller
 
                             //------------hapus file----------------------------------
                             $brigunas = $briguna->get();
-                            $path = public_path( 'uploads/' . $brigunas[0]['id_foto'] . '/' );
-                            $npwp = substr($request['NPWP_nasabah'], -4);
-                            if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
-                                $param_briguna['NPWP_nasabah'] = $request['NPWP_nasabah'];
-                            } else {
-                                unlink($path.'/'.$brigunas[0]['NPWP_nasabah']);
-                                $upload_file = $this->uploadimages($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
-                                $param_briguna['NPWP_nasabah'] = $upload_file;
-                            }
+                            $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah'],'NPWP_nasabah');
+                            \Log::info($npwp);
+                            // $npwp = substr($request['NPWP_nasabah'], -4);
+                            // if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
+                            //     $param_briguna['NPWP_nasabah'] = $request['NPWP_nasabah'];
+                            // } else {
+                            //     unlink($path.'/'.$brigunas[0]['NPWP_nasabah']);
+                            //     $upload_file = $this->uploadimages($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
+                            //     $param_briguna['NPWP_nasabah'] = $upload_file;
+                            // }
 
                             $eform->update($param_eform);
                             $briguna->update($param_briguna);
@@ -1757,6 +1758,19 @@ class ApiLasController extends Controller
         }
     }
 
+    function datafoto($request, $id_foto, $exist_field, $field){
+        $path = public_path( 'uploads/' . $id_foto . '/' );
+        $npwp = substr($request, -4);
+        if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
+            $params[$field] = $request;
+        } else {
+            unlink($path.'/'.$exist_field);
+            $upload_file = $this->uploadimages($request,$id_foto,$field);
+            $params[$field] = $upload_file;
+        }
+        return $params;
+    }
+
     public function show_briguna(Request $request) {
         $eform = EformBriguna::filter($request)->get();
         $eform = $eform->toArray();
@@ -1798,7 +1812,7 @@ class ApiLasController extends Controller
         }
     }
 
-    public function uploadimages($image,$id,$atribute) {
+    function uploadimages($image,$id,$atribute) {
         $path = public_path( 'uploads/' . $id . '/' );
 
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
