@@ -776,10 +776,10 @@ if (! function_exists('pushNotification')) {
 
     function lknEForm($credentials){
         $data      = $credentials;
+        $userLogin = $data['credentials'];
         $branch_id = $userLogin['branch_id'];
 
         if (!empty($data['recontest'])) {
-            $userLogin = $data['credentials'];
             $message   = getMessage("eform_lkn_recontest");
             $userModel = $data['user'];
             $userNotif = new UserNotification;
