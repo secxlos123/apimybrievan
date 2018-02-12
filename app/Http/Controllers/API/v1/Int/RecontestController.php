@@ -36,39 +36,60 @@ class RecontestController extends Controller
      */
     public function store( $eform_id, Request $request )
     {
-        DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-        $data = $request->only(["pros", "cons", "source", "income", "income_salary", "income_allowance", "source_income", "couple_salary", "couple_other_salary"]);
+            $data = $request->only(["pros", "cons", "source", "income", "income_salary", "income_allowance", "source_income", "couple_salary", "couple_other_salary"]);
 
-        $data['purpose_of_visit'] = "LKN Recontest";
-        $data['ao_recommendation'] = $request->input("recommendation");
-        $data['ao_recommended'] = $request->input("recommended");
+            $data['purpose_of_visit'] = "LKN Recontest";
+            $data['ao_recommendation'] = $request->input("recommendation");
+            $data['ao_recommended'] = $request->input("recommended");
 
-        // Get User Login
-        $user_login = \RestwsHc::getUser();
+            // Get User Login
+            $user_login = \RestwsHc::getUser();
 
+<<<<<<< HEAD
         $eform = EForm::find($eform_id);
         
         $typeModule = getTypeModule(EForm::class);
         notificationIsRead($eform_id, $typeModule);
+=======
+            $eform = EForm::find($eform_id);
+            $notificationIsRead = $this->userNotification->where('slug',$eform_id)
+    			->where('type_module', 'eform')
+    			->whereNull('read_at')
+    			->first();
 
-        $usersModel = User::FindOrFail($eform->user_id);
+            if( @$notificationIsRead ){
+                $notificationIsRead->markAsRead();
+            }
 
-        $eform->update(["is_approved" => true, 'status_eform' => 'Approval2']);
-        $recontest = $eform->recontest;
-        $recontest->update($data);
+            $usersModel = User::FindOrFail($eform->user_id);
+>>>>>>> 648cf93ae50fad2781e82cbb6bf431451cd9f086
 
-        $recontest->generateArrayData( $request->mutations, 'mutations' );
-        $recontest->generateArrayData( $request->recontest, 'documents' );
+            $eform->update(["is_approved" => true, 'status_eform' => 'Approval2']);
+            $recontest = $eform->recontest;
+            $recontest->update($data);
 
-        $credentials = [
-            'data'        => $eform,
-            'user'        => $usersModel,
-            'request'     => $request,
-            'recontest'   => true,
-        ];
+            $recontest->generateArrayData( $request->mutations, 'mutations' );
+            $recontest->generateArrayData( $request->recontest, 'documents' );
 
-        pushNotification($credentials, 'lknEForm');
+            $credentials = [
+                'data'        => $eform,
+                'user'        => $usersModel,
+                'request'     => $request,
+                'credentials' => $user_login,
+                'recontest'   => true,
+            ];
+
+            pushNotification($credentials, 'lknEForm');
+
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->success( [
+                'message' => $e->getMessage(),
+            ], 422);
+        }
 
         DB::commit();
         return response()->success( [
