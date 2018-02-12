@@ -11,11 +11,11 @@ class KartuKreditController extends Controller{
 	
 	public function example(){
 
-		// return response()->json([
-  //               'name' => 'Abigail',
-  //               'state' => 'CA'
-  //           ]);
-		$ef = new EFormController();
+		return response()->json([
+                'name' => 'Abigail',
+                'state' => 'CA'
+            ]);
+		// $ef = new EFormController();
 		
 	}
 
