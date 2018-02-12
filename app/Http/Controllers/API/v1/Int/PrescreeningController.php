@@ -41,7 +41,9 @@ class PrescreeningController extends Controller
         $user_login = \RestwsHc::getUser();
 
         $data = EForm::findOrFail($request->eform);
-        $personal = $data->customer->personal;
+        if ( $data->customer ) {
+            $personal = $data->customer->personal;
+        }
 
         $dhn = json_decode((string) $data->dhn_detail);
         if ( !isset($dhn->responseData) ) {
