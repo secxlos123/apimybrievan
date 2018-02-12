@@ -22,13 +22,22 @@ class ViewController extends Controller
 		$view2 = '';
 		$view3 = '';
 		$view4 = '';
+		$divid='';
+		$divname='';
         $newForm = VIEW::filter( $request )->get();
 		$table_view = $newForm->toArray();
 		$c = count($table_view);
 		for($i=0;$i<$c;$i++){
+			if(!empty($table_view[$i]['div_name'])){
+				$divname = 'name="'.$table_view[$i]['div_name'].'"';
+			}
+			
+			if(!empty($table_view[$i]['div_id'])){
+				$divid = 'id="'.$table_view[$i]['div_id'].'"';
+			}
 			if($table_view[$i]['kolom']=='1'){
 				if($table_view[$i]['first']=='1'){
-					$view1 .= '<div class="row"><div class="col-md-6"><div class="form-horizontal">';
+					$view1 .= '<div class="row"><div class="col-md-6"><div class="form-horizontal" '.$divid.' '.$divname.'>';
 				}
 					$view1 .= $this->generate_table($table_view,$i);
 				if($table_view[$i]['last']=='1'){
@@ -37,32 +46,32 @@ class ViewController extends Controller
 
 			}elseif($table_view[$i]['kolom']=='2'){
 				if($table_view[$i]['first']=='1'){
-					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'" '.$divid.' '.$divname.'><div class="form-horizontal">';
 					$view1 .= $this->generate_table($table_view,$i);
 					$view1 .= '</div></div>';
 				}
 				if($table_view[$i]['last']=='1'){
-					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= '<div class="'.$table_view[$i]['div_class'].'" '.$divid.' '.$divname.'><div class="form-horizontal">';
 					$view1 .= $this->generate_table($table_view,$i);
 					$view1 .= '</div></div></div>';
 				}
 			}elseif($table_view[$i]['kolom']=='3'){
 				if($table_view[$i]['first']=='1'){
-					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'" '.$divid.' '.$divname.'><div class="form-horizontal">';
 				}
 				if($table_view[$i]['last']=='1'){
-					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= '<div class="'.$table_view[$i]['div_class'].'" '.$divid.' '.$divname.'><div class="form-horizontal">';
 				}
 				if($table_view[$i]['last']=='0'&&$table_view[$i]['first']=='0'){
-					$view1 .= '<div class="'.$table_view[$i]['div_class'].'"><div class="form-horizontal">';
+					$view1 .= '<div class="'.$table_view[$i]['div_class'].'" '.$divid.' '.$divname.'><div class="form-horizontal">';
 				}
 				$view1 .= $this->generate_table($table_view,$i);
 				$view1 .= '</div></div>';
 			}elseif($table_view[$i]['kolom']=='0'){			
-				$view1 .= '<div class="row"><div class="col-md-6"><div class="form-horizontal"></div></div></div>';
+				$view1 .= '<div class="row"><div class="col-md-6" '.$divid.' '.$divname.'><div class="form-horizontal"></div></div></div>';
 			}elseif($table_view[$i]['kolom']=='single'){
 				if($table_view[$i]['first']=='1'){
-					$view1 .= '<div class="row"><div class="col-md-12"><div class="form-horizontal">';
+					$view1 .= '<div class="row"><div class="col-md-12" '.$divid.' '.$divname.'><div class="form-horizontal">';
 				}
 				$view1 .= $this->generate_table($table_view,$i);
 				if($table_view[$i]['last']=='1'){

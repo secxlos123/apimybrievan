@@ -46,10 +46,13 @@ class PropertyItemController extends Controller
     {
         \DB::beginTransaction();
         try {
-            $propertyItem = PropertyItem::create($request->all());
+            for ($i=$request->first_unit; $i <= $request->last_unit; $i++)
+            {
+            $propertyItem = PropertyItem::create($request->except('unit_size','first_unit','last_unit')+['no_item'=> $i ]);
             $status = 'success'; $message = "Project Item {$propertyItem->name} berhasil disimpan.";
             $code = 201;
             \DB::commit();
+            }
         } catch (\Exception $e) {
             \DB::rollBack();
             $status = 'error'; $message = "Project Item {$request->input('name')} gagal disimpan.";
