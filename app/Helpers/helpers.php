@@ -655,20 +655,20 @@ if (! function_exists('pushNotification')) {
         $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
 
-        $notificationData = UserNotification::where('slug', $dataUser['id'])
+        $notificationData = UserNotification::where('slug', $dataUser->id)
                                         ->where('type_module', 'eform')
                                         ->orderBy('created_at', 'desc')->first();
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData['id'],
-            'slug'     => $dataUser['ref_number'],
+            'slug'     => $dataUser->ref_number,
             'type'     => 'profile',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
 
         $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$dataUser['user_id']);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$dataUser->user_id);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
