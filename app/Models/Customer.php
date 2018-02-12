@@ -16,7 +16,7 @@ class Customer extends User
      *
      * @var array
      */
-    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved' ];
+    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile' ];
     /**
      * The accessors to append to the model's array form.
      *
