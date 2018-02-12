@@ -530,8 +530,8 @@ if (! function_exists('getMessage')) {
                 break;
             case 'eform_disposition':
                 $message = [
-                    'title'=> 'EForm Notification (Testing)',
-                    'body' => 'Disposisi Pengajuan (Mohon Abaikan)',
+                    'title'=> 'EForm Notification',
+                    'body' => 'Disposisi Pengajuan',
                 ];
                 break;
             case 'eform_recontest':
