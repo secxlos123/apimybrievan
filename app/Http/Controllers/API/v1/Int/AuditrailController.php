@@ -324,4 +324,44 @@ class AuditrailController extends Controller
                         ], 200);
     }
 
+    /**
+     * This function for list-modulname auditrail tab Collateral
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameCollateral(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_collaterals')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Collateral
+                         */
+
+                         $model_type = ['app\models\collateral','app\models\otsdoc'];
+                         $auditrail->wherein('auditable_type', $model_type);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
+                         $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
 }
