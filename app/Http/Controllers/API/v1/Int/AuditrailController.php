@@ -364,4 +364,84 @@ class AuditrailController extends Controller
                         ], 200);
     }
 
+    /**
+     * This function for list-modulname auditrail tab Agen Developer
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameAgenDev(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_admin_developer')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Agen Developer
+                         */
+
+                         $slug = 'developer-sales';
+                         $action = 'undefined action';
+                         $auditrail->where('role', $slug);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'login');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Property
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameProperty(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_property')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Property
+                         */
+
+                         $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%property%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined action%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%col%');
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
 }
