@@ -444,4 +444,42 @@ class AuditrailController extends Controller
                         ], 200);
     }
 
+    /**
+     * This function for list-modulname auditrail tab Detail User Activity
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameDetailUserActivity(Request $request, $id)
+    {
+        $getModulName = \DB::table('auditrail_admin_developer')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( &$request, &$id ){
+                        
+                        /**
+                         * This query for Auditrail Detail User Activity
+                         */
+
+                         $action = 'undefined action';
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                         $auditrail->where('user_id', '=', $id);
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
 }
