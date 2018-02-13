@@ -49,46 +49,61 @@ class AuthController extends Controller
         if( $login[ 'responseCode' ] == '00' ) {
             if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                 $role = 'ao';
-            // } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
-            //     $role = 'mp';
-            } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 50 ] ) ) {
+                $role_user = 'ao';
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
                 $role = 'mp';
+                $role_user = 'mp';
+                if( in_array( intval($data[ 'hilfm' ]), [ 49, 51 ] ) ) {
+                    $role_user = 'amp';
+                }
+            // } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 50 ] ) ) {
+            //     $role = 'mp';
             // new role
-            } else if( in_array( intval($data[ 'hilfm' ]), [ 49, 51 ] ) ) {
-                $role = 'amp';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 44 ] ) ) {
                 $role = 'fo';
-            // } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
-            //     $role = 'pinca';
-            } else if( in_array( intval($data[ 'hilfm' ]), [ 12, 14 ] ) ) {
+                $role_user = 'fo';
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                 $role = 'pinca';
+                $role_user = 'pinca';
+                if( in_array( intval($data[ 'hilfm' ]), [19] ) ) {
+                    $role_user = 'pincapem';
+                } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
+                    $role_user = 'pincasus';
+                } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
+                    $role_user = 'wapincasus';
+                }
+            // } else if( in_array( intval($data[ 'hilfm' ]), [ 12, 14 ] ) ) {
+            //     $role = 'pinca';
             // new role
             } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
                 $role = 'pinwil';
+                $role_user = 'pinwil';
             } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
                 $role = 'wapinwil';
-            } else if( in_array( intval($data[ 'hilfm' ]), [19] ) ) {
-                $role = 'pincapem';
-            } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
-                $role = 'pincasus';
-            } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
-                $role = 'wapincasus';
+                $role_user = 'wapinwil';
             } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
                 $role = 'cs';
+                $role_user = 'cs';
             } else if( in_array( intval($data[ 'hilfm' ]), [65] ) ) {
                 $role = 'teller';
+                $role_user = 'teller';
             } else if( in_array( intval($data[ 'hilfm' ]), [54] ) ) {
                 $role = 'spvadk';
+                $role_user = 'spvadk';
             // end new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
+                $role_user = 'prescreening';
                 if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
                     $role = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
+                    $role_user = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
                 }
             } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
+                $role_user = 'staff';
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
+                $role_user = 'collateral';
             // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
                 // $adk = explode(' ', $data['posisi']);
@@ -98,6 +113,7 @@ class AuthController extends Controller
                     // $role = 'adk';
                 // }
                 $role = 'adk';
+                $role_user = 'adk';
             } else {
                 // $request->headers->set( 'pn', $pn );
                 // $this->destroy( $request );
@@ -107,6 +123,7 @@ class AuthController extends Controller
                 // ], 401 );
                 // Ini Buat Handle Semua User Bisa Masuk Role Staff
                 $role = 'staff';
+                $role_user = 'staff';
             }
 
             if (ENV('APP_ENV') == 'local') {
@@ -130,7 +147,6 @@ class AuthController extends Controller
                     ]);
                 }
             }
-
 
             if (ENV('APP_ENV') == 'local') {
                 $branch = '12';
@@ -167,7 +183,6 @@ class AuthController extends Controller
                 $branch = $data[ 'branch' ];
             }
 
-
             return response()->success( [
                 'message' => 'Login Sukses',
                 'contents'=> [
@@ -176,6 +191,7 @@ class AuthController extends Controller
                     'name' => $data[ 'nama' ],
                     'branch' => $branch,
                     'role' => $role,
+                    'role_user' => $role_user,
                     'position' => $data['posisi'],
                     'uker' => $data['tipe_uker']
                 ]

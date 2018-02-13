@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Builder;
+// use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
@@ -1235,6 +1235,14 @@ class ApiLasController extends Controller
             // $putus = $ApiLas->putusSepakat($conten_putusan);
             // return $putus;
             try {
+                // save json_ws_log
+                $data_log = [
+                    'json_data' => $conten_putusan['JSONData'],
+                    'function_name' => 'putusSepakat',
+                    'created_at'=> date('Y-m-d H:i:s')
+                ];
+                $save = \DB::table('json_ws_log')->insert($data_log);
+                \Log::info('berhasil save putusSepakat json_ws_log'.$save);
                 $client = $this->client();
                 $resultclient = $client->putusSepakat($conten_putusan);
                 if($resultclient->putusSepakatResult){
@@ -1771,19 +1779,6 @@ class ApiLasController extends Controller
         }
     }
 
-    function datafoto($request, $id_foto, $exist_field, $field){
-        $path = public_path( 'uploads/' . $id_foto . '/' );
-        $npwp = substr($request, -4);
-        if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
-            $params = $request;
-        } else {
-            unlink($path.'/'.$exist_field);
-            $upload_file = $this->updateimage($request,$id_foto,$field);
-            $params = $upload_file;
-        }
-        return $params;
-    }
-
     public function show_briguna(Request $request) {
         $eform = EformBriguna::filter($request)->get();
         $eform = $eform->toArray();
@@ -1933,6 +1928,15 @@ class ApiLasController extends Controller
                 'uid'           => !isset($params['uid']) ? "" : $params['uid'],
                 'flag_override' => !isset($params['flag_override'])? "" : $params['flag_override']
             ];
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter,
+                'function_name' => 'kirimPemutus',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save kirimPemutus json_ws_log'.$save);
+
             $client = $this->client();
             $resultclient = $client->kirimPemutus($parameter);
             // print_r($resultclient);exit();
@@ -1965,6 +1969,14 @@ class ApiLasController extends Controller
     function hitungCRSBrigunaKarya($params) {
         try {
             $parameter['id_Aplikasi'] = $params;
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['id_Aplikasi'],
+                'function_name' => 'hitungCRS',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save hitungCRS json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->hitungCRSBrigunaKarya($parameter);
 
@@ -1997,6 +2009,14 @@ class ApiLasController extends Controller
     function insertDataKreditBriguna($params) {
         try {
             $parameter['JSON'] = json_encode($params);
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSON'],
+                'function_name' => 'insertDataKreditBriguna',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertDataKreditBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataKreditBriguna($parameter);
 
@@ -2029,6 +2049,14 @@ class ApiLasController extends Controller
     function insertPrescoringBriguna($params) {
         try {
             $parameter['JSON'] = json_encode($params);
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSON'],
+                'function_name' => 'insertPrescoringBriguna',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertPrescoringBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertPrescoringBriguna($parameter);
 
@@ -2061,6 +2089,14 @@ class ApiLasController extends Controller
     function insertPrescreeningBriguna($params) {
         try {
             $parameter['JSON'] = json_encode($params);
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSON'],
+                'function_name' => 'insertPrescreeningBriguna',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertPrescreeningBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertPrescreeningBriguna($parameter);
 
@@ -2094,6 +2130,14 @@ class ApiLasController extends Controller
         try {
             $parameter['JSONData'] = json_encode($params);
             $parameter['flag_sp']  = 1;
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSONData'],
+                'function_name' => 'insertDataDebtPerorangan',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertDataDebtPerorangan json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataDebtPerorangan($parameter);
 
@@ -2121,6 +2165,22 @@ class ApiLasController extends Controller
                 ]
             ];
         }
+    }
+
+    function datafoto($request, $id_foto, $exist_field, $field){
+        $path = public_path( 'uploads/' . $id_foto . '/' );
+        $npwp = substr($request, -4);
+        if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
+            $params = $request;
+        } else {
+            if (!empty($exist_field)) {
+                unlink($path.'/'.$exist_field);
+            }
+            
+            $upload_file = $this->updateimage($request,$id_foto,$field);
+            $params = $upload_file;
+        }
+        return $params;
     }
 
     function uploadimage($image, $id, $id_foto) {
