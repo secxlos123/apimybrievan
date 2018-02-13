@@ -287,4 +287,41 @@ class AuditrailController extends Controller
                         ], 200);
     }
 
+    /**
+     * This function for list-modulname auditrail tab Appointment
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameAppointment(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_type_one')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        /**
+                         * This query for Auditrail Appointment
+                         */
+
+                         $appointment = 'app\models\appointment';
+
+                         $auditrail->where('auditable_type', $appointment);
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
 }

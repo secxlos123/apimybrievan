@@ -141,6 +141,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/getnik', 'AuditrailController@getNik');
 		Route::get('auditrail/list-mnpengajuan', 'AuditrailController@modulNamePengajuanKredit')->name('list-mnpengajuan');
 		Route::get('auditrail/list-mnadmindev', 'AuditrailController@modulNameAdminDev')->name('list-mnadmindev');
+		Route::get('auditrail/list-mnappointment','AuditrailController@modulNameAppointment')->name('list-mnappointment');
 	} );
 
 	} );
