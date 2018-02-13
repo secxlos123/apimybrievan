@@ -8,6 +8,8 @@ use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\Audit;
+use App\Models\Developer;
+use App\Models\Collateral;
 use DB;
 
 class AuditrailController extends Controller
@@ -285,6 +287,308 @@ class AuditrailController extends Controller
                             'message' => 'Success',
                             'contents'=> $getModulName
                         ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Appointment
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameAppointment(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_type_one')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        /**
+                         * This query for Auditrail Appointment
+                         */
+
+                         $appointment = 'app\models\appointment';
+
+                         $auditrail->where('auditable_type', $appointment);
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Collateral
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameCollateral(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_collaterals')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Collateral
+                         */
+
+                         $model_type = ['app\models\collateral','app\models\otsdoc'];
+                         $auditrail->wherein('auditable_type', $model_type);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
+                         $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Agen Developer
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameAgenDev(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_admin_developer')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Agen Developer
+                         */
+
+                         $slug = 'developer-sales';
+                         $action = 'undefined action';
+                         $auditrail->where('role', $slug);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'login');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Property
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameProperty(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_property')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Property
+                         */
+
+                         $auditrail->where(\DB::raw('LOWER(auditable_type)'), 'like', '%property%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined action%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%pengajuan%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%col%');
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Detail User Activity
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameDetailUserActivity(Request $request, $id)
+    {
+        $getModulName = \DB::table('auditrail_admin_developer')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( &$request, &$id ){
+                        
+                        /**
+                         * This query for Auditrail Detail User Activity
+                         */
+
+                         $action = 'undefined action';
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                         $auditrail->where('user_id', '=', $id);
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    //Collateral detail
+     /**
+     * Show collateral list
+     * @return \Illuminate\Http\Response
+     */
+    public function collaterlDeveloper(Request $request)
+    {
+      
+      $developer_id = env('DEVELOPER_KEY',1);
+      $data = Collateral::with('property','developer')->where('developer_id','!=',$developer_id); 
+      if ($request->has('status')) $data->where('status', $request->input('status'));
+      if($request->has('staff_name')){
+                $data->where(\DB::raw('LOWER(staff_name)'), 'like', '%'.strtolower($request->input('staff_name')).'%');
+      }
+      if($request->has('manager_id')){
+                $data->where(\DB::raw('manager_id'), '=', $request->input('manager_id'));
+      } 
+      if($request->has('manager_name')){
+                $data->where(\DB::raw('LOWER(manager_name)'), 'like', '%'.strtolower($request->input('manager_name')).'%');
+      }
+      
+      if($request->has('region_id')){
+            $data->whereHas('property',function($property) use ($request)
+        {
+          $property->where('region_id','ilike','%'.$request->input('region_id').'%');
+ 
+        });
+      } 
+      if($request->has('region_name')){
+        $data->whereHas('property',function($property) use ($request)
+        {
+          $property->where('region_name','ilike','%'.$request->input('region_name').'%');
+        });
+      }
+      if ($request->has('created_at')){
+        $data->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+      }  
+        
+      $data->orderBy('created_at', 'desc');
+      return response()->success([
+        'contents' => $data->paginate($request->has('limit') ? $request->limit : 10)
+      ]);
+    }
+
+    /**
+     * Show Collateral Non Kerjasama
+     * @return \Illuminate\Http\Response
+     */
+    public function collateralNon(Request $request)
+    {
+      $developer_id = env('DEVELOPER_KEY',1);
+      // $data = Collateral::GetLists($request)->where('developer_id','=',$developer_id);
+        $data = \DB::table('collateral_view_table')
+                    ->selectRaw("properties.region_name,collaterals.manager_id,
+                        collaterals.manager_name,
+                        collaterals.created_at,
+                           collateral_view_table.*")
+                    ->join("properties", "properties.id", "=", "collateral_view_table.property_id")
+                    ->join("collaterals", "collaterals.id", "=", "collateral_view_table.collaterals_id");
+      if($request->has('manager_id')){
+        $data->where(\DB::raw('manager_id'), '=',$request->input('manager_id'));
+      } 
+      if($request->has('manager_name')){
+        $data->where(\DB::raw('LOWER(manager_name)'), 'like', '%'.strtolower($request->input('manager_name')).'%');
+      } 
+      if($request->has('region_id')){
+        $data->where('collateral_view_table.region_id','ilike','%'.$request->input('region_id').'%');
+      }
+      if($request->has('region_name')){
+        $data->where('region_name','ilike','%'.$request->input('region_name').'%');
+      }         
+      if ($request->has('created_at')){
+        $data->where(\DB::raw('DATE(collaterals.created_at)'), $request->input('created_at'));
+      }   
+           $data->orderBy('collaterals.created_at', 'desc');         
+      return response()->success([
+        'contents' => $data->paginate($request->has('limit') ? $this->request->limit : 10)
+      ]);
+    }
+
+    /*
+        Show data collateral
+    */
+
+    public function showCollateraldetail($developerId, $propertyId){
+            if($developerId ==1){
+
+            }else{
+                return $this->makeResponse(
+                $this->collateral->withAll()->where('developer_id', $developerId)->where('property_id', $propertyId)->firstOrFail()
+                );
+            }
+    }
+
+
+     /**
+     * Build response json
+     * @param  mixed $data
+     * @return \Illuminate\Http\Response
+     */
+    private function makeResponse($data)
+    {
+      return response()->success([
+        'contents' => $data
+      ]);
     }
 
 }
