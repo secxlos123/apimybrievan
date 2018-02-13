@@ -193,7 +193,8 @@ class AuthController extends Controller
                     'role' => $role,
                     'role_user' => $role_user,
                     'position' => $data['posisi'],
-                    'uker' => $data['tipe_uker']
+                    'uker' => $data['tipe_uker'],
+                    'hilfm' => $data['hilfm']
                 ]
             ], 200 );
 

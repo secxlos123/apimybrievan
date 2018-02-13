@@ -88,4 +88,33 @@ class VisitReportController extends Controller
             'contents' => $visit_report
         ], 201 );
     }
+
+    /**
+     * Resend VIP function
+     *
+     * @param integer $eform_id
+     * @param  \App\Http\Requests\API\v1\VisitReportRequest  $request
+     * @return \Illuminate\Http\Response
+     **/
+    public function resendVIP( $eform_id, Request $request )
+    {
+        $eform = EForm::find($eform_id);
+        $message = 'Resend E-Form VIP gagal';
+        // auto approve for VIP
+        if ( $eform->is_clas_ready ) {
+            $message = autoApproveForVIP( array(), $eform->id );
+
+            if ( $message == 'E-Form VIP berhasil' ) {
+                return response()->success( [
+                    'message' => $message,
+                    'contents' => array()
+                ], 200 );
+            }
+        }
+
+        return response()->error( [
+            'message' => $message,
+            'contents' => array()
+        ], 401 );
+    }
 }
