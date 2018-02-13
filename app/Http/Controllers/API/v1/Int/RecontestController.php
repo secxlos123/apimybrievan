@@ -48,24 +48,12 @@ class RecontestController extends Controller
             // Get User Login
             $user_login = \RestwsHc::getUser();
 
-<<<<<<< HEAD
-        $eform = EForm::find($eform_id);
-        
-        $typeModule = getTypeModule(EForm::class);
-        notificationIsRead($eform_id, $typeModule);
-=======
             $eform = EForm::find($eform_id);
-            $notificationIsRead = $this->userNotification->where('slug',$eform_id)
-    			->where('type_module', 'eform')
-    			->whereNull('read_at')
-    			->first();
-
-            if( @$notificationIsRead ){
-                $notificationIsRead->markAsRead();
-            }
+        
+            $typeModule = getTypeModule(EForm::class);
+            notificationIsRead($eform_id, $typeModule);
 
             $usersModel = User::FindOrFail($eform->user_id);
->>>>>>> 648cf93ae50fad2781e82cbb6bf431451cd9f086
 
             $eform->update(["is_approved" => true, 'status_eform' => 'Approval2']);
             $recontest = $eform->recontest;
