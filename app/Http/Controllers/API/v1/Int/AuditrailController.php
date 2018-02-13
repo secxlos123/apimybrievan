@@ -174,13 +174,7 @@ class AuditrailController extends Controller
 
         $eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
      //     dd($eform);              
-        // $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
-        // if (count($customerDetail) > 0) {
-        //     $customer = Customer::findOrFail( $customerDetail->user_id );
-        // } else {
-        //     $customer = Customer::findOrFail( $id );
-        // }
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $eform,
@@ -196,7 +190,7 @@ class AuditrailController extends Controller
                /**
                 * This query for search by Nama Customer or Nik Customer .
                 *
-                * @param $request->username
+                * @param $request->search
                 * @return \Illuminate\Database\Eloquent\Builder
                 */
 
@@ -212,6 +206,85 @@ class AuditrailController extends Controller
                         'message' => 'Sukses',
                         'contents' => $getNik
                         ], 200 );
+    }
+
+    /**
+     * This function for list-modulname auditrail tab pengajuan kredit
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNamePengajuanKredit(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_pengajuankredit')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where(function($auditrail) use ($request){
+                    /**
+                     * This query for search by Modul Name .
+                     *
+                     * @param $request->search
+                     * @return \Illuminate\Database\Eloquent\Builder
+                     */
+                        if($request->has('search')){
+                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                        }
+
+                        })
+                          ->where(function ($auditrail) use (&$request, &$query){
+                    
+                        $eform = 'app\\models\\eform';
+                        $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah'];
+                        $appointment = 'app\\models\\appointment';
+                        $propertyItem = 'app\\models\\propertyitem';
+                        $auditrail->whereNotNull('username');
+                        $auditrail->where(\DB::raw('LOWER(new_values)'), '!=', '[]');
+                        $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
+                        $auditrail->where('auditable_type', '!=', $appointment);
+                        $auditrail->where('auditable_type', '!=', $propertyItem);
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Sukses',
+                            'contents'=> $getModulName
+                        ], 200);
+    }
+
+    /**
+     * This function for list-modulname auditrail tab Admin Developer
+     * @param Illuminate\Http\Request
+     */
+
+    public function modulNameAdminDev(Request $request)
+    {
+        $getModulName = \DB::table('auditrail_new_admin_dev')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Admin Developer
+                         */
+                        $slug = 'developer';
+                        $action = ['undefined action','login','logout'];
+                        $model_type = 'app\\models\\audit';
+                        $auditrail->where('auditable_type', '!=', $model_type);
+                        $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
+                        $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen','tambah unit property']);
+
+                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        return response()->success([
+                            'message' => 'Success',
+                            'contents'=> $getModulName
+                        ], 200);
     }
 
 }

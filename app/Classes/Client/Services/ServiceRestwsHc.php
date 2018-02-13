@@ -105,7 +105,8 @@ class ServiceRestwsHc extends Client
                     'branch_id' => $branch,
                     'pn' => $get_user_info_service[ 'responseData' ][ 'PERNR' ],
                     'position' => $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ],
-                    'department' => $get_user_info_service[ 'responseData' ][ 'STELL_TX' ]
+                    'department' => $get_user_info_service[ 'responseData' ][ 'STELL_TX' ],
+                    'hilfm' => $get_user_info_service[ 'responseData' ][ 'HILFM' ]
                     // 'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
                 ];
             }

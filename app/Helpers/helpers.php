@@ -1112,7 +1112,7 @@ if (! function_exists('pushNotification')) {
             $data         = $dataBuilder->build();
             $topic        = new Topics();
 
-            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_97');
 
             $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
             $topicResponse->isSuccess();

@@ -177,7 +177,8 @@ class AuthController extends Controller
                     'branch' => $branch,
                     'role' => $role,
                     'position' => $data['posisi'],
-                    'uker' => $data['tipe_uker']
+                    'uker' => $data['tipe_uker'],
+                    'hilfm' => $data['hilfm']
                 ]
             ], 200 );
 
