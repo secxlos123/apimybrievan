@@ -347,6 +347,7 @@ class EForm extends Model implements AuditableContract
                             $eform->additional_parameters
                         )
                     );
+                    $eform->update($defaultValue);
                 }
             }
 
