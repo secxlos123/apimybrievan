@@ -99,7 +99,7 @@ class VisitReportController extends Controller
     public function resendVIP( $eform_id, Request $request )
     {
         $eform = EForm::find($eform_id);
-
+        $message = 'Resend E-Form VIP gagal';
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
             $message = autoApproveForVIP( array(), $eform->id );
@@ -113,7 +113,7 @@ class VisitReportController extends Controller
         }
 
         return response()->error( [
-            'message' => 'Resend E-Form VIP gagal',
+            'message' => $message,
             'contents' => array()
         ], 401 );
     }
