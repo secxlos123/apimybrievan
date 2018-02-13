@@ -347,6 +347,7 @@ class EForm extends Model implements AuditableContract
                             $eform->additional_parameters
                         )
                     );
+                    $eform->update($defaultValue);
                 }
             }
 
@@ -965,6 +966,12 @@ class EForm extends Model implements AuditableContract
                 'status' => true
                 , 'message' => ''
             );
+        } else {
+            if ( $endpoint == 'InsertIntoAnalis' ) {
+                $this->vip_sent = false;
+                $this->save();
+
+            }
         }
 
         return $return;
@@ -1560,18 +1567,26 @@ class EForm extends Model implements AuditableContract
      */
     public function getInterest( $fid_aplikasi )
     {
-        $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
-            ->setBody([
-                'Request' => json_encode( array(
-                    'fid_aplikasi' => $fid_aplikasi
-                ) )
-            ])
-            ->post( 'form_params' );
+        if ( !isset($this->additional_parameters['gimmick_rate']) ) {
+            $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
+                ->setBody([
+                    'Request' => json_encode( array(
+                        'fid_aplikasi' => $fid_aplikasi
+                    ) )
+                ])
+                ->post( 'form_params' );
 
-        $this->additional_parameters += [ "gimmick_rate" => $getGimmick[ 'contents' ] ] ;
-        $this->save();
+            $this->additional_parameters += [ "gimmick_rate" => $getGimmick[ 'contents' ] ] ;
+            $this->save();
 
-        return floatval($getGimmick[ 'contents' ]);
+            $return = $getGimmick[ 'contents' ];
+
+        } else {
+            $return = $this->additional_parameters['gimmick_rate'];
+
+        }
+
+        return floatval($return);
     }
 
     /**
