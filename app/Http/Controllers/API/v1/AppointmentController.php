@@ -96,12 +96,8 @@ class AppointmentController extends Controller
         // $save = $request->only($postTaken);
         if ($save) {
             $typeModule = getTypeModule(Appointment::class);
-            $notificationIsRead =  $this->userNotification->where( 'slug', $save->eform_id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
-            if($notificationIsRead != NULL){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($save->eform_id, $typeModule);
+
             $usersModel = User::FindOrFail($save->user_id);     /*send notification*/
             $usersModel->notify(new NewSchedulerCustomer($save));
 
@@ -196,12 +192,8 @@ class AppointmentController extends Controller
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
 
             $typeModule = getTypeModule(Appointment::class);
-            $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
-            if($notificationIsRead != NULL){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($id, $typeModule);
+
             $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
             $usersModel->notify(new UpdateSchedulerCustomer($Update));
 
