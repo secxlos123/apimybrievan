@@ -172,7 +172,20 @@ class DashboardController extends Controller
 
     public function marketing_summary(Request $request)
     {
-      $data = Marketing::getMarketingSummary($request)->get();
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar_branch($pn,$branch);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $data = Marketing::getMarketingSummary($request)->whereIn('pn',$list_pn)->get();
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
@@ -185,16 +198,31 @@ class DashboardController extends Controller
           $value->target
         ];
       }
-      $marketing_summary = [];
+
+      $data_summary = [];
+      $ext_nul = [
+        1=>'0',
+        2=>'00',
+        3=>'000',
+        4=>'0000'
+      ];
       foreach ($data as $key => $value) {
-        $marketing_summary[$value->pn]=[
-          'Total'=>array_sum($total[$value->pn]),
+        $data_summary[$value->pn]=[
+          'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
+          'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
+          'Total'=>count($total[$value->pn]),
           'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?count($status[$value->pn]['Prospek']):0,
-          'On Progres'=>(array_key_exists('On Progres',$status[$value->pn]))?count($status[$value->pn]['On Progres']):0,
+          'On Progress'=>(array_key_exists('On Progress',$status[$value->pn]))?count($status[$value->pn]['On Progress']):0,
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?count($status[$value->pn]['Done']):0,
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?count($status[$value->pn]['Batal']):0
         ];
       }
+      $marketing_summary = [];
+      foreach ($data_summary as $key => $value) {
+        $marketing_summary[]=$value;
+      }
+
+
 
       if ($marketing_summary) {
           return response()->success([
@@ -206,5 +234,38 @@ class DashboardController extends Controller
       return response()->error([
           'message' => 'Gagal get Marketing Summary.',
       ], 500);
+    }
+
+    public function pemasar_branch($pn, $branch){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
     }
 }
