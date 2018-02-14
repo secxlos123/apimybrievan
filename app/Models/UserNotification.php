@@ -186,7 +186,7 @@ class UserNotification extends Model
 		case 'App\Notifications\NewSchedulerCustomer':
 			$subjectNotif = ['message' => 'Schedule Data Baru',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'message_external' => 'Schedule Data Baru',
 				'url_mobile' => '#',
 			];
 			break;
@@ -316,7 +316,7 @@ class UserNotification extends Model
 
 		if (@$role == 'pinca') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
@@ -478,6 +478,7 @@ class UserNotification extends Model
 	}
 
 	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit, $count = null) {
+		$data = [];
 		if (empty($pn)) {
 			$query = new UserNotification;
 			if ($role == 'customer') {
@@ -606,7 +607,13 @@ class UserNotification extends Model
 		if (empty($count)) {
 			return $data->paginate($limit);
 		}else {
-			return $data->get()->count();
+			if(empty($data)){
+				$counter = count($data);
+			}else {
+				$counter = $data->get()->count();
+			}
+
+			return $counter;
 		}
 	}
 }
