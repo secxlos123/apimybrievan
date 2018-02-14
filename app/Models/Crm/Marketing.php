@@ -70,4 +70,22 @@ class Marketing extends Model
             // ]))
             ;
     }
+
+    public function scopeGetMarketingSummary($query, Request $request)
+    {
+      $summary_marketing = [];
+      return $query
+            ->where(function($marketing) use($request){
+              if($request->has('month')){
+                $marketing->whereMonth('marketings.created_at', '=', $request->input('month'));
+              }
+              if($request->has('product_type')){
+                $marketing->where('marketings.product_type', '=', $request->input('product_type'));
+              }
+              if($request->has('pn')){
+                $marketing->where('marketings.pn', '=', $request->input('pn'));
+              }
+            })
+            ;
+    }
 }

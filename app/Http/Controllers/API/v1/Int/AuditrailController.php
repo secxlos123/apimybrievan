@@ -535,6 +535,7 @@ class AuditrailController extends Controller
     public function collateralNon(Request $request)
     {
       $developer_id = env('DEVELOPER_KEY',1);
+
       // $data = Collateral::GetLists($request)->where('developer_id','=',$developer_id);
         $data = \DB::table('collateral_view_table')
                     ->selectRaw("properties.region_name,collaterals.manager_id,
@@ -543,6 +544,7 @@ class AuditrailController extends Controller
                            collateral_view_table.*")
                     ->join("properties", "properties.id", "=", "collateral_view_table.property_id")
                     ->join("collaterals", "collaterals.id", "=", "collateral_view_table.collaterals_id");
+        if ($request->has('status')) $data->where('collaterals.status', $request->input('status'));
       if($request->has('manager_id')){
         $data->where(\DB::raw('manager_id'), '=',$request->input('manager_id'));
       } 
@@ -558,9 +560,13 @@ class AuditrailController extends Controller
       if ($request->has('created_at')){
         $data->where(\DB::raw('DATE(collaterals.created_at)'), $request->input('created_at'));
       }   
-           $data->orderBy('collaterals.created_at', 'desc');         
+      if($request->has('staff_name')){
+            $data->where(\DB::raw('LOWER(collateral_view_table.staff_name)'), 'like', '%'.strtolower($request->input('staff_name')).'%');
+      }
+           $data->orderBy('collaterals.created_at', 'desc');        
+
       return response()->success([
-        'contents' => $data->paginate($request->has('limit') ? $this->request->limit : 10)
+        'contents' => $data->paginate($request->has('limit') ? $request->limit : 10)
       ]);
     }
 
