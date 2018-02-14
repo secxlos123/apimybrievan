@@ -625,7 +625,7 @@ class EFormController extends Controller
                                 $data = [
                                 'developer_id' => $developer_id,
                                 'property_id' => $property->id,
-                                'status' => Collateralpostman::STATUS[0]
+                                'status' => Collateral::STATUS[0]
                             ];
                             $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
                             \Log::info('=================== Insert Collateral===========');
