@@ -258,7 +258,7 @@ class CollateralController extends Controller
                   //*/
                   $credentials = [
                      'headerNotif' => $message['title'],
-                     'bodyNotif' => $message['message'],
+                     'bodyNotif' => $message['body'],
                      'id' => $id,
                      'type' => 'collateral_penilaian_agunan',
                      'slug' => $collateral_id,
@@ -428,7 +428,7 @@ class CollateralController extends Controller
               $id = $notificationData['id'];
               $credentials = [
                   'headerNotif' => 'Collateral Notification',
-                  'bodyNotif' => $message['message'],
+                  'bodyNotif' => $message['body'],
                   'id' => $id,
                   'type' => $type,
                   'slug' => $collateralId,
@@ -507,7 +507,7 @@ class CollateralController extends Controller
             'id' => $id,
             'user_id' => $staff_id,
             'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => $message['message'],
+            'bodyNotif' => $message['body'],
             'type' => 'collateral_disposition',
             'receiver' => $receiver,
         ];
@@ -587,7 +587,7 @@ class CollateralController extends Controller
                     //*/
                      $credentials = [
                       'headerNotif' => $message['title'],
-                      'bodyNotif' => $message['message'],
+                      'bodyNotif' => $message['body'],
                       'id' => $id,
                       'type' => 'collateral_checklist',
                       'slug' => $collateralId,
@@ -655,7 +655,7 @@ class CollateralController extends Controller
         //*/
         $credentials = [
             'headerNotif' => $message['title'],
-            'bodyNotif' => $message['message'],
+            'bodyNotif' => $message['body'],
             'id' => $id,
             'type' => 'collateral_ots',
             'slug' => $collateral_id,

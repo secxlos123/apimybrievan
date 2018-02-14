@@ -689,12 +689,8 @@ class EFormController extends Controller
             $eform->update( $baseRequest );
 
             $typeModule = getTypeModule(EForm::class);
-            $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
-                                           ->whereNull('read_at')
-                                           ->first();
-            if($notificationIsRead != NULL){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($id, $typeModule);
+
             $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
             $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
@@ -721,7 +717,7 @@ class EFormController extends Controller
             ];
 
             // Call the helper of push notification function
-            pushNotification($credentialsz, 'disposition');
+            pushNotification($credentials, 'disposition');
         } catch (Exception $e) {
             DB::rollback();
             return response()->error( [
@@ -759,17 +755,9 @@ class EFormController extends Controller
 
         if( $eform['status'] ) {
             $data =  EForm::findOrFail($eform_id);
+            
             $typeModule = getTypeModule(EForm::class);
-
-            $notificationIsRead = $this->userNotification
-                ->where( 'slug', $eform_id)
-                ->where( 'type_module',$typeModule)
-                ->whereNull('read_at')
-                ->first();
-
-            if($notificationIsRead != NULL ){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($eform_id, $typeModule);
 
             if ($request->is_approved == "true") {
                 $usersModel = User::FindOrFail($data->user_id);
@@ -855,9 +843,8 @@ class EFormController extends Controller
         $verify = EForm::verify( $token, $status );
         if( $verify['message'] ) {
             if ($verify['contents']) {
-                if ( $notificationIsRead != NULL ) {
-                    $notificationIsRead->markAsRead();
-                }
+                $typeModule = getTypeModule(EForm::class);
+                notificationIsRead($verify['contents']->id, $typeModule);
 
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
                 if ($status == 'approve') {
@@ -956,9 +943,7 @@ class EFormController extends Controller
                     )->first();
 
                     $typeModule = getTypeModule(EForm::class);
-                    $notificationIsRead = $this->userNotification->where( 'slug', $data->id)->where( 'type_module',$typeModule)
-                       ->whereNull('read_at')
-                       ->first();
+                    notificationIsRead($data->id, $typeModule);
 
                     $usersModel  = User::FindOrFail($data['user_id']);
                     $credentials = [

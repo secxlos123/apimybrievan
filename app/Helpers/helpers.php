@@ -357,6 +357,28 @@ if (! function_exists('get_employment')) {
     }
 }
 
+if (! function_exists('notificationIsRead')) {
+
+    /**
+     * Convert csv file to array.
+     *
+     * @param  string $file path to file
+     * @param  array $headers
+     * @param  string $delimiter
+     *
+     * @return array
+     */
+    function notificationIsRead($slug, $typeModule)
+    {
+        $notificationIsRead =  UserNotification::where('slug', $slug)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();
+        if($notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
+    }
+}
+
 if (! function_exists('get_loan_history')) {
 
     /**
