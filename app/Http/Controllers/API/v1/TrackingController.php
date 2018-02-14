@@ -31,6 +31,8 @@ class TrackingController extends Controller
                     , date(eforms.created_at) as tanggal_pengajuan
                     , kpr.request_amount as jumlah_pengajuan
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                        when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
+                        when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
                         when visit_reports.id is not null then 'Proses Analisa Pengajuan'
                         when eforms.ao_id is not null then 'Pengajuan Diterima'
@@ -57,6 +59,8 @@ class TrackingController extends Controller
                     , date(eforms.created_at) as tanggal_pengajuan
                     , kpr.request_amount as jumlah_pengajuan
                     , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                        when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
+                        when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
                         when visit_reports.id is not null then 'Proses Analisa Pengajuan'
                         when eforms.ao_id is not null then 'Pengajuan Diterima'
@@ -133,24 +137,26 @@ class TrackingController extends Controller
                 ->where( "eforms.ao_id", $request->header('pn') )
                 ->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
-                        $status = 'Pengajuan Kredit';
-                        if($request->input('status') == "Rejected") {
-                            $status = 'Kredit Ditolak';
-                        } elseif($request->input('status') == "Dispose") {
-                            $status = 'Disposisi Pengajuan';
-                        } elseif($request->input('status') == "Rekomend") {
+                        if ( $request->input('status') != "All" ) {
                             $status = 'Pengajuan Kredit';
-                        } elseif($request->input('status') == "Submit") {
-                            $status = 'Proses CLF';
-                        } elseif($request->input('status') == "Initiate") {
-                            $status = 'Prakarsa';
-                        } elseif($request->input('status') == "Approval1") {
-                            $status = 'Kredit Disetujui';
-                        } elseif($request->input('status') == 'Approval2') {
-                            $status = 'Rekontes Kredit';
-                        }
+                            if($request->input('status') == "Rejected") {
+                                $status = 'Kredit Ditolak';
+                            } elseif($request->input('status') == "Dispose") {
+                                $status = 'Disposisi Pengajuan';
+                            } elseif($request->input('status') == "Rekomend") {
+                                $status = 'Pengajuan Kredit';
+                            } elseif($request->input('status') == "Submit") {
+                                $status = 'Proses CLF';
+                            } elseif($request->input('status') == "Initiate") {
+                                $status = 'Prakarsa';
+                            } elseif($request->input('status') == "Approval1") {
+                                $status = 'Kredit Disetujui';
+                            } elseif($request->input('status') == 'Approval2') {
+                                $status = 'Rekontes Kredit';
+                            }
 
-                        $item->whereRaw($statusQuery . " = '" . $status . "'");
+                            $item->whereRaw($statusQuery . " = '" . $status . "'");
+                        }
                     }
 
                     if($request->has('search')){
