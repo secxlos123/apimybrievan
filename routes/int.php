@@ -149,6 +149,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/list-mndetailactivity/{id}', 'AuditrailController@modulNameDetailUserActivity')->name('list-mndetailactivity');
 		Route::get('auditrail/list-collateral-dev', 'AuditrailController@collaterlDeveloper');
         Route::get('auditrail/list-collateral-non', 'AuditrailController@collateralNon');
+        Route::get('auditrail/getEformCustomer/{nik}', 'AuditrailController@getEformCustomer');
 	} );
 
 	} );
