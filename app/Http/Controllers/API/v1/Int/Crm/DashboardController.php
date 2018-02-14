@@ -185,7 +185,7 @@ class DashboardController extends Controller
         $list_pn =[];
       }
 
-      $data = Marketing::getMarketingSummary($request)->whereIn('pn',$list_pn)->get();
+      $data = Marketing::getMarketingSummary($request)->get();
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
@@ -198,9 +198,12 @@ class DashboardController extends Controller
           $value->target
         ];
       }
-      $marketing_summary = [];
+      
+      $data_summary = [];
       foreach ($data as $key => $value) {
-        $marketing_summary[$value->pn]=[
+        $data_summary[$value->pn]=[
+          'Pemasar'=>$value->pn,
+          'Nama'=>array_key_exists($value->pn, $pemasar_name) ? $pemasar_name[$value->pn]:'',
           'Total'=>count($total[$value->pn]),
           'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?count($status[$value->pn]['Prospek']):0,
           'On Progress'=>(array_key_exists('On Progress',$status[$value->pn]))?count($status[$value->pn]['On Progress']):0,
@@ -208,6 +211,12 @@ class DashboardController extends Controller
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?count($status[$value->pn]['Batal']):0
         ];
       }
+      $marketing_summary = [];
+      foreach ($data_summary as $key => $value) {
+        $marketing_summary[]=$value;
+      }
+
+
 
       if ($marketing_summary) {
           return response()->success([
