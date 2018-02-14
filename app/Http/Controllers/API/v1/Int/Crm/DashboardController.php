@@ -190,7 +190,7 @@ class DashboardController extends Controller
         $marketing_summary[$value->pn]=[
           'Total'=>array_sum($total[$value->pn]),
           'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?count($status[$value->pn]['Prospek']):0,
-          'On Progres'=>(array_key_exists('On Progres',$status[$value->pn]))?count($status[$value->pn]['On Progres']):0,
+          'On Progress'=>(array_key_exists('On Progress',$status[$value->pn]))?count($status[$value->pn]['On Progress']):0,
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?count($status[$value->pn]['Done']):0,
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?count($status[$value->pn]['Batal']):0
         ];
