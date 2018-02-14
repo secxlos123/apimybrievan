@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Helpers;
 
@@ -14,7 +14,7 @@ class CustomValidation extends Validator
 
     /**
      * This for check old password user
-     * 
+     *
      * @param string $attribute
      * @param mixed $value
      * @param array $parameters
@@ -27,7 +27,7 @@ class CustomValidation extends Validator
 
     /**
      * This for check email by type role user
-     * 
+     *
      * @param string $attribute
      * @param mixed $value
      * @param array $parameters
@@ -45,7 +45,7 @@ class CustomValidation extends Validator
 
     /**
      * This for check alpha and spaces
-     * 
+     *
      * @param string $attribute
      * @param mixed $value
      * @param array $parameters
@@ -58,7 +58,7 @@ class CustomValidation extends Validator
 
     /**
      * This for check kode Pos
-     * 
+     *
      * @param string $attribute
      * @author erwan.akse@wgs.co.id
      * @param mixed $value
@@ -67,24 +67,28 @@ class CustomValidation extends Validator
      */
     public function validateKodePos($attribute, $value, $parameters)
     {
+        if (ENV('APP_ENV') == 'local') {
+            return true;
+        }
+
         $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
              'search' => $value,
         ] )->post();
         $result = false;
         $zip_code_list = $zip_code_service[ 'contents' ];
         if (count($zip_code_list['data'])>0) {
-        foreach ($zip_code_list['data'] as $key => $zipcode) {
-            if ($zipcode['kode_pos'] == $value) {
-                $result = true;
+            foreach ($zip_code_list['data'] as $key => $zipcode) {
+                if ($zipcode['kode_pos'] == $value) {
+                    $result = true;
+                }
             }
-        }
         }
         return  $result;
     }
 
     /**
      * This for check alpha and spaces
-     * 
+     *
      * @param string $attribute
      * @param mixed $value
      * @param array $parameters
