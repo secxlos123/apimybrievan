@@ -13,7 +13,20 @@ class ZipCodeController extends Controller {
 	 * @param \Illuminate\Http\Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index(Request $request) {
+	public function index(Request $request)
+	{
+        if (ENV('APP_ENV') == 'local') {
+        	return response()->success([
+				'message' => 'Sukses',
+				'contents' => array(
+	                'id' => '40000',
+	                'kota' => 'Bandung',
+	                'kecamatan' => 'Babakan Ciparay',
+					'kelurahan' => 'Babakan Ciparay'
+	            ),
+			], 200);
+        }
+
 		$zip_code_service = Asmx::setEndpoint('GetDataKodePos')->setQuery([
 			'search' => $request->search,
 			'limit' => $request->limit,
