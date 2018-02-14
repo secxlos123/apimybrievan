@@ -66,7 +66,7 @@ class VisitReportController extends Controller
             , 'ao_name' => $user_login['name']
             , 'ao_position' => $user_login['position']
         ]);
-        $visit_report = VisitReport::create([ 'eform_id' => $eform_id ] + $data );
+        $visit_report = VisitReport::updateOrCreate([ 'eform_id' => $eform_id ],[ 'eform_id' => $eform_id ] + $data );
         $credentials = [
             'data'        => $eform,
             'user'        => $usersModel,
@@ -112,7 +112,7 @@ class VisitReportController extends Controller
             }
         }
 
-        return response()->error( [
+        return response()->success( [
             'message' => $message,
             'contents' => array()
         ], 401 );
