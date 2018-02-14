@@ -44,7 +44,20 @@ class AppointmentController extends Controller
         if ($eks) {
             $data = $data->customer($request->user()->id, $request->month, $request->year)->get();
         } else {
-          $data = $data->ao($request->header('pn'),  $request->month, $request->year)->paginate(300);
+            $user_login = \RestwsHc::getUser();
+            if ( $user_login['role'] === 'ao' ) {
+                $data = $data->ao(
+                    $request->header('pn')
+                    , $request->month
+                    , $request->year
+                )->paginate(300);
+            } else {
+                $data = $data->pinca(
+                    $user_login['branch_id']
+                    , $request->month
+                    , $request->year
+                )->paginate(300);
+            }
         }
         if ($data) {
             if (count($data) > 0) {

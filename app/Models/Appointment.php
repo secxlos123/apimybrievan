@@ -56,6 +56,21 @@ class Appointment extends Model implements AuditableContract
     }
 
     /**
+     * Scope for get appointment by branch, month and year
+     * @param  \Illuminate\Database\Query\Builder $query
+     * @param  string $month
+     * @param  string $year
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopePinca($query, $branchId, $month, $year)
+    {
+        return $query->where(\DB::Raw("TRIM(LEADING '0' FROM ".$this->getTable().".branch_id)"), (string) intval($branchId))
+            ->whereNotNull($this->getTable() . '.ao_id')
+            ->atTime($month, $year)
+            ->ascAppointment();
+    }
+
+    /**
      * Scope for get appointment by customer, month and year
      * @param  \Illuminate\Database\Query\Builder $query
      * @param  string $month
