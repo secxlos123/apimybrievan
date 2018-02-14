@@ -225,7 +225,7 @@ class TrackingController extends Controller
                                 {
                                     $item->OrwhereNotNull('visit_reports.created_at');
                                     $item->where('eforms.is_approved', 'false');
-                                   // $item->where('eforms.status_eform', 'approved');
+                                    $item->whereNotIn('eforms.status_eform', ['Rejected']);
                                 }
                                 elseif(strtolower($request->input('search')) == "proses clf")
                                 {
