@@ -137,24 +137,26 @@ class TrackingController extends Controller
                 ->where( "eforms.ao_id", $request->header('pn') )
                 ->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
-                        $status = 'Pengajuan Kredit';
-                        if($request->input('status') == "Rejected") {
-                            $status = 'Kredit Ditolak';
-                        } elseif($request->input('status') == "Dispose") {
-                            $status = 'Disposisi Pengajuan';
-                        } elseif($request->input('status') == "Rekomend") {
+                        if ( $request->input('status') != "All" ) {
                             $status = 'Pengajuan Kredit';
-                        } elseif($request->input('status') == "Submit") {
-                            $status = 'Proses CLF';
-                        } elseif($request->input('status') == "Initiate") {
-                            $status = 'Prakarsa';
-                        } elseif($request->input('status') == "Approval1") {
-                            $status = 'Kredit Disetujui';
-                        } elseif($request->input('status') == 'Approval2') {
-                            $status = 'Rekontes Kredit';
-                        }
+                            if($request->input('status') == "Rejected") {
+                                $status = 'Kredit Ditolak';
+                            } elseif($request->input('status') == "Dispose") {
+                                $status = 'Disposisi Pengajuan';
+                            } elseif($request->input('status') == "Rekomend") {
+                                $status = 'Pengajuan Kredit';
+                            } elseif($request->input('status') == "Submit") {
+                                $status = 'Proses CLF';
+                            } elseif($request->input('status') == "Initiate") {
+                                $status = 'Prakarsa';
+                            } elseif($request->input('status') == "Approval1") {
+                                $status = 'Kredit Disetujui';
+                            } elseif($request->input('status') == 'Approval2') {
+                                $status = 'Rekontes Kredit';
+                            }
 
-                        $item->whereRaw($statusQuery . " = '" . $status . "'");
+                            $item->whereRaw($statusQuery . " = '" . $status . "'");
+                        }
                     }
 
                     if($request->has('search')){
