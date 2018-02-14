@@ -115,6 +115,7 @@ class ServiceRestwsHc extends Client
                 } else {
                     $branch = $get_user_info_service[ 'responseData' ][ 'BRANCH' ];
                     $department = $get_user_info_service[ 'responseData' ][ 'STELL_TX' ];
+                    $pn = $get_user_info_service[ 'responseData' ][ 'PERNR' ];
                 }
 
                 return [
@@ -124,7 +125,7 @@ class ServiceRestwsHc extends Client
                     'role' => $role,
                     'role_user' => $role_user,
                     'branch_id' => $branch,
-                    'pn' => $get_user_info_service[ 'responseData' ][ 'PERNR' ],
+                    'pn' => $pn,
                     'position' => $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ],
                     'department' => $department,
                     'hilfm' => $get_user_info_service[ 'responseData' ][ 'HILFM' ]
