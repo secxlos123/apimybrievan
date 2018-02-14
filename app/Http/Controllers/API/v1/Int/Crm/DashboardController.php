@@ -15,6 +15,8 @@ use App\Models\Crm\ActivityType;
 use App\Models\Crm\Status;
 use App\Models\Crm\ObjectActivity;
 use App\Models\Crm\ActionActivity;
+use App\Models\Crm\Marketing;
+use App\Models\Crm\MarketingActivity;
 
 
 
@@ -166,5 +168,43 @@ class DashboardController extends Controller
         'message' => 'Sukses get Sales Kit',
         'contents' => $sales_kit
       ]);
+    }
+
+    public function marketing_summary(Request $request)
+    {
+      $data = Marketing::getMarketingSummary($request)->get();
+      $total = [];
+      foreach ($data as $key => $value) {
+        $total[$value->pn][]=
+          $value->target
+        ;
+      }
+      $status = [];
+      foreach ($data as $key => $value) {
+        $status[$value->pn][$value->status][]=[
+          $value->target
+        ];
+      }
+      $marketing_summary = [];
+      foreach ($data as $key => $value) {
+        $marketing_summary[$value->pn]=[
+          'Total'=>array_sum($total[$value->pn]),
+          'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?count($status[$value->pn]['Prospek']):0,
+          'On Progres'=>(array_key_exists('On Progres',$status[$value->pn]))?count($status[$value->pn]['On Progres']):0,
+          'Done'=>(array_key_exists('Done',$status[$value->pn]))?count($status[$value->pn]['Done']):0,
+          'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?count($status[$value->pn]['Batal']):0
+        ];
+      }
+
+      if ($marketing_summary) {
+          return response()->success([
+              'message' => 'Sukses get Marketing Summary.',
+              'contents' => $marketing_summary,
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Gagal get Marketing Summary.',
+      ], 500);
     }
 }
