@@ -188,7 +188,7 @@ class DashboardController extends Controller
       $marketing_summary = [];
       foreach ($data as $key => $value) {
         $marketing_summary[$value->pn]=[
-          'Total'=>array_sum($total[$value->pn]),
+          'Total'=>count($total[$value->pn]),
           'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?count($status[$value->pn]['Prospek']):0,
           'On Progress'=>(array_key_exists('On Progress',$status[$value->pn]))?count($status[$value->pn]['On Progress']):0,
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?count($status[$value->pn]['Done']):0,
