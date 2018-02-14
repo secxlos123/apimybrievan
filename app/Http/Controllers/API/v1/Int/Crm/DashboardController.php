@@ -172,7 +172,20 @@ class DashboardController extends Controller
 
     public function marketing_summary(Request $request)
     {
-      $data = Marketing::getMarketingSummary($request)->get();
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $data = Marketing::getMarketingSummary($request)->whereIn('pn',$list_pn)->get();
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
