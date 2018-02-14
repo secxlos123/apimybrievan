@@ -937,7 +937,7 @@ if (! function_exists('pushNotification')) {
                 $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic(function($condition) use ($dataUser) {
                     // send to user
                     $condition->topic('user_'.$dataUser['data']->user_id);
-                })->andTopic(function($condition) use ($dataUser){
+                })->orTopic(function($condition) use ($dataUser){
                     // send to pinca
                     $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
                 });
@@ -969,7 +969,7 @@ if (! function_exists('pushNotification')) {
                 $data         = $dataBuilder->build();
                 $topic        = new Topics();
 
-                $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->orTopic('branch_'.$dataUser['data']->branch_id)->orTopic('pinca');
+                $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
 
                 $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
                 $topicResponse->isSuccess();
