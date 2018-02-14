@@ -160,7 +160,6 @@ class TrackingController extends Controller
                         $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'ilike', $lowerSearch);
                         $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
                         $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'ilike', $lowerSearch);
-                        $item->whereRaw($statusQuery . " ilike '" . $lowerSearch . "'");
                     }
                 })
                 ->paginate( $request->input( 'limit' ) ?: 10 );
