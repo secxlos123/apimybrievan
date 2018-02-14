@@ -131,7 +131,7 @@ class TrackingController extends Controller
                 ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
                 ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                 ->where( "eforms.ao_id", $request->header('pn') )
-                ->where( function($item) use (&$request) {
+                ->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
                         $status = 'Pengajuan Kredit';
                         if($request->input('status') == "Rejected") {
