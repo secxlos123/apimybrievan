@@ -686,44 +686,11 @@ class EFormController extends Controller
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
 
-        $baseRequest = [ 'ao_id' => $ao_id ];
-        // Get User Login
-        $user_login = \RestwsHc::getUser($ao_id);
-        $baseRequest['ao_name'] = $user_login['name'];
-        $baseRequest['ao_position'] = $user_login['position'];
-
-        $eform->update( $baseRequest );
-
-        $typeModule = getTypeModule(EForm::class);
-        notificationIsRead($id, $typeModule);
-
-        $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
-        $usersModel->notify(new EFormPenugasanDisposisi($eform));
-
-        //add scheduleData in Disposisition
-        $scheduleData = array(
-                'title' => $eform->ref_number
-                , 'appointment_date' => $eform->appointment_date
-                , 'user_id' => $eform->user_id
-                , 'ao_id' => $eform->ao_id
-                , 'eform_id' => $eform->id
-                , 'ref_number' => $eform->ref_number
-                , 'address' => $eform->address
-                , 'latitude' => $eform->longitude
-                , 'longitude' => $eform->latitude
-                , 'desc' => '-'
-                , 'status' => 'waiting'
-            );
-        $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
             $eform->update( $baseRequest );
 
             $typeModule = getTypeModule(EForm::class);
-            $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
-                                           ->whereNull('read_at')
-                                           ->first();
-            if($notificationIsRead != NULL){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($id, $typeModule);
+
             $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
             $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
@@ -757,7 +724,6 @@ class EFormController extends Controller
                 'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
             ], 422 );
         }
-
         DB::commit();
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
@@ -792,7 +758,7 @@ class EFormController extends Controller
             
             $typeModule = getTypeModule(EForm::class);
             notificationIsRead($eform_id, $typeModule);
-            
+
             if ($request->is_approved == "true") {
                 $usersModel = User::FindOrFail($data->user_id);
                 // Recontest
@@ -879,10 +845,6 @@ class EFormController extends Controller
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
                 notificationIsRead($verify['contents']->id, $typeModule);
-                
-                if ( $notificationIsRead != NULL ) {
-                    $notificationIsRead->markAsRead();
-                }
 
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
                 if ($status == 'approve') {
@@ -982,7 +944,7 @@ class EFormController extends Controller
 
                     $typeModule = getTypeModule(EForm::class);
                     notificationIsRead($data->id, $typeModule);
-                    
+
                     $usersModel  = User::FindOrFail($data['user_id']);
                     $credentials = [
                         'data'  => $data,
