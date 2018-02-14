@@ -930,16 +930,26 @@ class EForm extends Model implements AuditableContract
      */
     public function SentToBri($request, $endpoint, $value = null, $step)
     {
-        $post_to_bri = Asmx::setEndpoint( $endpoint )
-            ->setBody( [
-                'Request' => json_encode( $request )
-            ] )
-            ->post( 'form_params' );
+        if ( ENV('APP_ENV') == 'local' ) {
+            $post_to_bri = array (
+              'code' => '200',
+              'descriptions' => 'Success',
+              'contents' => $this->id
+            );
 
-        $return = array(
-            'status' => false
-            , 'message' => isset($post_to_bri[ 'contents' ]) ? $post_to_bri[ 'contents' ] : ''
-        );
+        } else {
+            $post_to_bri = Asmx::setEndpoint( $endpoint )
+                ->setBody( [
+                    'Request' => json_encode( $request )
+                ] )
+                ->post( 'form_params' );
+
+            $return = array(
+                'status' => false
+                , 'message' => isset($post_to_bri[ 'contents' ]) ? $post_to_bri[ 'contents' ] : ''
+            );
+
+        }
 
         \Log::info('============================================================================================');
         \Log::info($endpoint);
@@ -1568,13 +1578,22 @@ class EForm extends Model implements AuditableContract
     public function getInterest( $fid_aplikasi )
     {
         if ( !isset($this->additional_parameters['gimmick_rate']) ) {
-            $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
-                ->setBody([
-                    'Request' => json_encode( array(
-                        'fid_aplikasi' => $fid_aplikasi
-                    ) )
-                ])
-                ->post( 'form_params' );
+            if ( ENV('APP_ENV') == 'local' ) {
+                $getGimmick = array(
+                    "code" => "200"
+                    , "descriptions" => "Success"
+                    , "contents" => "7.11"
+                );
+
+            } else {
+                $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
+                    ->setBody([
+                        'Request' => json_encode( array(
+                            'fid_aplikasi' => $fid_aplikasi
+                        ) )
+                    ])
+                    ->post( 'form_params' );
+            }
 
             $this->additional_parameters += [ "gimmick_rate" => $getGimmick[ 'contents' ] ] ;
             $this->save();

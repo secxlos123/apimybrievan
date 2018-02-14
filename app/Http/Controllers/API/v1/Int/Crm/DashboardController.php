@@ -172,7 +172,20 @@ class DashboardController extends Controller
 
     public function marketing_summary(Request $request)
     {
-      $data = Marketing::getMarketingSummary($request)->get();
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar_branch($pn,$branch);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $data = Marketing::getMarketingSummary($request)->whereIn('pn',$list_pn)->get();
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
@@ -206,5 +219,38 @@ class DashboardController extends Controller
       return response()->error([
           'message' => 'Gagal get Marketing Summary.',
       ], 500);
+    }
+
+    public function pemasar_branch($pn, $branch){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
     }
 }
