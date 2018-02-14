@@ -64,7 +64,7 @@ class Appointment extends Model implements AuditableContract
      */
     public function scopePinca($query, $branchId, $month, $year)
     {
-        return $query->where(\DB::Raw("TRIM(LEADING '0' FROM ".$this->getTable().".branch_id)"), (string) intval($branchId))
+        return $query->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branchId))
             ->whereNotNull($this->getTable() . '.ao_id')
             ->atTime($month, $year)
             ->ascAppointment();
