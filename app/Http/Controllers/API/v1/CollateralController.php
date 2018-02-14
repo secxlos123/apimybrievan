@@ -507,7 +507,7 @@ class CollateralController extends Controller
             'id' => $id,
             'user_id' => $staff_id,
             'headerNotif' => 'Collateral Notification',
-            'bodyNotif' => $message['message'],
+            'bodyNotif' => $message['body'],
             'type' => 'collateral_disposition',
             'receiver' => $receiver,
         ];
