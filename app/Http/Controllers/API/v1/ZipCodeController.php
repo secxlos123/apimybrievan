@@ -27,6 +27,11 @@ class ZipCodeController extends Controller {
                             'kelurahan' => 'Babakan Ciparay'
                         )
                     )
+                    , "from" => "1"
+                    , "to" => "1"
+                    , "last_page" => "1"
+                    , "per_page" => "1"
+                    , "total" => "1"
                 ),
             ], 200);
         }
