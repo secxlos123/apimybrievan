@@ -183,6 +183,23 @@ class AuditrailController extends Controller
         ], 200 );
     }
 
+    public function getEformCustomer(Request $request, $id)
+    {
+        $eform2 = Eform::where('nik', '=', $id)->first();
+
+        $eform_id = $eform2->id;
+
+        $eform =  Eform::select('*')
+                    ->where('id', $eform_id)
+                    ->paginate( $request->input( 'limit' ) ?: 10 );
+       // dd($eform);
+
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $eform,
+        ], 200 );
+    }
+
     public function getNik(Request $request)
     {
         $getNik = \DB::table('eforms')

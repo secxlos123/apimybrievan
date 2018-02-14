@@ -750,7 +750,7 @@ class EFormController extends Controller
             ];
 
             // Call the helper of push notification function
-            pushNotification($credentialsz, 'disposition');
+            pushNotification($credentials, 'disposition');
         } catch (Exception $e) {
             DB::rollback();
             return response()->error( [
