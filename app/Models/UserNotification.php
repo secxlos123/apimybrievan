@@ -316,7 +316,7 @@ class UserNotification extends Model
 
 		if (@$role == 'pinca') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
