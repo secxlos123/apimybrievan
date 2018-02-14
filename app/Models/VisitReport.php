@@ -46,18 +46,23 @@ class VisitReport extends Model implements AuditableContract
     public static function create( $data ) {
 	if ( isset($data['mutations']) ){
         $visit_report = ( new static )->newQuery()->updateOrCreate( [ 'eform_id' => $data['eform_id']],$data );
+        $mutation_ids = array();
+        $bank_ids = array();
         foreach ( $data[ 'mutations' ] as $key => $mutation_data ) {
-            $mutation = Mutation::updateOrCreate( ['visit_report_id' => $visit_report->id]
-                ,[ 'visit_report_id' => $visit_report->id ] + $mutation_data );
+            $mutation = Mutation::create([ 'visit_report_id' => $visit_report->id ] + $mutation_data );
+            $mutation_ids[]= $mutation->id;
             if (isset($mutation_data[ 'tables' ])) {
                 foreach ( $mutation_data[ 'tables' ] as $key => $bank_statement_data ) {
-                    BankStatement::updateOrCreate(
-                        [ 'mutation_id' => $mutation->id]
-                    ,[ 'mutation_id' => $mutation->id ] + $bank_statement_data );
-            }
+                    $bank = BankStatement::create([ 'mutation_id' => $mutation->id ] + $bank_statement_data );
+                    $bank_ids[] = $bank->id;
+                }
+                //Delete Bank Yang Lama
+                BankStatement::where('mutation_id', $mutation->id)->whereNotIn('id', $bank_ids)->delete();
             }
         }
-}
+        //Delete mutasi yang Lama
+        Mutation::where('visit_report_id', $visit_report->id)->whereNotIn('id', $mutation_ids)->delete();
+        }
     }
 
     /**
