@@ -186,7 +186,7 @@ class UserNotification extends Model
 		case 'App\Notifications\NewSchedulerCustomer':
 			$subjectNotif = ['message' => 'Schedule Data Baru',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'message_external' => 'Schedule Data Baru',
 				'url_mobile' => '#',
 			];
 			break;
