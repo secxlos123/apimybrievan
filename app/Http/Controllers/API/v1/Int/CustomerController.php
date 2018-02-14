@@ -296,12 +296,12 @@ class CustomerController extends Controller
      */
     private function getZipCode($value)
     {
-        if (ENV('APP_ENV') == 'local') {
-            return [
+        if ( ENV('APP_ENV') == 'local' ) {
+            return array(
                 'id' => '40000',
                 'kabupaten' => 'Bandung',
                 'kecamatan' => 'Babakan Ciparay'
-            ];
+            );
         }
 
         $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
