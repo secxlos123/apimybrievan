@@ -6,6 +6,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   ] )->name('crm.index');
 
   Route::post('/marketing_summary', 'DashboardController@marketing_summary');
+  Route::post('/marketing_summary_v2', 'DashboardController@marketing_summary_2');
   // route reporting Crm
   Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
   // Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
