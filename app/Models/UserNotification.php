@@ -186,7 +186,7 @@ class UserNotification extends Model
 		case 'App\Notifications\NewSchedulerCustomer':
 			$subjectNotif = ['message' => 'Schedule Data Baru',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'message_external' => 'Schedule Data Baru',
 				'url_mobile' => '#',
 			];
 			break;
@@ -316,7 +316,7 @@ class UserNotification extends Model
 
 		if (@$role == 'pinca') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
