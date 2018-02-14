@@ -49,14 +49,9 @@ class RecontestController extends Controller
             $user_login = \RestwsHc::getUser();
 
             $eform = EForm::find($eform_id);
-            $notificationIsRead = $this->userNotification->where('slug',$eform_id)
-    			->where('type_module', 'eform')
-    			->whereNull('read_at')
-    			->first();
-
-            if( @$notificationIsRead ){
-                $notificationIsRead->markAsRead();
-            }
+        
+            $typeModule = getTypeModule(EForm::class);
+            notificationIsRead($eform_id, $typeModule);
 
             $usersModel = User::FindOrFail($eform->user_id);
 

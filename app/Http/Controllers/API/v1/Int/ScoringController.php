@@ -13,9 +13,15 @@ use Sentinel;
 use File;
 use DB;
 use App\Notifications\ScorePefindoPreScreening;
+use App\Models\UserNotification;
 
 class ScoringController extends Controller
 {
+    public function __construct(UserNotification $userNotification)
+    {
+        $this->userNotification = $userNotification;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -376,12 +382,8 @@ class ScoringController extends Controller
         if(env('PUSH_NOTIFICATION', false)){
             if($eform){
                 $typeModule = getTypeModule(Scoring::class);
-                $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
-                                               ->whereNull('read_at')
-                                               ->first();
-                if($notificationIsRead){
-                    $notificationIsRead->markAsRead();
-                }
+                notificationIsRead($id, $typeModule);
+
                 $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
                 $usersModel->notify(new ScorePefindoPreScreening($eform));                
             }
