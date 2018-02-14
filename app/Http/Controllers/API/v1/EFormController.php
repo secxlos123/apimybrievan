@@ -675,10 +675,16 @@ class EFormController extends Controller
         $role = request()->header( 'role' );
         $pn = request()->header( 'pn' );
         $branch_id = request()->header( 'branch_id' );
+        try {
+            DB::beginTransaction();
+            $eform = EForm::findOrFail( $id );
+            $ao_id = substr( '00000000' . $request->ao_id, -8 );
 
-        DB::beginTransaction();
-        $eform = EForm::findOrFail( $id );
-        $ao_id = substr( '00000000' . $request->ao_id, -8 );
+            $baseRequest = [ 'ao_id' => $ao_id ];
+            // Get User Login
+            $user_login = \RestwsHc::getUser($ao_id);
+            $baseRequest['ao_name'] = $user_login['name'];
+            $baseRequest['ao_position'] = $user_login['position'];
 
         $baseRequest = [ 'ao_id' => $ao_id ];
         // Get User Login
@@ -709,22 +715,54 @@ class EFormController extends Controller
                 , 'status' => 'waiting'
             );
         $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
+            $eform->update( $baseRequest );
+
+            $typeModule = getTypeModule(EForm::class);
+            $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
+                                           ->whereNull('read_at')
+                                           ->first();
+            if($notificationIsRead != NULL){
+                $notificationIsRead->markAsRead();
+            }
+            $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
+            $usersModel->notify(new EFormPenugasanDisposisi($eform));
+
+            //add scheduleData in Disposisition
+            $scheduleData = array(
+                    'title' => $eform->ref_number
+                    , 'appointment_date' => $eform->appointment_date
+                    , 'user_id' => $eform->user_id
+                    , 'ao_id' => $eform->ao_id
+                    , 'eform_id' => $eform->id
+                    , 'ref_number' => $eform->ref_number
+                    , 'address' => $eform->address
+                    , 'latitude' => $eform->longitude
+                    , 'longitude' => $eform->latitude
+                    , 'desc' => '-'
+                    , 'status' => 'waiting'
+                );
+            $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
+            
+            // Credentials for push notification helper
+            $credentials = [
+                'eform' => $eform,
+                'ao_id' => $ao_id,
+            ];
+
+            // Call the helper of push notification function
+            pushNotification($credentialsz, 'disposition');
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->error( [
+                'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+            ], 422 );
+        }
+
         DB::commit();
-
-
-        // Credentials for push notification helper
-        $credentials = [
-            'eform' => $eform,
-            'ao_id' => $ao_id,
-        ];
-
-        // Call the helper of push notification function
-        pushNotification($credentials, 'disposition');
-
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
             'contents' => $eform
-        ], 201 );
+        ], 201);
     }
 
     /**
@@ -737,7 +775,6 @@ class EFormController extends Controller
     public function approve( EFormRequest $request, $eform_id )
     {
         $baseRequest = $request;
-
         // Get User Login
         $user_login = \RestwsHc::getUser();
         if(isset($user_login)){
@@ -747,15 +784,16 @@ class EFormController extends Controller
 
         $data = EForm::findOrFail($eform_id);
         $currentStatus = $data->status_eform;
-        $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
+        $status = ($baseRequest->is_approved == "true" ? 'approveEForm' : 'rejectEForm');
         $eform = EForm::approve( $eform_id, $baseRequest );
 
         if( $eform['status'] ) {
             $data =  EForm::findOrFail($eform_id);
+            
             $typeModule = getTypeModule(EForm::class);
             notificationIsRead($eform_id, $typeModule);
             
-            if ($request->is_approved) {
+            if ($request->is_approved == "true") {
                 $usersModel = User::FindOrFail($data->user_id);
                 // Recontest
                 if ( $currentStatus != 'Approval2' ) {
@@ -842,14 +880,11 @@ class EFormController extends Controller
                 $typeModule = getTypeModule(EForm::class);
                 notificationIsRead($verify['contents']->id, $typeModule);
                 
+                if ( $notificationIsRead != NULL ) {
+                    $notificationIsRead->markAsRead();
+                }
+
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
-
-                $credentials = [
-                    'data' => $verify['contents'],
-                    'user' => $usersModel,
-                ];
-                pushNotification($credentials, $status."EForm");
-
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
 
