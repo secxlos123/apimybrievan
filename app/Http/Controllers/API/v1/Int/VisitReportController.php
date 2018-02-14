@@ -112,7 +112,7 @@ class VisitReportController extends Controller
             }
         }
 
-        return response()->error( [
+        return response()->success( [
             'message' => $message,
             'contents' => array()
         ], 401 );
