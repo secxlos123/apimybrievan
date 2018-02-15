@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use RestwsHc;
 use RestwsSm;
 use DB;
-use Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 
 use App\Models\Crm\RestBrispot;
