@@ -21,7 +21,8 @@ class DashboardController extends Controller
 
     public function dashboard(Request $request)
     {
-        $user_id = $request->user()->id;
+        $user_id = $request->user();
+        $user_id = $user_id->id;
 
     	$params       = $this->request->all();
     	$startList    = (isset($params['startList'])) ? $params['startList'] : '';
