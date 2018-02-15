@@ -316,18 +316,18 @@ class UserNotification extends Model
 
 		if (@$role == 'pinca') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->unreads()->where('eforms.branch_id', @$branch_id);
+				$query->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
 				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
 					->whereNotNull('visit_reports.created_at')
-					->unreads()->where('eforms.branch_id', @$branch_id);
+					->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
 				$query->whereNotNull('visit_reports.created_at')
-					->unreads()->where('eforms.branch_id', @$branch_id);
+					->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
 		}
 
