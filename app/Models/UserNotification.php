@@ -519,14 +519,15 @@ class UserNotification extends Model
 			}
 
 			if ($role == 'ao') {
-				$data = $query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 
+				$data = $query
+				->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 
 									   'notifications.notifiable_type', 'notifications.data', 'notifications.read_at',
 									   'notifications.created_at', 'notifications.updated_at', 
 									   'notifications.branch_id', 'notifications.role_name', 'notifications.slug',
 									   'notifications.type_module','notifications.is_read', 'eforms.is_approved', 
 									   'eforms.ao_id', 'eforms.ref_number')
 							  ->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
-				  	          ->where('eforms.branch_id', $branch_id)
+				  	          ->where('eforms.branch_id', 'like', '%'.$branch_id)
 							  ->where('eforms.ao_id', $pn)
 							  ->whereIn('notifications.type', [
 							  		'App\Notifications\EFormPenugasanDisposisi',
@@ -544,14 +545,14 @@ class UserNotification extends Model
 			}
 
 			if ($role == 'collateral-appraisal') {
-				$data = $query->where('eforms.branch_id', $branch_id)
+				$data = $query->where('branch_id', $branch_id)
 							  ->whereIn('type', [
 							  		'App\Notifications\CollateralDisposition',
 					    ]);
             }
 
 			if (@$role == 'collateral') {
-				$data = $query->where('eforms.branch_id', $branch_id)
+				$data = $query->where('branch_id', $branch_id)
 							  ->whereIn('type', [
 									'App\Notifications\PropertyNotification',
 									'App\Notifications\CollateralOTS',
