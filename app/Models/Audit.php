@@ -736,7 +736,7 @@ class Audit extends Model implements AuditContract
                 */
 
                     if($request->has('region_name')){
-                        $auditrail->where(\DB::raw('LOWER(region_name)'), 'like', '%'.strtolower($request->input('region_name')).'%');
+                        $auditrail->where(\DB::raw('LOWER(region_id)'), 'like', '%'.strtolower($request->input('region_id')).'%');
                   
                     }
                 })
