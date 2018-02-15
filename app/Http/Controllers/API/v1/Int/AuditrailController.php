@@ -909,7 +909,7 @@ class AuditrailController extends Controller
       if($request->has('search')){
             $lowerValue = '%'.$request->input('search').'%';
             $data->where(\DB::raw("concat(lower(collateral_view_table.first_name), ' ', lower(collateral_view_table.last_name))"), 'ilike', $lowerValue);
-            $data->where(\DB::raw('lower(collateral_view_table.home_location)'), 'ilike', $lowerValue);
+            $data->Orwhere(\DB::raw('lower(home_location)'), 'ilike', $lowerValue);
       }
            $data->orderBy('collaterals.created_at', 'desc');        
 
