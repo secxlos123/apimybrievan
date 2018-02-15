@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use RestwsHc;
 use RestwsSm;
 use DB;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 
 use App\Models\Crm\RestBrispot;
@@ -157,6 +159,26 @@ class DashboardController extends Controller
 
       return response()->success([
         'contents' => $result
+      ]);
+    }
+
+    public function kinerja_pemasar(Request $request)
+    {
+      $pn = $request->header('pn');
+      $client = new Client();
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $data = $client->request('GET', $host.'/customer/performance/officer/'.$pn,[
+        'headers' =>
+        [
+          'Authorization' => 'Bearer '.$this->get_token()
+          // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
+        ]
+      ]);
+      $kinerja_pemasar = json_decode($data->getBody()->getContents(), true);
+
+      return response()->success([
+        'message' => $kinerja_pemasar['message'],
+        'contents' => $kinerja_pemasar['data']
       ]);
     }
 
