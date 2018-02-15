@@ -491,8 +491,7 @@ class UserNotification extends Model
 													'App\Notifications\ApproveEFormCLAS',
 													'App\Notifications\RejectEFormCustomer',
 													'App\Notifications\RejectEFormCLAS'
-		   					   ])
-							   ->whereNull('read_at');
+		   					   ]);
 			}else if($role == 'developer') {
 				$data = $query->where('notifiable_id', $user_id)
 							  ->whereIn('type', [
@@ -500,8 +499,7 @@ class UserNotification extends Model
 													'App\Notifications\CollateralManagerApprove',
 													'App\Notifications\ApproveDeveloperProfile',
 													'App\Notifications\RejectDeveloperProfile'
-								   ])
-							   ->whereNull('read_at');
+								   ]);
 			}
 		}else{
 			$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
@@ -606,7 +604,7 @@ class UserNotification extends Model
 		if (empty($count)) {
 			return $data->paginate($limit);
 		}else {
-			return $data->get()->count();
+			return $data->whereNull('read_at')->get()->count();
 		}
 	}
 }
