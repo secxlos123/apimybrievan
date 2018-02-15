@@ -106,7 +106,7 @@ class PropertyController extends Controller
 
                 $dataProperty = Property::Find($property->id); 
                 $usersModel = User::FindOrFail($request->user()->id);
-                //$usersModel->notify(new PropertyNotification($dataProperty)); /*send notification to pinca*/
+                $usersModel->notify(new PropertyNotification($dataProperty)); /*send notification to pinca*/
 
                 \Log::info($property);
                 $data = [
