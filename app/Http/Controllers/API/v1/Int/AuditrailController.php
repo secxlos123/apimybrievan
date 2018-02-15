@@ -97,6 +97,7 @@ class AuditrailController extends Controller
                             ->where(\DB::raw('user_id'),'!=', 0)
                             ->where(\DB::raw('user_id'),'!=', 123)
                             ->where(function ($auditrail) use ($request) {
+                            $lowerValue = '%'.strtolower($request->input('username')).'%';
                /**
                 * This query for search by Nama User.
                 *
@@ -105,7 +106,7 @@ class AuditrailController extends Controller
                 */
 
                     if($request->has('username')){
-                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', $lowerValue);
                   
                     }
                 })
@@ -117,6 +118,7 @@ class AuditrailController extends Controller
                             ->where(\DB::raw('user_id'),'!=', 0)
                             ->where(\DB::raw('user_id'),'!=', 123)
                             ->where(function ($auditrail) use ($request) {
+                            $lowerValue = '%'.strtolower($request->input('username')).'%';
                /**
                 * This query for search by Nama User.
                 *
@@ -125,7 +127,7 @@ class AuditrailController extends Controller
                 */
 
                     if($request->has('username')){
-                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', $lowerValue);
                   
                     }
                 })
@@ -185,6 +187,7 @@ class AuditrailController extends Controller
 
     public function getEformCustomer(Request $request, $id)
     {
+        if(!empty($id)){
         $eform2 = Eform::where('nik', '=', $id)->first();
 
         $eform_id = $eform2->id;
@@ -192,6 +195,11 @@ class AuditrailController extends Controller
         $eform =  Eform::select('*')
                     ->where('id', $eform_id)
                     ->paginate( $request->input( 'limit' ) ?: 10 );
+        }else{
+
+        $eform =  Eform::select('*')
+                    ->paginate( $request->input( 'limit' ) ?: 10 );   
+        }
        // dd($eform);
 
         return response()->success( [
@@ -206,6 +214,7 @@ class AuditrailController extends Controller
                     ->selectRaw("eforms.nik, concat(users.first_name, ' ', users.last_name) as nama_pemohon")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
                     ->where(function ($auditrail) use ($request) {
+                    $lower = '%' . strtolower($request->input('search')) . '%';
                /**
                 * This query for search by Nama Customer or Nik Customer .
                 *
@@ -214,13 +223,13 @@ class AuditrailController extends Controller
                 */
 
                     if($request->has('search')){
-                        $auditrail->where(\DB::raw('LOWER(nik)'), 'like', '%'.strtolower($request->input('search')).'%');
-                        $auditrail->Orwhere(\DB::raw("concat(lower(users.first_name), ' ', lower(users.last_name))"), 'like', '%'.strtolower($request->input('search')).'%');
+                        $auditrail->where(\DB::raw('LOWER(nik)'), 'like', $lower);
+                        $auditrail->Orwhere(\DB::raw("concat(lower(users.first_name), ' ', lower(users.last_name))"), 'like', $lower);
                   
                         }
                     })
                     ->paginate( $request->input( 'limit' ) ?: 10 );
-                    \Log::info($getNik);
+                   
                     return response()->success( [
                         'message' => 'Sukses',
                         'contents' => $getNik
