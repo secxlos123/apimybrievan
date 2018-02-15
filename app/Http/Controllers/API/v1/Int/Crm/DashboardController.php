@@ -211,7 +211,7 @@ class DashboardController extends Controller
       ]);
     }
 
-    public function marketing_summary(Request $request)
+    public function marketing_summary_v2(Request $request)
     {
       $pn = $request->header('pn');
       $branch = $request->header('branch');
@@ -269,7 +269,7 @@ class DashboardController extends Controller
           return response()->success([
               'message' => 'Sukses get Marketing Summary.',
               'contents' => $marketing_summary,
-          ], 201);
+          ], 200);
       }
 
       return response()->error([
@@ -277,7 +277,7 @@ class DashboardController extends Controller
       ], 200);
     }
 
-    public function marketing_summary_v2(Request $request)
+    public function marketing_summary(Request $request)
     {
       $pn = $request->header('pn');
       $branch = $request->header('branch');

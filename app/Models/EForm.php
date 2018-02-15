@@ -1778,10 +1778,10 @@ class EForm extends Model implements AuditableContract
             ->with("kpr");
 
         if ( $user_id ) {
-            $developer = Developer::select('id')->where('user_id', $user_id)->first();
-            $data = $data->whereHas("kpr", function ($query) use ($developer) {
+            // $developer = Developer::select('id')->where('user_id', $user_id)->first();
+            $data = $data->whereHas("kpr", function ($query) use ($user_id) {
                 return $query->join('properties', 'properties.id', 'property_id')
-                    ->where('kpr.developer_id', $developer['id']);
+                    ->where('kpr.developer_id', $user_id);
             });
         }
         $user = \RestwsHc::getUser();
