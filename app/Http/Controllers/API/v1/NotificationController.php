@@ -36,11 +36,16 @@ class NotificationController extends Controller
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
         $branch_id = ( request()->header( 'branch_id' ) != '' ) ? request()->header( 'branch_id' ) : '' ;
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
-
         $ArrGetDataNotification = [];
-        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3),
+        
+        if (ENV('APP_ENV') == 'local') {
+            $branch_id = substr($branch_id,-3);
+            $pn = '000'.$pn;  
+        }
+
+        $getDataNotification = $this->userNotification->getUnreads( $branch_id,
                                                                     $role,
-                                                                    '000'.$pn,
+                                                                    $pn,
                                                                     $user_id);
         if($getDataNotification){
             foreach ($getDataNotification->get() as $value) {
