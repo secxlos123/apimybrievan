@@ -310,8 +310,8 @@ class UserNotification extends Model
 
 	public function getUnreads($branch_id, $role, $pn, $user_id) {
 		$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
-			->where('eforms.branch_id', @$branch_id)
-			// ->Where('eforms.ao_id', @$pn)
+			->Orwhere('eforms.branch_id', @$branch_id)
+			->OrWhere('eforms.ao_id', @$pn)
 			->orderBy('notifications.created_at', 'DESC');
 
 		if (@$role == 'pinca') {
@@ -337,30 +337,30 @@ class UserNotification extends Model
 				$query->whereNotNull('eforms.ao_id')
 					->whereNotNull('eforms.ao_name')
 					->whereNotNull('eforms.ao_position')
-					->unreads()->Where('eforms.ao_id', @$pn);
+					->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
 				/*is is_approved*/
-				$query->unreads()->Where('eforms.ao_id', @$pn);
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
 				/*is rejected*/
-				$query->unreads()->Where('eforms.ao_id', @$pn);
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationApproveFormNasabah')) {
 				/*verifiy app*/
-				$query->unreads()->Where('eforms.ao_id', @$pn);
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationRejectFormNasabah')) {
 				/*verifiy app*/
-				$query->unreads()->Where('eforms.ao_id', @$pn);
+				$query->unreads();
 			}
 			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
-				$query->unreads()->Where('eforms.ao_id', @$pn);
+				$query->unreads();
             }
 
             
@@ -492,7 +492,8 @@ class UserNotification extends Model
 													'App\Notifications\ApproveEFormCLAS',
 													'App\Notifications\RejectEFormCustomer',
 													'App\Notifications\RejectEFormCLAS'
-		   					   ]);
+		   					   ])
+							   ->whereNull('read_at');
 			}else if($role == 'developer') {
 				$data = $query->where('notifiable_id', $user_id)
 							  ->whereIn('type', [
@@ -500,7 +501,8 @@ class UserNotification extends Model
 													'App\Notifications\CollateralManagerApprove',
 													'App\Notifications\ApproveDeveloperProfile',
 													'App\Notifications\RejectDeveloperProfile'
-								   ]);
+								   ])
+							   ->whereNull('read_at');
 			}
 		}else{
 			$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
