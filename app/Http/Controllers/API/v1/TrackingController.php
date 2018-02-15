@@ -40,7 +40,7 @@ class TrackingController extends Controller
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
                     ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                    ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
+                    ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
                     ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                     ->where( "eforms.user_id", $user->id )
                     ->paginate( $request->input( 'limit' ) ?: 10 );
@@ -68,7 +68,7 @@ class TrackingController extends Controller
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
                     ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                    ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
+                    ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
                     ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                     ->where( "eforms.sales_dev_id", $user->id )
                     ->where(function($item) use (&$request){
@@ -132,7 +132,7 @@ class TrackingController extends Controller
                 ")
                 ->leftJoin("users", "users.id", "=", "eforms.user_id")
                 ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                ->leftJoin("developers", "developers.id", "=", "kpr.developer_id")
+                ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
                 ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                 ->where( "eforms.ao_id", $request->header('pn') )
                 ->where( function($item) use (&$request, $statusQuery) {

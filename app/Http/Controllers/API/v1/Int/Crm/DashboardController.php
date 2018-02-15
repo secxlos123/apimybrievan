@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use RestwsHc;
 use RestwsSm;
 use DB;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 
 use App\Models\Crm\RestBrispot;
@@ -160,11 +162,49 @@ class DashboardController extends Controller
       ]);
     }
 
+    public function kinerja_pemasar(Request $request)
+    {
+      $pn = $request->header('pn');
+      $client = new Client();
+      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $data = $client->request('GET', $host.'/customer/performance/officer/'.$pn,[
+        'headers' =>
+        [
+          'Authorization' => 'Bearer '.$this->get_token()
+          // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
+        ]
+      ]);
+      $kinerja_pemasar = json_decode($data->getBody()->getContents(), true);
+
+      return response()->success([
+        'message' => $kinerja_pemasar['message'],
+        'contents' => $kinerja_pemasar['data']
+      ]);
+    }
+
     public function sales_kit(Request $request)
     {
       $db_ext = new RestBrispot;
       $db_ext->setConnection('mysql2');
-      $sales_kit = $db_ext->all();
+      $data = $db_ext->all();
+      $sales_kit = [];
+      $img_url ='http://10.35.65.111/brispot/uploads/saleskit_sme/';
+
+      foreach ($data as $key => $value) {
+        $sales_kit[]=[
+          'id'=>$value->id,
+          'type'=>$value->type,
+          'headline'=>$value->headline,
+          'caption'=>$value->caption,
+          'filename'=>$value->filename,
+          'img_url'=>$img_url.$value->filename,
+          'filename_thumb'=>$value->filename_thumb,
+          'thumb_url'=>$img_url.$value->filename_thumb,
+          'description'=>$value->description,
+          'uploaded_on'=> $value->uploaded_on,
+          'uploaded_by'=>$value->uploaded_by
+        ];
+      }
       return response()->success([
         'message' => 'Sukses get Sales Kit',
         'contents' => $sales_kit
