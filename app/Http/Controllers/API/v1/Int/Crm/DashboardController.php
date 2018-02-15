@@ -17,6 +17,7 @@ use App\Models\Crm\ObjectActivity;
 use App\Models\Crm\ActionActivity;
 use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
+use App\Models\Crm\MarketingActivityFollowup;
 
 
 
