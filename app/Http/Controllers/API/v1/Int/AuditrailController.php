@@ -856,6 +856,13 @@ class AuditrailController extends Controller
       }
       if ($request->has('created_at')){
         $data->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+      }
+       if ($request->has('search')){
+            $data->whereHas('property',function($property) use ($request){
+                $lowerValue = '%'.$request->input('search').'%';
+                $property->where(\DB::raw('LOWER(name)'), 'ilike', $lowerValue);
+                $property->Orwhere(\DB::raw('LOWER(pic_name)'), 'ilike', $lowerValue);
+        });
       }  
         
       $data->orderBy('created_at', 'desc');
@@ -898,6 +905,11 @@ class AuditrailController extends Controller
       }   
       if($request->has('staff_name')){
             $data->where(\DB::raw('LOWER(collateral_view_table.staff_name)'), 'like', '%'.strtolower($request->input('staff_name')).'%');
+      }
+      if($request->has('search')){
+            $lowerValue = '%'.$request->input('search').'%';
+            $data->where(\DB::raw("concat(lower(collateral_view_table.first_name), ' ', lower(collateral_view_table.last_name))"), 'ilike', $lowerValue);
+            $data->Orwhere(\DB::raw('lower(home_location)'), 'ilike', $lowerValue);
       }
            $data->orderBy('collaterals.created_at', 'desc');        
 
