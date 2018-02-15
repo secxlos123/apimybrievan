@@ -208,6 +208,11 @@ class AuditrailController extends Controller
         ], 200 );
     }
 
+    /**
+     * This function for list-nik and name auditrail tab pengajuan kredit
+     * @param Illuminate\Http\Request
+     */
+
     public function getNik(Request $request)
     {
         $getNik = \DB::table('eforms')
@@ -233,6 +238,37 @@ class AuditrailController extends Controller
                     return response()->success( [
                         'message' => 'Sukses',
                         'contents' => $getNik
+                        ], 200 );
+    }
+
+    /**
+     * This function for list-branch_id and branch_name auditrail tab pengajuan kredit
+     * @param Illuminate\Http\Request
+     */
+
+    public function getBranch(Request $request)
+    {
+        $getBranch = \DB::table('eforms')
+                    ->selectRaw("branch_id, branch")
+                    ->where(function ($auditrail) use ($request) {
+                    $lower = '%' . strtolower($request->input('search')) . '%';
+               /**
+                * This query for search by Branch ID or Branch name .
+                *
+                * @param $request->search
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('search')){
+                        $auditrail->where(\DB::raw('LOWER(branch)'), 'like', $lower);
+                        }
+                    })
+                    ->groupBy('branch_id', 'branch')
+                    ->paginate( $request->input( 'limit' ) ?: 10 );
+                   
+                    return response()->success( [
+                        'message' => 'Sukses',
+                        'contents' => $getBranch
                         ], 200 );
     }
 
