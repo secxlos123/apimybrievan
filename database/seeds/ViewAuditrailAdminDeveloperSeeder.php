@@ -198,7 +198,8 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
            , f.staff_name
                , case when e.slug is not null then e.slug else h.role end as role
                /*, i.name as project_name */
-                , case when k.company_name is not null then k.company_name when m.company_name is not null then m.company_name when n.company_name is not null then n.company_name else c.company_name end as company_name
+                -- , case when k.company_name is not null then k.company_name when m.company_name is not null then m.company_name when n.company_name is not null then n.company_name else c.company_name end as company_name
+               , c.company_name as company_name
                , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
                , a.old_values
                , a.new_values

@@ -478,6 +478,7 @@ class UserNotification extends Model
 	}
 
 	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit, $count = null) {
+		$data = [];
 		if (empty($pn)) {
 			$query = new UserNotification;
 			if ($role == 'customer') {
@@ -606,7 +607,13 @@ class UserNotification extends Model
 		if (empty($count)) {
 			return $data->paginate($limit);
 		}else {
-			return $data->get()->count();
+			if(empty($data)){
+				$counter = count($data);
+			}else {
+				$counter = $data->get()->count();
+			}
+
+			return $counter;
 		}
 	}
 }

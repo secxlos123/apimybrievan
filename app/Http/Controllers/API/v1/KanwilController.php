@@ -22,11 +22,28 @@ class KanwilController extends Controller
         ->post( 'form_params' );
 
       if ( ENV('APP_ENV') == 'local' ) {
-        return array(
-          'region_id' => 'Q',
-          'region_name' => 'Jakarta 3',
-          'branch_id' => '12'
-        );
+        $kanwil_list = [
+            "current_page" => 1,
+            "data" => array(
+                array(
+                  'region_id' => 'Q',
+                  'region_name' => 'Jakarta 3',
+                  'branch_id' => '12'
+                )
+              ),
+            "from" => 1,
+            "last_page" => 1,
+            "next_page_url" => null,
+            "path" => "",
+            "per_page" => 1,
+            "prev_page_url" => null,
+            "to" => 1,
+            "total" => 1
+        ];
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $kanwil_list
+        ], 200 );
       } else {
         if ($get_kanwil['responseCode'] == '00' ) {
 
