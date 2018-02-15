@@ -1231,7 +1231,7 @@ class ApiLasController extends Controller
                 "flag_putusan"=> !isset($data['flag_putusan'])? "":$data['flag_putusan'],
                 "catatan"     => !isset($data['catatan'])? "":$data['catatan']
             ]);
-
+            \Log::info($conten_putusan);
             // $putus = $ApiLas->putusSepakat($conten_putusan);
             // return $putus;
             try {
@@ -1259,25 +1259,26 @@ class ApiLasController extends Controller
                             \Log::info("-------- putusan update table eforms sukses---------");
 
                             $data_briguna = [
-                                'is_send'         => !isset($data['is_send'])? "":$data['is_send'],
+                                'is_send'         => !isset($data['is_send'])? null:$data['is_send'],
                                 'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
                                 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
-                            // update table briguna
-                            $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
-                            $briguna->update($data_briguna);
-                            \Log::info("-------- putusan update table briguna sukses---------");
+                        } elseif ($data['flag_putusan'] == '7') {
+                            $data_briguna = [
+                                'is_send'     => !isset($data['is_send'])? null:$data['is_send'],
+                                'catatan_adk' => !isset($data['catat_adk'])? "":$data['catat_adk']
+                            ];
                         } else {
                             $data_briguna = [
-                                'is_send'        => !isset($data['is_send'])? "":$data['is_send'],
+                                'is_send'        => !isset($data['is_send'])? null:$data['is_send'],
                                 // 'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
                                 // 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
-                            // update table briguna
-                            $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
-                            $briguna->update($data_briguna);
-                            \Log::info("-------- putusan update table briguna sukses---------");
                         }
+                        // update table briguna
+                        $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
+                        $briguna->update($data_briguna);
+                        \Log::info("-------- putusan update table briguna sukses---------");
                         $result = $dataResult;
                         return $result;
                     }
