@@ -17,6 +17,7 @@ use App\Models\Crm\ObjectActivity;
 use App\Models\Crm\ActionActivity;
 use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
+use App\Models\Crm\MarketingActivityFollowup;
 
 
 
@@ -163,7 +164,25 @@ class DashboardController extends Controller
     {
       $db_ext = new RestBrispot;
       $db_ext->setConnection('mysql2');
-      $sales_kit = $db_ext->all();
+      $data = $db_ext->all();
+      $sales_kit = [];
+      $img_url ='http://10.35.65.111/brispot/uploads/saleskit_sme/';
+
+      foreach ($data as $key => $value) {
+        $sales_kit[]=[
+          'id'=>$value->id,
+          'type'=>$value->type,
+          'headline'=>$value->headline,
+          'caption'=>$value->caption,
+          'filename'=>$value->filename,
+          'img_url'=>$img_url.$value->filename,
+          'filename_thumb'=>$value->filename_thumb,
+          'thumb_url'=>$img_url.$value->filename_thumb,
+          'description'=>$value->description,
+          'uploaded_on'=> $value->uploaded_on,
+          'uploaded_by'=>$value->uploaded_by
+        ];
+      }
       return response()->success([
         'message' => 'Sukses get Sales Kit',
         'contents' => $sales_kit
