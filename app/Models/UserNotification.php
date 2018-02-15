@@ -57,7 +57,6 @@ class UserNotification extends Model
 		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
 		$internalurl = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/');
 		$externalurl =  env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
-		
 		$url = $internalurl . 'eform?ref_number=' . $ref_number . '&slug=' . $this->slug.'&type='.$this->type_module;
 		if ($user_id) {
 			$url = $externalurl.'tracking/detail/'.$this->slug;
@@ -187,7 +186,7 @@ class UserNotification extends Model
 		case 'App\Notifications\NewSchedulerCustomer':
 			$subjectNotif = ['message' => 'Schedule Data Baru',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'message_external' => 'Schedule Data Baru',
 				'url_mobile' => '#',
 			];
 			break;
@@ -317,7 +316,7 @@ class UserNotification extends Model
 
 		if (@$role == 'pinca') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
@@ -479,169 +478,142 @@ class UserNotification extends Model
 	}
 
 	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit, $count = null) {
-		$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
-			->where('eforms.branch_id', @$branch_id)
-			->Where('eforms.ao_id', @$pn)
-			->orderBy('notifications.created_at', 'DESC');
+		$data = [];
+		if (empty($pn)) {
+			$query = new UserNotification;
+			if ($role == 'customer') {
+				$data = $query->where('notifiable_id', $user_id)
+							  ->whereIn('type', [
+													'App\Notifications\PengajuanKprNotification',
+													'App\Notifications\RecontestEFormNotification',
+													'App\Notifications\NewSchedulerCustomer',
+													'App\Notifications\UpdateSchedulerCustomer',
+													'App\Notifications\ApproveEFormCustomer',
+													'App\Notifications\ApproveEFormCLAS',
+													'App\Notifications\RejectEFormCustomer',
+													'App\Notifications\RejectEFormCLAS'
+		   					   ])
+							   ->whereNull('read_at');
+			}else if($role == 'developer') {
+				$data = $query->where('notifiable_id', $user_id)
+							  ->whereIn('type', [
+													'App\Notifications\CollateralManagerRejected',
+													'App\Notifications\CollateralManagerApprove',
+													'App\Notifications\ApproveDeveloperProfile',
+													'App\Notifications\RejectDeveloperProfile'
+								   ])
+							   ->whereNull('read_at');
+			}
+		}else{
+			$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
+				->where('eforms.branch_id', @$branch_id)
+				->Where('eforms.ao_id', @$pn)
+				->orderBy('notifications.created_at', 'DESC');
 
-		if (@$role == 'pinca') {
-			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+			if (@$role == 'pinca') {
+				if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
+					$query->whereNull('eforms.ao_id')->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
+					$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
+						->whereNotNull('visit_reports.created_at')
+						->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
+					$query->whereNotNull('visit_reports.created_at')
+						->unreads();
+				}
+
 			}
 
-			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
-				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
-					->whereNotNull('visit_reports.created_at')
-					->unreads();
+			if (@$role == 'ao') {
+				if ($query->Orwhere('notifications.type', 'App\Notifications\EFormPenugasanDisposisi')) {
+					$query->whereNotNull('eforms.ao_id')
+						->whereNotNull('eforms.ao_name')
+						->whereNotNull('eforms.ao_position')
+						->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
+					/*is is_approved*/
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
+					/*is rejected*/
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationApproveFormNasabah')) {
+					/*verifiy app*/
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationRejectFormNasabah')) {
+					/*verifiy app*/
+					$query->unreads();
+				}
+				if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
+					$query->unreads();
+	            }
+
+	            
+	            if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\ScorePefindoPreScreening')) {
+					$query->unreads();
+				}
 			}
 
-			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
-				$query->whereNotNull('visit_reports.created_at')
-					->unreads();
+			if (@$role == 'staff') {
+				$query->whereNull('notifications.created_at');
 			}
 
-		}
-
-		if (@$role == 'ao') {
-			if ($query->Orwhere('notifications.type', 'App\Notifications\EFormPenugasanDisposisi')) {
-				$query->whereNotNull('eforms.ao_id')
-					->whereNotNull('eforms.ao_name')
-					->whereNotNull('eforms.ao_position')
-					->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
-				/*is is_approved*/
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
-				/*is rejected*/
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationApproveFormNasabah')) {
-				/*verifiy app*/
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationRejectFormNasabah')) {
-				/*verifiy app*/
-				$query->unreads();
-			}
-			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
-				$query->unreads();
+			if (@$role == 'collateral-appraisal') {
+                if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralDisposition')) {
+                    $query->unreads();
+                }
             }
 
-            
-            if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
-				$query->unreads();
+			if (@$role == 'collateral') {
+				if ($query->Orwhere('notifications.type', 'App\Notifications\PropertyNotification')) {
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralOTS')) {
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafPenilaianAnggunan')) {
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafRejectOTS')) {
+					$query->unreads();
+				}
+
+				if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafChecklist')) {
+					$query->unreads();
+				}
 			}
+
+			$data = $query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 		}
-
-		if (@$role == 'customer') {
-			$query->where('notifications.notifiable_id', @$user_id);
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\RecontestEFormNotification')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\NewSchedulerCustomer')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\UpdateSchedulerCustomer')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
-				/*is is_approved*/
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCLAS')) {
-				/*is is_approved*/
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCustomer')) {
-				/*is rejected*/
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
-				/*is rejected*/
-				$query->unreads();
-			}
-			
-			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
-				$query->unreads();
-			}*/
-		}
-
-		if (@$role == 'staff') {
-			$query->whereNull('notifications.created_at');
-		}
-
-		if (@$role == 'collateral-appraisal') {
-                    if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralDisposition')) {
-                            $query->unreads();
-                    }
-                }
-
-		if (@$role == 'collateral') {
-			if ($query->Orwhere('notifications.type', 'App\Notifications\PropertyNotification')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralOTS')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafPenilaianAnggunan')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafRejectOTS')) {
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralStafChecklist')) {
-				$query->unreads();
-			}
-
-		}
-
-		if (@$role == 'developer') {
-			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerRejected')) {
-				$query->where('notifications.notifiable_id', @$user_id);
-				$query->unreads();
-			}
-			
-			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerApprove')) {
-				$query->where('notifications.notifiable_id', @$user_id);
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveDeveloperProfile')) {
-				$query->where('notifications.notifiable_id', @$user_id);
-				$query->unreads();
-			}
-
-			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectDeveloperProfile')) {
-				$query->where('notifications.notifiable_id', @$user_id);
-				$query->unreads();
-			}
-
-		}
-
-		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 
 		if (empty($count)) {
-			return $query->paginate($limit);
+			return $data->paginate($limit);
 		}else {
-			return $query->get()->count();
+			if(empty($data)){
+				$counter = count($data);
+			}else {
+				$counter = $data->get()->count();
+			}
+
+			return $counter;
 		}
-		
 	}
 }

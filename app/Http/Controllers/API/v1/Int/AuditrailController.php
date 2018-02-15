@@ -97,6 +97,7 @@ class AuditrailController extends Controller
                             ->where(\DB::raw('user_id'),'!=', 0)
                             ->where(\DB::raw('user_id'),'!=', 123)
                             ->where(function ($auditrail) use ($request) {
+                            $lowerValue = '%'.strtolower($request->input('username')).'%';
                /**
                 * This query for search by Nama User.
                 *
@@ -105,7 +106,7 @@ class AuditrailController extends Controller
                 */
 
                     if($request->has('username')){
-                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', $lowerValue);
                   
                     }
                 })
@@ -117,6 +118,7 @@ class AuditrailController extends Controller
                             ->where(\DB::raw('user_id'),'!=', 0)
                             ->where(\DB::raw('user_id'),'!=', 123)
                             ->where(function ($auditrail) use ($request) {
+                            $lowerValue = '%'.strtolower($request->input('username')).'%';
                /**
                 * This query for search by Nama User.
                 *
@@ -125,7 +127,7 @@ class AuditrailController extends Controller
                 */
 
                     if($request->has('username')){
-                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                        $auditrail->where(\DB::raw('LOWER(username)'), 'like', $lowerValue);
                   
                     }
                 })
@@ -183,12 +185,36 @@ class AuditrailController extends Controller
         ], 200 );
     }
 
+    public function getEformCustomer(Request $request, $id)
+    {
+        if(!empty($id)){
+        $eform2 = Eform::where('nik', '=', $id)->first();
+
+        $eform_id = $eform2->id;
+
+        $eform =  Eform::select('*')
+                    ->where('id', $eform_id)
+                    ->paginate( $request->input( 'limit' ) ?: 10 );
+        }else{
+
+        $eform =  Eform::select('*')
+                    ->paginate( $request->input( 'limit' ) ?: 10 );   
+        }
+       // dd($eform);
+
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $eform,
+        ], 200 );
+    }
+
     public function getNik(Request $request)
     {
         $getNik = \DB::table('eforms')
                     ->selectRaw("eforms.nik, concat(users.first_name, ' ', users.last_name) as nama_pemohon")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
                     ->where(function ($auditrail) use ($request) {
+                    $lower = '%' . strtolower($request->input('search')) . '%';
                /**
                 * This query for search by Nama Customer or Nik Customer .
                 *
@@ -197,13 +223,13 @@ class AuditrailController extends Controller
                 */
 
                     if($request->has('search')){
-                        $auditrail->where(\DB::raw('LOWER(nik)'), 'like', '%'.strtolower($request->input('search')).'%');
-                        $auditrail->Orwhere(\DB::raw("concat(lower(users.first_name), ' ', lower(users.last_name))"), 'like', '%'.strtolower($request->input('search')).'%');
+                        $auditrail->where(\DB::raw('LOWER(nik)'), 'like', $lower);
+                        $auditrail->Orwhere(\DB::raw("concat(lower(users.first_name), ' ', lower(users.last_name))"), 'like', $lower);
                   
                         }
                     })
                     ->paginate( $request->input( 'limit' ) ?: 10 );
-                    \Log::info($getNik);
+                   
                     return response()->success( [
                         'message' => 'Sukses',
                         'contents' => $getNik
@@ -217,6 +243,46 @@ class AuditrailController extends Controller
 
     public function modulNamePengajuanKredit(Request $request)
     {
+        $limit = $request->input('limit') ?: 2;
+        $page = $request->input('page') ;
+
+        $getCountModulName = \DB::table('auditrail_pengajuankredit')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where(function($auditrail) use ($request){
+                    /**
+                     * This query for search by Modul Name .
+                     *
+                     * @param $request->search
+                     * @return \Illuminate\Database\Eloquent\Builder
+                     */
+                        if($request->has('search')){
+                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                        }
+
+                        })
+                          ->where(function ($auditrail) use (&$request, &$query){
+                    
+                        $eform = 'app\\models\\eform';
+                        $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah'];
+                        $appointment = 'app\\models\\appointment';
+                        $propertyItem = 'app\\models\\propertyitem';
+                        $auditrail->whereNotNull('username');
+                        $auditrail->where(\DB::raw('LOWER(new_values)'), '!=', '[]');
+                        $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
+                        $auditrail->where('auditable_type', '!=', $appointment);
+                        $auditrail->where('auditable_type', '!=', $propertyItem);
+                        })->get();
+        
+         $count = count($getCountModulName);
+
+         if($page == 0 ){
+            $pages = 0;
+         
+         }elseif($page >= 1){
+            $pages = 0;
+            $limit = $count; //$limit*2;
+         }
+
         $getModulName = \DB::table('auditrail_pengajuankredit')
                         ->selectRaw("distinct(modul_name)")
                         ->where(function($auditrail) use ($request){
@@ -242,10 +308,24 @@ class AuditrailController extends Controller
                         $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
                         $auditrail->where('auditable_type', '!=', $appointment);
                         $auditrail->where('auditable_type', '!=', $propertyItem);
-                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        })->limit($limit)->offset($pages)->get();
+        $ReqPage = $request->input('page') +1 ;
+        $data_list = [
+                "current_page" => 1,
+                "data" => $getModulName,
+                "from" => 1,
+                "last_page" => 1,
+                "next_page_url" => url('auditrail/list-mnpengajuan'.'?page='.$ReqPage),
+                "path" => url('auditrail/list-mnpengajuan'),
+                "per_page" => $limit,
+                "prev_page_url" => null,
+                "to" => 1,
+                "total" => $count
+            ];
+
                         return response()->success([
                             'message' => 'Sukses',
-                            'contents'=> $getModulName
+                            'contents'=> $data_list
                         ], 200);
     }
 
@@ -256,6 +336,48 @@ class AuditrailController extends Controller
 
     public function modulNameAdminDev(Request $request)
     {
+        $limit = $request->input('limit') ?: 2;
+        $page = $request->input('page') ;
+       
+        $getCountModulName = \DB::table('auditrail_new_admin_dev')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Admin Developer
+                         */
+                        $slug = 'developer';
+                        $action = ['undefined action','login','logout'];
+                        $model_type = 'app\\models\\audit';
+                        $auditrail->where('auditable_type', '!=', $model_type);
+                        $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
+                        $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen','tambah unit property']);
+
+                        })->get();
+
+        $count = count($getCountModulName);
+
+        if($page == 0 ){
+            $pages = 0;
+            //$limit = $limit*2;
+         
+         }elseif($page >= 1){
+            $pages = 0;
+            $limit = $count;
+         }
+
         $getModulName = \DB::table('auditrail_new_admin_dev')
                         ->selectRaw("distinct(modul_name)")
                         ->where( function( $auditrail ) use ( $request ){
@@ -282,10 +404,25 @@ class AuditrailController extends Controller
                         $auditrail->where(\DB::raw('LOWER(new_values)'), 'not like', '[]');
                         $auditrail->whereIn(\DB::raw('LOWER(modul_name)'), ['tambah admin dev','banned admin dev','unbanned admin dev','edit proyek','tambah agen','ubah admin dev','unbanned agen','banned agen','edit tipe property','tambah tipe property','tambah proyek','edit agen','tambah unit property']);
 
-                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        })->limit($limit)->offset($pages)->get();
+        
+        $ReqPage = $request->input('page') +1 ;
+        $data_list = [
+                "current_page" => 1,
+                "data" => $getModulName,
+                "from" => 1,
+                "last_page" => 1,
+                "next_page_url" => url('auditrail/list-mnadmindev'.'?page='.$ReqPage),
+                "path" => url('auditrail/list-mnadmindev'),
+                "per_page" => $limit,
+                "prev_page_url" => null,
+                "to" => 1,
+                "total" => $count
+            ];
+
                         return response()->success([
-                            'message' => 'Success',
-                            'contents'=> $getModulName
+                            'message' => 'Sukses',
+                            'contents'=> $data_list
                         ], 200);
     }
 
@@ -296,6 +433,43 @@ class AuditrailController extends Controller
 
     public function modulNameAppointment(Request $request)
     {
+        $page = $request->input('page') ;
+        $getCountModulName = \DB::table('auditrail_type_one')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        /**
+                         * This query for Auditrail Appointment
+                         */
+
+                         $appointment = 'app\models\appointment';
+
+                         $auditrail->where('auditable_type', $appointment);
+
+                        })->get();
+
+        $count = count($getCountModulName);
+
+        if($page == 0 ){
+            $pages = 0;
+            //$limit = $limit*2;
+         
+         }elseif($page >= 1){
+            $pages = 0;
+            $limit = $count;
+         }
+
         $getModulName = \DB::table('auditrail_type_one')
                         ->selectRaw("distinct(modul_name)")
                         ->where( function( $auditrail ) use ( $request ){
@@ -319,10 +493,25 @@ class AuditrailController extends Controller
 
                          $auditrail->where('auditable_type', $appointment);
 
-                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        })->limit($limit)->offset($pages)->get();
+        
+        $ReqPage = $request->input('page') +1 ;
+        $data_list = [
+                "current_page" => 1,
+                "data" => $getModulName,
+                "from" => 1,
+                "last_page" => 1,
+                "next_page_url" => url('auditrail/list-mnappointment'.'?page='.$ReqPage),
+                "path" => url('auditrail/list-mnappointment'),
+                "per_page" => $limit,
+                "prev_page_url" => null,
+                "to" => 1,
+                "total" => $count
+            ];
+
                         return response()->success([
-                            'message' => 'Success',
-                            'contents'=> $getModulName
+                            'message' => 'Sukses',
+                            'contents'=> $data_list
                         ], 200);
     }
 
@@ -333,6 +522,46 @@ class AuditrailController extends Controller
 
     public function modulNameCollateral(Request $request)
     {
+        $page = $request->input('page');
+        $getCountModulName = \DB::table('auditrail_collaterals')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Collateral
+                         */
+
+                         $model_type = ['app\models\collateral','app\models\otsdoc'];
+                         $auditrail->wherein('auditable_type', $model_type);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
+                         $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
+
+                        })->get();
+
+        $count = count($getCountModulName);
+
+        if($page == 0 ){
+            $pages = 0;
+            //$limit = $limit*2;
+         
+         }elseif($page >= 1){
+            $pages = 0;
+            $limit = $count;
+         }
+
         $getModulName = \DB::table('auditrail_collaterals')
                         ->selectRaw("distinct(modul_name)")
                         ->where( function( $auditrail ) use ( $request ){
@@ -359,10 +588,25 @@ class AuditrailController extends Controller
                          $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
                          $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
 
-                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        })->limit($limit)->offset($pages)->get();
+        
+        $ReqPage = $request->input('page') +1 ;
+        $data_list = [
+                "current_page" => 1,
+                "data" => $getModulName,
+                "from" => 1,
+                "last_page" => 1,
+                "next_page_url" => url('auditrail/list-mncollateral'.'?page='.$ReqPage),
+                "path" => url('auditrail/list-mncollateral'),
+                "per_page" => $limit,
+                "prev_page_url" => null,
+                "to" => 1,
+                "total" => $count
+            ];
+
                         return response()->success([
-                            'message' => 'Success',
-                            'contents'=> $getModulName
+                            'message' => 'Sukses',
+                            'contents'=> $data_list
                         ], 200);
     }
 
@@ -373,6 +617,47 @@ class AuditrailController extends Controller
 
     public function modulNameAgenDev(Request $request)
     {
+        $page = $request->input('page');
+        $getCountModulName = \DB::table('auditrail_admin_developer')
+                        ->selectRaw("distinct(modul_name)")
+                        ->where( function( $auditrail ) use ( $request ){
+
+                        /**
+                         * This query for search by Modul Name .
+                         *
+                         * @param $request->search
+                         * @return \Illuminate\Database\Eloquent\Builder
+                         */
+                            if($request->has('search')){
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            }
+                        })
+                        ->where( function( $auditrail ) use ( $request ){
+                        
+                        /**
+                         * This query for Auditrail Agen Developer
+                         */
+
+                         $slug = 'developer-sales';
+                         $action = 'undefined action';
+                         $auditrail->where('role', $slug);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', $action);
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'login');
+                         $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
+
+                        })->get();
+
+        $count = count($getCountModulName);
+
+        if($page == 0 ){
+            $pages = 0;
+            //$limit = $limit*2;
+         
+         }elseif($page >= 1){
+            $pages = 0;
+            $limit = $count;
+         }
+
         $getModulName = \DB::table('auditrail_admin_developer')
                         ->selectRaw("distinct(modul_name)")
                         ->where( function( $auditrail ) use ( $request ){
@@ -400,10 +685,25 @@ class AuditrailController extends Controller
                          $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'login');
                          $auditrail->where(\DB::raw('LOWER(modul_name)'), '!=', 'logout');
 
-                        })->paginate( $request->input( 'limit' ) ? : 10 );
+                        })->limit($limit)->offset($pages)->get();
+        
+        $ReqPage = $request->input('page') +1 ;
+        $data_list = [
+                "current_page" => 1,
+                "data" => $getModulName,
+                "from" => 1,
+                "last_page" => 1,
+                "next_page_url" => url('auditrail/list-mnagendev'.'?page='.$ReqPage),
+                "path" => url('auditrail/list-mnagendev'),
+                "per_page" => $limit,
+                "prev_page_url" => null,
+                "to" => 1,
+                "total" => $count
+            ];
+
                         return response()->success([
-                            'message' => 'Success',
-                            'contents'=> $getModulName
+                            'message' => 'Sukses',
+                            'contents'=> $data_list
                         ], 200);
     }
 

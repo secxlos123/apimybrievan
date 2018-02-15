@@ -380,7 +380,8 @@ class CustomerDetail extends Model implements AuditableContract
     {
         $credentials = \RestwsHc::getUser();
         $pn          = $credentials['pn'];
-        $role        = ($credentials['role'] == "ao" ? true : false);
+        $role        = $credentials['role'];
+        $branchId    = $credentials['branch_id'];
         $aoId        = substr('00000000'.$pn, -8);
 
         $name = empty($params['name']) ? '' : $params['name'];
@@ -392,11 +393,17 @@ class CustomerDetail extends Model implements AuditableContract
                     return $query->where(DB::raw('LOWER(first_name)'), 'like', '%'.strtolower($name).'%')
                                  ->orWhere(DB::raw('LOWER(last_name)'), 'like', '%'.strtolower($name).'%');
                 })
-                ->whereHas('eform', function($query) use ($aoId, $role){
-                    // Conditional when role is AO, get data by AO ID (PN)
-                    return $query->when($role, function($query) use ($aoId){
-                                    return $query->where('ao_id', $aoId);
-                                })->where('status_eform', "Pencairan");
+                ->whereHas('eform', function($query) use ($aoId, $role, $branchId){
+                    if ( $role == 'ao' ) {
+                        $query = $query->when($role, function($query) use ($aoId){
+                            return $query->where('ao_id', $aoId);
+                        });
+
+                    }
+                    return $query->where(
+                        \DB::Raw("TRIM(LEADING '0' FROM branch_id)"), (string) intval( $branchId )
+                    )
+                    ->where('status_eform', "Pencairan");
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){

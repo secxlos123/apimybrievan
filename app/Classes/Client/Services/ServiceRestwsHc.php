@@ -107,8 +107,15 @@ class ServiceRestwsHc extends Client
 
                 if (ENV('APP_ENV') == 'local') {
                     $branch = '12';
+                    $pn = empty( $pn ) ? request()->header( 'pn' ) : $pn;
+                    if ( $pn = 70828 ) {
+                        $role = 'collateral-manager';
+                        $department = 'PJ. COLLATERAL MANAGER';
+                    }
                 } else {
                     $branch = $get_user_info_service[ 'responseData' ][ 'BRANCH' ];
+                    $department = $get_user_info_service[ 'responseData' ][ 'STELL_TX' ];
+                    $pn = $get_user_info_service[ 'responseData' ][ 'PERNR' ];
                 }
 
                 return [
@@ -118,9 +125,9 @@ class ServiceRestwsHc extends Client
                     'role' => $role,
                     'role_user' => $role_user,
                     'branch_id' => $branch,
-                    'pn' => $get_user_info_service[ 'responseData' ][ 'PERNR' ],
+                    'pn' => $pn,
                     'position' => $get_user_info_service[ 'responseData' ][ 'ORGEH_TX' ],
-                    'department' => $get_user_info_service[ 'responseData' ][ 'STELL_TX' ],
+                    'department' => $department,
                     'hilfm' => $get_user_info_service[ 'responseData' ][ 'HILFM' ]
                     // 'phone' => $get_user_info_service[ 'responseData' ][ 'HP1' ]
                 ];
