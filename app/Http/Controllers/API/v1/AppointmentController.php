@@ -44,7 +44,20 @@ class AppointmentController extends Controller
         if ($eks) {
             $data = $data->customer($request->user()->id, $request->month, $request->year)->get();
         } else {
-          $data = $data->ao($request->header('pn'),  $request->month, $request->year)->paginate(300);
+            $user_login = \RestwsHc::getUser();
+            if ( $user_login['role'] === 'ao' ) {
+                $data = $data->ao(
+                    $request->header('pn')
+                    , $request->month
+                    , $request->year
+                )->paginate(300);
+            } else {
+                $data = $data->pinca(
+                    $user_login['branch_id']
+                    , $request->month
+                    , $request->year
+                )->paginate(300);
+            }
         }
         if ($data) {
             if (count($data) > 0) {
@@ -96,12 +109,8 @@ class AppointmentController extends Controller
         // $save = $request->only($postTaken);
         if ($save) {
             $typeModule = getTypeModule(Appointment::class);
-            $notificationIsRead =  $this->userNotification->where( 'slug', $save->eform_id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
-            if($notificationIsRead != NULL){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($save->eform_id, $typeModule);
+
             $usersModel = User::FindOrFail($save->user_id);     /*send notification*/
             $usersModel->notify(new NewSchedulerCustomer($save));
 
@@ -138,9 +147,14 @@ class AppointmentController extends Controller
     public function show(Appointment $appointment, Request $request, $id)
     {
       $appointment = $appointment->visibleColumn()
-        ->withEform()
-        ->customer($request->user()->id, $request->month, $request->year)
-        ->where((new Appointment)->getTable() . '.id', $id)
+        ->withEform();
+        if ($request->has('month') || $request->has('year')) {
+            $appointment->customer($request->user()->id, $request->month, $request->year);
+        }else
+        {
+        $appointment->where('eforms.user_id',$request->user()->id);
+        }
+        $appointment = $appointment->where((new Appointment)->getTable() . '.id', $id)
         ->first();
 
         return response()->success([
@@ -191,12 +205,8 @@ class AppointmentController extends Controller
             $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
 
             $typeModule = getTypeModule(Appointment::class);
-            $notificationIsRead =  $this->userNotification->where( 'slug', $id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
-            if($notificationIsRead != NULL){
-                $notificationIsRead->markAsRead();
-            }
+            notificationIsRead($id, $typeModule);
+
             $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
             $usersModel->notify(new UpdateSchedulerCustomer($Update));
 

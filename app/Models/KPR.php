@@ -125,6 +125,9 @@ class KPR extends Model implements AuditableContract
             case '7':
                 return 'Take Over Top Up';
                 break;
+            case '8':
+                return 'Take Over Account In House (Cash Bertahap)';
+                break;
             default:
                 return '';
                 break;

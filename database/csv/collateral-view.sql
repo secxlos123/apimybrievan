@@ -42,6 +42,10 @@ collaterals.is_staff,
 collaterals.approved_by,
 (select name from cities where cities.id = customer_details.birth_place_id) AS birthplace,
 (select region_id from properties where properties.id = kpr.property_id ) AS region_id,
+CASE WHEN kpr.active_kpr = 3 THEN '>2'
+    WHEN kpr.active_kpr = 2 THEN '2'
+    WHEN kpr.active_kpr = 1 THEN '1'
+    ELSE 'Tidak Ada' END AS active_kpr_preview,
 CASE WHEN customer_details.address_status::int = 0 THEN 'Milik Sendiri'
     WHEN customer_details.address_status::int = 1 THEN 'Milik Orang Tua/Mertua atau Rumah Dinas'
     WHEN customer_details.address_status::int = 3 THEN 'Tinggal di Rumah Kontrakan'

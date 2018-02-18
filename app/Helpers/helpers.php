@@ -357,6 +357,28 @@ if (! function_exists('get_employment')) {
     }
 }
 
+if (! function_exists('notificationIsRead')) {
+
+    /**
+     * Convert csv file to array.
+     *
+     * @param  string $file path to file
+     * @param  array $headers
+     * @param  string $delimiter
+     *
+     * @return array
+     */
+    function notificationIsRead($slug, $typeModule)
+    {
+        $notificationIsRead =  UserNotification::where('slug', $slug)->where( 'type_module',$typeModule)
+                                       ->whereNull('read_at')
+                                       ->first();
+        if($notificationIsRead){
+            $notificationIsRead->markAsRead();
+        }
+    }
+}
+
 if (! function_exists('get_loan_history')) {
 
     /**
@@ -947,6 +969,35 @@ if (! function_exists('pushNotification')) {
                 $topicResponse->shouldRetry();
                 $topicResponse->error();
             }else if($user_login['role'] == 'ao'){
+                $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+                $notificationBuilder->setBody($message['body'])
+                                    ->setSound('default');
+                // Get data from notifications table
+                $usersModel = User::FindOrFail($dataUser['data']->user_id);
+                $usersModel->notify(new PengajuanKprNotification($dataUser['data']));
+
+                $notificationData = UserNotification::where('slug', $dataUser['data']->id)
+                                                ->where('type_module', 'eform')
+                                                ->orderBy('created_at', 'desc')->first();
+
+                $dataBuilder = new PayloadDataBuilder();
+                $dataBuilder->addData([
+                    'id'   => $notificationData['id'],
+                    'slug' => $dataUser['data']->ref_number,
+                    'type' => 'eform',
+                ]);
+
+                $notification = $notificationBuilder->build();
+                $data         = $dataBuilder->build();
+                $topic        = new Topics();
+
+                $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
+
+                $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+                $topicResponse->isSuccess();
+                $topicResponse->shouldRetry();
+                $topicResponse->error();
+            }else {
                 $notificationBuilder = new PayloadNotificationBuilder($message['title']);
                 $notificationBuilder->setBody($message['body'])
                                     ->setSound('default');
