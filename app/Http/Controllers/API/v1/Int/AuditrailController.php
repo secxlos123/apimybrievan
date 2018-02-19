@@ -208,6 +208,11 @@ class AuditrailController extends Controller
         ], 200 );
     }
 
+    /**
+     * This function for list-nik and name auditrail tab pengajuan kredit
+     * @param Illuminate\Http\Request
+     */
+
     public function getNik(Request $request)
     {
         $getNik = \DB::table('eforms')
@@ -233,6 +238,37 @@ class AuditrailController extends Controller
                     return response()->success( [
                         'message' => 'Sukses',
                         'contents' => $getNik
+                        ], 200 );
+    }
+
+    /**
+     * This function for list-branch_id and branch_name auditrail tab pengajuan kredit
+     * @param Illuminate\Http\Request
+     */
+
+    public function getBranch(Request $request)
+    {
+        $getBranch = \DB::table('eforms')
+                    ->selectRaw("branch_id, branch")
+                    ->where(function ($auditrail) use ($request) {
+                    $lower = '%' . strtolower($request->input('search')) . '%';
+               /**
+                * This query for search by Branch ID or Branch name .
+                *
+                * @param $request->search
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('search')){
+                        $auditrail->where(\DB::raw('LOWER(branch)'), 'like', $lower);
+                        }
+                    })
+                    ->groupBy('branch_id', 'branch')
+                    ->paginate( $request->input( 'limit' ) ?: 10 );
+                   
+                    return response()->success( [
+                        'message' => 'Sukses',
+                        'contents' => $getBranch
                         ], 200 );
     }
 
@@ -820,6 +856,13 @@ class AuditrailController extends Controller
       }
       if ($request->has('created_at')){
         $data->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+      }
+       if ($request->has('search')){
+            $data->whereHas('property',function($property) use ($request){
+                $lowerValue = '%'.$request->input('search').'%';
+                $property->where(\DB::raw('LOWER(name)'), 'ilike', $lowerValue);
+                $property->Orwhere(\DB::raw('LOWER(pic_name)'), 'ilike', $lowerValue);
+        });
       }  
         
       $data->orderBy('created_at', 'desc');
@@ -862,6 +905,11 @@ class AuditrailController extends Controller
       }   
       if($request->has('staff_name')){
             $data->where(\DB::raw('LOWER(collateral_view_table.staff_name)'), 'like', '%'.strtolower($request->input('staff_name')).'%');
+      }
+      if($request->has('search')){
+            $lowerValue = '%'.$request->input('search').'%';
+            $data->where(\DB::raw("concat(lower(collateral_view_table.first_name), ' ', lower(collateral_view_table.last_name))"), 'ilike', $lowerValue);
+            $data->Orwhere(\DB::raw('lower(home_location)'), 'ilike', $lowerValue);
       }
            $data->orderBy('collaterals.created_at', 'desc');        
 
