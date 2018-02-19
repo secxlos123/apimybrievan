@@ -14,7 +14,9 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::post('getBranch', 'SelectUkerController@getBranch');
-	Route::post('getMitra', 'SelectListMitraController@getMitra');
+	Route::post('getMitra', 'SelectListMitraController@getMitra');	
+	Route::get('getFasilitas', 'SelectListController@getFasilitas');
+	Route::get('getBank', 'SelectListController@getBank');
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
 	Route::post('mitraall', 'mitra\ScoringProsesController@getallmitra');
 	Route::post('hapus_dir', 'dirrpcController@hapus_dir');
