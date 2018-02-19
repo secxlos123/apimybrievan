@@ -351,6 +351,8 @@ class AccountController extends Controller
       $data['point'] = $request['point'];
       $data['branch_id'] = $branch;
       $data['creator_name'] = $name;
+      $data['longitude'] = $request['longitude'];
+      $data['latitude'] = $request['latitude']; 
 
       $save = Referral::create($data);
       if ($save) {

@@ -58,6 +58,18 @@ Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
 	return $detail->nik;
 });
 
+Route::get('/collateral_pdf/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with('kpr')
+		->where('ref_number', $ref_number)->first();
+	$collateral = \App\Models\Collateral::withAll()->where('property_id',$detail->kpr->property_id)->first();
+	$eform = $detail;
+	$path = public_path('uploads/'.$detail->nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
+    echo "<br/>";
+	return $detail->nik;
+});
+
 Route::get('/resend_verification/{ref_number}', function ($ref_number) {
 	$eform = \App\Models\EForm::where( 'ref_number', $ref_number )->first();
 	$customer = \App\Models\Customer::where( 'id', $eform->user_id )->first();

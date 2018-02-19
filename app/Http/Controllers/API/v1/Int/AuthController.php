@@ -49,40 +49,71 @@ class AuthController extends Controller
         if( $login[ 'responseCode' ] == '00' ) {
             if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
                 $role = 'ao';
+                $role_user = 'ao';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 49, 50, 51 ] ) ) {
                 $role = 'mp';
+                $role_user = 'mp';
+                if( in_array( intval($data[ 'hilfm' ]), [ 49, 51 ] ) ) {
+                    $role_user = 'amp';
+                }
+            // } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 50 ] ) ) {
+            //     $role = 'mp';
+            // new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 44 ] ) ) {
                 $role = 'fo';
+                $role_user = 'fo';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                 $role = 'pinca';
+                $role_user = 'pinca';
+                if( in_array( intval($data[ 'hilfm' ]), [19] ) ) {
+                    $role_user = 'pincapem';
+                } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
+                    $role_user = 'pincasus';
+                } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
+                    $role_user = 'wapincasus';
+                }
+            // } else if( in_array( intval($data[ 'hilfm' ]), [ 12, 14 ] ) ) {
+            //     $role = 'pinca';
+            // new role
+            } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
+                $role = 'pinwil';
+                $role_user = 'pinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
+                $role = 'wapinwil';
+                $role_user = 'wapinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
+                $role = 'cs';
+                $role_user = 'cs';
+            } else if( in_array( intval($data[ 'hilfm' ]), [65] ) ) {
+                $role = 'teller';
+                $role_user = 'teller';
+            } else if( in_array( intval($data[ 'hilfm' ]), [54] ) ) {
+                $role = 'spvadk';
+                $role_user = 'spvadk';
+            // end new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
+                $role_user = 'prescreening';
                 if( in_array( strtolower($data[ 'posisi' ]), [ 'collateral appraisal', 'collateral manager' ] ) ){
                     $role = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
+                    $role_user = str_replace(' ', '-', strtolower($data[ 'posisi' ]));
                 }
             } else if( in_array( intval($data[ 'hilfm' ]), [26] ) ) {
                 $role = 'staff';
+                $role_user = 'staff';
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
-            // new role
-            } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
-                $role = 'wapincasus';
-            } else if( in_array( intval($data[ 'hilfm' ]), [5] ) ) {
-                $role = 'pincasus';
-            } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
-                $role = 'pinwil';
-            } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
-                $role = 'wapinwil';
-            } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
-                $role = 'cs';
+                $role_user = 'collateral';
             // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
-                $adk = explode(' ', $data['posisi']);
+                // $adk = explode(' ', $data['posisi']);
                 // print_r($adk);
                 // print_r($data);exit();
-                if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
-                    $role = 'adk';
-                }
+                // if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
+                    // $role = 'adk';
+                // }
+                $role = 'adk';
+                $role_user = 'adk';
             } else {
                 // $request->headers->set( 'pn', $pn );
                 // $this->destroy( $request );
@@ -92,6 +123,7 @@ class AuthController extends Controller
                 // ], 401 );
                 // Ini Buat Handle Semua User Bisa Masuk Role Staff
                 $role = 'staff';
+                $role_user = 'staff';
             }
 
             if (ENV('APP_ENV') == 'local') {
@@ -115,7 +147,6 @@ class AuthController extends Controller
                     ]);
                 }
             }
-
 
             if (ENV('APP_ENV') == 'local') {
                 $branch = '12';
@@ -152,7 +183,6 @@ class AuthController extends Controller
                 $branch = $data[ 'branch' ];
             }
 
-
             return response()->success( [
                 'message' => 'Login Sukses',
                 'contents'=> [
@@ -161,8 +191,10 @@ class AuthController extends Controller
                     'name' => $data[ 'nama' ],
                     'branch' => $branch,
                     'role' => $role,
+                    'role_user' => $role_user,
                     'position' => $data['posisi'],
-                    'uker' => $data['tipe_uker']
+                    'uker' => $data['tipe_uker'],
+                    'hilfm' => $data['hilfm']
                 ]
             ], 200 );
 

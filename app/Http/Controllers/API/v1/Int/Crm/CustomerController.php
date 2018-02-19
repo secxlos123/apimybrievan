@@ -149,6 +149,7 @@ class CustomerController extends Controller
       // $result = array_merge_recursive($customer_officer['data']['top'],$customer_officer['data']['bottom']);
       $result = array_merge_recursive($top,$bottom);
       // return $result;die();
+      $customer =[];
       foreach ($result as $key =>  $value) {
         if($value['DELTA_SALDO'] < 0 || $value['DELTA_SALDO'] > 0){
           if ( $value['DELTA_SALDO'] > 0) {
@@ -178,8 +179,8 @@ class CustomerController extends Controller
           }
         }
       }
-      $data=[];
 
+      $data=[];
       if(array_key_exists('top', $customer) && $customer['top'] != null){
         usort($customer['top'], function($a, $b) { //Sort the array using a user defined function
             return $a['DELTA_SALDO'] >= $b['DELTA_SALDO'] ? -1 : 1; //Compare the scores

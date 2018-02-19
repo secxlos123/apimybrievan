@@ -395,13 +395,35 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="label">Jenis KPP</td>
-                        <td class="break-word">: {{ $detail->visit_report['kpp_type_name'] }}</td>
+                        <td class="label">Jenis KPR</td>
+                        <td class="break-word">: {{ $detail->kpr['status_property_name'] }}</td>
                     </tr>
-                    <tr>
-                        <td class="label">Jenis Properti</td>
-                        <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
-                    </tr>
+
+                    @if( $detail->kpr['status_property'] == 1 )
+                        <tr>
+                            <td class="label">Developer</td>
+                            <td class="break-word">: {{ $detail->kpr['developer_name'] }}</td>
+                        </tr>
+                    @endif
+
+                    @if( $detail->kpr['developer_id'] == env('DEVELOPER_id','1') )
+                        <tr>
+                            <td class="label">Jenis Properti</td>
+                            <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
+                        </tr>
+
+                    @else
+                        <tr>
+                            <td class="label">Nama Proyek</td>
+                            <td class="break-word">: {{ $detail->kpr['property_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tipe Properti</td>
+                            <td class="break-word">: {{ $detail->kpr['property_type_name'] }}</td>
+                        </tr>
+
+                    @endif
+
                     <tr>
                         <td class="label">Harga Rumah</td>
                         <td class="break-word">: Rp. {{ number_format(round($detail->kpr['price']), 0, ",", ".") }}</td>
@@ -420,7 +442,7 @@
                     </tr>
                     <tr>
                         <td class="label">KPR Aktif ke</td>
-                        <td class="break-word">: {{ $detail->kpr['active_kpr'] }}</td>
+                        <td class="break-word">: {{ $detail->kpr['active_kpr_preview'] }}</td>
                     </tr>
                     <tr>
                         <td class="label">Uang Muka</td>
