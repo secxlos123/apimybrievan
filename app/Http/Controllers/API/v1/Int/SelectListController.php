@@ -39,36 +39,16 @@ class SelectListController extends Controller
 			$array=$ret;
 		return $array;
 		}
+
 	public function getFasilitas( Request $request )
 	{
-			
-			  $return = DB::table('ddfasilitas')
-							 ->select('NAMA','KODE')
-							 ->get();
-					$return = $return->toArray();
-					$return = json_decode(json_encode($return), True);
-				
-		if(empty($return)){
-			return ['code'=>'433','description'=>'gagal','contents'=>''];
-		}else{
 
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $return
-        ]);
-		}
-	}
-
-	
-	public function getFasilitas( Request $request )
-	{
-			
 			  $return = DB::table('ddbank')
 							 ->select('NAMA','KODE')
 							 ->get();
 					$return = $return->toArray();
 					$return = json_decode(json_encode($return), True);
-				
+
 		if(empty($return)){
 			return ['code'=>'433','description'=>'gagal','contents'=>''];
 		}else{
