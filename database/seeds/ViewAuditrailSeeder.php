@@ -54,6 +54,8 @@ left join collaterals f on f.developer_id = c.id
 left join eforms g on g.user_id = a.user_id
 left join user_services h on h.pn = a.user_id");
 
+         \DB::unprepared("DROP VIEW IF EXISTS auditrail_pengajuankredit");
+
  \DB::unprepared("DROP VIEW IF EXISTS auditrail_type_two");
         \DB::unprepared("CREATE VIEW auditrail_type_two AS
          select a.id
@@ -93,5 +95,31 @@ left join collaterals f on f.developer_id = c.id
 left join eforms g on g.user_id = a.user_id
 left join user_services h on h.pn = a.user_id
  join eforms i on i.id = a.auditable_id");
+
+        \DB::unprepared("CREATE VIEW auditrail_pengajuankredit AS
+         select a.id
+              , a.created_at
+              , a.modul_name
+              , a.event
+              , a.user_id
+              , a.auditable_type
+              , a.url
+              , a.username
+              , a.role
+              , a.ref_number
+              , a.company_name
+              , a.developer
+              , a.old_values
+              , a.new_values
+              , a.ip_address
+              , a.action_location
+              , b.id as eform_id
+              , b.branch_id
+              , d.region_name
+              , d.region_id 
+        from auditrail_type_two a 
+        join eforms b on b.ref_number = a.ref_number
+        join kpr c on c.eform_id = b.id
+        join properties d on d.id = c.property_id");
     }
 }

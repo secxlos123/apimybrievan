@@ -399,17 +399,20 @@
                         <td class="break-word">: {{ $detail->kpr['status_property_name'] }}</td>
                     </tr>
 
-                    @if( $detail->kpr['developer'] == env('DEVELOPER_id','1') )
+                    @if( $detail->kpr['status_property'] == 1 )
+                        <tr>
+                            <td class="label">Developer</td>
+                            <td class="break-word">: {{ $detail->kpr['developer_name'] }}</td>
+                        </tr>
+                    @endif
+
+                    @if( $detail->kpr['developer_id'] == env('DEVELOPER_id','1') )
                         <tr>
                             <td class="label">Jenis Properti</td>
                             <td class="break-word">: {{ $detail->kpr['kpr_type_property_name'] }}</td>
                         </tr>
 
                     @else
-                        <tr>
-                            <td class="label">Developer</td>
-                            <td class="break-word">: {{ $detail->kpr['developer_name'] }}</td>
-                        </tr>
                         <tr>
                             <td class="label">Nama Proyek</td>
                             <td class="break-word">: {{ $detail->kpr['property_name'] }}</td>

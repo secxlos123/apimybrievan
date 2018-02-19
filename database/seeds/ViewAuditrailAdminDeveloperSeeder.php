@@ -48,6 +48,7 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
         \DB::unprepared("DROP VIEW IF EXISTS auditrail_collaterals");
         \DB::unprepared("CREATE VIEW auditrail_collaterals AS
          select a.id
+            ,c.id as collateral_id
             , a.created_at
             , a.action as modul_name
             , a.event
@@ -63,11 +64,16 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
             , a.new_values
             , a.ip_address
             , a.extra_params as action_location
+            ,c.manager_id
+            ,c.manager_name
+            ,e.region_id
+            ,e.region_name
             from audits a
             left join user_services h on h.pn = a.user_id
             left join collaterals c on a.auditable_id = c.id
             left join users s on c.developer_id = s.id 
-            left join developers d on d.user_id = s.id");
+            left join developers d on d.user_id = s.id
+            left join properties e on e.id = c.property_id");
         //view audit trail property
         \DB::unprepared("DROP VIEW IF EXISTS auditrail_property");
         \DB::unprepared("CREATE VIEW auditrail_property AS
@@ -192,7 +198,8 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
            , f.staff_name
                , case when e.slug is not null then e.slug else h.role end as role
                /*, i.name as project_name */
-                , case when k.company_name is not null then k.company_name when m.company_name is not null then m.company_name when n.company_name is not null then n.company_name else c.company_name end as company_name
+                -- , case when k.company_name is not null then k.company_name when m.company_name is not null then m.company_name when n.company_name is not null then n.company_name else c.company_name end as company_name
+               , c.company_name as company_name
                , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
                , a.old_values
                , a.new_values
@@ -212,32 +219,7 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
                left join developers m on m.user_id = a.auditable_id
                left join developers n on n.id = a.auditable_id");
 
-        \DB::unprepared("DROP VIEW IF EXISTS auditrail_pengajuankredit");
-        \DB::unprepared("CREATE VIEW auditrail_pengajuankredit AS
-         select a.id
-              , a.created_at
-              , a.modul_name
-              , a.event
-              , a.user_id
-              , a.auditable_type
-              , a.url
-              , a.username
-              , a.role
-              , a.ref_number
-              , a.company_name
-              , a.developer
-              , a.old_values
-              , a.new_values
-              , a.ip_address
-              , a.action_location
-              , b.id as eform_id
-              , b.branch_id
-              , d.region_name
-              , d.region_id 
-        from auditrail_type_two a 
-        join eforms b on b.ref_number = a.ref_number
-        join kpr c on c.eform_id = b.id
-        join properties d on d.id = c.property_id");
+       
 
     }
 

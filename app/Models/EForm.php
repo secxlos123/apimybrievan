@@ -347,6 +347,7 @@ class EForm extends Model implements AuditableContract
                             $eform->additional_parameters
                         )
                     );
+                    $eform->update($defaultValue);
                 }
             }
 
@@ -929,16 +930,26 @@ class EForm extends Model implements AuditableContract
      */
     public function SentToBri($request, $endpoint, $value = null, $step)
     {
-        $post_to_bri = Asmx::setEndpoint( $endpoint )
-            ->setBody( [
-                'Request' => json_encode( $request )
-            ] )
-            ->post( 'form_params' );
+        if ( ENV('APP_ENV') == 'local' ) {
+            $post_to_bri = array (
+              'code' => '200',
+              'descriptions' => 'Success',
+              'contents' => $this->id
+            );
 
-        $return = array(
-            'status' => false
-            , 'message' => isset($post_to_bri[ 'contents' ]) ? $post_to_bri[ 'contents' ] : ''
-        );
+        } else {
+            $post_to_bri = Asmx::setEndpoint( $endpoint )
+                ->setBody( [
+                    'Request' => json_encode( $request )
+                ] )
+                ->post( 'form_params' );
+
+            $return = array(
+                'status' => false
+                , 'message' => isset($post_to_bri[ 'contents' ]) ? $post_to_bri[ 'contents' ] : ''
+            );
+
+        }
 
         \Log::info('============================================================================================');
         \Log::info($endpoint);
@@ -965,6 +976,12 @@ class EForm extends Model implements AuditableContract
                 'status' => true
                 , 'message' => ''
             );
+        } else {
+            if ( $endpoint == 'InsertIntoAnalis' ) {
+                $this->vip_sent = false;
+                $this->save();
+
+            }
         }
 
         return $return;
@@ -1560,18 +1577,35 @@ class EForm extends Model implements AuditableContract
      */
     public function getInterest( $fid_aplikasi )
     {
-        $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
-            ->setBody([
-                'Request' => json_encode( array(
-                    'fid_aplikasi' => $fid_aplikasi
-                ) )
-            ])
-            ->post( 'form_params' );
+        if ( !isset($this->additional_parameters['gimmick_rate']) ) {
+            if ( ENV('APP_ENV') == 'local' ) {
+                $getGimmick = array(
+                    "code" => "200"
+                    , "descriptions" => "Success"
+                    , "contents" => "7.11"
+                );
 
-        $this->additional_parameters += [ "gimmick_rate" => $getGimmick[ 'contents' ] ] ;
-        $this->save();
+            } else {
+                $getGimmick = Asmx::setEndpoint( 'GetGimmickRate' )
+                    ->setBody([
+                        'Request' => json_encode( array(
+                            'fid_aplikasi' => $fid_aplikasi
+                        ) )
+                    ])
+                    ->post( 'form_params' );
+            }
 
-        return floatval($getGimmick[ 'contents' ]);
+            $this->additional_parameters += [ "gimmick_rate" => $getGimmick[ 'contents' ] ] ;
+            $this->save();
+
+            $return = $getGimmick[ 'contents' ];
+
+        } else {
+            $return = $this->additional_parameters['gimmick_rate'];
+
+        }
+
+        return floatval($return);
     }
 
     /**
@@ -1744,10 +1778,10 @@ class EForm extends Model implements AuditableContract
             ->with("kpr");
 
         if ( $user_id ) {
-            $developer = Developer::select('id')->where('user_id', $user_id)->first();
-            $data = $data->whereHas("kpr", function ($query) use ($developer) {
+            // $developer = Developer::select('id')->where('user_id', $user_id)->first();
+            $data = $data->whereHas("kpr", function ($query) use ($user_id) {
                 return $query->join('properties', 'properties.id', 'property_id')
-                    ->where('kpr.developer_id', $developer['id']);
+                    ->where('kpr.developer_id', $user_id);
             });
         }
         $user = \RestwsHc::getUser();

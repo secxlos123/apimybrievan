@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+// use Illuminate\Database\Eloquent\Builder;
+// use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\Controller;
 use App\Models\KodePos;
 use App\Models\ApiLas;
@@ -38,7 +38,6 @@ class ApiLasController extends Controller
         $data    = '';
         if (!empty($respons['requestData'])) {
             $data = $respons['requestData'];
-            // print_r($data);exit();
         }
         
         switch ($method) {
@@ -1236,6 +1235,14 @@ class ApiLasController extends Controller
             // $putus = $ApiLas->putusSepakat($conten_putusan);
             // return $putus;
             try {
+                // save json_ws_log
+                $data_log = [
+                    'json_data' => $conten_putusan['JSONData'],
+                    'function_name' => 'putusSepakat',
+                    'created_at'=> date('Y-m-d H:i:s')
+                ];
+                $save = \DB::table('json_ws_log')->insert($data_log);
+                \Log::info('berhasil save putusSepakat json_ws_log'.$save);
                 $client = $this->client();
                 $resultclient = $client->putusSepakat($conten_putusan);
                 if($resultclient->putusSepakatResult){
@@ -1621,12 +1628,12 @@ class ApiLasController extends Controller
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
                                 "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
                                 "Jabatan_atasan"            => empty($request['jabatan_atasan'])?"":$request['jabatan_atasan'],
-                                "KK"                        => $request['KK'],
-                                "SLIP_GAJI"                 => $request['SLIP_GAJI'],
-                                "SK_AWAL"                   => $request['SK_AWAL'],
-                                "SK_AKHIR"                  => $request['SK_AKHIR'],
-                                "REKOMENDASI"               => $request['REKOMENDASI'],
-                                "SKPG"                      => $request['SKPG'],
+                                // "KK"                        => $request['KK'],
+                                // "SLIP_GAJI"                 => $request['SLIP_GAJI'],
+                                // "SK_AWAL"                   => $request['SK_AWAL'],
+                                // "SK_AKHIR"                  => $request['SK_AKHIR'],
+                                // "REKOMENDASI"               => $request['REKOMENDASI'],
+                                // "SKPG"                      => $request['SKPG'],
                                 "request_amount"            => $request['Permohonan_kredit'],
                                 "mitra_id"                  => $request['mitra_id'],
                                 "mitra"                     => $request['mitra_name'],
@@ -1678,13 +1685,27 @@ class ApiLasController extends Controller
                             //------------hapus file----------------------------------
                             $brigunas = $briguna->get();
                             $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah'],'NPWP_nasabah');
-                            \Log::info($npwp);
+                            $kk   = $this->datafoto($request['KK'],$brigunas[0]['id_foto'],$brigunas[0]['KK'],'KK');
+                            $gaji = $this->datafoto($request['SLIP_GAJI'],$brigunas[0]['id_foto'],$brigunas[0]['SLIP_GAJI'],'SLIP_GAJI');
+                            $skpg = $this->datafoto($request['SKPG'],$brigunas[0]['id_foto'],$brigunas[0]['SKPG'],'SKPG');
+                            $sk_awal = $this->datafoto($request['SK_AWAL'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AWAL'],'SK_AWAL');
+                            $sk_akhir = $this->datafoto($request['SK_AKHIR'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AKHIR'],'SK_AKHIR');
+                            $rekomend = $this->datafoto($request['REKOMENDASI'],$brigunas[0]['id_foto'],$brigunas[0]['REKOMENDASI'],'REKOMENDASI');
+
+                            $param_briguna['NPWP_nasabah'] = $npwp;
+                            $param_briguna['KK']           = $kk;
+                            $param_briguna['SLIP_GAJI']    = $gaji;
+                            $param_briguna['SKPG']         = $skpg;
+                            $param_briguna['SK_AWAL']      = $sk_awal;
+                            $param_briguna['SK_AKHIR']     = $sk_akhir;
+                            $param_briguna['REKOMENDASI']  = $rekomend;
+                            \Log::info($param_briguna);
                             // $npwp = substr($request['NPWP_nasabah'], -4);
                             // if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
                             //     $param_briguna['NPWP_nasabah'] = $request['NPWP_nasabah'];
                             // } else {
                             //     unlink($path.'/'.$brigunas[0]['NPWP_nasabah']);
-                            //     $upload_file = $this->uploadimages($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
+                            //     $upload_file = $this->updateimage($request['NPWP_nasabah'],$brigunas[0]['id_foto'],'NPWP_nasabah');
                             //     $param_briguna['NPWP_nasabah'] = $upload_file;
                             // }
 
@@ -1758,19 +1779,6 @@ class ApiLasController extends Controller
         }
     }
 
-    function datafoto($request, $id_foto, $exist_field, $field){
-        $path = public_path( 'uploads/' . $id_foto . '/' );
-        $npwp = substr($request, -4);
-        if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
-            $params[$field] = $request;
-        } else {
-            unlink($path.'/'.$exist_field);
-            $upload_file = $this->uploadimages($request,$id_foto,$field);
-            $params[$field] = $upload_file;
-        }
-        return $params;
-    }
-
     public function show_briguna(Request $request) {
         $eform = EformBriguna::filter($request)->get();
         $eform = $eform->toArray();
@@ -1810,32 +1818,6 @@ class ApiLasController extends Controller
                     'contents' => ''
                 ], 400 );
         }
-    }
-
-    function uploadimages($image,$id,$atribute) {
-        $path = public_path( 'uploads/' . $id . '/' );
-
-        if ( ! empty( $this->attributes[ $atribute ] ) ) {
-            File::delete( $path . $this->attributes[ $atribute ] );
-        }
-        $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = 'pdf';
-                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
-                    $extension = 'jpg';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
-            // log::info('image = '.$image->getMimeType());
-            $filename = $id . '-'.$atribute.'.' . $extension;
-            $image->move( $path, $filename );
-        }
-        return $filename;
     }
 
     public function update_foto_briguna(Request $request) {
@@ -1946,6 +1928,15 @@ class ApiLasController extends Controller
                 'uid'           => !isset($params['uid']) ? "" : $params['uid'],
                 'flag_override' => !isset($params['flag_override'])? "" : $params['flag_override']
             ];
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter,
+                'function_name' => 'kirimPemutus',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save kirimPemutus json_ws_log'.$save);
+
             $client = $this->client();
             $resultclient = $client->kirimPemutus($parameter);
             // print_r($resultclient);exit();
@@ -1978,6 +1969,14 @@ class ApiLasController extends Controller
     function hitungCRSBrigunaKarya($params) {
         try {
             $parameter['id_Aplikasi'] = $params;
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['id_Aplikasi'],
+                'function_name' => 'hitungCRS',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save hitungCRS json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->hitungCRSBrigunaKarya($parameter);
 
@@ -2010,6 +2009,14 @@ class ApiLasController extends Controller
     function insertDataKreditBriguna($params) {
         try {
             $parameter['JSON'] = json_encode($params);
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSON'],
+                'function_name' => 'insertDataKreditBriguna',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertDataKreditBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataKreditBriguna($parameter);
 
@@ -2042,6 +2049,14 @@ class ApiLasController extends Controller
     function insertPrescoringBriguna($params) {
         try {
             $parameter['JSON'] = json_encode($params);
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSON'],
+                'function_name' => 'insertPrescoringBriguna',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertPrescoringBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertPrescoringBriguna($parameter);
 
@@ -2074,6 +2089,14 @@ class ApiLasController extends Controller
     function insertPrescreeningBriguna($params) {
         try {
             $parameter['JSON'] = json_encode($params);
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSON'],
+                'function_name' => 'insertPrescreeningBriguna',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertPrescreeningBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertPrescreeningBriguna($parameter);
 
@@ -2107,6 +2130,14 @@ class ApiLasController extends Controller
         try {
             $parameter['JSONData'] = json_encode($params);
             $parameter['flag_sp']  = 1;
+            // save json_ws_log
+            $data_log = [
+                'json_data' => $parameter['JSONData'],
+                'function_name' => 'insertDataDebtPerorangan',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('berhasil save insertDataDebtPerorangan json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataDebtPerorangan($parameter);
 
@@ -2136,6 +2167,22 @@ class ApiLasController extends Controller
         }
     }
 
+    function datafoto($request, $id_foto, $exist_field, $field){
+        $path = public_path( 'uploads/' . $id_foto . '/' );
+        $npwp = substr($request, -4);
+        if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
+            $params = $request;
+        } else {
+            if (!empty($exist_field)) {
+                unlink($path.'/'.$exist_field);
+            }
+            
+            $upload_file = $this->updateimage($request,$id_foto,$field);
+            $params = $upload_file;
+        }
+        return $params;
+    }
+
     function uploadimage($image, $id, $id_foto) {
         $eform = EForm::where('id', $id)->first();
         if (isset($image['identity']) || isset($image['couple_identity'])) {
@@ -2160,6 +2207,31 @@ class ApiLasController extends Controller
             
             $filename = $eform->user_id.'-'.$id_foto.'.'.$extension;
             $data_image->move( $path, $filename );
+        }
+        return $filename;
+    }
+
+    function updateimage($image, $id, $atribute) {
+        $path = public_path( 'uploads/' . $id . '/' );
+        if (!empty($this->attributes[ $atribute ])) {
+            File::delete($path.$this->attributes[$atribute]);
+        }
+        $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg' || $image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+
+            $filename = $id . '-'.$atribute.'.' . $extension;
+            $image->move( $path, $filename );
         }
         return $filename;
     }

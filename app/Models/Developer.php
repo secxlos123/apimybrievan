@@ -137,6 +137,7 @@ class Developer extends Model implements AuditableContract
     public function getListUserProperties($startList = null, $endList = null, $user_id)
     {
         $developer = Developer::select('id')->where('user_id', $user_id)->first();
+        $filter = false;
         if(!empty($developer)){
             if(!empty($startList) && !empty($endList)){
                 $startList = date("01-m-Y",strtotime($startList));
@@ -167,8 +168,6 @@ class Developer extends Model implements AuditableContract
                 $startList = $dateStart->format('Y-m-d h:i:s');
 
                 $filter = true;
-            }else{
-                $filter = false;
             }
         }
 

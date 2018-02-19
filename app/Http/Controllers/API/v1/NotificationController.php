@@ -36,11 +36,16 @@ class NotificationController extends Controller
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
         $branch_id = ( request()->header( 'branch_id' ) != '' ) ? request()->header( 'branch_id' ) : '' ;
     	$user_id = ( request()->header( 'user_id' ) != '' ) ? request()->header( 'user_id' ) : 0 ;
-
         $ArrGetDataNotification = [];
-        $getDataNotification = $this->userNotification->getUnreads( substr($branch_id,-3),
+        
+        if (ENV('APP_ENV') == 'local') {
+            $branch_id = substr($branch_id,-3);
+            $pn = '000'.$pn;  
+        }
+
+        $getDataNotification = $this->userNotification->getUnreads( $branch_id,
                                                                     $role,
-                                                                    '000'.$pn,
+                                                                    $pn,
                                                                     $user_id);
         if($getDataNotification){
             foreach ($getDataNotification->get() as $value) {
@@ -67,7 +72,7 @@ class NotificationController extends Controller
         ], 200 );
     }
 
-    public function unreadMobile(Request $request)
+    public function unreadMobile(Request $request, $type)
     {
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
@@ -75,11 +80,16 @@ class NotificationController extends Controller
         $user_id = ( request()->header( 'userId' ) != '' ) ? request()->header( 'userId' ) : 0 ;
         $limit = (empty($request->limit) ? 10 : $request->limit);
 
-        $data = $this->userNotification->getUnreadsMobile(  substr($branch_id,-3), 
-                                                            $role, 
-                                                            '000'.$pn, 
-                                                            $user_id, 
-                                                            $limit);
+        if ($type == "eks") {
+            $data   = $this->userNotification->getUnreadsMobile(null, $role, null, $user_id, $limit, false);
+        }else {
+            $user     = \RestwsHc::getUser();
+            $branchID = substr($branch_id, -3);
+            $pn       = "000".$pn;
+
+            $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
+        }
+
         return  response()->success( [
             'message' => 'Sukses',
             'contents' => $data
@@ -116,6 +126,7 @@ class NotificationController extends Controller
             }elseif ($user->inRole('developer-sales')) {
                 $role = "developer-sales";
             }
+
             $data = $this->userNotification->getUnreadsMobile(null, $role, null, $userID, null, true);
         }else {
             $user     = \RestwsHc::getUser();
