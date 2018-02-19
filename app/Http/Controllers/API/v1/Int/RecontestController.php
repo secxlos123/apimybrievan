@@ -49,7 +49,7 @@ class RecontestController extends Controller
             $user_login = \RestwsHc::getUser();
 
             $eform = EForm::find($eform_id);
-        
+
             $typeModule = getTypeModule(EForm::class);
             notificationIsRead($eform_id, $typeModule);
 
@@ -59,7 +59,9 @@ class RecontestController extends Controller
             $recontest = $eform->recontest;
             $recontest->update($data);
 
-            $recontest->generateArrayData( $request->mutations, 'mutations' );
+            if ( $request->mutations ) {
+                $recontest->generateArrayData( $request->mutations, 'mutations' );
+            }
             $recontest->generateArrayData( $request->recontest, 'documents' );
 
             $credentials = [
