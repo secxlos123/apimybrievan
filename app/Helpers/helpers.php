@@ -17,6 +17,7 @@ use App\Notifications\LKNEFormRecontest;
 use App\Notifications\VerificationDataNasabah;
 use App\Notifications\RecontestEFormNotification;
 use App\Notifications\PengajuanKprNotification;
+use App\Notifications\ScorePefindoPreScreening;
 use App\Models\UserServices;
 use App\Models\User;
 use App\Models\Appointment;
