@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Models\EForm;
 
-class RejectEFormCLAS extends Notification
+class PencairanInternal extends Notification
 {
     use Queueable;
 
@@ -58,7 +58,7 @@ class RejectEFormCLAS extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_reject_clas", $this->eform);
+        $message    = getMessage("eform_pencairan", $this->eform);
 
         return [
             'eform_id' => $this->eForm->id,

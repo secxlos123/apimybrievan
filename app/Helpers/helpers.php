@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserNotification;
 use App\Models\EForm;
 use App\Notifications\ApproveEFormCustomer;
+use App\Notifications\ApproveEFormInternal;
+use App\Notifications\RejectEFormInternal;
 use App\Notifications\ApproveEFormCLAS;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\RejectEFormCLAS;
@@ -17,6 +19,8 @@ use App\Notifications\LKNEFormRecontest;
 use App\Notifications\VerificationDataNasabah;
 use App\Notifications\RecontestEFormNotification;
 use App\Notifications\PengajuanKprNotification;
+use App\Notifications\PencairanInternal;
+use App\Notifications\PencairanNasabah;
 use App\Notifications\ScorePefindoPreScreening;
 use App\Models\UserServices;
 use App\Models\User;
@@ -524,19 +528,13 @@ if (! function_exists('getMessage')) {
             case 'eform_approve_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan anda telah di Setujui',
+                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Setujui CLF.',
                 ];
                 break;
             case 'eform_approve_ao':
                 $message = [
                     'title'=> 'EForm Notification',
                     'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Setujui.',
-                ];
-                break;
-            case 'eform_approve_ao_clas':
-                $message = [
-                    'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Setujui CLF.',
                 ];
                 break;
             case 'eform_reject':
@@ -548,19 +546,13 @@ if (! function_exists('getMessage')) {
             case 'eform_reject_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan anda telah di Tolak',
+                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Tolak CLF.',
                 ];
                 break;
             case 'eform_reject_ao':
                 $message = [
                     'title'=> 'EForm Notification',
                     'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Tolak.',
-                ];
-                break;
-            case 'eform_reject_ao_clas':
-                $message = [
-                    'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Tolak CLF.',
                 ];
                 break;
             case 'eform_lkn_recontest':
@@ -720,9 +712,9 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_pencairan", $credentials);
+        $message   = getMessage("eform_pencairan_customer", $credentials);
         $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
+        $userModel->notify(new PencairanNasabah($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -761,7 +753,7 @@ if (! function_exists('pushNotification')) {
         $message   = getMessage("eform_pencairan", $credentials);
 
         $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
+        $userModel->notify(new PencairanInternal($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -801,7 +793,7 @@ if (! function_exists('pushNotification')) {
         $message   = getMessage("eform_pencairan", $credentials);
 
         $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
+        $userModel->notify(new PencairanInternal($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1293,16 +1285,16 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
         if(empty($clas))
         {
+            $userModel->notify(new ApproveEFormInternal($data['data']));
             $message   = getMessage("eform_approve_ao", $credentials);
         }else{
-            $message   = getMessage("eform_approve_ao_clas", $credentials);
+            $userModel->notify(new ApproveEFormCLAS($data['data']));
+            $message   = getMessage("eform_approve_clas", $credentials);
         }
-
-        $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1339,10 +1331,10 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_approve_ao_clas", $credentials);
+        $message   = getMessage("eform_approve_clas", $credentials);
 
         $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
+        $userModel->notify(new ApproveEFormCLAS($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1430,16 +1422,17 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
         if(empty($clas))
         {
+            $userModel->notify(new RejectEFormInternal($data['data']));
             $message = getMessage("eform_reject_ao", $credentials);
         }else{
-            $message = getMessage("eform_reject_ao_clas", $credentials);
+            $userModel->notify(new RejectEFormCLAS($data['data']));
+            $message = getMessage("eform_reject_clas", $credentials);
         }
 
-        $userNotif = new UserNotification;
-        $userModel->notify(new RejectEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1475,10 +1468,10 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_reject_ao_clas", $credentials);
+        $message   = getMessage("eform_reject_clas", $credentials);
 
         $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
+        $userModel->notify(new ApproveEFormCLAS($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1500,7 +1493,6 @@ if (! function_exists('pushNotification')) {
         $data         = $dataBuilder->build();
         $topic        = new Topics();
 
-        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
         $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);

@@ -485,9 +485,7 @@ class UserNotification extends Model
 								'App\Notifications\NewSchedulerCustomer',
 								'App\Notifications\UpdateSchedulerCustomer',
 								'App\Notifications\ApproveEFormCustomer',
-								'App\Notifications\ApproveEFormCLAS',
 								'App\Notifications\RejectEFormCustomer',
-								'App\Notifications\RejectEFormCLAS'
    					   ]);
 			}else if($role == 'developer') {
 				$data = $query->where('notifiable_id', $user_id)
@@ -507,6 +505,8 @@ class UserNotification extends Model
 			if ($role == 'pinca') {
 				$data = $query->where('branch_id', $branch_id)
 							  ->whereIn('type', [
+							'App\Notifications\ApproveEFormCLAS',
+							'App\Notifications\RejectEFormCLAS',
 							'App\Notifications\PengajuanKprNotification',
 							'App\Notifications\LKNEFormCustomer',
 							'App\Notifications\LKNEFormRecontest',
@@ -528,7 +528,10 @@ class UserNotification extends Model
 							  ->where('eforms.ao_id', $pn)
 							  ->whereIn('notifications.type', [
 							  		'App\Notifications\EFormPenugasanDisposisi',
-									'App\Notifications\ApproveEFormCustomer',
+									'App\Notifications\ApproveEFormInternal',
+									'App\Notifications\ApproveEFormCLAS',
+									'App\Notifications\RejectEFormCLAS',
+									'App\Notifications\RejectEFormInternal',
 									'App\Notifications\VerificationApproveFormNasabah',
 									'App\Notifications\VerificationRejectFormNasabah',
 									'App\Notifications\EditDeveloper',
