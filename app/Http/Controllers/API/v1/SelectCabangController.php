@@ -151,7 +151,7 @@ class SelectCabangController extends Controller
 		        \Log::info($request->all());
         $branchs = $this->fetch($request);
 		$page = $request->get('page', 1); // Get the ?page=1 from the url
-        $perPage = $request->get('limit', 10); // Number of items per page
+        $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
 		$nilaisampai = 0;
         $offices = [];
@@ -187,7 +187,6 @@ class SelectCabangController extends Controller
 					}else{
 						$kode_uker = $branch['kode_uker'];
 					} */
-					
 					if($kode_uker!='0'){
 						$nilaicount =0;
 						$request['key'] = $kode_uker;
