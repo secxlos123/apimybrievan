@@ -934,7 +934,7 @@ class EForm extends Model implements AuditableContract
             $post_to_bri = array (
               'code' => '200',
               'descriptions' => 'Success',
-              'contents' => $this->id
+              'contents' => $this->ref_number
             );
 
         } else {
