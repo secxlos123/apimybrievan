@@ -528,13 +528,13 @@ if (! function_exists('getMessage')) {
             case 'eform_approve_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Setujui CLF.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLF.',
                 ];
                 break;
             case 'eform_approve_ao':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Setujui.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui.',
                 ];
                 break;
             case 'eform_reject':
@@ -546,13 +546,13 @@ if (! function_exists('getMessage')) {
             case 'eform_reject_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Tolak CLF.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLF.',
                 ];
                 break;
             case 'eform_reject_ao':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di Tolak.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak.',
                 ];
                 break;
             case 'eform_lkn_recontest':
@@ -1290,10 +1290,10 @@ if (! function_exists('pushNotification')) {
         if(empty($clas))
         {
             $userModel->notify(new ApproveEFormInternal($data['data']));
-            $message   = getMessage("eform_approve_ao", $credentials);
+            $message   = getMessage("eform_approve_ao", $credentials['data']);
         }else{
             $userModel->notify(new ApproveEFormCLAS($data['data']));
-            $message   = getMessage("eform_approve_clas", $credentials);
+            $message   = getMessage("eform_approve_clas", $credentials['data']);
         }
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
@@ -1331,7 +1331,7 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_approve_clas", $credentials);
+        $message   = getMessage("eform_approve_clas", $data['data']);
 
         $userNotif = new UserNotification;
         $userModel->notify(new ApproveEFormCLAS($data['data']));
@@ -1427,10 +1427,10 @@ if (! function_exists('pushNotification')) {
         if(empty($clas))
         {
             $userModel->notify(new RejectEFormInternal($data['data']));
-            $message = getMessage("eform_reject_ao", $credentials);
+            $message = getMessage("eform_reject_ao", $credentials['data']);
         }else{
             $userModel->notify(new RejectEFormCLAS($data['data']));
-            $message = getMessage("eform_reject_clas", $credentials);
+            $message = getMessage("eform_reject_clas", $credentials['data']);
         }
 
 
@@ -1468,7 +1468,7 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_reject_clas", $credentials);
+        $message   = getMessage("eform_reject_clas", $credentials['data']);
 
         $userNotif = new UserNotification;
         $userModel->notify(new ApproveEFormCLAS($data['data']));
