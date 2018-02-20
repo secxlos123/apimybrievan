@@ -11,6 +11,7 @@ use App\Models\Audit;
 use App\Models\Developer;
 use App\Models\Collateral;
 use DB;
+use File;
 
 class AuditrailController extends Controller
 {
@@ -943,6 +944,30 @@ class AuditrailController extends Controller
       return response()->success([
         'contents' => $data
       ]);
+    }
+
+    /**
+     * This Fucntion for get Image on File Upload
+     * @param $request by nik
+     * @return \Illuminate\Http\Response
+     */
+    public function getImageUpload(Request $request)
+    {
+            $path = public_path('uploads/' .$request->nik);
+            if (is_dir($path)) {
+            $files = File::allFiles($path);
+            if (count($files) > 0) {
+                $image = array();
+                foreach ($files as $file) {
+                    if ( !empty($file) ) {
+                        $image[]['name'] = url('uploads/'.$request->nik.'/'.$file->getFilename());
+                    }
+                }
+                return response()->success(['message' => 'Success','contents' => $image], 200);
+                
+                }
+            }
+                return response()->success(['message' => 'Fails','contents' => ['image'=>'Nik Tidak ditemukan']], 404);
     }
 
 }
