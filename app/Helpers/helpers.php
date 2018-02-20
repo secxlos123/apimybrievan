@@ -836,7 +836,7 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message = getMessage("eform_prescreening", $credentials);
+        $message = getMessage("eform_prescreening", $credentials['data']);
 
         $userNotif = new UserNotification;
         $userModel->notify(new ScorePefindoPreScreening($data['data']));
