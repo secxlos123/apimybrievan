@@ -653,7 +653,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
-        $message = getMessage('collateral_approve');
+        $message = getMessage('collateral_ots');
         //*/
         $credentials = [
             'headerNotif' => $message['title'],
@@ -692,7 +692,7 @@ class CollateralController extends Controller
         $this->sendNotifOTS($colleteral_id,$typeKpr);
       //end notification
        }
-
+1 /68
       return $this->makeResponse(
         $data
       );
