@@ -574,6 +574,12 @@ if (! function_exists('getMessage')) {
                     'body' => 'Data LKN berhasil dikirim',
                 ];
                 break;
+            case 'eform_prescreening':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Hasil Prescreening : '.$credentials['data']->ref_number,
+                ];
+                break;
             case 'eform_disposition':
                 $message = [
                     'title'=> 'EForm Notification',
@@ -684,10 +690,52 @@ if (! function_exists('pushNotification')) {
                 verifyCustomer($credentials);
             }else if($type == 'recontestEForm'){
                 recontestEForm($credentials);
+            }else if($type == 'prescreening'){
+                prescreeningEForm($credentials);
             }else if ($type =='general'){
                 collateralNotification($credentials);
             }
         }
+    }
+
+    function prescreeningEForm($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message = getMessage("eform_prescreening", $credentials);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new ScorePefindoPreScreening($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+
     }
 
     function verifyCustomer($credentials){
@@ -1210,9 +1258,9 @@ if (! function_exists('pushNotification')) {
 
         if(empty($clas))
         {
-            $message   = getMessage("eform_reject_ao", $credentials);
+            $message = getMessage("eform_reject_ao", $credentials);
         }else{
-            $message   = getMessage("eform_reject_ao_clas", $credentials);
+            $message = getMessage("eform_reject_ao_clas", $credentials);
         }
 
         $userNotif = new UserNotification;

@@ -379,15 +379,26 @@ class ScoringController extends Controller
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
         }
 
-        if(env('PUSH_NOTIFICATION', false)){
-            if($eform){
-                $typeModule = getTypeModule(Scoring::class);
-                notificationIsRead($id, $typeModule);
+        $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
+        $credentials = [
+            'data' => $eform,
+            'user' => $usersModel
+        ];
+        // Call the helper of push notification function
+        
+        $typeModule = getTypeModule(Scoring::class);
+        notificationIsRead($id, $typeModule);
 
-                $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
-                $usersModel->notify(new ScorePefindoPreScreening($eform));                
-            }
-        }
+        pushNotification($credentials, 'prescreening');
+
+        // if(env('PUSH_NOTIFICATION', false)){
+        //     if($eform){
+
+
+        //         $usersModel->notify(new ScorePefindoPreScreening($eform));
+
+        //     }
+        // }
 
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
         DB::commit();
