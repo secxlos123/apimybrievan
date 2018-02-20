@@ -63,8 +63,8 @@ class SelectListController extends Controller
 	public function getFasilitas( Request $request )
 	{
 			
-			  $return = DB::table('ddbank')
-							 ->select('NAMA','KODE')
+			  $return = DB::table('mitra_detail_fasilitas_perbankan')
+							 ->select('fasilitas_lainnya','id')
 							 ->get();
 					$return = $return->toArray();
 					$return = json_decode(json_encode($return), True);
