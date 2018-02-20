@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserNotification;
 use App\Models\EForm;
 use App\Notifications\ApproveEFormCustomer;
+use App\Notifications\ApproveEFormInternal;
+use App\Notifications\RejectEFormInternal;
 use App\Notifications\ApproveEFormCLAS;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\RejectEFormCLAS;
@@ -17,6 +19,9 @@ use App\Notifications\LKNEFormRecontest;
 use App\Notifications\VerificationDataNasabah;
 use App\Notifications\RecontestEFormNotification;
 use App\Notifications\PengajuanKprNotification;
+use App\Notifications\PencairanInternal;
+use App\Notifications\PencairanNasabah;
+use App\Notifications\ScorePefindoPreScreening;
 use App\Models\UserServices;
 use App\Models\User;
 use App\Models\Appointment;
@@ -505,7 +510,7 @@ if (! function_exists('autoApproveForVIP')) {
 }
 
 if (! function_exists('getMessage')) {
-    function getMessage($type)
+    function getMessage($type, $credentials = null)
     {
         switch ($type) {
             case 'eform_create':
@@ -523,7 +528,13 @@ if (! function_exists('getMessage')) {
             case 'eform_approve_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan anda telah di Setujui',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLF.',
+                ];
+                break;
+            case 'eform_approve_ao':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui.',
                 ];
                 break;
             case 'eform_reject':
@@ -535,7 +546,13 @@ if (! function_exists('getMessage')) {
             case 'eform_reject_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan anda telah di Tolak',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLF.',
+                ];
+                break;
+            case 'eform_reject_ao':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak.',
                 ];
                 break;
             case 'eform_lkn_recontest':
@@ -550,6 +567,24 @@ if (! function_exists('getMessage')) {
                     'body' => 'Data LKN berhasil dikirim',
                 ];
                 break;
+            case 'eform_prescreening':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Hasil Prescreening : '.$credentials->ref_number,
+                ];
+                break;
+            case 'eform_pencairan_customer':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah dicairkan.',
+                ];
+                break;
+            case 'eform_pencairan':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah dicairkan.',
+                ];
+                break;
             case 'eform_disposition':
                 $message = [
                     'title'=> 'EForm Notification',
@@ -559,7 +594,7 @@ if (! function_exists('getMessage')) {
             case 'eform_recontest':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan Anda Telah di Rekontest',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Rekontest',
                 ];
                 break;
             case 'schedule_create':
@@ -660,10 +695,178 @@ if (! function_exists('pushNotification')) {
                 verifyCustomer($credentials);
             }else if($type == 'recontestEForm'){
                 recontestEForm($credentials);
+            }else if($type == 'prescreening'){
+                prescreeningEForm($credentials);
+            }else if($type == 'pencairanEForm'){
+                pencairanEForm($credentials);
             }else if ($type =='general'){
                 collateralNotification($credentials);
             }
         }
+    }
+
+    function pencairanEForm($credentials){
+        pencairanEFormToCustomer($credentials);
+        pencairanEFormToAO($credentials);
+        pencairanEFormToPinca($credentials);
+    }
+
+
+    function pencairanEFormToCustomer($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_pencairan_customer", $credentials['data']);
+        $userNotif = new UserNotification;
+        $userModel->notify(new PencairanNasabah($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function pencairanEFormToAO($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+        $message   = getMessage("eform_pencairan", $credentials['data']);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new PencairanInternal($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function pencairanEFormToPinca($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_pencairan", $credentials['data']);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new PencairanInternal($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function prescreeningEForm($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message = getMessage("eform_prescreening", $credentials);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new ScorePefindoPreScreening($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'eform',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
     }
 
     function verifyCustomer($credentials){
@@ -701,7 +904,7 @@ if (! function_exists('pushNotification')) {
     function recontestEForm($credentials){
         $dataUser  = $credentials['data'];
         $userModel = $credentials['user'];
-        $message   = getMessage("eform_recontest");
+        $message   = getMessage("eform_recontest", $dataUser);
 
         $userModel->notify(new RecontestEFormNotification($dataUser));
 
@@ -715,15 +918,14 @@ if (! function_exists('pushNotification')) {
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData->id,
-            'slug'     => $dataUser['ref_number'],
+            'slug'     => $dataUser->ref_number,
             'type'     => 'eform',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
 
         $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$dataUser['user_id']);
-
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$dataUser->branch_id)->andTopic('ao_'.$dataUser->ao_id);
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
         $topicResponse->shouldRetry();
@@ -859,6 +1061,14 @@ if (! function_exists('pushNotification')) {
             $topic = new Topics();
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('pinca');
 
+            // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic(function($condition) use ($branch_id) {
+            //     // send to pinca
+            //     $condition->topic('branch_'.$branch_id)->andTopic('pinca');
+            // })->orTopic(function($condition) use ($branch_id){
+            //     // send to pinca
+            //     $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
+            // });
+
             $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
             $topicResponse->isSuccess();
             $topicResponse->shouldRetry();
@@ -956,13 +1166,7 @@ if (! function_exists('pushNotification')) {
                 $data         = $dataBuilder->build();
                 $topic        = new Topics();
 
-                $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic(function($condition) use ($dataUser) {
-                    // send to user
-                    $condition->topic('user_'.$dataUser['data']->user_id);
-                })->orTopic(function($condition) use ($dataUser){
-                    // send to pinca
-                    $condition->topic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
-                });
+                $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$dataUser['data']->branch_id)->andTopic('pinca');
 
                 $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
                 $topicResponse->isSuccess();
@@ -1031,145 +1235,274 @@ if (! function_exists('pushNotification')) {
     }
 
     function approveEForm($credentials){
-        $data      = $credentials;
-        $userId    = $data['data']->user_id;
-        $userModel = $data['user'];
-
+        $data = $credentials;
         if (!empty($data['clas'])) {
-            $message   = getMessage("eform_approve_clas");
-            $userNotif = new UserNotification;
-            $userModel->notify(new ApproveEFormCLAS($data['data']));
-
-            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['body'])
-                                ->setSound('default');
-
-            // Get data from notifications table
-            $notificationData = $userNotif->where('slug', $data['data']->id)
-                                            ->where('type_module', 'eform')
-                                            ->orderBy('created_at', 'desc')->first();
-
-            $dataBuilder = new PayloadDataBuilder();
-            $dataBuilder->addData([
-                'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
-                'type' => 'tracking',
-            ]);
-
-            $notification = $notificationBuilder->build();
-            $data         = $dataBuilder->build();
-            $topic        = new Topics();
-
-            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
-
-            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
-            $topicResponse->isSuccess();
-            $topicResponse->shouldRetry();
-            $topicResponse->error();
+            approveEFormToCustomer($credentials);
+            approveEFormToAO($credentials, true);
+            approveEFormToPinca($credentials, true);
         }else {
-            $message   = getMessage("eform_approve");
-            $userNotif = new UserNotification;
-            $userModel->notify(new ApproveEFormCustomer($data['data']));
-
-            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['body'])
-                                ->setSound('default');
-
-            // Get data from notifications table
-            $notificationData = $userNotif->where('slug', $data['data']->id)
-                                            ->where('type_module', 'eform')
-                                            ->orderBy('created_at', 'desc')->first();
-
-            $dataBuilder = new PayloadDataBuilder();
-            $dataBuilder->addData([
-                'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
-                'type' => 'tracking',
-            ]);
-
-            $notification = $notificationBuilder->build();
-            $data         = $dataBuilder->build();
-            $topic        = new Topics();
-
-            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
-
-            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
-            $topicResponse->isSuccess();
-            $topicResponse->shouldRetry();
-            $topicResponse->error();
+            approveEFormToCustomer($credentials);
+            approveEFormToAO($credentials);
         }
     }
 
-    function rejectEForm($credentials){
+    function approveEFormToCustomer($credentials)
+    {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        if (!empty($data['clas'])) {
-            $message   = getMessage("eform_reject_clas");
+        $message   = getMessage("eform_approve");
+        $userNotif = new UserNotification;
+        $userModel->notify(new ApproveEFormCustomer($data['data']));
 
-            $userNotif = new UserNotification;
-            $userModel->notify(new RejectEFormCLAS($data['data']));
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
 
-            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['body'])
-                                ->setSound('default');
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
 
-            // Get data from notifications table
-            $notificationData = $userNotif->where('slug', $data['data']->id)
-                                            ->where('type_module', 'eform')
-                                            ->orderBy('created_at', 'desc')->first();
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
 
-            $dataBuilder = new PayloadDataBuilder();
-            $dataBuilder->addData([
-                'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
-                'type' => 'tracking',
-            ]);
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
 
-            $notification = $notificationBuilder->build();
-            $data         = $dataBuilder->build();
-            $topic        = new Topics();
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
 
-            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
 
-            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
-            $topicResponse->isSuccess();
-            $topicResponse->shouldRetry();
-            $topicResponse->error();
-        }else {
-            $message   = getMessage("eform_reject");
+    function approveEFormToAO($credentials, $clas = null)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
-            $userNotif = new UserNotification;
-            $userModel->notify(new RejectEFormCustomer($data['data']));
-
-            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-            $notificationBuilder->setBody($message['body'])
-                                ->setSound('default');
-
-            // Get data from notifications table
-            $notificationData = $userNotif->where('slug', $data['data']->id)
-                                            ->where('type_module', 'eform')
-                                            ->orderBy('created_at', 'desc')->first();
-
-            $dataBuilder = new PayloadDataBuilder();
-            $dataBuilder->addData([
-                'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
-                'type' => 'tracking',
-            ]);
-
-            $notification = $notificationBuilder->build();
-            $data         = $dataBuilder->build();
-            $topic        = new Topics();
-
-            $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
-
-            $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
-            $topicResponse->isSuccess();
-            $topicResponse->shouldRetry();
-            $topicResponse->error();
+        if(empty($clas))
+        {
+            $userModel->notify(new ApproveEFormInternal($data['data']));
+            $message   = getMessage("eform_approve_ao", $credentials['data']);
+        }else{
+            $userModel->notify(new ApproveEFormCLAS($data['data']));
+            $message   = getMessage("eform_approve_clas", $credentials['data']);
         }
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function approveEFormToPinca($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_approve_clas", $data['data']);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new ApproveEFormCLAS($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function rejectEForm($credentials){
+        $data = $credentials;
+
+        if (!empty($data['clas'])) {
+            RejectEFormToCustomer($credentials);
+            RejectEFormToAO($credentials, true);
+            RejectEFormToPinca($credentials, true);
+        }else {
+            RejectEFormToCustomer($credentials);
+            RejectEFormToAO($credentials);
+        }
+    }
+
+    function RejectEFormToCustomer($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_reject");
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new RejectEFormCustomer($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function RejectEFormToAO($credentials, $clas = null)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+        $userNotif = new UserNotification;
+
+        if(empty($clas))
+        {
+            $userModel->notify(new RejectEFormInternal($data['data']));
+            $message = getMessage("eform_reject_ao", $credentials['data']);
+        }else{
+            $userModel->notify(new RejectEFormCLAS($data['data']));
+            $message = getMessage("eform_reject_clas", $credentials['data']);
+        }
+
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function RejectEFormToPinca($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_reject_clas", $credentials['data']);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new ApproveEFormCLAS($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
     }
 
     function collateralNotification($credentials){
