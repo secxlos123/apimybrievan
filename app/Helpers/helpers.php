@@ -570,13 +570,13 @@ if (! function_exists('getMessage')) {
             case 'eform_prescreening':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Hasil Prescreening : '.$credentials['data']->ref_number,
+                    'body' => 'Hasil Prescreening : '.$credentials->ref_number,
                 ];
                 break;
             case 'eform_pencairan':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di dicairkan.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di dicairkan.',
                 ];
                 break;
             case 'eform_disposition':
