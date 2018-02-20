@@ -692,7 +692,7 @@ class CollateralController extends Controller
         $this->sendNotifOTS($colleteral_id,$typeKpr);
       //end notification
        }
-1 /68
+
       return $this->makeResponse(
         $data
       );
