@@ -712,7 +712,7 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_pencairan_customer", $credentials);
+        $message   = getMessage("eform_pencairan_customer", $credentials['data']);
         $userNotif = new UserNotification;
         $userModel->notify(new PencairanNasabah($data['data']));
 
@@ -750,7 +750,7 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
-        $message   = getMessage("eform_pencairan", $credentials);
+        $message   = getMessage("eform_pencairan", $credentials['data']);
 
         $userNotif = new UserNotification;
         $userModel->notify(new PencairanInternal($data['data']));
@@ -790,7 +790,7 @@ if (! function_exists('pushNotification')) {
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
 
-        $message   = getMessage("eform_pencairan", $credentials);
+        $message   = getMessage("eform_pencairan", $credentials['data']);
 
         $userNotif = new UserNotification;
         $userModel->notify(new PencairanInternal($data['data']));
