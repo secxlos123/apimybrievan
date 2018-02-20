@@ -527,7 +527,7 @@ class UserNotification extends Model
 									   'notifications.type_module','notifications.is_read', 'eforms.is_approved', 
 									   'eforms.ao_id', 'eforms.ref_number')
 							  ->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
-				  	          ->where('eforms.branch_id', 'like', '%'.$branch_id)
+				  	          ->where('eforms.branch_id', $branch_id)
 							  ->where('eforms.ao_id', $pn)
 							  ->whereIn('notifications.type', [
 							  		'App\Notifications\EFormPenugasanDisposisi',
