@@ -538,8 +538,6 @@ class UserNotification extends Model
 							'App\Notifications\LKNEFormCustomer',
 							'App\Notifications\LKNEFormRecontest',
 						]);
-				// var_dump(json_encode($data->get()));
-				// die();
 			}
 
 			if ($role == 'ao') {
@@ -592,7 +590,7 @@ class UserNotification extends Model
 		}
 
 		if (empty($count)) {
-			return $data->orderBy('created_at', 'desc')->paginate($limit);
+			return $data->unreads()->orderBy('created_at', 'desc')->paginate($limit);
 		}else {
 			if(empty($data)){
 				$counter = count($data);
