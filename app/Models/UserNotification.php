@@ -186,7 +186,7 @@ class UserNotification extends Model
 		case 'App\Notifications\NewSchedulerCustomer':
 			$subjectNotif = ['message' => 'Schedule Data Baru',
 				'url' => '/schedule?slug=' . $this->slug.'&type='.$this->type_module,
-				'message_external' => '',
+				'message_external' => 'Schedule Data Baru',
 				'url_mobile' => '#',
 			];
 			break;
@@ -310,34 +310,31 @@ class UserNotification extends Model
 
 	public function getUnreads($branch_id, $role, $pn, $user_id) {
 		$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
-			->where('eforms.branch_id', @$branch_id)
-			->Where('eforms.ao_id', @$pn)
+			// ->where('eforms.branch_id', @$branch_id)
+			//->Where('eforms.ao_id', @$pn)
 			->orderBy('notifications.created_at', 'DESC');
 
 		if (@$role == 'pinca') {
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PengajuanKprNotification')) {
-				$query->whereNull('eforms.ao_id')->unreads();
+				$query->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormCustomer')) {
 				$query->leftJoin('visit_reports', 'eforms.id', '=', 'visit_reports.eform_id')
 					->whereNotNull('visit_reports.created_at')
-					->unreads();
+					->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
 				$query->whereNotNull('visit_reports.created_at')
-					->unreads();
+					->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
-
 		}
 
 		if (@$role == 'ao') {
+
 			if ($query->Orwhere('notifications.type', 'App\Notifications\EFormPenugasanDisposisi')) {
-				$query->whereNotNull('eforms.ao_id')
-					->whereNotNull('eforms.ao_name')
-					->whereNotNull('eforms.ao_position')
-					->unreads();
+				$query->unreads();
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormCustomer')) {
@@ -362,7 +359,6 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
 				$query->unreads();
             }
-
             
             if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
 				$query->unreads();
@@ -371,6 +367,7 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ScorePefindoPreScreening')) {
 				$query->unreads();
 			}
+			$query->Where('eforms.ao_id', @$pn);
 		}
 
 		if (@$role == 'customer') {
@@ -566,7 +563,13 @@ class UserNotification extends Model
 		if (empty($count)) {
 			return $data->paginate($limit);
 		}else {
-			return $data->whereNull('read_at')->get()->count();
+			if(empty($data)){
+				$counter = count($data);
+			}else {
+				$counter = $data->get()->count();
+			}
+
+			return $counter;
 		}
 	}
 }

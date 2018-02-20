@@ -16,7 +16,7 @@ class PropertyItem extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'property_type_id', 'address', 'price', 'is_available', 'status', 'available_status'
+        'property_type_id', 'address', 'price', 'is_available', 'status', 'available_status','no_item'
     ];
 
     /**
@@ -41,6 +41,9 @@ class PropertyItem extends Model implements AuditableContract
         'address' => 'required',
         'status'  => 'required|in:new,second',
         'price'   => 'required|numeric',
+        'first_unit'   => 'required|numeric',
+        'last_unit'   => 'required|numeric',
+        'unit_size'   => 'required|numeric',
         'photos.*'=> 'image|max:1024',
     ];
 
@@ -78,7 +81,7 @@ class PropertyItem extends Model implements AuditableContract
     public function scopeGetLists($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['property_items.id', 'asc'];
-        $select = $request->has('dropdown') ? ['property_items.id', 'property_items.address', 'property_items.price'] : array_merge(['property_items.id'],['property_items.property_type_id', 'property_items.address', 'property_items.price', 'property_items.is_available', 'property_items.status']);
+        $select = $request->has('dropdown') ? ['property_items.id', 'property_items.address', 'property_items.price'] : array_merge(['property_items.id'],['property_items.property_type_id','property_items.no_item', 'property_items.address', 'property_items.price', 'property_items.is_available', 'property_items.status']);
         
         if ( ! $request->has('dropdown') ) $query->with('photos');
 
