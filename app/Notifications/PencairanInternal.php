@@ -58,7 +58,7 @@ class PencairanInternal extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_pencairan", $this->eform);
+        $message    = getMessage("eform_pencairan", $this->eForm);
 
         return [
             'eform_id' => $this->eForm->id,

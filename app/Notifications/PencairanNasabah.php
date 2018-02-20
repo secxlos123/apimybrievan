@@ -58,7 +58,7 @@ class PencairanNasabah extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_pencairan_customer", $this->eform);
+        $message    = getMessage("eform_pencairan_customer", $this->eForm);
 
         return [
             'eform_id' => $this->eForm->id,
