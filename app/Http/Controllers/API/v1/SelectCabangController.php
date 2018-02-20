@@ -187,12 +187,10 @@ class SelectCabangController extends Controller
 					}else{
 						$kode_uker = $branch['kode_uker'];
 					} */
-					
-					$limit = $request->get( 'limit' ) ?: 10;
 					if($kode_uker!='0'){
 						$nilaicount =0;
 						$request['key'] = $kode_uker;
-						$mitra = Mitra::filter( $request )->paginate($limit);
+						$mitra = Mitra::filter( $request )->get();
 						$mitra = $mitra->toArray();
 						$countmitra = count($mitra);
 
