@@ -124,7 +124,7 @@ class Audit extends Model implements AuditContract
                         //$auditrail->where('auditable_type', $eform);
                     }
                 })
-                ->where(function ($auditrail) use (&$request, &$query){
+                // ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for search by Kanwil.
                 *
@@ -133,11 +133,11 @@ class Audit extends Model implements AuditContract
                 */ 
                     
 
-                  if ($request->has('region_id')){
-                        $auditrail->where(\DB::raw('LOWER(region_id)'), 'like', '%'.strtolower($request->input('region_id')).'%');
+                //   if ($request->has('region_id')){
+                //         $auditrail->where(\DB::raw('LOWER(region_id)'), 'like', '%'.strtolower($request->input('region_id')).'%');
                    
-                    }
-                })
+                //     }
+                // })
                 ->where(function ($auditrail) use (&$request, &$query){
                 /**
                 * This query for search by Kanwil.

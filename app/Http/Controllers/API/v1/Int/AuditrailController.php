@@ -262,6 +262,17 @@ class AuditrailController extends Controller
                     if($request->has('search')){
                         $auditrail->where(\DB::raw('LOWER(branch)'), 'like', $lower);
                         }
+                /**
+                * This query for search by Branch ID or Branch name .
+                *
+                * @param $request->branch_id
+                * @return \Illuminate\Database\Eloquent\Builder
+                */
+
+                    if($request->has('branch_id')){
+                        $lowerBranch = '%' . strtolower($request->input('branch_id')) . '%';
+                        $auditrail->where(\DB::raw('LOWER(branch_id)'), 'like', $lowerBranch);
+                        }
                     })
                     ->groupBy('branch_id', 'branch')
                     ->paginate( $request->input( 'limit' ) ?: 10 );

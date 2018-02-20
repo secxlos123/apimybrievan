@@ -467,7 +467,7 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      **/
-    public function insertRecontestBRI( $params )
+    public function insertRecontestBRI( $status )
     {
         return $this->SentToBri(
             $this->additional_parameters + [
