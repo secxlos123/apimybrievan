@@ -29,7 +29,7 @@ class MapController extends Controller
           return response()->success([
               'message' => 'Sukses get Market Map.',
               'contents' => $market_map,
-          ], 201);
+          ], 200);
       }
 
       return response()->error([
@@ -76,7 +76,7 @@ class MapController extends Controller
           return response()->success([
               'message' => 'Sukses get Activity Map.',
               'contents' => $activity_map,
-          ], 201);
+          ], 200);
       }
 
       return response()->error([
