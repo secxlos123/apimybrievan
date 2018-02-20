@@ -1585,7 +1585,7 @@ if (! function_exists('pushNotification')) {
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
         }else if($receiver =='ao'){
             $dataUser  = UserServices::where('pn',$user_id)->first();
-            $dataUser['branch_id'];
+            $branch_id = $dataUser['branch_id'];
             $user_id = substr('0000'.$user_id, -8);
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('ao_'.$user_id);
         }else{
