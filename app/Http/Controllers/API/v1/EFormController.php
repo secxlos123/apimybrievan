@@ -569,7 +569,7 @@ class EFormController extends Controller
                         'pic_name' => 'BRI',
                         'pic_phone' => '-',
                         'address' => $baseRequest['home_location'],
-                        'category' => '3',
+                        'category' => $baseRequest['kpr_type_property'],
                         'latitude' => '0',
                         'longitude' => '0',
                         'description' => '-',
