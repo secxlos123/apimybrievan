@@ -410,6 +410,10 @@ class UserNotification extends Model
 				$query->unreads();
 			}
 
+			if ($query->Orwhere('notifications.type', 'App\Notifications\PencairanInternal')) {
+				$query->unreads();
+			}
+
 			$query->Where('eforms.ao_id', @$pn);
 		}
 
@@ -451,6 +455,10 @@ class UserNotification extends Model
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\PencairanNasabah')) {
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\PencairanInternal')) {
 				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
