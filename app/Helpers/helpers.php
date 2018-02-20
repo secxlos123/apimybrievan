@@ -1064,9 +1064,9 @@ if (! function_exists('pushNotification')) {
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic(function($condition) use ($branch_id) {
                 // send to pinca
                 $condition->topic('branch_'.$branch_id)->andTopic('pinca');
-            })->orTopic(function($condition) use ($data){
+            })->orTopic(function($condition) use ($credentials){
                 // send to pinca
-                $condition->topic('branch_'.$data['data']->branch_id)->andTopic('manager_collateral_'.'00070828');
+                $condition->topic('branch_'.$credentials['data']->branch_id)->andTopic('manager_collateral_'.'00070828');
             });
 
             $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
