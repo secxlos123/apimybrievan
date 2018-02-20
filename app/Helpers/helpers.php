@@ -594,7 +594,7 @@ if (! function_exists('getMessage')) {
             case 'eform_recontest':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan Anda Telah di Rekontest',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Rekontest',
                 ];
                 break;
             case 'schedule_create':
@@ -904,7 +904,7 @@ if (! function_exists('pushNotification')) {
     function recontestEForm($credentials){
         $dataUser  = $credentials['data'];
         $userModel = $credentials['user'];
-        $message   = getMessage("eform_recontest");
+        $message   = getMessage("eform_recontest", $dataUser);
 
         $userModel->notify(new RecontestEFormNotification($dataUser));
 
@@ -918,15 +918,14 @@ if (! function_exists('pushNotification')) {
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'       => $notificationData->id,
-            'slug'     => $dataUser['ref_number'],
+            'slug'     => $dataUser->ref_number,
             'type'     => 'eform',
         ]);
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
 
         $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$dataUser['user_id']);
-
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$dataUser->branch_id)->andTopic('ao_'.$dataUser->ao_id);
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
         $topicResponse->shouldRetry();
@@ -1322,7 +1321,6 @@ if (! function_exists('pushNotification')) {
         $data         = $dataBuilder->build();
         $topic        = new Topics();
 
-        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
         $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
