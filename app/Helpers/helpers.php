@@ -573,10 +573,16 @@ if (! function_exists('getMessage')) {
                     'body' => 'Hasil Prescreening : '.$credentials->ref_number,
                 ];
                 break;
+            case 'eform_pencairan_customer':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah dicairkan.',
+                ];
+                break;
             case 'eform_pencairan':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di dicairkan.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah dicairkan.',
                 ];
                 break;
             case 'eform_disposition':
