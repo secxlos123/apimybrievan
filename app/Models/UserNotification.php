@@ -585,6 +585,7 @@ class UserNotification extends Model
 									'App\Notifications\CollateraAODisposition',
 									'App\Notifications\ScorePefindoPreScreening',
 									'App\Notifications\PencairanInternal',
+									'App\Notifications\LKNEFormRecontest',
 					  	]);
 			}
 
@@ -612,7 +613,7 @@ class UserNotification extends Model
 		}
 
 		if (empty($count)) {
-			return $data->unreads()->orderBy('created_at', 'desc')->paginate($limit);
+			return $data->orderBy('created_at', 'desc')->paginate($limit);
 		}else {
 			if(empty($data)){
 				$counter = count($data);

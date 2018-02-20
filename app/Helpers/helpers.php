@@ -1070,7 +1070,6 @@ if (! function_exists('pushNotification')) {
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
         $topic = new Topics();
-        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('pinca');
 
         $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('pinca');
 
