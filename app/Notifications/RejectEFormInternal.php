@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Models\EForm;
 
-class ApproveEFormCLAS extends Notification
+class RejectEFormInternal extends Notification
 {
     use Queueable;
 
@@ -32,7 +32,7 @@ class ApproveEFormCLAS extends Notification
      */
     public function via($notifiable)
     {
-        return [NotificationsDbChannel::class];
+       return [NotificationsDbChannel::class];
     }
 
     /**
@@ -55,10 +55,29 @@ class ApproveEFormCLAS extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
+    public function toArray($notifiable)
+    {
+        return [
+            'eform_id' => $this->eForm->id,
+            'user_id' => $notifiable->id,
+            'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
+            'nik' => $this->eForm->nik,
+            'ref_number' => $this->eForm->ref_number,
+            'branch_id' => $this->eForm->branch_id,
+            'created_at' => $this->eForm->created_at,
+        ];
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_approve_clas", $this->eForm);
+        $message    = getMessage("eform_reject_ao", $this->eform);
 
         return [
             'eform_id' => $this->eForm->id,
