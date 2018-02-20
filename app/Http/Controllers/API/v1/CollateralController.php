@@ -145,7 +145,6 @@ class CollateralController extends Controller
         'property_id' => $request->property_id,
         'remark' => $request->remark,
         'status' => Collateral::STATUS[0],
-        'dispose_by' => $user['pn']
       ];
       $collateral = $this->collateral->create($data);
       return $this->makeResponse(
@@ -462,6 +461,7 @@ class CollateralController extends Controller
       $user = \RestwsHc::getUser();
       $baseRequest['manager_id'] = $user['pn'];
       $baseRequest['manager_name'] = $user['name'];
+      $baseRequest['dispose_by'] = $user['pn'];
 
       $this->collateral->where( 'status', Collateral::STATUS[0] )
         ->findOrFail( $collateralId )
