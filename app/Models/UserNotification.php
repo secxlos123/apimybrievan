@@ -103,6 +103,34 @@ class UserNotification extends Model
 				];
 			}
 			break;
+		case 'App\Notifications\ApproveEFormInternal':
+			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Setujui',
+				'message_external' => '',
+				'url' => $url,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\RejectEFormInternal':
+			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Tolak',
+				'message_external' => '',
+				'url' => $url,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\PencairanNasabah':
+			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Cairkan',
+				'message_external' => '',
+				'url' => $url,
+				'url_mobile' => '#',
+			];
+			break;
+		case 'App\Notifications\PencairanInternal':
+			$subjectNotif = ['message' => 'Pengajuan KPR Telah Di Cairkan',
+				'message_external' => '',
+				'url' => $url,
+				'url_mobile' => '#',
+			];
+			break;
 		case 'App\Notifications\ApproveEFormCLAS':
 			$getKPR = KPR::where('eform_id',$this->slug)->first();
 			$plafondKredit =  !($getKPR->request_amount) ? $getKPR->request_amount : 0;
