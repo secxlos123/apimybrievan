@@ -538,6 +538,7 @@ class UserNotification extends Model
 								'App\Notifications\UpdateSchedulerCustomer',
 								'App\Notifications\ApproveEFormCustomer',
 								'App\Notifications\RejectEFormCustomer',
+								'App\Notifications\PencairanNasabah',
    					   ]);
 			}else if($role == 'developer') {
 				$data = $query->where('notifiable_id', $user_id)
@@ -549,22 +550,16 @@ class UserNotification extends Model
 					   ]);
 			}
 		}else{
-			// $query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
-			// 	->where('eforms.branch_id', $branch_id)
-			// 	->Where('eforms.ao_id', $pn)
-			// 	->orderBy('notifications.created_at', 'DESC');
-
 			if ($role == 'pinca') {
 				$data = $query->where('branch_id', $branch_id)
 							  ->whereIn('type', [
 							'App\Notifications\ApproveEFormCLAS',
 							'App\Notifications\RejectEFormCLAS',
+							'App\Notifications\PencairanInternal',
 							'App\Notifications\PengajuanKprNotification',
 							'App\Notifications\LKNEFormCustomer',
 							'App\Notifications\LKNEFormRecontest',
 						]);
-				// var_dump(json_encode($data->get()));
-				// die();
 			}
 
 			if ($role == 'ao') {
@@ -589,6 +584,7 @@ class UserNotification extends Model
 									'App\Notifications\EditDeveloper',
 									'App\Notifications\CollateraAODisposition',
 									'App\Notifications\ScorePefindoPreScreening',
+									'App\Notifications\PencairanInternal',
 					  	]);
 			}
 
@@ -616,7 +612,7 @@ class UserNotification extends Model
 		}
 
 		if (empty($count)) {
-			return $data->paginate($limit);
+			return $data->unreads()->orderBy('created_at', 'desc')->paginate($limit);
 		}else {
 			if(empty($data)){
 				$counter = count($data);
