@@ -621,6 +621,12 @@ if (! function_exists('getMessage')) {
                     'body' => 'Approval Collateral',
                 ];
                 break;
+            case 'collateral_ots':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    'body' => 'OTS Collateral',
+                ];
+                break;
             case 'collateral_reject':
                 $message = [
                     'title'=> 'Collateral Notification',
