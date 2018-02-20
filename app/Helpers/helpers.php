@@ -904,7 +904,7 @@ if (! function_exists('pushNotification')) {
     function recontestEForm($credentials){
         $dataUser  = $credentials['data'];
         $userModel = $credentials['user'];
-        $message   = getMessage("eform_recontest", $dataUser['data']);
+        $message   = getMessage("eform_recontest", $dataUser);
 
         $userModel->notify(new RecontestEFormNotification($dataUser));
 
