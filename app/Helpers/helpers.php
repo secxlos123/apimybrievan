@@ -1110,6 +1110,7 @@ if (! function_exists('pushNotification')) {
         if (!empty($data['clas'])) {
             approveEFormToCustomer($credentials);
             approveEFormToAO($credentials, true);
+            approveEFormToPinca($credentials, true);
         }else {
             approveEFormToCustomer($credentials);
             approveEFormToAO($credentials);
@@ -1193,6 +1194,46 @@ if (! function_exists('pushNotification')) {
 
         // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
         $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function approveEFormToPinca($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_approve_ao_clas", $credentials);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new ApproveEFormCustomer($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
@@ -1288,6 +1329,46 @@ if (! function_exists('pushNotification')) {
         $topic        = new Topics();
 
         $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
+    }
+
+    function rejectEFormToPinca($credentials)
+    {
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_reject_ao_clas", $credentials);
+
+        $userNotif = new UserNotification;
+        $userModel->notify(new ApproveEFormCustomer($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
