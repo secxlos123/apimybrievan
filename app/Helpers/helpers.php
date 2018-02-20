@@ -581,6 +581,12 @@ if (! function_exists('getMessage')) {
                     'body' => 'Hasil Prescreening : '.$credentials['data']->ref_number,
                 ];
                 break;
+            case 'eform_pencairan':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials['data']->ref_number.' telah di dicairkan.',
+                ];
+                break;
             case 'eform_disposition':
                 $message = [
                     'title'=> 'EForm Notification',
@@ -693,10 +699,54 @@ if (! function_exists('pushNotification')) {
                 recontestEForm($credentials);
             }else if($type == 'prescreening'){
                 prescreeningEForm($credentials);
+            }else if($type == 'pencairanEForm'){
+                pencairanEForm($credentials);
             }else if ($type =='general'){
                 collateralNotification($credentials);
             }
         }
+    }
+
+    function pencairanEForm($credentials){
+        $data      = $credentials;
+        $userId    = $data['data']->user_id;
+        $userModel = $data['user'];
+
+        $message   = getMessage("eform_pencairan", $credentials);
+        $userNotif = new UserNotification;
+        $userModel->notify(new ApproveEFormCustomer($data['data']));
+
+        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+        $notificationBuilder->setBody($message['body'])
+                            ->setSound('default');
+
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
+        $dataBuilder = new PayloadDataBuilder();
+        $dataBuilder->addData([
+            'id'   => $notificationData['id'],
+            'slug' => $data['data']->id,
+            'type' => 'tracking',
+        ]);
+
+        $notification = $notificationBuilder->build();
+        $data         = $dataBuilder->build();
+        $topic        = new Topics();
+
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$userId)
+              ->orTopic(function($condition) use ($credentials){
+                    $condition->topic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
+              })->orTopic(function($condition) use ($credentials){
+                    $condition->topic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
+              });
+
+        $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+        $topicResponse->isSuccess();
+        $topicResponse->shouldRetry();
+        $topicResponse->error();
     }
 
     function prescreeningEForm($credentials)
@@ -736,7 +786,6 @@ if (! function_exists('pushNotification')) {
         $topicResponse->isSuccess();
         $topicResponse->shouldRetry();
         $topicResponse->error();
-
     }
 
     function verifyCustomer($credentials){

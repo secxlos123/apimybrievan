@@ -391,15 +391,6 @@ class ScoringController extends Controller
 
         pushNotification($credentials, 'prescreening');
 
-        // if(env('PUSH_NOTIFICATION', false)){
-        //     if($eform){
-
-
-        //         $usersModel->notify(new ScorePefindoPreScreening($eform));
-
-        //     }
-        // }
-
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
         DB::commit();
 
