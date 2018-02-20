@@ -354,7 +354,7 @@ class CollateralController extends Controller
             $developer_id =  $collateral->developer_id;
             $user_id =  $developer_id;
             $usersModel = User::find($user_id);
-            $dataUser  = UserServices::where('pn',$pn)->first();
+            $dataUser  = UserServices::where(\DB::Raw("TRIM(LEADING '0' FROM pn)"), (string) intval($branch_id))->first();
             $branch_id = $dataUser['branch_id'];
             if ($action === 'approve')
             {
