@@ -467,7 +467,7 @@ class EForm extends Model implements AuditableContract
      *
      * @return array
      **/
-    public function insertRecontestBRI( $params )
+    public function insertRecontestBRI( $status )
     {
         return $this->SentToBri(
             $this->additional_parameters + [
@@ -934,7 +934,7 @@ class EForm extends Model implements AuditableContract
             $post_to_bri = array (
               'code' => '200',
               'descriptions' => 'Success',
-              'contents' => $this->id
+              'contents' => $this->ref_number
             );
 
         } else {
