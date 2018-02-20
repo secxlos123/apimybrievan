@@ -358,6 +358,11 @@ class UserNotification extends Model
 				$query->whereNotNull('visit_reports.created_at')
 					->unreads()->Orwhere('eforms.branch_id', @$branch_id);
 			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\PencairanInternal')) {
+				$query->whereNotNull('visit_reports.created_at')
+					->unreads()->Orwhere('eforms.branch_id', @$branch_id);
+			}
 		}
 
 		if (@$role == 'ao') {
@@ -396,6 +401,15 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ScorePefindoPreScreening')) {
 				$query->unreads();
 			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\ApproveEFormInternal')) {
+				$query->unreads();
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormInternal')) {
+				$query->unreads();
+			}
+
 			$query->Where('eforms.ao_id', @$pn);
 		}
 
@@ -433,6 +447,10 @@ class UserNotification extends Model
 			}
 
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
+				$query->unreads()->where('notifications.notifiable_id', @$user_id);
+			}
+
+			if ($query->Orwhere('notifications.type', 'App\Notifications\PencairanNasabah')) {
 				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
 
