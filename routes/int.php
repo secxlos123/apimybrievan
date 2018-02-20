@@ -153,6 +153,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
         Route::get('auditrail/list-collateral-non', 'AuditrailController@collateralNon');
         Route::get('auditrail/getEformCustomer/{nik}', 'AuditrailController@getEformCustomer');
         Route::get('auditrail/getBranch', 'AuditrailController@getBranch');
+        Route::get('auditrail/getImage/{nik}', 'AuditrailController@getImageUpload');
 	} );
 
 	} );
