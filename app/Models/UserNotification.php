@@ -396,6 +396,11 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\ScorePefindoPreScreening')) {
 				$query->unreads();
 			}
+			
+			if ($query->Orwhere('notifications.type', 'App\Notifications\LKNEFormRecontest')) {
+				$query->unreads();
+			}
+			
 			$query->Where('eforms.ao_id', @$pn);
 		}
 
@@ -563,6 +568,7 @@ class UserNotification extends Model
 									'App\Notifications\CollateraAODisposition',
 									'App\Notifications\ScorePefindoPreScreening',
 									'App\Notifications\PencairanInternal',
+									'App\Notifications\LKNEFormRecontest',
 					  	]);
 			}
 
@@ -590,7 +596,7 @@ class UserNotification extends Model
 		}
 
 		if (empty($count)) {
-			return $data->unreads()->orderBy('created_at', 'desc')->paginate($limit);
+			return $data->orderBy('created_at', 'desc')->paginate($limit);
 		}else {
 			if(empty($data)){
 				$counter = count($data);
