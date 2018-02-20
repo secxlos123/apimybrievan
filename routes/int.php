@@ -92,6 +92,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		 Route::resource( 'register_mitra', 'mitra\RegisterMitraController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+		 Route::resource( 'fasilitas_mitra', 'mitra\FasilitasMitraController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		 Route::resource( 'scoring_mitra', 'mitra\ScoringProsesController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
@@ -153,6 +156,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
         Route::get('auditrail/list-collateral-non', 'AuditrailController@collateralNon');
         Route::get('auditrail/getEformCustomer/{nik}', 'AuditrailController@getEformCustomer');
         Route::get('auditrail/getBranch', 'AuditrailController@getBranch');
+        Route::get('auditrail/getImage/{nik}', 'AuditrailController@getImageUpload');
 	} );
 
 	} );

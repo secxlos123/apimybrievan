@@ -122,7 +122,7 @@ class AuthController extends Controller
                 //     'contents'=> []
                 // ], 401 );
                 // Ini Buat Handle Semua User Bisa Masuk Role Staff
-                $role = 'other';
+                $role = 'staff';
                 $role_user = 'staff';
             }
 

@@ -56,35 +56,33 @@ class BRITransport extends Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
-        if ( ENV('APP_ENV') != 'local' ) {
-            \Log::info('=========================================ini data masukan================');
-            \Log::info($message);
-            $data = $this->beforeSendPerformed($message);
-            \Log::info('=========================================ini data before masukan================');
-            \Log::info($data);
-            /**
-             * Wait for testing
-             */
+        \Log::info('=========================================ini data masukan================');
+        \Log::info($message);
+        $data = $this->beforeSendPerformed($message);
+        \Log::info('=========================================ini data before masukan================');
+        \Log::info($data);
+        /**
+         * Wait for testing
+         */
 
-            //\RestwsHc::setBody($this->payload($message))->post('form_params');
-            \Log::info('=========================================sent data================');
-            $res = $this->client->post($this->url.'/send_emailv2',
-            	  ['form_params' => [
-            	  	'headers' => ['Content-type' => 'application/x-www-form-urlencoded'] ,
-            	  	'app_id'  => 'mybriapi',
-            	  	'subject' => $message->getSubject(),
-            	  	'content' => $message->getBody(),
-            	  	'to' => array_keys($message->getTo())[0]
-            	  	],
-            	  ]);
-            \Log::info('=========================================Respon data Service================');
-            \Log::info($res->getStatusCode());
-            \Log::info('=========================================Respon Content data Service================');
-        	\Log::info($res->getBody()->getContents());
-            \Log::info('=========================================ini data sent sendPerformed================');
-            $sent = $this->sendPerformed($message);
-            \Log::info($sent);
-        }
+        //\RestwsHc::setBody($this->payload($message))->post('form_params');
+        \Log::info('=========================================sent data================');
+        $res = $this->client->post($this->url.'/send_emailv2',
+        	  ['form_params' => [
+        	  	'headers' => ['Content-type' => 'application/x-www-form-urlencoded'] ,
+        	  	'app_id'  => 'mybriapi',
+        	  	'subject' => $message->getSubject(),
+        	  	'content' => $message->getBody(),
+        	  	'to' => array_keys($message->getTo())[0]
+        	  	],
+        	  ]);
+        \Log::info('=========================================Respon data Service================');
+        \Log::info($res->getStatusCode());
+        \Log::info('=========================================Respon Content data Service================');
+    	\Log::info($res->getBody()->getContents());
+        \Log::info('=========================================ini data sent sendPerformed================');
+        $sent = $this->sendPerformed($message);
+        \Log::info($sent);
         return $this->numberOfRecipients($message);
     }
 

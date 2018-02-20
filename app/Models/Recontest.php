@@ -80,14 +80,13 @@ class Recontest extends Model implements AuditableContract
                 $name = $data[ 'name' ];
             }
 
-            if ( isset($data[ $keyTarget ]) ) {
-                $image = $this->globalSetImage( $eform, $publicPath, ($name . '-' . $field), $data[ $keyTarget ] );
-                unset( $data[ $keyTarget ] );
-                if ( $image ) {
-                    $data[ 'image_name' ] = $image;
-                    $data[ 'image' ] = $this->globalImageCheck( $path . $image );
-                    $return[ $key ] = $data;
-                }
+            $image = $this->globalSetImage( $eform, $publicPath, ($name . '-' . $field), $data[ $keyTarget ] );
+            unset( $data[ $keyTarget ] );
+
+            if ( $image ) {
+                $data[ 'image_name' ] = $image;
+                $data[ 'image' ] = $this->globalImageCheck( $path . $image );
+                $return[ $key ] = $data;
             }
         }
 

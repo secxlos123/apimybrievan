@@ -47,19 +47,11 @@ class CustomerController extends Controller
         ]
       ]);
       $body = json_decode($customer_nik->getBody()->getContents(), true);
-
-      if (array_key_exists('data', $body)) {
-        if(array_key_exists('card_info', $body['data'])){
-          $info = $body['data']['card_info'];
-          foreach ($info as $key => $value) {
-            $body['data']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
-          }
+      if(array_key_exists('card_info', $body['data'])){
+        $info = $body['data']['card_info'];
+        foreach ($info as $key => $value) {
+          $body['data']['card_info'][$key]['nomor_produk'] = substr($value['nomor_produk'], 0, -8).str_repeat('*', 8);
         }
-      } else {
-        return response()->success([
-          'message' => 'Data customer kosong',
-          'contents' => []
-        ]);
       }
 
       return response()->success([
