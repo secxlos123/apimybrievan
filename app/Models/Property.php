@@ -73,16 +73,16 @@ class Property extends Model implements AuditableContract
     public function getCategoryNameAttribute()
     {
         switch ($this->category) {
-            case '0':
-                $name = "Rumah";
-                break;
             case '1':
-                $name = "Rukan / Ruko";
+                $name = "Rumah Tapak";
                 break;
             case '2':
-                $name = "Rusun" ;
+                $name = "Rumah Susun/Apartment";
                 break;
             case '3':
+                $name = "Rumah Toko" ;
+                break;
+            case '4':
                 $name = "Non Kerja Sama" ;
                 break;
 

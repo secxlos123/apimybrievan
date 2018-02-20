@@ -150,7 +150,7 @@ class PropertyController extends Controller
         $property->load('developer');
         if (ENV('APP_ENV') == 'local') {
             $id = array('code' => '200',
-                        'contents'=> '1' );
+                        'contents'=> mt_rand(100, 999) );
         }else{
             $current = [
                 'tipe_project' => 'KPR',

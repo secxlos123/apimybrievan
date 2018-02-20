@@ -29,7 +29,7 @@ class PropertyItem extends Model implements AuditableContract
     ];
 
     protected $appends = [
-      'photos'
+      'photos','property_type_name'
     ];
 
     /**
@@ -47,6 +47,16 @@ class PropertyItem extends Model implements AuditableContract
         'photos.*'=> 'image|max:1024',
     ];
 
+    /**
+     * Get the Type Name for Property.
+     *
+     * @return string
+     */
+    public function getPropertyTypeNameAttribute()
+    {
+        $type = PropertyType::find($this->property_type_id);
+        return $type->name;
+    }
 
     public function getPhotosAttribute()
     {

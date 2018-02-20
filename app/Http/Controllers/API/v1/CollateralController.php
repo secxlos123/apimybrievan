@@ -139,11 +139,13 @@ class CollateralController extends Controller
         'message' => 'Tidak Bisa Membuat collateral jika dalam internal'
       ]);
 
+      $user = \RestwsHc::getUser();
       $data = [
         'developer_id' => $request->user()->id,
         'property_id' => $request->property_id,
         'remark' => $request->remark,
-        'status' => Collateral::STATUS[0]
+        'status' => Collateral::STATUS[0],
+        'dispose_by' => $user['pn']
       ];
       $collateral = $this->collateral->create($data);
       return $this->makeResponse(
@@ -269,7 +271,7 @@ class CollateralController extends Controller
               }
             }else{
               \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
-            }             
+            }
          }
       //end notif
         return $this->makeResponse(
