@@ -15,7 +15,7 @@ class Collateral extends Model implements AuditableContract
      * The fillable columns
      * @var array
      */
-    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by','is_staff', 'manager_id', 'manager_name'];
+    protected $fillable = ['property_id', 'developer_id', 'staff_id', 'staff_name', 'status', 'remark', 'approved_by','is_staff', 'manager_id', 'manager_name', 'dispose_by'];
 
     /**
      * The hidden columns
