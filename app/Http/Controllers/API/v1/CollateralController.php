@@ -392,14 +392,9 @@ class CollateralController extends Controller
                    $status = 'collateral_reject_penilaian';
                    $type = 'collateral_ots_'.$action;
                    $receiver = 'manager_collateral';
-                   if ($role=='ao')
-                   {
-                    $receiver = 'ao';
-                   }
                    if(!empty($collateral['manager_id']))
                    {
                     $user_id  = $collateral['manager_id'];
-                    //*
                     //insert data from notifications table
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
                       if($getDataEform){
@@ -424,7 +419,7 @@ class CollateralController extends Controller
                 }
             }
             if($user_id !='kosong')
-            {  // tidak kirim notif
+            {
               $message = getMessage($status);
               $id = $notificationData['id'];
               $credentials = [
