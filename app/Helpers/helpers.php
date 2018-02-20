@@ -1247,6 +1247,7 @@ if (! function_exists('pushNotification')) {
         if (!empty($data['clas'])) {
             RejectEFormToCustomer($credentials);
             RejectEFormToAO($credentials, true);
+            RejectEFormToPinca($credentials, true);
         }else {
             RejectEFormToCustomer($credentials);
             RejectEFormToAO($credentials);
@@ -1336,7 +1337,7 @@ if (! function_exists('pushNotification')) {
         $topicResponse->error();
     }
 
-    function rejectEFormToPinca($credentials)
+    function RejectEFormToPinca($credentials)
     {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
