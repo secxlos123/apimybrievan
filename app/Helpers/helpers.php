@@ -621,6 +621,12 @@ if (! function_exists('getMessage')) {
                     'body' => 'Approval Collateral',
                 ];
                 break;
+            case 'collateral_ots':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    'body' => 'OTS Collateral',
+                ];
+                break;
             case 'collateral_reject':
                 $message = [
                     'title'=> 'Collateral Notification',
@@ -1574,16 +1580,19 @@ if (! function_exists('pushNotification')) {
         if($receiver=='staf_collateral'){
              $dataUser  = UserServices::where('pn',$user_id)->first();
              $branch_id = $dataUser['branch_id'];
+             $user_id = substr('0000'.$user_id, -8);
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
         }else if ($receiver=='external'){  //send to external mobile apps
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$user_id);
         }else if ($receiver=='manager_collateral'){
              $dataUser  = UserServices::where('pn',$user_id)->first();
              $branch_id = $dataUser['branch_id'];
+             $user_id = substr('0000'.$user_id, -8);
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
         }else if($receiver =='ao'){
             $dataUser  = UserServices::where('pn',$user_id)->first();
-             $branch_id = $dataUser['branch_id'];
+            $branch_id = $dataUser['branch_id'];
+            $user_id = substr('0000'.$user_id, -8);
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('ao_'.$user_id);
         }else{
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'));

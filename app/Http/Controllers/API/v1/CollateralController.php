@@ -145,7 +145,6 @@ class CollateralController extends Controller
         'property_id' => $request->property_id,
         'remark' => $request->remark,
         'status' => Collateral::STATUS[0],
-        'dispose_by' => $user['pn']
       ];
       $collateral = $this->collateral->create($data);
       return $this->makeResponse(
@@ -356,7 +355,7 @@ class CollateralController extends Controller
             $developer_id =  $collateral->developer_id;
             $user_id =  $developer_id;
             $usersModel = User::find($user_id);
-            $dataUser  = UserServices::where('pn',$pn)->first();
+            $dataUser  = UserServices::where('pn', $pn)->first();
             $branch_id = $dataUser['branch_id'];
             if ($action === 'approve')
             {
@@ -462,6 +461,7 @@ class CollateralController extends Controller
       $user = \RestwsHc::getUser();
       $baseRequest['manager_id'] = $user['pn'];
       $baseRequest['manager_name'] = $user['name'];
+      $baseRequest['dispose_by'] = $user['pn'];
 
       $this->collateral->where( 'status', Collateral::STATUS[0] )
         ->findOrFail( $collateralId )
@@ -653,7 +653,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
-        $message = getMessage('collateral_approve');
+        $message = getMessage('collateral_ots');
         //*/
         $credentials = [
             'headerNotif' => $message['title'],
