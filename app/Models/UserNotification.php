@@ -65,12 +65,12 @@ class UserNotification extends Model
 		}
 		$tipeNotif = $this->type;
 		if($tipeNotif == 'App\Notifications\CollateralManagerApprove' || $tipeNotif  == 'App\Notifications\CollateralManagerRejected'){
-			$slug = !empty($this->data['prop_slug']) ? $this->data['prop_slug'] : null;  
+			$slug = !empty($this->data['prop_slug']) ? $this->data['prop_slug'] : null;
 		}
 
 		if($tipeNotif == 'App\Notifications\CollateralOTS' || $tipeNotif == 'App\Notifications\CollateralStafRejectOTS'){
 				$collateralAppraisal =!empty($this->data['staff_name']) ? $this->data['staff_name'] : null;
-				$debitur = !empty($this->data['user_name']) ? $this->data['user_name'] : null;		
+				$debitur = !empty($this->data['user_name']) ? $this->data['user_name'] : null;
 		}
 		switch ($this->type) {
 		/* eform  */
@@ -154,7 +154,7 @@ class UserNotification extends Model
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
-			break;			
+			break;
 		case 'App\Notifications\VerificationApproveFormNasabah':
 			$subjectNotif = ['message' => 'Customer Telah Menyetujui Form KPR',
 				'url' => $url,
@@ -219,7 +219,7 @@ class UserNotification extends Model
 				'url_mobile' => '#',
 			];
 			break;
-		
+
 		case 'App\Notifications\RecontestEFormNotification':
 			$subjectNotif = ['message' => 'Pengajuan Anda Telah di Rekontest.',
 				'url' => $url,
@@ -234,14 +234,14 @@ class UserNotification extends Model
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
-			break;	
+			break;
 		case 'App\Notifications\CollateraAODisposition':
 			$subjectNotif = ['message' => 'Penugasan AO Collateral',
 				'url' => $internalurl.'staff-collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
-			break;	
+			break;
 		case 'App\Notifications\CollateralOTS':
 			$subjectNotif = ['message' => 'Penilaian agunan debitur an. ['.$debitur.'] sedang dilakukan oleh ['.$collateralAppraisal.']',
 				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
@@ -255,21 +255,21 @@ class UserNotification extends Model
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
-			break;	
+			break;
 		case 'App\Notifications\CollateralStafPenilaianAnggunan':
 			$subjectNotif = ['message' => 'Form Penilaian Agunan',
 				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
-			break;	
+			break;
 		case 'App\Notifications\CollateralStafChecklist':
 			$subjectNotif = ['message' => 'Collateral Checklist',
 				'url' => $internalurl.'collateral?slug='.$this->slug. '&type=' . $typeModuleCollateral,
 				'message_external' => '',
 				'url_mobile' => '#',
 			];
-			break;			
+			break;
 		case 'App\Notifications\CollateralManagerRejected':
 			$subjectNotif = [
 			  'message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI',
@@ -277,7 +277,7 @@ class UserNotification extends Model
 				'url' => $externalurl.'dev/proyek?slug='.$slug. '&type=collateral_manager_approving',
 				'url_mobile' => '#',
 			];
-			break;	
+			break;
 		case 'App\Notifications\CollateralManagerApprove':
 			$subjectNotif = [
 			  'message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan',
@@ -309,6 +309,7 @@ class UserNotification extends Model
 	}
 
 	public function getUnreads($branch_id, $role, $pn, $user_id) {
+		$pn = substr( $pn, -8 );
 		$query = $this->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
 			// ->where('eforms.branch_id', @$branch_id)
 			//->Where('eforms.ao_id', @$pn)
@@ -359,7 +360,7 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\EditDeveloper')) {
 				$query->unreads();
             }
-            
+
             if ($query->Orwhere('notifications.type', 'App\Notifications\CollateraAODisposition')) {
 				$query->unreads();
 			}
@@ -406,7 +407,7 @@ class UserNotification extends Model
 			if ($query->Orwhere('notifications.type', 'App\Notifications\RejectEFormCLAS')) {
 				$query->unreads()->where('notifications.notifiable_id', @$user_id);
 			}
-			
+
 			/*if ($query->Orwhere('notifications.type', 'App\Notifications\VerificationDataNasabah')) {
 				$query->unreads();
 			}*/
@@ -450,7 +451,7 @@ class UserNotification extends Model
 				$query->where('notifications.notifiable_id', @$user_id);
 				$query->unreads();
 			}
-			
+
 			if ($query->Orwhere('notifications.type', 'App\Notifications\CollateralManagerApprove')) {
 				$query->where('notifications.notifiable_id', @$user_id);
 				$query->unreads();
@@ -471,7 +472,7 @@ class UserNotification extends Model
 		$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 
 		return $query;
-		
+
 	}
 
 	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit, $count = null) {
@@ -517,11 +518,11 @@ class UserNotification extends Model
 
 			if ($role == 'ao') {
 				$data = $query
-				->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 
+				->select('notifications.id', 'notifications.type', 'notifications.notifiable_id',
 									   'notifications.notifiable_type', 'notifications.data', 'notifications.read_at',
-									   'notifications.created_at', 'notifications.updated_at', 
+									   'notifications.created_at', 'notifications.updated_at',
 									   'notifications.branch_id', 'notifications.role_name', 'notifications.slug',
-									   'notifications.type_module','notifications.is_read', 'eforms.is_approved', 
+									   'notifications.type_module','notifications.is_read', 'eforms.is_approved',
 									   'eforms.ao_id', 'eforms.ref_number')
 							  ->leftJoin('eforms', 'notifications.slug', '=', 'eforms.id')
 				  	          ->where('eforms.branch_id', 'like', '%'.$branch_id)
