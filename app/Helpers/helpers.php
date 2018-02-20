@@ -1573,17 +1573,20 @@ if (! function_exists('pushNotification')) {
         $topic = new Topics();
         if($receiver=='staf_collateral'){
              $dataUser  = UserServices::where('pn',$user_id)->first();
-             $branch_id = substr('00000'.$dataUser['branch_id'], -8);
+             $branch_id = $dataUser['branch_id'];
+             $user_id = substr('0000'.$user_id, -8);
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('staff_collateral_'.$user_id);
         }else if ($receiver=='external'){  //send to external mobile apps
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('user_'.$user_id);
         }else if ($receiver=='manager_collateral'){
              $dataUser  = UserServices::where('pn',$user_id)->first();
-             $branch_id = substr('00000'.$dataUser['branch_id'], -8);
+             $branch_id = $dataUser['branch_id'];
+             $user_id = substr('0000'.$user_id, -8);
              $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.$user_id);
         }else if($receiver =='ao'){
             $dataUser  = UserServices::where('pn',$user_id)->first();
-             $branch_id = substr('00000'.$dataUser['branch_id'], -8);
+            $dataUser['branch_id'];
+            $user_id = substr('0000'.$user_id, -8);
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('ao_'.$user_id);
         }else{
             $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'));
