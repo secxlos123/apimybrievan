@@ -1104,7 +1104,7 @@ if (! function_exists('pushNotification')) {
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
         $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('pinca')->orTopic('manager_collateral_'.'00070828');
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('manager_collateral_'.'00070828');
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
