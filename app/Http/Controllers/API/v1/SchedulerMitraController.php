@@ -41,7 +41,7 @@ class SchedulerMitraController extends Controller
 				$database = "mybri";
 			}else{
 				$servername = '172.18.45.22';
-				$servernamelas = = "172.21.53.70";
+				$servernamelas = "172.21.53.70";
 				$database = "mybri_prod";
 			  }
 		//---------------------------------
