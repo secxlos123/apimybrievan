@@ -60,7 +60,8 @@ class SentSMSNotifController extends Controller
 		return $message;
 	}
 	public function sentsms( Request $request )
-	{
+	{		
+		\Log::info('==========sent sms==============');
 		\Log::info($request);
 		$host = env('APP_URL');
 			if($host == 'http://api.dev.net/'){		
