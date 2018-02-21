@@ -143,7 +143,7 @@ class ServiceRestwsHc extends Client
                             'requestMethod' => 'get_list_uker_from_cabang',
                             'requestData' => [
                                 'app_id' => 'mybriapi'
-                                , 'branch_code' => $request->input('branch_id')
+                                , 'branch_code' => $branch
                             ]
                         ])
                     ])->post('form_params');
