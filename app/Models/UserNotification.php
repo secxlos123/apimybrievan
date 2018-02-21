@@ -378,7 +378,8 @@ class UserNotification extends Model
 				$plafondKredit = $getKPR->request_amount ? $getKPR->request_amount : 0;
 
 				$append = array(
-					'message' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
+					'message' => 'Pengajuan KPR Telah Di Setujui'
+					, 'message_external' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
 				);
 				break;
 
