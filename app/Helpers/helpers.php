@@ -1084,6 +1084,7 @@ if (! function_exists('pushNotification')) {
 
         $message   = getMessage("eform_lkn");
         $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
