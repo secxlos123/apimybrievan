@@ -136,6 +136,7 @@ class SelectCabangController extends Controller
 				$cek = substr($request->get('BRANCH_CODE'),$i,1);
 				if($cek!=0){
 					$branchcis = substr($request->get('BRANCH_CODE'),$i,4);
+					$i = 5;
 				}
 			}
 			$request->BRANCH_CODE = $branchcis;
