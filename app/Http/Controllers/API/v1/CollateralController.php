@@ -263,7 +263,7 @@ class CollateralController extends Controller
                      'id' => $id,
                      'type' => 'collateral_penilaian_agunan',
                      'slug' => $collateral_id,
-                     'user_id' => $user_id,
+                     'user_id' => $manager_id,
                      'receiver' => 'manager_collateral',
                   ];
                   pushNotification($credentials,'general');
