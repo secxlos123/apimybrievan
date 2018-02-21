@@ -63,11 +63,20 @@ class CollateralController extends Controller
     public function index()
     {
       $user = \RestwsHc::getUser();
+      $region = \RestwsHc::getRegion($user['branch_id']);
       \Log::info($user);
+      \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int)$this->request->header('pn'));
+      }
+      else
+      {
+        $data->whereHas('property',function($property) use ($region)
+        {
+          $property->where('region_id',$region['region_id']);
+        });
       }
       if ($this->request->has('status')) $data->where('status', $this->request->input('status'));
       $request = $this->request;
@@ -87,11 +96,20 @@ class CollateralController extends Controller
     public function indexNon()
     {
       $user = \RestwsHc::getUser();
+      $region = \RestwsHc::getRegion($user['branch_id']);
       \Log::info($user);
+      \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int) $this->request->header('pn'));
+      }
+      else
+      {
+        $data->whereHas('property',function($property) use ($region)
+        {
+          $property->where('region_id',$region['region_id']);
+        });
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
