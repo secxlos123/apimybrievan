@@ -27,7 +27,7 @@ class SentSMSNotifController extends Controller
 		$id_trans = '1-'.date("Ymd His");
 		if($request['kode_message']=='1'){
 				//1. Pengajuan Kredit 
-			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].". Aplikasi Kredit Anda sudah kami terima dengan Nomor Referensi ".$request['no_reff'].".Petugas kami akan segera menghubungi Anda. Terima kasih.";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].". Aplikasi Kredit Anda sudah kami terima dengan Nomor Referensi ".$request['no_reff'].". Petugas kami akan segera menghubungi Anda. Terima kasih.";
 		}elseif($request['kode_message']=='2'){
 			$message = "Yth Bapak/Ibu ".$request['nama_cust'].". Pengajuan Anda dengan Nomor Referensi ".$request['no_reff']." akan ditindaklanjuti 
 						oleh Sdr/i. ".$request['rm_mantri']." / dari BRI ".$request['unit_kerja'].". 
