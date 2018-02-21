@@ -433,7 +433,7 @@ class UserNotification extends Model
 				break;
 
 			case 'App\Notifications\PropertyNotification':
-				//
+				// get property
 				// dari admin dev
 				// ke col-man
 				$append = array(
@@ -443,7 +443,7 @@ class UserNotification extends Model
 				break;
 
 			case 'App\Notifications\EditDeveloper':
-				//
+				// perubahan data
 				// dari
 				// ke admin dev
 				$append = array(
@@ -453,7 +453,7 @@ class UserNotification extends Model
 				break;
 
 			case 'App\Notifications\ApproveDeveloperProfile':
-				//
+				// approve perubahan data
 				// dari
 				// ke admin dev
 				$append = array(
@@ -464,7 +464,7 @@ class UserNotification extends Model
 				break;
 
 			case 'App\Notifications\RejectDeveloperProfile':
-				//
+				// reject perubahan data
 				// dari
 				// ke admin dev
 				$append = array(
