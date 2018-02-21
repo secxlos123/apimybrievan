@@ -388,7 +388,17 @@ class UserNotification extends Model
 				// Pengajuan di tolak di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS' );
+				break;
+
+			case 'App\Notifications\RejectEFormCLASCustomer':
+				// Pengajuan di tolak di CLAS
+				// dari CLAS
+				// ke nasabah
+				$append = array(
+					'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS'
+					, 'message_external' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
+				);
 				break;
 
 			case 'App\Notifications\LKNEFormCustomer':
