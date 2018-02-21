@@ -46,7 +46,6 @@ class UserNotification extends Model
 					, 'App\Notifications\RejectEFormCLAS'
 					, 'App\Notifications\LKNEFormCustomer'
 					, 'App\Notifications\LKNEFormRecontest'
-					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
 	}
@@ -71,6 +70,7 @@ class UserNotification extends Model
 					, 'App\Notifications\CollateraAODisposition'
 					, 'App\Notifications\CollateralManagerRejected'
 					, 'App\Notifications\CollateralManagerApprove'
+					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
 	}
@@ -83,7 +83,9 @@ class UserNotification extends Model
 				'notifications.type'
 				, array(
 					'App\Notifications\ApproveEFormCustomer'
+					, 'App\Notifications\ApproveEFormCLASCustomer'
 					, 'App\Notifications\RejectEFormCustomer'
+					, 'App\Notifications\RejectEFormCLASCustomer'
 					, 'App\Notifications\PencairanNasabah'
 					, 'App\Notifications\VerificationDataNasabah'
 					, 'App\Notifications\NewSchedulerCustomer'
@@ -331,7 +333,7 @@ class UserNotification extends Model
 				// Pengajuan di terima oleh MP/Pinca di myBRI
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui myBRI' );
 				break;
 
 			case 'App\Notifications\RejectEFormInternal':
@@ -372,11 +374,19 @@ class UserNotification extends Model
 				// Pengajuan di terima di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui oleh CLAS' );
+				break;
+
+			case 'App\Notifications\ApproveEFormCLASCustomer':
+				// Pengajuan di terima di CLAS
+				// dari CLAS
+				// ke Nasabah
 				$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 				$plafondKredit = $getKPR->request_amount ? $getKPR->request_amount : 0;
 
 				$append = array(
-					'message' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
+					'message' => 'Pengajuan KPR Telah Di Setujui'
+					, 'message_external' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
 				);
 				break;
 
@@ -499,8 +509,8 @@ class UserNotification extends Model
 
 			case 'App\Notifications\RecontestEFormNotification':
 				// Submit LKN recontest
-				// dari AO
-				// ke pinca
+				// dari CLAS
+				// ke AO
 				$append = array( 'message' => 'Pengajuan Anda Telah di Rekontest' );
 				break;
 
