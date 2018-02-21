@@ -30,9 +30,9 @@ class SchedulerMitraController extends Controller
 				$servername = '';
 				$servernamelas = '';
 				$username = 'administrator'
-				$usernamelas = "sa";
+				$usernamelas = 'sa';
 				$password = 'P@ssw0rd';
-				$passwordlas = "starbuck";
+				$passwordlas = 'starbuck';
 
 			  $host = env('APP_URL');
 			  if($host == 'http://api.dev.net/'){		
@@ -58,7 +58,7 @@ class SchedulerMitraController extends Controller
 			foreach ($datalas as $data) {
 				//,STR_TO_DATE('$data[3]','%Y%m%d')
 				$sql = "";
-					$sql = "INSERT INTO $table VALUES('$data[0]','$data[1]','$data[2]','$data[11]','$data[14]',
+					$sql = "INSERT INTO $table VALUES('$data[0]','$data[1]','$data[2]','$data[11]',to_number('$data[14]','99G999D9S'),
 				'$data[17]','$data[18]','','70','','$data[4]','$data[5]','$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[12]',
 				'$data[13]','$data[15]','$data[16]','$data[19],'$data[20]'')";
 
