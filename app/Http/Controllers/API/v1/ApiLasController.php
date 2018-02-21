@@ -15,6 +15,7 @@ use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
 use Asmx;
 use File;
+use Zip;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 
 class ApiLasController extends Controller
@@ -1788,6 +1789,39 @@ class ApiLasController extends Controller
             // $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
             return response()->success( [
                 'contents' => $eform
+            ],200);
+        }
+
+        return response()->error( [
+            'contents' => 'data tidak ditemukan'
+        ],400);
+    }
+
+    public function download(Request $request) {
+        \Log::info($request->all());
+        $response = $request->all();
+        $briguna = Briguna::where('eform_id',$response['eform_id'])->first();
+        \Log::info($briguna->toArray());
+        if (!empty($briguna)) {
+            $image_path = public_path('uploads/'.$briguna['id_foto']);
+            $url = $image_path.'/'.$briguna['SLIP_GAJI'];
+            $files = [
+                $briguna['KK'], $briguna['NPWP_nasabah'], $briguna['SK_AWAL'],
+                $briguna['SK_AKHIR'], $briguna['REKOMENDASI'], $briguna['SKPG']
+            ];
+            // $zipname = 'file.zip';
+            $publicPath = $image_path . '/foto.zip';
+            // $zip = new Zip;
+            // $zip = Zip::open($publicPath, Zip::CREATE);
+            $zip = Zip::open($publicPath,$image_path);
+            foreach ($files as $file) {
+              $zip = Zip::addFile($file);
+            }
+            $zip = Zip::close();
+            \Log::info($zip);
+            // $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
+            return response()->success( [
+                'contents' => $zip
             ],200);
         }
 

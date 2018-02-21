@@ -88,6 +88,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('api_las/briguna', 'ApiLasController@show_briguna');
 		Route::post('api_las/update', 'ApiLasController@update_briguna');
 		Route::post('api_las/update_foto', 'ApiLasController@update_foto_briguna');
+		Route::post('api_las/download_image', 'ApiLasController@download');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
