@@ -63,7 +63,7 @@ class CollateralController extends Controller
     public function index()
     {
       $user = \RestwsHc::getUser();
-      $region = \RestwsHc::getRegion($user['branch_id']);
+      $region = \RestwsHc::getRegion(intval($user['branch_id']));
       \Log::info($user);
       \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
@@ -96,7 +96,7 @@ class CollateralController extends Controller
     public function indexNon()
     {
       $user = \RestwsHc::getUser();
-      $region = \RestwsHc::getRegion($user['branch_id']);
+      $region = \RestwsHc::getRegion(intval($user['branch_id']));
       \Log::info($user);
       \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
