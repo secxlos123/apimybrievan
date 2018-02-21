@@ -46,6 +46,7 @@ class SchedulerMitraController extends Controller
 			  }
 		//---------------------------------
 		// Create connection
+	
 		$conn = mysqli_connect($servername, $username, $password);
 		$connlas = mysqli_connect($servernamelas, $usernamelas, $passwordlas);
 		$table = 'mitra';
