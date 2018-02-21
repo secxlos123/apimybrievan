@@ -59,8 +59,10 @@ class SentSMSNotifController extends Controller
 		}
 		return $message;
 	}
-	public function sentsms( Request $request )
-	{
+	public function sentsms($data)
+	{		
+		\Log::info('==========sent sms==============');
+		\Log::info($data);
 		$host = env('APP_URL');
 			if($host == 'http://api.dev.net/'){		
 				$divisi = 'SIT';
@@ -70,7 +72,7 @@ class SentSMSNotifController extends Controller
 				$produk = 'Kredit';
 			}
 
-		$data = $request->all();
+//		$data = $request->all();
 		$message = $this->message($data);
 		 $client = new Client();
 		 $url = '';
