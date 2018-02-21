@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use AsmxLas;
 use DB;
 
@@ -15,19 +16,81 @@ class ApiLas extends Model
      * @var string
      */
     protected $table = 'eforms';
-    public function scopeFilter($query, $id) {
-        $eforms = $query->where( function( $eforms ) use( $request, &$user ) {  
-            $kode = $id;
-            $eforms->Where('eforms.id', $kode);
-        });
 
-        $eforms->join('briguna', 'eform_id', '=', 'eforms.id');
-        $eforms = $eforms->select([
-            'eforms.*','briguna.*',
-            \DB::Raw("case when eforms.id is not null then 2 else 1 end as new_order")
-        ]);
-        \Log::info("query berhasil");
-        return $eforms;
+    public function scopeFilter( $query, Request $request )
+    {
+        // $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
+        // $eform = $query->where( function( $eform ) use( $request, &$user ) {
+        //     if( $request->has( 'status' ) ) {
+        //         if( $request->status == 'Submit' ) {
+        //             $eform->whereIsApproved( true );
+
+        //         } else if( $request->status == 'Initiate' ) {
+        //             $eform->has( 'visit_report' )->whereIsApproved( false );
+
+        //         } else if( $request->status == 'Dispose' ) {
+        //             $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+
+        //         } else if( $request->status == 'Rekomend' ) {
+        //             $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
+
+        //         } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
+        //             $eform->where('status_eform', $request->status);
+
+        //         }
+        //     }
+        // });
+
+        // if ($request->has('search')) {
+        //     $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
+        //         ->where( function( $eform ) use( $request, &$user ) {
+        //             $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
+        //                 ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
+        //                 ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
+        //         } );
+        // } else {
+        //     if ($request->has('customer_name')){
+        //         $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
+        //             ->where( function( $eform ) use( $request, &$user ) {
+        //                 $eform->orWhere(\DB::raw("LOWER(concat(users.first_name,' ', users.last_name))"), "like", "%".strtolower($request->input('customer_name'))."%");
+        //             });
+        //     }
+
+        //     if ($request->has('ref_number')) {
+        //         $eform = $eform->where( function( $eform ) use( $request, &$user ) {
+        //             $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
+        //         } );
+        //     }
+        // }
+
+        $eform = DB::table('eforms')
+                 ->select('eforms.ref_number','eforms.created_at','eforms.prescreening_status',
+                    'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
+                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
+                    'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
+                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
+                    'briguna.tgl_analisa','briguna.tgl_putusan','briguna.cif',
+                    'customer_details.nik','customer_details.is_verified',
+                    'customer_details.address','customer_details.mother_name',
+                    'customer_details.birth_date','users.first_name','users.last_name',
+                    'users.mobile_phone','users.gender'
+                   )
+                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
+                 ->join('users', 'users.id', '=', 'eforms.user_id')
+                 // ->where('eforms.branch_id', '=', $branch)
+                 ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request['branch_id']))
+                 ->orderBy('eforms.created_at', 'desc')
+                 ->limit($request['limit'])
+                 ->offset($request['start'])
+                 ->get();
+        // \Log::info($eform);
+        $eform = $eform->toArray();
+        // \Log::info($eform);
+        $eform = json_decode(json_encode($eform), True);
+        
+        \Log::info("query select briguna berhasil");
+        return $eform;
     }
 
     public function eform_briguna($branch = null) {
