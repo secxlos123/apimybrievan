@@ -32,8 +32,7 @@ class UserNotification extends Model
 
 	public function scopePinca( $query, $branch_id )
 	{
-		return $query->unreads()
-			->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
+		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->leftJoin( 'visit_reports', 'eforms.id', '=', 'visit_reports.eform_id' )
 			->whereNotNull( 'visit_reports.created_at' )
 			->where( 'eforms.branch_id', $branch_id )
@@ -52,8 +51,7 @@ class UserNotification extends Model
 
 	public function scopeAo( $query, $pn )
 	{
-		return $query->unreads()
-			->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
+		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->where( 'eforms.ao_id', $pn )
 			->whereIn(
 				'notifications.type'
@@ -77,8 +75,7 @@ class UserNotification extends Model
 
 	public function scopeCustomer( $query, $user_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.notifiable_id', $user_id )
+		return $query->where( 'notifications.notifiable_id', $user_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -102,8 +99,7 @@ class UserNotification extends Model
 
 	public function scopeCollateralAppraisal( $query, $branch_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.branch_id', $branch_id )
+		return $query->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -117,8 +113,7 @@ class UserNotification extends Model
 
 	public function scopeCollateral( $query, $branch_id )
 	{
-    	return $query->unreads()
-    		->where( 'notifications.branch_id', $branch_id )
+    	return $query->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -133,8 +128,7 @@ class UserNotification extends Model
 
 	public function scopeDeveloper( $query, $user_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.notifiable_id', $user_id )
+		return $query->where( 'notifications.notifiable_id', $user_id )
 			->whereIn(
 				'notifications.type'
 				, array(
