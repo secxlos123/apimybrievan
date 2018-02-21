@@ -36,6 +36,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		Route::post('SelectCabang', 'SelectCabangController@getCabangMitra');
 		Route::get('SelectCabangInternal', 'SelectCabangController@getCabangMitraOpi');
+		Route::get('scheduler_mitra', 'SchedulerMitraController@scheduler');
 		Route::post('gimmick_list', 'Int\GimmickController@list_gimmick');
 		Route::post('GetView', 'ViewController@index');
 		Route::post('testertoken', 'EFormController@TestingBranch');
