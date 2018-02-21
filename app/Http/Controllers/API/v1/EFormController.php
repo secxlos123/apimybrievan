@@ -527,7 +527,8 @@ class EFormController extends Controller
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
 				$message = ['no_hp'=>$customer[0]['phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];				
-				    \Log::info($message);
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
 				app('App\Http\Controllers\API\v1\SentSMSNotifController')->message($message);
                 $return = [
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
