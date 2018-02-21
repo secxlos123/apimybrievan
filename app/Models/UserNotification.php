@@ -333,7 +333,7 @@ class UserNotification extends Model
 				// Pengajuan di terima oleh MP/Pinca di myBRI
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui myBRI' );
 				break;
 
 			case 'App\Notifications\RejectEFormInternal':
@@ -374,7 +374,7 @@ class UserNotification extends Model
 				// Pengajuan di terima di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui oleh CLAS' );
 				break;
 
 			case 'App\Notifications\ApproveEFormCLASCustomer':
