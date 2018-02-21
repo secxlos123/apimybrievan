@@ -1006,7 +1006,7 @@ if (! function_exists('pushNotification')) {
     function lknEForm($credentials){
         $data      = $credentials;
         $userLogin = $data['credentials'];
-        $branch_id = $userLogin['branch_id'];
+        $branch_id = substr('0'.$userLogin['branch_id'], -3);
 
         if (!empty($data['recontest'])) {
             $message   = getMessage("eform_lkn_recontest");
