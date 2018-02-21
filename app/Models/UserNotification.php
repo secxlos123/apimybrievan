@@ -374,6 +374,13 @@ class UserNotification extends Model
 				// Pengajuan di terima di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui' );
+				break;
+
+			case 'App\Notifications\ApproveEFormCLASCustomer':
+				// Pengajuan di terima di CLAS
+				// dari CLAS
+				// ke Nasabah
 				$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 				$plafondKredit = $getKPR->request_amount ? $getKPR->request_amount : 0;
 
