@@ -253,7 +253,7 @@ class ViewController extends Controller
 			$x = count($radio);
 			for($i=0;$i<$x;$i++){
 				$radios = explode(",",$radio[$i]);
-				$form .= '<input type="radio" name="'.$view['id_table'].'" value="'.$radios['0'].'"'.$view['etc'].'>'.$radios['1'];
+				$form .= '<div class="col-md-3"><input type="radio" name="'.$view['id_table'].'" value="'.$radios['0'].'"'.$view['etc'].'>'.$radios['1'].'</div>';
 			}
 			
 /* 			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'">

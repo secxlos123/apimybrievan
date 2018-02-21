@@ -32,8 +32,7 @@ class UserNotification extends Model
 
 	public function scopePinca( $query, $branch_id )
 	{
-		return $query->unreads()
-			->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
+		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->leftJoin( 'visit_reports', 'eforms.id', '=', 'visit_reports.eform_id' )
 			->whereNotNull( 'visit_reports.created_at' )
 			->where( 'eforms.branch_id', $branch_id )
@@ -52,8 +51,7 @@ class UserNotification extends Model
 
 	public function scopeAo( $query, $pn )
 	{
-		return $query->unreads()
-			->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
+		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->where( 'eforms.ao_id', $pn )
 			->whereIn(
 				'notifications.type'
@@ -77,8 +75,7 @@ class UserNotification extends Model
 
 	public function scopeCustomer( $query, $user_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.notifiable_id', $user_id )
+		return $query->where( 'notifications.notifiable_id', $user_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -102,8 +99,7 @@ class UserNotification extends Model
 
 	public function scopeCollateralAppraisal( $query, $branch_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.branch_id', $branch_id )
+		return $query->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -117,8 +113,7 @@ class UserNotification extends Model
 
 	public function scopeCollateral( $query, $branch_id )
 	{
-    	return $query->unreads()
-    		->where( 'notifications.branch_id', $branch_id )
+    	return $query->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -133,8 +128,7 @@ class UserNotification extends Model
 
 	public function scopeDeveloper( $query, $user_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.notifiable_id', $user_id )
+		return $query->where( 'notifications.notifiable_id', $user_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -239,8 +233,8 @@ class UserNotification extends Model
 		if ( in_array( $role, ['pinca', 'ao'] ) ) {
 			$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 		}
-		\Log::info($query->getBindings());
-		\Log::info($query->toSql());
+		// \Log::info($query->getBindings());
+		// \Log::info($query->toSql());
 
 		return $query;
 	}
@@ -394,7 +388,17 @@ class UserNotification extends Model
 				// Pengajuan di tolak di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS' );
+				break;
+
+			case 'App\Notifications\RejectEFormCLASCustomer':
+				// Pengajuan di tolak di CLAS
+				// dari CLAS
+				// ke nasabah
+				$append = array(
+					'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS'
+					, 'message_external' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
+				);
 				break;
 
 			case 'App\Notifications\LKNEFormCustomer':

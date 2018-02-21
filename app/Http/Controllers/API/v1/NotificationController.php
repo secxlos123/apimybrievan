@@ -62,7 +62,7 @@ class NotificationController extends Controller
                                         'data' => $value->data,
                                         'created_at' => $value->created_at->diffForHumans(),
                                         'is_read' => (bool) $value->is_read,
-                                        'read_at' => Carbon::parse($value->read_at)->format('Y-m-d H:i:s'),
+                                        'read_at' => $value->read_at,
                                     ];
             }
         }
