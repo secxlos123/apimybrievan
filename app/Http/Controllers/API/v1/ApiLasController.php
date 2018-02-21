@@ -1729,7 +1729,7 @@ class ApiLasController extends Controller
                             ];
                             return $result;
                         } else {
-                            $error = 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'];
+                            $error[0] = $hitung['statusDesc'];
                             return [
                                 'code' => $hitung['statusCode'], 
                                 'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
@@ -1739,7 +1739,7 @@ class ApiLasController extends Controller
                             ];
                         }
                     } else {
-                        $error[0]  = 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'];
+                        $error[0]  = $insertKredit['statusDesc'];
                         return [
                             'code' => $insertKredit['statusCode'], 
                             'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
@@ -1749,7 +1749,7 @@ class ApiLasController extends Controller
                         ];
                     }
                 } else {
-                    $error[0] = 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'];
+                    $error[0] = $insertPrescoring['statusDesc'];
                     return [
                         'code' => $insertPrescoring['statusCode'], 
                         'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
@@ -1759,7 +1759,7 @@ class ApiLasController extends Controller
                     ];
                 }
             } else {
-                $error[0] = 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'];
+                $error[0] = $insertPrescreening['statusDesc'];
                 return [
                     'code' => $insertPrescreening['statusCode'], 
                     'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
@@ -1769,7 +1769,7 @@ class ApiLasController extends Controller
                 ];
             }
         } else {
-            $error[0] = 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'];
+            $error[0] = $insertDebitur['statusDesc'];
             return [
                 'code' => $insertDebitur['statusCode'], 
                 'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
@@ -1781,12 +1781,13 @@ class ApiLasController extends Controller
     }
 
     public function show_briguna(Request $request) {
-        $eform = EformBriguna::filter($request)->get();
-        $eform = $eform->toArray();
+        \Log::info($request->all());
+        $limit = $request->input('limit') ? : 10;
+        $eform = Apilas::filter($request);
         if (!empty($eform)) {
-            $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
+            // $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
             return response()->success( [
-                'contents' => $eform[0]
+                'contents' => $eform
             ],200);
         }
 
@@ -1931,7 +1932,7 @@ class ApiLasController extends Controller
             ];
             // save json_ws_log
             $data_log = [
-                'json_data' => $parameter,
+                'json_data' => json_encode($parameter),
                 'function_name' => 'kirimPemutus',
                 'created_at'=> date('Y-m-d H:i:s')
             ];
