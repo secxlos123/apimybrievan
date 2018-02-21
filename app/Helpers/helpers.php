@@ -1439,7 +1439,7 @@ if (! function_exists('pushNotification')) {
         {
             $userModel->notify(new RejectEFormCustomer($data['data']));
         }else {
-            $userModel->notify(new ApproveEFormCLASCustomer($data['data']));
+            $userModel->notify(new RejectEFormCLASCustomer($data['data']));
         }
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
@@ -1501,7 +1501,7 @@ if (! function_exists('pushNotification')) {
             $data         = $dataBuilder->build();
             $topic        = new Topics();
 
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->orTopic('ao_'.$credentials['data']->ao_id);
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('ao_'.$credentials['data']->ao_id);
 
             $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
             $topicResponse->isSuccess();
@@ -1519,7 +1519,7 @@ if (! function_exists('pushNotification')) {
         $message   = getMessage("eform_reject_clas", $credentials['data']);
 
         $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCLAS($data['data']));
+        $userModel->notify(new RejectEFormCLAS($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1541,7 +1541,7 @@ if (! function_exists('pushNotification')) {
         $data         = $dataBuilder->build();
         $topic        = new Topics();
 
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca');
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('pinca')->orTopic('ao_'.$credentials['data']->ao_id);
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
