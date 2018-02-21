@@ -798,9 +798,6 @@ if (! function_exists('pushNotification')) {
 
         $message   = getMessage("eform_pencairan", $credentials['data']);
 
-        $userNotif = new UserNotification;
-        $userModel->notify(new PencairanInternal($data['data']));
-
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
                             ->setSound('default');
@@ -1087,9 +1084,6 @@ if (! function_exists('pushNotification')) {
 
         $message   = getMessage("eform_lkn");
         $userModel = $data['user'];
-        $userNotif = new UserNotification;
-
-        $userModel->notify(new LKNEFormCustomer($data['data']));
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1109,9 +1103,7 @@ if (! function_exists('pushNotification')) {
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
         $topic = new Topics();
-        // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('pinca');
-
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$credentials['data']->branch_id)->andTopic('manager_collateral_'.'00070828');
+        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$branch_id)->andTopic('pinca')->orTopic('manager_collateral_'.'00070828');
 
         $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
         $topicResponse->isSuccess();
@@ -1339,10 +1331,11 @@ if (! function_exists('pushNotification')) {
         {
             $userModel->notify(new ApproveEFormInternal($data['data']));
             $message   = getMessage("eform_approve_ao", $credentials['data']);
-        }else{
-            $userModel->notify(new ApproveEFormCLAS($data['data']));
-            $message   = getMessage("eform_approve_clas", $credentials['data']);
         }
+        // else{
+        //     $userModel->notify(new ApproveEFormCLAS($data['data']));
+        //     $message   = getMessage("eform_approve_clas", $credentials['data']);
+        // }
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1476,8 +1469,8 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new RejectEFormInternal($data['data']));
             $message = getMessage("eform_reject_ao", $credentials['data']);
         }else{
-            $userModel->notify(new RejectEFormCLAS($data['data']));
-            $message = getMessage("eform_reject_clas", $credentials['data']);
+            // $userModel->notify(new RejectEFormCLAS($data['data']));
+            // $message = getMessage("eform_reject_clas", $credentials['data']);
         }
 
 
