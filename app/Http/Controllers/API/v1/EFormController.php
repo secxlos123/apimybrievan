@@ -408,10 +408,10 @@ class EFormController extends Controller
             if ($request->product_type == 'kkd'){
                 \Log::info("========================KARTU_KREDIT========================"); 
 
-            return response()->success([
-                'message' => 'E-Form berhasil di disposisi',
+                return response()->success([
+                    'message' => 'response eform kkd',
 
-            ], 200 );
+                ], 200 );
             }
 
             if ( $request->product_type == 'briguna' ) {

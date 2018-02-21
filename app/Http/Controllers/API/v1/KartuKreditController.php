@@ -15,8 +15,13 @@ class KartuKreditController extends Controller{
                 'name' => 'Abigail',
                 'state' => 'CA'
             ]);
-		// $ef = new EFormController();
 		
+		
+	}
+
+	public function cekEform(Request $request){
+		$ef = new EFormController();
+		$ef.store($request);
 	}
 
 	public function getNiks(Request $request){
