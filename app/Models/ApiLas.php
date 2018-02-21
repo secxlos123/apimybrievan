@@ -20,8 +20,8 @@ class ApiLas extends Model
     public function scopeFilter( $query, Request $request ) {
         // \Log::info($request->all());
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
-        $search = strtolower($request->input('search'));
-        // \Log::info($sort);
+        $search = $request->input('search');
+        \Log::info($search);
         // $eform = $query->where( function( $eform ) use( $request, &$user ) {
         //     if( $request->has( 'status' ) ) {
         //         if( $request->status == 'Submit' ) {
@@ -98,7 +98,13 @@ class ApiLas extends Model
                  ->join('users', 'users.id', '=', 'eforms.user_id')
                  // ->where('eforms.branch_id', '=', $branch)
                  ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request['branch_id']))
-                 ->orWhere('users.last_name', 'ilike', '%'.$search.'%')
+                 ->orWhere('eforms.created_at', 'ilike', '%'.$search.'%')
+                 ->orWhere('briguna.id_aplikasi', 'ilike', '%'.$search.'%')
+                 ->orWhere('eforms.ref_number', 'ilike', '%'.$search.'%')
+                 ->orWhere('eforms.ao_name', 'ilike', '%'.$search.'%')
+                 ->orWhere('briguna.cif', 'ilike', '%'.$search.'%')
+                 ->orWhere('users.first_name', 'ilike', '%'.$search.'%')
+                 ->orWhere('briguna.request_amount', 'ilike', '%'.$search.'%')
                  ->orderBy($sortir)
                  ->limit($request['limit'])
                  ->offset($request['start'])
