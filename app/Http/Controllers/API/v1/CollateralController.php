@@ -578,7 +578,6 @@ class CollateralController extends Controller
             {
                 if(!empty($manager_id))
                 {
-                    //*
                     //insert data from notifications table
                     $dataCollateral = Collateral::where('id',$collateralId)->first();
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
@@ -599,14 +598,13 @@ class CollateralController extends Controller
                                                     ->orderBy('created_at', 'desc')->first();
                     $id = $notificationData['id'];
                     $message = getMessage('collateral_checklist');
-                    //*/
                      $credentials = [
                       'headerNotif' => $message['title'],
                       'bodyNotif' => $message['body'],
                       'id' => $id,
                       'type' => 'collateral_checklist',
                       'slug' => $collateralId,
-                      'user_id' => $user_id,
+                      'user_id' => $manager_id,
                       'receiver' => 'manager_collateral',
                       ];
                      pushNotification($credentials,'general');
