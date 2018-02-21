@@ -34,7 +34,7 @@ class NotificationController extends Controller
     {
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
-        $branch_id = ( request()->header( 'branchid' ) != '' ) ? request()->header( 'branchid' ) : '' ;
+        $branch_id = ( request()->header( 'branchid' ) != '' ) ? request()->header( 'branchid' ) : 0 ;
     	$user_id = ( request()->header( 'userid' ) != '' ) ? request()->header( 'userid' ) : 0 ;
         $ArrGetDataNotification = [];
 

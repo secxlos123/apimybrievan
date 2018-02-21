@@ -58,7 +58,7 @@ class RecontestEFormNotification extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_recontest");
+        $message    = getMessage("eform_recontest", $this->eForm);
         return [
             'eform_id' => $this->eForm->id,
             'user_id' => $notifiable->id,
