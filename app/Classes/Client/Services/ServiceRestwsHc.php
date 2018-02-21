@@ -136,6 +136,28 @@ class ServiceRestwsHc extends Client
         return false;
     }
 
+    public static function getRegion( $branch = null )
+    {
+        $getKanwil = \RestwsHc::setBody([
+                        'request' => json_encode([
+                            'requestMethod' => 'get_list_uker_from_cabang',
+                            'requestData' => [
+                                'app_id' => 'mybriapi'
+                                , 'branch_code' => $branch
+                            ]
+                        ])
+                    ])->post('form_params');
+        $region = array();
+        if ( $getKanwil['responseCode'] == '00' ) {
+                        foreach ($getKanwil['responseData'] as $kanwil) {
+                            if ( $kanwil['branch'] ==  $branch) {
+                                $region['region_id'] = $kanwil['region'];
+                                }
+                            }
+                        }
+        return $region;
+    }
+
     /**
      * Post request to middleware.
      *
