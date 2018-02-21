@@ -8,8 +8,10 @@ use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\ApproveEFormInternal;
 use App\Notifications\RejectEFormInternal;
 use App\Notifications\ApproveEFormCLAS;
+use App\Notifications\ApproveEFormCLASCustomer;
 use App\Notifications\RejectEFormCustomer;
 use App\Notifications\RejectEFormCLAS;
+use App\Notifications\RejectEFormCLASCustomer;
 use App\Notifications\VerificationApproveFormNasabah;
 use App\Notifications\VerificationRejectFormNasabah;
 use App\Notifications\CreateScheduleNotification;
@@ -1004,7 +1006,7 @@ if (! function_exists('pushNotification')) {
     function lknEForm($credentials){
         $data      = $credentials;
         $userLogin = $data['credentials'];
-        $branch_id = $userLogin['branch_id'];
+        $branch_id = substr('0'.$userLogin['branch_id'], -3);
 
         if (!empty($data['recontest'])) {
             $message   = getMessage("eform_lkn_recontest");
@@ -1039,7 +1041,7 @@ if (! function_exists('pushNotification')) {
             $topicResponse->error();
         }else {
             lknPinca($credentials);
-            lknManagerCollateral($credentials);
+            // lknManagerCollateral($credentials);
         }
     }
 
@@ -1279,7 +1281,7 @@ if (! function_exists('pushNotification')) {
     function approveEForm($credentials){
         $data = $credentials;
         if (!empty($data['clas'])) {
-            approveEFormToCustomer($credentials);
+            approveEFormToCustomer($credentials, true);
             approveEFormToAO($credentials, true);
             approveEFormToPinca($credentials, true);
         }else {
@@ -1288,15 +1290,20 @@ if (! function_exists('pushNotification')) {
         }
     }
 
-    function approveEFormToCustomer($credentials)
+    function approveEFormToCustomer($credentials, $clas = null)
     {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
         $message   = getMessage("eform_approve");
-        $userNotif = new UserNotification;
-        $userModel->notify(new ApproveEFormCustomer($data['data']));
+        if(empty($clas))
+        {
+            $userModel->notify(new ApproveEFormCustomer($data['data']));
+        }else{
+            $userModel->notify(new ApproveEFormCLASCustomer($data['data']));
+        }
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1334,11 +1341,11 @@ if (! function_exists('pushNotification')) {
         $userModel = $data['user'];
         $userNotif = new UserNotification;
 
-        if(empty($clas))
-        {
+        // if(empty($clas))
+        // {
             $userModel->notify(new ApproveEFormInternal($data['data']));
             $message   = getMessage("eform_approve_ao", $credentials['data']);
-        }
+        // }
         // else{
         //     $userModel->notify(new ApproveEFormCLAS($data['data']));
         //     $message   = getMessage("eform_approve_clas", $credentials['data']);
@@ -1416,7 +1423,7 @@ if (! function_exists('pushNotification')) {
         $data = $credentials;
 
         if (!empty($data['clas'])) {
-            RejectEFormToCustomer($credentials);
+            RejectEFormToCustomer($credentials, true);
             RejectEFormToAO($credentials, true);
             RejectEFormToPinca($credentials, true);
         }else {
@@ -1425,16 +1432,20 @@ if (! function_exists('pushNotification')) {
         }
     }
 
-    function RejectEFormToCustomer($credentials)
+    function RejectEFormToCustomer($credentials, $clas = null)
     {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
         $message   = getMessage("eform_reject");
-
-        $userNotif = new UserNotification;
-        $userModel->notify(new RejectEFormCustomer($data['data']));
+        if (empty($clas))
+        {
+            $userModel->notify(new RejectEFormCustomer($data['data']));
+        }else {
+            $userModel->notify(new ApproveEFormCLASCustomer($data['data']));
+        }
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
