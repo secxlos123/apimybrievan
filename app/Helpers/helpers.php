@@ -1341,15 +1341,15 @@ if (! function_exists('pushNotification')) {
         $userModel = $data['user'];
         $userNotif = new UserNotification;
 
-        // if(empty($clas))
-        // {
+        if(empty($clas))
+        {
             $userModel->notify(new ApproveEFormInternal($data['data']));
             $message   = getMessage("eform_approve_ao", $credentials['data']);
-        // }
-        // else{
-        //     $userModel->notify(new ApproveEFormCLAS($data['data']));
-        //     $message   = getMessage("eform_approve_clas", $credentials['data']);
-        // }
+        }
+        else{
+            $userModel->notify(new ApproveEFormCLAS($data['data']));
+            $message   = getMessage("eform_approve_clas", $credentials['data']);
+        }
 
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
         $notificationBuilder->setBody($message['body'])
@@ -1487,8 +1487,8 @@ if (! function_exists('pushNotification')) {
             $userModel->notify(new RejectEFormInternal($data['data']));
             $message = getMessage("eform_reject_ao", $credentials['data']);
         }else{
-            // $userModel->notify(new RejectEFormCLAS($data['data']));
-            // $message = getMessage("eform_reject_clas", $credentials['data']);
+            $userModel->notify(new RejectEFormCLAS($data['data']));
+            $message = getMessage("eform_reject_clas", $credentials['data']);
         }
 
 
