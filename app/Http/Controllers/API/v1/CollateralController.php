@@ -659,7 +659,7 @@ class CollateralController extends Controller
         $dataUser  = UserServices::where('pn',$id_manager_collateral)->first();
         $branch_id = $dataUser['branch_id'];
         $userNotif = new UserNotification;
-        $usersModel->notify(new CollateralOTS($dataCollateral,$branch_id));
+        // $usersModel->notify(new CollateralOTS($dataCollateral,$branch_id));
         // Get data from notifications table
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();

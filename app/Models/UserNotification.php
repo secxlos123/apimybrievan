@@ -83,7 +83,9 @@ class UserNotification extends Model
 				'notifications.type'
 				, array(
 					'App\Notifications\ApproveEFormCustomer'
+					, 'App\Notifications\ApproveEFormCLASCustomer'
 					, 'App\Notifications\RejectEFormCustomer'
+					, 'App\Notifications\RejectEFormCLASCustomer'
 					, 'App\Notifications\PencairanNasabah'
 					, 'App\Notifications\VerificationDataNasabah'
 					, 'App\Notifications\NewSchedulerCustomer'
