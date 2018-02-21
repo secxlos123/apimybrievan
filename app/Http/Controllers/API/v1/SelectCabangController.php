@@ -131,7 +131,14 @@ class SelectCabangController extends Controller
 	{
 		if($request->internal=='776f60e189baaeef54e5fab8a95e3af'){
 	        \Log::info($request->all());
-				
+			$branchcis ='';
+			for($i=0;$i<5;$i++){
+				$cek = substr($request->get('BRANCH_CODE'),$i,1);
+				if($cek!=0){
+					$branchcis = substr($request->get('BRANCH_CODE'),$i,4);
+				}
+			}
+			$request->BRANCH_CODE = $branchcis;
 			$mitra = Mitra3::filter( $request )->get();
 			$mitra = $mitra->toArray();
         return response()->success([

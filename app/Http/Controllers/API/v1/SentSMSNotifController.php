@@ -61,6 +61,15 @@ class SentSMSNotifController extends Controller
 	}
 	public function sentsms( Request $request )
 	{
+		$host = env('APP_URL');
+			if($host == 'http://api.dev.net/'){		
+				$divisi = 'SIT';
+				$produk = 'Sms Dev';
+			}else{
+				$divisi = 'KRK';
+				$produk = 'Kredit';
+			}
+
 		$data = $request->all();
 		$message = $this->message($data);
 		 $client = new Client();
@@ -84,8 +93,8 @@ class SentSMSNotifController extends Controller
   <soap:Body>
     <FCD_SMS xmlns="http://tempuri.org/">
       <norek>0</norek>
-      <divisi>'.$data['divisi'].'</divisi>
-      <produk>'.$data['produk'].'</produk>
+      <divisi>'.$divisi.'</divisi>
+      <produk>'.$produk.'</produk>
       <fitur></fitur>
       <hp>'.$data['no_hp'].'</hp>
       <pesan>'.$message.'</pesan>
