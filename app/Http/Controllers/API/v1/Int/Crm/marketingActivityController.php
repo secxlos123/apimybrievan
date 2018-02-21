@@ -354,6 +354,9 @@ class marketingActivityController extends Controller
           $followUp['target_commitment_date'] = $request['target_commitment_date'];
         }
 
+        $followUp['longitude'] = $request['longitude'];
+        $followUp['latitude'] = $request['latitude'];
+
         $save = MarketingActivityFollowup::create($followUp);
 
 
