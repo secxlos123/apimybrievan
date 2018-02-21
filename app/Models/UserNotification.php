@@ -46,7 +46,6 @@ class UserNotification extends Model
 					, 'App\Notifications\RejectEFormCLAS'
 					, 'App\Notifications\LKNEFormCustomer'
 					, 'App\Notifications\LKNEFormRecontest'
-					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
 	}
@@ -71,6 +70,7 @@ class UserNotification extends Model
 					, 'App\Notifications\CollateraAODisposition'
 					, 'App\Notifications\CollateralManagerRejected'
 					, 'App\Notifications\CollateralManagerApprove'
+					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
 	}
@@ -501,8 +501,8 @@ class UserNotification extends Model
 
 			case 'App\Notifications\RecontestEFormNotification':
 				// Submit LKN recontest
-				// dari AO
-				// ke pinca
+				// dari CLAS
+				// ke AO
 				$append = array( 'message' => 'Pengajuan Anda Telah di Rekontest' );
 				break;
 
