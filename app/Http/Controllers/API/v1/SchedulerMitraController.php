@@ -29,7 +29,7 @@ class SchedulerMitraController extends Controller
 		//----------prod-----------------------
 				$servername = '';
 				$servernamelas = '';
-				$username = 'administrator'
+				$username = 'administrator';
 				$usernamelas = 'sa';
 				$password = 'P@ssw0rd';
 				$passwordlas = 'starbuck';
