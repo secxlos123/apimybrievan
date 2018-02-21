@@ -703,8 +703,6 @@ if (! function_exists('pushNotification')) {
                 verifyCustomer($credentials);
             }else if($type == 'recontestEForm'){
                 recontestEForm($credentials);
-            }else if($type == 'iconRecontestEForm'){
-                iconRecontestEForm($credentials);
             }else if($type == 'prescreening'){
                 prescreeningEForm($credentials);
             }else if($type == 'pencairanEForm'){

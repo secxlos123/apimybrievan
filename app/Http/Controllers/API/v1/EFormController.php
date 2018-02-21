@@ -289,14 +289,6 @@ class EFormController extends Controller
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 			// Check recontest or not
-            if($recontest){
-                $usersModel  = User::FindOrFail($eform->user_id);
-                $credentials = [
-                    'data' => $eform,
-                    'user' => $usersModel,
-                ];
-                pushNotification($credentials, "iconRecontestEForm");
-            }
             return response()->success([
 				'contents' => $eform
 			]);
