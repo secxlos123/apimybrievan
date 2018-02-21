@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ( ENV('APP_ENV') == "local" ) {
+        if ( ENV('APP_ENV') == "locals" ) {
             \DB::listen(function ($query) {
                 \Log::info('--------------------- start query -------------------------');
                 \Log::info('query : ' . $query->sql);
