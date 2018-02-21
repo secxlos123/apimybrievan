@@ -530,6 +530,8 @@ class EFormController extends Controller
 				\Log::info("-------------------sms notifikasi-----------------");
 				\Log::info($message);
 				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->message($message);
+				\Log::info($testing);
+				
 				$return = [
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $testing
