@@ -59,7 +59,7 @@ class SentSMSNotifController extends Controller
 		}
 		return $message;
 	}
-	public function sentsms( Request $request )
+	public function sentsms( $data )
 	{		
 		\Log::info('==========sent sms==============');
 		\Log::info($request);
@@ -72,7 +72,7 @@ class SentSMSNotifController extends Controller
 				$produk = 'Kredit';
 			}
 
-		$data = $request->all();
+		//$data = $request->all();
 		$message = $this->message($data);
 		 $client = new Client();
 		 $url = '';
