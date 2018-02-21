@@ -27,6 +27,7 @@ class Mitra3 extends Authenticatable  {
 	
 						 if( $request->has( 'BRANCH_CODE' ) ) {
 								$BRANCH_CODE = $request->input('BRANCH_CODE');
+								$branchcis ='';
 									for($i=0;$i<5;$i++){
 										$cek = substr($BRANCH_CODE,$i,1);
 										if($cek!=0){
@@ -34,8 +35,7 @@ class Mitra3 extends Authenticatable  {
 											$i = 5;
 										}
 									}
-		 						return $BRANCH_CODE;die();
-								$mitra->Where('BRANCH_CODE', $BRANCH_CODE);
+								$mitra->Where('BRANCH_CODE', $branchcis);
 						 }
 						 
 						 if( $request->has( 'search' ) ) {
