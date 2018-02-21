@@ -355,7 +355,7 @@ class CollateralController extends Controller
             $developer_id =  $collateral->developer_id;
             $user_id =  $developer_id;
             $usersModel = User::find($user_id);
-            $dataUser  = UserServices::where(\DB::Raw("TRIM(LEADING '0' FROM pn)"), (string) intval($pn))->first();
+            $dataUser  = UserServices::where('pn', $pn)->first();
             $branch_id = $dataUser['branch_id'];
             if ($action === 'approve')
             {
@@ -648,7 +648,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
-        $message = getMessage('collateral_approve');
+        $message = getMessage('collateral_ots');
         //*/
         $credentials = [
             'headerNotif' => $message['title'],
