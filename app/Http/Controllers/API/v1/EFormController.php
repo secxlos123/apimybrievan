@@ -529,11 +529,15 @@ class EFormController extends Controller
 				$message = ['no_hp'=>$customer[0]['phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];				
 				\Log::info("-------------------sms notifikasi-----------------");
 				\Log::info($message);
-				app('App\Http\Controllers\API\v1\SentSMSNotifController')->message($message);
-                $return = [
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->message($message);
+				$return = [
+                    'message' => 'Data e-form briguna berhasil ditambahkan.',
+                    'contents' => $testing
+                ];
+               /*  $return = [
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
-                ];
+                ]; */
                     \Log::info($kpr);
         } else {
 			        $branchs = \RestwsHc::setBody([
