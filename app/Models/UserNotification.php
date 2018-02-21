@@ -181,6 +181,7 @@ class UserNotification extends Model
 			, $status_eform
 			, getTypeModule(Collateral::class)
 			, ApprovalDataChange::where( 'related_id', $this->slug)->first()
+			, $ref_number
 		);
 	}
 
@@ -256,7 +257,7 @@ class UserNotification extends Model
 		return !empty( $data ) ? $data : null;
 	}
 
-	public function defineSubject( $url, $status_eform, $typeModuleCollateral, $approvalDataChange )
+	public function defineSubject( $url, $status_eform, $typeModuleCollateral, $approvalDataChange, $ref_number )
 	{
 		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
 		$externalurl = env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
