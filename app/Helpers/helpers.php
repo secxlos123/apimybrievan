@@ -803,6 +803,7 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials;
         $userId    = $data['data']->user_id;
         $userModel = $data['user'];
+        $userNotif = new UserNotification;
 
         $message   = getMessage("eform_pencairan", $credentials['data']);
         $notificationBuilder = new PayloadNotificationBuilder($message['title']);
@@ -810,6 +811,10 @@ if (! function_exists('pushNotification')) {
                             ->setSound('default');
 
         // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $data['data']->id)
+                                        ->where('type_module', 'eform')
+                                        ->orderBy('created_at', 'desc')->first();
+
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
