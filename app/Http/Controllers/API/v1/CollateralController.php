@@ -106,10 +106,7 @@ class CollateralController extends Controller
       }
       else
       {
-        $data->whereHas('property',function($property) use ($region)
-        {
-          $property->where('region_id',$region['region_id']);
-        });
+          $data->where('region_id',$region['region_id']);
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
