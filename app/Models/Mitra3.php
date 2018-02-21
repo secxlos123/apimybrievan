@@ -34,7 +34,7 @@ class Mitra3 extends Authenticatable  {
 											$i = 5;
 										}
 									}
-		 						
+		 						return $BRANCH_CODE;die();
 								$mitra->Where('BRANCH_CODE', $BRANCH_CODE);
 						 }
 						 
