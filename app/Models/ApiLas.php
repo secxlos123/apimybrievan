@@ -17,9 +17,11 @@ class ApiLas extends Model
      */
     protected $table = 'eforms';
 
-    public function scopeFilter( $query, Request $request )
-    {
-        // $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
+    public function scopeFilter( $query, Request $request ) {
+        // \Log::info($request->all());
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
+        $search = strtolower($request->input('search'));
+        // \Log::info($sort);
         // $eform = $query->where( function( $eform ) use( $request, &$user ) {
         //     if( $request->has( 'status' ) ) {
         //         if( $request->status == 'Submit' ) {
@@ -62,6 +64,22 @@ class ApiLas extends Model
         //         } );
         //     }
         // }
+        $sortir = ['eforms.created_at', 'asc'];
+        if ($sort[0] == "tgl_pengajuan" || $sort[0] == "action" || $sort[0] == "STATUS" || $sort[0] == "status_screening" || $sort[0] == "fid_tp_produk") {
+            $sortir = ['eforms.created_at', $sort[1]];
+        } else if ($sort[0] == "cif") {
+            $sortir = ['briguna.cif', $sort[1]];
+        } else if ($sort[0] == "id_aplikasi") {
+            $sortir = ['briguna.id_aplikasi', $sort[1]];
+        } else if ($sort[0] == "ref_number") {
+            $sortir = ['eforms.ref_number', $sort[1]];
+        } else if ($sort[0] == "nama_pegawai") {
+            $sortir = ['eforms.ao_name', $sort[1]];
+        } else if ($sort[0] == "namadeb") {
+            $sortir = ['users.first_name', $sort[1]];
+        } else if ($sort[0] == "request_amount") {
+            $sortir = ['briguna.request_amount', $sort[1]];
+        }
 
         $eform = DB::table('eforms')
                  ->select('eforms.ref_number','eforms.created_at','eforms.prescreening_status',
@@ -80,15 +98,15 @@ class ApiLas extends Model
                  ->join('users', 'users.id', '=', 'eforms.user_id')
                  // ->where('eforms.branch_id', '=', $branch)
                  ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request['branch_id']))
-                 ->orderBy('eforms.created_at', 'desc')
+                 ->orWhere('users.last_name', 'ilike', '%'.$search.'%')
+                 ->orderBy($sortir)
                  ->limit($request['limit'])
                  ->offset($request['start'])
                  ->get();
-        // \Log::info($eform);
+        
         $eform = $eform->toArray();
         // \Log::info($eform);
         $eform = json_decode(json_encode($eform), True);
-        
         \Log::info("query select briguna berhasil");
         return $eform;
     }

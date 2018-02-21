@@ -1558,13 +1558,13 @@ class ApiLasController extends Controller
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
-                                $error[0] = $kirim['nama'].' gagal, '.$kirim['statusDesc'];
+                                // $error[0] = $kirim['nama'].' gagal, '.$kirim['statusDesc'];
                                 return [
                                     'code' => $kirim['statusCode'], 
                                     'descriptions' => $kirim['nama'].' gagal, '.$kirim['statusDesc'],
-                                    'contents' => [
-                                        'data' => $error
-                                    ]
+                                    // 'contents' => [
+                                    //     'data' => $error
+                                    // ]
                                 ];
                             }
 
@@ -1729,53 +1729,53 @@ class ApiLasController extends Controller
                             ];
                             return $result;
                         } else {
-                            $error[0] = $hitung['statusDesc'];
+                            // $error[0] = $hitung['statusDesc'];
                             return [
                                 'code' => $hitung['statusCode'], 
                                 'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
-                                'contents' => [
-                                    'data' => $error
-                                ]
+                                // 'contents' => [
+                                //     'data' => $error
+                                // ]
                             ];
                         }
                     } else {
-                        $error[0]  = $insertKredit['statusDesc'];
+                        // $error[0]  = $insertKredit['statusDesc'];
                         return [
                             'code' => $insertKredit['statusCode'], 
                             'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
-                            'contents' => [
-                                'data' => $error
-                            ]
+                            // 'contents' => [
+                            //     'data' => $error
+                            // ]
                         ];
                     }
                 } else {
-                    $error[0] = $insertPrescoring['statusDesc'];
+                    // $error[0] = $insertPrescoring['statusDesc'];
                     return [
                         'code' => $insertPrescoring['statusCode'], 
                         'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
-                        'contents' => [
-                            'data' => $error
-                        ]
+                        // 'contents' => [
+                        //     'data' => $error
+                        // ]
                     ];
                 }
             } else {
-                $error[0] = $insertPrescreening['statusDesc'];
+                // $error[0] = $insertPrescreening['statusDesc'];
                 return [
                     'code' => $insertPrescreening['statusCode'], 
                     'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
-                    'contents' => [
-                        'data' => $error
-                    ]
+                    // 'contents' => [
+                    //     'data' => $error
+                    // ]
                 ];
             }
         } else {
-            $error[0] = $insertDebitur['statusDesc'];
+            // $error[0] = $insertDebitur['statusDesc'];
             return [
                 'code' => $insertDebitur['statusCode'], 
                 'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
-                'contents' => [
-                    'data' => $error
-                ]
+                // 'contents' => [
+                //     'data' => $error
+                // ]
             ];
         }
     }
