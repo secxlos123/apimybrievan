@@ -1049,7 +1049,7 @@ if (! function_exists('pushNotification')) {
     {
         $data      = $credentials;
         $userLogin = $data['credentials'];
-        $branch_id = $userLogin['branch_id'];
+        $branch_id = substr('0'.$userLogin['branch_id'], -3);
 
         $message   = getMessage("eform_lkn");
         $userModel = $data['user'];
