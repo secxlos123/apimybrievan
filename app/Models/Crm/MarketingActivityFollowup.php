@@ -14,7 +14,9 @@ class MarketingActivityFollowup extends Model
       'fu_result',
       'count_rekening',
       'amount',
-      'target_commitment_date'
+      'target_commitment_date',
+      'longitude',
+      'latitude'
     ];
 
     public function activity()

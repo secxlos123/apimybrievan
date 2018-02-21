@@ -46,7 +46,7 @@ class PropertyItemController extends Controller
     {
         \DB::beginTransaction();
         try {
-            for ($i=$request->first_unit; $i <= $request->last_unit; $i++)
+            for ($i=intval($request->first_unit); $i <= intval($request->last_unit); $i++)
             {
             $propertyItem = PropertyItem::create($request->except('unit_size','first_unit','last_unit')+['no_item'=> $i ]);
             $status = 'success'; $message = "Project Item {$propertyItem->name} berhasil disimpan.";
