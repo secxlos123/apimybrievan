@@ -98,6 +98,29 @@ class PropertyItem extends Model implements AuditableContract
         return $query
             ->with('propertyType')
             ->where(function ($item) use (&$request) {
+                if ($request->has('without_independent')){
+                    if ($request->without_independent) {
+                    $data = \DB::table('properties')->select('id')->whereNotIn('developer_id',[1])->get();
+                    $dataid = array();
+                    if (count($data)>0) {
+                        foreach ($data as $key => $value) {
+                            foreach ($value as $key2 => $value2) {
+                                $dataid[]= $value2;
+                            }
+                        }
+                    }
+                    $dataitem = \DB::table('property_types')->select('id')->whereIn('property_id',$dataid)->get();
+                    $itemid = array();
+                    if (count($dataitem)) {
+                        foreach ($dataitem as $key => $value) {
+                            foreach ($value as $key2 => $value2) {
+                                $itemid[]= $value2;
+                            }
+                        }
+                    }
+                    $item->whereIn('property_type_id',$itemid);
+                    }
+                }
                 if ($request->has('property_type_id')) 
                     $item->where('property_items.property_type_id', $request->input('property_type_id'));
 

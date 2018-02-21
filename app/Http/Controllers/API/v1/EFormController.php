@@ -73,22 +73,23 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	 public function hapuseform( Request $request )
+	public function hapuseform( Request $request )
     {
         \Log::info($request->all());
-          $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
-		  if($briguna->is_send==null || $briguna->is_send=='' || empty($briguna->is_send)){
-			  return response()->success( [
-					'contents' => 'Hapus Gagal'
-				],200 );  
-		  }else{
-				$briguna = $briguna->delete();
-				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
-				  $eform = $eform->delete();
-				return response()->success( [
-					'contents' => 'Hapus berhasil'
-				],200 );  
-		  }
+        $message = 'Hapus Gagal';
+        $eform = EForm::findOrFail( $request->id );
+        if ( $eform->briguna ) {
+            $briguna = $eform->briguna;
+            if( $briguna->is_send == null || $briguna->is_send == '' || empty($briguna->is_send) ){
+                $briguna->delete();
+                $eform->delete();
+                $message = 'Hapus berhasil';
+            }    
+        }
+
+        return response()->success( [
+            'contents' => $message
+        ], 200 );
     }
     public function index( Request $request )
     {
@@ -288,14 +289,6 @@ class EFormController extends Controller
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 			// Check recontest or not
-            if($recontest){
-                $usersModel  = User::FindOrFail($eform->user_id);
-                $credentials = [
-                    'data' => $eform,
-                    'user' => $usersModel,
-                ];
-                pushNotification($credentials, "iconRecontestEForm");
-            }
             return response()->success([
 				'contents' => $eform
 			]);

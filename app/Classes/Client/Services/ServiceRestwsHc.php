@@ -155,6 +155,10 @@ class ServiceRestwsHc extends Client
                                 }
                             }
                         }
+        else
+        {
+            $region['region_id'] = 'Q';
+        }
         return $region;
     }
 

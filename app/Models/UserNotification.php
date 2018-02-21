@@ -32,8 +32,7 @@ class UserNotification extends Model
 
 	public function scopePinca( $query, $branch_id )
 	{
-		return $query->unreads()
-			->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
+		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->leftJoin( 'visit_reports', 'eforms.id', '=', 'visit_reports.eform_id' )
 			->whereNotNull( 'visit_reports.created_at' )
 			->where( 'eforms.branch_id', $branch_id )
@@ -46,15 +45,13 @@ class UserNotification extends Model
 					, 'App\Notifications\RejectEFormCLAS'
 					, 'App\Notifications\LKNEFormCustomer'
 					, 'App\Notifications\LKNEFormRecontest'
-					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
 	}
 
 	public function scopeAo( $query, $pn )
 	{
-		return $query->unreads()
-			->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
+		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->where( 'eforms.ao_id', $pn )
 			->whereIn(
 				'notifications.type'
@@ -71,19 +68,21 @@ class UserNotification extends Model
 					, 'App\Notifications\CollateraAODisposition'
 					, 'App\Notifications\CollateralManagerRejected'
 					, 'App\Notifications\CollateralManagerApprove'
+					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
 	}
 
 	public function scopeCustomer( $query, $user_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.notifiable_id', $user_id )
+		return $query->where( 'notifications.notifiable_id', $user_id )
 			->whereIn(
 				'notifications.type'
 				, array(
 					'App\Notifications\ApproveEFormCustomer'
+					, 'App\Notifications\ApproveEFormCLASCustomer'
 					, 'App\Notifications\RejectEFormCustomer'
+					, 'App\Notifications\RejectEFormCLASCustomer'
 					, 'App\Notifications\PencairanNasabah'
 					, 'App\Notifications\VerificationDataNasabah'
 					, 'App\Notifications\NewSchedulerCustomer'
@@ -100,8 +99,7 @@ class UserNotification extends Model
 
 	public function scopeCollateralAppraisal( $query, $branch_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.branch_id', $branch_id )
+		return $query->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -115,8 +113,7 @@ class UserNotification extends Model
 
 	public function scopeCollateral( $query, $branch_id )
 	{
-    	return $query->unreads()
-    		->where( 'notifications.branch_id', $branch_id )
+    	return $query->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -131,8 +128,7 @@ class UserNotification extends Model
 
 	public function scopeDeveloper( $query, $user_id )
 	{
-		return $query->unreads()
-			->where( 'notifications.notifiable_id', $user_id )
+		return $query->where( 'notifications.notifiable_id', $user_id )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -237,8 +233,8 @@ class UserNotification extends Model
 		if ( in_array( $role, ['pinca', 'ao'] ) ) {
 			$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 		}
-		\Log::info($query->getBindings());
-		\Log::info($query->toSql());
+		// \Log::info($query->getBindings());
+		// \Log::info($query->toSql());
 
 		return $query;
 	}
@@ -331,7 +327,7 @@ class UserNotification extends Model
 				// Pengajuan di terima oleh MP/Pinca di myBRI
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui myBRI' );
 				break;
 
 			case 'App\Notifications\RejectEFormInternal':
@@ -372,11 +368,19 @@ class UserNotification extends Model
 				// Pengajuan di terima di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
+				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui oleh CLAS' );
+				break;
+
+			case 'App\Notifications\ApproveEFormCLASCustomer':
+				// Pengajuan di terima di CLAS
+				// dari CLAS
+				// ke Nasabah
 				$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 				$plafondKredit = $getKPR->request_amount ? $getKPR->request_amount : 0;
 
 				$append = array(
-					'message' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
+					'message' => 'Pengajuan KPR Telah Di Setujui'
+					, 'message_external' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
 				);
 				break;
 
@@ -384,7 +388,17 @@ class UserNotification extends Model
 				// Pengajuan di tolak di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.' );
+				$append = array( 'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS' );
+				break;
+
+			case 'App\Notifications\RejectEFormCLASCustomer':
+				// Pengajuan di tolak di CLAS
+				// dari CLAS
+				// ke nasabah
+				$append = array(
+					'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS'
+					, 'message_external' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
+				);
 				break;
 
 			case 'App\Notifications\LKNEFormCustomer':
@@ -499,8 +513,8 @@ class UserNotification extends Model
 
 			case 'App\Notifications\RecontestEFormNotification':
 				// Submit LKN recontest
-				// dari AO
-				// ke pinca
+				// dari CLAS
+				// ke AO
 				$append = array( 'message' => 'Pengajuan Anda Telah di Rekontest' );
 				break;
 
