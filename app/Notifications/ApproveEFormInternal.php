@@ -58,7 +58,7 @@ class ApproveEFormInternal extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_approve_ao", $this->eform);
+        $message    = getMessage("eform_approve_ao", $this->eForm);
 
         return [
             'eform_id' => $this->eForm->id,
