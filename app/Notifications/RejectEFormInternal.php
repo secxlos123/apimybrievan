@@ -77,7 +77,7 @@ class RejectEFormInternal extends Notification
     public function toDatabase($notifiable)
     {
         $typeModule = getTypeModule(EForm::class);
-        $message    = getMessage("eform_reject_ao", $this->eform);
+        $message    = getMessage("eform_reject_ao", $this->eForm);
 
         return [
             'eform_id' => $this->eForm->id,
