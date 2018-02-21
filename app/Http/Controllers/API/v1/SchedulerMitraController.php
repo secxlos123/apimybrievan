@@ -37,7 +37,7 @@ class SchedulerMitraController extends Controller
 			  $host = env('APP_URL');
 			  if($host == 'http://api.dev.net/'){		
 				$servername = '10.35.65.156:5432';
-				$servernamelas = "10.35.65.166"
+				$servernamelas = "10.35.65.166";
 				$database = "mybri";
 			}else{
 				$servername = '172.18.45.22';
