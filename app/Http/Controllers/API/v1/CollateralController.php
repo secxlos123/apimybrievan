@@ -63,11 +63,20 @@ class CollateralController extends Controller
     public function index()
     {
       $user = \RestwsHc::getUser();
+      $region = \RestwsHc::getRegion(intval($user['branch_id']));
       \Log::info($user);
+      \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int)$this->request->header('pn'));
+      }
+      else
+      {
+        $data->whereHas('property',function($property) use ($region)
+        {
+          $property->where('region_id',$region['region_id']);
+        });
       }
       if ($this->request->has('status')) $data->where('status', $this->request->input('status'));
       $request = $this->request;
@@ -87,11 +96,20 @@ class CollateralController extends Controller
     public function indexNon()
     {
       $user = \RestwsHc::getUser();
+      $region = \RestwsHc::getRegion(intval($user['branch_id']));
       \Log::info($user);
+      \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         $data->where('staff_id',(int) $this->request->header('pn'));
+      }
+      else
+      {
+        $data->whereHas('property',function($property) use ($region)
+        {
+          $property->where('region_id',$region['region_id']);
+        });
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
@@ -263,7 +281,7 @@ class CollateralController extends Controller
                      'id' => $id,
                      'type' => 'collateral_penilaian_agunan',
                      'slug' => $collateral_id,
-                     'user_id' => $user_id,
+                     'user_id' => $manager_id,
                      'receiver' => 'manager_collateral',
                   ];
                   pushNotification($credentials,'general');
@@ -392,14 +410,9 @@ class CollateralController extends Controller
                    $status = 'collateral_reject_penilaian';
                    $type = 'collateral_ots_'.$action;
                    $receiver = 'manager_collateral';
-                   if ($role=='ao')
-                   {
-                    $receiver = 'ao';
-                   }
                    if(!empty($collateral['manager_id']))
                    {
                     $user_id  = $collateral['manager_id'];
-                    //*
                     //insert data from notifications table
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
                       if($getDataEform){
@@ -424,7 +437,7 @@ class CollateralController extends Controller
                 }
             }
             if($user_id !='kosong')
-            {  // tidak kirim notif
+            {
               $message = getMessage($status);
               $id = $notificationData['id'];
               $credentials = [
@@ -565,7 +578,6 @@ class CollateralController extends Controller
             {
                 if(!empty($manager_id))
                 {
-                    //*
                     //insert data from notifications table
                     $dataCollateral = Collateral::where('id',$collateralId)->first();
                     $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
@@ -586,14 +598,13 @@ class CollateralController extends Controller
                                                     ->orderBy('created_at', 'desc')->first();
                     $id = $notificationData['id'];
                     $message = getMessage('collateral_checklist');
-                    //*/
                      $credentials = [
                       'headerNotif' => $message['title'],
                       'bodyNotif' => $message['body'],
                       'id' => $id,
                       'type' => 'collateral_checklist',
                       'slug' => $collateralId,
-                      'user_id' => $user_id,
+                      'user_id' => $manager_id,
                       'receiver' => 'manager_collateral',
                       ];
                      pushNotification($credentials,'general');
