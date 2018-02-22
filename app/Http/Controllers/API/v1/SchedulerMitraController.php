@@ -52,6 +52,9 @@ class SchedulerMitraController extends Controller
 		//$conn = mysqli_connect($servername, $username, $password);
 		\Log::info("-------------------connect to las-----------------");
 				
+				$users = DB::connection('sqlsrv')->select("SELECT * FROM LAS_M_INSTANSI_BRI ORDER BY ID_INSTANSI_BRI ASC");
+		\Log::info($users);
+		die('gagal lagi');
 		if(!sqlsrv_connect($servernamelas, $usernamelas, $passwordlas)){
 			\Log::info("-------------------ERROR LOG TO LAS-----------------");
 			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'Can't connect To LAS')");
@@ -77,7 +80,7 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		try{
 			$datalas = sqlsrv_query($connlas,$query);
-		}catch{
+		}catch(Exception $e){
 			\Log::info("-------------------ERROR CALL DATA LAS-----------------");
 				DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
 			\Log::info($e);
