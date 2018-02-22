@@ -391,24 +391,10 @@ class CollateralController extends Controller
                 $role = $dataUser['role'];
                 if ($role=='collateral')  //reject penilaian anggunan untuk developer
                 {
-                   $bodyNotif = 'reject collateral';
-                   $status    = 'collateral_reject';
-                   $type = 'collateral_'.$action;
-                   $receiver = 'staf_collateral';
-                   $user_id = $collateral->staff_id;
-                   //insert data from notifications table
-                   $usersModel->notify(new CollateralManagerRejected($collateral,$branch_id));
-                   $userNotif = new UserNotification;
-                   // Get data from notifications table
-                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')
-                                                   ->orderBy('created_at', 'desc')->first();
-                }
-                else  //reject untuk staf collateral dan ao
-                {
                    $bodyNotif = 'menolak menilai agunan';
                    $status = 'collateral_reject_penilaian';
                    $type = 'collateral_ots_'.$action;
-                   $receiver = 'staf_collateral';
+                   $receiver = 'manager_collateral';
                    if(!empty($collateral['manager_id']))
                    {
                     $user_id  = $collateral['manager_id'];
@@ -433,6 +419,19 @@ class CollateralController extends Controller
                    {
                      $user_id = 'kosong';
                    }
+                }
+                else  //reject untuk staf collateral dan ao
+                {
+                   $bodyNotif = 'reject collateral';
+                   $status    = 'collateral_reject';
+                   $type = 'collateral_'.$action;
+                   $receiver = 'staf_collateral';
+                   $user_id = $collateral->staff_id;
+                   //insert data from notifications table
+                   $usersModel->notify(new CollateralManagerRejected($collateral,$branch_id));
+                   $userNotif = new UserNotification;
+                   // Get data from notifications table
+                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
                 }
             }
             if($user_id !='kosong')
