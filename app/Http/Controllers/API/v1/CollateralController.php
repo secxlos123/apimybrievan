@@ -408,7 +408,7 @@ class CollateralController extends Controller
                    $bodyNotif = 'menolak menilai agunan';
                    $status = 'collateral_reject_penilaian';
                    $type = 'collateral_ots_'.$action;
-                   $receiver = 'manager_collateral';
+                   $receiver = 'staf_collateral';
                    if(!empty($collateral['manager_id']))
                    {
                     $user_id  = $collateral['manager_id'];
