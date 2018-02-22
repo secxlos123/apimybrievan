@@ -242,7 +242,7 @@ class CollateralController extends Controller
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
             $aksiCollateral = 'collateral_penilaian_ots';
-            $cekNotifColltaeralOTS=UserNotification::where('slug',$collateralId)->where('type_module',$aksiCollateral)->first();
+            $cekNotifColltaeralOTS=[];//UserNotification::where('slug',$collateralId)->where('type_module',$aksiCollateral)->first();
             if(empty($cekNotifColltaeralOTS))
             {
               \Log::info('=======notification web and mobile sent to manager collateral  ======');
@@ -377,7 +377,8 @@ class CollateralController extends Controller
                 $bodyNotif = 'approval collateral';
                 $status = 'collateral_approve';
                 $type = 'collateral_manager_approving';
-                $receiver = 'external';
+                $receiver = 'staf_collateral';
+                $user_id = $collateral->staff_id;
                 //insert data from notifications table
                 $usersModel->notify(new CollateralManagerApprove($collateral,$branch_id));
                 $userNotif = new UserNotification;
