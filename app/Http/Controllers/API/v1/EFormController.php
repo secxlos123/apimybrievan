@@ -896,6 +896,35 @@ class EFormController extends Controller
         $eform = EForm::findOrFail($request->eform_id);
 		if($eform->product_type=='briguna'){
 			try{
+				
+				$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.user_id', $eform->user_id)
+						 ->get();
+				
+				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
+				
+				
+				$briguna = DB::table('briguna')
+						 ->select('year','request_amount')
+						 ->where('briguna.eform_id', $request->eform_id)
+						 ->get();
+				
+				$briguna = $briguna->toArray();
+				$briguna = json_decode(json_encode($briguna), True);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],
+							'plafond'=>$briguna[0]['request_amount'],
+							'year'=>$briguna[0]['year'],
+							'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
+							'kode_message'=>'5'];				
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
+		
+		
 					User::destroy($eform->user_id);
 				  DB::commit();
 				return response()->success( [
