@@ -1803,22 +1803,28 @@ class ApiLasController extends Controller
         $briguna = Briguna::where('eform_id',$response['eform_id'])->first();
         \Log::info($briguna->toArray());
         if (!empty($briguna)) {
-            $image_path = public_path('uploads/'.$briguna['id_foto']);
-            $url = $image_path.'/'.$briguna['SLIP_GAJI'];
-            $files = [
+            // $publicPath = public_path('uploads/'.$briguna['id_foto']);
+            $publicPath = public_path('uploads/146');
+            /*$files = [
                 $briguna['KK'], $briguna['NPWP_nasabah'], $briguna['SK_AWAL'],
                 $briguna['SK_AKHIR'], $briguna['REKOMENDASI'], $briguna['SKPG']
+            ];*/
+            $files = [
+                '146-20180207141609.jpg', '146-20180207141908.jpeg', '146-20180207143122.jpg',
+                '146-20180207142139.png', '146-20180207142448.jpg'
             ];
-            // $zipname = 'file.zip';
-            $publicPath = $image_path . '/foto.zip';
-            // $zip = new Zip;
-            // $zip = Zip::open($publicPath, Zip::CREATE);
-            $zip = Zip::open($publicPath,$image_path);
+            \Log::info($files);
+
+            // $zip = Zip::open($publicPath,$image_path);
+            $zip = Zip::setPath($publicPath)->add('file');
+            $zip = Zip::create($briguna['id_foto'].'-all_image.zip');
             foreach ($files as $file) {
-              $zip = Zip::addFile($file);
+                \Log::info($file);
+                $zip = Zip::add($publicPath.'/'.$file);
             }
-            $zip = Zip::close();
+            $zip->close($zip);
             \Log::info($zip);
+            dd('development test');
             // $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
             return response()->success( [
                 'contents' => $zip
@@ -2205,9 +2211,13 @@ class ApiLasController extends Controller
 
     function datafoto($request, $id_foto, $exist_field, $field){
         $path = public_path( 'uploads/' . $id_foto . '/' );
-        $npwp = substr($request, -4);
-        if ($npwp == '.jpg' || $npwp == '.pdf' || $npwp == 'jpeg') {
+        $image = substr($request, -4);
+        if ($image == '.jpg' || $image == '.pdf' || $image == 'jpeg' || $image == '.png' || $image == '.gif') {
             $params = $request;
+        } else if (empty($request)) {
+            if (!empty($exist_field)) {
+                unlink($path.'/'.$exist_field);
+            }
         } else {
             if (!empty($exist_field)) {
                 unlink($path.'/'.$exist_field);
@@ -2249,9 +2259,6 @@ class ApiLasController extends Controller
 
     function updateimage($image, $id, $atribute) {
         $path = public_path( 'uploads/' . $id . '/' );
-        if (!empty($this->attributes[ $atribute ])) {
-            File::delete($path.$this->attributes[$atribute]);
-        }
         $filename = null;
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
