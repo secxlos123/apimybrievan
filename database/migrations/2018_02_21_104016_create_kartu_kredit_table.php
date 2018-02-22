@@ -17,7 +17,7 @@ class CreateKartuKreditTable extends Migration
     {
         Schema::create('kartu_kredit_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nik'); //fk
+            $table->string('customer_id'); //fk
             $table->string('hp');
             $table->string('email');
             // $table->string('nama_ibu_kandung');
@@ -45,10 +45,10 @@ class CreateKartuKreditTable extends Migration
             $table->string('image_nametag');
             $table->string('image_kartu_bank_lain');
 
-            $table->foreign('nik')
-            ->references('nik')
-            ->on('customer_details');
-
+            $table->foreign('customer_id')
+            ->references('id')
+            ->on('customer_details')
+            ->onUpdate('cascade');
 
         });
     }
