@@ -2218,6 +2218,7 @@ class ApiLasController extends Controller
             if (!empty($exist_field)) {
                 unlink($path.'/'.$exist_field);
             }
+            $params = $request;
         } else {
             if (!empty($exist_field)) {
                 unlink($path.'/'.$exist_field);
