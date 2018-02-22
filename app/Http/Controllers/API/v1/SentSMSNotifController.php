@@ -27,8 +27,7 @@ class SentSMSNotifController extends Controller
 		$id_trans = '1-'.date("Ymd His");
 		if($request['kode_message']=='1'){
 				//1. Pengajuan Kredit 
-			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].".Aplikasi Kredit Anda sudah kami terima dengan Nomor Referensi ".$request['no_reff'].".
-						Petugas kami akan segera menghubungi Anda. Terima kasih.";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].". Aplikasi Kredit Anda sudah kami terima dengan Nomor Referensi ".$request['no_reff'].". Petugas kami akan segera menghubungi Anda. Terima kasih.";
 		}elseif($request['kode_message']=='2'){
 			$message = "Yth Bapak/Ibu ".$request['nama_cust'].". Pengajuan Anda dengan Nomor Referensi ".$request['no_reff']." akan ditindaklanjuti 
 						oleh Sdr/i. ".$request['rm_mantri']." / dari BRI ".$request['unit_kerja'].". 
@@ -59,9 +58,20 @@ class SentSMSNotifController extends Controller
 		}
 		return $message;
 	}
-	public function sentsms( Request $request )
-	{
-		$data = $request->all();
+	public function sentsms( $data )
+	{		
+		\Log::info('==========sent sms==============');
+//		\Log::info($request);
+		$host = env('APP_URL');
+			if($host == 'http://api.dev.net/'){		
+				$divisi = 'SIT';
+				$produk = 'Sms Dev';
+			}else{
+				$divisi = 'KRK';
+				$produk = 'Kredit';
+			}
+
+		//$data = $request->all();
 		$message = $this->message($data);
 		 $client = new Client();
 		 $url = '';
@@ -84,8 +94,8 @@ class SentSMSNotifController extends Controller
   <soap:Body>
     <FCD_SMS xmlns="http://tempuri.org/">
       <norek>0</norek>
-      <divisi>'.$data['divisi'].'</divisi>
-      <produk>'.$data['produk'].'</produk>
+      <divisi>'.$divisi.'</divisi>
+      <produk>'.$produk.'</produk>
       <fitur></fitur>
       <hp>'.$data['no_hp'].'</hp>
       <pesan>'.$message.'</pesan>
