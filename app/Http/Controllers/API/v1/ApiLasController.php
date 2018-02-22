@@ -1907,10 +1907,10 @@ class ApiLasController extends Controller
         if (!empty($response)) {
             try {
                 $image   = $response;
-                $id_foto = date('YmdHis');
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
                 $detail  = CustomerDetail::where('user_id',$data_eforms['user_id'])->first();
                 // $this->removeAllImage($detail);
+                $id_foto = $data_eforms['id_foto'];
                 $filename= $this->uploadimage($image, $response['eform_id'], $id_foto);
                 $data_briguna = array_slice($response, 0,3);
 
@@ -1921,25 +1921,25 @@ class ApiLasController extends Controller
                     $data_eform   = ['couple_identity' => $filename];
                     $detail->update($data_eform);
                 } else if (isset($image['NPWP_nasabah'])) {
-                    $data_briguna['id_foto'] = $detail['user_id'];
+                    $data_briguna['id_foto'] = $id_foto;
                     $data_briguna['NPWP_nasabah'] = $filename;
                 } else if (isset($image['SLIP_GAJI'])) {
-                    $data_briguna['id_foto']   = $detail['user_id'];
+                    $data_briguna['id_foto']   = $id_foto;
                     $data_briguna['SLIP_GAJI'] = $filename;
                 } else if (isset($image['KK'])) {
-                    $data_briguna['id_foto'] = $detail['user_id'];
+                    $data_briguna['id_foto'] = $id_foto;
                     $data_briguna['KK'] = $filename;
                 } else if (isset($image['SK_AWAL'])) {
-                    $data_briguna['id_foto'] = $detail['user_id'];
+                    $data_briguna['id_foto'] = $id_foto;
                     $data_briguna['SK_AWAL'] = $filename;
                 } else if (isset($image['SK_AKHIR'])) {
-                    $data_briguna['id_foto']  = $detail['user_id'];
+                    $data_briguna['id_foto']  = $id_foto;
                     $data_briguna['SK_AKHIR'] = $filename;
                 } else if (isset($image['REKOMENDASI'])) {
-                    $data_briguna['id_foto']  = $detail['user_id'];
+                    $data_briguna['id_foto']  = $id_foto;
                     $data_briguna['REKOMENDASI'] = $filename;
                 } else if (isset($image['SKPG'])) {
-                    $data_briguna['id_foto']   = $detail['user_id'];
+                    $data_briguna['id_foto']   = $id_foto;
                     $data_briguna['SKPG'] = $filename;
                 }
                 \Log::info($data_briguna);
@@ -2275,7 +2275,7 @@ class ApiLasController extends Controller
         if (isset($image['identity']) || isset($image['couple_identity'])) {
             $path  = public_path('uploads/'.$eform->nik.'/');
         } else {
-            $path  = public_path('uploads/'.$eform->user_id.'/');
+            $path  = public_path('uploads/'.$id_foto.'/');
         }
         $data_image = $image['uploadfoto'];
         $filename = null;
