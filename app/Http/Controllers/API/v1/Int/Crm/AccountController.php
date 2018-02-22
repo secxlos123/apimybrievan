@@ -323,7 +323,7 @@ class AccountController extends Controller
         $list_pn =[];
       }
 
-      $count = Referral::whereIn('branch_id', $branch)->whereMonth('created_at', date('m'))->count() + 1;
+      $count = Referral::where('branch_id', $branch)->whereMonth('created_at', date('m'))->count() + 1;
       $len = 4;
       if(strlen($count) == $len) {
         $num = $count;
