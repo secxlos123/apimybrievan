@@ -13,11 +13,17 @@ class KartuKredit extends Model
 	//======================================
 	//pilihan kartu -> kartu yang user ajukan. diisi "world access","easy card", "platinum","touch"
 
+	//gambar gimana dong
     protected $fillable = [
-    	'nik','hp','email','nama_ibu_kandung','status','ttl','jenis_kelamin',
-    	'nama','tempat_lahir','telephone','pendidikan','cif','pekerjaan',
-    	'tiering_gaji','npwp','agama','jenis_nasabah','pilihan_kartu',
-    	'penghasilan_diatas_10_juta','jumlah_penerbit_kartu',
-    	'memiliki_kk_bank_lain'
-    ]
+    	'nik','hp','email',
+    	'jenis_kelamin','nama','tempat_lahir','telephone',
+    	'pendidikan','pekerjaan','tiering_gaji',
+    	'agama','jenis_nasabah','pilihan_kartu',
+    	'penghasilan_perbulan','jumlah_penerbit_kartu',
+    	'memiliki_kk_bank_lain','limit_tertinggi'
+    ];
+
+    protected $hidden = [
+        'id'
+    ];
 }
