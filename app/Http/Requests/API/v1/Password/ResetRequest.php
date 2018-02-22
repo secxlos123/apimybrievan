@@ -26,7 +26,7 @@ class ResetRequest extends FormRequest
         $type = $this->segment(3);
 
         return [
-            'email' => "required|email|exists:users,email|email_by_type:{$type}"
+            'email' => "required|email|exists:users,email"
         ];
     }
 }
