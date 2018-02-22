@@ -4,6 +4,7 @@ use App\Mail\Register;
 use App\Mail\VerificationEFormCustomer;
 use App\Events\Customer\CustomerVerify;
 use Illuminate\Http\Request;
+use App\Http\Requests\ApkRequest;
 use App\Models\ApkLogs;
 
 /*
@@ -128,18 +129,18 @@ Route::get( '/getbidangpekerjaan', function() {
 } );
 
 Route::get( '/uploads-apk', function() {
-	print_r(ini_get('post_max_size'));
-	print_r(asset('uploads/apk/int/int000001.apk'));
-	if (file_exists(asset('uploads/apk/int/int000001.apk'))) {
-		print_r('aya');
-	}else{
-		print_r('euweuh');
-	}
+	// print_r(ini_get('post_max_size'));
+	// print_r(asset('uploads/apk/int/int000001.apk'));
+	// // if (file_exists(asset('uploads/apk/int/int000001.apk'))) {
+	// // 	print_r('aya');
+	// // }else{
+	// // 	print_r('euweuh');
+	// // }
 	$data = ApkLogs::all();
 	return view('uploads-apk.form', compact('data'));
 } )->name('uploads-apk');
 
-Route::post( '/post-apk', function(Request $request) {
+Route::post( '/post-apk', function(ApkRequest $request) {
 
 		if (isset($request->apkEks) && $request->apkEks) {
 			$destinationPath = 'uploads/apk/eks';

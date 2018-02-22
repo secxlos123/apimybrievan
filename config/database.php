@@ -88,6 +88,16 @@ return [
             'password' => env('DB_PASSWORD_LAS', ''),
             'charset' => 'utf8',
             'prefix' => '',
+        ],
+		'sqlsrv_prod' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_LAS_PROD', '172.21.53.70'),
+            'database' => env('DB_DATABASE_LAS', 'forge'),
+            'port' => env('DB_PORT_LAS', '1433'),
+            'username' => env('DB_USERNAME_LAS', 'forge'),
+            'password' => env('DB_PASSWORD_LAS', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
         ]
 
     ],
