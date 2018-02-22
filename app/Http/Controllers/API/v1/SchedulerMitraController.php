@@ -23,71 +23,44 @@ class SchedulerMitraController extends Controller
 		
 	public function scheduler( Request $request )
 	{
+		if($request->all()){
+			$paginates = $request->all();
+			$paginates = $paginates['page'];
+		}else{
+			$paginates = 0;
+		}
 		ini_set('max_execution_time', 12000);
 		error_reporting(E_ALL);
 		$time_first = date('H:i:s');
 		$datenow = date('Y/M/D');
+		
 		//----------prod-----------------------
-				$servername = '';
-				$servernamelas = '';
-				$conn_array_las = array (
-					"UID" => "sa",
-					"PWD" => "starbuck",
-					"Database" => "LAS",
-				);
-
+				$servernyalas = '';
 			  $host = env('APP_URL');
-			  if($host == 'http://api.dev.net/'){		
-				$servername = '10.35.65.156:5432';
-				$servernamelas = "10.35.65.166";
-				$database = "mybri";
+			  if($host == 'http://api.dev.net/' || $host='http://localhost'){	
+					$servernyalas = 'sqlsrv';
 			}else{
-				$servername = '172.18.45.22';
-				$servernamelas = "172.21.53.70";
-				$database = "mybri_prod";
+					$servernyalas = 'sqlsrv_prod';
 			  }
 		//---------------------------------
 		// Create connection
 	
 		//$conn = mysqli_connect($servername, $username, $password);
-		\Log::info("-------------------connect to las-----------------");
-				
-				$users = DB::connection('sqlsrv')->select("SELECT * FROM LAS_M_INSTANSI_BRI ORDER BY ID_INSTANSI_BRI ASC");
-		\Log::info($users);
-		die('gagal lagi');
-		if(!sqlsrv_connect($servernamelas, $usernamelas, $passwordlas)){
-			\Log::info("-------------------ERROR LOG TO LAS-----------------");
-			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'Can't connect To LAS')");
-			\Log::info($logsql);
-			die("Can't connect To LAS");
-		}
-		
-		try{
-			$connlas = sqlsrv_connect($servernamelas, $conn_array_las);
-		}catch(Exception $e) {
-			\Log::info("-------------------ERROR LOG TO LAS-----------------");
-				DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
-			\Log::info($e);
-			die($e);
-		}
-		
-			\Log::info("-------------------CONNECT LAS SUKSES-----------------");
-		//$table = 'mitra';
-		//select a database to work with
-		//$selected = mysqli_select_db($conn,$database);
-//		$selectedlas = mysqli_select_db($connlas,"LAS");
-		$query = "SELECT * FROM LAS_M_INSTANSI_BRI ORDER BY ID_INSTANSI_BRI ASC;";
 		$datalas = array();
+		\Log::info("-------------------connect to las-----------------");
 		try{
-			$datalas = sqlsrv_query($connlas,$query);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(10000);
+							$datalas_encode = json_decode(json_encode($datalas), True);
+//							return $datalas_encode;die();
 		}catch(Exception $e){
-			\Log::info("-------------------ERROR CALL DATA LAS-----------------");
-				DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
-			\Log::info($e);
-			die($e);
+			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
+			print_r($e);
+			die();
 		}
+		
 			\Log::info("-------------------GET ALL DATA LAS SUKSES-----------------");
 			
+		if($paginates==0){
 			try{
 				$logsql = DB::statement("CREATE TABLE mitra_create(
 					   idMitrakerja text,
@@ -117,55 +90,90 @@ class SchedulerMitraController extends Controller
 			}catch(Exception $e){
 
 				\Log::info("-------------------ERROR CREATE mitra MYBRI-----------------");
-				 DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
+				 DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
 				\Log::info($e);
-				die($e);
+				print_r($e);
+				die();
 			}
-			
+		}
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
-				foreach ($datalas as $data) {
+					$query = "";
+				foreach ($datalas_encode['data'] as $data) {
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
 				try{
-					$sql = DB::statement("INSERT INTO mitra VALUES('$data[0]','$data[1]','$data[2]','$data[11]',to_number('$data[14]','99G999D9S'),
-					'$data[17]','$data[18]','','70','','$data[4]','$data[5]','$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[12]',
-					'$data[13]','$data[15]','$data[16]','$data[19],'$data[20]')");
+					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
+					
+					$idinstansi = str_replace("'","",$data['ID_INSTANSI_BRI']);
+					$namainstansi = str_replace("'","",$data['NAMA_INSTANSI']);
+					$kodeinstansi = str_replace("'","",$data['KODE_INSTANSI']);
+					$posisinpl = str_replace("'","",$data['POSISI_NPL']);
+					$kodeuker = str_replace("'","",$data['KODE_UKER_PEMRAKARSA']);
+					$jumlahkaryawan = str_replace("'","",$data['JUMLAH_KARYAWAN']);
+					$jenisinstansi = str_replace("'","",$data['JENIS_INSTANSI']);
+					$jenisbidangusaha = str_replace("'","",$data['JENIS_BIDANG_USAHA']);
+					$telponinstansi = str_replace("'","",$data['TELEPON_INSTANSI']);
+					$lembagapemeringkat = str_replace("'","",$data['LEMBAGA_PEMERINGKAT']);
+					$tglpemeringkat = str_replace("'","",$data['TANGGAL_PEMERINGKAT']);
+					$gopublic = str_replace("'","",$data['GO_PUBLIC']);
+					$noijinprinsip = str_replace("'","",$data['NO_IJIN_PRINSIP']);
+					$dateupdate = str_replace("'","",$data['DATE_UPDATED']);
+					$updateby = str_replace("'","",$data['UPDATED_BY']);
+					$acctype = str_replace("'","",$data['ACC_TYPE']);
+					$alamatinstansi = str_replace("'","",$data['ALAMAT_INSTANSI']);
+					$alamatinstansi2 = str_replace("'","",$data['ALAMAT_INSTANSI2']);
+					$alamatinstansi3 = str_replace("'","",$data['ALAMAT_INSTANSI3']);
+					
+					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data['ID_INSTANSI_BRI']."','".$namainstansi."','".$kodeinstansi."',
+										'".$posisinpl."','".$kodeuker."',
+					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
+					'".$alamatinstansi."','".$alamatinstansi3."','".$data['TELEPON_INSTANSI']."','".$data['RATING_INSTANSI']."',
+					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
+					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
 				}catch(Exception $e) {
 					\Log::info("-------------------ERROR LOG Insert mitra MYBRI-----------------");
-					DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
+					DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
 					\Log::info($e);
-					die($e);
+					print_r($e);
+					die();
 				}
-				
-				\Log::info("-------------------INSERT MITRA SUKSES-----------------");
-				\Log::info($sql);
 						/* $sql = "INSERT INTO $table VALUES('$data[0]','$data[1]','$data[2]','$data[11]',to_number('$data[14]','99G999D9S'),
 					'$data[17]','$data[18]','','70','','$data[4]','$data[5]','$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[12]',
 					'$data[13]','$data[15]','$data[16]','$data[19],'$data[20]'')"; */
 					
-					
+				}
+				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
+				\Log::info($sql);
+				if($datalas_encode['current_page']!=$datalas_encode['last_page']){
+							$a = explode('/',$datalas_encode['next_page_url']);
+							header("Location:".$a[5]);die();
+				}else{
 					try{
-					if($data[1] != "" && $sql != ""){
-							DB::statement("ALTER TABLE mitra RENAME TO mitraxxx;");
-							DB::statement("ALTER TABLE mitra_create RENAME TO mitra;");
+					if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != "" && $sql != ""){
+							DB::statement("ALTER TABLE mitra_scheduller RENAME TO mitraxxx;");
+							DB::statement("ALTER TABLE mitra_create RENAME TO mitra_scheduller;");
 							DB::statement("DROP TABLE mitraxxx;");
-							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'Sukses')");
+							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'Sukses')");
 							\Log::info("-------------------Sukses ALL-----------------");
 							\Log::info('SUKSES');
-							die("clear");
+							print_r('SUKSES');
+							die();
 						
 					}else{
-							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'Data Ketarik Kosong')");
+							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'Data Ketarik Kosong')");
 							\Log::info($e);
-							die("Gagal");
+							print_r('GAGAL');
+							die();
 					}
 					}catch(Exception $e) {
 						\Log::info("-------------------ERROR LOG Insert mitra MYBRI-----------------");
-						DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
-						die($e);
+						DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
+						print_r($e);
+						die();
 					}
 				}
-			mysqli_close($conn);
+				
+			
 	}
    
 }
