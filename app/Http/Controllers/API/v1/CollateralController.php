@@ -394,7 +394,8 @@ class CollateralController extends Controller
                    $bodyNotif = 'reject collateral';
                    $status    = 'collateral_reject';
                    $type = 'collateral_'.$action;
-                   $receiver = 'external';  // send to external apps
+                   $receiver = 'staf_collateral';
+                   $user_id = $collateral->staff_id;
                    //insert data from notifications table
                    $usersModel->notify(new CollateralManagerRejected($collateral,$branch_id));
                    $userNotif = new UserNotification;
