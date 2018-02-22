@@ -45,10 +45,10 @@ class CreateKartuKreditTable extends Migration
             $table->string('image_nametag');
             $table->string('image_kartu_bank_lain');
 
-            $table->foreign('customer_id')
-            ->references('id')
-            ->on('customer_details')
-            ->onUpdate('cascade');
+            // $table->foreign('customer_id')
+            // ->references('id')
+            // ->on('customer_details')
+            // ->onUpdate('cascade');
 
         });
     }
