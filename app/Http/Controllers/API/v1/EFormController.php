@@ -14,6 +14,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\KartuKredit;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -398,13 +399,16 @@ class EFormController extends Controller
                 }
             }
 
-            if ($request->product_type == 'kkd'){
+            if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================"); 
 
-            return response()->success([
-                'message' => 'E-Form berhasil di disposisi',
+                //bandingin nik sama customer_details, kalau gak nemu create baru
+                
 
-            ], 200 );
+                return response()->success([
+                    'message' => 'response eform kkd',
+
+                ], 200 );
             }
 
             if ( $request->product_type == 'briguna' ) {
