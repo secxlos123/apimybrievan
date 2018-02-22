@@ -75,17 +75,17 @@ class NewCustomerController extends Controller
       $data['phone'] = $request['telp'];
       $data['address'] = $request['alamat'];
 
-      if (CrmNewCustomer::where('email', '=', $request['email'])->exists()) {
-        return response()->error([
-            'message' => 'Email Telah Digunakan',
-        ], 500);
-      }
-
-      if (CrmNewCustomer::where('nik', '=', $request['nik'])->exists()) {
-        return response()->error([
-            'message' => 'NIK Telah Digunakan',
-        ], 500);
-      }
+      // if (CrmNewCustomer::where('email', '=', $request['email'])->exists()) {
+      //   return response()->error([
+      //       'message' => 'Email Telah Digunakan',
+      //   ], 500);
+      // }
+      //
+      // if (CrmNewCustomer::where('nik', '=', $request['nik'])->exists()) {
+      //   return response()->error([
+      //       'message' => 'NIK Telah Digunakan',
+      //   ], 500);
+      // }
 
       $save = CrmNewCustomer::create($data);
       if ($save) {
