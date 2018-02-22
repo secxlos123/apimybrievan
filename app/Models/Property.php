@@ -351,6 +351,9 @@ class Property extends Model implements AuditableContract
                 if ($developerId)
                     {
                         $property->where('prop_dev_id', $developerId);
+                        if ($request->has('is_approved')) {
+                            $property->where('is_approved',false);
+                        }
                     }
                 // jgn di hapus sengaja di disable untuk prod
                 else{
