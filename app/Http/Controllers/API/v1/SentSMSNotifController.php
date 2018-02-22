@@ -27,63 +27,51 @@ class SentSMSNotifController extends Controller
 		$id_trans = '1-'.date("Ymd His");
 		if($request['kode_message']=='1'){
 				//1. Pengajuan Kredit 
-			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust']." Terima kasih atas pengajuan Anda. ".
-						"Aplikasi pengajuan Kredit BRIGUNA Anda telah kami terima dengan detail sbb :". 
-						"ID Transaksi : ".$id_trans.", ".
-						"No Ref : ".$request['no_reff'].". ".
-						"Petugas kami akan segera menghubungi Anda. ".
-						"Pantau pengajuan kredit Anda dengan nomor referensi diatas, melalui MyBRI, ".
-						"website pinjaman.bri.co.id, atau via Petugas Pemasaran kami.";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].". Aplikasi Kredit Anda sudah kami terima dengan Nomor Referensi ".$request['no_reff'].". Petugas kami akan segera menghubungi Anda. Terima kasih.";
 		}elseif($request['kode_message']=='2'){
+			$message = "Yth Bapak/Ibu ".$request['nama_cust'].". Pengajuan Anda dengan Nomor Referensi ".$request['no_reff']." akan ditindaklanjuti 
+						oleh Sdr/i. ".$request['rm_mantri']." / dari BRI ".$request['unit_kerja'].". 
+						Petugas kami akan segera menghubungi Anda. Terima kasih. ";
 				//2. Pengajuan Kredit Anda Sedang Dalam Proses
-			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].", Form pengajuan Kredit BRIGUNA Anda telah ditindaklanjuti oleh Petugas kami, ".
-						"dengan detail sbb : ".
-						"No Ref ".$request['no_reff'].", ".
-						"RM/Mantri ".$request['rm_mantri'].", ".
-						"No Handphone : ".$request['no_hp']." ".
-						"Terima kasih atas pengajuan kredit Anda. Petugas kami akan segera menghubungi Anda.";
 		}elseif($request['kode_message']=='3'){
 				//3. Persetujuan Kredit
-			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
-						"Pinjaman anda dengan No Referensi ".$request['no_reff']." telah disetujui dengan detail sbb : ".
-						"Plafond : Rp. ".$request['plafond'].",-, ".
-						"Jangka Waktu : ".$request['year']." bulan. ".
-						"Angsuran : Rp.".$request['angsuran'].",-, ".
-						"Pola Angsuran : 1 bulanan. ".
-						"Mohon hubungi Petugas Pemasaran kami atau BRI untuk proses akad kredit & pencairan kredit. Terima kasih";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan Rp ".$request['angsuran'].".,-.
+						Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
 		}elseif($request['kode_message']=='4'){
 				//4. Pengajuan Kredit Tidak Disetujui
-			$message = "Kepada Yth. Bapak/Ibu ".$request['nama_cust'].". ".
-						"Kami informasikan pengajuan kredit Anda dengan detail sbb :".
-						" Plafond : Rp. ".$request['plafond'].",-, ".
-						"Jangka Waktu : ".$request['year']." bulan. ".
-						"Belum dapat disetujui sehubungan dengan belum terpenuhinya persyaratan Bank yang telah ditetapkan. Terima kasih";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Kami informasikan pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year'].
+						" bulan belum disetujui/belum terpenuhinya persyaratan Bank.";
 		}elseif($request['kode_message']=='5'){
 				//5. Pembatalan Pengajuan Pinjaman
-			$message = "KepadaYth. Bapak/Ibu ".$request['nama_cust'].". ".
-						"Kami informasikan pembatalan pengajuan kredit Anda dengan detail sebagai berikut : ".
-						"Plafond : Rp. 50.000.000,- ".
-						"Jangka Waktu : ".$request['year']." bulan. ".
-						"Anda dapat mengajukan pinjaman kembali melalui MyBRI atau BRI terdekat. Terima kasih.";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year']." bulan dibatalkan. 
+						Ajukan kembali melalui MyBRI atau Kantor BRI terdekat.";
 		}elseif($request['kode_message']=='6'){
 				//6. SMS reminder angsuran pinjaman (Khusus Debitur Payroll)
-			$message = "Yth. Bapak/Ibu ".$request['nama_cust']." ,".
-						"Kami informasikan kewajiban angsuran Anda sebesar Rp.".$request['angsuran']." ,- ".
-						"jatuh tempo pada 25 Agustus 2017. Harap segera melakukan pembayaran. ".
-						"Bilamana telah melakukan pembayaran, abaikan sms ini. Terima kasih.";
+			$message = "Yth Bapak/Ibu ".$request['nama_cust'].", kewajiban angsuran Anda sebesar Rp. ".$request['plafond'].",- jatuh tempo ".$request['jatuh_tempo'].". 
+						Harap melakukan pembayaran. Bilamana telah melakukan pembayaran, abaikan sms ini.";
 		}elseif($request['kode_message']=='7'){
 				//7. SMS reminder tunggakan (Khusus Debitur Payroll)
-			$message = "Yth. Bapak/Ibu ".$request['nama_cust'].". ".
-						"Kami informasikan kewajiban angsuran Anda telah melewati jatuh tempo sebesar Rp. ".$request['angsuran'].",-. ".
-						"Harap segera melakukan pembayaran. Terima kasih.";
+			$message = "Yth. Bapak/Ibu  ".$request['nama_cust'].". Kami informasikan kewajiban angsuran Anda telah melewati jatuh tempo sebesar 
+						Rp.  ".$request['plafond'].",-. Harap segera melakukan pembayaran. Terima kasih.";
 		}else{
 			$message = $request['message'];
 		}
 		return $message;
 	}
-	public function sentsms( Request $request )
-	{
-		$data = $request->all();
+	public function sentsms( $data )
+	{		
+		\Log::info('==========sent sms==============');
+//		\Log::info($request);
+		$host = env('APP_URL');
+			if($host == 'http://api.dev.net/'){		
+				$divisi = 'SIT';
+				$produk = 'Sms Dev';
+			}else{
+				$divisi = 'KRK';
+				$produk = 'Kredit';
+			}
+
+		//$data = $request->all();
 		$message = $this->message($data);
 		 $client = new Client();
 		 $url = '';
@@ -106,8 +94,8 @@ class SentSMSNotifController extends Controller
   <soap:Body>
     <FCD_SMS xmlns="http://tempuri.org/">
       <norek>0</norek>
-      <divisi>'.$data['divisi'].'</divisi>
-      <produk>'.$data['produk'].'</produk>
+      <divisi>'.$divisi.'</divisi>
+      <produk>'.$produk.'</produk>
       <fitur></fitur>
       <hp>'.$data['no_hp'].'</hp>
       <pesan>'.$message.'</pesan>

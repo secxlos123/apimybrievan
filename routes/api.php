@@ -36,6 +36,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('SelectKodePos', 'SelectKodePosController@SelectKodePos');
 		Route::post('SelectCabang', 'SelectCabangController@getCabangMitra');
 		Route::get('SelectCabangInternal', 'SelectCabangController@getCabangMitraOpi');
+		Route::get('scheduler_mitra', 'SchedulerMitraController@scheduler');
 		Route::post('gimmick_list', 'Int\GimmickController@list_gimmick');
 		Route::post('GetView', 'ViewController@index');
 		Route::post('testertoken', 'EFormController@TestingBranch');
@@ -88,6 +89,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('api_las/briguna', 'ApiLasController@show_briguna');
 		Route::post('api_las/update', 'ApiLasController@update_briguna');
 		Route::post('api_las/update_foto', 'ApiLasController@update_foto_briguna');
+		Route::post('api_las/download_image', 'ApiLasController@download');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]

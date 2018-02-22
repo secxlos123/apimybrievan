@@ -74,22 +74,23 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	 public function hapuseform( Request $request )
+	public function hapuseform( Request $request )
     {
         \Log::info($request->all());
-          $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
-		  if($briguna->is_send==null || $briguna->is_send=='' || empty($briguna->is_send)){
-			  return response()->success( [
-					'contents' => 'Hapus Gagal'
-				],200 );  
-		  }else{
-				$briguna = $briguna->delete();
-				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
-				  $eform = $eform->delete();
-				return response()->success( [
-					'contents' => 'Hapus berhasil'
-				],200 );  
-		  }
+        $message = 'Hapus Gagal';
+        $eform = EForm::findOrFail( $request->id );
+        if ( $eform->briguna ) {
+            $briguna = $eform->briguna;
+            if( $briguna->is_send == null || $briguna->is_send == '' || empty($briguna->is_send) ){
+                $briguna->delete();
+                $eform->delete();
+                $message = 'Hapus berhasil';
+            }    
+        }
+
+        return response()->success( [
+            'contents' => $message
+        ], 200 );
     }
     public function index( Request $request )
     {
@@ -289,14 +290,6 @@ class EFormController extends Controller
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 			// Check recontest or not
-            if($recontest){
-                $usersModel  = User::FindOrFail($eform->user_id);
-                $credentials = [
-                    'data' => $eform,
-                    'user' => $usersModel,
-                ];
-                pushNotification($credentials, "recontestEForm");
-            }
             return response()->success([
 				'contents' => $eform
 			]);
@@ -529,6 +522,19 @@ class EFormController extends Controller
 				}
 			}
                 $kpr = BRIGUNA::create( $baseRequest );
+				$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.nik', $request->nik)
+						 ->get();
+				
+				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];				
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
                 $return = [
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
@@ -573,7 +579,7 @@ class EFormController extends Controller
                         'pic_name' => 'BRI',
                         'pic_phone' => '-',
                         'address' => $baseRequest['home_location'],
-                        'category' => '3',
+                        'category' => $baseRequest['kpr_type_property'],
                         'latitude' => '0',
                         'longitude' => '0',
                         'description' => '-',

@@ -13,7 +13,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //route $pemasar
   Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');
-  Route::post('kinerja_pemasar', 'DashboardController@kinerja_pemasar');
+  Route::get('kinerja_pemasar', 'DashboardController@kinerja_pemasar');
 
   //route account
   Route::post( 'account/leads', 'AccountController@index')->name('crm.account');

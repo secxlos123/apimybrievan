@@ -15,6 +15,7 @@ use App\Models\BRIGUNA;
 use App\Models\EformBriguna;
 use Asmx;
 use File;
+use Zip;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 
 class ApiLasController extends Controller
@@ -1231,7 +1232,7 @@ class ApiLasController extends Controller
                 "flag_putusan"=> !isset($data['flag_putusan'])? "":$data['flag_putusan'],
                 "catatan"     => !isset($data['catatan'])? "":$data['catatan']
             ]);
-
+            \Log::info($conten_putusan);
             // $putus = $ApiLas->putusSepakat($conten_putusan);
             // return $putus;
             try {
@@ -1259,25 +1260,26 @@ class ApiLasController extends Controller
                             \Log::info("-------- putusan update table eforms sukses---------");
 
                             $data_briguna = [
-                                'is_send'         => !isset($data['is_send'])? "":$data['is_send'],
+                                'is_send'         => !isset($data['is_send'])? null:$data['is_send'],
                                 'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
                                 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
-                            // update table briguna
-                            $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
-                            $briguna->update($data_briguna);
-                            \Log::info("-------- putusan update table briguna sukses---------");
+                        } elseif ($data['flag_putusan'] == '7') {
+                            $data_briguna = [
+                                'is_send'     => !isset($data['is_send'])? null:$data['is_send'],
+                                'catatan_adk' => !isset($data['catat_adk'])? "":$data['catat_adk']
+                            ];
                         } else {
                             $data_briguna = [
-                                'is_send'        => !isset($data['is_send'])? "":$data['is_send'],
+                                'is_send'        => !isset($data['is_send'])? null:$data['is_send'],
                                 // 'tgl_putusan'     => !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
                                 // 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
-                            // update table briguna
-                            $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
-                            $briguna->update($data_briguna);
-                            \Log::info("-------- putusan update table briguna sukses---------");
                         }
+                        // update table briguna
+                        $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
+                        $briguna->update($data_briguna);
+                        \Log::info("-------- putusan update table briguna sukses---------");
                         $result = $dataResult;
                         return $result;
                     }
@@ -1557,13 +1559,13 @@ class ApiLasController extends Controller
                             \Log::info("-------- masuk kirimPemutus ---------");
                             \Log::info($kirim);
                             if ($kirim['statusCode'] != '01') {
-                                $error[0] = $kirim['nama'].' gagal, '.$kirim['statusDesc'];
+                                // $error[0] = $kirim['nama'].' gagal, '.$kirim['statusDesc'];
                                 return [
                                     'code' => $kirim['statusCode'], 
                                     'descriptions' => $kirim['nama'].' gagal, '.$kirim['statusDesc'],
-                                    'contents' => [
-                                        'data' => $error
-                                    ]
+                                    // 'contents' => [
+                                    //     'data' => $error
+                                    // ]
                                 ];
                             }
 
@@ -1728,64 +1730,98 @@ class ApiLasController extends Controller
                             ];
                             return $result;
                         } else {
-                            $error = 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'];
+                            // $error[0] = $hitung['statusDesc'];
                             return [
                                 'code' => $hitung['statusCode'], 
                                 'descriptions' => 'hitung '.$hitung['nama'].' gagal, '.$hitung['statusDesc'],
-                                'contents' => [
-                                    'data' => $error
-                                ]
+                                // 'contents' => [
+                                //     'data' => $error
+                                // ]
                             ];
                         }
                     } else {
-                        $error[0]  = 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'];
+                        // $error[0]  = $insertKredit['statusDesc'];
                         return [
                             'code' => $insertKredit['statusCode'], 
                             'descriptions' => 'insert '.$insertKredit['nama'].' gagal, '.$insertKredit['statusDesc'],
-                            'contents' => [
-                                'data' => $error
-                            ]
+                            // 'contents' => [
+                            //     'data' => $error
+                            // ]
                         ];
                     }
                 } else {
-                    $error[0] = 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'];
+                    // $error[0] = $insertPrescoring['statusDesc'];
                     return [
                         'code' => $insertPrescoring['statusCode'], 
                         'descriptions' => 'insert '.$insertPrescoring['nama'].' gagal, '.$insertPrescoring['statusDesc'],
-                        'contents' => [
-                            'data' => $error
-                        ]
+                        // 'contents' => [
+                        //     'data' => $error
+                        // ]
                     ];
                 }
             } else {
-                $error[0] = 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'];
+                // $error[0] = $insertPrescreening['statusDesc'];
                 return [
                     'code' => $insertPrescreening['statusCode'], 
                     'descriptions' => 'insert '.$insertPrescreening['nama'].' gagal, '.$insertPrescreening['statusDesc'],
-                    'contents' => [
-                        'data' => $error
-                    ]
+                    // 'contents' => [
+                    //     'data' => $error
+                    // ]
                 ];
             }
         } else {
-            $error[0] = 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'];
+            // $error[0] = $insertDebitur['statusDesc'];
             return [
                 'code' => $insertDebitur['statusCode'], 
                 'descriptions' => 'insert '.$insertDebitur['nama'].' gagal, '.$insertDebitur['statusDesc'],
-                'contents' => [
-                    'data' => $error
-                ]
+                // 'contents' => [
+                //     'data' => $error
+                // ]
             ];
         }
     }
 
     public function show_briguna(Request $request) {
-        $eform = EformBriguna::filter($request)->get();
-        $eform = $eform->toArray();
+        \Log::info($request->all());
+        $limit = $request->input('limit') ? : 10;
+        $eform = Apilas::filter($request);
         if (!empty($eform)) {
-            $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
+            // $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
             return response()->success( [
-                'contents' => $eform[0]
+                'contents' => $eform
+            ],200);
+        }
+
+        return response()->error( [
+            'contents' => 'data tidak ditemukan'
+        ],400);
+    }
+
+    public function download(Request $request) {
+        \Log::info($request->all());
+        $response = $request->all();
+        $briguna = Briguna::where('eform_id',$response['eform_id'])->first();
+        \Log::info($briguna->toArray());
+        if (!empty($briguna)) {
+            $image_path = public_path('uploads/'.$briguna['id_foto']);
+            $url = $image_path.'/'.$briguna['SLIP_GAJI'];
+            $files = [
+                $briguna['KK'], $briguna['NPWP_nasabah'], $briguna['SK_AWAL'],
+                $briguna['SK_AKHIR'], $briguna['REKOMENDASI'], $briguna['SKPG']
+            ];
+            // $zipname = 'file.zip';
+            $publicPath = $image_path . '/foto.zip';
+            // $zip = new Zip;
+            // $zip = Zip::open($publicPath, Zip::CREATE);
+            $zip = Zip::open($publicPath,$image_path);
+            foreach ($files as $file) {
+              $zip = Zip::addFile($file);
+            }
+            $zip = Zip::close();
+            \Log::info($zip);
+            // $eform[0]['Url'] = env('APP_URL').'/uploads/'.$eform[0]['user_id'];
+            return response()->success( [
+                'contents' => $zip
             ],200);
         }
 
@@ -1930,7 +1966,7 @@ class ApiLasController extends Controller
             ];
             // save json_ws_log
             $data_log = [
-                'json_data' => $parameter,
+                'json_data' => json_encode($parameter),
                 'function_name' => 'kirimPemutus',
                 'created_at'=> date('Y-m-d H:i:s')
             ];
