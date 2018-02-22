@@ -43,8 +43,8 @@ class SentSMSNotifController extends Controller
 						" bulan belum disetujui/belum terpenuhinya persyaratan Bank.";
 		}elseif($request['kode_message']=='5'){
 				//5. Pembatalan Pengajuan Pinjaman
-			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year']." bulan dibatalkan. 
-						Ajukan kembali melalui MyBRI atau Kantor BRI terdekat.";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year'].
+						" bulan dibatalkan.Ajukan kembali melalui MyBRI atau Kantor BRI terdekat.";
 		}elseif($request['kode_message']=='6'){
 				//6. SMS reminder angsuran pinjaman (Khusus Debitur Payroll)
 			$message = "Yth Bapak/Ibu ".$request['nama_cust'].", kewajiban angsuran Anda sebesar Rp. ".$request['plafond'].",- jatuh tempo ".$request['jatuh_tempo'].". 
