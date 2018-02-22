@@ -1295,7 +1295,7 @@ class ApiLasController extends Controller
 									$eform_sms = $eform_sms->toArray();
 									$eform_sms = json_decode(json_encode($eform_sms), True);
 									
-							$customer = \DB::table('customer_details')
+							$customer = \DB::table('users')
 							 ->select('mobile_phone','first_name','last_name')
 							 ->where('users.id', $eform_sms[0]['user_id'])
 							 ->get();
