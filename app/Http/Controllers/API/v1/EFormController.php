@@ -14,6 +14,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\KartuKredit;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -398,13 +399,16 @@ class EFormController extends Controller
                 }
             }
 
-            if ($request->product_type == 'kkd'){
+            if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================"); 
 
-            return response()->success([
-                'message' => 'E-Form berhasil di disposisi',
+                //bandingin nik sama customer_details, kalau gak nemu create baru
+                
 
-            ], 200 );
+                return response()->success([
+                    'message' => 'response eform kkd',
+
+                ], 200 );
             }
 
             if ( $request->product_type == 'briguna' ) {
@@ -526,8 +530,11 @@ class EFormController extends Controller
 				
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
-				$message = ['no_hp'=>$customer[0]['phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name']];				
-				app('App\Http\Controllers\API\v1\SentSMSNotifController')->message($message);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];				
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
                 $return = [
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
