@@ -304,7 +304,8 @@ class AuditrailController extends Controller
                      * @return \Illuminate\Database\Eloquent\Builder
                      */
                         if($request->has('search')){
-                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                         }
 
                         })
@@ -341,7 +342,8 @@ class AuditrailController extends Controller
                      * @return \Illuminate\Database\Eloquent\Builder
                      */
                         if($request->has('search')){
-                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                         }
 
                         })
@@ -388,7 +390,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -427,7 +430,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
