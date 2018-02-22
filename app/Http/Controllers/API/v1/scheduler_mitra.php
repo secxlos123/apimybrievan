@@ -30,10 +30,11 @@ class SchedulerMitraController extends Controller
 		//----------prod-----------------------
 				$servername = '';
 				$servernamelas = '';
-				$username = 'administrator';
-				$usernamelas = 'sa';
-				$password = 'P@ssw0rd';
-				$passwordlas = 'starbuck';
+				$conn_array_las = array (
+					"UID" => "sa",
+					"PWD" => "starbuck",
+					"Database" => "LAS",
+				);
 
 			  $host = env('APP_URL');
 			  if($host == 'http://api.dev.net/'){		
@@ -51,7 +52,7 @@ class SchedulerMitraController extends Controller
 		//$conn = mysqli_connect($servername, $username, $password);
 		\Log::info("-------------------connect to las-----------------");
 				
-		if(!mysqli_connect($servernamelas, $usernamelas, $passwordlas)){
+		if(!sqlsrv_connect($servernamelas, $usernamelas, $passwordlas)){
 			\Log::info("-------------------ERROR LOG TO LAS-----------------");
 			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'Can't connect To LAS')");
 			\Log::info($logsql);
@@ -59,7 +60,7 @@ class SchedulerMitraController extends Controller
 		}
 		
 		try{
-			$connlas = mysqli_connect($servernamelas, $usernamelas, $passwordlas);
+			$connlas = sqlsrv_connect($servernamelas, $conn_array_las);
 		}catch(Exception $e) {
 			\Log::info("-------------------ERROR LOG TO LAS-----------------");
 				DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
@@ -71,11 +72,11 @@ class SchedulerMitraController extends Controller
 		//$table = 'mitra';
 		//select a database to work with
 		//$selected = mysqli_select_db($conn,$database);
-		$selectedlas = mysqli_select_db($connlas,"LAS");
+//		$selectedlas = mysqli_select_db($connlas,"LAS");
 		$query = "SELECT * FROM LAS_M_INSTANSI_BRI ORDER BY ID_INSTANSI_BRI ASC;";
 		$datalas = array();
 		try{
-			$datalas = mysqli_query($connlas,$query);
+			$datalas = sqlsrv_query($connlas,$query);
 		}catch{
 			\Log::info("-------------------ERROR CALL DATA LAS-----------------");
 				DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'$time_first',localtime,'".$e."')");
