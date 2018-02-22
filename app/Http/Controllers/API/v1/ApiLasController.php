@@ -1305,7 +1305,7 @@ class ApiLasController extends Controller
 									
 									
 									$briguna = \DB::table('briguna')
-											 ->select('year','request_amount')
+											 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran')
 											 ->where('briguna.eform_id', $data['eform_id'])
 											 ->get();
 									
@@ -1313,9 +1313,10 @@ class ApiLasController extends Controller
 									$briguna = json_decode(json_encode($briguna), True);
 									$message = ['no_hp'=>$customer[0]['mobile_phone'],
 												'plafond'=>$briguna[0]['request_amount'],
+												'angsuran'=>$briguna[0]['Maksimum_angsuran'],
 												'year'=>$briguna[0]['year'],
 												'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
-												'kode_message'=>$kode_sms;				
+												'kode_message'=>$kode_sms];				
 									\Log::info("-------------------sms notifikasi-----------------");
 									\Log::info($message);
 									$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
