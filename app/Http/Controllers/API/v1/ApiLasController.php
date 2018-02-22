@@ -1287,7 +1287,7 @@ class ApiLasController extends Controller
 						}else{
 							$kode_sms = '3';							
 						}
-							$eform_sms = DB::table('eforms')
+							$eform_sms = \DB::table('eforms')
 							 ->select('user_id')
 							 ->where('eforms.id', $data['eform_id'])
 							 ->get();
@@ -1295,7 +1295,7 @@ class ApiLasController extends Controller
 									$eform_sms = $eform_sms->toArray();
 									$eform_sms = json_decode(json_encode($eform_sms), True);
 									
-							$customer = DB::table('customer_details')
+							$customer = \DB::table('customer_details')
 							 ->select('mobile_phone','first_name','last_name')
 							 ->where('users.id', $eform_sms[0]['user_id'])
 							 ->get();
@@ -1304,7 +1304,7 @@ class ApiLasController extends Controller
 									$customer = json_decode(json_encode($customer), True);
 									
 									
-									$briguna = DB::table('briguna')
+									$briguna = \DB::table('briguna')
 											 ->select('year','request_amount')
 											 ->where('briguna.eform_id', $request->eform_id)
 											 ->get();
