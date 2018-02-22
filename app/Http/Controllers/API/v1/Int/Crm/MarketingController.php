@@ -16,6 +16,7 @@ use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
+use App\Models\Crm\Referral;
 
 use RestwsHc;
 
@@ -240,6 +241,13 @@ class MarketingController extends Controller
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
       $save = Marketing::create($data);
+
+      if ($request['ref_id']!="") {
+        $referral = Referral::where('ref_id', $request['ref_id']);
+        $referral_update['status'] = "Prospek";
+        $referral->update($referral_update);
+      }
+
       if ($save) {
           $this->first_activity($request->header('pn'), $save->id, $request);
 
