@@ -1908,7 +1908,7 @@ class ApiLasController extends Controller
         if (!empty($response)) {
             try {
                 $image   = $response;
-                $data_eforms = EForm::where('id',$response['eform_id'])->first();
+                $data_eforms = EForm::where('id',$response['eform_id'])->get();
                 $detail  = CustomerDetail::where('user_id',$data_eforms['user_id'])->first();
                 // $this->removeAllImage($detail);
                 $id_foto = $data_eforms['id_foto'];
