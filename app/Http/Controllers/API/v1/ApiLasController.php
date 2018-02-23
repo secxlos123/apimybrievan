@@ -1282,11 +1282,13 @@ class ApiLasController extends Controller
                         \Log::info("-------- putusan update table briguna sukses---------");
                         $result = $dataResult;
 
-						if($datadetail->nama=='TOLAKAN'){
+						
+						if($data['flag_putusan']=='2'){
 							$kode_sms = '4';
-						}elseif($datadetail->nama=='PUTUSAN'){
+						}elseif($data['flag_putusan']=='6'){
 							$kode_sms = '3';							
 						}
+						if($data['flag_putusan']=='2' || $data['flag_putusan']=='6'){
 							$eform_sms = \DB::table('eforms')
 							 ->select('user_id')
 							 ->where('eforms.id', $data['eform_id'])
@@ -1322,15 +1324,17 @@ class ApiLasController extends Controller
 									\Log::info($message);
 									$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
 													\Log::info($testing);
+						}
 
                         return $result;
                     }
                     $result = $dataResult;
-											if($datadetail->nama=='TOLAKAN'){
+						if($data['flag_putusan']=='2'){
 							$kode_sms = '4';
-						}elseif($datadetail->nama=='PUTUSAN'){
+						}elseif($data['flag_putusan']=='6'){
 							$kode_sms = '3';							
 						}
+						if($data['flag_putusan']=='2' || $data['flag_putusan']=='6'){
 							$eform_sms = \DB::table('eforms')
 							 ->select('user_id')
 							 ->where('eforms.id', $data['eform_id'])
@@ -1366,6 +1370,7 @@ class ApiLasController extends Controller
 									\Log::info($message);
 									$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
 													\Log::info($testing);
+						}
 
                     return $result;
                     \Log::info($result);
