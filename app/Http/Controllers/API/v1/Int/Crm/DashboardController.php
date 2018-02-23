@@ -344,7 +344,7 @@ class DashboardController extends Controller
       return response()->error([
           'message' => 'Marketing Summary tidak ditemukan.',
           'contents' => $marketing_summary,
-      ], 204);
+      ], 200);
     }
 
     public function pemasar_branch($pn, $branch){
