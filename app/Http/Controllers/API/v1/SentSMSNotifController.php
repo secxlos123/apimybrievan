@@ -35,7 +35,10 @@ class SentSMSNotifController extends Controller
 				//2. Pengajuan Kredit Anda Sedang Dalam Proses
 		}elseif($request['kode_message']=='3'){
 				//3. Persetujuan Kredit
-			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan Rp ".$request['angsuran'].
+/* 							$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan Rp ".$request['angsuran'].
+						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
+ */
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan ".
 						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
 		}elseif($request['kode_message']=='4'){
 				//4. Pengajuan Kredit Tidak Disetujui
