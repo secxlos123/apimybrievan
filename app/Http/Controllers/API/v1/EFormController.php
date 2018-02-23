@@ -14,6 +14,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\KartuKredit;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -398,13 +399,16 @@ class EFormController extends Controller
                 }
             }
 
-            if ($request->product_type == 'kkd'){
+            if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================"); 
 
-            return response()->success([
-                'message' => 'E-Form berhasil di disposisi',
+                //bandingin nik sama customer_details, kalau gak nemu create baru
+                
 
-            ], 200 );
+                return response()->success([
+                    'message' => 'response eform kkd',
+
+                ], 200 );
             }
 
             if ( $request->product_type == 'briguna' ) {
@@ -892,6 +896,35 @@ class EFormController extends Controller
         $eform = EForm::findOrFail($request->eform_id);
 		if($eform->product_type=='briguna'){
 			try{
+				
+				$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.user_id', $eform->user_id)
+						 ->get();
+				
+				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
+				
+				
+				$briguna = DB::table('briguna')
+						 ->select('year','request_amount')
+						 ->where('briguna.eform_id', $request->eform_id)
+						 ->get();
+				
+				$briguna = $briguna->toArray();
+				$briguna = json_decode(json_encode($briguna), True);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],
+							'plafond'=>$briguna[0]['request_amount'],
+							'year'=>$briguna[0]['year'],
+							'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
+							'kode_message'=>'5'];				
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
+		
+		
 					User::destroy($eform->user_id);
 				  DB::commit();
 				return response()->success( [

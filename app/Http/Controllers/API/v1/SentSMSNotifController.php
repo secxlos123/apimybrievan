@@ -35,16 +35,19 @@ class SentSMSNotifController extends Controller
 				//2. Pengajuan Kredit Anda Sedang Dalam Proses
 		}elseif($request['kode_message']=='3'){
 				//3. Persetujuan Kredit
-			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan Rp ".$request['angsuran'].".,-.
-						Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
+/* 							$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan Rp ".$request['angsuran'].
+						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
+ */
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan ".
+						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
 		}elseif($request['kode_message']=='4'){
 				//4. Pengajuan Kredit Tidak Disetujui
 			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Kami informasikan pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year'].
 						" bulan belum disetujui/belum terpenuhinya persyaratan Bank.";
 		}elseif($request['kode_message']=='5'){
 				//5. Pembatalan Pengajuan Pinjaman
-			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year']." bulan dibatalkan. 
-						Ajukan kembali melalui MyBRI atau Kantor BRI terdekat.";
+			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year'].
+						" bulan dibatalkan.Ajukan kembali melalui MyBRI atau Kantor BRI terdekat.";
 		}elseif($request['kode_message']=='6'){
 				//6. SMS reminder angsuran pinjaman (Khusus Debitur Payroll)
 			$message = "Yth Bapak/Ibu ".$request['nama_cust'].", kewajiban angsuran Anda sebesar Rp. ".$request['plafond'].",- jatuh tempo ".$request['jatuh_tempo'].". 
@@ -78,7 +81,7 @@ class SentSMSNotifController extends Controller
 		$host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
 		$url = 'http://10.35.65.61:9997/';
-	}else{
+		}else{
 		$url = 'http://172.21.56.34:9994/';  
 	  }
       $requestLeads = $client->request('POST', $url.'Service.asmx',

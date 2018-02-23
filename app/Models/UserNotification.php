@@ -64,8 +64,8 @@ class UserNotification extends Model
 					, 'App\Notifications\VerificationApproveFormNasabah'
 					, 'App\Notifications\VerificationRejectFormNasabah'
 					, 'App\Notifications\CollateraAODisposition'
-					, 'App\Notifications\CollateralManagerRejected'
-					, 'App\Notifications\CollateralManagerApprove'
+					, 'App\Notifications\CollateralManagerRejectedAO'
+					, 'App\Notifications\CollateralManagerApproveAO'
 					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);

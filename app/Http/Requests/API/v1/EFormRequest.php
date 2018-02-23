@@ -51,7 +51,7 @@ class EFormRequest extends BaseRequest
                 } else {
                     return [
                         /* changing */
-                        'product_type' => 'required|in:kpr,briguna',
+                        'product_type' => 'required|in:kpr,briguna,kartu_kredit',
                         /* ---------------- */
                         /* BRIGUNA */
                         'status_property' => 'required_if:product_type,kpr,required',
