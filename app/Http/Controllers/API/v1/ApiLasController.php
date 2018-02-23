@@ -1911,7 +1911,7 @@ class ApiLasController extends Controller
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
                 $detail  = CustomerDetail::where('user_id',$data_eforms['user_id'])->first();
                 // $this->removeAllImage($detail);
-                $id_foto = $data_eforms['id_foto'];
+                $id_foto = $data_eforms['briguna']['id_foto'];
                 $filename= $this->uploadimage($image, $response['eform_id'], $id_foto);
                 $data_briguna = array_slice($response, 0,3);
 

@@ -345,6 +345,7 @@ class DashboardController extends Controller
 
       return response()->error([
           'message' => 'Gagal get Marketing Summary.',
+          'contents' => $marketing_summary,
       ], 200);
     }
 
