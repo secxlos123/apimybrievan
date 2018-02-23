@@ -1305,7 +1305,7 @@ class ApiLasController extends Controller
 									
 									
 									$briguna = \DB::table('briguna')
-											 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran')
+											 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran','branch_name')
 											 ->where('briguna.eform_id', $data['eform_id'])
 											 ->get();
 									
@@ -1314,6 +1314,7 @@ class ApiLasController extends Controller
 									$message = ['no_hp'=>$customer[0]['mobile_phone'],
 												'plafond'=>$briguna[0]['request_amount'],
 												'angsuran'=>$briguna[0]['Maksimum_angsuran'],
+												'unit_kerja'=>$briguna[0]['branch_name'],
 												'year'=>$briguna[0]['year'],
 												'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
 												'kode_message'=>$kode_sms];				
