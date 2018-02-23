@@ -1282,7 +1282,7 @@ class ApiLasController extends Controller
                         \Log::info("-------- putusan update table briguna sukses---------");
                         $result = $dataResult;
 
-/* 						if($datadetail->nama=='TOLAKAN'){
+						if($datadetail->nama=='TOLAKAN'){
 							$kode_sms = '4';
 						}else{
 							$kode_sms = '3';							
@@ -1320,7 +1320,7 @@ class ApiLasController extends Controller
 									\Log::info("-------------------sms notifikasi-----------------");
 									\Log::info($message);
 									$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
-													\Log::info($testing); */
+													\Log::info($testing);
 
                         return $result;
                     }
