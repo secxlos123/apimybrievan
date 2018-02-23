@@ -81,7 +81,7 @@ class SentSMSNotifController extends Controller
 		$host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
 		$url = 'http://10.35.65.61:9997/';
-	}else{
+		}else{
 		$url = 'http://172.21.56.34:9994/';  
 	  }
       $requestLeads = $client->request('POST', $url.'Service.asmx',
