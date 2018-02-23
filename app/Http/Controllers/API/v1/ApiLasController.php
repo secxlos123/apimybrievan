@@ -1284,7 +1284,7 @@ class ApiLasController extends Controller
 
 						if($datadetail->nama=='TOLAKAN'){
 							$kode_sms = '4';
-						}else{
+						}elseif($datadetail->nama=='PUTUSAN'){
 							$kode_sms = '3';							
 						}
 							$eform_sms = \DB::table('eforms')
@@ -1326,6 +1326,47 @@ class ApiLasController extends Controller
                         return $result;
                     }
                     $result = $dataResult;
+											if($datadetail->nama=='TOLAKAN'){
+							$kode_sms = '4';
+						}elseif($datadetail->nama=='PUTUSAN'){
+							$kode_sms = '3';							
+						}
+							$eform_sms = \DB::table('eforms')
+							 ->select('user_id')
+							 ->where('eforms.id', $data['eform_id'])
+							 ->get();
+					
+									$eform_sms = $eform_sms->toArray();
+									$eform_sms = json_decode(json_encode($eform_sms), True);
+									
+							$customer = \DB::table('users')
+							 ->select('mobile_phone','first_name','last_name')
+							 ->where('users.id', $eform_sms[0]['user_id'])
+							 ->get();
+					
+									$customer = $customer->toArray();
+									$customer = json_decode(json_encode($customer), True);
+									
+									
+									$briguna = \DB::table('briguna')
+											 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran','branch_name')
+											 ->where('briguna.eform_id', $data['eform_id'])
+											 ->get();
+									
+									$briguna = $briguna->toArray();
+									$briguna = json_decode(json_encode($briguna), True);
+									$message = ['no_hp'=>$customer[0]['mobile_phone'],
+												'plafond'=>$briguna[0]['request_amount'],
+												'angsuran'=>$briguna[0]['Maksimum_angsuran'],
+												'unit_kerja'=>$briguna[0]['branch_name'],
+												'year'=>$briguna[0]['year'],
+												'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
+												'kode_message'=>$kode_sms];				
+									\Log::info("-------------------sms notifikasi-----------------");
+									\Log::info($message);
+									$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+													\Log::info($testing);
+
                     return $result;
                     \Log::info($result);
                 }
