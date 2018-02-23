@@ -42,7 +42,14 @@ class AppointmentController extends Controller
         $data = Appointment::visibleColumn()->withEform();
         $eks = $request->is('api/v1/eks/schedule');
         if ($eks) {
-            $data = $data->customer($request->user()->id, $request->month, $request->year)->get();
+          if ($request->has('month') || $request->has('year')) {
+              $data->customer($request->user()->id, $request->month, $request->year);
+            }
+          else
+            {
+              $data->where('eforms.user_id',$request->user()->id);
+            }
+            $data = $data->get();
         } else {
             $user_login = \RestwsHc::getUser();
             if ( $user_login['role'] === 'ao' ) {

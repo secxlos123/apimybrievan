@@ -130,8 +130,7 @@ class UserNotification extends Model
 			->whereIn(
 				'notifications.type'
 				, array(
-					'App\Notifications\PropertyNotification'
-					, 'App\Notifications\EditDeveloper'
+					'App\Notifications\EditDeveloper'
 					, 'App\Notifications\ApproveDeveloperProfile'
 					, 'App\Notifications\RejectDeveloperProfile'
 					, 'App\Notifications\CollateralManagerRejected'
