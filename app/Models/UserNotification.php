@@ -208,8 +208,8 @@ class UserNotification extends Model
 
 	public function defineQuery( $pn, $user_id, $branch_id, $role )
 	{
-		$pn = substr( $pn, -8 );
-
+		$pn    = substr( $pn, -8 );
+		$role  = ($role == 'mp') ? 'pinca' : $role;
 		$query = $this->orderBy('notifications.created_at', 'DESC');
 
 		$return = array(
