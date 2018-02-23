@@ -334,17 +334,15 @@ class DashboardController extends Controller
         $marketing_summary[]=$value;
       }
 
-
-
-      if ($marketing_summary) {
+      if (!empty($marketing_summary)) {
           return response()->success([
               'message' => 'Sukses get Marketing Summary.',
               'contents' => $marketing_summary,
-          ], 201);
+          ], 200);
       }
 
       return response()->error([
-          'message' => 'Gagal get Marketing Summary.',
+          'message' => 'Marketing Summary tidak ditemukan.',
           'contents' => $marketing_summary,
       ], 200);
     }
