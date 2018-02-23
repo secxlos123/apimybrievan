@@ -304,7 +304,8 @@ class AuditrailController extends Controller
                      * @return \Illuminate\Database\Eloquent\Builder
                      */
                         if($request->has('search')){
-                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                         }
 
                         })
@@ -341,7 +342,8 @@ class AuditrailController extends Controller
                      * @return \Illuminate\Database\Eloquent\Builder
                      */
                         if($request->has('search')){
-                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                            $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                            $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                         }
 
                         })
@@ -357,19 +359,9 @@ class AuditrailController extends Controller
                         $auditrail->where('auditable_type', '!=', $appointment);
                         $auditrail->where('auditable_type', '!=', $propertyItem);
                         })->limit($limit)->offset($pages)->get();
-        $ReqPage = $request->input('page') +1 ;
-        $data_list = [
-                "current_page" => 1,
-                "data" => $getModulName,
-                "from" => 1,
-                "last_page" => 1,
-                "next_page_url" => url('auditrail/list-mnpengajuan'.'?page='.$ReqPage),
-                "path" => url('auditrail/list-mnpengajuan'),
-                "per_page" => $limit,
-                "prev_page_url" => null,
-                "to" => 1,
-                "total" => $count
-            ];
+                        $ReqPage = $request->input('page') +1 ;
+                        $url = 'list-mnpengajuan';
+                        $data_list = $this->dataList($getModulName, $ReqPage, $limit, $count, $url);
 
                         return response()->success([
                             'message' => 'Sukses',
@@ -398,7 +390,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -437,7 +430,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -454,19 +448,9 @@ class AuditrailController extends Controller
 
                         })->limit($limit)->offset($pages)->get();
         
-        $ReqPage = $request->input('page') +1 ;
-        $data_list = [
-                "current_page" => 1,
-                "data" => $getModulName,
-                "from" => 1,
-                "last_page" => 1,
-                "next_page_url" => url('auditrail/list-mnadmindev'.'?page='.$ReqPage),
-                "path" => url('auditrail/list-mnadmindev'),
-                "per_page" => $limit,
-                "prev_page_url" => null,
-                "to" => 1,
-                "total" => $count
-            ];
+                        $ReqPage = $request->input('page') +1 ;
+                        $url = 'list-mnadmindev';
+                        $data_list = $this->dataList($getModulName, $ReqPage, $limit, $count, $url);
 
                         return response()->success([
                             'message' => 'Sukses',
@@ -493,7 +477,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -529,7 +514,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -543,19 +529,9 @@ class AuditrailController extends Controller
 
                         })->limit($limit)->offset($pages)->get();
         
-        $ReqPage = $request->input('page') +1 ;
-        $data_list = [
-                "current_page" => 1,
-                "data" => $getModulName,
-                "from" => 1,
-                "last_page" => 1,
-                "next_page_url" => url('auditrail/list-mnappointment'.'?page='.$ReqPage),
-                "path" => url('auditrail/list-mnappointment'),
-                "per_page" => $limit,
-                "prev_page_url" => null,
-                "to" => 1,
-                "total" => $count
-            ];
+                        $ReqPage = $request->input('page') +1 ;
+                        $url = 'list-mnappointment';
+                        $data_list = $this->dataList($getModulName, $ReqPage, $limit, $count, $url);
 
                         return response()->success([
                             'message' => 'Sukses',
@@ -582,7 +558,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -599,16 +576,16 @@ class AuditrailController extends Controller
 
                         })->get();
 
-        $count = count($getCountModulName);
+                        $count = count($getCountModulName);
 
-        if($page == 0 ){
-            $pages = 0;
-            //$limit = $limit*2;
-         
-         }elseif($page >= 1){
-            $pages = 0;
-            $limit = $count;
-         }
+                        if($page == 0 ){
+                            $pages = 0;
+                            //$limit = $limit*2;
+                         
+                         }elseif($page >= 1){
+                            $pages = 0;
+                            $limit = $count;
+                         }
 
         $getModulName = \DB::table('auditrail_collaterals')
                         ->selectRaw("distinct(modul_name)")
@@ -621,7 +598,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -638,19 +616,9 @@ class AuditrailController extends Controller
 
                         })->limit($limit)->offset($pages)->get();
         
-        $ReqPage = $request->input('page') +1 ;
-        $data_list = [
-                "current_page" => 1,
-                "data" => $getModulName,
-                "from" => 1,
-                "last_page" => 1,
-                "next_page_url" => url('auditrail/list-mncollateral'.'?page='.$ReqPage),
-                "path" => url('auditrail/list-mncollateral'),
-                "per_page" => $limit,
-                "prev_page_url" => null,
-                "to" => 1,
-                "total" => $count
-            ];
+                        $ReqPage = $request->input('page') +1 ;
+                        $url = 'list-mncollateral';
+                        $data_list = $this->dataList($getModulName, $ReqPage, $limit, $count, $url);
 
                         return response()->success([
                             'message' => 'Sukses',
@@ -677,7 +645,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -717,7 +686,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -735,19 +705,9 @@ class AuditrailController extends Controller
 
                         })->limit($limit)->offset($pages)->get();
         
-        $ReqPage = $request->input('page') +1 ;
-        $data_list = [
-                "current_page" => 1,
-                "data" => $getModulName,
-                "from" => 1,
-                "last_page" => 1,
-                "next_page_url" => url('auditrail/list-mnagendev'.'?page='.$ReqPage),
-                "path" => url('auditrail/list-mnagendev'),
-                "per_page" => $limit,
-                "prev_page_url" => null,
-                "to" => 1,
-                "total" => $count
-            ];
+                        $ReqPage = $request->input('page') +1 ;
+                        $url = 'list-mnagendev';
+                        $data_list = $this->dataList($getModulName, $ReqPage, $limit, $count, $url);
 
                         return response()->success([
                             'message' => 'Sukses',
@@ -773,7 +733,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( $request ){
@@ -795,6 +756,28 @@ class AuditrailController extends Controller
     }
 
     /**
+     * This Function For array List
+     * @return array $data_list
+     */
+
+    public function dataList($getModulName, $ReqPage, $limit, $count, $url)
+    {
+        $data_list = [
+            "current_page" => 1,
+            "data" => $getModulName,
+            "from" => 1,
+            "last_page" => 1,
+            "next_page_url" => url('auditrail/'.$url.'?page='.$ReqPage),
+            "path" => url('auditrail/'.$url),
+            "per_page" => $limit,
+            "prev_page_url" => null,
+            "to" => 1,
+            "total" => $count
+        ];
+        return $data_list;
+    }
+
+    /**
      * This function for list-modulname auditrail tab Detail User Activity
      * @param Illuminate\Http\Request
      */
@@ -812,7 +795,8 @@ class AuditrailController extends Controller
                          * @return \Illuminate\Database\Eloquent\Builder
                          */
                             if($request->has('search')){
-                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', '%'.strtolower($request->input('search')).'%');
+                                $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                                $auditrail->where(\DB::raw('lower(modul_name)'), 'ilike', $lowerSearch);
                             }
                         })
                         ->where( function( $auditrail ) use ( &$request, &$id ){

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\API\v1\Password;
+namespace App\Http\Requests;
 
-use App\Http\Requests\BaseRequest as FormRequest;
+use App\Http\Requests\BaseRequest;
 
-class ResetRequest extends FormRequest
+class ApkRequest extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,9 @@ class ResetRequest extends FormRequest
      */
     public function rules()
     {
-        $type = $this->segment(3);
-
         return [
-            'email' => "required|email|exists:users,email"
+            'apkEks'=>'file',
+            'apkInt'=>'file'
         ];
     }
 }

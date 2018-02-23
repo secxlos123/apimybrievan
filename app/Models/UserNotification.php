@@ -33,9 +33,7 @@ class UserNotification extends Model
 	public function scopePinca( $query, $branch_id )
 	{
 		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
-			->leftJoin( 'visit_reports', 'eforms.id', '=', 'visit_reports.eform_id' )
-			->whereNotNull( 'visit_reports.created_at' )
-			->where( 'eforms.branch_id', $branch_id )
+			->where( 'notifications.branch_id', $branch_id )
 			->whereIn(
 				'notifications.type'
 				, array(

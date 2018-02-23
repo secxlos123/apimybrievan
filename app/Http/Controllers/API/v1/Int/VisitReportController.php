@@ -96,21 +96,15 @@ class VisitReportController extends Controller
     {
         $eform = EForm::find($eform_id);
         $message = 'Resend E-Form VIP gagal';
+        
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
             $message = autoApproveForVIP( array(), $eform->id );
-
-            if ( $message == 'E-Form VIP berhasil' ) {
-                return response()->success( [
-                    'message' => $message,
-                    'contents' => array()
-                ], 200 );
-            }
         }
 
         return response()->success( [
             'message' => $message,
             'contents' => array()
-        ], 401 );
+        ], 200 );
     }
 }

@@ -22,7 +22,8 @@ class MapController extends Controller
           'category'=> $market->category,
           'longitude'=> $market->longitude,
           'latitude'=> $market->latitude,
-          'address'=> $market->address
+          'address'=> $market->address,
+          'pos_code'=> $market->pos_code
         ];
       }
 
@@ -35,7 +36,8 @@ class MapController extends Controller
 
       return response()->error([
           'message' => 'Gagal get Market Map.',
-      ], 500);
+          'contents' => $market_map,
+      ], 200);
     }
 
     public function activity_map(Request $request)
@@ -86,6 +88,7 @@ class MapController extends Controller
 
       return response()->error([
           'message' => 'Gagal get Activity Map.',
+          'contents' => $activity_map,
       ], 500);
 
     }
