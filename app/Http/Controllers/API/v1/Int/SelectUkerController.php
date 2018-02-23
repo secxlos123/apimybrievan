@@ -78,7 +78,7 @@ class SelectUkerController extends Controller
     {
 		 $host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
-		$urls = 'http://172.18.44.182/';
+		$urls = 'http://10.35.65.208:81/bribranch/branch/';
 	}else{
 		$urls = 'http://api.briconnect.bri.co.id/';  
 	  }
