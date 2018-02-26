@@ -50,13 +50,13 @@ class UserNotification extends Model
 	public function scopeAo( $query, $pn )
 	{
 		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
-			->leftJoin( 'collaterals', function ( $join ) {
-                $join->on( 'collaterals.id', '=' , 'notifications.slug' )
-                    ->where( 'notifications.type_module', '=', 'collateral' )
-                    ->where( 'notifications.type', '=', 'App\Notifications\CollateraAODisposition' );
-            })
+			// ->leftJoin( 'collaterals', function ( $join ) {
+   //              $join->on( 'collaterals.id', '=' , 'notifications.slug' )
+   //                  ->where( 'notifications.type_module', '=', 'collateral' )
+   //                  ->where( 'notifications.type', '=', 'App\Notifications\CollateraAODisposition' );
+   //          })
 			->where( 'eforms.ao_id', $pn )
-			->orWhereNotNull( 'collaterals.id' )
+			// ->orWhereNotNull( 'collaterals.id' )
 			->whereIn(
 				'notifications.type'
 				, array(
