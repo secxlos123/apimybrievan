@@ -52,7 +52,6 @@ class UserNotification extends Model
 		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
 			->leftJoin( 'collaterals', function ( $join ) {
                 $join->on( 'collaterals.id', '=' , 'notifications.slug' )
-                    ->where( 'notifications.type_module', '=', 'collateral' )
                     ->where( function( $q ) {
 						$q->whereIn( 'notifications.type_module'
 							, array(
@@ -599,7 +598,7 @@ class UserNotification extends Model
 			case 'App\Notifications\CollateralManagerRejected':
 				// reject collateral
 				// dari col-man
-				// ke staff-col / AO , admin dev
+				// ke admin dev
 				$append = array(
 				 	'message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI'
 				 	, 'message_external' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI'
@@ -607,14 +606,36 @@ class UserNotification extends Model
 				);
 				break;
 
+			case 'App\Notifications\CollateralManagerRejectedAO':
+				// reject collateral
+				// dari col-man
+				// ke staff-col / AO
+				$append = array(
+				 	'message' => 'Collateral manager reject untuk AO'
+				 	, 'message_external' => 'Collateral manager reject untuk AO'
+				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slug . '&type=collateral_manager_rejecting'
+				);
+				break;
+
 			case 'App\Notifications\CollateralManagerApprove':
 				// approve collateral
 				// dari col-man
-				// ke staff-col / AO , admin dev
+				// ke admin dev
 				$append = array(
 				 	'message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan'
 				 	, 'message_external' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan'
 					, 'url' => $externalurl . 'dev/proyek?slug=' . $slug . '&type=collateral_manager_approving'
+				);
+				break;
+
+			case 'App\Notifications\CollateralManagerApproveAO':
+				// approve collateral
+				// dari col-man
+				// ke staff-col / AO
+				$append = array(
+				 	'message' => 'Collateral manager approve untuk AO'
+				 	, 'message_external' => 'Collateral manager approve untuk AO'
+					, 'url' => $internalurl . 'staff-collateral?slug=' . $slug . '&type=collateral_manager_approving'
 				);
 				break;
 
