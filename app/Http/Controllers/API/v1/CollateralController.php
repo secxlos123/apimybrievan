@@ -391,7 +391,7 @@ class CollateralController extends Controller
                 // Get data from notifications table
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
                 ->orderBy('created_at', 'desc')->first();
-                $pushNotif = false;
+                // $pushNotif = false;
               }
 
                 // Notif Akan Dikirim ke AO
@@ -426,7 +426,7 @@ class CollateralController extends Controller
                     $userNotif = new UserNotification;
                     // Get data from notifications table
                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
-                    $pushNotif = false;
+                    // $pushNotif = false;
                   }
 
                     // Notif Akan Dikirim ke AO
