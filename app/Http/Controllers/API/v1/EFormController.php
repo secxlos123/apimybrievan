@@ -494,9 +494,25 @@ class EFormController extends Controller
 					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
 					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
 					/*----------------------------------*/
+				}else if(!empty($request->SK_AWAL) || !empty($request->SK_AKHIR)){
+					if(!empty($request->SK_AWAL)){
+						$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+						$SK_AWAL = $request->SK_AWAL;
+						$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+						$baseRequest['SK_AWAL'] = $SK_AWAL;
+												
+					}else{
+						$baseRequest['SK_AWAL'] = $SK_AWAL;
+
+						$SK_AKHIR = $request->SK_AKHIR;
+						$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+						$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+					}
+					/*----------------------------------*/
+				}else{
+					$baseRequest['SK_AWAL'] = $SK_AWAL;
+					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
 				}
-				$baseRequest['SK_AWAL'] = $SK_AWAL;
-				$baseRequest['SK_AKHIR'] = $SK_AKHIR;
 			}
 
 			if($baseRequest['Payroll']=='1'){

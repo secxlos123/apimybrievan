@@ -4,16 +4,15 @@ namespace App\Http\Controllers\API\v1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\v1\Int\Crm\CustomerController;
 use App\Http\Controllers\API\v1\EFormController;
-use App\Models\CustomerDetail;
 use App\Models\KartuKredit;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class KartuKreditController extends Controller{
 
-	
+	use ValidatesRequests;
 	
 	public function example(){
 
@@ -148,15 +147,58 @@ class KartuKreditController extends Controller{
 	}
 
 	public function checkNIK(Request $req){
-		$nik = CustomerDetail::where('nik','=',$req->nik)->first();
-		if ($nik == null){
-			return "tidak ditemukan";
-		}else{
-			
-			return "nik ada";
+		$client = new Client();
+		$host = 'apimybri.bri.co.id/api/v1';
+
+		//body
+		$nik = $req['nik'];
+		//header
+		$pn =  $req->header('pn');
+		// $branch = $req->header('branch');
+		$auth = $req->header('Authorization');
+		
+		try{
+			$res = $client
+			->request('POST',
+				$host.'/int/crm/account/customer_nik',
+				['form_params'=>['nik' => $nik,]],
+				['headers'=>['pn'=> $pn,'Authorization'=>$auth]]
+			);
+		}catch(RequestException $e){
+			// return "error";
+			echo $e->getMessage() . "\n";
+     	 	echo $e->getRequest()->getMethod();
+      	 	echo " \n";
 		}
 
+		// $body = $res->getBody();
+		// $obj = json_decode($body);
+		// $data = $obj->responseData;
+
+		// return $data;
+		return response()->json([
+			'nik'=>$nik,
+			'pn' =>$pn,
+			'Authorization'=>$auth
+
+		]);
 	}
+
+	public function sendUserDataToLos(Request $req){
+
+		$validatedData = $this->validate($req,[
+            'PersonalName' => 'required',
+            'PersonalNIK' => 'required',
+            'PersonalTempatLahir' => 'required',
+            'PersonalTanggalLahir' => 'required',
+
+         ]);
+
+		$kk = new KartuKredit();
+		$informasiLos = $kk->convertToAddDataLosFormat($req);
+		
+		return $informasiLos;
+    }
 
 }
 
