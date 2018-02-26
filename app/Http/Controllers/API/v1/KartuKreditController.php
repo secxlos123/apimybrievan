@@ -184,14 +184,14 @@ class KartuKreditController extends Controller{
 		]);
 	}
 
-	public function sentUserDataToLos(Request $req){
+	public function sendUserDataToLos(Request $req){
 
 		$validatedData = $this->validate($req,[
             'PersonalName' => 'required',
             'PersonalNIK' => 'required',
             'PersonalTempatLahir' => 'required',
-            'PersonalTanggalLahir' => 'required'
-            'PersonalEmail' => 'require'
+            'PersonalTanggalLahir' => 'required',
+
          ]);
 
 		$kk = new KartuKredit();
