@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class EditNullableFieldOnCrmNewCustomers extends Migration
+class DropIndexCrmNewCustomers extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class EditNullableFieldOnCrmNewCustomers extends Migration
     public function up()
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
-		$table->string('nik')->nullable()->change();
-		$table->string('email')->nullable()->change();
+        	$table->dropUnique('nik');
+		$table->dropUnique('email');
         });
     }
 
@@ -27,8 +27,8 @@ class EditNullableFieldOnCrmNewCustomers extends Migration
     public function down()
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
-            $table->string('nik')->unique()->change();
-          $table->string('email')->unique()->change();
+		$table->unique('nik');
+		$table->unique('email');
         });
     }
 }
