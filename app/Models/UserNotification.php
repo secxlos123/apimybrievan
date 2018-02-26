@@ -281,7 +281,9 @@ class UserNotification extends Model
 
 		$managerKeys = array(
 			'App\Notifications\CollateralManagerApprove'
+			, 'App\Notifications\CollateralManagerApproveAO'
 			, 'App\Notifications\CollateralManagerRejected'
+			, 'App\Notifications\CollateralManagerRejectedAO'
 		);
 
 		if ( in_array( $this->type, $managerKeys ) ) {
