@@ -55,7 +55,11 @@ class PropertyItem extends Model implements AuditableContract
     public function getPropertyTypeNameAttribute()
     {
         $type = PropertyType::find($this->property_type_id);
-        return $type->name;
+        $name=NULL;
+        if (count($type)>0) {
+            $name = $type->name;
+        }
+        return $name;
     }
 
     public function getPhotosAttribute()

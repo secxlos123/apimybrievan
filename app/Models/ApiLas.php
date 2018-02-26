@@ -119,7 +119,7 @@ class ApiLas extends Model
 
     public function eform_briguna($branch = null) {
         if (!empty($branch)) {
-            $eforms = DB::table('eforms')
+            /*$eforms = DB::table('eforms')
                  ->select('eforms.ref_number','eforms.created_at','eforms.prescreening_status',
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
                     'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
@@ -137,10 +137,9 @@ class ApiLas extends Model
                  // ->where('eforms.branch_id', '=', $branch)
                  ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branch))
                  ->orderBy('eforms.created_at', 'desc')
-                 ->get();
-        } else {
+                 ->get();*/
             $eforms = DB::table('eforms')
-                 ->select('eforms.ref_number','eforms.created_at','eforms.prescreening_status',
+                 ->select(['eforms.ref_number','eforms.created_at','eforms.prescreening_status',
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
                     'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
                     'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
@@ -149,8 +148,86 @@ class ApiLas extends Model
                     'customer_details.nik','customer_details.is_verified',
                     'customer_details.address','customer_details.mother_name',
                     'customer_details.birth_date','users.first_name','users.last_name',
-                    'users.mobile_phone','users.gender'
-                   )
+                    'users.mobile_phone','users.gender',
+                    \DB::Raw("case when eforms.ao_id is not null or eforms.ao_id != '' 
+                        then 'Disposisi Pengajuan'
+                        else 'Pengajuan Kredit' end as status_pengajuan"),
+                    \DB::Raw("case when briguna.tp_produk = '1' then 'Briguna Karya/Umum'
+                        when briguna.tp_produk = '2' then 'Briguna Purna'
+                        when briguna.tp_produk = '10' then 'Briguna Micro'
+                        when briguna.tp_produk = '22' then 'Briguna Talangan'
+                        when briguna.tp_produk = '28' then 'Briguna Karyawan BRI'
+                        else 'Lainnya' end as product"),
+                    \DB::Raw("case when briguna.is_send = 0 then 'APPROVAL'
+                        when briguna.is_send = 1 then 'APPROVED'
+                        when briguna.is_send = 2 then 'UNAPPROVED'
+                        when briguna.is_send = 3 then 'DITOLAK'
+                        when briguna.is_send = 4 then 'VOID ADK'
+                        when briguna.is_send = 5 then 'APPROVED PENCAIRAN'
+                        when briguna.is_send = 6 then 'DISBURSED'
+                        when briguna.is_send = 7 then 'SENT TO BRINETS'
+                        when briguna.is_send = 8 then 'AGREE BY MP'
+                        when briguna.is_send = 9 then 'DITOLAK'
+                        when briguna.is_send = 10 then 'AGREE BY AMP'
+                        when briguna.is_send = 11 then 'AGREE BY PINCAPEM'
+                        when briguna.is_send = 12 then 'AGREE BY PINCA'
+                        when briguna.is_send = 13 then 'AGREE BY WAPINWIL'
+                        when briguna.is_send = 14 then 'AGREE BY WAPINCASUS'
+                        when briguna.is_send = 15 then 'NAIK KETINGKAT LEBIH TINGGI'
+                        when briguna.is_send = 16 then 'MENGEMBALIKAN DATA KE AO'
+                        else '-' end as status_putusan")
+                    ])
+                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
+                 ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
+                 ->join('users', 'users.id', '=', 'eforms.user_id')
+                 ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branch))
+                 ->orderBy('eforms.created_at', 'desc')
+                 ->get();
+        } else {
+            $eforms = DB::table('eforms')
+                 ->select(['eforms.ref_number','eforms.created_at','eforms.prescreening_status',
+                    'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
+                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
+                    'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
+                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
+                    'briguna.tgl_analisa','briguna.tgl_putusan','briguna.cif',
+                    'customer_details.nik','customer_details.is_verified',
+                    'customer_details.address','customer_details.mother_name',
+                    'customer_details.birth_date','users.first_name','users.last_name',
+                    'users.mobile_phone','users.gender',
+                    \DB::Raw("case when (eforms.is_approved = false and eforms.recommended is not null) 
+                        or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
+                        when eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
+                        when eforms.status_eform = 'Approval2' then 'Rekontes Kredit'
+                        when eforms.status_eform = 'Pencairan' then 'Pencairan'
+                        when eforms.is_approved = true then 'Proses CLF'
+                        when eforms.ao_id is not null or eforms.ao_id != '' then 'Disposisi Pengajuan'
+                        else 'Pengajuan Kredit' end as new_status"),
+                    \DB::Raw("case when briguna.tp_produk = '1' then 'Briguna Karya/Umum'
+                        when briguna.tp_produk = '2' then 'Briguna Purna'
+                        when briguna.tp_produk = '10' then 'Briguna Micro'
+                        when briguna.tp_produk = '22' then 'Briguna Talangan'
+                        when briguna.tp_produk = '28' then 'Briguna Karyawan BRI'
+                        else 'Lainnya' end as product"),
+                    \DB::Raw("case when briguna.is_send = 0 then 'APPROVAL'
+                        when briguna.is_send = 1 then 'APPROVED'
+                        when briguna.is_send = 2 then 'UNAPPROVED'
+                        when briguna.is_send = 3 then 'DITOLAK'
+                        when briguna.is_send = 4 then 'VOID ADK'
+                        when briguna.is_send = 5 then 'APPROVED PENCAIRAN'
+                        when briguna.is_send = 6 then 'DISBURSED'
+                        when briguna.is_send = 7 then 'SENT TO BRINETS'
+                        when briguna.is_send = 8 then 'AGREE BY MP'
+                        when briguna.is_send = 9 then 'DITOLAK'
+                        when briguna.is_send = 10 then 'AGREE BY AMP'
+                        when briguna.is_send = 11 then 'AGREE BY PINCAPEM'
+                        when briguna.is_send = 12 then 'AGREE BY PINCA'
+                        when briguna.is_send = 13 then 'AGREE BY WAPINWIL'
+                        when briguna.is_send = 14 then 'AGREE BY WAPINCASUS'
+                        when briguna.is_send = 15 then 'NAIK KETINGKAT LEBIH TINGGI'
+                        when briguna.is_send = 16 then 'MENGEMBALIKAN DATA KE AO'
+                        else '-' end as status_putusan")
+                    ])
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
                  ->join('users', 'users.id', '=', 'eforms.user_id')
@@ -159,8 +236,9 @@ class ApiLas extends Model
         }
         
         $eforms = $eforms->toArray();
+        \Log::info($eforms);
         $eforms = json_decode(json_encode($eforms), True);
-        
+                            
         \Log::info("query select briguna berhasil");
         return $eforms;
     }

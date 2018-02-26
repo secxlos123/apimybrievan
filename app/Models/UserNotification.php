@@ -64,8 +64,8 @@ class UserNotification extends Model
 					, 'App\Notifications\VerificationApproveFormNasabah'
 					, 'App\Notifications\VerificationRejectFormNasabah'
 					, 'App\Notifications\CollateraAODisposition'
-					, 'App\Notifications\CollateralManagerRejected'
-					, 'App\Notifications\CollateralManagerApprove'
+					, 'App\Notifications\CollateralManagerRejectedAO'
+					, 'App\Notifications\CollateralManagerApproveAO'
 					, 'App\Notifications\RecontestEFormNotification'
 				)
 			);
@@ -130,8 +130,7 @@ class UserNotification extends Model
 			->whereIn(
 				'notifications.type'
 				, array(
-					'App\Notifications\PropertyNotification'
-					, 'App\Notifications\EditDeveloper'
+					'App\Notifications\EditDeveloper'
 					, 'App\Notifications\ApproveDeveloperProfile'
 					, 'App\Notifications\RejectDeveloperProfile'
 					, 'App\Notifications\CollateralManagerRejected'
@@ -208,8 +207,8 @@ class UserNotification extends Model
 
 	public function defineQuery( $pn, $user_id, $branch_id, $role )
 	{
-		$pn = substr( $pn, -8 );
-
+		$pn    = substr( $pn, -8 );
+		$role  = ($role == 'mp') ? 'pinca' : $role;
 		$query = $this->orderBy('notifications.created_at', 'DESC');
 
 		$return = array(

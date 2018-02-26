@@ -39,7 +39,7 @@ class SentSMSNotifController extends Controller
 						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
  */
 			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].", kredit Anda disetujui ".$request['plafond'].".,- JK ".$request['year'].". bulan,angs. 1 bulanan ".
-						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad & pencairan kredit.. ";
+						".,-.Kunjungi BRI ".$request['unit_kerja'].". untuk akad dan pencairan kredit. ";
 		}elseif($request['kode_message']=='4'){
 				//4. Pengajuan Kredit Tidak Disetujui
 			$message = "Yth.Bapak/Ibu ".$request['nama_cust'].",Kami informasikan pengajuan kredit Anda Rp. ".$request['plafond'].",- JK ".$request['year'].
@@ -81,7 +81,7 @@ class SentSMSNotifController extends Controller
 		$host = env('APP_URL');
 	  if($host == 'http://api.dev.net/'){
 		$url = 'http://10.35.65.61:9997/';
-	}else{
+		}else{
 		$url = 'http://172.21.56.34:9994/';  
 	  }
       $requestLeads = $client->request('POST', $url.'Service.asmx',
