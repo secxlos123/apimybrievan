@@ -358,6 +358,7 @@ class EForm extends Model implements AuditableContract
             $defaultValue['status_eform'] = 'Rejected';
             $availableStatus = "available";
             $result['status'] = true;
+            $kprValue['is_sent'] = false;
 
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
