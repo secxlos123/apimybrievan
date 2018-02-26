@@ -18,7 +18,8 @@ class MapController extends Controller
       $market_map = [];
       foreach (MarketMapping::all() as $market) {
         $market_map []= [
-          'market_name'=> $market->market_name,
+	  'id'=> $market->id,	
+	  'market_name'=> $market->market_name,
           'category'=> $market->category,
           'longitude'=> $market->longitude,
           'latitude'=> $market->latitude,
