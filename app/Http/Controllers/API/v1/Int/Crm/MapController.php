@@ -24,7 +24,9 @@ class MapController extends Controller
           'longitude'=> $market->longitude,
           'latitude'=> $market->latitude,
           'address'=> $market->address,
-          'pos_code'=> $market->pos_code
+	  'pos_code'=> $market->pos_code,
+	  'province' => $market->province,
+	  'city'=> $market->ciry
         ];
       }
 
