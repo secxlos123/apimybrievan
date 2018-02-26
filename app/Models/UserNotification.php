@@ -60,7 +60,7 @@ class UserNotification extends Model
 								, 'collateral_manager_approving'
 							)
 						);
-		            } );
+		            } )
                     ->where( function( $q ) {
 						$q->whereIn( 'notifications.type'
 							, array(
@@ -69,7 +69,7 @@ class UserNotification extends Model
 								, 'App\Notifications\CollateralManagerRejectedAO'
 							)
 						);
-		            } );
+		            } )
             } )
             ->where( function( $q ) use ( $pn ) {
 				$q->where( 'eforms.ao_id', $pn )
