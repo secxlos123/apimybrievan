@@ -377,7 +377,7 @@ class CollateralController extends Controller
             $pushNotif = true;
             if ($action === 'approve')
             {
-              if ($developer_id == 1)
+              if($developer_id != 1)
               {
                 // Notif Akan Dikirim ke Admin Developer
                 $bodyNotif = 'approval collateral';
@@ -392,7 +392,8 @@ class CollateralController extends Controller
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
                 ->orderBy('created_at', 'desc')->first();
                 $pushNotif = false;
-              }else {
+              }
+
                 // Notif Akan Dikirim ke AO
                 $bodyNotif = 'approval collateral';
                 $status = 'collateral_approve';
@@ -405,14 +406,14 @@ class CollateralController extends Controller
                 // Get data from notifications table
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
                 ->orderBy('created_at', 'desc')->first();
-              }
+
             }
             else if ($action === 'reject')
             {
                 $role = $dataUser['role'];
                 if ($role=='collateral')  //reject penilaian anggunan untuk developer
                 {
-                  if($developer_id == 1)
+                  if($developer_id != 1)
                   {
                     // Notif Akan Dikirim ke Admin Developer
                     $bodyNotif = 'reject collateral';
@@ -426,7 +427,8 @@ class CollateralController extends Controller
                     // Get data from notifications table
                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
                     $pushNotif = false;
-                  }else {
+                  }
+
                     // Notif Akan Dikirim ke AO
                     $bodyNotif = 'reject collateral';
                     $status    = 'collateral_reject';
@@ -438,7 +440,7 @@ class CollateralController extends Controller
                     $userNotif = new UserNotification;
                     // Get data from notifications table
                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
-                  }
+
                 }
                 else  //reject untuk staf collateral dan ao
                 {
