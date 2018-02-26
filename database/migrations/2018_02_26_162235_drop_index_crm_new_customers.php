@@ -14,7 +14,7 @@ class DropIndexCrmNewCustomers extends Migration
     public function up()
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
-        	$table->dropUnique('nik');
+        	
 		$table->dropUnique('email');
         });
     }
@@ -27,7 +27,7 @@ class DropIndexCrmNewCustomers extends Migration
     public function down()
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
-		$table->unique('nik');
+		
 		$table->unique('email');
         });
     }
