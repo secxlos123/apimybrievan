@@ -227,6 +227,7 @@ class BRIGUNA extends Model
                     $briguna['ref_number_new'] = $data_dropbox['refno'];
                     $eforms = EForm::findOrFail($data_dropbox['eform_id']);
                     $base_request["ref_number"] = $data_dropbox['refno'];
+					$eform['ref_number'] = $data_dropbox['refno'];
                     $eforms->update($base_request);
                     return $eform;
                 }

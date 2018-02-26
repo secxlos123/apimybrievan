@@ -34,7 +34,7 @@ class NotificationController extends Controller
     {
         $role = ( request()->header( 'role' ) != '' ) ? request()->header( 'role' ) : 0 ;
         $pn = ( request()->header( 'pn' ) != '' ) ? request()->header( 'pn' ) : '' ;
-        $branch_id = ( request()->header( 'branchid' ) != '' ) ? request()->header( 'branchid' ) : '' ;
+        $branch_id = ( request()->header( 'branchid' ) != '' ) ? request()->header( 'branchid' ) : 0 ;
     	$user_id = ( request()->header( 'userid' ) != '' ) ? request()->header( 'userid' ) : 0 ;
         $ArrGetDataNotification = [];
 
@@ -62,7 +62,7 @@ class NotificationController extends Controller
                                         'data' => $value->data,
                                         'created_at' => $value->created_at->diffForHumans(),
                                         'is_read' => (bool) $value->is_read,
-                                        'read_at' => Carbon::parse($value->read_at)->format('Y-m-d H:i:s'),
+                                        'read_at' => $value->read_at,
                                     ];
             }
         }

@@ -9,6 +9,7 @@ class MarketMapping extends Model
   protected $fillable = [
     'category',
     'market_name',
+    'pos_code',
     'province',
     'city',
     'longitude',
