@@ -14,6 +14,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\KartuKredit;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -73,22 +74,23 @@ class EFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-	 public function hapuseform( Request $request )
+	public function hapuseform( Request $request )
     {
         \Log::info($request->all());
-          $briguna = BRIGUNA::where('eform_id', $request->id )->findOrFail();
-		  if($briguna->is_send==null || $briguna->is_send=='' || empty($briguna->is_send)){
-			  return response()->success( [
-					'contents' => 'Hapus Gagal'
-				],200 );  
-		  }else{
-				$briguna = $briguna->delete();
-				  $eform = EForm::where('eform_id', $request->id )->findOrFail();
-				  $eform = $eform->delete();
-				return response()->success( [
-					'contents' => 'Hapus berhasil'
-				],200 );  
-		  }
+        $message = 'Hapus Gagal';
+        $eform = EForm::findOrFail( $request->id );
+        if ( $eform->briguna ) {
+            $briguna = $eform->briguna;
+            if( $briguna->is_send == null || $briguna->is_send == '' || empty($briguna->is_send) ){
+                $briguna->delete();
+                $eform->delete();
+                $message = 'Hapus berhasil';
+            }    
+        }
+
+        return response()->success( [
+            'contents' => $message
+        ], 200 );
     }
     public function index( Request $request )
     {
@@ -288,14 +290,6 @@ class EFormController extends Controller
 		}elseif($eform['product_type']=='kpr'){
 			$eform = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
 			// Check recontest or not
-            if($recontest){
-                $usersModel  = User::FindOrFail($eform->user_id);
-                $credentials = [
-                    'data' => $eform,
-                    'user' => $usersModel,
-                ];
-                pushNotification($credentials, "recontestEForm");
-            }
             return response()->success([
 				'contents' => $eform
 			]);
@@ -403,6 +397,18 @@ class EFormController extends Controller
                     $baseRequest[$target] = $baseRequest[$base];
                     unset($baseRequest[$base]);
                 }
+            }
+
+            if ($request->product_type == 'kartu_kredit'){
+                \Log::info("========================KARTU_KREDIT========================"); 
+
+                //bandingin nik sama customer_details, kalau gak nemu create baru
+                
+
+                return response()->success([
+                    'message' => 'response eform kkd',
+
+                ], 200 );
             }
 
             if ( $request->product_type == 'briguna' ) {
@@ -516,6 +522,19 @@ class EFormController extends Controller
 				}
 			}
                 $kpr = BRIGUNA::create( $baseRequest );
+				$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.nik', $request->nik)
+						 ->get();
+				
+				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];				
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
                 $return = [
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
@@ -560,7 +579,7 @@ class EFormController extends Controller
                         'pic_name' => 'BRI',
                         'pic_phone' => '-',
                         'address' => $baseRequest['home_location'],
-                        'category' => '3',
+                        'category' => $baseRequest['kpr_type_property'],
                         'latitude' => '0',
                         'longitude' => '0',
                         'description' => '-',
@@ -666,60 +685,60 @@ class EFormController extends Controller
         $role = request()->header( 'role' );
         $pn = request()->header( 'pn' );
         $branch_id = request()->header( 'branch_id' );
+        try {
+            DB::beginTransaction();
+            $eform = EForm::findOrFail( $id );
+            $ao_id = substr( '00000000' . $request->ao_id, -8 );
 
-        DB::beginTransaction();
-        $eform = EForm::findOrFail( $id );
-        $ao_id = substr( '00000000' . $request->ao_id, -8 );
+            $baseRequest = [ 'ao_id' => $ao_id ];
+            // Get User Login
+            $user_login = \RestwsHc::getUser($ao_id);
+            $baseRequest['ao_name'] = $user_login['name'];
+            $baseRequest['ao_position'] = $user_login['position'];
 
-        $baseRequest = [ 'ao_id' => $ao_id ];
-        // Get User Login
-        $user_login = \RestwsHc::getUser($ao_id);
-        $baseRequest['ao_name'] = $user_login['name'];
-        $baseRequest['ao_position'] = $user_login['position'];
+            $eform->update( $baseRequest );
 
-        $eform->update( $baseRequest );
+            $typeModule = getTypeModule(EForm::class);
+            notificationIsRead($id, $typeModule);
 
-        $typeModule = getTypeModule(EForm::class);
-        $notificationIsRead =  $this->userNotification->where('slug', $id)->where( 'type_module',$typeModule)
-                                       ->whereNull('read_at')
-                                       ->first();
-        if($notificationIsRead != NULL){
-            $notificationIsRead->markAsRead();
+            $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
+            $usersModel->notify(new EFormPenugasanDisposisi($eform));
+
+            //add scheduleData in Disposisition
+            $scheduleData = array(
+                    'title' => $eform->ref_number
+                    , 'appointment_date' => $eform->appointment_date
+                    , 'user_id' => $eform->user_id
+                    , 'ao_id' => $eform->ao_id
+                    , 'eform_id' => $eform->id
+                    , 'ref_number' => $eform->ref_number
+                    , 'address' => $eform->address
+                    , 'latitude' => $eform->longitude
+                    , 'longitude' => $eform->latitude
+                    , 'desc' => '-'
+                    , 'status' => 'waiting'
+                );
+            $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
+            
+            // Credentials for push notification helper
+            $credentials = [
+                'eform' => $eform,
+                'ao_id' => $ao_id,
+            ];
+
+            // Call the helper of push notification function
+            pushNotification($credentials, 'disposition');
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->error( [
+                'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi',
+            ], 422 );
         }
-        $usersModel = User::FindOrFail($eform->user_id);     /*send notification*/
-        $usersModel->notify(new EFormPenugasanDisposisi($eform));
-
-        //add scheduleData in Disposisition
-        $scheduleData = array(
-                'title' => $eform->ref_number
-                , 'appointment_date' => $eform->appointment_date
-                , 'user_id' => $eform->user_id
-                , 'ao_id' => $eform->ao_id
-                , 'eform_id' => $eform->id
-                , 'ref_number' => $eform->ref_number
-                , 'address' => $eform->address
-                , 'latitude' => $eform->longitude
-                , 'longitude' => $eform->latitude
-                , 'desc' => '-'
-                , 'status' => 'waiting'
-            );
-        $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
         DB::commit();
-
-
-        // Credentials for push notification helper
-        $credentials = [
-            'eform' => $eform,
-            'ao_id' => $ao_id,
-        ];
-
-        // Call the helper of push notification function
-        pushNotification($credentials, 'disposition');
-
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
             'contents' => $eform
-        ], 201 );
+        ], 201);
     }
 
     /**
@@ -732,7 +751,6 @@ class EFormController extends Controller
     public function approve( EFormRequest $request, $eform_id )
     {
         $baseRequest = $request;
-
         // Get User Login
         $user_login = \RestwsHc::getUser();
         if(isset($user_login)){
@@ -742,24 +760,16 @@ class EFormController extends Controller
 
         $data = EForm::findOrFail($eform_id);
         $currentStatus = $data->status_eform;
-        $status = ( $request->is_approved ? 'approveEForm' : 'rejectEForm' );
+        $status = ($baseRequest->is_approved == "true" ? 'approveEForm' : 'rejectEForm');
         $eform = EForm::approve( $eform_id, $baseRequest );
 
         if( $eform['status'] ) {
             $data =  EForm::findOrFail($eform_id);
+            
             $typeModule = getTypeModule(EForm::class);
+            notificationIsRead($eform_id, $typeModule);
 
-            $notificationIsRead = $this->userNotification
-                ->where( 'slug', $eform_id)
-                ->where( 'type_module',$typeModule)
-                ->whereNull('read_at')
-                ->first();
-
-            if($notificationIsRead != NULL ){
-                $notificationIsRead->markAsRead();
-            }
-
-            if ($request->is_approved) {
+            if ($request->is_approved == "true") {
                 $usersModel = User::FindOrFail($data->user_id);
                 // Recontest
                 if ( $currentStatus != 'Approval2' ) {
@@ -844,25 +854,9 @@ class EFormController extends Controller
         if( $verify['message'] ) {
             if ($verify['contents']) {
                 $typeModule = getTypeModule(EForm::class);
-
-                $notificationIsRead =  $this->userNotification
-                    ->where( 'slug', $verify['contents']->id)
-                    ->where( 'type_module',$typeModule)
-                    ->whereNull('read_at')
-                    ->first();
-
-                if ( $notificationIsRead != NULL ) {
-                    $notificationIsRead->markAsRead();
-                }
+                notificationIsRead($verify['contents']->id, $typeModule);
 
                 $usersModel  = User::FindOrFail($verify['contents']->user_id);
-
-                $credentials = [
-                    'data' => $verify['contents'],
-                    'user' => $usersModel,
-                ];
-                pushNotification($credentials, $status."EForm");
-
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
 
@@ -902,6 +896,35 @@ class EFormController extends Controller
         $eform = EForm::findOrFail($request->eform_id);
 		if($eform->product_type=='briguna'){
 			try{
+				
+				$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.user_id', $eform->user_id)
+						 ->get();
+				
+				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
+				
+				
+				$briguna = DB::table('briguna')
+						 ->select('year','request_amount')
+						 ->where('briguna.eform_id', $request->eform_id)
+						 ->get();
+				
+				$briguna = $briguna->toArray();
+				$briguna = json_decode(json_encode($briguna), True);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],
+							'plafond'=>$briguna[0]['request_amount'],
+							'year'=>$briguna[0]['year'],
+							'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
+							'kode_message'=>'5'];				
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
+		
+		
 					User::destroy($eform->user_id);
 				  DB::commit();
 				return response()->success( [
@@ -959,9 +982,7 @@ class EFormController extends Controller
                     )->first();
 
                     $typeModule = getTypeModule(EForm::class);
-                    $notificationIsRead = $this->userNotification->where( 'slug', $data->id)->where( 'type_module',$typeModule)
-                       ->whereNull('read_at')
-                       ->first();
+                    notificationIsRead($data->id, $typeModule);
 
                     $usersModel  = User::FindOrFail($data['user_id']);
                     $credentials = [

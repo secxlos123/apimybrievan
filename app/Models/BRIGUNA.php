@@ -34,7 +34,7 @@ class BRIGUNA extends Model
         'NIP','Status_Pekerjaan','Nama_atasan_Langsung','Jabatan_atasan','mitra',
         'tujuan_penggunaan','NPWP_nasabah','KK','SLIP_GAJI','SK_AWAL',
         'SK_AKHIR','REKOMENDASI','SKPG',
-        'eform_id','tujuan_penggunaan_id','mitra_id','jenis_pinjaman_id','year',
+        'eform_id','tujuan_penggunaan_id','mitra_id','jenis_pinjaman_id','year','is_send',
 		'request_amount', 'angsuran_usulan', 'maksimum_plafond',
 		'uid','uid_pemrakarsa','tp_produk','id_aplikasi','cif_las',
 		'Tgl_perkiraan_pensiun','Sifat_suku_bunga','Briguna_profesi',
@@ -227,6 +227,7 @@ class BRIGUNA extends Model
                     $briguna['ref_number_new'] = $data_dropbox['refno'];
                     $eforms = EForm::findOrFail($data_dropbox['eform_id']);
                     $base_request["ref_number"] = $data_dropbox['refno'];
+					$eform['ref_number'] = $data_dropbox['refno'];
                     $eforms->update($base_request);
                     return $eform;
                 }

@@ -14,6 +14,9 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::post('getBranch', 'SelectUkerController@getBranch');
+	Route::post('getMitra', 'SelectListMitraController@getMitra');	
+	Route::get('getFasilitas', 'SelectListController@getFasilitas');
+	Route::get('getBank', 'SelectListController@getBank');
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
 	Route::post('mitraall', 'mitra\ScoringProsesController@getallmitra');
 	Route::post('hapus_dir', 'dirrpcController@hapus_dir');
@@ -59,6 +62,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		] );
 
 		Route::put( 'customers/{id}/verify', 'CustomerController@verify' );
+		Route::post( 'eforms/{eform_id}/resend-vip', 'VisitReportController@resendVIP' );
 
 		Route::group( [ 'prefix' => 'eforms/{eform_id}' ], function () {
 			Route::resource( 'visit-reports', 'VisitReportController', [
@@ -86,6 +90,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		 Route::resource( 'register_mitra', 'mitra\RegisterMitraController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'fasilitas_mitra', 'mitra\FasilitasMitraController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		 Route::resource( 'scoring_mitra', 'mitra\ScoringProsesController', [
@@ -136,6 +143,20 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/property', 'AuditrailController@auditProperty');
 		Route::get('auditrail/useractivity', 'AuditrailController@auditUserActivity');
 		Route::get('auditrail/activity_detail/{user_id}', 'AuditrailController@auditUserActitiyDetail');
+		Route::get('auditrail/customers/{nik}', 'AuditrailController@show');
+		Route::get('auditrail/getnik', 'AuditrailController@getNik');
+		Route::get('auditrail/list-mnpengajuan', 'AuditrailController@modulNamePengajuanKredit')->name('list-mnpengajuan');
+		Route::get('auditrail/list-mnadmindev', 'AuditrailController@modulNameAdminDev')->name('list-mnadmindev');
+		Route::get('auditrail/list-mnappointment','AuditrailController@modulNameAppointment')->name('list-mnappointment');
+		Route::get('auditrail/list-mncollateral','AuditrailController@modulNameCollateral')->name('list-mncollateral');
+		Route::get('auditrail/list-mnagendev', 'AuditrailController@modulNameAgenDev')->name('list-mnagendev');
+		Route::get('auditrail/list-mnproperty', 'AuditrailController@modulNameProperty')->name('list-mnproperty');
+		Route::get('auditrail/list-mndetailactivity/{id}', 'AuditrailController@modulNameDetailUserActivity')->name('list-mndetailactivity');
+		Route::get('auditrail/list-collateral-dev', 'AuditrailController@collaterlDeveloper');
+        Route::get('auditrail/list-collateral-non', 'AuditrailController@collateralNon');
+        Route::get('auditrail/getEformCustomer/{nik}', 'AuditrailController@getEformCustomer');
+        Route::get('auditrail/getBranch', 'AuditrailController@getBranch');
+        Route::get('auditrail/getImage/{nik}', 'AuditrailController@getImageUpload');
 	} );
 
 	} );

@@ -19,7 +19,6 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
-        \Log::info($request->all());
         $branchs = $this->fetch($request);
         $page = $request->get('page', 1); // Get the ?page=1 from the url
         $perPage = $request->get('limit', 10000); // Number of items per page
@@ -79,7 +78,6 @@ class OfficeController extends Controller
      */
     private function fetch(Request $request)
     {
-        \Log::info($request->all());
         $long = number_format($request->get('long', env('DEF_LONG', '106.81350')), 5);
         $lat = number_format($request->get('lat', env('DEF_LAT', '-6.21670')), 5);
         $return = RestwsHc::setBody([
@@ -97,7 +95,6 @@ class OfficeController extends Controller
             ])
         ])
         ->post('form_params');
-        \Log::info($return);
         return $return;
     }
 }

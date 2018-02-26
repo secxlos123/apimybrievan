@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
+use App\Models\Crm\MarketingActivityFollowup;
 use App\Models\Crm\MarketMapping;
+
+use RestwsHc;
 
 class MapController extends Controller
 {
@@ -19,7 +22,8 @@ class MapController extends Controller
           'category'=> $market->category,
           'longitude'=> $market->longitude,
           'latitude'=> $market->latitude,
-          'address'=> $market->address
+          'address'=> $market->address,
+          'pos_code'=> $market->pos_code
         ];
       }
 
@@ -27,12 +31,13 @@ class MapController extends Controller
           return response()->success([
               'message' => 'Sukses get Market Map.',
               'contents' => $market_map,
-          ], 201);
+          ], 200);
       }
 
       return response()->error([
           'message' => 'Gagal get Market Map.',
-      ], 500);
+          'contents' => $market_map,
+      ], 200);
     }
 
     public function activity_map(Request $request)
@@ -40,7 +45,6 @@ class MapController extends Controller
       $pn = $request->header('pn');
       $branch = $request->header('branch');
       $pemasar = $this->pemasar($pn,$branch);
-
       if ($pemasar != null) {
         $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
         $list_pn = array_column($pemasar, 'PERNR');
@@ -50,11 +54,14 @@ class MapController extends Controller
       }
 
       $activity_map = [];
+      $lkn_map = [];
       foreach (MarketingActivity::where('desc', '!=', 'first')->whereIn('pn', $list_pn)->with('marketing')->get() as $activity) {
+        $lkn = MarketingActivityFollowup::where('activity_id', $activity->id)->orderBy('id', 'desc')->first();
         $officer1 = array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'';
         $officer2 = array_key_exists($activity->pn_join, $pemasar_name) ? ' ,'.$pemasar_name[$activity->pn_join]:'';
         $officer = $officer1.$officer2;
         $activity_map[]= [
+          'type' => 'schedule',
           'id' => $activity->id,
           'nama' => $activity->marketing->nama,
           'pn' => $activity->pn,
@@ -63,9 +70,11 @@ class MapController extends Controller
           'marketing_activity_type' => $activity->marketing->activity_type,
           'start_date' => date('Y-m-d', strtotime($activity->start_date)),
           'start_time' => date('H:i', strtotime($activity->start_date)),
-          'longitude' => $activity->longitude,
-          'latitude' => $activity->latitude,
+          'long_scd' => $activity->longitude,
+          'lat_scd' => $activity->latitude,
           'address' => $activity->address,
+          'long_lkn' => ($lkn['longitude'])?$lkn['longitude']:'',
+          'lat_lkn' => ($lkn['latitude'])?$lkn['latitude']:'',
           ];
       }
 
@@ -74,11 +83,12 @@ class MapController extends Controller
           return response()->success([
               'message' => 'Sukses get Activity Map.',
               'contents' => $activity_map,
-          ], 201);
+          ], 200);
       }
 
       return response()->error([
           'message' => 'Gagal get Activity Map.',
+          'contents' => $activity_map,
       ], 500);
 
     }

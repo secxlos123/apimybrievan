@@ -106,7 +106,7 @@ class PropertyController extends Controller
 
                 $dataProperty = Property::Find($property->id); 
                 $usersModel = User::FindOrFail($request->user()->id);
-                //$usersModel->notify(new PropertyNotification($dataProperty)); /*send notification to pinca*/
+                $usersModel->notify(new PropertyNotification($dataProperty)); /*send notification to pinca*/
 
                 \Log::info($property);
                 $data = [
@@ -148,25 +148,29 @@ class PropertyController extends Controller
     public function service($property)
     {
         $property->load('developer');
+        if (ENV('APP_ENV') == 'local') {
+            $id = array('code' => '200',
+                        'contents'=> mt_rand(100, 999) );
+        }else{
+            $current = [
+                'tipe_project' => 'KPR',
+                'nama_project' => $property->name,
+                // 'alamat_project' => $property->address,
+                'pic_project' => $property->pic_name ?: '',
+                'pks_project' => $property->developer->pks_number ?: '-',
+                'deskripsi_project' => substr($property->description, 255),
+                'telepon_project' => $property->pic_phone ?: '',
+                'hp_project' => $property->pic_project ?: '',
+                'fax_project' => '',
+                'deskripsi_pks_project' => $property->developer->pks_description ?: '',
+                'project_value' => $property->prop_id_bri ?: '',
+            ];
 
-        $current = [
-            'tipe_project' => 'KPR',
-            'nama_project' => $property->name,
-            // 'alamat_project' => $property->address,
-            'pic_project' => $property->pic_name ?: '',
-            'pks_project' => $property->developer->pks_number ?: '-',
-            'deskripsi_project' => substr($property->description, 255),
-            'telepon_project' => $property->pic_phone ?: '',
-            'hp_project' => $property->pic_project ?: '',
-            'fax_project' => '',
-            'deskripsi_pks_project' => $property->developer->pks_description ?: '',
-            'project_value' => $property->prop_id_bri ?: '',
-        ];
-
-        $id = \Asmx::setEndpoint('InsertDataProject')
-            ->setBody(['request' => json_encode($current)])
-            ->post('form_params');
-        \Log::info($id);
+            $id = \Asmx::setEndpoint('InsertDataProject')
+                ->setBody(['request' => json_encode($current)])
+                ->post('form_params');
+            \Log::info($id);
+    }
         return $id;
     }
 

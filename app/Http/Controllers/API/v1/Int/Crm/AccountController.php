@@ -323,7 +323,7 @@ class AccountController extends Controller
         $list_pn =[];
       }
 
-      $count = Referral::whereIn('created_by', $list_pn)->whereMonth('created_at', date('m'))->count() + 1;
+      $count = Referral::where('branch_id', $branch)->whereMonth('created_at', date('m'))->count() + 1;
       $len = 4;
       if(strlen($count) == $len) {
         $num = $count;
@@ -352,7 +352,7 @@ class AccountController extends Controller
       $data['branch_id'] = $branch;
       $data['creator_name'] = $name;
       $data['longitude'] = $request['longitude'];
-      $data['latitude'] = $request['latitude']; 
+      $data['latitude'] = $request['latitude'];
 
       $save = Referral::create($data);
       if ($save) {

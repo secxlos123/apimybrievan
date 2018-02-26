@@ -16,7 +16,7 @@ class PropertyItem extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'property_type_id', 'address', 'price', 'is_available', 'status', 'available_status'
+        'property_type_id', 'address', 'price', 'is_available', 'status', 'available_status','no_item'
     ];
 
     /**
@@ -29,7 +29,7 @@ class PropertyItem extends Model implements AuditableContract
     ];
 
     protected $appends = [
-      'photos'
+      'photos','property_type_name'
     ];
 
     /**
@@ -41,9 +41,26 @@ class PropertyItem extends Model implements AuditableContract
         'address' => 'required',
         'status'  => 'required|in:new,second',
         'price'   => 'required|numeric',
+        'first_unit'   => 'required|numeric',
+        'last_unit'   => 'required|numeric',
+        'unit_size'   => 'required|numeric',
         'photos.*'=> 'image|max:1024',
     ];
 
+    /**
+     * Get the Type Name for Property.
+     *
+     * @return string
+     */
+    public function getPropertyTypeNameAttribute()
+    {
+        $type = PropertyType::find($this->property_type_id);
+        $name=NULL;
+        if (count($type)>0) {
+            $name = $type->name;
+        }
+        return $name;
+    }
 
     public function getPhotosAttribute()
     {
@@ -78,13 +95,36 @@ class PropertyItem extends Model implements AuditableContract
     public function scopeGetLists($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['property_items.id', 'asc'];
-        $select = $request->has('dropdown') ? ['property_items.id', 'property_items.address', 'property_items.price'] : array_merge(['property_items.id'],['property_items.property_type_id', 'property_items.address', 'property_items.price', 'property_items.is_available', 'property_items.status']);
+        $select = $request->has('dropdown') ? ['property_items.id', 'property_items.address', 'property_items.price'] : array_merge(['property_items.id'],['property_items.property_type_id','property_items.no_item', 'property_items.address', 'property_items.price', 'property_items.is_available', 'property_items.status']);
         
         if ( ! $request->has('dropdown') ) $query->with('photos');
 
         return $query
             ->with('propertyType')
             ->where(function ($item) use (&$request) {
+                if ($request->has('without_independent')){
+                    if ($request->without_independent) {
+                    $data = \DB::table('properties')->select('id')->whereNotIn('developer_id',[1])->get();
+                    $dataid = array();
+                    if (count($data)>0) {
+                        foreach ($data as $key => $value) {
+                            foreach ($value as $key2 => $value2) {
+                                $dataid[]= $value2;
+                            }
+                        }
+                    }
+                    $dataitem = \DB::table('property_types')->select('id')->whereIn('property_id',$dataid)->get();
+                    $itemid = array();
+                    if (count($dataitem)) {
+                        foreach ($dataitem as $key => $value) {
+                            foreach ($value as $key2 => $value2) {
+                                $itemid[]= $value2;
+                            }
+                        }
+                    }
+                    $item->whereIn('property_type_id',$itemid);
+                    }
+                }
                 if ($request->has('property_type_id')) 
                     $item->where('property_items.property_type_id', $request->input('property_type_id'));
 

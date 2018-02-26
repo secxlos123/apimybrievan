@@ -16,6 +16,7 @@ use App\Models\Crm\ActivityType;
 use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
+use App\Models\Crm\Referral;
 
 use RestwsHc;
 
@@ -39,6 +40,13 @@ class MarketingController extends Controller
         $pemasar_name = [];
       }
 
+      $ext_nul = [
+        1=>'0',
+        2=>'00',
+        3=>'000',
+        4=>'0000'
+      ];
+
       $marketings = [];
       foreach (Marketing::where('pn',$pn)->with('activity')->get() as $marketing) {
 
@@ -58,13 +66,13 @@ class MarketingController extends Controller
             $ownership = 'main';
           }
 
-          $pnName = array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'';
+          // $pnName = array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'';
 
           $marketingActivity[]= [
             'id' => $activity->id,
             'pn' => $activity->pn,
             'marketing_activity_type' => $activity->marketing->activity_type,
-            'pn_name' => $pnName,
+            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
             'object_activity' => $activity->object_activity,
             'action_activity' => $activity->action_activity,
             'start_date' => date('Y-m-d', strtotime($activity->start_date)),
@@ -88,7 +96,7 @@ class MarketingController extends Controller
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
-          'pn_name' => $pnName,
+          'pn_name' => array_key_exists($ext_nul[8-strlen($marketing->pn)].$marketing->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($marketing->pn)].$marketing->pn]:'',
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
@@ -128,6 +136,13 @@ class MarketingController extends Controller
         $pemasar_name = [];
         $list_pn =[];
       }
+
+      $ext_nul = [
+        1=>'0',
+        2=>'00',
+        3=>'000',
+        4=>'0000'
+      ];
 
       $marketings = [];
       foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
@@ -171,7 +186,7 @@ class MarketingController extends Controller
         $marketings[]=[
           'id'=> $marketing->id,
           'pn'=> $marketing->pn,
-          'pn_name'=> array_key_exists($marketing->pn, $pemasar_name) ? $pemasar_name[$marketing->pn]:'',
+          'pn_name'=> array_key_exists($ext_nul[8-strlen($marketing->pn)].$marketing->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($marketing->pn)].$marketing->pn]:'',
           'product_type'=> $marketing->product_type,
           'activity_type'=> $marketing->activity_type,
           'target'=> $marketing->target,
@@ -233,6 +248,13 @@ class MarketingController extends Controller
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
       $save = Marketing::create($data);
+
+      if ($request['ref_id']!="") {
+        $referral = Referral::where('ref_id', $request['ref_id']);
+        $referral_update['status'] = "Prospek";
+        $referral->update($referral_update);
+      }
+
       if ($save) {
           $this->first_activity($request->header('pn'), $save->id, $request);
 
