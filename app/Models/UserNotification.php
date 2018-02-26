@@ -57,8 +57,7 @@ class UserNotification extends Model
             } )
             ->where( function( $q ) use ( $pn ) {
 				$q->where( 'eforms.ao_id', $pn )
-				    ->orWhereNotNull( 'collaterals.id' )
-
+				    ->orWhereNotNull( 'collaterals.id' );
             } )
 			->whereIn(
 				'notifications.type'
