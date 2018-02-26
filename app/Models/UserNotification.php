@@ -53,7 +53,10 @@ class UserNotification extends Model
 			->leftJoin( 'collaterals', function ( $join ) {
                 $join->on( 'collaterals.id', '=' , 'notifications.slug' )
                     ->where( 'notifications.type_module', '=', 'collateral' )
-                    ->where( 'notifications.type', '=', 'App\Notifications\CollateraAODisposition' );
+                    ->where( function( $q ) {
+						$q->where( 'notifications.type', '=', 'App\Notifications\CollateraAODisposition' )
+						    ->orWhere( 'notifications.type', '=', 'App\Notifications\CollateraAODisposition' );
+		            } );
             } )
             ->where( function( $q ) use ( $pn ) {
 				$q->where( 'eforms.ao_id', $pn )
