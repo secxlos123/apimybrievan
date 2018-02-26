@@ -281,13 +281,21 @@ class UserNotification extends Model
 
 		$managerKeys = array(
 			'App\Notifications\CollateralManagerApprove'
-			, 'App\Notifications\CollateralManagerApproveAO'
 			, 'App\Notifications\CollateralManagerRejected'
-			, 'App\Notifications\CollateralManagerRejectedAO'
 		);
 
 		if ( in_array( $this->type, $managerKeys ) ) {
 			$slug = $this->defineData( $this->data['prop_slug'] );
+
+		}
+
+		$managerAOKeys = array(
+			'App\Notifications\CollateralManagerApproveAO'
+			, 'App\Notifications\CollateralManagerRejectedAO'
+		);
+
+		if ( in_array( $this->type, $managerAOKeys ) ) {
+			$slugAO = $this->defineData( $this->data['collateral_id'] );
 
 		}
 
@@ -615,7 +623,7 @@ class UserNotification extends Model
 				$append = array(
 				 	'message' => 'Collateral manager reject untuk AO'
 				 	, 'message_external' => 'Collateral manager reject untuk AO'
-				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slug . '&type=collateral_manager_rejecting'
+				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_rejecting'
 				);
 				break;
 
@@ -637,7 +645,7 @@ class UserNotification extends Model
 				$append = array(
 				 	'message' => 'Collateral manager approve untuk AO'
 				 	, 'message_external' => 'Collateral manager approve untuk AO'
-					, 'url' => $internalurl . 'staff-collateral?slug=' . $slug . '&type=collateral_manager_approving'
+					, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_approving'
 				);
 				break;
 
