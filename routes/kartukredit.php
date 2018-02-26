@@ -10,7 +10,7 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1'], function() {
 
 	Route::post('get-nik','KartuKreditController@checkNIK');
 
-	Route::post('los','KartuKreditController@sentUserDataToLos');
+	Route::post('los','KartuKreditController@sendUserDataToLos');
 
     Route::group(['middleware' => 'api.auth'], function() {
     	 //cari nik di mybri(nasabah), kalau ada balikin, kalau engga cari lagi di crm baru balikin
