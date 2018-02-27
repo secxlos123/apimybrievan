@@ -100,7 +100,7 @@ class SchedulerMitraController extends Controller
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
-				foreach ($datalas_encode['data'] as $data) {
+				foreach ((array) $datalas_encode['data'] as $data) {
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
@@ -150,7 +150,7 @@ class SchedulerMitraController extends Controller
 							header("Location:".$a[5]);die();
 				}else{
 					try{
-					if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != "" && $sql != ""){
+					if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != ""){
 							DB::statement("ALTER TABLE mitra_scheduller RENAME TO mitraxxx;");
 							DB::statement("ALTER TABLE mitra_create RENAME TO mitra_scheduller;");
 							DB::statement("DROP TABLE mitraxxx;");
@@ -162,7 +162,6 @@ class SchedulerMitraController extends Controller
 						
 					}else{
 							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'Data Ketarik Kosong')");
-							\Log::info($e);
 							print_r('GAGAL');
 							die();
 					}
