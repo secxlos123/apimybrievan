@@ -107,6 +107,7 @@ class SchedulerMitraController extends Controller
 				die();
 			}
 		}
+		
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
@@ -115,25 +116,25 @@ class SchedulerMitraController extends Controller
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = str_replace("'","",$data->ID_INSTANSI_BRI);
-					$namainstansi = str_replace("'","",$data->NAMA_INSTANSI);
-					$kodeinstansi = str_replace("'","",$data->KODE_INSTANSI);
-					$posisinpl = str_replace("'","",$data->POSISI_NPL);
-					$kodeuker = str_replace("'","",$data->KODE_UKER_PEMRAKARSA);
-					$jumlahkaryawan = str_replace("'","",$data->JUMLAH_KARYAWAN);
-					$jenisinstansi = str_replace("'","",$data->JENIS_INSTANSI);
-					$jenisbidangusaha = str_replace("'","",$data->JENIS_BIDANG_USAHA);
-					$telponinstansi = str_replace("'","",$data->TELEPON_INSTANSI);
-					$lembagapemeringkat = str_replace("'","",$data->LEMBAGA_PEMERINGKAT);
-					$tglpemeringkat = str_replace("'","",$data->TANGGAL_PEMERINGKAT);
-					$gopublic = str_replace("'","",$data->GO_PUBLIC);
-					$noijinprinsip = str_replace("'","",$data->NO_IJIN_PRINSIP);
-					$dateupdate = str_replace("'","",$data->DATE_UPDATED);
-					$updateby = str_replace("'","",$data->UPDATED_BY);
-					$acctype = str_replace("'","",$data->ACC_TYPE);
-					$alamatinstansi = str_replace("'","",$data->ALAMAT_INSTANSI);
-					$alamatinstansi2 = str_replace("'","",$data->ALAMAT_INSTANSI2);
-					$alamatinstansi3 = str_replace("'","",$data->ALAMAT_INSTANSI3);
+					$idinstansi = Encoding::fixUTF8(str_replace("'","",$data->ID_INSTANSI_BRI));
+					$namainstansi = Encoding::fixUTF8(str_replace("'","",$data->NAMA_INSTANSI));
+					$kodeinstansi = Encoding::fixUTF8(str_replace("'","",$data->KODE_INSTANSI));
+					$posisinpl = Encoding::fixUTF8(str_replace("'","",$data->POSISI_NPL));
+					$kodeuker = Encoding::fixUTF8(str_replace("'","",$data->KODE_UKER_PEMRAKARSA));
+					$jumlahkaryawan = Encoding::fixUTF8(str_replace("'","",$data->JUMLAH_KARYAWAN));
+					$jenisinstansi = Encoding::fixUTF8(str_replace("'","",$data->JENIS_INSTANSI));
+					$jenisbidangusaha = Encoding::fixUTF8(str_replace("'","",$data->JENIS_BIDANG_USAHA));
+					$telponinstansi = Encoding::fixUTF8(str_replace("'","",$data->TELEPON_INSTANSI));
+					$lembagapemeringkat = Encoding::fixUTF8(str_replace("'","",$data->LEMBAGA_PEMERINGKAT));
+					$tglpemeringkat = Encoding::fixUTF8(str_replace("'","",$data->TANGGAL_PEMERINGKAT));
+					$gopublic = Encoding::fixUTF8(str_replace("'","",$data->GO_PUBLIC));
+					$noijinprinsip = Encoding::fixUTF8(str_replace("'","",$data->NO_IJIN_PRINSIP));
+					$dateupdate = Encoding::fixUTF8(str_replace("'","",$data->DATE_UPDATED));
+					$updateby = Encoding::fixUTF8(str_replace("'","",$data->UPDATED_BY));
+					$acctype = Encoding::fixUTF8(str_replace("'","",$data->ACC_TYPE));
+					$alamatinstansi = Encoding::fixUTF8(str_replace("'","",$data->ALAMAT_INSTANSI));
+					$alamatinstansi2 = Encoding::fixUTF8(str_replace("'","",$data->ALAMAT_INSTANSI2));
+					$alamatinstansi3 = Encoding::fixUTF8(str_replace("'","",$data->ALAMAT_INSTANSI3));
 					
 					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
