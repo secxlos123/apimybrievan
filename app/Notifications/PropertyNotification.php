@@ -14,15 +14,17 @@ class PropertyNotification extends Notification
     use Queueable;
 
     public $prop;
+    public $branch_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($prop)
+    public function __construct($prop, $branch_id)
     {
         $this->prop = $prop;
+        $this->branch_id = $branch_id;
     }
 
     /**
@@ -77,7 +79,7 @@ class PropertyNotification extends Notification
             'prop_id' => $this->prop->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'branch_id' => 0,
+            'branch_id' => $branch_id,
             'role_name' => $notifiable->roles->first()->slug,
             'name' => $this->prop->name,
             'slug' => $this->prop->id,
