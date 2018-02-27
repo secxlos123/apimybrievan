@@ -122,7 +122,7 @@ class PropertyController extends Controller
                     $usersModel->notify(
                         new PropertyNotification(
                             $dataProperty
-                            , substr( '0000' . $receiver->branch_id, -4)
+                            , substr( '0000' . $receiver->branch_id, -5)
                         )
                     ); /*send notification to collateral manager*/
 
