@@ -49,8 +49,19 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(10000);
-							$datalas_encode = json_decode(json_encode($datalas), True);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(1000);
+							
+							//$datalas_encode = json_decode(json_encode($datalas), True);
+							$last_page = $datalas->lastPage();
+							$current_page = $datalas->currentPage();
+							$nextPage = (int)$current_page + 1;
+							$url = env('APP_URL').'scheduler_mitra';
+							$next_page_url = $url.'?page='.$nextPage;
+							$isi_data = '0';
+							if($datalas->items()[0]->ID_INSTANSI_BRI != ""){
+								$isi_data = '1';
+							}
+							
 //							return $datalas_encode;die();
 		}catch(Exception $e){
 			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
@@ -96,38 +107,39 @@ class SchedulerMitraController extends Controller
 				die();
 			}
 		}
+		
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
-				foreach ($datalas_encode['data'] as $data) {
+				foreach ($datalas->items() as $data) {
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = str_replace("'","",$data['ID_INSTANSI_BRI']);
-					$namainstansi = str_replace("'","",$data['NAMA_INSTANSI']);
-					$kodeinstansi = str_replace("'","",$data['KODE_INSTANSI']);
-					$posisinpl = str_replace("'","",$data['POSISI_NPL']);
-					$kodeuker = str_replace("'","",$data['KODE_UKER_PEMRAKARSA']);
-					$jumlahkaryawan = str_replace("'","",$data['JUMLAH_KARYAWAN']);
-					$jenisinstansi = str_replace("'","",$data['JENIS_INSTANSI']);
-					$jenisbidangusaha = str_replace("'","",$data['JENIS_BIDANG_USAHA']);
-					$telponinstansi = str_replace("'","",$data['TELEPON_INSTANSI']);
-					$lembagapemeringkat = str_replace("'","",$data['LEMBAGA_PEMERINGKAT']);
-					$tglpemeringkat = str_replace("'","",$data['TANGGAL_PEMERINGKAT']);
-					$gopublic = str_replace("'","",$data['GO_PUBLIC']);
-					$noijinprinsip = str_replace("'","",$data['NO_IJIN_PRINSIP']);
-					$dateupdate = str_replace("'","",$data['DATE_UPDATED']);
-					$updateby = str_replace("'","",$data['UPDATED_BY']);
-					$acctype = str_replace("'","",$data['ACC_TYPE']);
-					$alamatinstansi = str_replace("'","",$data['ALAMAT_INSTANSI']);
-					$alamatinstansi2 = str_replace("'","",$data['ALAMAT_INSTANSI2']);
-					$alamatinstansi3 = str_replace("'","",$data['ALAMAT_INSTANSI3']);
+					$idinstansi = json_decode(json_encode(str_replace("'","",$data->ID_INSTANSI_BRI)));
+					$namainstansi = json_decode(json_encode(str_replace("'","",$data->NAMA_INSTANSI)));
+					$kodeinstansi = json_decode(json_encode(str_replace("'","",$data->KODE_INSTANSI)));
+					$posisinpl = json_decode(json_encode(str_replace("'","",$data->POSISI_NPL)));
+					$kodeuker = json_decode(json_encode(str_replace("'","",$data->KODE_UKER_PEMRAKARSA)));
+					$jumlahkaryawan = json_decode(json_encode(str_replace("'","",$data->JUMLAH_KARYAWAN)));
+					$jenisinstansi = json_decode(json_encode(str_replace("'","",$data->JENIS_INSTANSI)));
+					$jenisbidangusaha = json_decode(json_encode(str_replace("'","",$data->JENIS_BIDANG_USAHA)));
+					$telponinstansi = json_decode(json_encode(str_replace("'","",$data->TELEPON_INSTANSI)));
+					$lembagapemeringkat = json_decode(json_encode(str_replace("'","",$data->LEMBAGA_PEMERINGKAT)));
+					$tglpemeringkat = json_decode(json_encode(str_replace("'","",$data->TANGGAL_PEMERINGKAT)));
+					$gopublic = json_decode(json_encode(str_replace("'","",$data->GO_PUBLIC)));
+					$noijinprinsip = json_decode(json_encode(str_replace("'","",$data->NO_IJIN_PRINSIP)));
+					$dateupdate = json_decode(json_encode(str_replace("'","",$data->DATE_UPDATED)));
+					$updateby = json_decode(json_encode(str_replace("'","",$data->UPDATED_BY)));
+					$acctype = json_decode(json_encode(str_replace("'","",$data->ACC_TYPE)));
+					$alamatinstansi = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI)));
+					$alamatinstansi2 = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI2)));
+					$alamatinstansi3 = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI3)));
 					
-					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data['ID_INSTANSI_BRI']."','".$namainstansi."','".$kodeinstansi."',
+					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
 					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
-					'".$alamatinstansi."','".$alamatinstansi3."','".$data['TELEPON_INSTANSI']."','".$data['RATING_INSTANSI']."',
+					'".$alamatinstansi."','".$alamatinstansi3."','".$data->TELEPON_INSTANSI."','".$data->RATING_INSTANSI."',
 					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
 					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
 				}catch(Exception $e) {
@@ -144,12 +156,13 @@ class SchedulerMitraController extends Controller
 				}
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
-				if($datalas_encode['current_page']!=$datalas_encode['last_page']){
-							$a = explode('/',$datalas_encode['next_page_url']);
-							header("Location:".$a[5]);die();
+				
+				if($current_page!=$last_page){
+							//$a = explode('/',$next_page_url);
+							header("Location:".'scheduler_mitra?page='.$nextPage);die();
 				}else{
 					try{
-					if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != "" && $sql != ""){
+					if($isi_data == '1'){
 							DB::statement("ALTER TABLE mitra_scheduller RENAME TO mitraxxx;");
 							DB::statement("ALTER TABLE mitra_create RENAME TO mitra_scheduller;");
 							DB::statement("DROP TABLE mitraxxx;");
@@ -161,7 +174,6 @@ class SchedulerMitraController extends Controller
 						
 					}else{
 							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'Data Ketarik Kosong')");
-							\Log::info($e);
 							print_r('GAGAL');
 							die();
 					}

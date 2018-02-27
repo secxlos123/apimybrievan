@@ -5,6 +5,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   ] )->name('crm.index');
 
+  Route::post('/branch/list_kanwil', 'branchController@list_kanwil');
+  Route::post('/branch/list_kanca_kanwil', 'branchController@get_kanca_kanwil');
+  Route::post('/branch/list_uker_kanca', 'branchController@get_uker_kanca');
   Route::post('/marketing_summary', 'DashboardController@marketing_summary');
   Route::post('/marketing_summary_v2', 'DashboardController@marketing_summary_v2');
   // route reporting Crm
