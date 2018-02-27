@@ -49,13 +49,14 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(100);
-							$datalas_encode = json_decode(json_encode($datalas), True);
-							$last_page = $datalas_encode['last_page'];
-							$current_page = $datalas_encode['current_page'];
-							$next_page_url = $datalas_encode['next_page_url'];
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(1000);
+							
+							//$datalas_encode = json_decode(json_encode($datalas), True);
+							$last_page = $datalas->lastPage();
+							$current_page = $datalas->currentPage();
+							$next_page_url = $datalas->path().'?page='.$datalas->currentPage()+1;
 							$isi_data = '0';
-							if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != ""){
+							if($datalas->items()[0]->ID_INSTANSI_BRI != ""){
 								$isi_data = '1';
 							}
 							
@@ -107,35 +108,35 @@ class SchedulerMitraController extends Controller
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
-				foreach ((array) $datalas_encode['data'] as $data) {
+				foreach ($datalas->items() as $data) {
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = str_replace("'","",$data['ID_INSTANSI_BRI']);
-					$namainstansi = str_replace("'","",$data['NAMA_INSTANSI']);
-					$kodeinstansi = str_replace("'","",$data['KODE_INSTANSI']);
-					$posisinpl = str_replace("'","",$data['POSISI_NPL']);
-					$kodeuker = str_replace("'","",$data['KODE_UKER_PEMRAKARSA']);
-					$jumlahkaryawan = str_replace("'","",$data['JUMLAH_KARYAWAN']);
-					$jenisinstansi = str_replace("'","",$data['JENIS_INSTANSI']);
-					$jenisbidangusaha = str_replace("'","",$data['JENIS_BIDANG_USAHA']);
-					$telponinstansi = str_replace("'","",$data['TELEPON_INSTANSI']);
-					$lembagapemeringkat = str_replace("'","",$data['LEMBAGA_PEMERINGKAT']);
-					$tglpemeringkat = str_replace("'","",$data['TANGGAL_PEMERINGKAT']);
-					$gopublic = str_replace("'","",$data['GO_PUBLIC']);
-					$noijinprinsip = str_replace("'","",$data['NO_IJIN_PRINSIP']);
-					$dateupdate = str_replace("'","",$data['DATE_UPDATED']);
-					$updateby = str_replace("'","",$data['UPDATED_BY']);
-					$acctype = str_replace("'","",$data['ACC_TYPE']);
-					$alamatinstansi = str_replace("'","",$data['ALAMAT_INSTANSI']);
-					$alamatinstansi2 = str_replace("'","",$data['ALAMAT_INSTANSI2']);
-					$alamatinstansi3 = str_replace("'","",$data['ALAMAT_INSTANSI3']);
+					$idinstansi = str_replace("'","",$data->ID_INSTANSI_BRI);
+					$namainstansi = str_replace("'","",$data->NAMA_INSTANSI);
+					$kodeinstansi = str_replace("'","",$data->KODE_INSTANSI);
+					$posisinpl = str_replace("'","",$data->POSISI_NPL);
+					$kodeuker = str_replace("'","",$data->KODE_UKER_PEMRAKARSA);
+					$jumlahkaryawan = str_replace("'","",$data->JUMLAH_KARYAWAN);
+					$jenisinstansi = str_replace("'","",$data->JENIS_INSTANSI);
+					$jenisbidangusaha = str_replace("'","",$data->JENIS_BIDANG_USAHA);
+					$telponinstansi = str_replace("'","",$data->TELEPON_INSTANSI);
+					$lembagapemeringkat = str_replace("'","",$data->LEMBAGA_PEMERINGKAT);
+					$tglpemeringkat = str_replace("'","",$data->TANGGAL_PEMERINGKAT);
+					$gopublic = str_replace("'","",$data->GO_PUBLIC);
+					$noijinprinsip = str_replace("'","",$data->NO_IJIN_PRINSIP);
+					$dateupdate = str_replace("'","",$data->DATE_UPDATED);
+					$updateby = str_replace("'","",$data->UPDATED_BY);
+					$acctype = str_replace("'","",$data->ACC_TYPE);
+					$alamatinstansi = str_replace("'","",$data->ALAMAT_INSTANSI);
+					$alamatinstansi2 = str_replace("'","",$data->ALAMAT_INSTANSI2);
+					$alamatinstansi3 = str_replace("'","",$data->ALAMAT_INSTANSI3);
 					
-					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data['ID_INSTANSI_BRI']."','".$namainstansi."','".$kodeinstansi."',
+					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
 					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
-					'".$alamatinstansi."','".$alamatinstansi3."','".$data['TELEPON_INSTANSI']."','".$data['RATING_INSTANSI']."',
+					'".$alamatinstansi."','".$alamatinstansi3."','".$data->TELEPON_INSTANSI."','".$data->RATING_INSTANSI."',
 					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
 					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
 				}catch(Exception $e) {
