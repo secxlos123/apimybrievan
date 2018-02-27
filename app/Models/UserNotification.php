@@ -489,7 +489,7 @@ class UserNotification extends Model
 				$append = array(
 					'message' => 'Proyek Data Baru'
 					, 'message_external' => 'Terdapat permohohonan penilaian agunan baru dari ' . $this->data['user_name'] . ' untuk Developer PKS BRI. Harap segera lakukan penilaian agunan sesuai ketentuan yang berlaku.'
-					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
+					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
 
