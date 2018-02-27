@@ -364,11 +364,12 @@ class EFormController extends Controller
     {
         $nik = $request->nik;
         $check = CustomerDetail::where('nik', $nik)->get();
+        $data = Eform::where('nik', $nik)->get();
         if(count($check) == 0){
             return response()->error( [
                         'message' => 'Data dengan nik tersebut tidak ditemukan!',
-                        'contents' => 'Not Acceptable',
-                    ], 406 );
+                        'contents' => $data,
+                    ], 422 );
         }
 
         DB::beginTransaction();
