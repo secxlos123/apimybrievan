@@ -9,6 +9,8 @@ use App\Models\Property;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Models\KPR;
+use App\Models\UserNotification;
+use App\Models\UserServices;
 use App\Notifications\PropertyNotification;
 use DB;
 class PropertyController extends Controller
@@ -104,9 +106,37 @@ class PropertyController extends Controller
             if ( ! $property instanceof Property ) {
                 $property = Property::create($request->all());
 
-                $dataProperty = Property::Find($property->id); 
+                $dataProperty = Property::Find($property->id);
                 $usersModel = User::FindOrFail($request->user()->id);
-                $usersModel->notify(new PropertyNotification($dataProperty)); /*send notification to pinca*/
+                $userNotif = new UserNotification;
+
+                // Get data from notifications table
+                $message = getMessage('collateral_property');
+
+                $receiverData = UserServices::where('role', 'collateral')->get();
+
+                $notificationData = $userNotif->where('slug', $property->id)->where('type_module', 'property')
+                    ->orderBy('created_at', 'desc')->first();
+
+                foreach ($receiverData as $receiver) {
+                    $usersModel->notify(
+                        new PropertyNotification(
+                            $dataProperty
+                            , substr( '0000' . $receiver->branch_id, -5)
+                        )
+                    ); /*send notification to collateral manager*/
+
+                    $credentials = [
+                        'headerNotif' => $message['title'],
+                        'bodyNotif' => $message['body'],
+                        'id' => $notificationData['id'],
+                        'type' => 'property',
+                        'slug' => $property->id,
+                        'user_id' => $receiver->pn,
+                        'receiver' => 'manager_collateral',
+                    ];
+                    pushNotification( $credentials, 'general' );
+                }
 
                 \Log::info($property);
                 $data = [
@@ -149,9 +179,11 @@ class PropertyController extends Controller
     {
         $property->load('developer');
         if (ENV('APP_ENV') == 'local') {
-            $id = array('code' => '200',
-                        'contents'=> mt_rand(100, 999) );
-        }else{
+            $id = array(
+                'code' => '200'
+                , 'contents'=> mt_rand(100, 999)
+            );
+        } else {
             $current = [
                 'tipe_project' => 'KPR',
                 'nama_project' => $property->name,
@@ -189,12 +221,12 @@ class PropertyController extends Controller
     /*
     *  Show data notif from manager collateral to admin developer
     */
-    public function notifCollateral($prop_slug){  
-     $collateral = DB::table('developer_properties_view_table')->where('prop_slug', $prop_slug)->first();  
-     
+    public function notifCollateral($prop_slug){
+     $collateral = DB::table('developer_properties_view_table')->where('prop_slug', $prop_slug)->first();
+
      return response()->success( [
         'contents' => $collateral
-     ] );     
+     ] );
     }
 
     public function getListPropertyAgenDev(Request $req)
