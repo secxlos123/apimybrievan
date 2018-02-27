@@ -71,13 +71,12 @@ class KartuKreditController extends Controller{
 			'list_jumlah_karyawan' => $jumlahKaryawan,
 			'list_hubungan_keluarga' => $hubunganKeluarga
 		]);
-
 	}
 
 	function getListStatusPernikahan($token,$client,$host){
 		
 		$res = $client->request('POST',$host.'/api/listStatusPernikahan', ['headers' =>  ['access_token'=>$token]]);
-		
+
 		$responseCode = $res->getStatusCode();
 		if ($responseCode == 200){
 			$body = $res->getBody();
@@ -161,8 +160,9 @@ class KartuKreditController extends Controller{
 			$res = $client
 			->request('POST',
 				$host.'/int/crm/account/customer_nik',
-				['form_params'=>['nik' => $nik,]],
-				['headers'=>['pn'=> $pn,'Authorization'=>$auth]]
+				['form_params'=>['nik' => $nik,],
+				'headers'=>['pn'=> $pn,'Authorization'=>$auth]
+				]
 			);
 		}catch(RequestException $e){
 			// return "error";
@@ -171,33 +171,61 @@ class KartuKreditController extends Controller{
       	 	echo " \n";
 		}
 
-		// $body = $res->getBody();
-		// $obj = json_decode($body);
-		// $data = $obj->responseData;
+		$body = $res->getBody();
+		$obj = json_decode($body);
+		$data = $obj->contents;
 
-		// return $data;
 		return response()->json([
-			'nik'=>$nik,
-			'pn' =>$pn,
-			'Authorization'=>$auth
-
+			'responseCode' => 00,
+			'responseMessage' => 'sukses',
+			'content'=>$data
 		]);
+
+		return $body;
+		// return response()->json([
+		// 	'nik'=>$nik,
+		// 	'pn' =>$pn,
+		// 	'Authorization'=>$auth
+
+		// ]);
 	}
 
 	public function sendUserDataToLos(Request $req){
+
+		$TOKEN_LOS = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+
+		$host = '10.107.11.111:9975';
 
 		$validatedData = $this->validate($req,[
             'PersonalName' => 'required',
             'PersonalNIK' => 'required',
             'PersonalTempatLahir' => 'required',
             'PersonalTanggalLahir' => 'required',
-
-         ]);
+        ]);
 
 		$kk = new KartuKredit();
 		$informasiLos = $kk->convertToAddDataLosFormat($req);
+
+		$client = new Client();
+
+		try{
+			$res = $client
+			->request('POST',
+				$host.'/api/addData',
+				['headers'=>['access_token'=> $TOKEN_LOS],
+				'form_params'=> $informasiLos,
+				]
+			);
+		}catch (RequestException $e){
+			return $e;
+		}
+
+		$body = $res->getBody();
+		$obj = json_decode($body);
+		// $data = $obj->responseData;
+
+		return response()->json($obj);
 		
-		return $informasiLos;
     }
 
 }

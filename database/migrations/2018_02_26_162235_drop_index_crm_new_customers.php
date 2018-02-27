@@ -15,7 +15,7 @@ class DropIndexCrmNewCustomers extends Migration
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
         	
-		$table->dropUnique('email');
+		
         });
     }
 
@@ -28,7 +28,7 @@ class DropIndexCrmNewCustomers extends Migration
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
 		
-		$table->unique('email');
+		
         });
     }
 }
