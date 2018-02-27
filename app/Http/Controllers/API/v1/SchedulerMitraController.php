@@ -49,7 +49,7 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(1000);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(100000);
 							
 							//$datalas_encode = json_decode(json_encode($datalas), True);
 							$last_page = $datalas->lastPage();
@@ -163,8 +163,8 @@ class SchedulerMitraController extends Controller
 				}else{
 					try{
 					if($isi_data == '1'){
-							DB::statement("ALTER TABLE mitra_scheduller RENAME TO mitraxxx;");
-							DB::statement("ALTER TABLE mitra_create RENAME TO mitra_scheduller;");
+							DB::statement("ALTER TABLE mitra RENAME TO mitraxxx;");
+							DB::statement("ALTER TABLE mitra_create RENAME TO mitra;");
 							DB::statement("DROP TABLE mitraxxx;");
 							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'Sukses')");
 							\Log::info("-------------------Sukses ALL-----------------");
