@@ -158,8 +158,8 @@ class SchedulerMitraController extends Controller
 				\Log::info($sql);
 				
 				if($current_page!=$last_page){
-							$a = explode('/',$next_page_url);
-							header("Location:".$a[5]);die();
+							//$a = explode('/',$next_page_url);
+							header("Location:".'scheduler_mitra?page='.$nextPage);die();
 				}else{
 					try{
 					if($isi_data == '1'){
