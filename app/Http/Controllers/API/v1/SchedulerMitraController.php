@@ -49,8 +49,9 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(10000);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(300);
 							$datalas_encode = json_decode(json_encode($datalas), True);
+							
 //							return $datalas_encode;die();
 		}catch(Exception $e){
 			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");

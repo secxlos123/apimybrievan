@@ -207,9 +207,7 @@ class UserNotification extends Model
 
 	public function defineQuery( $pn, $user_id, $branch_id, $role )
 	{
-		$pn    = substr( $pn, -8 );
 		$role  = ($role == 'mp') ? 'pinca' : $role;
-		$query = $this->orderBy('notifications.created_at', 'DESC');
 
 		$return = array(
 			'pinca' => $branch_id
@@ -221,19 +219,26 @@ class UserNotification extends Model
 			, 'developer' => $user_id
 		);
 
-		foreach ($return as $key => $value) {
-			if ( $role == $key ) {
-				$query->{ str_replace('-', '', $key) }( $value );
+		if ( isset( $return[ $role ] ) ) {
+			$pn    = substr( $pn, -8 );
+			$query = $this->orderBy('notifications.created_at', 'DESC');
+
+			foreach ($return as $key => $value) {
+				if ( $role == $key ) {
+					$query->{ str_replace('-', '', $key) }( $value );
+				}
 			}
+
+			if ( in_array( $role, ['pinca', 'ao'] ) ) {
+				$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
+			}
+			// \Log::info($query->getBindings());
+			// \Log::info($query->toSql());
+
+			return $query;
 		}
 
-		if ( in_array( $role, ['pinca', 'ao'] ) ) {
-			$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
-		}
-		// \Log::info($query->getBindings());
-		// \Log::info($query->toSql());
-
-		return $query;
+		return null;
 	}
 
 	public function defineUrl( $ref_number, $user_id )
