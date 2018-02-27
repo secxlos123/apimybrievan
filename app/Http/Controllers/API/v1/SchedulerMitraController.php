@@ -49,7 +49,7 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(300);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(100);
 							$datalas_encode = json_decode(json_encode($datalas), True);
 							
 //							return $datalas_encode;die();
@@ -145,6 +145,7 @@ class SchedulerMitraController extends Controller
 				}
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
+				
 				if($datalas_encode['current_page']!=$datalas_encode['last_page']){
 							$a = explode('/',$datalas_encode['next_page_url']);
 							header("Location:".$a[5]);die();
