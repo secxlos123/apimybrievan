@@ -77,7 +77,7 @@ class marketingActivityController extends Controller
           // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
           'desc'=> $fu_result['desc'],
           'fu_result'=> $fu_result['fu_result'],
-          'count_rekening'=> $fu_result['count_rekening'],
+          'account_number'=> $fu_result['account_number'],
           'amount'=> $fu_result['amount'],
           'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
@@ -147,7 +147,7 @@ class marketingActivityController extends Controller
           // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
           'desc'=> $fu_result['desc'],
           'fu_result'=> $fu_result['fu_result'],
-          'count_rekening'=> $fu_result['count_rekening'],
+          'account_number'=> $fu_result['account_number'],
           'amount'=> $fu_result['amount'],
           'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
@@ -349,7 +349,7 @@ class marketingActivityController extends Controller
         $followUp['fu_result'] = $request['fu_result'];
 
         if($request['fu_result']=='Done'){
-          $followUp['count_rekening'] = $request['count_rekening'];
+          $followUp['account_number'] = $request['account_number'];
           $followUp['amount'] = $request['amount'];
           $followUp['target_commitment_date'] = $request['target_commitment_date'];
         }
@@ -453,7 +453,7 @@ class marketingActivityController extends Controller
           // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
           'desc'=> $fu_result['desc'],
           'fu_result'=> $fu_result['fu_result'],
-          'count_rekening'=> $fu_result['count_rekening'],
+          'account_number'=> $fu_result['account_number'],
           'amount'=> $fu_result['amount'],
           'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
@@ -510,7 +510,7 @@ class marketingActivityController extends Controller
           // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
           'desc'=> $fu_result['desc'],
           'fu_result'=> $fu_result['fu_result'],
-          'count_rekening'=> $fu_result['count_rekening'],
+          'account_number'=> $fu_result['account_number'],
           'amount'=> $fu_result['amount'],
           'target_commitment_date'=> $fu_result['target_commitment_date'],
           ];
@@ -579,7 +579,7 @@ class marketingActivityController extends Controller
           // 'fu_result'=>MarketingActivityFollowup::where('activity_id',$activity->id)->first()
           'desc'=> $fu_result['desc'],
           'fu_result'=> $fu_result['fu_result'],
-          'count_rekening'=> $fu_result['count_rekening'],
+          'account_number'=> $fu_result['account_number'],
           'amount'=> $fu_result['amount'],
           'target_commitment_date'=> $fu_result['target_commitment_date'],
         ];

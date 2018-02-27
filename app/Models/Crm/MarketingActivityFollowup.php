@@ -12,7 +12,7 @@ class MarketingActivityFollowup extends Model
       'activity_id',
       'desc',
       'fu_result',
-      'count_rekening',
+      'account_number',
       'amount',
       'target_commitment_date',
       'longitude',
