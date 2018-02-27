@@ -79,7 +79,7 @@ class PropertyNotification extends Notification
             'prop_id' => $this->prop->id,
             'user_id' => $notifiable->id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'branch_id' => $branch_id,
+            'branch_id' => $this->branch_id,
             'role_name' => $notifiable->roles->first()->slug,
             'name' => $this->prop->name,
             'slug' => $this->prop->id,
