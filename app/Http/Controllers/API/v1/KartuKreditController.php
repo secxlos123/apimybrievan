@@ -166,9 +166,10 @@ class KartuKreditController extends Controller{
 			);
 		}catch(RequestException $e){
 			// return "error";
-			echo $e->getMessage() . "\n";
-     	 	echo $e->getRequest()->getMethod();
-      	 	echo " \n";
+			//echo $e->getMessage() . "\n";
+     	 	//echo $e->getRequest()->getMethod();
+      	 	//echo " \n";
+      	 	return  $e->getMessage();
 		}
 
 		$body = $res->getBody();
