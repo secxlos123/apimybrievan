@@ -49,8 +49,15 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(300);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(100);
 							$datalas_encode = json_decode(json_encode($datalas), True);
+							$last_page = $datalas_encode['last_page'];
+							$current_page = $datalas_encode['current_page'];
+							$next_page_url = $datalas_encode['next_page_url'];
+							$isi_data = '0';
+							if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != ""){
+								$isi_data = '1';
+							}
 							
 //							return $datalas_encode;die();
 		}catch(Exception $e){
@@ -145,12 +152,13 @@ class SchedulerMitraController extends Controller
 				}
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
-				if($datalas_encode['current_page']!=$datalas_encode['last_page']){
-							$a = explode('/',$datalas_encode['next_page_url']);
+				
+				if($current_page!=$last_page){
+							$a = explode('/',$next_page_url);
 							header("Location:".$a[5]);die();
 				}else{
 					try{
-					if($datalas_encode['data'][0]['ID_INSTANSI_BRI'] != ""){
+					if($isi_data == '1'){
 							DB::statement("ALTER TABLE mitra_scheduller RENAME TO mitraxxx;");
 							DB::statement("ALTER TABLE mitra_create RENAME TO mitra_scheduller;");
 							DB::statement("DROP TABLE mitraxxx;");
