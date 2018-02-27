@@ -2013,6 +2013,75 @@ class ApiLasController extends Controller
         }
     }
 
+    public function update_rekening() {
+        // $parameter['branch'] = '00120';
+        $client = $this->client();
+        // $resultclient = $client->inquiryListVerputADK($parameter);
+        // if($resultclient->inquiryListVerputADKResult){
+        //     $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
+        //     $result = $this->return_conten($datadetail);
+        // }
+        // print_r($result);
+        // foreach ($result['contents']['data'] as $key => $value) {
+        //     $id_aplikasi[] = $value->id_aplikasi;
+        // }
+        // $ApiLas = new ApiLas();
+        // $las = $ApiLas->eform_briguna('00120');
+        try {
+            $data_briguna = \DB::table("briguna")
+                        ->select(['id','eform_id','id_aplikasi','cif','no_rekening','tgl_putusan'])
+                        ->orderBy('id','asc')
+                        ->get()->toArray();
+            if (!empty($data_briguna)) {
+                $message = [
+                    'message'  => 'data briguna kosong',
+                    'contents' => ''
+                ];
+                foreach ($data_briguna as $key => $value) {
+                    if (!isset($value->no_rekening) && $value->id_aplikasi != '') {
+                        $parameter['id_aplikasi'] = $value->id_aplikasi;
+                        $rekening = $client->getStatusInterface($parameter);
+                        if($rekening->getStatusInterfaceResult){
+                            $datadetail = json_decode($rekening->getStatusInterfaceResult);
+                            $result = $this->return_conten($datadetail);
+                            // print_r($result);
+                            if ($result['code'] == '01') {
+                                $update_data = [
+                                    'eform_id'    => $value->eform_id,
+                                    'is_send'     => 6,
+                                    'no_rekening' => $result['contents']['data'][0]->NO_REKENING,
+                                    'cif'         => $result['contents']['data'][0]->CIF,
+                                    'cif_las'     => $result['contents']['data'][0]->CIF_LAS,
+                                ];
+
+                                $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
+                                $briguna->update($update_data);
+                                $message = [
+                                    'message'  => 'Sukses update briguna',
+                                    'contents' => $briguna
+                                ];
+                            }
+                        }
+                    }
+                    // print_r($value);
+                    // print_r($value->id);exit();
+                }
+                // print_r($message);exit();
+                return $message;
+            } else {
+                return response()->error( [
+                    'message' => 'Hasil inquiry data briguna tidak ditemukan',
+                    'contents' => ''
+                ], 400 );
+            }                
+        } catch (Exception $e) {
+            return response()->error( [
+                'message' => 'Koneksi Gagal',
+                'contents' => ''
+            ], 400 );
+        }
+    }
+
     function loginLAS($params) {
         $pn['PN'] = $params;
         $result = false;
