@@ -54,7 +54,6 @@ class SchedulerMitraController extends Controller
 							//$datalas_encode = json_decode(json_encode($datalas), True);
 							$last_page = $datalas->lastPage();
 							$current_page = $datalas->currentPage();
-							$path = $datalas->path;
 							$nextPage = (int)$currentPage + 1;
 							$url = env('APP_URL').'scheduler_mitra';
 							$next_page_url = $url.'?page='.$nextPage;
