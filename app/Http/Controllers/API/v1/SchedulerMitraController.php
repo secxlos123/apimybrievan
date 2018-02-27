@@ -54,7 +54,10 @@ class SchedulerMitraController extends Controller
 							//$datalas_encode = json_decode(json_encode($datalas), True);
 							$last_page = $datalas->lastPage();
 							$current_page = $datalas->currentPage();
-							$next_page_url = $datalas->path().'?page='.$datalas->currentPage()+1;
+							$path = $datalas->path;
+							$nextPage = (int)$currentPage + 1;
+							$url = env('APP_URL').'scheduler_mitra';
+							$next_page_url = $url.'?page='.$nextPage;
 							$isi_data = '0';
 							if($datalas->items()[0]->ID_INSTANSI_BRI != ""){
 								$isi_data = '1';
