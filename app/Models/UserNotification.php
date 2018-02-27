@@ -219,7 +219,7 @@ class UserNotification extends Model
 			, 'developer' => $user_id
 		);
 
-		if ( in_array( $role, $return ) ) {
+		if ( isset( $return[ $role ] ) ) {
 			$pn    = substr( $pn, -8 );
 			$query = $this->orderBy('notifications.created_at', 'DESC');
 
