@@ -80,12 +80,12 @@ class branchController extends Controller
 	{
 			$requestPost =[
 				'id_user' => $request->header('pn'),
-				'kode_branch' => $request['branch']
+				'branch_code' => $request['branch_code']
 			];
 
 			$list_uker_kanca = RestwsHc::setBody([
 						'request' => json_encode([
-								'requestMethod' => 'get_list_uker',
+								'requestMethod' => 'get_list_uker_from_cabang',
 								'requestData' => $requestPost
 						])
 				])

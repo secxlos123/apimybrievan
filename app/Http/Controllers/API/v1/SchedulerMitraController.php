@@ -116,25 +116,25 @@ class SchedulerMitraController extends Controller
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = json_decode(json_encode(str_replace("'","",$data->ID_INSTANSI_BRI)));
-					$namainstansi = json_decode(json_encode(str_replace("'","",$data->NAMA_INSTANSI)));
-					$kodeinstansi = json_decode(json_encode(str_replace("'","",$data->KODE_INSTANSI)));
-					$posisinpl = json_decode(json_encode(str_replace("'","",$data->POSISI_NPL)));
-					$kodeuker = json_decode(json_encode(str_replace("'","",$data->KODE_UKER_PEMRAKARSA)));
-					$jumlahkaryawan = json_decode(json_encode(str_replace("'","",$data->JUMLAH_KARYAWAN)));
-					$jenisinstansi = json_decode(json_encode(str_replace("'","",$data->JENIS_INSTANSI)));
-					$jenisbidangusaha = json_decode(json_encode(str_replace("'","",$data->JENIS_BIDANG_USAHA)));
-					$telponinstansi = json_decode(json_encode(str_replace("'","",$data->TELEPON_INSTANSI)));
-					$lembagapemeringkat = json_decode(json_encode(str_replace("'","",$data->LEMBAGA_PEMERINGKAT)));
-					$tglpemeringkat = json_decode(json_encode(str_replace("'","",$data->TANGGAL_PEMERINGKAT)));
-					$gopublic = json_decode(json_encode(str_replace("'","",$data->GO_PUBLIC)));
-					$noijinprinsip = json_decode(json_encode(str_replace("'","",$data->NO_IJIN_PRINSIP)));
-					$dateupdate = json_decode(json_encode(str_replace("'","",$data->DATE_UPDATED)));
-					$updateby = json_decode(json_encode(str_replace("'","",$data->UPDATED_BY)));
-					$acctype = json_decode(json_encode(str_replace("'","",$data->ACC_TYPE)));
-					$alamatinstansi = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI)));
-					$alamatinstansi2 = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI2)));
-					$alamatinstansi3 = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI3)));
+					$idinstansi = str_replace("'","",$data->ID_INSTANSI_BRI);
+					$namainstansi = str_replace("'","",$data->NAMA_INSTANSI);
+					$kodeinstansi = str_replace("'","",$data->KODE_INSTANSI);
+					$posisinpl = str_replace("'","",$data->POSISI_NPL);
+					$kodeuker = str_replace("'","",$data->KODE_UKER_PEMRAKARSA);
+					$jumlahkaryawan = str_replace("'","",$data->JUMLAH_KARYAWAN);
+					$jenisinstansi = str_replace("'","",$data->JENIS_INSTANSI);
+					$jenisbidangusaha = str_replace("'","",$data->JENIS_BIDANG_USAHA);
+					$telponinstansi = str_replace("'","",$data->TELEPON_INSTANSI);
+					$lembagapemeringkat = str_replace("'","",$data->LEMBAGA_PEMERINGKAT);
+					$tglpemeringkat = str_replace("'","",$data->TANGGAL_PEMERINGKAT);
+					$gopublic = str_replace("'","",$data->GO_PUBLIC);
+					$noijinprinsip = str_replace("'","",$data->NO_IJIN_PRINSIP);
+					$dateupdate = str_replace("'","",$data->DATE_UPDATED);
+					$updateby = str_replace("'","",$data->UPDATED_BY);
+					$acctype = str_replace("'","",$data->ACC_TYPE);
+					$alamatinstansi = str_replace("'","",$data->ALAMAT_INSTANSI);
+					$alamatinstansi2 = str_replace("'","",$data->ALAMAT_INSTANSI2);
+					$alamatinstansi3 = str_replace("'","",$data->ALAMAT_INSTANSI3);
 					
 					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
@@ -159,7 +159,7 @@ class SchedulerMitraController extends Controller
 				
 				if($current_page!=$last_page){
 							//$a = explode('/',$next_page_url);
-							header("Location:".'scheduler_mitra?page='.$nextPage);die();
+							header("Location:scheduler_mitra?page=".$nextPage);die();
 				}else{
 					try{
 					if($isi_data == '1'){
