@@ -99,9 +99,11 @@ class PrescreeningController extends Controller
                 $this->dependencies( $key, $eform );
             }
         }
-        // if ( !$eform->pefindo_detail ) {
-        //     $this->pefindo( $eform );
-        // }
+        if( env( 'AUTO_PRESCREENING', false ) ){
+            if ( !$eform->pefindo_detail ) {
+                $this->pefindo( $eform );
+            }
+        }
 
         $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
@@ -144,8 +146,10 @@ class PrescreeningController extends Controller
             }
 
             $risk = array();
-            foreach ($pefindo['risk'] as $value) {
-                $risk[] = $value['description'];
+            if ( isset( $pefindo['risk'] ) ) {
+                foreach ($pefindo['risk'] as $value) {
+                    $risk[] = $value['description'];
+                }
             }
 
             $risk = implode(', ', $risk);
