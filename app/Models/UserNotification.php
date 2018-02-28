@@ -291,13 +291,14 @@ class UserNotification extends Model
 
 		if ( isset( $this->data['eform_id'] ) ) {
 			$eform = EForm::find($this->data['eform_id']);
+			\Log::info($eform);
 
 			$pincaPosition = strtoupper( !empty($eform->pinca_position) ? $eform->pinca_position : '' );
 			$pincaName = strtoupper( !empty($eform->pinca_name) ? $eform->pinca_name : ''  );
 			$aoPosition = strtoupper( !empty($eform->ao_position) ? $eform->ao_position : '' );
 			$aoName = strtoupper( !empty($eform->ao_name) ? $eform->ao_name : '' );
-			$baseWording = strtoupper( $eform->product_type ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
-			$coloring = $eform->prescreening_status;
+			$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
+			$coloring = !empty($eform->prescreening_status) ? $eform->prescreening_status : '' ;
 
 			$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 			$plafondKredit = $getKPR->request_amount ? $getKPR->request_amount : 0;
