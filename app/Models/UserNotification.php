@@ -490,8 +490,8 @@ class UserNotification extends Model
 			case 'App\Notifications\VerificationRejectFormNasabah':
 				// Reject nasabah verifikasi
 				// dari nasabah
-				// ke AOApp\Notifications\ScorePefindoPreScreening
-				$append = array(App\Notifications\ScorePefindoPreScreening'message' => 'Customer Telah Menolak Form KPR' );
+				// ke AO
+				$append = array( 'message' => 'Customer Telah Menolak Form KPR' );
 				break;
 
 			case 'App\Notifications\VerificationDataNasabah':
