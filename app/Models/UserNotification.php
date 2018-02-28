@@ -288,6 +288,7 @@ class UserNotification extends Model
 		$coloring = '';
 		$collateralManager = '';
 		$debitur = '';
+		$pengajuan = '';
 
 		if ( isset( $this->data['eform_id'] ) ) {
 			$eform = EForm::find($this->data['eform_id']);
@@ -295,10 +296,21 @@ class UserNotification extends Model
 			$pincaName = strtoupper( !empty($eform->pinca_name) ? $eform->pinca_name : ''  );
 			$aoPosition = strtoupper( !empty($eform->ao_position) ? $eform->ao_position : '' );
 			$aoName = strtoupper( !empty($eform->ao_name) ? $eform->ao_name : '' );
+			$staffPosition = strtoupper( !empty($eform->staff_position) ? $eform->staff_position : '' );
+			$staffName = strtoupper( !empty($eform->staff_name) ? $eform->staff_name : '' );
 			$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
 			$coloring = !empty($eform->prescreening_status) ? $eform->prescreening_status : '' ;
 			$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 			$plafondKredit = !empty($getKPR->request_amount) ? $getKPR->request_amount : 0;
+
+			$pengajuan = 'Pengajuan ' . $baseWording . ' berhasil ditambahkan';
+			if ( $staffName != "" ) {
+				$pengajuan = 'Pengajuan baru ' . $baseWording . ' dari pengumpan ' . $staffName . ' mohon untuk dilakukan disposisi ke RM yang ditunjuk';
+
+			} else if ( $aoName != '' ) {
+				$pengajuan = 'Pengajuan ' . $baseWording . ' oleh RM ' . $aoName . ' berhasil ditambahkan. Saat ini dalam proses prakarsa oleh RM ' . $aoName;
+
+			}
 		}
 
 		if ( isset( $this->data['collateral_id'] ) ) {
@@ -354,7 +366,7 @@ class UserNotification extends Model
 				// dari nasabah, ao, staff
 				// ke pinca
 				$append = array(
-					'message' => 'Pengajuan ' . $baseWording . ' berhasil ditambahkan.'
+					'message' => $pengajuan
 					, 'message_external' => 'Selamat, pengajuan kredit anda sukses dilakukan. petugas BRI akan segera menghubungi no HP yang telah anda daftarkan.'
 				);
 				break;
