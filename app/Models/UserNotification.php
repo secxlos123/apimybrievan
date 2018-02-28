@@ -287,6 +287,7 @@ class UserNotification extends Model
 		$baseWording = '';
 		$coloring = '';
 		$collateralManager = '';
+		$collateralAppraisal = '';
 		$debitur = '';
 		$pengajuan = '';
 
@@ -631,8 +632,9 @@ class UserNotification extends Model
 				// Submit OTS
 				// dari staff-col / AO
 				// ke col-man
+				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Unkwon' ;
 				$append = array(
-					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralAppraisal . ', saat ini menunggu persetujauan Anda.'
+					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralStaf . ', saat ini menunggu persetujauan Anda.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
