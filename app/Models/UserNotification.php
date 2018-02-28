@@ -292,10 +292,10 @@ class UserNotification extends Model
 		if ( isset( $this->data['eform_id'] ) ) {
 			$eform = EForm::find($this->data['eform_id']);
 
-			$pincaPosition = strtoupper( $eform->pinca_position );
-			$pincaName = strtoupper( $eform->pinca_name );
-			$aoPosition = strtoupper( $eform->ao_position );
-			$aoName = strtoupper( $eform->ao_name );
+			$pincaPosition = strtoupper( !empty($eform->pinca_position) ? $eform->pinca_position : '' );
+			$pincaName = strtoupper( !empty($eform->pinca_name) ? $eform->pinca_name : ''  );
+			$aoPosition = strtoupper( !empty($eform->ao_position) ? $eform->ao_position : '' );
+			$aoName = strtoupper( !empty($eform->ao_name) ? $eform->ao_name : '' );
 			$baseWording = strtoupper( $eform->product_type ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
 			$coloring = $eform->prescreening_status;
 
