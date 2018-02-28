@@ -622,7 +622,7 @@ class UserNotification extends Model
 				// dari staff-col / AO
 				// ke col-man
 				$append = array(
-					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' (' . $this->data['ref_number'] . ') telah dilakukan oleh ' . $collateralAppraisal . ', saat ini menunggu persetujauan Anda.'
+					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralAppraisal . ', saat ini menunggu persetujauan Anda.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
@@ -653,8 +653,8 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' (' . $this->data['ref_number'] . ') telah ditolak oleh ' . $collateralManager
-				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' (' . $this->data['ref_number'] . ') telah ditolak oleh ' . $collateralManager
+				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh ' . $collateralManager
+				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh ' . $collateralManager
 				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_rejecting'
 				);
 				break;
