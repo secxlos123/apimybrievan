@@ -203,11 +203,9 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
-      \DB::beginTransaction();
-      try {
-        
+      return DB::transaction(function() use($collateralId,$dataother) {
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->orWhere('status', Collateral::STATUS[4])->findOrFail($collateralId);
-        \Log::info($collateral);
+        \Log::info($collateralId);
         $collateral->otsInArea()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
         $collateral->otsLetter()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->letter);
         $collateral->otsBuilding()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->building);
@@ -245,12 +243,7 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-        \Log::info('selesai save');
-        \DB::commit();
-      } catch (Exception $e) {
-        \Log::info($e);
-        \DB::rollback();
-      }
+
 
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
@@ -261,7 +254,6 @@ class CollateralController extends Controller
               \Log::info('=======notification web and mobile sent to manager collateral  ======');
               $collateral_id =$collateralId;
               $dataCollateral = Collateral::find($collateralId);
-              \Log::info($dataCollateral);
               if(!empty($dataCollateral->manager_id))
               {
                   $manager_id = $dataCollateral->manager_id; //id manager collateral
@@ -305,6 +297,7 @@ class CollateralController extends Controller
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
+      });
     }
 
     /**
@@ -332,7 +325,7 @@ class CollateralController extends Controller
 
       \DB::beginTransaction();
       $developer_id = env('DEVELOPER_KEY',1);
-      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2],Collateral::STATUS[4]])->findOrFail($collateralId);
+      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2], Collateral::STATUS[4]])->findOrFail($collateralId);
       $property = Property::findOrFail($collateral->property_id);
       $prevStatus = $collateral->status;
       $handleReject = function($prevStatus) {
