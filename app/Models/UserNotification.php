@@ -287,6 +287,8 @@ class UserNotification extends Model
 		$baseWording = '';
 		$coloring = '';
 		$collateralManager = '';
+		$debitur = '';
+
 		if ( isset( $this->data['eform_id'] ) ) {
 			$eform = EForm::find($this->data['eform_id']);
 
