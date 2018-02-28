@@ -49,7 +49,7 @@ class SchedulerMitraController extends Controller
 		$datalas = array();
 		\Log::info("-------------------connect to las-----------------");
 		try{
-							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(1000);
+							$datalas = DB::connection($servernyalas)->table('LAS_M_INSTANSI_BRI')->select()->paginate(100000);
 							
 							//$datalas_encode = json_decode(json_encode($datalas), True);
 							$last_page = $datalas->lastPage();
@@ -116,25 +116,25 @@ class SchedulerMitraController extends Controller
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = json_decode(json_encode(str_replace("'","",$data->ID_INSTANSI_BRI)));
-					$namainstansi = json_decode(json_encode(str_replace("'","",$data->NAMA_INSTANSI)));
-					$kodeinstansi = json_decode(json_encode(str_replace("'","",$data->KODE_INSTANSI)));
-					$posisinpl = json_decode(json_encode(str_replace("'","",$data->POSISI_NPL)));
-					$kodeuker = json_decode(json_encode(str_replace("'","",$data->KODE_UKER_PEMRAKARSA)));
-					$jumlahkaryawan = json_decode(json_encode(str_replace("'","",$data->JUMLAH_KARYAWAN)));
-					$jenisinstansi = json_decode(json_encode(str_replace("'","",$data->JENIS_INSTANSI)));
-					$jenisbidangusaha = json_decode(json_encode(str_replace("'","",$data->JENIS_BIDANG_USAHA)));
-					$telponinstansi = json_decode(json_encode(str_replace("'","",$data->TELEPON_INSTANSI)));
-					$lembagapemeringkat = json_decode(json_encode(str_replace("'","",$data->LEMBAGA_PEMERINGKAT)));
-					$tglpemeringkat = json_decode(json_encode(str_replace("'","",$data->TANGGAL_PEMERINGKAT)));
-					$gopublic = json_decode(json_encode(str_replace("'","",$data->GO_PUBLIC)));
-					$noijinprinsip = json_decode(json_encode(str_replace("'","",$data->NO_IJIN_PRINSIP)));
-					$dateupdate = json_decode(json_encode(str_replace("'","",$data->DATE_UPDATED)));
-					$updateby = json_decode(json_encode(str_replace("'","",$data->UPDATED_BY)));
-					$acctype = json_decode(json_encode(str_replace("'","",$data->ACC_TYPE)));
-					$alamatinstansi = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI)));
-					$alamatinstansi2 = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI2)));
-					$alamatinstansi3 = json_decode(json_encode(str_replace("'","",$data->ALAMAT_INSTANSI3)));
+					$idinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ID_INSTANSI_BRI));
+					$namainstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->NAMA_INSTANSI));
+					$kodeinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_INSTANSI));
+					$posisinpl = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->POSISI_NPL));
+					$kodeuker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_UKER_PEMRAKARSA));
+					$jumlahkaryawan = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JUMLAH_KARYAWAN));
+					$jenisinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JENIS_INSTANSI));
+					$jenisbidangusaha = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JENIS_BIDANG_USAHA));
+					$telponinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TELEPON_INSTANSI));
+					$lembagapemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->LEMBAGA_PEMERINGKAT));
+					$tglpemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TANGGAL_PEMERINGKAT));
+					$gopublic = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->GO_PUBLIC));
+					$noijinprinsip = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->NO_IJIN_PRINSIP));
+					$dateupdate = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->DATE_UPDATED));
+					$updateby = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->UPDATED_BY));
+					$acctype = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ACC_TYPE));
+					$alamatinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI));
+					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI2));
+					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI3));
 					
 					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
@@ -159,12 +159,12 @@ class SchedulerMitraController extends Controller
 				
 				if($current_page!=$last_page){
 							//$a = explode('/',$next_page_url);
-							header("Location:".'scheduler_mitra?page='.$nextPage);die();
+							header("Location:scheduler_mitra?page=".$nextPage);die();
 				}else{
 					try{
 					if($isi_data == '1'){
-							DB::statement("ALTER TABLE mitra_scheduller RENAME TO mitraxxx;");
-							DB::statement("ALTER TABLE mitra_create RENAME TO mitra_scheduller;");
+							DB::statement("ALTER TABLE mitra RENAME TO mitraxxx;");
+							DB::statement("ALTER TABLE mitra_create RENAME TO mitra;");
 							DB::statement("DROP TABLE mitraxxx;");
 							DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'Sukses')");
 							\Log::info("-------------------Sukses ALL-----------------");
