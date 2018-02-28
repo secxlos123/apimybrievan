@@ -231,6 +231,7 @@ class UserNotification extends Model
 	public function defineQuery( $pn, $user_id, $branch_id, $role )
 	{
 		$role  = ($role == 'mp') ? 'pinca' : $role;
+		$pn    = substr( $pn, -8 );
 
 		$return = array(
 			'pinca' => $branch_id
@@ -243,7 +244,6 @@ class UserNotification extends Model
 		);
 
 		if ( isset( $return[ $role ] ) ) {
-			$pn    = substr( $pn, -8 );
 			$query = $this->orderBy('notifications.created_at', 'DESC');
 
 			foreach ($return as $key => $value) {
@@ -490,8 +490,8 @@ class UserNotification extends Model
 			case 'App\Notifications\VerificationRejectFormNasabah':
 				// Reject nasabah verifikasi
 				// dari nasabah
-				// ke AO
-				$append = array( 'message' => 'Customer Telah Menolak Form KPR' );
+				// ke AOApp\Notifications\ScorePefindoPreScreening
+				$append = array(App\Notifications\ScorePefindoPreScreening'message' => 'Customer Telah Menolak Form KPR' );
 				break;
 
 			case 'App\Notifications\VerificationDataNasabah':
