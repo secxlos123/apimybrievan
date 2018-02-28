@@ -287,6 +287,7 @@ class UserNotification extends Model
 		$baseWording = '';
 		$coloring = '';
 		$collateralManager = '';
+		$collateralAppraisal = '';
 		$debitur = '';
 
 		if ( isset( $this->data['eform_id'] ) ) {
@@ -619,7 +620,7 @@ class UserNotification extends Model
 				// Submit OTS
 				// dari staff-col / AO
 				// ke col-man
-				$collateralStaf = 'Unkwown';
+				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Unkwon' ;
 				$append = array(
 					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralStaf . ', saat ini menunggu persetujauan Anda.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
