@@ -205,6 +205,7 @@ class CollateralController extends Controller
       }
       \DB::beginTransaction();
       try {
+        
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->orWhere('status', Collateral::STATUS[4])->findOrFail($collateralId);
         \Log::info($collateral);
         $collateral->otsInArea()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
@@ -246,6 +247,10 @@ class CollateralController extends Controller
         $collateral->save();
         \Log::info('selesai save');
         \DB::commit();
+      } catch (Exception $e) {
+        \Log::info($e);
+        \DB::rollback();
+      }
 
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
@@ -256,6 +261,7 @@ class CollateralController extends Controller
               \Log::info('=======notification web and mobile sent to manager collateral  ======');
               $collateral_id =$collateralId;
               $dataCollateral = Collateral::find($collateralId);
+              \Log::info($dataCollateral);
               if(!empty($dataCollateral->manager_id))
               {
                   $manager_id = $dataCollateral->manager_id; //id manager collateral
@@ -296,10 +302,6 @@ class CollateralController extends Controller
             }
          }
       //end notif
-      } catch (Exception $e) {
-        \Log::info($e);
-        \DB::rollback();
-      }
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
