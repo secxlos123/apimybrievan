@@ -204,23 +204,26 @@ class CollateralController extends Controller
         $dataother = $this->request->other;
       }
       return DB::transaction(function() use($collateralId,$dataother) {
-        $collateral = $this->collateral->where('status', Collateral::STATUS[1])->findOrFail($collateralId);
-        $collateral->otsInArea()->create($this->request->area);
-        $collateral->otsLetter()->create($this->request->letter);
-        $collateral->otsBuilding()->create($this->request->building);
-        $collateral->otsEnvironment()->create($this->request->environment);
-        $collateral->otsValuation()->create($this->request->valuation);
-        $collateral->otsSeven()->create($this->request->seven);
-        $collateral->otsEight()->create($this->request->eight);
-        $collateral->otsNine()->create($this->request->nine);
-        $collateral->otsTen()->create($this->request->ten);
-        $otsOther = $collateral->otsOther()->create($dataother);
+        $collateral = $this->collateral->where('status', Collateral::STATUS[1])->orWhere('status', Collateral::STATUS[4])->findOrFail($collateralId);
+        $collateral->otsInArea()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
+        $collateral->otsLetter()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->letter);
+        $collateral->otsBuilding()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->building);
+        $collateral->otsEnvironment()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->environment);
+        $collateral->otsValuation()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->valuation);
+        $collateral->otsSeven()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->seven);
+        $collateral->otsEight()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->eight);
+        $collateral->otsNine()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->nine);
+        $collateral->otsTen()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->ten);
+        $otsOther = $collateral->otsOther()->updateOrCreate(['collateral_id' => $collateral->id],$dataother);
         if (count($dataother['image_area'])>0) {
+          $photo_id = array();
           foreach ($dataother['image_area'] as $key => $value) {
             \Log::info('======= data foreach ======');
             \Log::info($value);
-            $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+            $photos = $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+            $photo_id[]=$photos->id;
           }
+          $otsOther->images()->where('ots_other_id', $otsOther->id)->whereNotIn('id', $photo_id)->delete();
           $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
           if ( $collateralView ) {
             $eform = EForm::find($collateralView->eform_id);
@@ -321,7 +324,7 @@ class CollateralController extends Controller
 
       \DB::beginTransaction();
       $developer_id = env('DEVELOPER_KEY',1);
-      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
+      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2],Collateral::STATUS[4]])->findOrFail($collateralId);
       $property = Property::findOrFail($collateral->property_id);
       $prevStatus = $collateral->status;
       $handleReject = function($prevStatus) {
