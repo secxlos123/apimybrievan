@@ -203,8 +203,10 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
-      return DB::transaction(function() use($collateralId,$dataother) {
+      \DB::beginTransaction();
+      try {
         $collateral = $this->collateral->where('status', Collateral::STATUS[1])->orWhere('status', Collateral::STATUS[4])->findOrFail($collateralId);
+        \Log::info($collateral);
         $collateral->otsInArea()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
         $collateral->otsLetter()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->letter);
         $collateral->otsBuilding()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->building);
@@ -242,7 +244,8 @@ class CollateralController extends Controller
         $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-
+        \Log::info('selesai save');
+        \DB::commit();
 
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
@@ -293,10 +296,13 @@ class CollateralController extends Controller
             }
          }
       //end notif
+      } catch (Exception $e) {
+        \Log::info($e);
+        \DB::rollback();
+      }
         return $this->makeResponse(
           $this->collateral->withAll()->find($collateralId)
         );
-      });
     }
 
     /**
