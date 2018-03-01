@@ -20,7 +20,7 @@ class ThrottleCustom extends BaseReq
         $retryAfter = $this->limiter->availableIn($key);
 
         return response()->error( [
-                'message' => 'Anda Telah Mencoba Login Sebanyak '.$maxAttempts.',Silahkan Tunggu Beberapa Saat Untuk Login'
+                'message' => 'Anda Telah Mencoba Login Beberapa Kali ,Silahkan Tunggu Beberapa Saat Untuk Login'
             ], 422 );
     }
 }
