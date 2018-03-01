@@ -243,8 +243,11 @@ class CollateralController extends Controller
         //$otsOther->save();
         $collateral->update(['status'=> Collateral::STATUS[2] ]);
         //$collateral->save();
-
-        if(env('PUSH_NOTIFICATION', false)){
+        return $this->makeResponse(
+          $this->collateral->withAll()->find($collateralId)
+        );
+      });
+       if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
             $aksiCollateral = 'collateral_penilaian_ots';
             $cekNotifColltaeralOTS=[];//UserNotification::where('slug',$collateralId)->where('type_module',$aksiCollateral)->first();
@@ -292,11 +295,6 @@ class CollateralController extends Controller
               \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
             }
          }
-      //end notif
-        return $this->makeResponse(
-          $this->collateral->withAll()->find($collateralId)
-        );
-      });
     }
 
     /**
