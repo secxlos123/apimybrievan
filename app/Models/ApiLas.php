@@ -117,27 +117,8 @@ class ApiLas extends Model
         return $eform;
     }
 
-    public function eform_briguna($branch = null) {
-        if (!empty($branch)) {
-            /*$eforms = DB::table('eforms')
-                 ->select('eforms.ref_number','eforms.created_at','eforms.prescreening_status',
-                    'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
-                    'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
-                    'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
-                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
-                    'briguna.tgl_analisa','briguna.tgl_putusan','briguna.cif',
-                    'customer_details.nik','customer_details.is_verified',
-                    'customer_details.address','customer_details.mother_name',
-                    'customer_details.birth_date','users.first_name','users.last_name',
-                    'users.mobile_phone','users.gender'
-                   )
-                 ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
-                 ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
-                 ->join('users', 'users.id', '=', 'eforms.user_id')
-                 // ->where('eforms.branch_id', '=', $branch)
-                 ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branch))
-                 ->orderBy('eforms.created_at', 'desc')
-                 ->get();*/
+    public function eform_briguna($branch = null, $id_aplikasi = null) {
+        if (!empty($branch) && !empty($id_aplikasi)) {
             $eforms = DB::table('eforms')
                  ->select(['eforms.ref_number','eforms.created_at','eforms.prescreening_status',
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
@@ -181,6 +162,7 @@ class ApiLas extends Model
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
                  ->join('users', 'users.id', '=', 'eforms.user_id')
                  ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branch))
+                 ->whereIn('briguna.id_aplikasi', $id_aplikasi)
                  ->orderBy('eforms.created_at', 'desc')
                  ->get();
         } else {
@@ -231,6 +213,7 @@ class ApiLas extends Model
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
                  ->join('customer_details', 'customer_details.user_id', '=', 'eforms.user_id')
                  ->join('users', 'users.id', '=', 'eforms.user_id')
+                 ->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($branch))
                  ->orderBy('eforms.created_at', 'desc')
                  ->get();
         }

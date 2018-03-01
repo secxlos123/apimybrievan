@@ -12,7 +12,6 @@ use App\Models\EForm;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\BRIGUNA;
-use App\Models\EformBriguna;
 use Asmx;
 use File;
 use Zip;
@@ -420,7 +419,7 @@ class ApiLasController extends Controller
                 break;
 
             case 'eformBriguna':
-                $inquiry = $ApiLas->eform_briguna($data);
+                $inquiry = $ApiLas->eform_briguna($data['branch'],$data['id_aplikasi']);
                 return $inquiry;
                 break;
 
@@ -2014,72 +2013,89 @@ class ApiLasController extends Controller
     }
 
     public function update_rekening() {
-        // $parameter['branch'] = '00120';
-        $client = $this->client();
-        // $resultclient = $client->inquiryListVerputADK($parameter);
-        // if($resultclient->inquiryListVerputADKResult){
-        //     $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
-        //     $result = $this->return_conten($datadetail);
-        // }
-        // print_r($result);
-        // foreach ($result['contents']['data'] as $key => $value) {
-        //     $id_aplikasi[] = $value->id_aplikasi;
-        // }
-        // $ApiLas = new ApiLas();
-        // $las = $ApiLas->eform_briguna('00120');
-        try {
-            $data_briguna = \DB::table("briguna")
-                        ->select(['id','eform_id','id_aplikasi','cif','no_rekening','tgl_putusan'])
-                        ->orderBy('id','asc')
-                        ->get()->toArray();
-            if (!empty($data_briguna)) {
-                $message = [
-                    'message'  => 'data briguna kosong',
-                    'contents' => ''
-                ];
-                foreach ($data_briguna as $key => $value) {
-                    if (!isset($value->no_rekening) && $value->id_aplikasi != '') {
-                        $parameter['id_aplikasi'] = $value->id_aplikasi;
-                        $rekening = $client->getStatusInterface($parameter);
-                        if($rekening->getStatusInterfaceResult){
-                            $datadetail = json_decode($rekening->getStatusInterfaceResult);
-                            $result = $this->return_conten($datadetail);
-                            // print_r($result);
-                            if ($result['code'] == '01') {
-                                $update_data = [
-                                    'eform_id'    => $value->eform_id,
-                                    'is_send'     => 6,
-                                    'no_rekening' => $result['contents']['data'][0]->NO_REKENING,
-                                    'cif'         => $result['contents']['data'][0]->CIF,
-                                    'cif_las'     => $result['contents']['data'][0]->CIF_LAS,
-                                ];
-
-                                $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
-                                $briguna->update($update_data);
-                                $message = [
-                                    'message'  => 'Sukses update briguna',
-                                    'contents' => $briguna
-                                ];
-                            }
-                        }
-                    }
-                    // print_r($value);
-                    // print_r($value->id);exit();
-                }
-                // print_r($message);exit();
-                return $message;
-            } else {
-                return response()->error( [
-                    'message' => 'Hasil inquiry data briguna tidak ditemukan',
-                    'contents' => ''
-                ], 400 );
-            }                
-        } catch (Exception $e) {
-            return response()->error( [
-                'message' => 'Koneksi Gagal',
-                'contents' => ''
-            ], 400 );
+        /*$full = array('a'=>2,'b'=>4,'c'=>2,'d'=>5,'e'=>6,'f'=>2);
+        $extends = array('a'=>2,'b'=>4,'c'=>2,'d'=>5,'e'=>6,'f'=>2,'g'=>3,'h'=>5);
+        
+        foreach ($extends as $value) {
+            $filteredArray = array_filter($full, function ($item) use ($value){
+                print_r($item);
+                print_r($value);
+                print_r('-------');
+                // if ($item == $value) {
+                    return ($item != $value);
+                // }
+            }, ARRAY_FILTER_USE_KEY);
+            print_r($filteredArray);
         }
+        exit();*/
+        $parameter['branch'] = '00120';
+        $client = $this->client();
+        $resultclient = $client->inquiryListVerputADK($parameter);
+        if($resultclient->inquiryListVerputADKResult){
+            $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
+            $result = $this->return_conten($datadetail);
+        }
+        
+        foreach ($result['contents']['data'] as $key => $value) {
+            $id_aplikasi[] = $value->id_aplikasi;
+        }
+        print_r($id_aplikasi);
+        $ApiLas = new ApiLas();
+        $las = $ApiLas->eform_briguna('00120',$id_aplikasi);
+        print_r($las);exit();
+        // try {
+        //     $data_briguna = \DB::table("briguna")
+        //                 ->select(['id','eform_id','id_aplikasi','cif','no_rekening','tgl_putusan'])
+        //                 ->orderBy('id','asc')
+        //                 ->get()->toArray();
+        //     if (!empty($data_briguna)) {
+        //         $message = [
+        //             'message'  => 'data briguna kosong',
+        //             'contents' => ''
+        //         ];
+        //         // print_r($data_briguna);exit();
+        //         foreach ($data_briguna as $key => $value) {
+        //             if (!isset($value->no_rekening) && $value->id_aplikasi != '') {
+        //                 $parameter['id_aplikasi'] = $value->id_aplikasi;
+        //                 $rekening = $client->getStatusInterface($parameter);
+        //                 if($rekening->getStatusInterfaceResult){
+        //                     $datadetail = json_decode($rekening->getStatusInterfaceResult);
+        //                     $result = $this->return_conten($datadetail);
+        //                     // print_r($result);
+        //                     if ($result['code'] == '01') {
+        //                         $update_data = [
+        //                             'eform_id'    => $value->eform_id,
+        //                             'is_send'     => 6,
+        //                             'no_rekening' => $result['contents']['data'][0]->NO_REKENING,
+        //                             'cif'         => $result['contents']['data'][0]->CIF,
+        //                             'cif_las'     => $result['contents']['data'][0]->CIF_LAS,
+        //                         ];
+
+        //                         $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
+        //                         $briguna->update($update_data);
+        //                         $message = [
+        //                             'message'  => 'Sukses update briguna',
+        //                             'contents' => $briguna
+        //                         ];
+        //                     }
+        //                 }
+        //             }
+        //             // print_r($value);
+        //             // print_r($value->id);exit();
+        //         }
+        //         return $message;
+        //     } else {
+        //         return response()->error( [
+        //             'message' => 'Hasil inquiry data briguna tidak ditemukan',
+        //             'contents' => ''
+        //         ], 400 );
+        //     }                
+        // } catch (Exception $e) {
+        //     return response()->error( [
+        //         'message' => 'Koneksi Gagal',
+        //         'contents' => ''
+        //     ], 400 );
+        // }
     }
 
     function loginLAS($params) {
