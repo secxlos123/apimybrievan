@@ -57,6 +57,7 @@ class Kernel extends HttpKernel
         'can'        => \Illuminate\Auth\Middleware\Authorize::class,
         'guest'      => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'throttle-custom'   => \App\Http\Middleware\ThrottleCustom::class,
         'api.access' => \App\Http\Middleware\VerifyApiAccess::class,
         'api.auth'   => \App\Http\Middleware\GetUserFromToken::class,
         'api.refresh'=> \Tymon\JWTAuth\Middleware\RefreshToken::class,
