@@ -181,7 +181,7 @@ class PropertyController extends Controller
         if (ENV('APP_ENV') == 'local') {
             $id = array(
                 'code' => '200'
-                , 'contents'=> mt_rand(100, 999)
+                ,'contents'=> '2222'
             );
         } else {
             $current = [

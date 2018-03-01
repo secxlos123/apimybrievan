@@ -240,9 +240,9 @@ class CollateralController extends Controller
             }
           }
         }
-        $otsOther->save();
+        //$otsOther->save();
         $collateral->update(['status'=> Collateral::STATUS[2] ]);
-        $collateral->save();
+        //$collateral->save();
 
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
