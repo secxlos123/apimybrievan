@@ -7,24 +7,24 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\NotificationsDbChannel;
-use App\Models\Property;
+use App\Models\Collateral;
 
-class PropertyNotification extends Notification
+class CollateralManagerApproveAO extends Notification
 {
     use Queueable;
 
-    public $prop;
-    public $branch_id;
+    public $collateral;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($prop, $branch_id)
+    public function __construct($collateral,$branch_id)
     {
-        $this->prop = $prop;
-        $this->branch_id = $branch_id;
+        $this->collateral  = $collateral;
+        $this->branch_id   = $branch_id;
+
     }
 
     /**
@@ -46,23 +46,10 @@ class PropertyNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        // return (new MailMessage)
-        //             ->line('The introduction to the notification.')
-        //             ->action('Notification Action', url('/'))
-        //             ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
+        /*return (new MailMessage)
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');*/
     }
 
     /**
@@ -73,17 +60,23 @@ class PropertyNotification extends Notification
      */
     public function toDatabase($notifiable)
     {
-        $typeModule = getTypeModule(Property::class);
 
+        $typeModule = 'collateral_manager_approving';
+        $message    = getMessage('collateral_approve');
         return [
-            'prop_id' => $this->prop->id,
+            'collateral_id' => $this->collateral->id,
             'user_id' => $notifiable->id,
+            'developer_id' =>  $this->collateral->developer_id,
+            'property_id' =>  $this->collateral->property_id,
             'user_name' => $notifiable->first_name.' '.$notifiable->last_name,
-            'branch_id' => $this->branch_id,
-            'role_name' => $notifiable->roles->first()->slug,
-            'name' => $this->prop->name,
-            'slug' => $this->prop->id,
+            'branch_id' => $this->branch_id,    
+            'slug' => $this->collateral->id,
             'type_module' => $typeModule,
+            'created_at' => $this->collateral->created_at,
+            'role_name' => $notifiable->roles->first()->slug,
+            'staff_name' => $this->collateral->staff_name,
+            'prop_slug' => $this->collateral->property->slug,
+            'message' => $message,
         ];
     }
 }

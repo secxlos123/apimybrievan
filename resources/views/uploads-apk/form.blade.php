@@ -24,7 +24,7 @@
 		<div class="col-md-5 col-md-offset-1">
          	<div class="form-group">
 	         	<label>APK Eksternal</label>
-        		<input type="file" name="apkEks">
+        		<input type="file" name="apkEks" accept="application/vnd.android.package-archive">
          	</div>
          	<div class="form-group">
 	         	<label>APK Eksternal Version</label>
@@ -53,7 +53,7 @@
         <div class="col-md-5">
         	<div class="form-group">
         		<label>APK Internal</label>
-        		<input type="file" name="apkInt">
+        		<input type="file" name="apkInt" accept="application/vnd.android.package-archive">
         	</div>
         	<div class="form-group">
 	         	<label>APK Internal Version</label>
@@ -80,12 +80,13 @@
          	</div>
         </div>
 	</div>
-	<button type="submit">submit</button>
-
+    <div class="text-center">
+	<button  type="submit">submit</button>
+    </div>
 	</form>
 
 	<div class="page-header">
-            <h1 class="text-center">List Routes</h1>
+            <h1 class="text-center">List APK</h1>
         </div>
         <div class="container">
             <div class="table">
@@ -96,7 +97,7 @@
         	    			<th>Version</th>
         	    			<th>Name</th>
         	    			<th>created at</th>
-        	    			<th>Action</th>
+                            <th>Action</th>
         	    		</tr>
             		</thead>
             		<tbody>
@@ -106,6 +107,7 @@
         	    				<td>{{$key->version_number}}</td>
         	    				<td>{{$key->file_name}}</td>
         	    				<td>{{$key->created_at}}</td>
+                                <td><a href="{{$key->link}}" target="_blank" >Download</a></td>
         	    				<td></td>
         	    			</tr>
             			@endforeach

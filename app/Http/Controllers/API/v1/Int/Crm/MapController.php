@@ -18,11 +18,15 @@ class MapController extends Controller
       $market_map = [];
       foreach (MarketMapping::all() as $market) {
         $market_map []= [
-          'market_name'=> $market->market_name,
+	  'id'=> $market->id,	
+	  'market_name'=> $market->market_name,
           'category'=> $market->category,
           'longitude'=> $market->longitude,
           'latitude'=> $market->latitude,
-          'address'=> $market->address
+          'address'=> $market->address,
+	  'pos_code'=> $market->pos_code,
+	  'province' => $market->province,
+	  'city'=> $market->ciry
         ];
       }
 
@@ -35,7 +39,8 @@ class MapController extends Controller
 
       return response()->error([
           'message' => 'Gagal get Market Map.',
-      ], 500);
+          'contents' => $market_map,
+      ], 200);
     }
 
     public function activity_map(Request $request)
@@ -86,6 +91,7 @@ class MapController extends Controller
 
       return response()->error([
           'message' => 'Gagal get Activity Map.',
+          'contents' => $activity_map,
       ], 500);
 
     }

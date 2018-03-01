@@ -22,6 +22,7 @@ class reportController extends Controller
         $last_activity = MarketingActivity::where('desc', '!=', 'first')->where('marketing_id',$value->id)->orderBy('created_at', 'desc')->first();
         $result = MarketingActivityFollowup::where('activity_id',$last_activity['id'])->orderBy('created_at', 'desc')->first();
         $marketings[] =[
+          "pn"=>$value->pn,
           "bulan"=>date('M',strtotime($value->created_at)),
           "tahun"=>date('Y',strtotime($value->created_at)),
           "wilayah"=> $value->branch,
@@ -32,11 +33,11 @@ class reportController extends Controller
           "activity_type"=> $value->activity_type,
           "nama"=> $value->nama,
           "target"=> $value->target,
-          "rekening" => "rekening",
-          "volume_rekening" => "volume_rekening",
+          "rekening" => $result['account_number'],
+          "volume_rekening" => $result['amount'],
           "status"=> $value->status,
           "target_closing_date"=> $value->target_closing_date,
-          "result" => $result,
+          "result" => $result['fu_result'],
           "activity" => $last_activity
           // "nik"=> $value->nik,
           // "number"=> $value->number,

@@ -358,6 +358,7 @@ class EForm extends Model implements AuditableContract
             $defaultValue['status_eform'] = 'Rejected';
             $availableStatus = "available";
             $result['status'] = true;
+            $kprValue['is_sent'] = false;
 
             // Recontest
             if ($eform->status_eform == 'Approval2' ) {
@@ -651,7 +652,8 @@ class EForm extends Model implements AuditableContract
                 ->where( function( $eform ) use( $request, &$user ) {
                     $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
                         ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
+                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%')
+						->orWhere('eforms.user_id', 'ilike', '%'.$request->input('search').'%');
                 } );
 
         } else {

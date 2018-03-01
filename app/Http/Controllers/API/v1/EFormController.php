@@ -14,6 +14,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
+use App\Models\KartuKredit;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -84,7 +85,7 @@ class EFormController extends Controller
                 $briguna->delete();
                 $eform->delete();
                 $message = 'Hapus berhasil';
-            }    
+            }
         }
 
         return response()->success( [
@@ -398,13 +399,16 @@ class EFormController extends Controller
                 }
             }
 
-            if ($request->product_type == 'kkd'){
-                \Log::info("========================KARTU_KREDIT========================"); 
+            if ($request->product_type == 'kartu_kredit'){
+                \Log::info("========================KARTU_KREDIT========================");
 
-            return response()->success([
-                'message' => 'E-Form berhasil di disposisi',
+                //bandingin nik sama customer_details, kalau gak nemu create baru
 
-            ], 200 );
+
+                return response()->success([
+                    'message' => 'response eform kkd',
+
+                ], 200 );
             }
 
             if ( $request->product_type == 'briguna' ) {
@@ -458,17 +462,17 @@ class EFormController extends Controller
 //            $baseRequest['SK_AKHIR'] = $SK_AKHIR;
             $baseRequest['REKOMENDASI'] = $REKOMENDASI;
 			$baseRequest['id_foto'] = $id;
-			
+
 			$SK_AWAL = '';
 			$SK_AKHIR = '';
-				
-			
+
+
 			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
 				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
 					$SK_AWAL = $request->SK_AWAL;
 					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
 					$baseRequest['SK_AWAL'] = $SK_AWAL;
-					
+
 					$SK_AKHIR = $request->SK_AKHIR;
 					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
 					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
@@ -485,14 +489,30 @@ class EFormController extends Controller
 					$SK_AWAL = $request->SK_AWAL;
 					$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
 					$baseRequest['SK_AWAL'] = $SK_AWAL;
-					
+
 					$SK_AKHIR = $request->SK_AKHIR;
 					$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
 					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
 					/*----------------------------------*/
+				}else if(!empty($request->SK_AWAL) || !empty($request->SK_AKHIR)){
+					if(!empty($request->SK_AWAL)){
+						$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+						$SK_AWAL = $request->SK_AWAL;
+						$SK_AWAL = $this->uploadimage($SK_AWAL,$id,'SK_AWAL');
+						$baseRequest['SK_AWAL'] = $SK_AWAL;
+
+					}else{
+						$baseRequest['SK_AWAL'] = $SK_AWAL;
+
+						$SK_AKHIR = $request->SK_AKHIR;
+						$SK_AKHIR = $this->uploadimage($SK_AKHIR,$id,'SK_AKHIR');
+						$baseRequest['SK_AKHIR'] = $SK_AKHIR;
+					}
+					/*----------------------------------*/
+				}else{
+					$baseRequest['SK_AWAL'] = $SK_AWAL;
+					$baseRequest['SK_AKHIR'] = $SK_AKHIR;
 				}
-				$baseRequest['SK_AWAL'] = $SK_AWAL;
-				$baseRequest['SK_AKHIR'] = $SK_AKHIR;
 			}
 
 			if($baseRequest['Payroll']=='1'){
@@ -523,10 +543,10 @@ class EFormController extends Controller
 						 ->join('users', 'users.id', '=', 'customer_details.user_id')
 						 ->where('customer_details.nik', $request->nik)
 						 ->get();
-				
+
 				$customer = $customer->toArray();
 				$customer = json_decode(json_encode($customer), True);
-				$message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];				
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];
 				\Log::info("-------------------sms notifikasi-----------------");
 				\Log::info($message);
 				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
@@ -715,7 +735,7 @@ class EFormController extends Controller
                     , 'status' => 'waiting'
                 );
             $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
-            
+
             // Credentials for push notification helper
             $credentials = [
                 'eform' => $eform,
@@ -761,7 +781,7 @@ class EFormController extends Controller
 
         if( $eform['status'] ) {
             $data =  EForm::findOrFail($eform_id);
-            
+
             $typeModule = getTypeModule(EForm::class);
             notificationIsRead($eform_id, $typeModule);
 
@@ -892,6 +912,35 @@ class EFormController extends Controller
         $eform = EForm::findOrFail($request->eform_id);
 		if($eform->product_type=='briguna'){
 			try{
+
+				$customer = DB::table('customer_details')
+						 ->select('users.*','customer_details.*')
+						 ->join('users', 'users.id', '=', 'customer_details.user_id')
+						 ->where('customer_details.user_id', $eform->user_id)
+						 ->get();
+
+				$customer = $customer->toArray();
+				$customer = json_decode(json_encode($customer), True);
+
+
+				$briguna = DB::table('briguna')
+						 ->select('year','request_amount')
+						 ->where('briguna.eform_id', $request->eform_id)
+						 ->get();
+
+				$briguna = $briguna->toArray();
+				$briguna = json_decode(json_encode($briguna), True);
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],
+							'plafond'=>$briguna[0]['request_amount'],
+							'year'=>$briguna[0]['year'],
+							'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
+							'kode_message'=>'5'];
+				\Log::info("-------------------sms notifikasi-----------------");
+				\Log::info($message);
+				$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+								\Log::info($testing);
+
+
 					User::destroy($eform->user_id);
 				  DB::commit();
 				return response()->success( [
@@ -904,7 +953,7 @@ class EFormController extends Controller
 					], 422 );
 			}
 		}else{
-			if ($eform->kpr->is_sent == false ) {
+			if ($eform->kpr->is_sent == false || $eform->status_eform == 'Rejected' ) {
 			  User::destroy($eform->user_id);
 			  DB::commit();
 			return response()->success( [
