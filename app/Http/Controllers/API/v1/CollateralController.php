@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\API\v1;
 
 use DB;
-use App\Models\OtsInArea;
 use App\Models\Collateral;
-use App\Models\OtsValuation;
-use Illuminate\Http\Request;
-use App\Models\OtsEnvironment;
-use App\Models\OtsAnotherData;
+use App\Models\OtsInArea;
+use App\Models\OtsOtsAccordingLetterLand;
 use App\Models\OtsBuildingDesc;
+use App\Models\OtsEnvironment;
+use App\Models\OtsValuation;
+use App\Models\OtsSeven;
+use App\Models\OtsEight;
+use App\Models\OtsNine;
+use App\Models\OtsTen;
+use App\Models\OtsAnotherData;
+use App\Models\OtsPhoto;
+use Illuminate\Http\Request;
 use App\Models\UserServices;
 use App\Http\Controllers\Controller;
-use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
 use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
@@ -204,31 +209,31 @@ class CollateralController extends Controller
         $dataother = $this->request->other;
       }
       return DB::transaction(function() use($collateralId,$dataother) {
-        $collateral = $this->collateral->where('status', Collateral::STATUS[1])->orWhere('status', Collateral::STATUS[4])->findOrFail($collateralId);
-        \Log::info($collateralId);
-        $collateral->otsInArea()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
-        $collateral->otsLetter()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->letter);
-        $collateral->otsBuilding()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->building);
-        $collateral->otsEnvironment()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->environment);
-        $collateral->otsValuation()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->valuation);
-        $collateral->otsSeven()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->seven);
-        $collateral->otsEight()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->eight);
-        $collateral->otsNine()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->nine);
-        $collateral->otsTen()->updateOrCreate(['collateral_id' => $collateral->id],$this->request->ten);
-        $otsOther = $collateral->otsOther()->updateOrCreate(['collateral_id' => $collateral->id],$dataother);
+        $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
+        \Log::info($collateral);
+        OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
+        OtsAccordingLetterLand::updateOrCreate(['collateral_id' => $collateral->id],$this->request->letter);
+        OtsBuildingDesc::updateOrCreate(['collateral_id' => $collateral->id],$this->request->building);
+        OtsEnvironment::updateOrCreate(['collateral_id' => $collateral->id],$this->request->environment);
+        OtsValuation::updateOrCreate(['collateral_id' => $collateral->id],$this->request->valuation);
+        OtsSeven::updateOrCreate(['collateral_id' => $collateral->id],$this->request->seven);
+        OtsEight::updateOrCreate(['collateral_id' => $collateral->id],$this->request->eight);
+        OtsNine::updateOrCreate(['collateral_id' => $collateral->id],$this->request->nine);
+        OtsTen::updateOrCreate(['collateral_id' => $collateral->id],$this->request->ten);
+        $otsOther = OtsAnotherData::updateOrCreate(['collateral_id' => $collateral->id],$dataother);
         if (count($dataother['image_area'])>0) {
           $photo_id = array();
           foreach ($dataother['image_area'] as $key => $value) {
             \Log::info(' ======= data foreach ======');
             \Log::info($value);
-            $photos = $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+            $photos = OtsPhoto::create(['ots_other_id'=>$otsOther->id]+$value);
             $photo_id[]=$photos->id;
           }
-          $otsOther->images()->where('ots_other_id', $otsOther->id)->whereNotIn('id', $photo_id)->delete();
+          OtsPhoto::where('ots_other_id', $otsOther->id)->whereNotIn('id', $photo_id)->delete();
           $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-          if ( $collateralView ) {
+          if ( count($collateralView) > 0 ) {
             $eform = EForm::find($collateralView->eform_id);
-            if ( $eform ) {
+            if ( count($eform) > 0 ) {
               foreach( $otsOther->images as $image ) {
                 $paths = explode('/', $image->image_data);
                 $filename = $paths[ count($paths) - 1 ];
@@ -240,13 +245,10 @@ class CollateralController extends Controller
             }
           }
         }
-        //$otsOther->save();
-        $collateral->update(['status'=> Collateral::STATUS[2] ]);
-        //$collateral->save();
-        return $this->makeResponse(
-          $this->collateral->withAll()->find($collateralId)
-        );
+        $collateral->status = Collateral::STATUS[2];
+        $collateral->save();
       });
+
        if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
             $aksiCollateral = 'collateral_penilaian_ots';
@@ -295,6 +297,9 @@ class CollateralController extends Controller
               \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
             }
          }
+        return $this->makeResponse(
+          $this->collateral->withAll()->find($collateralId)
+        );
     }
 
     /**
