@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use DB;
 use App\Models\Collateral;
 use App\Models\OtsInArea;
-use App\Models\OtsOtsAccordingLetterLand;
+use App\Models\OtsAccordingLetterLand;
 use App\Models\OtsBuildingDesc;
 use App\Models\OtsEnvironment;
 use App\Models\OtsValuation;
