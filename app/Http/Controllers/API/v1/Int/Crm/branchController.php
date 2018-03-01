@@ -79,7 +79,7 @@ class branchController extends Controller
 	public function get_uker_kanca(Request $request)
 	{
 			$requestPost =[
-				'id_user' => $request->header('pn'),
+				'app_id' => 'mybriapi',
 				'branch_code' => $request['branch_code']
 			];
 
