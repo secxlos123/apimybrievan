@@ -247,6 +247,9 @@ class CollateralController extends Controller
         }
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
+        return $this->makeResponse(
+          $this->collateral->withAll()->find($collateralId)
+        );
       });
 
        if(env('PUSH_NOTIFICATION', false)){
@@ -297,9 +300,6 @@ class CollateralController extends Controller
               \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
             }
          }
-        return $this->makeResponse(
-          $this->collateral->withAll()->find($collateralId)
-        );
     }
 
     /**
