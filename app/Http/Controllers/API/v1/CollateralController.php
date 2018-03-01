@@ -209,6 +209,7 @@ class CollateralController extends Controller
         $dataother = $this->request->other;
       }
       return DB::transaction(function() use($collateralId,$dataother) {
+        $developer_id = env('DEVELOPER_KEY',1);
         $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
         \Log::info($collateral);
         OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
@@ -230,6 +231,7 @@ class CollateralController extends Controller
             $photo_id[]=$photos->id;
           }
           OtsPhoto::where('ots_other_id', $otsOther->id)->whereNotIn('id', $photo_id)->delete();
+          if ($collateral->developer_id == $developer_id) {
           $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
           if ( count($collateralView) > 0 ) {
             $eform = EForm::find($collateralView->eform_id);
@@ -241,6 +243,7 @@ class CollateralController extends Controller
                   public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $filename )
                   , public_path( 'uploads/' . $eform->nik . '/' . $filename )
                 );
+                }
               }
             }
           }
