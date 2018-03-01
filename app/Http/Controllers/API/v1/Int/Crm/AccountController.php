@@ -134,7 +134,7 @@ class AccountController extends Controller
           ]);
         }
       } catch (\Exception $e) {
-        $error[0] = 'Gagal Koneksi Jaringan';
+        $error = 'Gagal Koneksi Jaringan';
         return [
             'message' => 'Gagal Koneksi Jaringan',
             'contents' => $error
