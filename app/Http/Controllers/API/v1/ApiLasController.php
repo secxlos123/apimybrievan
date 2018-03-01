@@ -2367,19 +2367,19 @@ class ApiLasController extends Controller
     }
 
     function datafoto($request, $id_foto, $exist_field, $field){
-        $path = public_path( 'uploads/' . $id_foto . '/' );
+        $path  = public_path( 'uploads/' . $id_foto );
         $image = substr($request, -4);
         if ($image == '.jpg' || $image == '.pdf' || $image == 'jpeg' || $image == '.png' || $image == '.gif') {
             $params = $request;
-        } else if (empty($request)) {
-            if (!empty($exist_field)) {
-                unlink($path.'/'.$exist_field);
-            }
+        } else if (empty($request) || $request == 'null') {
+            // if (!empty($exist_field)) {
+            //     unlink($path.'/'.$exist_field);
+            // }
             $params = $request;
         } else {
-            if (!empty($exist_field)) {
-                unlink($path.'/'.$exist_field);
-            }
+            // if (!empty($exist_field)) {
+            //     unlink($path.'/'.$exist_field);
+            // }
             
             $upload_file = $this->updateimage($request,$id_foto,$field);
             $params = $upload_file;
