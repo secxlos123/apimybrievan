@@ -73,17 +73,17 @@ class SchedulerMitraController extends Controller
 			
 		if($paginates==0){
 			try{
-				$logsql = DB::statement("CREATE TABLE mitra_create(
-					   idMitrakerja text,
-					   NAMA_INSTANSI text,
+				$logsql = DB::statement('CREATE TABLE mitra_create(
+					   "idMitrakerja" text,
+					   "NAMA_INSTANSI" text,
 					   kode text,
-					   NPL text,
-					   BRANCH_CODE text,
-					   Jumlah_pegawai text,
-					   JENIS_INSTANSI text,
-					   UNIT_KERJA text,
-					   Scoring text,
-					   KET_Scoring text,
+					   "NPL" text,
+					   "BRANCH_CODE" text,
+					   "Jumlah_pegawai" text,
+					   "JENIS_INSTANSI" text,
+					   "UNIT_KERJA" text,
+					   "Scoring" text,
+					   "KET_Scoring" text,
 					   jenis_bidang_usaha text,
 					   alamat_instansi text,
 					   alamat_instansi3 text,
@@ -97,7 +97,7 @@ class SchedulerMitraController extends Controller
 					   updated_by text,
 					   acc_type text,
 					   alamat_instansi2 text
-					);");
+					);');
 			}catch(Exception $e){
 
 				\Log::info("-------------------ERROR CREATE mitra MYBRI-----------------");
