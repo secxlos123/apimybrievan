@@ -219,7 +219,7 @@ class CollateralController extends Controller
         if (count($dataother['image_area'])>0) {
           $photo_id = array();
           foreach ($dataother['image_area'] as $key => $value) {
-            \Log::info('======= data foreach ======');
+            \Log::info(' ======= data foreach ======');
             \Log::info($value);
             $photos = $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
             $photo_id[]=$photos->id;
