@@ -27,7 +27,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::post('get_dir_detail', 'dirrpcController@get_dir_detail');
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
 	// if request attemp 5 it will wait 10 minutes
-	Route::group(['middleware' => 'throttle-custom:5,5'], function() {
+	Route::group(['middleware' => 'throttle-custom:10,10'], function() {
 		Route::post( 'auth/login', 'AuthController@store' );
 	});
 
