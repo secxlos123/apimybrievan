@@ -80,3 +80,5 @@ LEFT JOIN kpr ON kpr.eform_id = eforms.id
 LEFT JOIN visit_reports ON visit_reports.eform_id = eforms.id
 LEFT JOIN collaterals ON collaterals.property_id = kpr.property_id
 WHERE eforms.id is not null AND collaterals.id is not null AND visit_reports.id is not null
+GROUP BY users.id , customer_details.id , eforms.id , kpr.id , visit_reports.id , collaterals.id
+ORDER BY collaterals.created_at
