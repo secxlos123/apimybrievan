@@ -184,7 +184,7 @@ class ApiLas extends Model
                         when eforms.status_eform = 'Pencairan' then 'Pencairan'
                         when eforms.is_approved = true then 'Proses CLF'
                         when eforms.ao_id is not null or eforms.ao_id != '' then 'Disposisi Pengajuan'
-                        else 'Pengajuan Kredit' end as new_status"),
+                        else 'Pengajuan Kredit' end as status_pengajuan"),
                     \DB::Raw("case when briguna.tp_produk = '1' then 'Briguna Karya/Umum'
                         when briguna.tp_produk = '2' then 'Briguna Purna'
                         when briguna.tp_produk = '10' then 'Briguna Micro'

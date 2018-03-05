@@ -75,7 +75,8 @@ class EFormRequest extends BaseRequest
                         'appointment_date' => 'required|date',
                         'address' => 'required',
                         'longitude' => 'required',
-                        'latitude' => 'required'
+                        'latitude' => 'required',
+                        'tujuan' => 'required_if:product_type,kartu_kredit,required'
                     ];
                 }
                 break;

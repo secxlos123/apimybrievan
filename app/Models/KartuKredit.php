@@ -31,7 +31,7 @@ class KartuKredit extends Model
         'id'
     ];
 
-    public function convertToAddDataLosFormat(Request $req){
+    public function convertToAddDataLosFormat(Request $req,$type){
 
          // $validatedData = $req->validate([
          //    'PersonalName' => 'required',
@@ -39,6 +39,8 @@ class KartuKredit extends Model
          //    'PersonalTempatLahir' => 'required',
          //    'PersonalTanggalLahir' => 'required'
          // ]);
+
+        
 
         try{
                 
@@ -86,12 +88,17 @@ class KartuKredit extends Model
 
             $emergencyNoTlp = $req['EmergencyNoTlp'];
             $emergencyKota = $req['EmergencyKota'];
+            $cardType = $req['CardType'];
+
+            if ($type == 'update'){
+                $appNumber = $req['appNumber'];
+            }
             
         }catch (Exception $e){
             echo "terdapat error";
         }
 
-        
+        $informasiLos['abc'] = 'dssad';
 
          $informasiLos = [
             'PersonalName'=>$personalName,
@@ -136,10 +143,28 @@ class KartuKredit extends Model
             'EmergencyAlamat' =>$emergencyAlamat,
             'EmergencyKota' => $emergencyKota,
             'EmergencyNoTlp' =>$emergencyNoTlp,
-            'EmergencyKota' => $emergencyKota
+            'EmergencyKota' => $emergencyKota,
+            'CardType' => $cardType
         ];
 
+        if ($type == 'update'){
+            $informasiLos['appNumber'] = $appNumber;
+        }
+
+        $informasiLos = $this->checkParam($informasiLos);
+
         return $informasiLos;
+    }
+
+    function checkParam($arrays){
+        //cek data kosong, jadiin strip
+        foreach ($arrays as $key => $value) {
+            if($arrays[$key] == '' || !$arrays[$key]){
+               $arrays[$key] = '-'; 
+            }
+        }
+
+        return $arrays;
     }
 
 
