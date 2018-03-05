@@ -180,7 +180,7 @@ class EForm extends Model implements AuditableContract
     public function getPefindoColorAttribute( $value )
     {
         $value = $this->pefindo_score;
-        if ( $value >= 250 && $value <= 573 ) {
+        if ( $value >= 250 && $value <= 529 ) {
             return 'Merah';
 
         } elseif ( $value >= 677 && $value <= 900 ) {
@@ -652,7 +652,8 @@ class EForm extends Model implements AuditableContract
                 ->where( function( $eform ) use( $request, &$user ) {
                     $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
                         ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
+                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%')
+						->orWhere('eforms.user_id', '=', $request->input('search'));
                 } );
 
         } else {

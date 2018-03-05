@@ -14,7 +14,7 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::post('getBranch', 'SelectUkerController@getBranch');
-	Route::post('getMitra', 'SelectListMitraController@getMitra');	
+	Route::post('getMitra', 'SelectListMitraController@getMitra');
 	Route::get('getFasilitas', 'SelectListController@getFasilitas');
 	Route::get('getBank', 'SelectListController@getBank');
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
@@ -186,6 +186,7 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			'only' => [ 'index', 'store', 'update' ]
 		] );
 		Route::post( 'eforms/prescreening', 'PrescreeningController@show' );
+		Route::get( 'eforms/auto_prescreening', 'PrescreeningController@getIsAutoPrescreening' );
 
 		/**
 		 * Route resource for RoleController

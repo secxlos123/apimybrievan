@@ -92,16 +92,18 @@ class PrescreeningController extends Controller
      */
     public function store( Request $request )
     {
-        $eform = EForm::findOrFail( $request->input('eform') );
+        $eform = EForm::findOrFail( $request['nik']->input('eform') );
 
         foreach ( array( 'sicd', 'dhn' ) as $key) {
             if ( !$eform->{$key.'_detail'} ) {
                 $this->dependencies( $key, $eform );
             }
         }
-        // if ( !$eform->pefindo_detail ) {
-        //     $this->pefindo( $eform );
-        // }
+        if( env( 'AUTO_PRESCREENING', false ) ){
+            if ( !$eform->pefindo_detail ) {
+                $this->pefindo( $eform );
+            }
+        }
 
         $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
@@ -144,8 +146,10 @@ class PrescreeningController extends Controller
             }
 
             $risk = array();
-            foreach ($pefindo['risk'] as $value) {
-                $risk[] = $value['description'];
+            if ( isset( $pefindo['risk'] ) ) {
+                foreach ($pefindo['risk'] as $value) {
+                    $risk[] = $value['description'];
+                }
             }
 
             $risk = implode(', ', $risk);
@@ -158,7 +162,7 @@ class PrescreeningController extends Controller
 
             $score = $eform->pefindo_score;
             $pefindoC = 'Kuning';
-            if ( $score >= 250 && $score <= 573 ) {
+            if ( $score >= 250 && $score <= 529 ) {
                 $pefindoC = 'Merah';
 
             } elseif ( $score >= 677 && $score <= 900 ) {
@@ -437,7 +441,7 @@ class PrescreeningController extends Controller
             , 'risk' => $risk
             , 'score' => $score
         );
-        if ( $score >= 250 && $score <= 573 ) {
+        if ( $score >= 250 && $score <= 529 ) {
             $return['color'] = 'Merah';
             $return['position'] = 1;
 
@@ -509,5 +513,20 @@ class PrescreeningController extends Controller
         }
 
         return $html;
+    }
+
+    /**
+     * Get auto prescreening flag
+     *
+     * @return string
+     **/
+    public function getIsAutoPrescreening()
+    {
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => array(
+                'auto_prescreening' => env( 'AUTO_PRESCREENING', false )
+            )
+        ], 200 );
     }
 }
