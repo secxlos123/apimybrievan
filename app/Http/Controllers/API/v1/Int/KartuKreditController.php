@@ -263,7 +263,7 @@ class KartuKreditController extends Controller{
 
     public function cekDataNasabah($apRegno){
     	$host = '10.107.11.111:9975/api/dataNasabah';
-    	$header = ['access_token'=> '$this->tokenLos'];
+    	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
     	try{
