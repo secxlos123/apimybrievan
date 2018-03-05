@@ -139,7 +139,9 @@ class DeveloperController extends Controller
         else
         {
                 \Log::info($developer->user_id);
-                User::destroy($developer->user_id);
+                if ($method == 'disimpan') {
+                    User::destroy($developer->user_id);
+                }
                 \DB::commit();
                 return response()->error([
                 'message'  => "Data developer Gagal {$method}.",

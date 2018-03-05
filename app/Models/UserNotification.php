@@ -50,7 +50,30 @@ class UserNotification extends Model
 	public function scopeAo( $query, $pn )
 	{
 		return $query->leftJoin( 'eforms', 'notifications.slug', '=', 'eforms.id' )
-			->where( 'eforms.ao_id', $pn )
+			->leftJoin( 'collaterals', function ( $join ) {
+                $join->on( 'collaterals.id', '=' , 'notifications.slug' )
+                    ->where( function( $q ) {
+						$q->whereIn( 'notifications.type_module'
+							, array(
+								'collateral'
+								, 'collateral_manager_approving'
+							)
+						);
+		            } )
+                    ->where( function( $q ) {
+						$q->whereIn( 'notifications.type'
+							, array(
+								'App\Notifications\CollateraAODisposition'
+								, 'App\Notifications\CollateralManagerApproveAO'
+								, 'App\Notifications\CollateralManagerRejectedAO'
+							)
+						);
+		            } );
+            } )
+            ->where( function( $q ) use ( $pn ) {
+				$q->where( 'eforms.ao_id', $pn )
+				    ->orWhereNotNull( 'collaterals.id' );
+            } )
 			->whereIn(
 				'notifications.type'
 				, array(
@@ -77,8 +100,8 @@ class UserNotification extends Model
 			->whereIn(
 				'notifications.type'
 				, array(
-					'App\Notifications\ApproveEFormCustomer'
-					, 'App\Notifications\ApproveEFormCLASCustomer'
+					// 'App\Notifications\ApproveEFormCustomer'
+					'App\Notifications\ApproveEFormCLASCustomer'
 					, 'App\Notifications\RejectEFormCustomer'
 					, 'App\Notifications\RejectEFormCLASCustomer'
 					, 'App\Notifications\PencairanNasabah'
@@ -208,6 +231,7 @@ class UserNotification extends Model
 	public function defineQuery( $pn, $user_id, $branch_id, $role )
 	{
 		$role  = ($role == 'mp') ? 'pinca' : $role;
+		$pn    = substr( $pn, -8 );
 
 		$return = array(
 			'pinca' => $branch_id
@@ -220,7 +244,6 @@ class UserNotification extends Model
 		);
 
 		if ( isset( $return[ $role ] ) ) {
-			$pn    = substr( $pn, -8 );
 			$query = $this->orderBy('notifications.created_at', 'DESC');
 
 			foreach ($return as $key => $value) {
@@ -257,6 +280,45 @@ class UserNotification extends Model
 
 	public function defineSubject( $url, $status_eform, $typeModuleCollateral, $approvalDataChange, $ref_number )
 	{
+		$pincaPosition = '';
+		$pincaName = '';
+		$aoName = '';
+		$aoPosition = '';
+		$baseWording = '';
+		$coloring = '';
+		$collateralManager = '';
+		$collateralAppraisal = '';
+		$debitur = '';
+		$pengajuan = '';
+
+		if ( isset( $this->data['eform_id'] ) ) {
+			$eform = EForm::find($this->data['eform_id']);
+			$pincaPosition = strtoupper( !empty($eform->pinca_position) ? $eform->pinca_position : '' );
+			$pincaName = strtoupper( !empty($eform->pinca_name) ? $eform->pinca_name : ''  );
+			$aoPosition = strtoupper( !empty($eform->ao_position) ? $eform->ao_position : '' );
+			$aoName = strtoupper( !empty($eform->ao_name) ? $eform->ao_name : '' );
+			$staffPosition = strtoupper( !empty($eform->staff_position) ? $eform->staff_position : '' );
+			$staffName = strtoupper( !empty($eform->staff_name) ? $eform->staff_name : '' );
+			$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
+			$coloring = !empty($eform->prescreening_status) ? $eform->prescreening_status : '' ;
+			$getKPR = KPR::where( 'eform_id', $this->slug )->first();
+			$plafondKredit = !empty($getKPR->request_amount) ? $getKPR->request_amount : 0;
+
+			$pengajuan = 'Pengajuan ' . $baseWording . ' berhasil ditambahkan';
+			if ( $staffName != "" ) {
+				$pengajuan = 'Pengajuan baru ' . $baseWording . ' dari pengumpan ' . $staffName . ' mohon untuk dilakukan disposisi ke RM yang ditunjuk';
+
+			} else if ( $aoName != '' ) {
+				$pengajuan = 'Pengajuan ' . $baseWording . ' oleh RM ' . $aoName . ' berhasil ditambahkan. Saat ini dalam proses prakarsa oleh RM ' . $aoName;
+
+			}
+		}
+
+		if ( isset( $this->data['collateral_id'] ) ) {
+			$collateralData = Collateral::find($this->data['collateral_id']);
+			$collateralManager = strtoupper( $collateralData->manager_name );
+		}
+
 		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
 		$externalurl = env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
 		$internalurl = env('INTERNAL_APP_URL', 'http://internalmybri.bri.co.id/');
@@ -268,6 +330,16 @@ class UserNotification extends Model
 
 		if ( in_array( $this->type, $managerKeys ) ) {
 			$slug = $this->defineData( $this->data['prop_slug'] );
+
+		}
+
+		$managerAOKeys = array(
+			'App\Notifications\CollateralManagerApproveAO'
+			, 'App\Notifications\CollateralManagerRejectedAO'
+		);
+
+		if ( in_array( $this->type, $managerAOKeys ) ) {
+			$slugAO = $this->defineData( $this->data['collateral_id'] );
 
 		}
 
@@ -295,7 +367,7 @@ class UserNotification extends Model
 				// dari nasabah, ao, staff
 				// ke pinca
 				$append = array(
-					'message' => 'Pengajuan Aplikasi KPR Baru'
+					'message' => $pengajuan
 					, 'message_external' => 'Selamat, pengajuan kredit anda sukses dilakukan. petugas BRI akan segera menghubungi no HP yang telah anda daftarkan.'
 				);
 				break;
@@ -304,7 +376,7 @@ class UserNotification extends Model
 				// Disposisi
 				// dari MP/Pinca
 				// ke AO
-				$append = array( 'message' => 'Disposisi Pengajuan' );
+				$append = array( 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!' );
 				break;
 
 			case 'App\Notifications\ApproveEFormCustomer':
@@ -318,8 +390,8 @@ class UserNotification extends Model
 
 				if ( $status_eform == 'approved' ) {
 					$append = array(
-						'message' => 'Pengajuan KPR Telah Di Setujui'
-						, 'message_external' => 'Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' dalam proses analisa oleh BRI.'
+						'message' => 'Pengajuan ' . $baseWording . ' telah disetujui'
+						, 'message_external' => 'Permohonan ' . $baseWording . ' dalam proses analisa oleh BRI'
 					);
 
 				}
@@ -329,14 +401,14 @@ class UserNotification extends Model
 				// Pengajuan di terima oleh MP/Pinca di myBRI
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui myBRI' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' telah direkomendasi [' . $pincaPosition . '] untuk diproses lebih lanjut oleh CLF' );
 				break;
 
 			case 'App\Notifications\RejectEFormInternal':
 				// Pengajuan di tolak oleh MP/Pinca
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Tolak' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLF' );
 				break;
 
 			case 'App\Notifications\RejectEFormCustomer':
@@ -344,8 +416,8 @@ class UserNotification extends Model
 				// dari MP/Pinca
 				// ke nasabah
 				$append = array(
-					'message' => 'Pengajuan KPR Telah Ditolak'
-					, 'message_external' => 'Pengajuan KPR Telah Ditolak'
+					'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLF'
+					, 'message_external' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
 				);
 				break;
 
@@ -354,8 +426,8 @@ class UserNotification extends Model
 				// dari CLAS
 				// ke nasabah
 				$append = array(
-					'message' => 'Pengajuan KPR Telah Dicairkan'
-					, 'message_external' => 'Pengajuan KPR Telah Dicairkan'
+					'message' => 'Selamat pencairan kredit ' . $baseWording . ' sebesar Rp. ' . number_format( $plafondKredit, 2 ) . ' telah berhasil'
+					, 'message_external' => 'Selamat pencairan kredit ' . $baseWording . ' Anda sebesar Rp. ' . number_format( $plafondKredit, 2 ) . ' telah berhasil'
 				);
 				break;
 
@@ -363,26 +435,23 @@ class UserNotification extends Model
 				// Proses pencairan dari CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Pengajuan KPR Telah Dicairkan' );
+				$append = array( 'message' => 'Selamat pencairan kredit ' . $baseWording . ' sebesar Rp. ' . number_format( $plafondKredit, 2 ) . ' telah berhasil' );
 				break;
 
 			case 'App\Notifications\ApproveEFormCLAS':
 				// Pengajuan di terima di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Pengajuan KPR Telah Di Setujui oleh CLAS' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' telah disetujui ' . $pincaName . ' ' . $pincaPosition . ' dengan nonimal Rp. ' . number_format( $plafondKredit, 2 ) );
 				break;
 
 			case 'App\Notifications\ApproveEFormCLASCustomer':
 				// Pengajuan di terima di CLAS
 				// dari CLAS
 				// ke Nasabah
-				$getKPR = KPR::where( 'eform_id', $this->slug )->first();
-				$plafondKredit = $getKPR->request_amount ? $getKPR->request_amount : 0;
-
 				$append = array(
-					'message' => 'Pengajuan KPR Telah Di Setujui'
-					, 'message_external' => 'Selamat Permohonan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' telah disetujui sebesar RP. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
+					'message' => 'Pengajuan ' . $baseWording . ' telah disetujui ' . $pincaName . ' ' . $pincaPosition . ' dengan nonimal Rp. ' . number_format( $plafondKredit, 2 )
+					, 'message_external' => 'Selamat Permohonan ' . $baseWording . ' telah disetujui sebesar Rp. ' . number_format( $plafondKredit, 2 ) . ' Mohon siapkan dokumen yang diperlukan untuk penandatanganan akad kredit. Informasi lebih lanjut harap hubungi tenaga pemasar BRI'
 				);
 				break;
 
@@ -390,7 +459,7 @@ class UserNotification extends Model
 				// Pengajuan di tolak di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS' );
+				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF' );
 				break;
 
 			case 'App\Notifications\RejectEFormCLASCustomer':
@@ -398,8 +467,8 @@ class UserNotification extends Model
 				// dari CLAS
 				// ke nasabah
 				$append = array(
-					'message' => 'Pengajuan KPR Telah Ditolak oleh CLAS'
-					, 'message_external' => 'Mohon maaf pengajuan KPR an. ' . $this->data['user_name'] . ' no : ' . $this->data['ref_number'] . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
+					'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF'
+					, 'message_external' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut'
 				);
 				break;
 
@@ -407,21 +476,21 @@ class UserNotification extends Model
 				// AO submit LKN
 				// dari AO
 				// ke MP/Pinca
-				$append = array( 'message' => 'Prakarsa LKN' );
+				$append = array( 'message' => 'LKN RM ' . $aoName . ' atas pengajuan ' . $baseWording . ' telah dikirim dan menunggu persetujuan Anda.' );
 				break;
 
 			case 'App\Notifications\LKNEFormRecontest':
 				// Klik recontest di CLAS
 				// dari CLAS
 				// ke MP/Pinca
-				$append = array( 'message' => 'LKN Recontest' );
+				$append = array( 'message' => 'LKN Rekontes RM ' . $aoName . ' atas pengajuan ' . $baseWording . ' telah dikirim dan menunggu persetujuan Anda.' );
 				break;
 
 			case 'App\Notifications\ScorePefindoPreScreening':
 				// Submit prescreening
 				// dari petugas prescreening
 				// ke AO
-				$append = array( 'message' => 'Eform Pengajuan Telah Diisi Score Pefindo' );
+				$append = array( 'message' => 'Prescreening Calon Debitur a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ') telah selesai. Hasil Prescreening :  ' . $coloring );
 				break;
 
 			case 'App\Notifications\VerificationApproveFormNasabah':
@@ -456,6 +525,7 @@ class UserNotification extends Model
 				$append = array(
 					'message' => 'Proyek Data Baru'
 					, 'message_external' => 'Terdapat permohohonan penilaian agunan baru dari ' . $this->data['user_name'] . ' untuk Developer PKS BRI. Harap segera lakukan penilaian agunan sesuai ketentuan yang berlaku.'
+					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
 
@@ -465,6 +535,7 @@ class UserNotification extends Model
 				// ke admin dev
 				$append = array(
 					'message' => 'Perbaharui Data Profile'
+					, 'message_external' => 'Perbaharui Data Profile'
 					, 'url' => $internalurl . '/approval-data/developer?related_id=' . $approval_data_changes_id . '&slug=' . $this->slug . '&type=' . $this->type_module
 				);
 				break;
@@ -517,14 +588,14 @@ class UserNotification extends Model
 				// Submit LKN recontest
 				// dari CLAS
 				// ke AO
-				$append = array( 'message' => 'Pengajuan Anda Telah di Rekontest' );
+				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF' );
 				break;
 
 			case 'App\Notifications\CollateralDisposition':
 				// Disposisi collateral
 				// dari col-man
 				// ke staff-col
-				$append = array( 'message' => 'Penugasan Staff Collateral' );
+				$append = array( 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!' );
 				break;
 
 			case 'App\Notifications\CollateraAODisposition':
@@ -532,7 +603,7 @@ class UserNotification extends Model
 				// dari col-man
 				// ke ao
 				$append = array(
-					'message' => 'Penugasan AO Collateral'
+					'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!'
 					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
@@ -542,7 +613,7 @@ class UserNotification extends Model
 				// dari staff-col / AO
 				// ke col-man
 				$append = array(
-					'message' => 'Penilaian agunan debitur an. [' . $debitur . '] sedang dilakukan oleh [' . $collateralAppraisal . ']'
+					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' sedang dilakukan oleh ' . $collateralAppraisal
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
@@ -552,7 +623,7 @@ class UserNotification extends Model
 				// dari staff-col / AO
 				// ke col-man
 				$append = array(
-					'message' => 'Collateral appraisal an [' . $collateralAppraisal . '] menolak permintaan penilaian, harap lakukan penugasan ke staff collateral lainnya'
+					'message' => 'Collateral appraisal a.n ' . $collateralAppraisal . ' menolak permintaan penilaian, harap lakukan penugasan ke staff collateral lainnya'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
@@ -561,8 +632,9 @@ class UserNotification extends Model
 				// Submit OTS
 				// dari staff-col / AO
 				// ke col-man
+				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Unkwon' ;
 				$append = array(
-					'message' => 'Form Penilaian Agunan'
+					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralStaf . ', saat ini menunggu persetujauan Anda.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
@@ -572,7 +644,7 @@ class UserNotification extends Model
 				// dari staff-col / AO
 				// ke col-man
 				$append = array(
-					'message' => 'Collateral Checklist'
+					'message' => 'Collateral appraisal a.n ' . $collateralAppraisal . ' telah berhasil menambahkan dokumen Collateral Checklist.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
 				);
 				break;
@@ -580,7 +652,7 @@ class UserNotification extends Model
 			case 'App\Notifications\CollateralManagerRejected':
 				// reject collateral
 				// dari col-man
-				// ke staff-col / AO , admin dev
+				// ke admin dev
 				$append = array(
 				 	'message' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI'
 				 	, 'message_external' => 'Mohon maaf daftar property anda belum dapat kami tayangkan. Pastikan data property anda dan isi PKS dengan BRI telah sesuai. Info lebih lanjut hubungi Staff Business Relations BRI'
@@ -588,14 +660,36 @@ class UserNotification extends Model
 				);
 				break;
 
+			case 'App\Notifications\CollateralManagerRejectedAO':
+				// reject collateral
+				// dari col-man
+				// ke staff-col / AO
+				$append = array(
+				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh ' . $collateralManager
+				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh ' . $collateralManager
+				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_rejecting'
+				);
+				break;
+
 			case 'App\Notifications\CollateralManagerApprove':
 				// approve collateral
 				// dari col-man
-				// ke staff-col / AO , admin dev
+				// ke admin dev
 				$append = array(
 				 	'message' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan'
 				 	, 'message_external' => 'Selamat, daftar property anda telah tayang di aplikasi MyBRI, kini properti anda dapat dilihat oleh member dan visitor MyBRI. Apabila ada perubahan harga dan detail data properti harap segera lakukan perubahan'
 					, 'url' => $externalurl . 'dev/proyek?slug=' . $slug . '&type=collateral_manager_approving'
+				);
+				break;
+
+			case 'App\Notifications\CollateralManagerApproveAO':
+				// approve collateral
+				// dari col-man
+				// ke staff-col / AO
+				$append = array(
+				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh ' . $collateralManager
+				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh ' . $collateralManager
+					, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_approving'
 				);
 				break;
 
