@@ -27,7 +27,13 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->command('SchedulerRekening:updaterekening')
-                 ->everyMinute();
+                 // ->everyMinute();
+        // $schedule->command('foo')
+          ->weekdays()
+          ->hourly()
+          ->at('12:00');
+          // ->timezone('America/Chicago')
+          // ->between('8:00', '17:00');
     }
 
     /**

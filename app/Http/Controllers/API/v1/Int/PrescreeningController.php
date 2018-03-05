@@ -162,7 +162,7 @@ class PrescreeningController extends Controller
 
             $score = $eform->pefindo_score;
             $pefindoC = 'Kuning';
-            if ( $score >= 250 && $score <= 573 ) {
+            if ( $score >= 250 && $score <= 529 ) {
                 $pefindoC = 'Merah';
 
             } elseif ( $score >= 677 && $score <= 900 ) {
@@ -441,7 +441,7 @@ class PrescreeningController extends Controller
             , 'risk' => $risk
             , 'score' => $score
         );
-        if ( $score >= 250 && $score <= 573 ) {
+        if ( $score >= 250 && $score <= 529 ) {
             $return['color'] = 'Merah';
             $return['position'] = 1;
 

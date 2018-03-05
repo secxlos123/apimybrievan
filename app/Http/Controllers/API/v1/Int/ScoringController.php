@@ -169,7 +169,7 @@ class ScoringController extends Controller
         // Get pefindo
         $score = $request->input('pefindo_score');
         $pefindoC = 'Kuning';
-        if ( $score >= 250 && $score <= 573 ) {
+        if ( $score >= 250 && $score <= 529 ) {
             $pefindoC = 'Merah';
 
         } elseif ( $score >= 677 && $score <= 900 ) {
@@ -385,7 +385,7 @@ class ScoringController extends Controller
             'user' => $usersModel
         ];
         // Call the helper of push notification function
-        
+
         $typeModule = getTypeModule(Scoring::class);
         notificationIsRead($id, $typeModule);
 

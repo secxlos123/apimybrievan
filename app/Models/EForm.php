@@ -180,7 +180,7 @@ class EForm extends Model implements AuditableContract
     public function getPefindoColorAttribute( $value )
     {
         $value = $this->pefindo_score;
-        if ( $value >= 250 && $value <= 573 ) {
+        if ( $value >= 250 && $value <= 529 ) {
             return 'Merah';
 
         } elseif ( $value >= 677 && $value <= 900 ) {
