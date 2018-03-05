@@ -412,10 +412,12 @@ class EFormController extends Controller
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
 
-                
+                $kredit = new KartuKredit();
+                $info = $kredit->create($baseRequest);
                 
                 return response()->success([
                     'message' => 'response eform kkd',
+                    'content'=>$info
 
                 ], 200 );
             }

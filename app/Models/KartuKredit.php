@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use App\Models\EForm;
 
 
 
@@ -98,8 +99,6 @@ class KartuKredit extends Model
             echo "terdapat error";
         }
 
-        $informasiLos['abc'] = 'dssad';
-
          $informasiLos = [
             'PersonalName'=>$personalName,
             'PersonalNIK'=>$personalNIK,
@@ -151,20 +150,25 @@ class KartuKredit extends Model
             $informasiLos['appNumber'] = $appNumber;
         }
 
-        $informasiLos = $this->checkParam($informasiLos);
+        $informasiLos = $this->checkInformasiLosKosong($informasiLos);
 
         return $informasiLos;
     }
 
-    function checkParam($arrays){
+    function checkInformasiLosKosong($arrays){
         //cek data kosong, jadiin strip
-        foreach ($arrays as $key => $value) {
-            if($arrays[$key] == '' || !$arrays[$key]){
-               $arrays[$key] = '-'; 
+        foreach ($informasi as $key => $value) {
+            if($informasi[$key] == '' || !$informasi[$key]){
+               $informasi[$key] = '-'; 
             }
         }
 
-        return $arrays;
+        return $informasi;
+    }
+
+    public function create($data){
+        $eform = EForm::create($data);
+        \Log::info('$eform');
     }
 
 
