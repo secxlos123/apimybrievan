@@ -108,30 +108,39 @@ class AccountController extends Controller
       $data['branch'] = $request->header('branch');
       $data['pn'] = $request->header('pn');
 
-      $client = new Client();
-      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
-      $requestListExisting = $client->request('GET', $host.'/customer/saving/'.$data['branch'].'/'.$data['pn'],
-        [
-          'headers' =>
+      try {
+          $client = new Client();
+          $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+          $requestListExisting = $client->request('GET', $host.'/customer/saving/'.$data['branch'].'/'.$data['pn'],
           [
-            'Authorization' => 'Bearer '.$this->get_token()
-            // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
+            'headers' =>
+            [
+              'Authorization' => 'Bearer '.$this->get_token()
+              // 'Authorization' => 'Bearer '.'0874cf43c96a04a3b931927d036b5cf200a63454'
+            ]
           ]
-        ]
-      );
-      $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
+        );
+        $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
 
-      if ($listExisting['code'] == 200) {
-        return response()->success( [
-          'message' => 'Sukses',
-          'contents' => $listExisting['data']
-        ]);
-      } else {
-        return response()->success( [
-          'message' => $listExisting['message'],
-          'contents' => $listExisting['message']
-        ]);
+        if ($listExisting['code'] == 200) {
+          return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $listExisting['data']
+          ]);
+        } else {
+          return response()->success( [
+            'message' => $listExisting['message'],
+            'contents' => $listExisting['message']
+          ]);
+        }
+      } catch (\Exception $e) {
+        $error = 'Gagal Koneksi Jaringan';
+        return [
+            'message' => 'Gagal Koneksi Jaringan',
+            'contents' => $error
+        ];
       }
+
     }
 
     public function getExistingByFo($data, $token)

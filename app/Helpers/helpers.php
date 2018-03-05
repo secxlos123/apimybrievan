@@ -653,6 +653,12 @@ if (! function_exists('getMessage')) {
                     'body' => 'Collateral Checklist',
                 ];
                 break;
+            case 'collateral_property':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Collateral Property Baru',
+                ];
+                break;
             case 'verify':
                 $message = [
                     'title'=> 'Verify Notification',
