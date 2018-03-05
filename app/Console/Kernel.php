@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        '\App\Console\Commands\SchedulerRekening',
+        '\App\Console\Commands\SchedulerRekening'
+        , '\App\Console\Commands\BackupDatabaseCommand'
     ];
 
     /**
@@ -24,16 +25,20 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        // $schedule->command('inspire')->hourly();
+        $schedule->command('db:backup daily')
+            ->dailyAt('00:00');
+        $schedule->command('db:backup monthly')
+            ->monthlyOn(1, '00:00');
+
         $schedule->command('SchedulerRekening:updaterekening')
-                 // ->everyMinute();
-        // $schedule->command('foo')
-          ->weekdays()
-          ->hourly()
-          ->at('12:00');
-          // ->timezone('America/Chicago')
-          // ->between('8:00', '17:00');
+            ->weekdays()
+            ->hourlyAt('12');
+
+        // // test function
+        // $schedule->call(function(){
+        //     \Log::info("salah masuk");
+        // })->everyMinute();
     }
 
     /**
