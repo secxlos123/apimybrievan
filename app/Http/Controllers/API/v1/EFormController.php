@@ -362,14 +362,16 @@ class EFormController extends Controller
 
     public function store( EFormRequest $request )
     {
-        $nik = $request->nik;
-        $check = CustomerDetail::where('nik', $nik)->get();
-        $data = Eform::where('nik', $nik)->get();
-        if(count($check) == 0){
-            return response()->error( [
-                        'message' => 'Data dengan nik tersebut tidak ditemukan!',
-                        'contents' => $data,
-                    ], 422 );
+        if ($request->product_type != 'kartu_kredit'){
+            $nik = $request->nik;
+            $check = CustomerDetail::where('nik', $nik)->get();
+            $data = Eform::where('nik', $nik)->get();
+            if(count($check) == 0){
+                return response()->error( [
+                            'message' => 'Data dengan nik tersebut tidak ditemukan!',
+                            'contents' => $data,
+                        ], 422 );
+            }
         }
 
         DB::beginTransaction();
@@ -439,10 +441,13 @@ class EFormController extends Controller
                 $baseRequest['LIMIT_KARTU'] = $limitKartu;
 
                 $baseRequest['id_foto'] = $id;
+
+                $kk = new KartuKredit();
+                // $resultInsert = $kk->create($baseRequest);
                 
                 return response()->success([
                     'message' => 'response eform kkd',
-                    'content'=>$info
+                    'content' => 'tes'
 
                 ], 200 );
             }
