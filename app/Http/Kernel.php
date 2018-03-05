@@ -57,6 +57,7 @@ class Kernel extends HttpKernel
         'can'        => \Illuminate\Auth\Middleware\Authorize::class,
         'guest'      => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'throttle-custom'   => \App\Http\Middleware\ThrottleCustom::class,
         'api.access' => \App\Http\Middleware\VerifyApiAccess::class,
         'api.auth'   => \App\Http\Middleware\GetUserFromToken::class,
         'api.refresh'=> \Tymon\JWTAuth\Middleware\RefreshToken::class,
@@ -64,5 +65,6 @@ class Kernel extends HttpKernel
         'has.user.dev' => \App\Http\Middleware\HasDeveloper::class,
         'property.access' => \App\Http\Middleware\PropertyTypeAccess::class,
         'property-type.access' => \App\Http\Middleware\PropertyItemAccess::class,
+        'ipcheck' => \App\Http\Middleware\IpWhiteList::class,
     ];
 }

@@ -60,6 +60,6 @@ class CreateKartuKreditTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kartu_kredit');
+        Schema::dropIfExists('kartu_kredit_details');
     }
 }

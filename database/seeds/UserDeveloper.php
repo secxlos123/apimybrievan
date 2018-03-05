@@ -14,11 +14,11 @@ class UserDeveloper extends Seeder
         DB::beginTransaction();
         try {
             $this->createNonPKS();
-            $this->createAlamkaryaSelaras();
-            $this->createArthaPutraPrima();
-            $this->createJayaGardenPolis();
-            $this->createSinarPuspapersada();
-            $this->createCitraMajaJO();
+            //$this->createAlamkaryaSelaras();
+            //$this->createArthaPutraPrima();
+            //$this->createJayaGardenPolis();
+            //$this->createSinarPuspapersada();
+            //$this->createCitraMajaJO();
 
             DB::commit();
         } catch (Exception $e) {
