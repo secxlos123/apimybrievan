@@ -84,7 +84,10 @@ class SchedulerRekening extends Command
     public function handle()
     {
         try {
-            $data_briguna = \DB::table("briguna")
+            print_r('hai scheduler running');
+            \Log::info('hai scheduler running nih coyyyy');
+            exit();
+            /*$data_briguna = \DB::table("briguna")
                         ->select(['id','eform_id','id_aplikasi','cif','no_rekening','tgl_putusan'])
                         ->orderBy('id','asc')
                         ->get()->toArray();
@@ -132,7 +135,7 @@ class SchedulerRekening extends Command
                     'message' => 'Hasil inquiry data rekening briguna tidak ditemukan',
                     'contents' => ''
                 ], 400 );
-            }                
+            }*/                
         } catch (Exception $e) {
             return response()->error([
                 'message' => 'Koneksi Jaringan Gagal',
