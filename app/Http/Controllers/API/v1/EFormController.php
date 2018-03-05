@@ -402,9 +402,8 @@ class EFormController extends Controller
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
 
-                //bandingin nik sama customer_details, kalau gak nemu create baru
-
-
+                
+                
                 return response()->success([
                     'message' => 'response eform kkd',
 
