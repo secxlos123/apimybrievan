@@ -1,6 +1,5 @@
 <?php
 
-
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
     Route::get('get-data','KartuKreditController@example');
      // Route::post('eform','KartuKreditController@cekEform');
