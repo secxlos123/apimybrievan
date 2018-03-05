@@ -514,4 +514,19 @@ class PrescreeningController extends Controller
 
         return $html;
     }
+
+    /**
+     * Get auto prescreening flag
+     *
+     * @return string
+     **/
+    public function getIsAutoPrescreening()
+    {
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => array(
+                'auto_prescreening' => env( 'AUTO_PRESCREENING', false )
+            )
+        ], 200 );
+    }
 }
