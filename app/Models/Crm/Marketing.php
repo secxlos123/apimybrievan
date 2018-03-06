@@ -54,20 +54,24 @@ class Marketing extends Model
 
       return $query
             ->orderBy('marketings.id', 'asc')
-            // ->leftJoin('marketing_activities', 'marketing_activities.marketing_id', '=', 'marketings.id')
-            // ->where('desc', '!=', 'first')
-            // ->leftJoin('marketing_activity_followups')
             ->where( function($marketing) use($request){
-              if($request->has('pn')){
-                $marketing->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+              if($request->header('role_user')!='pinwil' || $request->header('role_user')!='wapinwil'){
+                $marketing->where( 'marketings.branch', '=', $request->header( 'branch' ) );
+              }
+              if($request->has('region')){
+                if($request->input('branch')=='all'){
+                  $marketing->whereIn('branch', $request->input('branch'));
+                }else{
+                  $marketing->where('branch', $request->input('branch'));
+                }
               }
               if($request->has('period_start') && $request->has('period_end')){
                 $marketing->whereBetwen('created_at',[$request->input( 'period_start' ), $request->input( 'period_end' )]);
               }
+              if($request->has('pn')){
+                $marketing->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+              }
             })
-            // ->select(array_merge([
-            //   'marketings.*','marketing_activities.pn','marketing_activities.pn_join','marketing_activities.desc','marketing_activities.start_date'
-            // ]))
             ;
     }
 
