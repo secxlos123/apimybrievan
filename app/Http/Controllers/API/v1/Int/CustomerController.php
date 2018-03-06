@@ -83,6 +83,15 @@ class CustomerController extends Controller
                 'contents' => $data
             ], 201 );
 
+        }else if ($product_leads == 'kartu_kredit'){
+            DB::beginTransaction();
+            $customer = Customer::create($data);
+
+            DB::commit();
+            return response()->success( [
+                'message' => 'Data nasabah berhasil ditambahkan.',
+                'contents' => $data
+            ], 201 );
         }
     }
 
