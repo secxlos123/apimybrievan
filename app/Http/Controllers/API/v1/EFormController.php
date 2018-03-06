@@ -384,6 +384,7 @@ class EFormController extends Controller
                   //customerController
             ]);
          }
+         \Log::info('Nik ditemukan');
         }
         
 
@@ -455,7 +456,18 @@ class EFormController extends Controller
 
                 $baseRequest['id_foto'] = $id;
 
-                // $kk = new KartuKredit();
+                //send ke eform
+
+                //cek dedup
+
+                //send eform ke pefindo
+
+                //cek jumlah kk
+
+                //update eform
+
+                $kk = new KartuKredit();
+                // $createKK = KartuKredit::create($baseRequest);
                 // $eform = Eform::create($request);
                 // $resultInsert = $kk->create($baseRequest);
                 
