@@ -15,11 +15,12 @@ class reportController extends Controller
 {
     public function report_marketings(Request $request)
     {
-      $region = $request->input('region');
       if($request->has('region')){
+        $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
       }else{
         $list_kanca = $this->list_all_kanca();
+        $region = $list_kanca[$request->header('branch')]['region_id'];
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = Marketing::getReports($request)->get();
@@ -33,7 +34,7 @@ class reportController extends Controller
           "bulan"=>date('M',strtotime($value->created_at)),
           "tahun"=>date('Y',strtotime($value->created_at)),
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
-          "cabang"=> $list_kanca[$branch],
+          "cabang"=> $list_kanca[$branch]['mbdesc'],
           "uker"=> $value->branch,
           "fo_name"=> $value->pn,
           "product_type"=> $value->product_type,
@@ -157,7 +158,12 @@ class reportController extends Controller
       foreach ($list_kanwil as $key => $value) {
         $list_kanca = $this->get_kanca_kanwil($value['region_id']);
         foreach ($list_kanca['responseData'] as $key_kanca => $value_kanca) {
-         $list_all_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] = $value_kanca['mbdesc']
+         $list_all_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] =
+         [
+           'mbdesc' => $value_kanca['mbdesc'],
+           'region_id' => $value['region_id']
+
+           ]
           ;
         }
       }
