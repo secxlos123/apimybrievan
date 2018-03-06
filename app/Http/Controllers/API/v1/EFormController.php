@@ -376,14 +376,14 @@ class EFormController extends Controller
         if ($request->product_type == 'kartu_kredit'){
             //cek nik di customer detail, kalau gak ada di create
             $nik = $request->nik;
-            $checkNik = CustomerDetail::where('nik'$nik)->get();
+            $checkNik = CustomerDetail::where('nik',$nik)->get();
              if(count($checkNik) == 0){
-                return reponse()->error([
-                 'responseCode' => 01,
+                return response()->error([
+                 'responseCode' => '01',
                   'responseMessage' => "NIK tidak ditemukan"
                   //android tembak ke   api/v1/{type}/customer 
                   //customerController
-            ])
+            ]);
          }
         }
         
