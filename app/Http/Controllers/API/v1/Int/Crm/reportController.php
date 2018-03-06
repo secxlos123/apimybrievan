@@ -34,7 +34,7 @@ class reportController extends Controller
           "bulan"=>date('M',strtotime($value->created_at)),
           "tahun"=>date('Y',strtotime($value->created_at)),
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
-          "cabang"=> $list_kanca[$branch],
+          "cabang"=> $list_kanca[$branch]['mbdesc'],
           "uker"=> $value->branch,
           "fo_name"=> $value->pn,
           "product_type"=> $value->product_type,
