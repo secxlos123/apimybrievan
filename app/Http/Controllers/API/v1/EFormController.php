@@ -36,6 +36,7 @@ use Cache;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use App\Http\Controllers\API\v1\Int\PrescreeningController;
 
 class EFormController extends Controller
 {
@@ -372,21 +373,7 @@ class EFormController extends Controller
                             'contents' => $data,
                         ], 422 );
             }
-        }else if($request->product_type == 'kartu_kredit'){
-            //cek nik di customer detail, kalau gak ada di create
-            $nik = $request->nik;
-            $checkNik = CustomerDetail::where('nik',$nik)->get();
-             if(count($checkNik) == 0){
-                return response()->json([
-                 'responseCode' => '01',
-                  'responseMessage' => "NIK tidak ditemukan"
-                  //android tembak ke   api/v1/{type}/customer 
-                  //customerController
-            ]);
-         }
-         \Log::info('Nik ditemukan');
         }
-        
 
         DB::beginTransaction();
         try {
@@ -430,6 +417,23 @@ class EFormController extends Controller
 
                 // $kredit = new KartuKredit();
                 // $info = $kredit->create($baseRequest)
+
+                  //cek nik di customer detail, kalau gak ada di create
+                 $nik = $request->nik;
+                $checkNik = CustomerDetail::where('nik',$nik)->get();
+                 if(count($checkNik) == 0){
+                    return response()->json([
+                     'responseCode' => '01',
+                      'responseMessage' => "NIK tidak ditemukan"
+                   //android tembak ke   api/v1/{type}/customer 
+                   //customerController
+                    ]);
+                }else{
+                    // $baseRequest['user_id']= $checkNik['user_id'];
+                    return response()->json([
+                        'contents'=>$checkNik
+                    ]);
+                }
 
                 //gambar
                 $npwp = $request->npwp;
@@ -495,6 +499,8 @@ class EFormController extends Controller
                 }
 
                 //send eform ke pefindo
+                $pefindoController = new PrescreeningController();
+                // $getPefindo = $pefindoController->getPefindo()
 
                 //cek jumlah kk
 
@@ -566,7 +572,6 @@ class EFormController extends Controller
 
 			$SK_AWAL = '';
 			$SK_AKHIR = '';
-
 
 			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
 				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){
