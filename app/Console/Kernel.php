@@ -26,14 +26,17 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('db:backup daily')
-            ->dailyAt('00:00');
-        $schedule->command('db:backup monthly')
-            ->monthlyOn(1, '00:00');
+        if ( env( 'BACKUP_DATABASE', false ) ) {
+            $schedule->command('db:backup daily')
+                ->dailyAt('00:00');
+            $schedule->command('db:backup monthly')
+                ->monthlyOn(1, '00:00');
+        }
 
         $schedule->command('SchedulerRekening:updaterekening')
-            ->weekdays()
-            ->hourlyAt('12');
+            ->everyMinute();
+            // ->weekdays()
+            // ->hourlyAt('12');
 
         // // test function
         // $schedule->call(function(){

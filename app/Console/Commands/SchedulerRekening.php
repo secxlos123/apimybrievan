@@ -87,7 +87,11 @@ class SchedulerRekening extends Command
             \Log::info('handle running scheduler aman nih coyy');
             /*$data_briguna = \DB::table("briguna")
                         ->select(['id','eform_id','id_aplikasi','cif','no_rekening'])
+                        ->whereNotNull('id_aplikasi')
+                        ->whereNull('no_rekening')
+                        ->orWhere('no_rekening','=','')
                         ->orderBy('id','asc')
+                        ->limit('10')
                         ->get()->toArray();
             // print_r($data_briguna);exit();
             if (!empty($data_briguna)) {
@@ -99,7 +103,7 @@ class SchedulerRekening extends Command
                 $client = $this->client();
                 foreach ($data_briguna as $key => $value) {
                     try {
-                        if ((!isset($value->no_rekening) || $value->no_rekening == '') && $value->id_aplikasi != '') {
+                        // if ((!isset($value->no_rekening) || $value->no_rekening == '') && $value->id_aplikasi != '') {
                             $parameter['id_aplikasi'] = $value->id_aplikasi;
                             $rekening = $client->getStatusInterface($parameter);
                             if($rekening->getStatusInterfaceResult){
@@ -118,7 +122,7 @@ class SchedulerRekening extends Command
 
                                     $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
                                     $briguna->update($update_data);
-                                    
+
                                     // save json_ws_log
                                     $data_log = [
                                         'json_data' => 'scheduler update nomer rekening sukses',
@@ -133,7 +137,7 @@ class SchedulerRekening extends Command
                                     ];
                                 }
                             }
-                        }
+                        // }
                     } catch (Exception $e) {
                         // save json_ws_log
                         $data_log = [
@@ -164,7 +168,7 @@ class SchedulerRekening extends Command
                     'message' => 'Hasil inquiry data rekening briguna tidak ditemukan',
                     'contents' => ''
                 ], 400 );
-            }*/                
+            }*/
         } catch (Exception $e) {
             // save json_ws_log
             $data_log = [

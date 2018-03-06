@@ -60,6 +60,7 @@ class KartuKreditController extends Controller{
 			$statusPekerjaan = $this->getListStatusPekerjaan($TOKEN_LOS,$client,$host);
 			$jumlahKaryawan = $this->getListJumlahKaryawan($TOKEN_LOS,$client,$host);
 			$hubunganKeluarga = $this->getListHubunganKeluarga($TOKEN_LOS,$client,$host);
+			$listSubBidangUsaha = $this->getListSubBidangUsaha($TOKEN_LOS,$client,$host);
 
 		}catch (RequestException $e){
 			return response()->json([
@@ -76,7 +77,8 @@ class KartuKreditController extends Controller{
 			'list_kategori_pekerjaan' => $kategoriPekerjaan,
 			'list_status_pekerjaan' => $statusPekerjaan,
 			'list_jumlah_karyawan' => $jumlahKaryawan,
-			'list_hubungan_keluarga' => $hubunganKeluarga
+			'list_hubungan_keluarga' => $hubunganKeluarga,
+			'list_sub_bidang_usaha' =>$listSubBidangUsaha
 		]);
 	}
 
@@ -144,6 +146,17 @@ class KartuKreditController extends Controller{
 	function getListHubunganKeluarga($token,$client,$host){
 
 		$res = $client->request('POST',$host.'/api/listHubunganKeluarga', ['headers' =>  ['access_token'=>$token]]);
+		
+		$body = $res->getBody();
+		$obj = json_decode($body);
+		$data = $obj->responseData;
+
+		return $data;
+	}
+
+	function getListSubBidangUsaha($token,$client,$host){
+
+		$res = $client->request('POST',$host.'/api/listsubbidangusaha', ['headers' =>  ['access_token'=>$token]]);
 		
 		$body = $res->getBody();
 		$obj = json_decode($body);
@@ -300,6 +313,7 @@ class KartuKreditController extends Controller{
     	$responseCode = $obj->responseCode;
 
     	if ($responseCode == 0 || $responseCode == 00){
+    		//langsung merah. update eform.
     		return response()->json([
     			'responseCode' => 01,
     			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
@@ -311,18 +325,6 @@ class KartuKreditController extends Controller{
     	}
 
     	
-    }
-
-    public function sendEform(EFormRequest $req){
-
-    	// $ef = new EFormController();
-    	// $res = $ef->store($req);
-
-    	// return response()->json([
-    	// 	'content'=> $req->all();
-    	// ]);
-
-    	return $req->input('nik');
     }
 
     public function pefindo(){
