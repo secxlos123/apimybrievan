@@ -457,7 +457,7 @@ class EFormController extends Controller
                 $baseRequest['id_foto'] = $id;
 
                 //cek user id di customer
-                $baseRequest['user_id']
+                $baseRequest['user_id'];
 
                 //send ke eform
                 $eformCreate = Eform::create($baseRequest);
@@ -479,7 +479,7 @@ class EFormController extends Controller
                     return response()->error([
                         'responseCode'=>'01',
                         'responseMessage'=> 'Terjadi Kesalahan. Silahkan ajukan kembali'
-                    ],400)
+                    ],400);
                 }
 
                 $body = $res->getBody();
