@@ -263,7 +263,7 @@ class KartuKreditController extends Controller{
 
     public function cekDataNasabah($apRegno){
     	$host = '10.107.11.111:9975/api/dataNasabah';
-    	$header = ['access_token'=> '$this->tokenLos'];
+    	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
     	try{
@@ -300,6 +300,7 @@ class KartuKreditController extends Controller{
     	$responseCode = $obj->responseCode;
 
     	if ($responseCode == 0 || $responseCode == 00){
+    		//langsung merah. update eform.
     		return response()->json([
     			'responseCode' => 01,
     			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
@@ -311,18 +312,6 @@ class KartuKreditController extends Controller{
     	}
 
     	
-    }
-
-    public function sendEform(EFormRequest $req){
-
-    	// $ef = new EFormController();
-    	// $res = $ef->store($req);
-
-    	// return response()->json([
-    	// 	'content'=> $req->all();
-    	// ]);
-
-    	return $req->input('nik');
     }
 
     public function pefindo(){

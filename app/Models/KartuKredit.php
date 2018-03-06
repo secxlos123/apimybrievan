@@ -168,7 +168,7 @@ class KartuKredit extends Model
 
     public function create($data){
         $eform = EForm::create($data);
-        \Log::info('$eform');
+        \Log::info($eform);
     }
 
 

@@ -17,7 +17,6 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 	Route::post('/update-data-los', 'KartuKreditController@updateDataLos');
 
-	Route::post('/tesEform', 'KartuKreditController@sendEform');
 	Route::get('/pefindo', 'KartuKreditController@pefindo');
 
     Route::group(['middleware' => 'api.auth'], function() {

@@ -362,15 +362,30 @@ class EFormController extends Controller
 
     public function store( EFormRequest $request )
     {
-        $nik = $request->nik;
-        $check = CustomerDetail::where('nik', $nik)->get();
-        $data = Eform::where('nik', $nik)->get();
-        if(count($check) == 0){
-            return response()->error( [
-                        'message' => 'Data dengan nik tersebut tidak ditemukan!',
-                        'contents' => $data,
-                    ], 422 );
+        if ($request->product_type != 'kartu_kredit'){
+            $nik = $request->nik;
+            $check = CustomerDetail::where('nik', $nik)->get();
+            $data = Eform::where('nik', $nik)->get();
+            if(count($check) == 0){
+                return response()->error( [
+                            'message' => 'Data dengan nik tersebut tidak ditemukan!',
+                            'contents' => $data,
+                        ], 422 );
+            }
+        }else if($request->product_type == 'kartu_kredit'){
+            //cek nik di customer detail, kalau gak ada di create
+            $nik = $request->nik;
+            $checkNik = CustomerDetail::where('nik',$nik)->get();
+             if(count($checkNik) == 0){
+                return response()->json([
+                 'responseCode' => '01',
+                  'responseMessage' => "NIK tidak ditemukan"
+                  //android tembak ke   api/v1/{type}/customer 
+                  //customerController
+            ]);
+         }
         }
+        
 
         DB::beginTransaction();
         try {
@@ -412,17 +427,46 @@ class EFormController extends Controller
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
 
-                $kredit = new KartuKredit();
-                $info = $kredit->create($baseRequest);
+                // $kredit = new KartuKredit();
+                // $info = $kredit->create($baseRequest)
+
+                //gambar
+                $npwp = $request->npwp;
+                $ktp = $request->ktp;
+                $slipGaji = $request->slip_gaji;
+
+                $nameTag = $request->name_tag;
+                $limitKartu = $request->limit_kartu;
+
+                //nama gambar
+                $id = date('YmdHis');
+
+                $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                $ktp = $this->uploadimage($ktp,$id,'KTP');
+                $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
+                $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
+                $limitKartu = $this->uploadimage($limitKartu,$id,"LIMIT_KARTU");
+
+                $baseRequest['NPWP_nasabah'] = $npwp;
+                $baseRequest['KTP'] = $ktp;
+                $baseRequest['SLIP_GAJI'] = $slipGaji;
+                $baseRequest['NAME_TAG'] = $nameTag;
+                $baseRequest['LIMIT_KARTU'] = $limitKartu;
+
+                $baseRequest['id_foto'] = $id;
+
+                // $kk = new KartuKredit();
+                // $eform = Eform::create($request);
+                // $resultInsert = $kk->create($baseRequest);
                 
                 return response()->success([
                     'message' => 'response eform kkd',
-                    'content'=>$info
+                    'content' => 'tes'
 
                 ], 200 );
             }
 
-            if ( $request->product_type == 'briguna' ) {
+            else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
