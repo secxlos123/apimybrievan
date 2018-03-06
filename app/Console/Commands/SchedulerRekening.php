@@ -85,8 +85,9 @@ class SchedulerRekening extends Command
     {
         try {
             \Log::info('handle running scheduler aman nih coyy');
-            /*$data_briguna = \DB::table("briguna")
-                        ->select(['id','eform_id','id_aplikasi','cif','no_rekening'])
+            $data_briguna = \DB::table("briguna")
+                        ->select(['id','is_send','eform_id','id_aplikasi','cif','no_rekening'])
+                        ->where('is_send','6')
                         ->whereNotNull('id_aplikasi')
                         ->whereNull('no_rekening')
                         ->orWhere('no_rekening','=','')
@@ -95,49 +96,45 @@ class SchedulerRekening extends Command
                         ->get()->toArray();
             // print_r($data_briguna);exit();
             if (!empty($data_briguna)) {
-                $message = [
-                    'message'  => 'data briguna kosong',
-                    'contents' => ''
-                ];
-                // print_r($data_briguna);exit();
                 $client = $this->client();
                 foreach ($data_briguna as $key => $value) {
                     try {
-                        // if ((!isset($value->no_rekening) || $value->no_rekening == '') && $value->id_aplikasi != '') {
-                            $parameter['id_aplikasi'] = $value->id_aplikasi;
-                            $rekening = $client->getStatusInterface($parameter);
-                            if($rekening->getStatusInterfaceResult){
-                                $datadetail = json_decode($rekening->getStatusInterfaceResult);
-                                $result = $this->return_conten($datadetail);
-                                // print_r($result);
-                                \Log::info($result);
-                                if ($result['code'] == '01') {
-                                    $update_data = [
-                                        'eform_id'    => $value->eform_id,
-                                        'is_send'     => 6,
-                                        'no_rekening' => $result['contents']['data'][0]->NO_REKENING,
-                                        'cif'         => $result['contents']['data'][0]->CIF,
-                                        'cif_las'     => $result['contents']['data'][0]->CIF_LAS,
-                                    ];
+                        $parameter['id_aplikasi'] = $value->id_aplikasi;
+                        $rekening = $client->getStatusInterface($parameter);
+                        if($rekening->getStatusInterfaceResult){
+                            $datadetail = json_decode($rekening->getStatusInterfaceResult);
+                            $result = $this->return_conten($datadetail);
+                            $message = [
+                                'message'  => $result['descriptions'].' dari brinets',
+                                'contents' => ''
+                            ];
+                            \Log::info($result);
 
-                                    $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
-                                    $briguna->update($update_data);
+                            if ($result['code'] == '01') {
+                                $update_data = [
+                                    'eform_id'   => $value->eform_id,
+                                    'is_send'    => 6,
+                                    'no_rekening'=> $result['contents']['data'][0]->NO_REKENING,
+                                    'cif'        => $result['contents']['data'][0]->CIF
+                                ];
 
-                                    // save json_ws_log
-                                    $data_log = [
-                                        'json_data' => 'scheduler update nomer rekening sukses',
-                                        'function_name' => 'updateRekening',
-                                        'created_at'=> date('Y-m-d H:i:s')
-                                    ];
-                                    $save = \DB::table('json_ws_log')->insert($data_log);
-                                    \Log::info('Sukses Update Rekening ALL dan simpan json_ws_log');
-                                    $message = [
-                                        'message'  => 'Sukses update briguna',
-                                        'contents' => $briguna
-                                    ];
-                                }
+                                $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
+                                $briguna->update($update_data);
+
+                                // save json_ws_log
+                                $data_log = [
+                                    'json_data' => 'scheduler update nomer rekening sukses',
+                                    'function_name' => 'updateRekening',
+                                    'created_at'=> date('Y-m-d H:i:s')
+                                ];
+                                $save = \DB::table('json_ws_log')->insert($data_log);
+                                \Log::info('Sukses Update Rekening ALL dan simpan json_ws_log');
+                                $message = [
+                                    'message'  => 'Sukses update no_rekening briguna dari brinets',
+                                    'contents' => 'sukses'
+                                ];
                             }
-                        // }
+                        }
                     } catch (Exception $e) {
                         // save json_ws_log
                         $data_log = [
@@ -168,7 +165,7 @@ class SchedulerRekening extends Command
                     'message' => 'Hasil inquiry data rekening briguna tidak ditemukan',
                     'contents' => ''
                 ], 400 );
-            }*/
+            }                
         } catch (Exception $e) {
             // save json_ws_log
             $data_log = [

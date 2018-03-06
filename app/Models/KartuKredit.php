@@ -93,6 +93,7 @@ class KartuKredit extends Model
 
             if ($type == 'update'){
                 $appNumber = $req['appNumber'];
+                $subBidangUsaha = $req['subBidangUsaha'];
             }
             
         }catch (Exception $e){
@@ -148,6 +149,7 @@ class KartuKredit extends Model
 
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
+            $informasiLos['subBidangUsaha'] = $subBidangUsaha;
         }
 
         $informasiLos = $this->checkInformasiLosKosong($informasiLos);
@@ -155,20 +157,21 @@ class KartuKredit extends Model
         return $informasiLos;
     }
 
-    function checkInformasiLosKosong($arrays){
+    function checkInformasiLosKosong($informasiLos){
         //cek data kosong, jadiin strip
-        foreach ($informasi as $key => $value) {
-            if($informasi[$key] == '' || !$informasi[$key]){
-               $informasi[$key] = '-'; 
+        foreach ($informasiLos as $key => $value) {
+            if($informasiLos[$key] == '' || !$informasiLos[$key]){
+               $informasiLos[$key] = '-'; 
             }
         }
 
-        return $informasi;
+        return $informasiLos;
     }
 
-    public function create($data){
-        $eform = EForm::create($data);
-        \Log::info($eform);
+    function checkDedup(){
+
+
+        
     }
 
 
