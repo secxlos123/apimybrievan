@@ -92,7 +92,7 @@ class PrescreeningController extends Controller
      */
     public function store( Request $request )
     {
-        $eform = EForm::findOrFail( $request['nik']->input('eform') );
+        $eform = EForm::findOrFail( $request->input('eform') );
 
         foreach ( array( 'sicd', 'dhn' ) as $key) {
             if ( !$eform->{$key.'_detail'} ) {
