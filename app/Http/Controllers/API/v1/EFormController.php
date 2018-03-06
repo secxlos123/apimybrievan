@@ -373,6 +373,20 @@ class EFormController extends Controller
                         ], 422 );
             }
         }
+        if ($request->product_type != 'kartu_kredit'){
+            //cek nik di customer detail, kalau gak ada di create
+            $nik = $request->nik;
+            $checkNik = CustomerDetail::where('nik'$nik)->get();
+             if(count($checkNik) == 0){
+                return reponse()->error([
+                 'responseCode' => 01,
+                  'responseMessage' => "NIK tidak ditemukan"
+                  //android tembak ke   api/v1/{type}/customer 
+                  //customerController
+            ])
+         }
+        }
+        
 
         DB::beginTransaction();
         try {
@@ -442,7 +456,8 @@ class EFormController extends Controller
 
                 $baseRequest['id_foto'] = $id;
 
-                $kk = new KartuKredit();
+                // $kk = new KartuKredit();
+                // $eform = Eform::create($request);
                 // $resultInsert = $kk->create($baseRequest);
                 
                 return response()->success([
@@ -452,7 +467,7 @@ class EFormController extends Controller
                 ], 200 );
             }
 
-            if ( $request->product_type == 'briguna' ) {
+            else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
