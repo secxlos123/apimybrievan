@@ -294,6 +294,18 @@ class KartuKreditController extends Controller{
 
     }
 
+    public function sendSMS(Request $req){
+    	$pn = $req['handphone'];
+    	$message = 'Kode unik anda adalah '.['message'].'\. periksa email';
+
+    	$host = '10.107.11.111:9975/notif/tosms';
+    	$client = new Client();
+    }
+
+    public function toEmail(Request $req){
+    	
+    }
+
     public function checkDedup($nik){
     	// $nik = $req['nik'];
     	$host = '10.107.11.111:9975/api/nik';
@@ -321,6 +333,13 @@ class KartuKreditController extends Controller{
     	}
 
     	
+    }
+
+    public function eform(EFormRequest $req){
+    	$kk = new KartuKredit();
+    	$eform = $kk->createEform($req);
+
+    	return $eform;
     }
 
     public function pefindo(){
