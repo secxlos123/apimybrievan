@@ -89,6 +89,7 @@ class CustomerController extends Controller
 
             DB::commit();
             return response()->success( [
+                'responseCode' => '00',
                 'message' => 'Data nasabah berhasil ditambahkan.',
                 'contents' => $data
             ], 201 );

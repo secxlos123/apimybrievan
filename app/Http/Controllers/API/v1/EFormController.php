@@ -456,9 +456,43 @@ class EFormController extends Controller
 
                 $baseRequest['id_foto'] = $id;
 
+                //cek user id di customer
+                $baseRequest['user_id'];
+
                 //send ke eform
+                $eformCreate = Eform::create($baseRequest);
 
                 //cek dedup
+                $nik = $baseRequest['nik'];
+                $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+
+                $host = '10.107.11.111:9975/api/nik';
+                $header = ['access_token'=> $tokenLos];
+                $client = new Client();
+
+                try{
+                    $res = $client->request('POST',$host, ['headers' =>  $header,
+                            'form_params' => ['nik' => $nik]
+                        ]);
+                }catch (RequestException $e){
+                    echo  $e->getMessage();
+                    return response()->error([
+                        'responseCode'=>'01',
+                        'responseMessage'=> 'Terjadi Kesalahan. Silahkan ajukan kembali'
+                    ],400);
+                }
+
+                $body = $res->getBody();
+                $obj = json_decode($body);
+                $responseCode = $obj->responseCode;
+
+                if ($responseCode == 0 || $responseCode == 00){
+                    //langsung merah. update eform.
+                    return response()->json([
+                        'responseCode' => 01,
+                        'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
+                    ]);
+                }
 
                 //send eform ke pefindo
 
