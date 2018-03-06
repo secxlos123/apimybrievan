@@ -168,9 +168,10 @@ class KartuKredit extends Model
         return $informasiLos;
     }
 
-    public function create($data){
-        $eform = EForm::create($data);
-        \Log::info($eform);
+    function checkDedup(){
+
+
+        
     }
 
 
