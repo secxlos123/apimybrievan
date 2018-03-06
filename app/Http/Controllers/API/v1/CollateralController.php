@@ -212,7 +212,7 @@ class CollateralController extends Controller
       $sendNotif = false;
 
       try {
-        DB::transaction();
+        DB::beginTransaction();
 
         $developer_id = env('DEVELOPER_KEY',1);
         $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
