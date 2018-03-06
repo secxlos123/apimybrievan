@@ -16,20 +16,23 @@ class reportController extends Controller
     public function report_marketings(Request $request)
     {
       $region = $request->input('region');
-      $list_kanca = $this->list_kanca_for_kanwil($region);
+      if($request->has('region')){
+        $list_kanca = $this->list_kanca_for_kanwil($region);
+      }else{
+        $list_kanca = $this->list_all_kanca();
+      }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = Marketing::getReports($request)->get();
       $marketings = [];
       foreach ($data as $key => $value) {
         $last_activity = MarketingActivity::where('desc', '!=', 'first')->where('marketing_id',$value->id)->orderBy('created_at', 'desc')->first();
         $result = MarketingActivityFollowup::where('activity_id',$last_activity['id'])->orderBy('created_at', 'desc')->first();
-        $fo_info = RestwsHc::getUser($value->pn);
         $branch = $value->branch;
         $marketings[] =[
           "pn"=>$value->pn,
           "bulan"=>date('M',strtotime($value->created_at)),
           "tahun"=>date('Y',strtotime($value->created_at)),
-          "wilayah"=> $list_kanwil[$branch],
+          "wilayah"=> $list_kanwil[$region],
           "cabang"=> $list_kanca[$branch],
           "uker"=> $value->branch,
           "fo_name"=> $value->pn,
@@ -43,7 +46,6 @@ class reportController extends Controller
           "status"=> $value->status,
           "result" => $result['fu_result'],
           "activity" => $last_activity,
-          "fo_info" => $fo_info
         ];
       }
       return response()->success( [

@@ -318,10 +318,6 @@ class KartuKreditController extends Controller{
     			'responseCode' => 01,
     			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
     		]);
-    	}else{
-    		// return response()->json($obj);
-    		//ke pefindo
-
     	}
 
     	
