@@ -456,8 +456,8 @@ class EFormController extends Controller
 
                 $baseRequest['id_foto'] = $id;
 
-                $kk = new KartuKredit();
-                $eform = Eform::create($request);
+                // $kk = new KartuKredit();
+                // $eform = Eform::create($request);
                 // $resultInsert = $kk->create($baseRequest);
                 
                 return response()->success([
