@@ -34,8 +34,9 @@ class Kernel extends ConsoleKernel
         }
 
         $schedule->command('SchedulerRekening:updaterekening')
-            ->weekdays()
-            ->hourlyAt('12');
+            ->everyMinute();
+            // ->weekdays()
+            // ->hourlyAt('12');
 
         // // test function
         // $schedule->call(function(){
