@@ -91,7 +91,7 @@ class ProfileController extends Controller
 
         // }
 
-        if ($user->inRole('developer') || $user->inRole('others')) {
+        else if ($user->inRole('developer') || $user->inRole('others')) {
             $type = 'Unknown';
             if ($user->inRole('developer')) {
                 $dev = Developer::where(['user_id'=> $user->id])->first();
