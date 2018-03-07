@@ -437,7 +437,8 @@ class EFormController extends Controller
                     \Log::info("==========================");
                     \Log::info($eformCreate);
 
-                    return $eformCreate;
+                    DB::commit();
+                    // return $eformCreate;
 
 
                     //gambar
