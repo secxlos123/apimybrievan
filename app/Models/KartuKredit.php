@@ -207,7 +207,7 @@ class KartuKredit extends Model
         $data['image_slip_gaji'] = $req['SLIP_GAJI'];
         $data['image_nametag'] = $req['NAME_TAG'];
 
-        $kkDetails = 
+        // $kkDetails = 
         
 
         // $data['image_kartu_bank_lain'] = $req['image_kartu_bank_lain'];
