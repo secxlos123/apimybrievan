@@ -481,10 +481,10 @@ class EFormController extends Controller
                     return response()->success([
                         'message' => 'response eform kkd',
                         //balikin eform buat eform list di android
-                        'content' => $eformCreate;
+                        'content' => $eformCreate
 
                     ], 200 );
-                    }
+                    
 
                     //cek user id di customer
                     // $baseRequest['user_id'];
@@ -540,9 +540,7 @@ class EFormController extends Controller
 
                     ], 200 );
                     }
-            }
-
-            else if ( $request->product_type == 'briguna' ) {
+            }else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
