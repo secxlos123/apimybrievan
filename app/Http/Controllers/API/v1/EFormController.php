@@ -484,7 +484,7 @@ class EFormController extends Controller
                         'content' => $eformCreate
 
                     ], 200 );
-                    }
+                    
 
                     //cek user id di customer
                     // $baseRequest['user_id'];
@@ -540,9 +540,7 @@ class EFormController extends Controller
 
                     ], 200 );
                     }
-            }
-
-            else if ( $request->product_type == 'briguna' ) {
+            }else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
