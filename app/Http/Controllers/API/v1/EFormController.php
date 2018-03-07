@@ -481,7 +481,7 @@ class EFormController extends Controller
                     return response()->success([
                         'message' => 'response eform kkd',
                         //balikin eform buat eform list di android
-                        'content' => $eformCreate;
+                        'content' => $eformCreate
 
                     ], 200 );
                     }
