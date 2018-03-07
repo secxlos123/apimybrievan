@@ -27,8 +27,8 @@ class EditNullableFieldOnCrmNewCustomers extends Migration
     public function down()
     {
         Schema::table('crm_new_customers', function (Blueprint $table) {
-            $table->string('nik')->unique()->change();
-          $table->string('email')->unique()->change();
+          $table->string('nik')->nullable()->change();
+          $table->string('email')->nullable()->change();
         });
     }
 }
