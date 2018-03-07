@@ -209,9 +209,15 @@ class KartuKredit extends Model
             $data['image_kartu_bank_lain'] = $req['KARTU_BANK_LAIN'];
         }
 
+        if ($req['memiliki_kk_bank_lain'] == 'true'){
+            $data['memiliki_kk_bank_lain'] = true;
+        }else{
+            $data['memiliki_kk_bank_lain'] = false;
+        }
+
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
         $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
-        $data['memiliki_kk_bank_lain'] = $req['memiliki_kk_bank_lain'];
+        
         $data['limit_tertinggi'] = $req['limit_kartu'];
         $data['jenis_nasabah'] = $req['jenis_nasabah'];
         $data['hp'] = $req['hp'];
