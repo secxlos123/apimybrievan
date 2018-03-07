@@ -343,7 +343,7 @@ class Customer extends User
 	    \Log::info('==========ini data separate====');
 	    \Log::info($separate_array_keys);
 
-        if ( $data['status'] == 2 ) {
+        if ( $data['status'] == 2 && $data['product_leads'] != 'kartu_kredit') {
             $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'], 'couple_identity'=> $data['couple_identity'] ] + array_diff_key( $data, $separate_array_keys );
 
         } else {
