@@ -440,10 +440,10 @@ class EFormController extends Controller
                         $ktp = $request->KTP;
 
                         
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
 
-                        $baseRequest['NPWP_nasabah'] = $npwp;
+                        $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
                     }else{
                         $npwp = $request->NPWP;
