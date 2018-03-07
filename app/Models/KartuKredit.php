@@ -194,7 +194,7 @@ class KartuKredit extends Model
         $data['user_id'] = $userId;
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
 
-        if ($data['jenis_nasabah'] == 'debitur'){
+        if ($req['jenis_nasabah'] == 'debitur'){
             $data['image_npwp'] = $req['NPWP_nasabah'];
             $data['image_ktp'] = $req['KTP'];
         }else{
@@ -217,7 +217,7 @@ class KartuKredit extends Model
         $data['pekerjaan'] = $req['pekerjaan'];
         $data['tiering_gaji'] = $req['tiering_gaji'];
         $data['agama'] = $req['agama'];
-
+\Log::info($data);
         $kkDetails = KartuKredit::create($data);
         \Log::info($kkDetails);
         return $kkDetails;
