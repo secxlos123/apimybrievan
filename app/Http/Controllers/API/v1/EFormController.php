@@ -436,31 +436,35 @@ class EFormController extends Controller
 
                     //cek debitur atau nasabah. ambil gambar
                     if ($request->jenis_nasabah == 'debitur'){
-                        $npwp = $request->npwp;
-                        $ktp = $request->ktp;
+                        $npwp = $request->NPWP;
+                        $ktp = $request->KTP;
 
-                        $baseRequest['NPWP_nasabah'] = $npwp;
-                        $baseRequest['KTP'] = $ktp;
+                        
                         $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
-                    }else{
-                        $npwp = $request->npwp;
-                        $ktp = $request->ktp;
-                        $slipGaji = $request->slip_gaji;
-                        $nameTag = $request->name_tag;
-                        $limitKartu = $request->limit_kartu;
+
                         $baseRequest['NPWP_nasabah'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
-                        $baseRequest['SLIP_GAJI'] = $slipGaji;
-                        $baseRequest['NAME_TAG'] = $nameTag;
-                        $baseRequest['LIMIT_KARTU'] = $limitKartu;
+                    }else{
+                        $npwp = $request->NPWP;
+                        $ktp = $request->KTP;
+                        $slipGaji = $request->SLIP_GAJI;
+                        $nameTag = $request->NAME_TAG;
+                        $limitKartu = $request->KARTU_BANK_LAIN;
+                        
 
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
 
                         $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
                         $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                        $limitKartu = $this->uploadimage($limitKartu,$id,"LIMIT_KARTU");
+                        $limitKartu = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
+
+                        $baseRequest['NPWP'] = $npwp;
+                        $baseRequest['KTP'] = $ktp;
+                        $baseRequest['SLIP_GAJI'] = $slipGaji;
+                        $baseRequest['NAME_TAG'] = $nameTag;
+                        $baseRequest['KARTU_BANK_LAIN'] = $limitKartu;
                     }
 
 
@@ -477,6 +481,9 @@ class EFormController extends Controller
                     \Log::info($eformCreate);
 
                     DB::commit();
+
+                    //cek dedup
+                    //TODO: dedup
 
                     return response()->success([
                         'message' => 'response eform kkd',
