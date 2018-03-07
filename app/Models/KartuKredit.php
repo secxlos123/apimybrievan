@@ -202,7 +202,7 @@ class KartuKredit extends Model
             $data['image_nametag'] = '-';
             $data['image_kartu_bank_lain'] = '-';
         }else{
-            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
             $data['image_slip_gaji'] = $req['SLIP_GAJI'];
             $data['image_nametag'] = $req['NAME_TAG'];
