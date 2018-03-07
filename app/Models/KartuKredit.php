@@ -178,6 +178,7 @@ class KartuKredit extends Model
         $ef = $this->overwriteEmptyRecord($ef);
         \Log::info($ef);
         $eform = EForm::create($ef);
+        \Log::info($eform);
 
     }
 
