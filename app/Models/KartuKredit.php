@@ -23,7 +23,7 @@ class KartuKredit extends Model
     protected $table = 'kartu_kredit_details';
 
     protected $fillable = [
-    	'nik','hp','email','user_id','eform_id',
+    	'hp','email','user_id','eform_id',
     	'jenis_kelamin','nama','tempat_lahir','telephone',
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
@@ -34,7 +34,7 @@ class KartuKredit extends Model
     protected $hidden = [
         'id','updated_at'
     ];
-    
+
     public $timestamps = false;
 
     public function convertToAddDataLosFormat(Request $req,$type){
@@ -186,29 +186,34 @@ class KartuKredit extends Model
     }
 
     public function createKartuKreditDetails($req){
+         \Log::info($req);
         //get user id
         $nik= $req['nik'];
         $e = EForm::where('nik',$nik)->first();
         $userId = $e->user_id;
-        \Log::info('======== create kk details ========');
-        \Log::info($e);
 
         $data['user_id'] = $userId;
-        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+        
 
         if ($req['jenis_nasabah'] == 'debitur'){
-            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = '-';
+            $data['image_nametag'] = '-';
+            $data['image_kartu_bank_lain'] = '-';
         }else{
             $data['image_npwp'] = $req['NPWP_nasabah'];
             $data['image_ktp'] = $req['KTP'];
             $data['image_slip_gaji'] = $req['SLIP_GAJI'];
             $data['image_nametag'] = $req['NAME_TAG'];
-            $data['image_kartu_bank_lain'] = $req['LIMIT_KARTU'];
+            $data['image_kartu_bank_lain'] = $req['KARTU_BANK_LAIN'];
         }
 
-
-
+        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+        $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
+        $data['memiliki_kk_bank_lain'] = $req['memiliki_kk_bank_lain'];
+        $data['limit_tertinggi'] = $req['limit_kartu'];
+        $data['jenis_nasabah'] = $req['jenis_nasabah'];
         $data['hp'] = $req['hp'];
         $data['email'] = $req['email'];
         $data['jenis_kelamin'] = $req['jenis_kelamin'];
@@ -219,7 +224,8 @@ class KartuKredit extends Model
         $data['pekerjaan'] = $req['pekerjaan'];
         $data['tiering_gaji'] = $req['tiering_gaji'];
         $data['agama'] = $req['agama'];
-\Log::info($data);
+        $data['pilihan_kartu'] = $req['pilihan_kartu'];
+
         $kkDetails = KartuKredit::create($data);
         \Log::info($kkDetails);
         return $kkDetails;
