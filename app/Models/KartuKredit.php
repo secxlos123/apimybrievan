@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\EForm;
+use App\Models\CustomerDetail;
 use App\Http\Requests\API\v1\EFormRequest;
 
 
@@ -19,9 +20,10 @@ class KartuKredit extends Model
 	//======================================
 	//pilihan kartu -> kartu yang user ajukan. diisi "world access","easy card", "platinum","touch"
 
-	//gambar gimana dong
+    protected $table = 'kartu_kredit_details';
+
     protected $fillable = [
-    	'nik','hp','email',
+    	'nik','hp','email','user_id','eform_id',
     	'jenis_kelamin','nama','tempat_lahir','telephone',
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
@@ -182,7 +184,48 @@ class KartuKredit extends Model
     }
 
     public function createKartuKreditDetails($req){
-        $det[]
+        //get user id
+        $nik= $req['nik'];
+        $userId = EForm::select('user_id')
+        ->where('nik',$nik)
+        ->get();
+
+        \Log::info('========= user id = '.$userId.'==========');
+        $data = $req;
+        $data['user_id'] = $user_id;
+        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+
+        if ($data['jenis_nasabah'] == 'debitur'){
+            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_ktp'] = $req['KTP'];
+        }else{
+            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = $req['SLIP_GAJI'];
+            $data['image_nametag'] = $req['NAME_TAG'];
+            $data['image_kartu_bank_lain'] = $req['LIMIT_KARTU'];
+        }
+
+        $kkDetails = KartuKredit::create($data);
+        \Log::info($kkDetails);
+        return $kkDetails;
+        
+
+        // $data['image_kartu_bank_lain'] = $req['image_kartu_bank_lain'];
+
+        // $data['hp'] = $req['hp'];
+        // $data['email'] = $req['email'];
+        // $data['jenis_kelamin'] = $req['jenis_kelamin'];
+        // $data['nama'] = $req['nama'];
+        // $data['tempat_lahir'] = $req['tempat_lahir'];
+        // $data['telephone'] = $req['telephone'];
+        // $data['pendidikan'] = $req['pendidikan'];
+        // $data['pekerjaan'] = $req['pekerjaan'];
+        // $data['tiering_gaji'] = $req['tiering_gaji'];
+        // $data['agama'] = $req['agama'];
+
+        
+        // $det[]
     }
 
     public function eformStatusFail(){

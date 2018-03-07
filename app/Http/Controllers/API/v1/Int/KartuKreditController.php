@@ -296,7 +296,7 @@ class KartuKreditController extends Controller{
 
     public function sendSMS(Request $req){
     	$pn = $req['handphone'];
-    	$message = 'Kode unik anda adalah '.['message'].'\. periksa email';
+    	$message = 'Kode unik anda adalah '.$req['message'].'\. periksa email';
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
