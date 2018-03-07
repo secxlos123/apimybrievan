@@ -348,16 +348,16 @@ class EForm extends Model implements AuditableContract
 
         // Approve function
         if ( $request->is_approved ) {
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+            if ( $eform->status_eform == 'Approval2' ) {
+                // Recontest
+                $result = $eform->insertRecontestBRI( '21' );
+                $kprValue = null;
+
+            } else if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 $result = $eform->insertCoreBRI(10);
 
             } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
-
-            } else if ( $eform->status_eform == 'Approval2' ) {
-                // Recontest
-                $result = $eform->insertRecontestBRI( '21' );
-                $kprValue = null;
 
             } else {
                 $result = $eform->insertCoreBRI(8);
