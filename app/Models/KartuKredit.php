@@ -32,7 +32,7 @@ class KartuKredit extends Model
     ];
 
     protected $hidden = [
-        'id'
+        'id','updated_at'
     ];
 
     public function convertToAddDataLosFormat(Request $req,$type){
