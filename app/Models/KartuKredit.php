@@ -34,6 +34,8 @@ class KartuKredit extends Model
     protected $hidden = [
         'id','updated_at'
     ];
+    
+    public $timestamps = false;
 
     public function convertToAddDataLosFormat(Request $req,$type){
         
