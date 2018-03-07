@@ -36,6 +36,7 @@ use Cache;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use App\Http\Controllers\API\v1\Int\PrescreeningController;
 
 class EFormController extends Controller
 {
@@ -372,20 +373,7 @@ class EFormController extends Controller
                             'contents' => $data,
                         ], 422 );
             }
-        }else if($request->product_type == 'kartu_kredit'){
-            //cek nik di customer detail, kalau gak ada di create
-            $nik = $request->nik;
-            $checkNik = CustomerDetail::where('nik',$nik)->get();
-             if(count($checkNik) == 0){
-                return response()->json([
-                 'responseCode' => '01',
-                  'responseMessage' => "NIK tidak ditemukan"
-                  //android tembak ke   api/v1/{type}/customer 
-                  //customerController
-            ]);
-         }
         }
-        
 
         DB::beginTransaction();
         try {
@@ -427,46 +415,132 @@ class EFormController extends Controller
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
 
-                // $kredit = new KartuKredit();
-                // $info = $kredit->create($baseRequest)
+                  //cek nik di customer detail, kalau gak ada di create
+                 $nik = $request->nik;
+                $checkNik = CustomerDetail::where('nik',$nik)->get();
+                 if(count($checkNik) == 0){
+                    return response()->json([
+                     'responseCode' => '01',
+                      'responseMessage' => "NIK tidak ditemukan"
+                   //android tembak ke   api/v1/{type}/customer 
+                   //customerController
+                    ]);
+                }else{
+                    // return response()->json([
+                    //     'contents'=>$checkNik
+                    // ]);
+                   
 
-                //gambar
-                $npwp = $request->npwp;
-                $ktp = $request->ktp;
-                $slipGaji = $request->slip_gaji;
+                    //nama gambar
+                    $id = date('YmdHis');
 
-                $nameTag = $request->name_tag;
-                $limitKartu = $request->limit_kartu;
+                    //cek debitur atau nasabah. ambil gambar
+                    if ($request->jenis_nasabah == 'debitur'){
+                        $npwp = $request->npwp;
+                        $ktp = $request->ktp;
 
-                //nama gambar
-                $id = date('YmdHis');
+                        $baseRequest['NPWP_nasabah'] = $npwp;
+                        $baseRequest['KTP'] = $ktp;
+                        $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                        $ktp = $this->uploadimage($ktp,$id,'KTP');
+                    }else{
+                        $npwp = $request->npwp;
+                        $ktp = $request->ktp;
+                        $slipGaji = $request->slip_gaji;
+                        $nameTag = $request->name_tag;
+                        $limitKartu = $request->limit_kartu;
+                        $baseRequest['NPWP_nasabah'] = $npwp;
+                        $baseRequest['KTP'] = $ktp;
+                        $baseRequest['SLIP_GAJI'] = $slipGaji;
+                        $baseRequest['NAME_TAG'] = $nameTag;
+                        $baseRequest['LIMIT_KARTU'] = $limitKartu;
 
-                $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
-                $ktp = $this->uploadimage($ktp,$id,'KTP');
-                $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
-                $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                $limitKartu = $this->uploadimage($limitKartu,$id,"LIMIT_KARTU");
+                        $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                        $ktp = $this->uploadimage($ktp,$id,'KTP');
 
-                $baseRequest['NPWP_nasabah'] = $npwp;
-                $baseRequest['KTP'] = $ktp;
-                $baseRequest['SLIP_GAJI'] = $slipGaji;
-                $baseRequest['NAME_TAG'] = $nameTag;
-                $baseRequest['LIMIT_KARTU'] = $limitKartu;
+                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
+                        $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
+                        $limitKartu = $this->uploadimage($limitKartu,$id,"LIMIT_KARTU");
+                    }
 
-                $baseRequest['id_foto'] = $id;
 
-                // $kk = new KartuKredit();
-                // $eform = Eform::create($request);
-                // $resultInsert = $kk->create($baseRequest);
-                
-                return response()->success([
-                    'message' => 'response eform kkd',
-                    'content' => 'tes'
+                    $baseRequest['id_foto'] = $id;
 
-                ], 200 );
-            }
+                    $kk = new KartuKredit();
+                    //insert ke table eform
+                    $eformCreate = $kk->createEform($baseRequest);
+                    \Log::info("===========create eform==========");
+                    \Log::info($eformCreate);
+                    //insert ke table kartu_kredit_details
+                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
+                    \Log::info("========crate kk details=============");
+                    \Log::info($eformCreate);
 
-            else if ( $request->product_type == 'briguna' ) {
+                    DB::commit();
+
+                    return response()->success([
+                        'message' => 'response eform kkd',
+                        //balikin eform buat eform list di android
+                        'content' => $eformCreate
+
+                    ], 200 );
+                    
+
+                    //cek user id di customer
+                    // $baseRequest['user_id'];
+
+                    //send ke eform
+                    // $eformCreate = Eform::create($baseRequest);
+                    
+
+                    //cek dedup
+                    $nik = $baseRequest['nik'];
+                    $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+
+                    $host = '10.107.11.111:9975/api/nik';
+                    $header = ['access_token'=> $tokenLos];
+                    $client = new Client();
+
+                    try{
+                        $res = $client->request('POST',$host, ['headers' =>  $header,
+                                'form_params' => ['nik' => $nik]
+                            ]);
+                    }catch (RequestException $e){
+                        echo  $e->getMessage();
+                        return response()->error([
+                            'responseCode'=>'01',
+                            'responseMessage'=> 'Terjadi Kesalahan. Silahkan ajukan kembali'
+                        ],400);
+                    }
+
+                    $body = $res->getBody();
+                    $obj = json_decode($body);
+                    $responseCode = $obj->responseCode;
+
+                    if ($responseCode == 0 || $responseCode == 00){
+                        //langsung merah. update eform.
+                        
+                        return response()->json([
+                            'responseCode' => '01',
+                            'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
+                        ]);
+                    }
+
+                    //send eform ke pefindo
+                    $pefindoController = new PrescreeningController();
+                    // $getPefindo = $pefindoController->getPefindo()
+
+                    //cek jumlah kk
+
+                    //update eform
+                    
+                    return response()->success([
+                        'message' => 'response eform kkd',
+                        'content' => 'tes'
+
+                    ], 200 );
+                    }
+            }else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
 					$data_new['branch']=$request->input('branch_id');
@@ -520,7 +594,6 @@ class EFormController extends Controller
 
 			$SK_AWAL = '';
 			$SK_AKHIR = '';
-
 
 			if($baseRequest['baru_atau_perpanjang']=='0' && $baseRequest['kredit_take_over']=='0'){
 				if(!empty($request->SK_AWAL) && !empty($request->SK_AKHIR)){

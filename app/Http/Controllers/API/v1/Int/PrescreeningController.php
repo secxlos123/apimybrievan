@@ -50,13 +50,13 @@ class PrescreeningController extends Controller
             $dhn = json_decode((string) '[{"kategori":null,"keterangan":"","warna":"Hijau","result":""}]');
 
         } else {
-            if ( $user_login['role'] == 'ao' ) {
-                $dhn = $dhn->responseData;
+            $dhn = $dhn->responseData;
 
-            } else {
-                $dhn = array($dhn->responseData[ intval($data->selected_dhn) ]);
-
-            }
+            // change request by Mas Singh
+            // if ( $user_login['role'] == 'ao' ) {
+            // } else {
+            //     $dhn = array($dhn->responseData[ intval($data->selected_dhn) ]);
+            // }
         }
 
         $sicd = json_decode((string) $data->sicd_detail);
@@ -64,13 +64,13 @@ class PrescreeningController extends Controller
             $sicd = json_decode((string) '[{"status":null,"acctno":null,"cbal":null,"bikole":null,"result":null,"cif":null,"nama_debitur":null,"tgl_lahir":null,"alamat":null,"no_identitas":null}]');
 
         } else {
-            if ( $user_login['role'] == 'ao' ) {
-                $sicd = $sicd->responseData;
+            $sicd = $sicd->responseData;
 
-            } else {
-                $sicd = array($sicd->responseData[ intval($data->selected_sicd) ]);
-
-            }
+            // change request by Mas Singh
+            // if ( $user_login['role'] == 'ao' ) {
+            // } else {
+            //     $sicd = array($sicd->responseData[ intval($data->selected_sicd) ]);
+            // }
         }
 
         $data['uploadscore'] = $this->generatePDFUrl( $data );
@@ -92,7 +92,7 @@ class PrescreeningController extends Controller
      */
     public function store( Request $request )
     {
-        $eform = EForm::findOrFail( $request['nik']->input('eform') );
+        $eform = EForm::findOrFail( $request->input('eform') );
 
         foreach ( array( 'sicd', 'dhn' ) as $key) {
             if ( !$eform->{$key.'_detail'} ) {

@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\EForm;
+use App\Models\CustomerDetail;
+use App\Http\Requests\API\v1\EFormRequest;
 
 
 
@@ -18,9 +20,10 @@ class KartuKredit extends Model
 	//======================================
 	//pilihan kartu -> kartu yang user ajukan. diisi "world access","easy card", "platinum","touch"
 
-	//gambar gimana dong
+    protected $table = 'kartu_kredit_details';
+
     protected $fillable = [
-    	'nik','hp','email',
+    	'nik','hp','email','user_id','eform_id',
     	'jenis_kelamin','nama','tempat_lahir','telephone',
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
@@ -33,14 +36,6 @@ class KartuKredit extends Model
     ];
 
     public function convertToAddDataLosFormat(Request $req,$type){
-
-         // $validatedData = $req->validate([
-         //    'PersonalName' => 'required',
-         //    'PersonalNIK' => 'required',
-         //    'PersonalTempatLahir' => 'required',
-         //    'PersonalTanggalLahir' => 'required'
-         // ]);
-
         
 
         try{
@@ -93,6 +88,7 @@ class KartuKredit extends Model
 
             if ($type == 'update'){
                 $appNumber = $req['appNumber'];
+                $subBidangUsaha = $req['subBidangUsaha'];
             }
             
         }catch (Exception $e){
@@ -148,6 +144,7 @@ class KartuKredit extends Model
 
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
+            $informasiLos['subBidangUsaha'] = $subBidangUsaha;
         }
 
         $informasiLos = $this->checkInformasiLosKosong($informasiLos);
@@ -155,20 +152,84 @@ class KartuKredit extends Model
         return $informasiLos;
     }
 
-    function checkInformasiLosKosong($arrays){
+    function overwriteEmptyRecord($arrays){
         //cek data kosong, jadiin strip
-        foreach ($informasi as $key => $value) {
-            if($informasi[$key] == '' || !$informasi[$key]){
-               $informasi[$key] = '-'; 
+        foreach ($arrays as $key => $value) {
+            if($arrays[$key] == '0'){
+                $arrays[$key] = 0;
+            }else if($arrays[$key] == '' || !$arrays[$key] ){
+               $arrays[$key] = '-'; 
             }
+            
         }
 
-        return $informasi;
+        return $arrays;
     }
 
-    public function create($data){
-        $eform = EForm::create($data);
+    public function createEform($req){
+        $ef['ao_id'] = $req['ao_id'];
+        $ef['branch_id'] = $req['branch_id'];
+        $ef['address'] = $req['address'];
+        $ef['longitude'] = $req['longitude'];
+        $ef['latitude'] = $req['latitude'];
+        $ef['appointment_date'] = $req['appointment_date'];
+        $ef['nik'] = $req['nik'];
+        $ef['product_type'] = $req['product_type']; 
+
+        $ef = $this->overwriteEmptyRecord($ef);
+        $eform = EForm::create($ef);
         \Log::info($eform);
+
+        return $eform;
+    }
+
+    public function createKartuKreditDetails($req){
+        //get user id
+        $nik= $req['nik'];
+        $userId = EForm::select('user_id')
+        ->where('nik',$nik)
+        ->get();
+
+        \Log::info('========= user id = '.$userId.'==========');
+        $data = $req;
+        $data['user_id'] = $userId;
+        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+
+        if ($data['jenis_nasabah'] == 'debitur'){
+            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_ktp'] = $req['KTP'];
+        }else{
+            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = $req['SLIP_GAJI'];
+            $data['image_nametag'] = $req['NAME_TAG'];
+            $data['image_kartu_bank_lain'] = $req['LIMIT_KARTU'];
+        }
+
+        $kkDetails = KartuKredit::create($data);
+        \Log::info($kkDetails);
+        return $kkDetails;
+        
+
+        // $data['image_kartu_bank_lain'] = $req['image_kartu_bank_lain'];
+
+        // $data['hp'] = $req['hp'];
+        // $data['email'] = $req['email'];
+        // $data['jenis_kelamin'] = $req['jenis_kelamin'];
+        // $data['nama'] = $req['nama'];
+        // $data['tempat_lahir'] = $req['tempat_lahir'];
+        // $data['telephone'] = $req['telephone'];
+        // $data['pendidikan'] = $req['pendidikan'];
+        // $data['pekerjaan'] = $req['pekerjaan'];
+        // $data['tiering_gaji'] = $req['tiering_gaji'];
+        // $data['agama'] = $req['agama'];
+
+        
+        // $det[]
+    }
+
+    public function eformStatusFail(){
+        //update table eform field status_eform jadi 'fail-dedup' kalau gagal di dedup
     }
 
 
