@@ -40,8 +40,8 @@ class DropAndCreateCrmNewCustomers extends Migration
           $table->integer('pn')->unsigned()->index();
           $table->integer('branch')->unsigned()->index();
           $table->string('name');
-          $table->string('nik')->unique();
-          $table->string('email')->unique();
+          $table->string('nik')->nullable();
+          $table->string('email')->nullable();
           $table->string('phone');
           $table->string('address');
           $table->timestamps();
