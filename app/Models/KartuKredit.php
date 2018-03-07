@@ -196,18 +196,19 @@ class KartuKredit extends Model
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
 
         if ($data['jenis_nasabah'] == 'debitur'){
-
+            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_ktp'] = $req['KTP'];
         }else{
-
+            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = $req['SLIP_GAJI'];
+            $data['image_nametag'] = $req['NAME_TAG'];
+            $data['image_kartu_bank_lain'] = $req['LIMIT_KARTU'];
         }
 
-
-        $data['image_npwp'] = $req['NPWP_nasabah'];
-        $data['image_ktp'] = $req['KTP'];
-        $data['image_slip_gaji'] = $req['SLIP_GAJI'];
-        $data['image_nametag'] = $req['NAME_TAG'];
-
-        // $kkDetails = 
+        $kkDetails = KartuKredit::create($data);
+        \Log::info($kkDetails);
+        return $kkDetails;
         
 
         // $data['image_kartu_bank_lain'] = $req['image_kartu_bank_lain'];
