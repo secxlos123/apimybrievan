@@ -617,9 +617,9 @@ class EForm extends Model implements AuditableContract
                 , 'eform_id' => $eform->id
                 , 'ref_number' => $eform->ref_number
                 , 'address' => $eform->address
-                , 'latitude' => $eform->longitude
-                , 'longitude' => $eform->latitude
-                , 'desc' => '-'
+                , 'latitude' => $eform->latitude
+                , 'longitude' => $eform->longitude
+                , 'desc' => $eform->ref_number
                 , 'status' => 'waiting'
             );
 

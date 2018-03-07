@@ -56,6 +56,9 @@ class ServiceRestwsHc extends Client
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 44 ] ) ) {
                     $role = 'fo';
                     $role_user = 'fo';
+                } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 46 ] ) ) {
+                    $role = 'mtr';
+                    $role_user = 'mtr';
                 } else if( in_array( intval($get_user_info_service[ 'responseData' ][ 'HILFM' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                     $role = 'pinca';
                     $role_user = 'pinca';

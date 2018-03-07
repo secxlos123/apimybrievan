@@ -18,6 +18,7 @@ class reportController extends Controller
       if($request->has('region')){
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
+        $request['list_branch'] =array_keys($list_kanca);
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
@@ -34,7 +35,7 @@ class reportController extends Controller
           "bulan"=>date('M',strtotime($value->created_at)),
           "tahun"=>date('Y',strtotime($value->created_at)),
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
-          "cabang"=> $list_kanca[$branch]['mbdesc'],
+          "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
           "uker"=> $value->branch,
           "fo_name"=> $value->pn,
           "product_type"=> $value->product_type,
@@ -58,10 +59,21 @@ class reportController extends Controller
 
     public function report_activities(Request $request)
     {
-      // return response()->success( [
-      //   'message' => 'Sukses get list report Activities',
-      //   'contents' => $activities
-      // ], 200 );
+      if($request->has('region')){
+        $region = $request->input('region');
+        $list_kanca = $this->list_kanca_for_kanwil($region);
+      }else{
+        $list_kanca = $this->list_all_kanca();
+        $region = $list_kanca[$request->header('branch')]['region_id'];
+      }
+      $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
+      $data = MarketingActivity::getReports($request)->get();
+      $activities = [];
+
+      return response()->success( [
+        'message' => 'Sukses get list report Activities',
+        'contents' => $activities
+      ], 200 );
     }
 
     public function list_kanwil()
@@ -137,7 +149,12 @@ class reportController extends Controller
       $data = $this->get_kanca_kanwil($region);
       $list_kanca =[];
       foreach ($data['responseData'] as $key_kanca => $value_kanca) {
-        $list_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] = $value_kanca['mbdesc']
+        $list_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] =
+        [
+           'mbdesc' => $value_kanca['mbdesc'],
+           'region_id' => $region
+
+           ]
         ;
       }
       return $list_kanca;
