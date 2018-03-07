@@ -449,8 +449,14 @@ class EFormController extends Controller
                     //nama gambar
                     $id = date('YmdHis');
 
+                    //cek debitur atau nasabah
+                    if ($request->jenis_nasabah == 'debitur'){
+
+                    }
+
                     $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
                     $ktp = $this->uploadimage($ktp,$id,'KTP');
+
                     $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
                     $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
                     $limitKartu = $this->uploadimage($limitKartu,$id,"LIMIT_KARTU");
