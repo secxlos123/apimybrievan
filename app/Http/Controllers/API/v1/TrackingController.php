@@ -48,6 +48,7 @@ class TrackingController extends Controller
             }
 
             else if( $user->inRole('developer-sales') ) {
+				//leftJoin("kpr",function($join){$join->on("briguna.eform_id","=","eforms.id")->where('eforms.product_type','briguna');})
                     $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon

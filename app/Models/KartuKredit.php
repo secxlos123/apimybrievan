@@ -186,11 +186,11 @@ class KartuKredit extends Model
     public function createKartuKreditDetails($req){
         //get user id
         $nik= $req['nik'];
-        $userId = EForm::select('user_id')
-        ->where('nik',$nik)
-        ->get();
+        $e = EForm::where('nik',$nik)->get();
+        $userId = $e->user_id;
 
         \Log::info('========= user id = '.$userId.'==========');
+
         $data = $req;
         $data['user_id'] = $userId;
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
