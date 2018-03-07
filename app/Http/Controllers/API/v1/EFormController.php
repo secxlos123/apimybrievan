@@ -434,6 +434,8 @@ class EFormController extends Controller
                     // ]);
                     $kk = new KartuKredit();
                     $eformCreate = $kk->createEform($baseRequest);
+                    \Log::info("==========================");
+                    \Log::info($eform);
 
                     return $eformCreate;
 
