@@ -124,7 +124,7 @@ class ApiLas extends Model
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
                     'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
                     'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
-                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
+                    'briguna.is_send','briguna.eform_id','briguna.tp_produk','briguna.tgl_pencairan',
                     'briguna.tgl_analisa','briguna.tgl_putusan','briguna.cif',
                     'customer_details.nik','customer_details.is_verified',
                     'customer_details.address','customer_details.mother_name',
@@ -171,7 +171,7 @@ class ApiLas extends Model
                     'eforms.ao_name','eforms.ao_position','eforms.pinca_name','eforms.is_screening',
                     'eforms.pinca_position','briguna.id','briguna.id_aplikasi',
                     'briguna.no_rekening','briguna.request_amount','briguna.Plafond_usulan',
-                    'briguna.is_send','briguna.eform_id','briguna.tp_produk',
+                    'briguna.is_send','briguna.eform_id','briguna.tp_produk','briguna.tgl_pencairan',
                     'briguna.tgl_analisa','briguna.tgl_putusan','briguna.cif',
                     'customer_details.nik','customer_details.is_verified',
                     'customer_details.address','customer_details.mother_name',
@@ -219,7 +219,7 @@ class ApiLas extends Model
         }
         
         $eforms = $eforms->toArray();
-        \Log::info($eforms);
+        // \Log::info($eforms);
         $eforms = json_decode(json_encode($eforms), True);
                             
         \Log::info("query select briguna berhasil");
