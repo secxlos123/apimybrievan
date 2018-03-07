@@ -299,11 +299,51 @@ class KartuKreditController extends Controller{
     	$message = 'Kode unik anda adalah '.['message'].'\. periksa email';
 
     	$host = '10.107.11.111:9975/notif/tosms';
+    	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
+
+    	try{
+    		$res = $client->request('POST',$host, ['headers' =>  $header,
+    				'form_params' => ['handphone' => $pn,'message'=>$message]
+    			]);
+    	}catch (RequestException $e){
+    		return  $e->getMessage();
+    	}
+
+    	$body = $res->getBody();
+    	$obj = json_decode($body);
+
+    	return response()->json([
+    		'responseCode' => '01',
+    		'contents' =>$obj
+    	]);
     }
 
     public function toEmail(Request $req){
-    	
+    	//email, subject, message
+    	$email = $req['email'];
+    	$subject = $req['subject'];
+    	$message = $req['message'];
+
+    	$host = '10.107.11.111:9975/notif/toemail';
+    	$header = ['access_token'=> $this->tokenLos];
+    	$client = new Client();
+
+    	try{
+    		$res = $client->request('POST',$host, ['headers' =>  $header,
+    				'form_params' => ['email' => $email,'$subject'=>$subject,'message'=>$message]
+    			]);
+    	}catch (RequestException $e){
+    		return  $e->getMessage();
+    	}
+
+    	$body = $res->getBody();
+    	$obj = json_decode($body);
+
+    	return response()->json([
+    		'responseCode' => '01',
+    		'contents' =>$obj
+    	]);
     }
 
     public function checkDedup($nik){
