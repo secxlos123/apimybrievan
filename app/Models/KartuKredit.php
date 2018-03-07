@@ -165,7 +165,6 @@ class KartuKredit extends Model
     }
 
     public function createEform($req){
-        \Log::info($req);
         $ef['ao_id'] = $req['ao_id'];
         $ef['branch_id'] = $req['branch_id'];
         $ef['address'] = $req['address'];
@@ -176,16 +175,18 @@ class KartuKredit extends Model
         $ef['product_type'] = $req['product_type']; 
 
         $ef = $this->overwriteEmptyRecord($ef);
-        \Log::info($ef);
         $eform = EForm::create($ef);
         \Log::info($eform);
 
+        return $eform;
     }
 
-    function checkDedup(){
+    public function createKartuKreditDetails($req){
+        $det[]
+    }
 
-
-        
+    public function eformStatusFail(){
+        //update table eform field status_eform jadi 'fail-dedup' kalau gagal di dedup
     }
 
 
