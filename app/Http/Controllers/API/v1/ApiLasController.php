@@ -2002,90 +2002,57 @@ class ApiLasController extends Controller
         }
     }
 
-    public function update_rekening() {
-        /*$full = array('a'=>2,'b'=>4,'c'=>2,'d'=>5,'e'=>6,'f'=>2);
-        $extends = array('a'=>2,'b'=>4,'c'=>2,'d'=>5,'e'=>6,'f'=>2,'g'=>3,'h'=>5);
-        
-        foreach ($extends as $value) {
-            $filteredArray = array_filter($full, function ($item) use ($value){
-                print_r($item);
-                print_r($value);
-                print_r('-------');
-                // if ($item == $value) {
-                    return ($item != $value);
-                // }
-            }, ARRAY_FILTER_USE_KEY);
-            print_r($filteredArray);
-        }
-        exit();*/
-        $parameter['branch'] = '00120';
-        $client = $this->client();
-        $resultclient = $client->inquiryListVerputADK($parameter);
-        if($resultclient->inquiryListVerputADKResult){
-            $datadetail = json_decode($resultclient->inquiryListVerputADKResult);
-            $result = $this->return_conten($datadetail);
-        }
-        
-        foreach ($result['contents']['data'] as $key => $value) {
-            $id_aplikasi[] = $value->id_aplikasi;
-        }
-        print_r($id_aplikasi);
-        $ApiLas = new ApiLas();
-        $las = $ApiLas->eform_briguna('00120',$id_aplikasi);
-        print_r($las);exit();
-        // try {
-        //     $data_briguna = \DB::table("briguna")
-        //                 ->select(['id','eform_id','id_aplikasi','cif','no_rekening','tgl_putusan'])
-        //                 ->orderBy('id','asc')
-        //                 ->get()->toArray();
-        //     if (!empty($data_briguna)) {
-        //         $message = [
-        //             'message'  => 'data briguna kosong',
-        //             'contents' => ''
-        //         ];
-        //         // print_r($data_briguna);exit();
-        //         foreach ($data_briguna as $key => $value) {
-        //             if (!isset($value->no_rekening) && $value->id_aplikasi != '') {
-        //                 $parameter['id_aplikasi'] = $value->id_aplikasi;
-        //                 $rekening = $client->getStatusInterface($parameter);
-        //                 if($rekening->getStatusInterfaceResult){
-        //                     $datadetail = json_decode($rekening->getStatusInterfaceResult);
-        //                     $result = $this->return_conten($datadetail);
-        //                     // print_r($result);
-        //                     if ($result['code'] == '01') {
-        //                         $update_data = [
-        //                             'eform_id'    => $value->eform_id,
-        //                             'is_send'     => 6,
-        //                             'no_rekening' => $result['contents']['data'][0]->NO_REKENING,
-        //                             'cif'         => $result['contents']['data'][0]->CIF,
-        //                             'cif_las'     => $result['contents']['data'][0]->CIF_LAS,
-        //                         ];
+    public function update_foto_lainnya(Request $request) {
+        $response = $request->all();
+        print_r($response);exit();
+        if (!empty($response)) {
+            try {
+                $image   = $response;
+                $data_eforms = EForm::where('id',$response['eform_id'])->first();
+                $detail  = CustomerDetail::where('user_id',$data_eforms['user_id'])->first();
+                // $this->removeAllImage($detail);
+                $id_foto = $data_eforms['briguna']['id_foto'];
+                $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah'],'NPWP_nasabah');
+                $filename= $this->uploadimage($image, $response['eform_id'], $id_foto);
+                $data_briguna = array_slice($response, 0,3);
 
-        //                         $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
-        //                         $briguna->update($update_data);
-        //                         $message = [
-        //                             'message'  => 'Sukses update briguna',
-        //                             'contents' => $briguna
-        //                         ];
-        //                     }
-        //                 }
-        //             }
-        //             // print_r($value);
-        //             // print_r($value->id);exit();
-        //         }
-        //         return $message;
-        //     } else {
-        //         return response()->error( [
-        //             'message' => 'Hasil inquiry data briguna tidak ditemukan',
-        //             'contents' => ''
-        //         ], 400 );
-        //     }                
-        // } catch (Exception $e) {
-        //     return response()->error( [
-        //         'message' => 'Koneksi Gagal',
-        //         'contents' => ''
-        //     ], 400 );
-        // }
+                if (isset($image['lainnya1'])) {
+                    $data_briguna['id_foto']  = $id_foto;
+                    $data_briguna['lainnya1'] = $filename;
+                } else if (isset($image['lainnya2'])) {
+                    $data_briguna['id_foto']  = $id_foto;
+                    $data_briguna['lainnya2'] = $filename;
+                } else if (isset($image['lainnya3'])) {
+                    $data_briguna['id_foto']  = $id_foto;
+                    $data_briguna['lainnya3'] = $filename;
+                } else if (isset($image['lainnya4'])) {
+                    $data_briguna['id_foto']  = $id_foto;
+                    $data_briguna['lainnya4'] = $filename;
+                } else if (isset($image['lainnya5'])) {
+                    $data_briguna['id_foto']  = $id_foto;
+                    $data_briguna['lainnya5'] = $filename;
+                }
+                \Log::info($data_briguna);
+
+                $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
+                $briguna->update($data_briguna);
+                $message = [
+                    'message' => 'Sukses update eforms atau briguna',
+                    'contents' => $briguna
+                ];
+                return response()->success($message, 200);
+            } catch (Exception $e) {
+                return response()->error( [
+                    'message' => 'Koneksi Gagal',
+                    'contents' => ''
+                ], 400 );
+            }
+        } else {
+            return response()->error( [
+                    'message' => 'Request tidak ditemukan',
+                    'contents' => ''
+                ], 400 );
+        }
     }
 
     function loginLAS($params) {
@@ -2378,14 +2345,18 @@ class ApiLasController extends Controller
         if ($image == '.jpg' || $image == '.pdf' || $image == 'jpeg' || $image == '.png' || $image == '.gif') {
             $params = $request;
         } else if (empty($request) || $request == 'null') {
-            // if (!empty($exist_field)) {
-            //     unlink($path.'/'.$exist_field);
-            // }
+            if (!empty($exist_field)) {
+                if (file_exists($path.'/'.$exist_field)) {
+                    unlink($path.'/'.$exist_field);
+                }
+            }
             $params = $request;
         } else {
-            // if (!empty($exist_field)) {
-            //     unlink($path.'/'.$exist_field);
-            // }
+            if (!empty($exist_field)) {
+                if (file_exists($path.'/'.$exist_field)) {
+                    unlink($path.'/'.$exist_field);
+                }
+            }
             
             $upload_file = $this->updateimage($request,$id_foto,$field);
             $params = $upload_file;
@@ -2415,7 +2386,7 @@ class ApiLasController extends Controller
                 $extension = $data_image->getClientOriginalExtension();
             }
             
-            $filename = $eform->user_id.'-'.$id_foto.'.'.$extension;
+            $filename = $eform->user_id.'-'.$image->getOriginalName().'.'.$extension;
             $data_image->move( $path, $filename );
         }
         return $filename;
@@ -2437,7 +2408,7 @@ class ApiLasController extends Controller
                 $extension = $image->getClientOriginalExtension();
             }
 
-            $filename = $id . '-'.$atribute.'.' . $extension;
+            $filename = $id . '-'.$image->getOriginalName().'.' . $extension;
             $image->move( $path, $filename );
         }
         return $filename;
