@@ -429,7 +429,7 @@ class EFormController extends Controller
                    //customerController
                     ]);
                 }else{
-                    // $baseRequest['user_id']= $checkNik['user_id'];
+                    $baseRequest['user_id']= $checkNik->user_id;
                     return response()->json([
                         'contents'=>$checkNik
                     ]);
@@ -464,7 +464,8 @@ class EFormController extends Controller
                 $baseRequest['user_id'];
 
                 //send ke eform
-                $eformCreate = Eform::create($baseRequest);
+                // $eformCreate = Eform::create($baseRequest);
+                
 
                 //cek dedup
                 $nik = $baseRequest['nik'];

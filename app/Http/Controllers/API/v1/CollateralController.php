@@ -208,7 +208,12 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
-      return DB::transaction(function() use($collateralId,$dataother) {
+
+      $sendNotif = false;
+
+      try {
+        DB::transaction();
+
         $developer_id = env('DEVELOPER_KEY',1);
         $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
         \Log::info($collateral);
@@ -250,12 +255,17 @@ class CollateralController extends Controller
         }
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
-        return $this->makeResponse(
-          $this->collateral->withAll()->find($collateralId)
-        );
-      });
+        $sendNotif = true;
+        DB::commit();
 
-       if(env('PUSH_NOTIFICATION', false)){
+      } catch (Exception $e) {
+        DB::rollback();
+        \Log::info($e);
+
+      }
+
+      if ( $sendNotif ){
+        if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
             $aksiCollateral = 'collateral_penilaian_ots';
             $cekNotifColltaeralOTS=[];//UserNotification::where('slug',$collateralId)->where('type_module',$aksiCollateral)->first();
@@ -302,7 +312,12 @@ class CollateralController extends Controller
             }else{
               \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
             }
-         }
+        }
+      }
+
+      return $this->makeResponse(
+        $this->collateral->withAll()->find($collateralId)
+      );
     }
 
     /**
