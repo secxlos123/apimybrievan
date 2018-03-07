@@ -458,13 +458,13 @@ class EFormController extends Controller
 
                         $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
                         $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                        $limitKartu = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
+                        $kartuBankLain = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
                         $baseRequest['SLIP_GAJI'] = $slipGaji;
                         $baseRequest['NAME_TAG'] = $nameTag;
-                        $baseRequest['KARTU_BANK_LAIN'] = $limitKartu;
+                        $baseRequest['KARTU_BANK_LAIN'] = $kartuBankLain;
                     }
 
 
@@ -534,16 +534,18 @@ class EFormController extends Controller
                     }
 
                     //send eform ke pefindo
-                    $pefindoController = new PrescreeningController();
+                    // $pefindoController = new PrescreeningController();
                     // $getPefindo = $pefindoController->getPefindo()
 
                     //cek jumlah kk
-
+                    //pefindo dalam development. sabar ya :)
                     //update eform
+
+                    //add data ke los
                     
                     return response()->success([
-                        'message' => 'response eform kkd',
-                        'content' => 'tes'
+                        'responseMessage' => 'response eform kkd',
+                        'contents' => 'tes'
 
                     ], 200 );
                     }

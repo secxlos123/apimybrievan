@@ -28,7 +28,8 @@ class KartuKredit extends Model
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
-    	'memiliki_kk_bank_lain','limit_tertinggi'
+    	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
+        'status_pernikahan'
     ];
 
     protected $hidden = [
@@ -38,7 +39,6 @@ class KartuKredit extends Model
     public $timestamps = false;
 
     public function convertToAddDataLosFormat(Request $req,$type){
-        
 
         try{
                 
@@ -218,7 +218,7 @@ class KartuKredit extends Model
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
         $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
         
-        $data['limit_tertinggi'] = $req['limit_kartu'];
+        $data['limit_tertinggi'] = $req['range_kartu'];
         $data['jenis_nasabah'] = $req['jenis_nasabah'];
         $data['hp'] = $req['hp'];
         $data['email'] = $req['email'];
@@ -231,6 +231,8 @@ class KartuKredit extends Model
         $data['tiering_gaji'] = $req['tiering_gaji'];
         $data['agama'] = $req['agama'];
         $data['pilihan_kartu'] = $req['pilihan_kartu'];
+        $data['nama_ibu_kandung'] = $req['nama_ibu_kandung'];
+        $data['status_pernikahan'] = $req['status'];
 
         $kkDetails = KartuKredit::create($data);
         \Log::info($kkDetails);
