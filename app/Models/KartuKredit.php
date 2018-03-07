@@ -192,7 +192,7 @@ class KartuKredit extends Model
 
         \Log::info('========= user id = '.$userId.'==========');
         $data = $req;
-        $data['user_id'] = $user_id;
+        $data['user_id'] = $userId;
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
 
         if ($data['jenis_nasabah'] == 'debitur'){
