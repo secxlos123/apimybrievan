@@ -164,7 +164,7 @@ class KartuKredit extends Model
         return $arrays;
     }
 
-    public function createEform(EFormRequest $req){
+    public function createEform($req){
         \Log::info($req);
         $ef['ao_id'] = $req['ao_id'];
         $ef['branch_id'] = $req['branch_id'];
