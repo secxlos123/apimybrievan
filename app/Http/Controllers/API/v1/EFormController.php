@@ -435,6 +435,8 @@ class EFormController extends Controller
                     $kk = new KartuKredit();
                     $eformCreate = $kk->createEform($baseRequest);
 
+                    return $eformCreate;
+
 
                     //gambar
                     $npwp = $request->npwp;
