@@ -76,7 +76,7 @@ class CollateraAODisposition extends Notification
             'role_name' => $notifiable->roles->first()->slug,
             'staff_name' => $this->collateral->staff_name,
             'prop_slug' => $this->collateral->property->slug,
-            'messae' => $message,
+            'message' => $message,
         ];
     }
 }
