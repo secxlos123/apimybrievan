@@ -429,7 +429,7 @@ class EFormController extends Controller
                    //customerController
                     ]);
                 }else{
-                    $baseRequest['user_id']= $checkNik->user_id;
+
                     return response()->json([
                         'contents'=>$checkNik
                     ]);
