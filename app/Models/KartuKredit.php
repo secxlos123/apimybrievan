@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\EForm;
+use App\Http\Requests\API\v1\EFormRequest;
 
 
 
@@ -33,14 +34,6 @@ class KartuKredit extends Model
     ];
 
     public function convertToAddDataLosFormat(Request $req,$type){
-
-         // $validatedData = $req->validate([
-         //    'PersonalName' => 'required',
-         //    'PersonalNIK' => 'required',
-         //    'PersonalTempatLahir' => 'required',
-         //    'PersonalTanggalLahir' => 'required'
-         // ]);
-
         
 
         try{
@@ -157,15 +150,36 @@ class KartuKredit extends Model
         return $informasiLos;
     }
 
-    function checkInformasiLosKosong($informasiLos){
+    function overwriteEmptyRecord($arrays){
         //cek data kosong, jadiin strip
-        foreach ($informasiLos as $key => $value) {
-            if($informasiLos[$key] == '' || !$informasiLos[$key]){
-               $informasiLos[$key] = '-'; 
+        foreach ($arrays as $key => $value) {
+            if($arrays[$key] == '0'){
+                $arrays[$key] = 0;
+            }else if($arrays[$key] == '' || !$arrays[$key] ){
+               $arrays[$key] = '-'; 
             }
+            
         }
 
-        return $informasiLos;
+        return $arrays;
+    }
+
+    public function createEform($req){
+        \Log::info($req);
+        $ef['ao_id'] = $req['ao_id'];
+        $ef['branch_id'] = $req['branch_id'];
+        $ef['address'] = $req['address'];
+        $ef['longitude'] = $req['longitude'];
+        $ef['latitude'] = $req['latitude'];
+        $ef['appointment_date'] = $req['appointment_date'];
+        $ef['nik'] = $req['nik'];
+        $ef['product_type'] = $req['product_type']; 
+
+        $ef = $this->overwriteEmptyRecord($ef);
+        \Log::info($ef);
+        $eform = EForm::create($ef);
+        \Log::info($eform);
+
     }
 
     function checkDedup(){

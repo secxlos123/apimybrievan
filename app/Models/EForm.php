@@ -47,7 +47,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready','pefindo_detail_json' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -116,6 +116,19 @@ class EForm extends Model implements AuditableContract
             return $this->kpr->request_amount;
         }
         return 0;
+    }
+
+    /**
+     * Get Dhn detail information.
+     *
+     * @return Array
+     */
+    public function getPefindoDetailJsonAttribute()
+    {
+        if( $this->pefindo_detail ) {
+            return json_decode($this->pefindo_detail);
+        }
+        return ['individual'=>[],'couple'=>[]];
     }
 
     /**
@@ -1421,7 +1434,7 @@ class EForm extends Model implements AuditableContract
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
-            "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status)?'Ditempati Sendiri':$otsSeven->collateral_status,
+            "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status) ? 'Ditempati Sendiri' : $otsSeven->collateral_status,
             "Deskripsi_agunan_rt" => !($otsSeven->description) ? '0' : $otsSeven->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
             "Nama_pemilik_agunan_rt" => !($otsSeven->on_behalf_of) ? '0' : $otsSeven->on_behalf_of,
