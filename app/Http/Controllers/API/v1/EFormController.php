@@ -462,7 +462,7 @@ class EFormController extends Controller
                     $baseRequest['id_foto'] = $id;
 
                     //cek user id di customer
-                    $baseRequest['user_id'];
+                    // $baseRequest['user_id'];
 
                     //send ke eform
                     // $eformCreate = Eform::create($baseRequest);
