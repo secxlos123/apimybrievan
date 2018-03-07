@@ -14,8 +14,8 @@ class ChangeBrigunaNull extends Migration
     public function up()
     {
        Schema::table('briguna', function (Blueprint $table) {
-            $table->text('SK_AWAL')->nullable()->change();
-            $table->text('SK_AKHIR')->nullable()->change();
+            $table->text('SK_AWAL')->nullable();
+            $table->text('SK_AKHIR')->nullable();
        });
     }
 
@@ -27,8 +27,8 @@ class ChangeBrigunaNull extends Migration
     public function down()
     {
        Schema::table('briguna', function (Blueprint $table) {
-            $table->text('SK_AWAL')->nullable()->change();
-            $table->text('SK_AKHIR')->nullable()->change();
+            $table->dropColumn('SK_AWAL');
+            $table->dropColumn('SK_AKHIR');
        });
     }
 }

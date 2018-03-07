@@ -76,7 +76,6 @@ class EFormRequest extends BaseRequest
                         'address' => 'required',
                         'longitude' => 'required',
                         'latitude' => 'required',
-                        'tujuan' => 'required_if:product_type,kartu_kredit,required'
                     ];
                 }
                 break;
