@@ -181,8 +181,12 @@ class KartuKredit extends Model
         return $eform;
     }
 
-    public function eformStatusFail(){
+    public function createKartuKreditDetails($req){
+        $det[]
+    }
 
+    public function eformStatusFail(){
+        //update table eform field status_eform jadi 'fail-dedup' kalau gagal di dedup
     }
 
 

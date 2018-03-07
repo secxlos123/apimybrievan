@@ -496,6 +496,7 @@ class EFormController extends Controller
 
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
+                        
                         return response()->json([
                             'responseCode' => '01',
                             'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
