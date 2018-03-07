@@ -17,8 +17,7 @@ class CreateKartuKreditTable extends Migration
     {
         Schema::create('kartu_kredit_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('user_id');
-            $table->string('eform_id');
+            $table->string('customer_id');
             $table->string('hp');
             $table->string('email');
             $table->string('nama_ibu_kandung');

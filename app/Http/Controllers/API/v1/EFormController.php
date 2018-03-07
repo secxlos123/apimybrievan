@@ -415,9 +415,6 @@ class EFormController extends Controller
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
 
-                // $kredit = new KartuKredit();
-                // $info = $kredit->create($baseRequest)
-
                   //cek nik di customer detail, kalau gak ada di create
                  $nik = $request->nik;
                 $checkNik = CustomerDetail::where('nik',$nik)->get();
@@ -437,7 +434,8 @@ class EFormController extends Controller
                     \Log::info("==========================");
                     \Log::info($eformCreate);
 
-                    return $eformCreate;
+                    DB::commit();
+                    // return $eformCreate;
 
 
                     //gambar
@@ -499,7 +497,7 @@ class EFormController extends Controller
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
                         return response()->json([
-                            'responseCode' => 01,
+                            'responseCode' => '01',
                             'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
                         ]);
                     }
