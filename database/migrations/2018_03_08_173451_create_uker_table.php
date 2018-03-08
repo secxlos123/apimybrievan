@@ -14,9 +14,8 @@ class CreateUkerTable extends Migration
     public function up()
     {
           Schema::create('uker_tables', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('kanwil');
             $table->string('id_uker');
+            $table->string('kanwil');
             $table->string('unit_kerja');
             $table->string('unit_induk');
             $table->string('kanca_induk');
