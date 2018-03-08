@@ -404,6 +404,8 @@ class KartuKreditController extends Controller{
     public function analisaKK(Request $req){
     	$eformId = $req->eform_id;
     	$dataEform = EForm::where('id',$eformId)->first();
+    	\Log::info('===data eform=====');
+    	\Log::info($dataEform);
     	$jenisNasabah = $dataEform['jenis_nasabah'];
 
     	$apregno = $dataEform['appregno'];
