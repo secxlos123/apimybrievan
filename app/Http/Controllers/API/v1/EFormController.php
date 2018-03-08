@@ -442,9 +442,11 @@ class EFormController extends Controller
                         
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
+                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
+                        $baseRequest['SLIP_GAJI'] = $slipGaji;
                     }else{
                         $npwp = $request->NPWP;
                         $ktp = $request->KTP;
@@ -473,8 +475,10 @@ class EFormController extends Controller
                     $kk = new KartuKredit();
                     //insert ke table eform
                     $eformCreate = $kk->createEform($baseRequest);
+                    $eformId = $eformCreate['id'];
                     \Log::info("===========create eform==========");
                     //insert ke table kartu_kredit_details
+                    $baseRequest['eform_id'] = $eformId;
                     $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
                     \Log::info("========crate kk details=============");
                     \Log::info($eformCreate);

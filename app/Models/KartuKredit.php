@@ -234,11 +234,15 @@ class KartuKredit extends Model
         $data['nama_ibu_kandung'] = $req['nama_ibu_kandung'];
         $data['status_pernikahan'] = $req['status'];
 
+
         $kkDetails = KartuKredit::create($data);
         \Log::info($kkDetails);
         $kkDetails['range_kartu'] = $kkDetails['limit_tertinggi'];
         return $kkDetails;
 
+    }
+
+    function insertEformIdIntoKKDetails($eformid){
     }
 
     public function eformStatusFail(){
