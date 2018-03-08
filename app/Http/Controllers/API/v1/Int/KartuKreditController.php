@@ -284,12 +284,13 @@ class KartuKreditController extends Controller{
 		$body = $res->getBody();
 		$obj = json_decode($body);
 		// $data = $obj->responseData;
-		//update data eform
+
+		//update data user
 		//get user id from eform
 		$eformData = EForm::where('id',$eform_id)->first();
-		$userId = $eformData['user_id'];
+		$apregno = $request['apregno'];
 
-		// $newUser = User::where('id',)
+		$updatedData = $this->updateUserTable($apregno);
 
 		// $updateLos = User::where('id',$eform_id)
 		// ->update('');
@@ -297,6 +298,9 @@ class KartuKreditController extends Controller{
 
 		return response()->json($obj);
 
+    }
+    function updateUserTable($apregno){
+    	//ganti semua user
     }
 
     function getApregnoFromKKDetails($eform_id){
