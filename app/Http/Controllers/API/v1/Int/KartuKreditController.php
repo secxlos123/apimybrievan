@@ -260,6 +260,8 @@ class KartuKreditController extends Controller{
     	$header = ['access_token'=> $this->tokenLos];
     	$host = '10.107.11.111:9975/api/updateData';
     	$client = new Client();
+    	\Log::info('========update los data======');
+    	\Log::info($req);
 
     	$eform_id = $req->eform_id;
     	$req->appNumber = $this->getApregnoFromKKDetails($eform_id);
@@ -288,7 +290,7 @@ class KartuKreditController extends Controller{
 
     function getApregnoFromKKDetails($eform_id){
     	$kk = KartuKredit::where('eform_id',$eform_id)->first();
-   		$apRegno = $kk->appregno;
+   		$apRegno = $kk['appregno'];
     	return $apRegno;
     }
 
