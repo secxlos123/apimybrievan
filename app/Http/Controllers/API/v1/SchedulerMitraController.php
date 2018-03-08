@@ -179,7 +179,7 @@ class SchedulerMitraController extends Controller
 					
 					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
-					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
+					'".$jumlahkaryawan."','".$jenisinstansi."','".$ukerdata['kode_uker']."','70','','".$jenisbidangusaha."',
 					'".$alamatinstansi."','".$alamatinstansi3."','".$data->TELEPON_INSTANSI."','".$data->RATING_INSTANSI."',
 					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
 					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
