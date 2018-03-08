@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Brispot;
 use Cache;
-use App\Models\Crm\apiPdmToken;
+use App\Models\ApiPdmTokensBriguna;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 
@@ -47,11 +47,11 @@ class SelectUkerController extends Controller
       $data['pn'] = $request->header('pn');
 	  // $apiPdmToken = $apiPdmToken[0];
       // dd(count(apiPdmToken::all()));
-      if ( count(apiPdmToken::all()) > 0 ) {
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+      if ( count(ApiPdmTokensBriguna::all()) > 0 ) {
+        $apiPdmToken = ApiPdmTokensBriguna::latest('id')->first()->toArray();
       } else {
-        $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+        $this->gen_token_briguna();
+        $apiPdmToken = ApiPdmTokensBriguna::latest('id')->first()->toArray();
       }
       if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
         $token = $apiPdmToken['access_token'];
@@ -61,8 +61,8 @@ class SelectUkerController extends Controller
             'contents' => $listExisting
         ]);
       } else {
-        $briConnect = $this->gen_token();
-        $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
+        $briConnect = $this->gen_token_briguna();
+        $apiPdmToken = ApiPdmTokensBriguna::latest('id')->first()->toArray();
         
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($data, $token);
