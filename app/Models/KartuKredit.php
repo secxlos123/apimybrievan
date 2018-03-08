@@ -39,7 +39,7 @@ class KartuKredit extends Model
 
     public $timestamps = false;
 
-    public function convertToAddDataLosFormat(Request $req,$type){
+    public function convertToAddDataLosFormat($req,$type){
 
         try{
                 
