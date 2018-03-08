@@ -422,76 +422,50 @@ class EFormController extends Controller
                     return response()->json([
                      'responseCode' => '01',
                       'responseMessage' => "NIK tidak ditemukan"
-                   //android tembak ke   api/v1/{type}/customer 
-                   //customerController
                     ]);
                 }else{
-                    // return response()->json([
-                    //     'contents'=>$checkNik
-                    // ]);
                    
-
                     //nama gambar
                     $id = date('YmdHis');
 
                     //cek debitur atau nasabah. ambil gambar
                     if ($request->jenis_nasabah == 'debitur'){
-                        $npwp = $request->npwp;
-                        $ktp = $request->ktp;
+                        $npwp = $request->NPWP;
+                        $ktp = $request->KTP;
+                        $slipGaji = $request->SLIP_GAJI;
 
-                        $baseRequest['NPWP_nasabah'] = $npwp;
-                        $baseRequest['KTP'] = $ktp;
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                        
+                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
-                    }else{
-                        $npwp = $request->npwp;
-                        $ktp = $request->ktp;
-                        $slipGaji = $request->slip_gaji;
-                        $nameTag = $request->name_tag;
-                        $limitKartu = $request->limit_kartu;
-                        $baseRequest['NPWP_nasabah'] = $npwp;
+                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
+
+                        $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
                         $baseRequest['SLIP_GAJI'] = $slipGaji;
-                        $baseRequest['NAME_TAG'] = $nameTag;
-                        $baseRequest['LIMIT_KARTU'] = $limitKartu;
+                    }else{
+                        $npwp = $request->NPWP;
+                        $ktp = $request->KTP;
+                        $slipGaji = $request->SLIP_GAJI;
+                        $nameTag = $request->NAME_TAG;
+                        $limitKartu = $request->KARTU_BANK_LAIN;
+                        
 
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP_nasabah');
+                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
 
                         $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
                         $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                        $limitKartu = $this->uploadimage($limitKartu,$id,"LIMIT_KARTU");
+                        $kartuBankLain = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
+
+                        $baseRequest['NPWP'] = $npwp;
+                        $baseRequest['KTP'] = $ktp;
+                        $baseRequest['SLIP_GAJI'] = $slipGaji;
+                        $baseRequest['NAME_TAG'] = $nameTag;
+                        $baseRequest['KARTU_BANK_LAIN'] = $kartuBankLain;
                     }
 
 
                     $baseRequest['id_foto'] = $id;
-
-                    $kk = new KartuKredit();
-                    //insert ke table eform
-                    $eformCreate = $kk->createEform($baseRequest);
-                    \Log::info("===========create eform==========");
-                    \Log::info($eformCreate);
-                    //insert ke table kartu_kredit_details
-                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
-                    \Log::info("========crate kk details=============");
-                    \Log::info($eformCreate);
-
-                    DB::commit();
-
-                    return response()->success([
-                        'message' => 'response eform kkd',
-                        //balikin eform buat eform list di android
-                        'content' => $eformCreate
-
-                    ], 200 );
-                    
-
-                    //cek user id di customer
-                    // $baseRequest['user_id'];
-
-                    //send ke eform
-                    // $eformCreate = Eform::create($baseRequest);
-                    
 
                     //cek dedup
                     $nik = $baseRequest['nik'];
@@ -526,17 +500,39 @@ class EFormController extends Controller
                         ]);
                     }
 
+                    //berhasil lewat dedup
+
+                    $kk = new KartuKredit();
+                    //insert ke table eform
+                    $eformCreate = $kk->createEform($baseRequest);
+                    $eformId = $eformCreate['id'];
+                    \Log::info("===========create eform==========");
+                    //insert ke table kartu_kredit_details
+                    $baseRequest['eform_id'] = $eformId;
+                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
+                    \Log::info("========crate kk details=============");
+                    \Log::info($eformCreate);
+
+                    DB::commit();
+
+                    return response()->success([
+                        'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
+                        //balikin eform buat eform list di android
+                        'content' => $eformCreate
+
+                    ], 200 );
+                    
                     //send eform ke pefindo
-                    $pefindoController = new PrescreeningController();
+                    // $pefindoController = new PrescreeningController();
                     // $getPefindo = $pefindoController->getPefindo()
 
                     //cek jumlah kk
-
+                    //pefindo dalam development. sabar ya :)
                     //update eform
                     
                     return response()->success([
-                        'message' => 'response eform kkd',
-                        'content' => 'tes'
+                        'responseMessage' => 'response eform kkd',
+                        'contents' => 'tes'
 
                     ], 200 );
                     }

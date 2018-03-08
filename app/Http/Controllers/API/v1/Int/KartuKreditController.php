@@ -241,9 +241,18 @@ class KartuKreditController extends Controller{
 
 		$body = $res->getBody();
 		$obj = json_decode($body);
-		// $data = $obj->responseData;
+		$data = $obj->responseData;
+		$appregno = $data->apRegno;
+
+		$this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
 
 		return response()->json($obj);
+    }
+
+    function updateAppRegnoKreditDetails($appregno,$eform_id){
+    	$addAppregno = KartuKredit::where('eform_id',$eform_id)
+    	->update(['appregno'=>$appregno]);
+
     }
 
     public function updateDataLos(Request $req){
@@ -371,8 +380,6 @@ class KartuKreditController extends Controller{
     			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
     		]);
     	}
-
-    	
     }
 
     public function eform(EFormRequest $req){
