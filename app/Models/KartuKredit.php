@@ -90,7 +90,7 @@ class KartuKredit extends Model
             $cardType = $req['CardType'];
 
             if ($type == 'update'){
-                $appNumber = $req['appNumber'];
+                $appNumber = $req['apregno'];
                 $subBidangUsaha = $req['subBidangUsaha'];
             }
             
@@ -149,6 +149,8 @@ class KartuKredit extends Model
             $informasiLos['appNumber'] = $appNumber;
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
         }
+        \Log::info('========update=======');
+        \Log::info($informasiLos);
 
         $informasiLos = $this->overwriteEmptyRecord($informasiLos);
 

@@ -262,13 +262,12 @@ class KartuKreditController extends Controller{
     	$host = '10.107.11.111:9975/api/updateData';
     	$client = new Client();
     	
+    	$request = $req->all();
+    	$eform_id = $request['eform_id'];
+    	$request['apregno'] = $this->getApregnoFromKKDetails($eform_id);
 
-    	$eform_id = $req->eform_id;
-    	$req->appNumber = $this->getApregnoFromKKDetails($eform_id);
-    	\Log::info('========update los data======');
-    	\Log::info($req);
     	$kk = new KartuKredit();
-    	$informasiLos = $kk->convertToAddDataLosFormat($req,'update');
+    	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
 
     	try{
 			$res = $client
