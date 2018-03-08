@@ -407,6 +407,7 @@ class KartuKreditController extends Controller{
     	$jenisNasabah = $dataEform['jenis_nasabah'];
 
     	$apregno = $dataEform['appregno'];
+    	\Log::info('apregno = '.$apregno);
     	$dataLos = $this->cekDataNasabah($apregno);
 
     	$npwp = $dataEform['image_npwp'];
@@ -434,10 +435,13 @@ class KartuKreditController extends Controller{
     			'responseCode'=>'00',
     			'responseMessage'=>'sukses',
     			'images'=>[
+    				'npwp'=>$npwp,
+    				'ktp'=>$ktp,
+    				'slip_gaji'=>$slipGaji,
     				'nametag'=>$nametag,
     				'kartu_bank_lain'=>$kartuBankLain
     			],
-    			'$data_los'=> $dataLos
+    			'data_los'=> $dataLos
     		]);
 
     	}
