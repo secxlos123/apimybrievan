@@ -30,6 +30,7 @@ class CreateUkerTable extends Migration
             $table->string('koordinat');
             $table->string('latitude');
             $table->string('longitude');
+		  });
     }
 
     /**
