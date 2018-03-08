@@ -50,19 +50,19 @@ class MarketingActivity extends Model
               ->orderBy('marketing_activities.id', 'asc')
               ->join('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id')
               ->where('marketing_activities.desc', '!=', 'first')
-              ->select('')
+              ->select('marketing_activities.id', 'marketing_activities.pn', 'marketings.branch', 'marketing_activities.object_activity', 'marketing_activities.action_activity', 'marketing_activities.start_date', 'marketing_activities.end_date', 'marketing_activities.address', 'marketings.activity_type', 'marketings.nama')
 
               ->where( function($activities) use($request){
                 if ($request->header('role') != 'fo') {
                   if($request->has('region')){
                     if($request->input('branch')=='all' || $request->input('branch')==''){
-                      $activities->whereIn('branch', $request->input('list_branch'));
+                      $activities->whereIn('marketings.branch', $request->input('list_branch'));
                     }else{
-                      $activities->where('branch', $request->input('branch'));
+                      $activities->where('marketings.branch', $request->input('branch'));
                     }
-                  }
-                  if($request->has('pn')){
-                    $activities->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+                    if($request->has('pn')){
+                      $activities->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+                    }
                   }
                 }else{
                   $activities->where( 'marketings.pn', '=', $request->header( 'pn' ) );
