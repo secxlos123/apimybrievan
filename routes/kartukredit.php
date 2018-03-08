@@ -20,6 +20,8 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 	Route::post('/eform', 'KartuKreditController@eform');
 
+	Route::post('/analisa', 'KartuKreditController@analisaKK');
+
 
     Route::group(['middleware' => 'api.auth'], function() {
     	 //cari nik di mybri(nasabah), kalau ada balikin, kalau engga cari lagi di crm baru balikin

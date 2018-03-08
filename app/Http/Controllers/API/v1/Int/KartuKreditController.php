@@ -24,18 +24,6 @@ class KartuKreditController extends Controller{
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-	// public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
- //    {
- //        $this->userServices = new UserServices;
- //        $this->user = $user;
- //        $this->userservices = $userservices;
- //        $this->userNotification = $userNotification;
- //    }
-
-	public function cekEform(Request $request){
-		$ef = new EFormController();
-		$ef.store($request);
-	}
 
 	public function getNiks(Request $request){
 		$nik = $request['nik'];
@@ -413,11 +401,46 @@ class KartuKreditController extends Controller{
     	}
     }
 
-    public function eform(EFormRequest $req){
-    	$kk = new KartuKredit();
-    	$eform = $kk->createEform($req);
+    public function analisaKK(Request $req){
+    	$eformId = $req->eform_id;
+    	$dataEform = EForm::where('id',$eformId)->first();
+    	$jenisNasabah = $dataEform['jenis_nasabah'];
 
-    	return $eform;
+    	$apregno = $dataEform['appregno'];
+    	$dataLos = $this->cekDataNasabah($apregno);
+
+    	$npwp = $dataEform['image_npwp'];
+    	$ktp = $dataEform['image_ktp'];
+    	$slipGaji = $dataEform['image_slip_gaji'];
+
+
+    	if ($jenisNasabah == 'debitur'){
+    		
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'sukses',
+    			'images'=>[
+    				'npwp'=>$npwp,
+    				'ktp'=>$ktp,
+    				'slip_gaji'=>$slipGaji
+    			],
+    			'$data_los'=> $dataLos
+    		]);
+    	}else{
+    		$nametag = $dataEform['image_nametag'];
+    		$kartuBankLain = $dataEform['image_kartu_bank_lain'];
+
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'sukses',
+    			'images'=>[
+    				'nametag'=>$nametag,
+    				'kartu_bank_lain'=>$kartuBankLain
+    			],
+    			'$data_los'=> $dataLos
+    		]);
+
+    	}
     }
 
     public function pefindo(){

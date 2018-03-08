@@ -206,7 +206,7 @@ class KartuKredit extends Model
         if ($req['jenis_nasabah'] == 'debitur'){
             $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
-            $data['image_slip_gaji'] = '-';
+            $data['image_slip_gaji'] = 'SLIP_GAJI';
             $data['image_nametag'] = '-';
             $data['image_kartu_bank_lain'] = '-';
         }else{
