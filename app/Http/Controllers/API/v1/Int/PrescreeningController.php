@@ -107,6 +107,9 @@ class PrescreeningController extends Controller
 
         $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
+        $detail = $eform;
+        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+
         return response()->success( [
             'message' => 'Data Screening e-form',
             'contents' => $eform
