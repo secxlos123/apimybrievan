@@ -29,7 +29,8 @@ class KartuKredit extends Model
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
     	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
-        'status_pernikahan'
+        'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
+        'image_nametag','image_kartu_bank_lain'
     ];
 
     protected $hidden = [
