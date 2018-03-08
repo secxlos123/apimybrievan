@@ -422,15 +422,9 @@ class EFormController extends Controller
                     return response()->json([
                      'responseCode' => '01',
                       'responseMessage' => "NIK tidak ditemukan"
-                   //android tembak ke   api/v1/{type}/customer 
-                   //customerController
                     ]);
                 }else{
-                    // return response()->json([
-                    //     'contents'=>$checkNik
-                    // ]);
                    
-
                     //nama gambar
                     $id = date('YmdHis');
 
@@ -438,6 +432,7 @@ class EFormController extends Controller
                     if ($request->jenis_nasabah == 'debitur'){
                         $npwp = $request->NPWP;
                         $ktp = $request->KTP;
+                        $slipGaji = $request->SLIP_GAJI;
 
                         
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
@@ -472,19 +467,6 @@ class EFormController extends Controller
 
                     $baseRequest['id_foto'] = $id;
 
-                    $kk = new KartuKredit();
-                    //insert ke table eform
-                    $eformCreate = $kk->createEform($baseRequest);
-                    $eformId = $eformCreate['id'];
-                    \Log::info("===========create eform==========");
-                    //insert ke table kartu_kredit_details
-                    $baseRequest['eform_id'] = $eformId;
-                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
-                    \Log::info("========crate kk details=============");
-                    \Log::info($eformCreate);
-
-                    DB::commit();
-
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
@@ -517,6 +499,21 @@ class EFormController extends Controller
                             'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
                         ]);
                     }
+
+                    //berhasil lewat dedup
+
+                    $kk = new KartuKredit();
+                    //insert ke table eform
+                    $eformCreate = $kk->createEform($baseRequest);
+                    $eformId = $eformCreate['id'];
+                    \Log::info("===========create eform==========");
+                    //insert ke table kartu_kredit_details
+                    $baseRequest['eform_id'] = $eformId;
+                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
+                    \Log::info("========crate kk details=============");
+                    \Log::info($eformCreate);
+
+                    DB::commit();
 
                     return response()->success([
                         'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
