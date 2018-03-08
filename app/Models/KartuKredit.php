@@ -183,7 +183,8 @@ class KartuKredit extends Model
         $ef['latitude'] = $req['latitude'];
         $ef['appointment_date'] = $req['appointment_date'];
         $ef['nik'] = $req['nik'];
-        $ef['product_type'] = $req['product_type']; 
+        $ef['product_type'] = $req['product_type'];
+        $ef['response_status'] = 'unverified'; 
 
         $ef = $this->overwriteEmptyRecord($ef);
         $eform = EForm::create($ef);

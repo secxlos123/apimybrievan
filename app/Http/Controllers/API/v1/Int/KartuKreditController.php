@@ -290,6 +290,11 @@ class KartuKreditController extends Controller{
 		$eformData = EForm::where('id',$eform_id)->first();
 		$apregno = $request['apregno'];
 
+		//update eform response status
+		$updateStatus = EForm::where('id',$eform_id)
+		->update('response_status','verified');
+		
+
 		$updatedData = $this->updateUserTable($apregno);
 
 		// $updateLos = User::where('id',$eform_id)
