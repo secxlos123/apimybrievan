@@ -55,14 +55,14 @@ class MarketingActivity extends Model
               ->where( function($activities) use($request){
                 if ($request->header('role') != 'fo') {
                   if($request->has('region')){
-                    if($request->input('branch')=='all' || $request->input('branch')==''){
-                      $activities->whereIn('marketings.branch', $request->input('list_branch'));
-                    }else{
-                      $activities->where('marketings.branch', $request->input('branch'));
-                    }
-                    if($request->has('pn')){
-                      $activities->where( 'marketings.pn', '=', $request->input( 'pn' ) );
-                    }
+                   if($request->input('branch')=='all' || $request->input('branch')==''){
+                     $activities->whereIn('marketings.branch', $request->input('list_branch'));
+                   }else{
+                     $activities->where('marketings.branch', $request->input('branch'));
+                   }
+                   if($request->has('pn')){
+                     $activities->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+                   }
                   }
                 }else{
                   $activities->where( 'marketings.pn', '=', $request->header( 'pn' ) );
