@@ -90,9 +90,29 @@ class NotificationController extends Controller
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
         }
 
+        if($data){
+            foreach ($data->get() as $value) {
+                $arrData[] = [
+                                        'id' => $value->id,
+                                        'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],
+                                        'subject' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message'],
+                                        'subject_external' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external'],
+                                        'type' => $value->type,
+                                        'notifiable_id' => $value->notifiable_id,
+                                        'notifiable_type' => $value->notifiable_type,
+                                        'role_name' => $value->role_name,
+                                        'branch_id' => $value->branch_id,
+                                        'data' => $value->data,
+                                        'created_at' => $value->created_at->diffForHumans(),
+                                        'is_read' => (bool) $value->is_read,
+                                        'read_at' => $value->read_at,
+                                    ];
+            }
+        }
+
         return  response()->success( [
             'message' => 'Sukses',
-            'contents' => $data
+            'contents' => $arrData
         ], 200 );
     }
 
