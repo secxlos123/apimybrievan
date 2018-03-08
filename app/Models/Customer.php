@@ -331,7 +331,7 @@ class Customer extends User
     	\Log::info($data);
         $email = strtolower($data['email']);
         $data['email'] = $email;
-        $data['product_leads'] = isset($data['product_leads']) ? $data['product_leads'] : null;
+        //$data['product_leads'] = isset($data['product_leads']) ? $data['product_leads'] : null;
         $user_model = new User;
         $password = str_random( 8 );
         $separate_array_keys = array_flip( $user_model->fillable );
@@ -344,7 +344,13 @@ class Customer extends User
 	    \Log::info('==========ini data separate====');
 	    \Log::info($separate_array_keys);
 
-        if ( $data['status'] == 2 && $data['product_leads'] != 'kartu_kredit') {
+        $product = true;
+        if (isset($data['product_leads'])) {
+            if ($data['product_leads'] != 'kartu_kredit') {
+                $product = false;
+            }
+        }
+        if ( $data['status'] == 2 && $product ) {
             $customer_data = [ 'user_id' => $user->id, 'identity'=> $data['identity'], 'couple_identity'=> $data['couple_identity'] ] + array_diff_key( $data, $separate_array_keys );
 
         } else {
