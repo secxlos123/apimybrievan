@@ -97,7 +97,7 @@ class NotificationController extends Controller
                     , 'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message']
                 ];
                 $data[$key]['message_external'] = [
-                    'title' => $value['data']['message_external']['title']
+                    'title' => $value['data']['message']['title']
                     , 'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external']
                 ];
             }
