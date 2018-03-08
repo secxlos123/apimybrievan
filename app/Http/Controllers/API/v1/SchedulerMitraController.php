@@ -67,11 +67,26 @@ class SchedulerMitraController extends Controller
 					
 					$UKERS = $UKERS['responseData'];
 					foreach($UKERS as $uker){
-							DB::statement("INSERT INTO uker_table_create VALUES('".$uker['id']."','".$uker['unit_kerja']."','".$uker['unit_induk']."','"
-											.$uker['kanca_induk']."','".$uker['jenis_uker']."','".$uker['kode_uker']."','"
-											.$uker['dati2']."','".$uker['dati1']."','".$uker['alamat']."','"
-											.$uker['no_telp']."','".$uker['no_fax']."','".$uker['koordinat']
-											.$uker['latitude']."','".$uker['longitude']."');");
+							$id = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['id']));
+							$unit_kerja = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['unit_kerja']));
+							$unit_induk = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['unit_induk']));
+							$kanca_induk = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['kanca_induk']));
+							$jenis_uker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['jenis_uker']));
+							$kode_uker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['kode_uker']));
+							$dati2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['dati2']));
+							$dati1 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['dati1']));
+							$alamat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['alamat']));
+							$no_telp = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['no_telp']));
+							$no_fax = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['no_fax']));
+							$koordinat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['koordinat']));
+							$latitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['latitude']));
+							$latitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['latitude']));
+							
+							DB::statement("INSERT INTO uker_table_create VALUES('".$id."','".$unit_kerja."','".$unit_induk."','"
+											.$kanca_induk."','".$jenis_uker."','".$kode_uker."','"
+											.$dati2."','".$dati1."','".$alamat."','"
+											.$no_telp."','".$no_fax."','".$koordinat."','".
+											.$latitude."','".$latitude."');");
 					}
 					DB::statement("ALTER TABLE uker_tables RENAME TO uker_tablesxxx;");
 							DB::statement("ALTER TABLE uker_table_create RENAME TO uker_tables;");
