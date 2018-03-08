@@ -225,8 +225,8 @@ class SelectCabangController extends Controller
 	}else{
 		$branch_code = $branch_code;
 	}
-        $long = number_format($request->get('long', env('DEF_LONG', '106.81350')), 5);
-        $lat = number_format($request->get('lat', env('DEF_LAT', '-6.21670')), 5);
+        $long = number_format($request->get('long', env('DEF_LONG', '106.86758')), 5);
+        $lat = number_format($request->get('lat', env('DEF_LAT', '-6.232423')), 5);
         $return = RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_near_branch_v2',

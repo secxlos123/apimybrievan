@@ -21,8 +21,41 @@ class SchedulerMitraController extends Controller
      * @return \Illuminate\Http\Response
      */
 		
+	private function fetch()
+    {
+        \Log::info($request->all());
+	$branch_code = $request->get('BRANCH_CODE',0);
+	if(strlen($branch_code)<4){
+		$branch_code = '0';
+	}else{
+		$branch_code = $branch_code;
+	}
+	
+        $long = number_format('106.86758', 5);
+        $lat = number_format('-6.232423', 5);
+        $return = RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => "0",
+                    'distance'    => "1000000000000000000",
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => $lat,
+                    'longitude' => $long
+                ]
+            ])
+        ])
+        ->post('form_params');
+        \Log::info($return);
+        return $return;
+    }
+	
 	public function scheduler( Request $request )
 	{
+		
+        $UKERS = $this->fetch();
 		if($request->all()){
 			$paginates = $request->all();
 			$paginates = $paginates['page'];
@@ -111,7 +144,10 @@ class SchedulerMitraController extends Controller
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
+		foreach ($UKERS as $ukerdata){
+				
 				foreach ($datalas->items() as $data) {
+					if($ukerdata['kode_uker']==iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_UKER_PEMRAKARSA))){
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
@@ -153,7 +189,9 @@ class SchedulerMitraController extends Controller
 					'$data[17]','$data[18]','','70','','$data[4]','$data[5]','$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[12]',
 					'$data[13]','$data[15]','$data[16]','$data[19],'$data[20]'')"; */
 					
+					}
 				}
+		}
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
 				
