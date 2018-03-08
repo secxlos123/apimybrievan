@@ -256,10 +256,13 @@ class KartuKreditController extends Controller{
     }
 
     public function updateDataLos(Request $req){
+    	//saat verifikasi
     	$header = ['access_token'=> $this->tokenLos];
     	$host = '10.107.11.111:9975/api/updateData';
     	$client = new Client();
 
+    	$eform_id = $req->eform_id;
+    	$req->appNumber = $this->getApregnoFromKKDetails($eform_id);
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($req,'update');
 
@@ -281,6 +284,12 @@ class KartuKreditController extends Controller{
 
 		return response()->json($obj);
 
+    }
+
+    function getApregnoFromKKDetails($eform_id){
+    	$kk = KartuKredit::where('eform_id',$eform_id)->first();
+   		$apRegno = $kk->appregno;
+    	return $apRegno;
     }
 
     public function cekDataNasabah($apRegno){
