@@ -62,12 +62,14 @@ class reportController extends Controller
       if($request->has('region')){
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
+        $request['list_branch'] =array_keys($list_kanca);
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
-      $data = MarketingActivity::getReports($request)->get();
+      $data = MarketingActivity::with('fu_result')->getReports($request)->get();
+      return $data;die();
       $activities = [];
 
       return response()->success( [
