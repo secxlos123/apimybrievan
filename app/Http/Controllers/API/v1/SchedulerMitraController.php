@@ -20,17 +20,9 @@ class SchedulerMitraController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-		
+			
 	private function fetch()
     {
-    /*     \Log::info($request->all());
-	$branch_code = $request->get('BRANCH_CODE',0);
-	if(strlen($branch_code)<4){
-		$branch_code = '0';
-	}else{
-		$branch_code = $branch_code;
-	}
-	 */
         $long = number_format('106.86758', 5);
         $lat = number_format('-6.232423', 5);
         $return = RestwsHc::setBody([
@@ -53,13 +45,43 @@ class SchedulerMitraController extends Controller
 	
 	public function scheduler( Request $request )
 	{
-		
-        $UKERS = $this->fetch();
-			$UKERS = $this->fetch();
+		try{
+		    $UKERS = $this->fetch();
 			if($UKERS['responseCode']=='00'){
+				 DB::statement('CREATE TABLE uker_table_create(
+					   "id" text,
+					   "unit_kerja" text,
+					   "unit_induk" text,
+					   "kanca_induk" text,
+					   "jenis_uker" text,
+					   "kode_uker" text,
+					   "dati2" text,
+					   "dati1" text,
+					   "alamat" text,
+					   "no_telp" text,
+					   "no_fax" text,
+					   "koordinat" text,
+					   "latitude" text,
+					   "longitude" text
+					);');
+					
 					$UKERS = $UKERS['responseData'];
+					foreach($UKERS as $uker){
+							DB::statement("INSERT INTO uker_table_create VALUES('".$uker['id']."','".$uker['unit_kerja']."','".$uker['unit_induk']."','"
+											.$uker['kanca_induk']."','".$uker['jenis_uker']."','".$uker['kode_uker']."','"
+											.$uker['dati2']."','".$uker['dati1']."','".$uker['alamat']."','"
+											.$uker['no_telp']."','".$uker['no_fax']."','".$uker['koordinat']
+											.$uker['latitude']."','".$uker['longitude']."');");
+					}
+					DB::statement("ALTER TABLE uker_tables RENAME TO uker_tablesxxx;");
+							DB::statement("ALTER TABLE uker_table_create RENAME TO uker_tables;");
+							DB::statement("DROP TABLE uker_tablesxxx;");
 			}
-
+		}catch(Exception $e){
+			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
+			print_r($e);
+			die();
+		}
 		if($request->all()){
 			$paginates = $request->all();
 			$paginates = $paginates['page'];
@@ -148,10 +170,7 @@ class SchedulerMitraController extends Controller
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
-		foreach ($UKERS as $ukerdata){
-				
 				foreach ($datalas->items() as $data) {
-					if($ukerdata['kode_uker']==iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_UKER_PEMRAKARSA))){
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
@@ -176,12 +195,12 @@ class SchedulerMitraController extends Controller
 					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI2));
 					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI3));
 					
-					$query .= "INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
+					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
-					'".$jumlahkaryawan."','".$jenisinstansi."','".$ukerdata['kode_uker']."','70','','".$jenisbidangusaha."',
+					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
 					'".$alamatinstansi."','".$alamatinstansi3."','".$data->TELEPON_INSTANSI."','".$data->RATING_INSTANSI."',
 					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
-					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');";
+					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
 				}catch(Exception $e) {
 					\Log::info("-------------------ERROR LOG Insert mitra MYBRI-----------------");
 					DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
@@ -189,15 +208,11 @@ class SchedulerMitraController extends Controller
 					print_r($e);
 					die();
 				}
-				
 						/* $sql = "INSERT INTO $table VALUES('$data[0]','$data[1]','$data[2]','$data[11]',to_number('$data[14]','99G999D9S'),
 					'$data[17]','$data[18]','','70','','$data[4]','$data[5]','$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[12]',
 					'$data[13]','$data[15]','$data[16]','$data[19],'$data[20]'')"; */
 					
-					}
 				}
-		}
-					$sql = DB::statement($query);
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
 				
