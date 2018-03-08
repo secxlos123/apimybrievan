@@ -236,7 +236,7 @@ class KartuKredit extends Model
         $data['status_pernikahan'] = $req['status'];
         $data['eform_id'] = $req['eform_id'];
         $data['pn'] = $req['ao_id'];
-        $data['tanggal_lahir'] = $req['birth_date'];
+        $data['tanggal_lahir'] = $req['ttl'];
 
 
         $kkDetails = KartuKredit::create($data);
