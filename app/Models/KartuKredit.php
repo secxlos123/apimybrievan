@@ -29,7 +29,8 @@ class KartuKredit extends Model
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
     	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
-        'status_pernikahan'
+        'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
+        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir'
     ];
 
     protected $hidden = [
@@ -234,6 +235,8 @@ class KartuKredit extends Model
         $data['nama_ibu_kandung'] = $req['nama_ibu_kandung'];
         $data['status_pernikahan'] = $req['status'];
         $data['eform_id'] = $req['eform_id'];
+        $data['pn'] = $req['ao_id'];
+        $data['tanggal_lahir'] = $req['birth_date'];
 
 
         $kkDetails = KartuKredit::create($data);
