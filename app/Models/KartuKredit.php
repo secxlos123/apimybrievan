@@ -23,20 +23,23 @@ class KartuKredit extends Model
     protected $table = 'kartu_kredit_details';
 
     protected $fillable = [
-    	'nik','hp','email','user_id','eform_id',
+    	'hp','email','user_id','eform_id',
     	'jenis_kelamin','nama','tempat_lahir','telephone',
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
-    	'memiliki_kk_bank_lain','limit_tertinggi'
+    	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
+        'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
+        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir'
     ];
 
     protected $hidden = [
-        'id'
+        'id','updated_at'
     ];
 
+    public $timestamps = false;
+
     public function convertToAddDataLosFormat(Request $req,$type){
-        
 
         try{
                 
@@ -147,7 +150,7 @@ class KartuKredit extends Model
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
         }
 
-        $informasiLos = $this->checkInformasiLosKosong($informasiLos);
+        $informasiLos = $this->overwriteEmptyRecord($informasiLos);
 
         return $informasiLos;
     }
@@ -184,29 +187,40 @@ class KartuKredit extends Model
     }
 
     public function createKartuKreditDetails($req){
+         \Log::info($req);
         //get user id
         $nik= $req['nik'];
         $e = EForm::where('nik',$nik)->first();
         $userId = $e->user_id;
-        \Log::info('======== create kk details ========');
-        \Log::info($e);
 
         $data['user_id'] = $userId;
-        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+        
 
-        if ($data['jenis_nasabah'] == 'debitur'){
-            $data['image_npwp'] = $req['NPWP_nasabah'];
+        if ($req['jenis_nasabah'] == 'debitur'){
+            $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = '-';
+            $data['image_nametag'] = '-';
+            $data['image_kartu_bank_lain'] = '-';
         }else{
-            $data['image_npwp'] = $req['NPWP_nasabah'];
+            $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
             $data['image_slip_gaji'] = $req['SLIP_GAJI'];
             $data['image_nametag'] = $req['NAME_TAG'];
-            $data['image_kartu_bank_lain'] = $req['LIMIT_KARTU'];
+            $data['image_kartu_bank_lain'] = $req['KARTU_BANK_LAIN'];
         }
 
+        if ($req['memiliki_kk_bank_lain'] == 'true'){
+            $data['memiliki_kk_bank_lain'] = true;
+        }else{
+            $data['memiliki_kk_bank_lain'] = false;
+        }
 
-
+        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+        $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
+        
+        $data['limit_tertinggi'] = $req['range_kartu'];
+        $data['jenis_nasabah'] = $req['jenis_nasabah'];
         $data['hp'] = $req['hp'];
         $data['email'] = $req['email'];
         $data['jenis_kelamin'] = $req['jenis_kelamin'];
@@ -217,11 +231,24 @@ class KartuKredit extends Model
         $data['pekerjaan'] = $req['pekerjaan'];
         $data['tiering_gaji'] = $req['tiering_gaji'];
         $data['agama'] = $req['agama'];
+        $data['pilihan_kartu'] = $req['pilihan_kartu'];
+        $data['nama_ibu_kandung'] = $req['nama_ibu_kandung'];
+        $data['status_pernikahan'] = $req['status'];
+        $data['eform_id'] = $req['eform_id'];
+        $data['pn'] = $req['ao_id'];
+        $data['tanggal_lahir'] = $req['ttl'];
+
 
         $kkDetails = KartuKredit::create($data);
+        
+        $kkDetails['range_kartu'] = $kkDetails['limit_tertinggi'];
+        \Log::info('=======kk details=========');
         \Log::info($kkDetails);
         return $kkDetails;
 
+    }
+
+    function insertEformIdIntoKKDetails($eformid){
     }
 
     public function eformStatusFail(){
