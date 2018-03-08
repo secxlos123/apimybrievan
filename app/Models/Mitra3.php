@@ -28,13 +28,28 @@ class Mitra3 extends Authenticatable  {
 						 if( $request->has( 'BRANCH_CODE' ) ) {
 								$BRANCH_CODE = $request->input('BRANCH_CODE');
 								$branchcis ='';
-									for($i=0;$i<5;$i++){
+								if(strlen($BRANCH_CODE)=='5'){
+									$branchcis = $BRANCH_CODE;
+									/* for($i=0;$i<5;$i++){
 										$cek = substr($BRANCH_CODE,$i,1);
 										if($cek!=0){
 											$branchcis = substr($BRANCH_CODE,$i,4);
 											$i = 5;
 										}
-									}
+									} */
+								}else{								
+										$o = strlen($BRANCH_CODE);
+										$branchut = '';
+										for($y=$o;$y<5;$y++){
+											if($y==$o){
+												$branchut = '0'.$BRANCH_CODE;
+											}else{
+												$branchut = '0'.$branchut;
+											}
+										} 
+										$branchcis = $branchut;	
+								}
+								\Log::info($branchcis);
 								$mitra->Where('BRANCH_CODE', $branchcis);
 						 }
 						 

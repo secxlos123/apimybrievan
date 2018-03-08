@@ -2004,41 +2004,32 @@ class ApiLasController extends Controller
 
     public function update_foto_lainnya(Request $request) {
         $response = $request->all();
-        print_r($response);exit();
+        // print_r($response);exit();
         if (!empty($response)) {
             try {
-                $image   = $response;
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
-                $detail  = CustomerDetail::where('user_id',$data_eforms['user_id'])->first();
-                // $this->removeAllImage($detail);
+                // print_r($data_eforms['briguna']['lainnya1']);exit();
                 $id_foto = $data_eforms['briguna']['id_foto'];
-                $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah'],'NPWP_nasabah');
-                $filename= $this->uploadimage($image, $response['eform_id'], $id_foto);
-                $data_briguna = array_slice($response, 0,3);
-
-                if (isset($image['lainnya1'])) {
-                    $data_briguna['id_foto']  = $id_foto;
-                    $data_briguna['lainnya1'] = $filename;
-                } else if (isset($image['lainnya2'])) {
-                    $data_briguna['id_foto']  = $id_foto;
-                    $data_briguna['lainnya2'] = $filename;
-                } else if (isset($image['lainnya3'])) {
-                    $data_briguna['id_foto']  = $id_foto;
-                    $data_briguna['lainnya3'] = $filename;
-                } else if (isset($image['lainnya4'])) {
-                    $data_briguna['id_foto']  = $id_foto;
-                    $data_briguna['lainnya4'] = $filename;
-                } else if (isset($image['lainnya5'])) {
-                    $data_briguna['id_foto']  = $id_foto;
-                    $data_briguna['lainnya5'] = $filename;
-                }
+                $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1'],'');
+                // $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2'],'');
+                // $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3'],'');
+                // $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4'],'');
+                // $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5'],'');
+                
+                $data_briguna['id_foto']  = $id_foto;
+                $data_briguna['lainnya1'] = $foto_lainnya1;
+                // $data_briguna['lainnya2'] = $foto_lainnya2;
+                // $data_briguna['lainnya3'] = $foto_lainnya3;
+                // $data_briguna['lainnya4'] = $foto_lainnya4;
+                // $data_briguna['lainnya5'] = $foto_lainnya5;
+                // print_r($data_briguna);exit();
                 \Log::info($data_briguna);
 
                 $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
                 $briguna->update($data_briguna);
                 $message = [
-                    'message' => 'Sukses update eforms atau briguna',
-                    'contents' => $briguna
+                    'message' => 'Sukses simpan foto lainnya',
+                    'contents' => 'sukses'
                 ];
                 return response()->success($message, 200);
             } catch (Exception $e) {
@@ -2357,7 +2348,6 @@ class ApiLasController extends Controller
                     unlink($path.'/'.$exist_field);
                 }
             }
-            
             $upload_file = $this->updateimage($request,$id_foto,$field);
             $params = $upload_file;
         }
@@ -2374,19 +2364,19 @@ class ApiLasController extends Controller
         $data_image = $image['uploadfoto'];
         $filename = null;
         if ($data_image) {
-            if (!$data_image->getClientOriginalExtension()) {
-                if ($data_image->getMimeType() == '.pdf') {
-                    $extension = 'pdf';
-                }elseif($data_image->getMimeType() == '.jpg'||$data_image->getMimeType() == '.jpeg'){
-                    $extension = 'jpg';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $data_image->getClientOriginalExtension();
-            }
+            // if (!$data_image->getClientOriginalExtension()) {
+            //     if ($data_image->getMimeType() == '.pdf') {
+            //         $extension = 'pdf';
+            //     }elseif($data_image->getMimeType() == '.jpg'||$data_image->getMimeType() == '.jpeg'){
+            //         $extension = 'jpg';
+            //     }else{
+            //         $extension = 'png';
+            //     }
+            // }else{
+            //     $extension = $data_image->getClientOriginalExtension();
+            // }
             
-            $filename = $eform->user_id.'-'.$image->getOriginalName().'.'.$extension;
+            $filename = $eform->user_id.'-'.$data_image->getClientOriginalName();
             $data_image->move( $path, $filename );
         }
         return $filename;
@@ -2396,19 +2386,19 @@ class ApiLasController extends Controller
         $path = public_path( 'uploads/' . $id . '/' );
         $filename = null;
         if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = 'pdf';
-                }elseif($image->getMimeType() == '.jpg' || $image->getMimeType() == '.jpeg'){
-                    $extension = 'jpg';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
+            // if (!$image->getClientOriginalExtension()) {
+            //     if ($image->getMimeType() == '.pdf') {
+            //         $extension = 'pdf';
+            //     }elseif($image->getMimeType() == '.jpg' || $image->getMimeType() == '.jpeg'){
+            //         $extension = 'jpg';
+            //     }else{
+            //         $extension = 'png';
+            //     }
+            // }else{
+            //     $extension = $image->getClientOriginalExtension();
+            // }
 
-            $filename = $id . '-'.$image->getOriginalName().'.' . $extension;
+            $filename = $id . '-'.$image->getClientOriginalName();
             $image->move( $path, $filename );
         }
         return $filename;
