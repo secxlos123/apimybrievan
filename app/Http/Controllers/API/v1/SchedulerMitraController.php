@@ -23,14 +23,14 @@ class SchedulerMitraController extends Controller
 		
 	private function fetch()
     {
-        \Log::info($request->all());
+    /*     \Log::info($request->all());
 	$branch_code = $request->get('BRANCH_CODE',0);
 	if(strlen($branch_code)<4){
 		$branch_code = '0';
 	}else{
 		$branch_code = $branch_code;
 	}
-	
+	 */
         $long = number_format('106.86758', 5);
         $lat = number_format('-6.232423', 5);
         $return = RestwsHc::setBody([
@@ -56,6 +56,11 @@ class SchedulerMitraController extends Controller
 	{
 		
         $UKERS = $this->fetch();
+			$UKERS = $this->fetch();
+			if($UKERS['responseCode']=='00'){
+					$UKERS = $UKERS['responseData'];
+			}
+
 		if($request->all()){
 			$paginates = $request->all();
 			$paginates = $paginates['page'];
