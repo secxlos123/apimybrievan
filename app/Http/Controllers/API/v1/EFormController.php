@@ -515,12 +515,12 @@ class EFormController extends Controller
 
                     DB::commit();
 
-                    return response()->success([
+                    return response()->json([
                         'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
                         //balikin eform buat eform list di android
                         'eform_id' => $eformId
 
-                    ], 200 );
+                    ]);
                     
                     //send eform ke pefindo
                     // $pefindoController = new PrescreeningController();
