@@ -1999,10 +1999,10 @@ class ApiLasController extends Controller
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
                 $id_foto = $data_eforms['briguna']['id_foto'];
 
-                // $tgl_jatuh_tempo = date('dmY',strtotime('+180 months'));
-                // print_r($data_eforms['id']);
-                // print_r("<br>");
-                // print_r($tgl_jatuh_tempo);exit();
+                $tgl_jatuh_tempo = date('dmY',strtotime('+180 months'));
+                print_r($data_eforms['id']);
+                print_r("<br>");
+                print_r($tgl_jatuh_tempo);exit();
                 $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1'],$data_eforms['id']);
                 $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2'],$data_eforms['id']);
                 $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3'],$data_eforms['id']);
@@ -2348,14 +2348,12 @@ class ApiLasController extends Controller
     }
 
     function uploadimage($image, $id, $id_foto) {
-        $eform = EForm::where('id', $id)->first();
-        if (isset($image['identity']) || isset($image['couple_identity'])) {
-            $path  = public_path('uploads/'.$eform->nik.'/');
-        } else {
-            $path  = public_path('uploads/'.$id_foto.'/');
-        }
-
+        $path  = public_path('uploads/'.$id_foto.'/');
         if (isset($image['uploadfoto'])) {
+            $eform = EForm::where('id', $id)->first();
+            if (isset($image['identity']) || isset($image['couple_identity'])) {
+                $path  = public_path('uploads/'.$eform->nik.'/');
+            }
             $data_image = $image['uploadfoto'];
         } else {
             $data_image = $image;
