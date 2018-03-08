@@ -185,25 +185,25 @@ class SchedulerMitraController extends Controller
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ID_INSTANSI_BRI'];
-					$namainstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['NAMA_INSTANSI'];
-					$kodeinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['KODE_INSTANSI'];
-					$posisinpl = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['POSISI_NPL'];
-					$kodeuker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['KODE_UKER_PEMRAKARSA'];
-					$jumlahkaryawan = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JUMLAH_KARYAWAN'];
-					$jenisinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JENIS_INSTANSI'];
-					$jenisbidangusaha = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JENIS_BIDANG_USAHA'];
-					$telponinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['TELEPON_INSTANSI'];
-					$lembagapemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['LEMBAGA_PEMERINGKAT'];
-					$tglpemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['TANGGAL_PEMERINGKAT'];
-					$gopublic = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['GO_PUBLIC'];
-					$noijinprinsip = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['NO_IJIN_PRINSIP'];
-					$dateupdate = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['DATE_UPDATED'];
-					$updateby = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['UPDATED_BY'];
-					$acctype = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ACC_TYPE'];
-					$alamatinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI'];
-					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI2'];
-					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI3'];
+					$idinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ID_INSTANSI_BRI']));
+					$namainstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['NAMA_INSTANSI']));
+					$kodeinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['KODE_INSTANSI']));
+					$posisinpl = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['POSISI_NPL']));
+					$kodeuker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['KODE_UKER_PEMRAKARSA']));
+					$jumlahkaryawan = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JUMLAH_KARYAWAN']));
+					$jenisinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JENIS_INSTANSI']));
+					$jenisbidangusaha = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JENIS_BIDANG_USAHA']));
+					$telponinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['TELEPON_INSTANSI']));
+					$lembagapemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['LEMBAGA_PEMERINGKAT']));
+					$tglpemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['TANGGAL_PEMERINGKAT']));
+					$gopublic = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['GO_PUBLIC']));
+					$noijinprinsip = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['NO_IJIN_PRINSIP']));
+					$dateupdate = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['DATE_UPDATED']));
+					$updateby = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['UPDATED_BY']));
+					$acctype = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ACC_TYPE']));
+					$alamatinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI']));
+					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI2']));
+					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI3']));
 					
 					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data['ID_INSTANSI_BRI']."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
