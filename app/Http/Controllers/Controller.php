@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Cartalyst\Sentinel\Native\Facades\Sentinel;
 
 use App\Models\Crm\apiPdmToken;
+use App\Models\ApiPdmTokensBriguna;
 
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
@@ -109,7 +110,7 @@ class Controller extends BaseController
       );
       $briConnect = json_decode($requestBriconnect->getBody()->getContents(), true);
 
-      $apiPdmToken = new apiPdmToken;
+      $apiPdmToken = new ApiPdmTokensBriguna;
 
       $apiPdmToken->access_token = $briConnect['access_token'];
       $apiPdmToken->expires_in = date("Y-m-d H:i:s", time() + $briConnect['expires_in']);
