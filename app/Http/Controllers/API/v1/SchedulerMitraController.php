@@ -21,8 +21,45 @@ class SchedulerMitraController extends Controller
      * @return \Illuminate\Http\Response
      */
 		
+	private function fetch()
+    {
+    /*     \Log::info($request->all());
+	$branch_code = $request->get('BRANCH_CODE',0);
+	if(strlen($branch_code)<4){
+		$branch_code = '0';
+	}else{
+		$branch_code = $branch_code;
+	}
+	 */
+        $long = number_format('106.86758', 5);
+        $lat = number_format('-6.232423', 5);
+        $return = RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => "0",
+                    'distance'    => "1000000000000000000",
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => $lat,
+                    'longitude' => $long
+                ]
+            ])
+        ])
+        ->post('form_params');
+        return $return;
+    }
+	
 	public function scheduler( Request $request )
 	{
+		
+        $UKERS = $this->fetch();
+			$UKERS = $this->fetch();
+			if($UKERS['responseCode']=='00'){
+					$UKERS = $UKERS['responseData'];
+			}
+
 		if($request->all()){
 			$paginates = $request->all();
 			$paginates = $paginates['page'];
@@ -111,35 +148,67 @@ class SchedulerMitraController extends Controller
 				\Log::info("-------------------CREATE TABLE MITRA NEW SUKSES-----------------");
 					$sql = "";
 					$query = "";
+		foreach ($UKERS as $ukerdata){
+				
 				foreach ($datalas->items() as $data) {
+					if($ukerdata['kode_uker']==iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_UKER_PEMRAKARSA))){
+							$combinedata[]['ID_INSTANSI_BRI'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ID_INSTANSI_BRI));
+							$combinedata[]['NAMA_INSTANSI'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->NAMA_INSTANSI));
+							$combinedata[]['KODE_INSTANSI'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_INSTANSI));
+							$combinedata[]['POSISI_NPL'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->POSISI_NPL));
+							$combinedata[]['KODE_UKER_PEMRAKARSA'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_UKER_PEMRAKARSA));
+							$combinedata[]['JUMLAH_KARYAWAN'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JUMLAH_KARYAWAN));
+							$combinedata[]['JENIS_INSTANSI'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JENIS_INSTANSI));
+							$combinedata[]['JENIS_BIDANG_USAHA'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JENIS_BIDANG_USAHA));
+							$combinedata[]['TELEPON_INSTANSI'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TELEPON_INSTANSI));
+							$combinedata[]['LEMBAGA_PEMERINGKAT'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->LEMBAGA_PEMERINGKAT));
+							$combinedata[]['TANGGAL_PEMERINGKAT'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TANGGAL_PEMERINGKAT));
+							$combinedata[]['GO_PUBLIC'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->GO_PUBLIC));
+							$combinedata[]['NO_IJIN_PRINSIP'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->NO_IJIN_PRINSIP));
+							$combinedata[]['DATE_UPDATED'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->DATE_UPDATED));
+							$combinedata[]['UPDATED_BY'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->UPDATED_BY));
+							$combinedata[]['ACC_TYPE'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ACC_TYPE));
+							$combinedata[]['ALAMAT_INSTANSI'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI));
+							$combinedata[]['ALAMAT_INSTANSI2'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI2));
+							$combinedata[]['ALAMAT_INSTANSI3'] = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI3));
+							$combinedata[]['UNIT_KERJA'] = $ukerdata['kode_uker'];
+							$combinedata[]['ID_INSTANSI_BRI'] = $data->ID_INSTANSI_BRI;
+							$combinedata[]['TELEPON_INSTANSI'] = $data->TELEPON_INSTANSI;
+							$combinedata[]['RATING_INSTANSI'] = $data->RATING_INSTANSI;
+							
+					}
+				}
+		}
 					//,STR_TO_DATE('$data[3]','%Y%m%d')
+			\Log::info($combinedata);
+			foreach($combinedata as $data){
 				try{
 					//to_number('".$data['KODE_UKER_PEMRAKARSA']."','99G999D9S')
 					
-					$idinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ID_INSTANSI_BRI));
-					$namainstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->NAMA_INSTANSI));
-					$kodeinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_INSTANSI));
-					$posisinpl = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->POSISI_NPL));
-					$kodeuker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->KODE_UKER_PEMRAKARSA));
-					$jumlahkaryawan = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JUMLAH_KARYAWAN));
-					$jenisinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JENIS_INSTANSI));
-					$jenisbidangusaha = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->JENIS_BIDANG_USAHA));
-					$telponinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TELEPON_INSTANSI));
-					$lembagapemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->LEMBAGA_PEMERINGKAT));
-					$tglpemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TANGGAL_PEMERINGKAT));
-					$gopublic = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->GO_PUBLIC));
-					$noijinprinsip = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->NO_IJIN_PRINSIP));
-					$dateupdate = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->DATE_UPDATED));
-					$updateby = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->UPDATED_BY));
-					$acctype = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ACC_TYPE));
-					$alamatinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI));
-					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI2));
-					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI3));
+					$idinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ID_INSTANSI_BRI'];
+					$namainstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['NAMA_INSTANSI'];
+					$kodeinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['KODE_INSTANSI'];
+					$posisinpl = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['POSISI_NPL'];
+					$kodeuker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['KODE_UKER_PEMRAKARSA'];
+					$jumlahkaryawan = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JUMLAH_KARYAWAN'];
+					$jenisinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JENIS_INSTANSI'];
+					$jenisbidangusaha = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['JENIS_BIDANG_USAHA'];
+					$telponinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['TELEPON_INSTANSI'];
+					$lembagapemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['LEMBAGA_PEMERINGKAT'];
+					$tglpemeringkat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['TANGGAL_PEMERINGKAT'];
+					$gopublic = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['GO_PUBLIC'];
+					$noijinprinsip = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['NO_IJIN_PRINSIP'];
+					$dateupdate = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['DATE_UPDATED'];
+					$updateby = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['UPDATED_BY'];
+					$acctype = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ACC_TYPE'];
+					$alamatinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI'];
+					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI2'];
+					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data['ALAMAT_INSTANSI3'];
 					
-					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
+					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data['ID_INSTANSI_BRI']."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
-					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
-					'".$alamatinstansi."','".$alamatinstansi3."','".$data->TELEPON_INSTANSI."','".$data->RATING_INSTANSI."',
+					'".$jumlahkaryawan."','".$jenisinstansi."','".$data['UNIT_KERJA']."','70','','".$jenisbidangusaha."',
+					'".$alamatinstansi."','".$alamatinstansi3."','".$data['TELEPON_INSTANSI']."','".$data['RATING_INSTANSI']."',
 					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
 					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
 				}catch(Exception $e) {
@@ -153,7 +222,7 @@ class SchedulerMitraController extends Controller
 					'$data[17]','$data[18]','','70','','$data[4]','$data[5]','$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[12]',
 					'$data[13]','$data[15]','$data[16]','$data[19],'$data[20]'')"; */
 					
-				}
+					}
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
 				
