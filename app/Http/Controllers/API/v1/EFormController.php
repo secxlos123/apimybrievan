@@ -518,7 +518,7 @@ class EFormController extends Controller
                     return response()->success([
                         'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
                         //balikin eform buat eform list di android
-                        'content' => $eformCreate
+                        'eform_id' => $eformId
 
                     ], 200 );
                     
@@ -530,12 +530,8 @@ class EFormController extends Controller
                     //pefindo dalam development. sabar ya :)
                     //update eform
                     
-                    return response()->success([
-                        'responseMessage' => 'response eform kkd',
-                        'contents' => 'tes'
-
-                    ], 200 );
-                    }
+                   
+                }
             }else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
             /* BRIGUNA */
