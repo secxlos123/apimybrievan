@@ -474,31 +474,12 @@ class EFormController extends Controller
                     //insert ke table eform
                     $eformCreate = $kk->createEform($baseRequest);
                     \Log::info("===========create eform==========");
-                    \Log::info($eformCreate);
                     //insert ke table kartu_kredit_details
                     $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
                     \Log::info("========crate kk details=============");
                     \Log::info($eformCreate);
 
                     DB::commit();
-
-                    //cek dedup
-                    //TODO: dedup
-
-                    return response()->success([
-                        'message' => 'response eform kkd',
-                        //balikin eform buat eform list di android
-                        'content' => $eformCreate
-
-                    ], 200 );
-                    
-
-                    //cek user id di customer
-                    // $baseRequest['user_id'];
-
-                    //send ke eform
-                    // $eformCreate = Eform::create($baseRequest);
-                    
 
                     //cek dedup
                     $nik = $baseRequest['nik'];
@@ -533,6 +514,13 @@ class EFormController extends Controller
                         ]);
                     }
 
+                    return response()->success([
+                        'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
+                        //balikin eform buat eform list di android
+                        'content' => $eformCreate
+
+                    ], 200 );
+                    
                     //send eform ke pefindo
                     // $pefindoController = new PrescreeningController();
                     // $getPefindo = $pefindoController->getPefindo()
@@ -540,8 +528,6 @@ class EFormController extends Controller
                     //cek jumlah kk
                     //pefindo dalam development. sabar ya :)
                     //update eform
-
-                    //add data ke los
                     
                     return response()->success([
                         'responseMessage' => 'response eform kkd',

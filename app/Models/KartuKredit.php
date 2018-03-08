@@ -149,7 +149,7 @@ class KartuKredit extends Model
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
         }
 
-        $informasiLos = $this->checkInformasiLosKosong($informasiLos);
+        $informasiLos = $this->overwriteEmptyRecord($informasiLos);
 
         return $informasiLos;
     }
@@ -236,6 +236,7 @@ class KartuKredit extends Model
 
         $kkDetails = KartuKredit::create($data);
         \Log::info($kkDetails);
+        $kkDetails['range_kartu'] = $kkDetails['limit_tertinggi'];
         return $kkDetails;
 
     }
