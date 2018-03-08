@@ -72,7 +72,7 @@ class SchedulerMitraController extends Controller
 							$unit_induk = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['unit_induk']));
 							$kanca_induk = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['kanca_induk']));
 							$jenis_uker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['jenis_uker']));
-							$kode_uker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['kode_uker']));
+							$kode_uker = $uker['kode_uker'];
 							$dati2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['dati2']));
 							$dati1 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['dati1']));
 							$alamat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['alamat']));
@@ -85,7 +85,7 @@ class SchedulerMitraController extends Controller
 							DB::statement("INSERT INTO uker_table_create VALUES('".$id."','".$unit_kerja."','".$unit_induk."','"
 											.$kanca_induk."','".$jenis_uker."','".$kode_uker."','"
 											.$dati2."','".$dati1."','".$alamat."','"
-											.$no_telp."','".$no_fax."','".$koordinat."','".
+											.$no_telp."','".$no_fax."','".$koordinat."','"
 											.$latitude."','".$latitude."');");
 					}
 					DB::statement("ALTER TABLE uker_tables RENAME TO uker_tablesxxx;");
