@@ -47,17 +47,27 @@ class MarketingActivity extends Model
 
 
       return $query
-              ->join('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id');
-    }
+              ->orderBy('marketing_activities.id', 'asc')
+              ->join('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id')
+              ->where('marketing_activities.desc', '!=', 'first')
+              ->select('')
 
-    public function scopeGetReportMarketings($query, Request $request)
-    {
-      return $query
-            ->leftJoin('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id')
-            ->where( function($marketing) use($request){
-              if($request->has('pn')){
-                $marketing->where( 'marketings.pn', '=', $request->input( 'pn' ) );
-              }
-            });
+              ->where( function($activities) use($request){
+                if ($request->header('role') != 'fo') {
+                  if($request->has('region')){
+                    if($request->input('branch')=='all' || $request->input('branch')==''){
+                      $activities->whereIn('branch', $request->input('list_branch'));
+                    }else{
+                      $activities->where('branch', $request->input('branch'));
+                    }
+                  }
+                  if($request->has('pn')){
+                    $activities->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+                  }
+                }else{
+                  $activities->where( 'marketings.pn', '=', $request->header( 'pn' ) );
+                }
+              })
+              ;
     }
 }
