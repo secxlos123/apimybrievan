@@ -87,11 +87,13 @@ class KartuKredit extends Model
 
             $emergencyNoTlp = $req['EmergencyNoTlp'];
             $emergencyKota = $req['EmergencyKota'];
-            $cardType = $req['CardType'];
+            
 
             if ($type == 'update'){
                 $appNumber = $req['apregno'];
                 $subBidangUsaha = $req['subBidangUsaha'];
+            }else{
+                $cardType = $req['CardType'];
             }
             
         }catch (Exception $e){
@@ -142,12 +144,14 @@ class KartuKredit extends Model
             'EmergencyKota' => $emergencyKota,
             'EmergencyNoTlp' =>$emergencyNoTlp,
             'EmergencyKota' => $emergencyKota,
-            'CardType' => $cardType
+            
         ];
 
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
+        }else{
+            $informasiLos['CardType'] = $cardType;
         }
         \Log::info('========update=======');
         \Log::info($informasiLos);
