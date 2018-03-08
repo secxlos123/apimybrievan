@@ -331,6 +331,7 @@ class Customer extends User
     	\Log::info($data);
         $email = strtolower($data['email']);
         $data['email'] = $email;
+        $data['product_leads'] = isset($data['product_leads']) ? $data['product_leads'] : null;
         $user_model = new User;
         $password = str_random( 8 );
         $separate_array_keys = array_flip( $user_model->fillable );
