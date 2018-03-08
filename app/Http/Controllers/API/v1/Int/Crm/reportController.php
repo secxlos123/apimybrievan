@@ -72,6 +72,23 @@ class reportController extends Controller
       return $data;die();
       $activities = [];
 
+      foreach ($data as $key => $value) {
+        $branch = $value->branch;
+        $activities[] =[
+          "pn"=>$value->pn,
+          "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
+          "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
+          "fo_name"=> $value->pn,
+          "activity"=> $value->object_activity,
+          "tujuan"=> $value->pn,
+          "tanggal"=> $value->start_date,
+          "alamat"=> $value->address,
+          "marketing_type" => $value->activity_type,
+          "nama" => $value->nama,
+          "result" => $value->fu_result
+        ];
+      }
+
       return response()->success( [
         'message' => 'Sukses get list report Activities',
         'contents' => $activities
