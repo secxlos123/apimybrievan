@@ -92,10 +92,14 @@ class NotificationController extends Controller
 
         if($data){
             foreach ($data as $key => $value) {
-                \Log::info($value);
-                $data[$key]['message'] = ['body'=>$value->getSubject($value->is_approved, $value->ref_number,$user_id)['message']];
-                $data[$key]['message_external'] = ['body'=>$value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external']];
-                \Log::info("=========================================");
+                $data[$key]['message'] = [
+                    'title' => $value['data']['message']['title']
+                    , 'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message']
+                ];
+                $data[$key]['message_external'] = [
+                    'title' => $value['data']['message_external']['title']
+                    , 'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external']
+                ];
             }
         }
         return  response()->success( [
