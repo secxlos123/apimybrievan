@@ -11,7 +11,8 @@ use GuzzleHttp\Client;
 use App\Models\UserServices;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-
+use App\Models\User;
+use App\Models\EForm;
 use Asmx;
 
 class KartuKreditController extends Controller{
@@ -260,11 +261,12 @@ class KartuKreditController extends Controller{
     	$header = ['access_token'=> $this->tokenLos];
     	$host = '10.107.11.111:9975/api/updateData';
     	$client = new Client();
-    	\Log::info('========update los data======');
-    	\Log::info($req);
+    	
 
     	$eform_id = $req->eform_id;
     	$req->appNumber = $this->getApregnoFromKKDetails($eform_id);
+    	\Log::info('========update los data======');
+    	\Log::info($req);
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($req,'update');
 
@@ -283,6 +285,16 @@ class KartuKreditController extends Controller{
 		$body = $res->getBody();
 		$obj = json_decode($body);
 		// $data = $obj->responseData;
+		//update data eform
+		//get user id from eform
+		$eformData = EForm::where('id',$eform_id)->first();
+		$userId = $eformData['user_id'];
+
+		// $newUser = User::where('id',)
+
+		// $updateLos = User::where('id',$eform_id)
+		// ->update('');
+
 
 		return response()->json($obj);
 
@@ -411,6 +423,25 @@ class KartuKreditController extends Controller{
                     ) )
                 ])
                 ->post( 'form_params' );
+    }
+
+    public function checkEmailVerification(Request $request){
+    	$codeVerif = $request->code;
+    	$apRegno = $request->apRegno;
+    	$data = KartuKredit::where('appregno',$apRegno)->first();
+    	$correctCode = $data['verification_code'];
+
+    	if ($codeVerif == $correctCode){
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'Kode Benar'
+    		]);
+    	}else{
+    		return response()->json([
+    			'responseCode'=>'01',
+    			'responseMessage'=>'Kode Salah'
+    		]);
+    	}
     }
 
 }
