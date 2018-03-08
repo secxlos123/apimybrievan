@@ -241,16 +241,28 @@ class KartuKreditController extends Controller{
 
 		$body = $res->getBody();
 		$obj = json_decode($body);
-		// $data = $obj->responseData;
+		$data = $obj->responseData;
+		$appregno = $data->apRegno;
+
+		$this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
 
 		return response()->json($obj);
     }
 
+    function updateAppRegnoKreditDetails($appregno,$eform_id){
+    	$addAppregno = KartuKredit::where('eform_id',$eform_id)
+    	->update(['appregno'=>$appregno]);
+
+    }
+
     public function updateDataLos(Request $req){
+    	//saat verifikasi
     	$header = ['access_token'=> $this->tokenLos];
     	$host = '10.107.11.111:9975/api/updateData';
     	$client = new Client();
 
+    	$eform_id = $req->eform_id;
+    	$req->appNumber = $this->getApregnoFromKKDetails($eform_id);
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($req,'update');
 
@@ -272,6 +284,12 @@ class KartuKreditController extends Controller{
 
 		return response()->json($obj);
 
+    }
+
+    function getApregnoFromKKDetails($eform_id){
+    	$kk = KartuKredit::where('eform_id',$eform_id)->first();
+   		$apRegno = $kk->appregno;
+    	return $apRegno;
     }
 
     public function cekDataNasabah($apRegno){
@@ -371,8 +389,6 @@ class KartuKreditController extends Controller{
     			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
     		]);
     	}
-
-    	
     }
 
     public function eform(EFormRequest $req){

@@ -20,18 +20,17 @@ class CreateKartuKreditTable extends Migration
             $table->string('customer_id');
             $table->string('hp');
             $table->string('email');
-            $table->string('nama_ibu_kandung');
-            $table->string('status_pernikahan');
+            
+            
             $table->string('jenis_kelamin');
-            $table->string('tanggal_lahir');
+
             $table->string('nama');
-            $table->string('tempat_lahir');
+
             $table->string('telephone');
             $table->string('pendidikan');
-            $table->string('cif');
+
             $table->string('pekerjaan');
             $table->string('tiering_gaji');
-            $table->string('npwp');
             $table->string('agama');
             $table->string('jenis_nasabah');
             $table->string('pilihan_kartu');
