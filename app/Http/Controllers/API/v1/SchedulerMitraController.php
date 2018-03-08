@@ -48,7 +48,6 @@ class SchedulerMitraController extends Controller
             ])
         ])
         ->post('form_params');
-        \Log::info($return);
         return $return;
     }
 	
@@ -198,8 +197,7 @@ class SchedulerMitraController extends Controller
 					}
 				}
 		}
-		print_r($query);die();
-					$sql .= DB::statement($query);
+					$sql = DB::statement($query);
 				\Log::info("-------------------INSERT MITRA SUKSES ".$paginates."-----------------");
 				\Log::info($sql);
 				
