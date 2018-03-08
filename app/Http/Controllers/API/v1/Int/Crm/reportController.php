@@ -67,7 +67,7 @@ class reportController extends Controller
         $region = $list_kanca[$request->header('branch')]['region_id'];
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
-      $data = MarketingActivity::getReports($request)->get();
+      $data = MarketingActivity::with('fu_result')->getReports($request)->get();
       return $data;die();
       $activities = [];
 
