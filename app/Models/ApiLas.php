@@ -177,13 +177,8 @@ class ApiLas extends Model
                     'customer_details.address','customer_details.mother_name',
                     'customer_details.birth_date','users.first_name','users.last_name',
                     'users.mobile_phone','users.gender',
-                    \DB::Raw("case when (eforms.is_approved = false and eforms.recommended is not null) 
-                        or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
-                        when eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
-                        when eforms.status_eform = 'Approval2' then 'Rekontes Kredit'
-                        when eforms.status_eform = 'Pencairan' then 'Pencairan'
-                        when eforms.is_approved = true then 'Proses CLF'
-                        when eforms.ao_id is not null or eforms.ao_id != '' then 'Disposisi Pengajuan'
+                    \DB::Raw("case when eforms.ao_id is not null or eforms.ao_id != '' 
+                        then 'Disposisi Pengajuan'
                         else 'Pengajuan Kredit' end as status_pengajuan"),
                     \DB::Raw("case when briguna.tp_produk = '1' then 'Briguna Karya/Umum'
                         when briguna.tp_produk = '2' then 'Briguna Purna'
