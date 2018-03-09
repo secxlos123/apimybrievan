@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Mitra;
+use App\Models\Mitra4;
 use App\Models\Mitra3;
 use Sentinel;
 use DB;
