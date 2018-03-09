@@ -61,8 +61,8 @@ class SchedulerMitraController extends Controller
 					   "no_telp" text,
 					   "no_fax" text,
 					   "koordinat" text,
-					   "latitude" text,
-					   "longitude" text
+					   "latitude" float8,
+					   "longitude" float8
 					);');
 					
 					$UKERS = $UKERS['responseData'];
@@ -80,13 +80,13 @@ class SchedulerMitraController extends Controller
 							$no_fax = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['no_fax']));
 							$koordinat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['koordinat']));
 							$latitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['latitude']));
-							$latitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['latitude']));
+							$longitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['longitude']));
 							
 							DB::statement("INSERT INTO uker_table_create VALUES('".$id."','".$unit_kerja."','".$unit_induk."','"
 											.$kanca_induk."','".$jenis_uker."','".$kode_uker."','"
 											.$dati2."','".$dati1."','".$alamat."','"
 											.$no_telp."','".$no_fax."','".$koordinat."','"
-											.$latitude."','".$latitude."');");
+											.$latitude."','".$longitude."');");
 					}
 					DB::statement("ALTER TABLE uker_tables RENAME TO uker_tablesxxx;");
 							DB::statement("ALTER TABLE uker_table_create RENAME TO uker_tables;");

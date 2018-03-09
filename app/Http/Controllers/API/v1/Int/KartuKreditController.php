@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\v1\EFormController;
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
+use App\Models\CustomerDetail;
 use GuzzleHttp\Client;
 use App\Models\UserServices;
 use GuzzleHttp\Exception\RequestException;
@@ -414,7 +415,6 @@ class KartuKreditController extends Controller{
     	$npwp = $dataEform['image_npwp'];
     	$ktp = $dataEform['image_ktp'];
     	$slipGaji = $dataEform['image_slip_gaji'];
-
 
     	if ($jenisNasabah == 'debitur'){
     		
