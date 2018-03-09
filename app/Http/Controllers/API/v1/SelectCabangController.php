@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Mitra;
+use App\Models\Mitra4;
 use App\Models\Mitra3;
 use Sentinel;
 use DB;
@@ -144,6 +145,19 @@ class SelectCabangController extends Controller
 	}
 
 
+	public function mitraeksternal( Request $request )
+	{
+	        \Log::info($request->all());
+				
+			$limit = $request->input( 'limit' ) ?: 10;
+			$mitra = Mitra4::filter( $request )->paginate($limit);
+			//$mitra = $mitra->toArray();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+	}
+  
 	public function index( Request $request )
 	{
 		        \Log::info($request->all());

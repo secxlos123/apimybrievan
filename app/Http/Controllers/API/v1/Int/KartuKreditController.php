@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\v1\EFormController;
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
+use App\Models\CustomerDetail;
 use GuzzleHttp\Client;
 use App\Models\UserServices;
 use GuzzleHttp\Exception\RequestException;
@@ -14,6 +15,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\User;
 use App\Models\EForm;
 use Asmx;
+
+use App\Http\Controllers\API\v1\Int\KreditEmailGeneratorController;
 
 class KartuKreditController extends Controller{
 
@@ -24,18 +27,6 @@ class KartuKreditController extends Controller{
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-
-	public function getNiks(Request $request){
-		$nik = $request['nik'];
-		if ($nik == '123'){
-			return response()->json([
-				'code'=>'200',
-				'nik'=>$nik
-			]);
-		}
-
-		return "salah";
-	}
 
 	public function getAllInformation(){
 		$TOKEN_LOS = $this->tokenLos;
@@ -351,7 +342,14 @@ class KartuKreditController extends Controller{
     	//email, subject, message
     	$email = $req['email'];
     	$subject = $req['subject'];
-    	$message = $req['message'];
+    	// $message = $req['message'];
+
+    	$apregno = $req['apRegno'];
+
+    	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
+    	$emailGenerator = new KreditEmailGeneratorController();
+    	$message = $emailGenerator
+    	->sendEmailVerification($dataKredit,$apregno,'www.google.com');
 
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
@@ -415,6 +413,7 @@ class KartuKreditController extends Controller{
     	$ktp = $dataEform['image_ktp'];
     	$slipGaji = $dataEform['image_slip_gaji'];
 
+    	$scoring = $this->getScoring($apregno);
 
     	if ($jenisNasabah == 'debitur'){
     		
@@ -426,7 +425,8 @@ class KartuKreditController extends Controller{
     				'ktp'=>$ktp,
     				'slip_gaji'=>$slipGaji
     			],
-    			'$data_los'=> $dataLos
+    			'data_los'=> $dataLos,
+    			'score'=>$scoring
     		]);
     	}else{
     		$nametag = $dataEform['image_nametag'];
@@ -442,11 +442,43 @@ class KartuKreditController extends Controller{
     				'nametag'=>$nametag,
     				'kartu_bank_lain'=>$kartuBankLain
     			],
-    			'data_los'=> $dataLos
+    			'data_los'=> $dataLos,
+    			'score'=>$scoring
     		]);
-
     	}
+
+    	//eror
+    	return response()->json([
+    		'responseCode'=>'01',
+    		'responseMessage'=>'terjadi kesalahan'
+    	]);
     }
+
+    function getScoring($apRegno){
+    	$TOKEN_LOS = $this->tokenLos;
+		$client = new Client();
+		$host = '10.107.11.111:9975';
+
+		try{
+			$res = $client
+			->request('POST',
+				$host.'/api/scoring',
+				['headers'=>['access_token'=> $TOKEN_LOS],
+				'form_params'=> ['apRegno'=>$apRegno],
+				]
+			);
+		}catch (RequestException $e){
+			echo "Terjadi kesalahan";
+			return  $e->getMessage();
+		}
+
+		$body = $res->getBody();
+		$obj = json_decode($body);
+		$data = $obj->responseData;
+
+		return $data;
+
+	}
 
     public function pefindo(){
     	$getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
@@ -460,6 +492,8 @@ class KartuKreditController extends Controller{
                 ])
                 ->post( 'form_params' );
     }
+
+
 
     public function checkEmailVerification(Request $request){
     	$codeVerif = $request->code;

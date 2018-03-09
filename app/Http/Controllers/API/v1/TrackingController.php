@@ -16,6 +16,7 @@ class TrackingController extends Controller
      */
     public function index($type ,Request $request)
     {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort') ) : ['id', 'asc'];
         $eforms = array();
         if ($type == 'eks') {
             $user = $request->user();
@@ -48,7 +49,7 @@ class TrackingController extends Controller
             }
 
             else if( $user->inRole('developer-sales') ) {
-				//leftJoin("kpr",function($join){$join->on("briguna.eform_id","=","eforms.id")->where('eforms.product_type','briguna');})
+                
                     $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
@@ -109,7 +110,7 @@ class TrackingController extends Controller
                                 }
                             }
                     })
-                    ->paginate( $request->input( 'limit' ) ?: 10 );
+                    ->orderBy($sort[0], $sort[1])->paginate( $request->input( 'limit' ) ?: 10 );
                 // $limit = $request->input('limit') ?: 10;
                 // $eforms = EForm::Tracking($request)->paginate($limit);
                 // return response()->success(['contents' => $eforms]);

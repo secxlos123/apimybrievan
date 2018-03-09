@@ -19,9 +19,11 @@ class reportController extends Controller
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
         $request['list_branch'] =array_keys($list_kanca);
+        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
+        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = Marketing::getReports($request)->get();
@@ -37,7 +39,7 @@ class reportController extends Controller
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
           "uker"=> $value->branch,
-          "fo_name"=> $value->pn,
+          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )]['SNAME'],
           "product_type"=> $value->product_type,
           "activity_type"=> $value->activity_type,
           "nama"=> $value->nama,
@@ -63,13 +65,15 @@ class reportController extends Controller
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
         $request['list_branch'] =array_keys($list_kanca);
+        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
+        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = MarketingActivity::with('fu_result')->getReports($request)->get();
-      return $data;die();
+
       $activities = [];
 
       foreach ($data as $key => $value) {
@@ -78,7 +82,7 @@ class reportController extends Controller
           "pn"=>$value->pn,
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
-          "fo_name"=> $value->pn,
+          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )]['SNAME'],
           "activity"=> $value->object_activity,
           "tujuan"=> $value->pn,
           "tanggal"=> $value->start_date,
@@ -157,18 +161,11 @@ class reportController extends Controller
     public function list_kanca_for_kanwil($region)
     {
       $list_all_kanca = [];
-        $len = 5;
-        $con =[
-        1 =>'0',
-        2=>'00',
-        3=>'000',
-        4=>'0000'
-        ];
 
       $data = $this->get_kanca_kanwil($region);
       $list_kanca =[];
       foreach ($data['responseData'] as $key_kanca => $value_kanca) {
-        $list_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] =
+        $list_kanca[substr( '00000' . $value_kanca['mainbr'], -5 )] =
         [
            'mbdesc' => $value_kanca['mbdesc'],
            'region_id' => $region
@@ -183,18 +180,11 @@ class reportController extends Controller
     {
       $list_kanwil = $this->list_kanwil();
       $list_all_kanca = [];
-        $len = 5;
-        $con =[
-        1 =>'0',
-        2=>'00',
-        3=>'000',
-        4=>'0000'
-        ];
 
       foreach ($list_kanwil as $key => $value) {
         $list_kanca = $this->get_kanca_kanwil($value['region_id']);
         foreach ($list_kanca['responseData'] as $key_kanca => $value_kanca) {
-         $list_all_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] =
+         $list_all_kanca[substr( '00000' . $value_kanca['mainbr'], -5 )] =
          [
            'mbdesc' => $value_kanca['mbdesc'],
            'region_id' => $value['region_id']
@@ -233,4 +223,49 @@ class reportController extends Controller
       }
 
   	}
+
+    public function pemasar($pn, $branch){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
+    }
+
+    public function pemasar_kanwil($pn, $region)
+    {
+      $list_kanca = array_keys($this->list_kanca_for_kanwil($region));
+      foreach($list_kanca as $kanca){
+        foreach($this->pemasar($pn,$kanca) as $value){
+        $pemasar[]= $value;
+        }
+      }
+      return $pemasar;
+
+    }
 }
