@@ -41,6 +41,15 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+/**
+ * Configure Monolog Separate Log By User.
+ */
+$app->configureMonologUsing(function(Monolog\Logger $monolog) {
+    $filename = storage_path('logs/laravel-'.php_sapi_name().'-'.Carbon\Carbon::now()->format('Y-m-d').'.log');
+    $handler = new Monolog\Handler\RotatingFileHandler($filename);
+    $monolog->pushHandler($handler);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application
