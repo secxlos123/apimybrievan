@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\EForm;
 use App\Models\CustomerDetail;
 use App\Http\Requests\API\v1\EFormRequest;
+use File;
 
 
 
@@ -38,6 +39,27 @@ class KartuKredit extends Model
     ];
 
     public $timestamps = false;
+
+    function globalImageCheck( $filename ){
+        $path =  'img/noimage.jpg';
+        $id = substr ($filename,0,14);
+        if( ! empty( $filename ) ) {
+            $image = 'uploads/' . $id . '/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
+            }
+        }
+
+        return url( $path );
+    }
+
+    public function getImageNpwpAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+    public function getImageKTPAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
 
     public function convertToAddDataLosFormat($req,$type){
 

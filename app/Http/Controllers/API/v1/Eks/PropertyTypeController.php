@@ -148,4 +148,15 @@ class PropertyTypeController extends Controller
     {
         //
     }
+    /**
+     * [GetAllType description]
+     */
+    public function GetAllType()
+    {
+        $developer_id = env('DEVELOPER_KEY',1);
+        $types = PropertyType::select('id','property_id','name')->whereRaw("property_id in (select id from properties where developer_id != ? and is_approved = true)",[$developer_id]);
+            return response()->success([
+                'message'  => "List Data Semua Tipe Property",
+                'contents' => $types ]);
+    }
 }
