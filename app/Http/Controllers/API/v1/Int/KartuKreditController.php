@@ -28,18 +28,6 @@ class KartuKreditController extends Controller{
 	public $hostPefindo = '10.35.65.167:6969';
 
 
-	public function getNiks(Request $request){
-		$nik = $request['nik'];
-		if ($nik == '123'){
-			return response()->json([
-				'code'=>'200',
-				'nik'=>$nik
-			]);
-		}
-
-		return "salah";
-	}
-
 	public function getAllInformation(){
 		$TOKEN_LOS = $this->tokenLos;
 		$client = new Client();
@@ -360,7 +348,8 @@ class KartuKreditController extends Controller{
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGeneratorController();
-    	$message = $emailGenerator->sendEmailVerification($dataKredit,$apregno,'www.google.com');
+    	$message = $emailGenerator
+    	->sendEmailVerification($dataKredit,$apregno,'www.google.com');
 
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
