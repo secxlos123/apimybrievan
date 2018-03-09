@@ -61,8 +61,8 @@ class SchedulerMitraController extends Controller
 					   "no_telp" text,
 					   "no_fax" text,
 					   "koordinat" text,
-					   "latitude" text,
-					   "longitude" text
+					   "latitude" float8,
+					   "longitude" float8
 					);');
 					
 					$UKERS = $UKERS['responseData'];
