@@ -417,7 +417,8 @@ class KartuKreditController extends Controller{
     	$slipGaji = $dataEform['image_slip_gaji'];
 
     	$kk = new KartuKredit();
-    	$npwp = $kk->getNpwpAttribute($npwp);
+    	$npwp = $kk->globalImageCheck($npwp);
+
 
 
 

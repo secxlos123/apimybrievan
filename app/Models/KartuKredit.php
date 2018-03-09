@@ -41,8 +41,9 @@ class KartuKredit extends Model
 
     function globalImageCheck( $filename ){
         $path =  'img/noimage.jpg';
+        $id = substr ($filename,0,14);
         if( ! empty( $filename ) ) {
-            $image = 'uploads/' . $this->nik . '/' . $filename;
+            $image = 'uploads/' . $id . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -51,11 +52,11 @@ class KartuKredit extends Model
         return url( $path );
     }
 
-    public function getNpwpAttribute( $value ){
+    public function getImageNpwpAttribute( $value ){
         return $this->globalImageCheck( $value );
     }
 
-    public function getIdentityAttribute( $value ){
+    public function getImageKTPAttribute( $value ){
         return $this->globalImageCheck( $value );
     }
 
