@@ -39,6 +39,26 @@ class KartuKredit extends Model
 
     public $timestamps = false;
 
+    function globalImageCheck( $filename ){
+        $path =  'img/noimage.jpg';
+        if( ! empty( $filename ) ) {
+            $image = 'uploads/' . $this->nik . '/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
+            }
+        }
+
+        return url( $path );
+    }
+
+    public function getNpwpAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+    public function getIdentityAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
     public function convertToAddDataLosFormat($req,$type){
 
         try{
