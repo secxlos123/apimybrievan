@@ -110,6 +110,12 @@ class CustomerRequest extends FormRequest
              'name' => 'alpha_spaces',
             ];
         }
+        elseif ($this->user()->inRole('developer-sales'))
+        {
+            return[
+             'name' => 'alpha_spaces',
+            ];
+        }
         elseif ($this->user()->inRole('others'))
         {
             return[

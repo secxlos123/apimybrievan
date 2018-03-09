@@ -33,7 +33,7 @@ class DeveloperController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('has.user.dev', ['except' => ['index', 'store'] ]);
+        $this->middleware('has.user.dev', ['except' => ['index', 'store','GetAllDeveloper'] ]);
     }
 
     /**
@@ -190,6 +190,18 @@ class DeveloperController extends Controller
         \Log::info($id);
 
         return $id;
+
+    }
+
+    /**
+     * [GetAllDeveloper description]
+     */
+    public function GetAllDeveloper()
+    {
+        $developer = Developer::select('id','company_name')->get();
+            return response()->success([
+                'message'  => "List Data Semua Developer",
+                'contents' => $developer ]);
 
     }
 }

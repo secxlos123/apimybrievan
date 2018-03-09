@@ -217,16 +217,16 @@ class CollateralController extends Controller
         $developer_id = env('DEVELOPER_KEY',1);
         $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
         \Log::info($collateral);
-        OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],$this->request->area);
-        OtsAccordingLetterLand::updateOrCreate(['collateral_id' => $collateral->id],$this->request->letter);
-        OtsBuildingDesc::updateOrCreate(['collateral_id' => $collateral->id],$this->request->building);
-        OtsEnvironment::updateOrCreate(['collateral_id' => $collateral->id],$this->request->environment);
-        OtsValuation::updateOrCreate(['collateral_id' => $collateral->id],$this->request->valuation);
-        OtsSeven::updateOrCreate(['collateral_id' => $collateral->id],$this->request->seven);
-        OtsEight::updateOrCreate(['collateral_id' => $collateral->id],$this->request->eight);
-        OtsNine::updateOrCreate(['collateral_id' => $collateral->id],$this->request->nine);
-        OtsTen::updateOrCreate(['collateral_id' => $collateral->id],$this->request->ten);
-        $otsOther = OtsAnotherData::updateOrCreate(['collateral_id' => $collateral->id],$dataother);
+        OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->area);
+        OtsAccordingLetterLand::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->letter);
+        OtsBuildingDesc::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->building);
+        OtsEnvironment::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->environment);
+        OtsValuation::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->valuation);
+        OtsSeven::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->seven);
+        OtsEight::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->eight);
+        OtsNine::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->nine);
+        OtsTen::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->ten);
+        $otsOther = OtsAnotherData::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$dataother);
         if (count($dataother['image_area'])>0) {
           $photo_id = array();
           foreach ($dataother['image_area'] as $key => $value) {
@@ -368,13 +368,12 @@ class CollateralController extends Controller
         }
           if ($collateral->developer_id == $developer_id && $hasapprove) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
-              \DB::commit();
-              // if ($sentclas['status']) {
-              // \DB::commit();
-              // }else
-              // {
-              // \DB::rollback();
-              // }
+               if ($sentclas['status']) {
+               \DB::commit();
+               }else
+               {
+               \DB::rollback();
+               }
               $eform = $eformdata;
               generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
           }
