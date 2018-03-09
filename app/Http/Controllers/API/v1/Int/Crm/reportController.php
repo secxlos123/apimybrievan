@@ -62,14 +62,32 @@ class reportController extends Controller
       if($request->has('region')){
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
+        $request['list_branch'] =array_keys($list_kanca);
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
-      $data = MarketingActivity::getReports($request)->get();
+      $data = MarketingActivity::with('fu_result')->getReports($request)->get();
       return $data;die();
       $activities = [];
+
+      foreach ($data as $key => $value) {
+        $branch = $value->branch;
+        $activities[] =[
+          "pn"=>$value->pn,
+          "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
+          "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
+          "fo_name"=> $value->pn,
+          "activity"=> $value->object_activity,
+          "tujuan"=> $value->pn,
+          "tanggal"=> $value->start_date,
+          "alamat"=> $value->address,
+          "marketing_type" => $value->activity_type,
+          "nama" => $value->nama,
+          "result" => $value->fu_result
+        ];
+      }
 
       return response()->success( [
         'message' => 'Sukses get list report Activities',
