@@ -69,7 +69,7 @@ class reportController extends Controller
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = MarketingActivity::with('fu_result')->getReports($request)->get();
-      return $data;die();
+      
       $activities = [];
 
       foreach ($data as $key => $value) {

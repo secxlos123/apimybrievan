@@ -7,11 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\v1\EFormController;
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
+use App\Models\CustomerDetail;
 use GuzzleHttp\Client;
 use App\Models\UserServices;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-
+use App\Models\User;
+use App\Models\EForm;
 use Asmx;
 
 class KartuKreditController extends Controller{
@@ -23,18 +25,6 @@ class KartuKreditController extends Controller{
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-	// public function __construct(User $user, UserServices $userservices, UserNotification $userNotification)
- //    {
- //        $this->userServices = new UserServices;
- //        $this->user = $user;
- //        $this->userservices = $userservices;
- //        $this->userNotification = $userNotification;
- //    }
-
-	public function cekEform(Request $request){
-		$ef = new EFormController();
-		$ef.store($request);
-	}
 
 	public function getNiks(Request $request){
 		$nik = $request['nik'];
@@ -260,13 +250,13 @@ class KartuKreditController extends Controller{
     	$header = ['access_token'=> $this->tokenLos];
     	$host = '10.107.11.111:9975/api/updateData';
     	$client = new Client();
-    	\Log::info('========update los data======');
-    	\Log::info($req);
+    	
+    	$request = $req->all();
+    	$eform_id = $request['eform_id'];
+    	$request['apregno'] = $this->getApregnoFromKKDetails($eform_id);
 
-    	$eform_id = $req->eform_id;
-    	$req->appNumber = $this->getApregnoFromKKDetails($eform_id);
     	$kk = new KartuKredit();
-    	$informasiLos = $kk->convertToAddDataLosFormat($req,'update');
+    	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
 
     	try{
 			$res = $client
@@ -284,8 +274,27 @@ class KartuKreditController extends Controller{
 		$obj = json_decode($body);
 		// $data = $obj->responseData;
 
+		//update data user
+		//get user id from eform
+		$eformData = EForm::where('id',$eform_id)->first();
+		$apregno = $request['apregno'];
+
+		//update eform response status
+		$updateStatus = EForm::where('id',$eform_id)
+		->update(['response_status'=>'verified']);
+		
+
+		$updatedData = $this->updateUserTable($apregno);
+
+		// $updateLos = User::where('id',$eform_id)
+		// ->update('');
+
+
 		return response()->json($obj);
 
+    }
+    function updateUserTable($apregno){
+    	//ganti semua user
     }
 
     function getApregnoFromKKDetails($eform_id){
@@ -393,11 +402,55 @@ class KartuKreditController extends Controller{
     	}
     }
 
-    public function eform(EFormRequest $req){
-    	$kk = new KartuKredit();
-    	$eform = $kk->createEform($req);
+    public function analisaKK(Request $req){
+    	$eformId = $req->eform_id;
+    	$dataEform = KartuKredit::where('eform_id',$eformId)->first();
 
-    	return $eform;
+    	$jenisNasabah = $dataEform['jenis_nasabah'];
+
+    	$apregno = $dataEform['appregno'];
+    	\Log::info('apregno = '.$apregno);
+    	$dataLos = $this->cekDataNasabah($apregno);
+
+    	$npwp = $dataEform['image_npwp'];
+    	$ktp = $dataEform['image_ktp'];
+    	$slipGaji = $dataEform['image_slip_gaji'];
+
+    	$kk = new KartuKredit();
+    	$npwp = $kk->getNpwpAttribute($npwp);
+
+
+
+    	if ($jenisNasabah == 'debitur'){
+    		
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'sukses',
+    			'images'=>[
+    				'npwp'=>$npwp,
+    				'ktp'=>$ktp,
+    				'slip_gaji'=>$slipGaji
+    			],
+    			'$data_los'=> $dataLos
+    		]);
+    	}else{
+    		$nametag = $dataEform['image_nametag'];
+    		$kartuBankLain = $dataEform['image_kartu_bank_lain'];
+
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'sukses',
+    			'images'=>[
+    				'npwp'=>$npwp,
+    				'ktp'=>$ktp,
+    				'slip_gaji'=>$slipGaji,
+    				'nametag'=>$nametag,
+    				'kartu_bank_lain'=>$kartuBankLain
+    			],
+    			'data_los'=> $dataLos
+    		]);
+
+    	}
     }
 
     public function pefindo(){
@@ -411,6 +464,25 @@ class KartuKreditController extends Controller{
                     ) )
                 ])
                 ->post( 'form_params' );
+    }
+
+    public function checkEmailVerification(Request $request){
+    	$codeVerif = $request->code;
+    	$apRegno = $request->apRegno;
+    	$data = KartuKredit::where('appregno',$apRegno)->first();
+    	$correctCode = $data['verification_code'];
+
+    	if ($codeVerif == $correctCode){
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'Kode Benar'
+    		]);
+    	}else{
+    		return response()->json([
+    			'responseCode'=>'01',
+    			'responseMessage'=>'Kode Salah'
+    		]);
+    	}
     }
 
 }
