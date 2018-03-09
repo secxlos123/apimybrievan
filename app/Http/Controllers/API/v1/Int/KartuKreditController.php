@@ -416,6 +416,8 @@ class KartuKreditController extends Controller{
     	$ktp = $dataEform['image_ktp'];
     	$slipGaji = $dataEform['image_slip_gaji'];
 
+    	$scoring = $this->getScoring($apregno);
+
     	if ($jenisNasabah == 'debitur'){
     		
     		return response()->json([
@@ -426,7 +428,8 @@ class KartuKreditController extends Controller{
     				'ktp'=>$ktp,
     				'slip_gaji'=>$slipGaji
     			],
-    			'$data_los'=> $dataLos
+    			'data_los'=> $dataLos,
+    			'score'=>$scoring
     		]);
     	}else{
     		$nametag = $dataEform['image_nametag'];
@@ -442,11 +445,43 @@ class KartuKreditController extends Controller{
     				'nametag'=>$nametag,
     				'kartu_bank_lain'=>$kartuBankLain
     			],
-    			'data_los'=> $dataLos
+    			'data_los'=> $dataLos,
+    			'score'=>$scoring
     		]);
-
     	}
+
+    	//eror
+    	return response()->json([
+    		'responseCode'=>'01',
+    		'responseMessage'=>'terjadi kesalahan'
+    	]);
     }
+
+    function getScoring($apRegno){
+    	$TOKEN_LOS = $this->tokenLos;
+		$client = new Client();
+		$host = '10.107.11.111:9975';
+
+		try{
+			$res = $client
+			->request('POST',
+				$host.'/api/scoring',
+				['headers'=>['access_token'=> $TOKEN_LOS],
+				'form_params'=> ['apRegno'=>$apRegno],
+				]
+			);
+		}catch (RequestException $e){
+			echo "Terjadi kesalahan";
+			return  $e->getMessage();
+		}
+
+		$body = $res->getBody();
+		$obj = json_decode($body);
+		$data = $obj->responseData;
+
+		return $data;
+
+	}
 
     public function pefindo(){
     	$getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
@@ -460,6 +495,8 @@ class KartuKreditController extends Controller{
                 ])
                 ->post( 'form_params' );
     }
+
+
 
     public function checkEmailVerification(Request $request){
     	$codeVerif = $request->code;
