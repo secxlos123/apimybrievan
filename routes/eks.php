@@ -243,30 +243,32 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1' ], function() {
 	        'as'    => 'api.user.read_notification.eks',
 	        'uses'  => 'NotificationController@read'
 	    ]);
-	    /**
-		 * Route for namespace API\v1\Eks
-		 */
-		 Route::get('developer/getall', [
-	        'uses'  => 'Int\DeveloperController@GetAllDeveloper'
-	    ]);
-		/**
-		 * Route for namespace API\v1\Eks
-		 */
-		 Route::get('property/getall', [
-	        'uses'  => 'Eks\PropertyController@GetAllProperty'
-	    ]);
-		 /**
-		 * Route for namespace API\v1\Eks
-		 */
-		 Route::get('property-type/getall', [
-	        'uses'  => 'Eks\PropertyTypeController@GetAllType'
-	    ]);
-		 /**
-		 * Route for namespace API\v1\Eks
-		 */
-		 Route::get('property-item/getall', [
-	        'uses'  => 'Eks\PropertyItemController@GetAllItem'
-	    ]);
+	    Route::group(['prefix' => 'getall'], function() {
+		    /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('developer', [
+		        'uses'  => 'Int\DeveloperController@GetAllDeveloper'
+		    ]);
+			/**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property', [
+		        'uses'  => 'Eks\PropertyController@GetAllProperty'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-type', [
+		        'uses'  => 'Eks\PropertyTypeController@GetAllType'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-item', [
+		        'uses'  => 'Eks\PropertyItemController@GetAllItem'
+		    ]);
+	    });
 
 	});
 });
