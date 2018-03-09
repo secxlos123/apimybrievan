@@ -16,6 +16,8 @@ use App\Models\User;
 use App\Models\EForm;
 use Asmx;
 
+use App\Http\Controllers\API\v1\Int\KreditEmailGeneratorController;
+
 class KartuKreditController extends Controller{
 
 
@@ -352,7 +354,13 @@ class KartuKreditController extends Controller{
     	//email, subject, message
     	$email = $req['email'];
     	$subject = $req['subject'];
-    	$message = $req['message'];
+    	// $message = $req['message'];
+
+    	$apregno = $req['apRegno'];
+
+    	$dataKredit = KartuKredit::where('appregno',$apRegno)->first();
+    	$emailGenerator = new KreditEmailGeneratorController();
+    	$message = $emailGenerator->sendEmailVerification($dataKredit,$apregno,'www.google.com');
 
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
