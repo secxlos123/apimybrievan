@@ -39,7 +39,7 @@ class KartuKredit extends Model
 
     public $timestamps = false;
 
-    public function convertToAddDataLosFormat(Request $req,$type){
+    public function convertToAddDataLosFormat($req,$type){
 
         try{
                 
@@ -87,11 +87,13 @@ class KartuKredit extends Model
 
             $emergencyNoTlp = $req['EmergencyNoTlp'];
             $emergencyKota = $req['EmergencyKota'];
-            $cardType = $req['CardType'];
+            
 
             if ($type == 'update'){
-                $appNumber = $req['appNumber'];
+                $appNumber = $req['apregno'];
                 $subBidangUsaha = $req['subBidangUsaha'];
+            }else{
+                $cardType = $req['CardType'];
             }
             
         }catch (Exception $e){
@@ -142,13 +144,17 @@ class KartuKredit extends Model
             'EmergencyKota' => $emergencyKota,
             'EmergencyNoTlp' =>$emergencyNoTlp,
             'EmergencyKota' => $emergencyKota,
-            'CardType' => $cardType
+            
         ];
 
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
+        }else{
+            $informasiLos['CardType'] = $cardType;
         }
+        \Log::info('========update=======');
+        \Log::info($informasiLos);
 
         $informasiLos = $this->overwriteEmptyRecord($informasiLos);
 
@@ -177,7 +183,8 @@ class KartuKredit extends Model
         $ef['latitude'] = $req['latitude'];
         $ef['appointment_date'] = $req['appointment_date'];
         $ef['nik'] = $req['nik'];
-        $ef['product_type'] = $req['product_type']; 
+        $ef['product_type'] = $req['product_type'];
+        $ef['response_status'] = 'unverified'; 
 
         $ef = $this->overwriteEmptyRecord($ef);
         $eform = EForm::create($ef);
@@ -199,7 +206,7 @@ class KartuKredit extends Model
         if ($req['jenis_nasabah'] == 'debitur'){
             $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
-            $data['image_slip_gaji'] = '-';
+            $data['image_slip_gaji'] = 'SLIP_GAJI';
             $data['image_nametag'] = '-';
             $data['image_kartu_bank_lain'] = '-';
         }else{
