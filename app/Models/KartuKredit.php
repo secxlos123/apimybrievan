@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\EForm;
+use App\Models\CustomerDetail;
 use App\Http\Requests\API\v1\EFormRequest;
 
 
@@ -19,22 +20,26 @@ class KartuKredit extends Model
 	//======================================
 	//pilihan kartu -> kartu yang user ajukan. diisi "world access","easy card", "platinum","touch"
 
-	//gambar gimana dong
+    protected $table = 'kartu_kredit_details';
+
     protected $fillable = [
-    	'nik','hp','email',
+    	'hp','email','user_id','eform_id',
     	'jenis_kelamin','nama','tempat_lahir','telephone',
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
-    	'memiliki_kk_bank_lain','limit_tertinggi'
+    	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
+        'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
+        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir'
     ];
 
     protected $hidden = [
-        'id'
+        'id','updated_at'
     ];
 
-    public function convertToAddDataLosFormat(Request $req,$type){
-        
+    public $timestamps = false;
+
+    public function convertToAddDataLosFormat($req,$type){
 
         try{
                 
@@ -82,11 +87,13 @@ class KartuKredit extends Model
 
             $emergencyNoTlp = $req['EmergencyNoTlp'];
             $emergencyKota = $req['EmergencyKota'];
-            $cardType = $req['CardType'];
+            
 
             if ($type == 'update'){
-                $appNumber = $req['appNumber'];
+                $appNumber = $req['apregno'];
                 $subBidangUsaha = $req['subBidangUsaha'];
+            }else{
+                $cardType = $req['CardType'];
             }
             
         }catch (Exception $e){
@@ -137,15 +144,19 @@ class KartuKredit extends Model
             'EmergencyKota' => $emergencyKota,
             'EmergencyNoTlp' =>$emergencyNoTlp,
             'EmergencyKota' => $emergencyKota,
-            'CardType' => $cardType
+            
         ];
 
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
+        }else{
+            $informasiLos['CardType'] = $cardType;
         }
+        \Log::info('========update=======');
+        \Log::info($informasiLos);
 
-        $informasiLos = $this->checkInformasiLosKosong($informasiLos);
+        $informasiLos = $this->overwriteEmptyRecord($informasiLos);
 
         return $informasiLos;
     }
@@ -172,7 +183,8 @@ class KartuKredit extends Model
         $ef['latitude'] = $req['latitude'];
         $ef['appointment_date'] = $req['appointment_date'];
         $ef['nik'] = $req['nik'];
-        $ef['product_type'] = $req['product_type']; 
+        $ef['product_type'] = $req['product_type'];
+        $ef['response_status'] = 'unverified'; 
 
         $ef = $this->overwriteEmptyRecord($ef);
         $eform = EForm::create($ef);
@@ -182,7 +194,68 @@ class KartuKredit extends Model
     }
 
     public function createKartuKreditDetails($req){
-        $det[]
+         \Log::info($req);
+        //get user id
+        $nik= $req['nik'];
+        $e = EForm::where('nik',$nik)->first();
+        $userId = $e->user_id;
+
+        $data['user_id'] = $userId;
+        
+
+        if ($req['jenis_nasabah'] == 'debitur'){
+            $data['image_npwp'] = $req['NPWP'];
+            $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = 'SLIP_GAJI';
+            $data['image_nametag'] = '-';
+            $data['image_kartu_bank_lain'] = '-';
+        }else{
+            $data['image_npwp'] = $req['NPWP'];
+            $data['image_ktp'] = $req['KTP'];
+            $data['image_slip_gaji'] = $req['SLIP_GAJI'];
+            $data['image_nametag'] = $req['NAME_TAG'];
+            $data['image_kartu_bank_lain'] = $req['KARTU_BANK_LAIN'];
+        }
+
+        if ($req['memiliki_kk_bank_lain'] == 'true'){
+            $data['memiliki_kk_bank_lain'] = true;
+        }else{
+            $data['memiliki_kk_bank_lain'] = false;
+        }
+
+        $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
+        $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
+        
+        $data['limit_tertinggi'] = $req['range_kartu'];
+        $data['jenis_nasabah'] = $req['jenis_nasabah'];
+        $data['hp'] = $req['hp'];
+        $data['email'] = $req['email'];
+        $data['jenis_kelamin'] = $req['jenis_kelamin'];
+        $data['nama'] = $req['nama'];
+        $data['tempat_lahir'] = $req['tempat_lahir'];
+        $data['telephone'] = $req['telephone'];
+        $data['pendidikan'] = $req['pendidikan'];
+        $data['pekerjaan'] = $req['pekerjaan'];
+        $data['tiering_gaji'] = $req['tiering_gaji'];
+        $data['agama'] = $req['agama'];
+        $data['pilihan_kartu'] = $req['pilihan_kartu'];
+        $data['nama_ibu_kandung'] = $req['nama_ibu_kandung'];
+        $data['status_pernikahan'] = $req['status'];
+        $data['eform_id'] = $req['eform_id'];
+        $data['pn'] = $req['ao_id'];
+        $data['tanggal_lahir'] = $req['ttl'];
+
+
+        $kkDetails = KartuKredit::create($data);
+        
+        $kkDetails['range_kartu'] = $kkDetails['limit_tertinggi'];
+        \Log::info('=======kk details=========');
+        \Log::info($kkDetails);
+        return $kkDetails;
+
+    }
+
+    function insertEformIdIntoKKDetails($eformid){
     }
 
     public function eformStatusFail(){
