@@ -350,6 +350,7 @@ class KartuKreditController extends Controller{
     	$message = $emailGenerator
     	->sendEmailVerification($dataKredit,$apregno,'www.google.com');
 
+   		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
