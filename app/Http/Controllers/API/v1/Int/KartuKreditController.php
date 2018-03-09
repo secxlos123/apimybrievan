@@ -416,12 +416,6 @@ class KartuKreditController extends Controller{
     	$ktp = $dataEform['image_ktp'];
     	$slipGaji = $dataEform['image_slip_gaji'];
 
-    	$kk = new KartuKredit();
-    	$npwp = $kk->globalImageCheck($npwp);
-
-
-
-
     	if ($jenisNasabah == 'debitur'){
     		
     		return response()->json([
