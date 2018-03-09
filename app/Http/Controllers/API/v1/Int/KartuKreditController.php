@@ -358,7 +358,7 @@ class KartuKreditController extends Controller{
 
     	$apregno = $req['apRegno'];
 
-    	$dataKredit = KartuKredit::where('appregno',$apRegno)->first();
+    	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGeneratorController();
     	$message = $emailGenerator->sendEmailVerification($dataKredit,$apregno,'www.google.com');
 
