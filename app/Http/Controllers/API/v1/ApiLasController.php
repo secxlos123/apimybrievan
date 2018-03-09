@@ -1761,13 +1761,13 @@ class ApiLasController extends Controller
 
                             //------------hapus file----------------------------------
                             $brigunas = $briguna->get();
-                            $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah'],$brigunas[0]['eform_id']);
-                            $kk   = $this->datafoto($request['KK'],$brigunas[0]['id_foto'],$brigunas[0]['KK'],$brigunas[0]['eform_id']);
-                            $gaji = $this->datafoto($request['SLIP_GAJI'],$brigunas[0]['id_foto'],$brigunas[0]['SLIP_GAJI'],$brigunas[0]['eform_id']);
-                            $skpg = $this->datafoto($request['SKPG'],$brigunas[0]['id_foto'],$brigunas[0]['SKPG'],$brigunas[0]['eform_id']);
-                            $sk_awal = $this->datafoto($request['SK_AWAL'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AWAL'],$brigunas[0]['eform_id']);
-                            $sk_akhir = $this->datafoto($request['SK_AKHIR'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AKHIR'],$brigunas[0]['eform_id']);
-                            $rekomend = $this->datafoto($request['REKOMENDASI'],$brigunas[0]['id_foto'],$brigunas[0]['REKOMENDASI'],$brigunas[0]['eform_id']);
+                            $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah']);
+                            $kk   = $this->datafoto($request['KK'],$brigunas[0]['id_foto'],$brigunas[0]['KK']);
+                            $gaji = $this->datafoto($request['SLIP_GAJI'],$brigunas[0]['id_foto'],$brigunas[0]['SLIP_GAJI']);
+                            $skpg = $this->datafoto($request['SKPG'],$brigunas[0]['id_foto'],$brigunas[0]['SKPG']);
+                            $sk_awal = $this->datafoto($request['SK_AWAL'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AWAL']);
+                            $sk_akhir = $this->datafoto($request['SK_AKHIR'],$brigunas[0]['id_foto'],$brigunas[0]['SK_AKHIR']);
+                            $rekomend = $this->datafoto($request['REKOMENDASI'],$brigunas[0]['id_foto'],$brigunas[0]['REKOMENDASI']);
 
                             $param_briguna['NPWP_nasabah'] = $npwp;
                             $param_briguna['KK']           = $kk;
@@ -2003,11 +2003,11 @@ class ApiLasController extends Controller
                 // print_r($data_eforms['id']);
                 // print_r("<br>");
                 // print_r($tgl_jatuh_tempo);exit();
-                $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1'],$data_eforms['id']);
-                $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2'],$data_eforms['id']);
-                $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3'],$data_eforms['id']);
-                $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4'],$data_eforms['id']);
-                $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5'],$data_eforms['id']);
+                $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
+                $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
+                $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
+                $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
+                $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
                 
                 $data_briguna['id_foto']  = $id_foto;
                 $data_briguna['lainnya1'] = $foto_lainnya1;
@@ -2323,7 +2323,7 @@ class ApiLasController extends Controller
         }
     }
 
-    function datafoto($request, $id_foto, $exist_field, $eform_id){
+    function datafoto($request, $id_foto, $exist_field){
         $path  = public_path( 'uploads/' . $id_foto );
         $image = substr($request, -4);
         if ($image == '.jpg' || $image == '.pdf' || $image == 'jpeg' || $image == '.png' || $image == '.gif') {
@@ -2341,7 +2341,7 @@ class ApiLasController extends Controller
                     unlink($path.'/'.$exist_field);
                 }
             }
-            $upload_file = $this->uploadimage($request,$eform_id,$id_foto);
+            $upload_file = $this->updateimage($request,$id_foto);
             $params = $upload_file;
         }
         return $params;
@@ -2349,15 +2349,11 @@ class ApiLasController extends Controller
 
     function uploadimage($image, $id, $id_foto) {
         $path  = public_path('uploads/'.$id_foto.'/');
-        if (isset($image['uploadfoto'])) {
-            $eform = EForm::where('id', $id)->first();
-            if (isset($image['identity']) || isset($image['couple_identity'])) {
-                $path  = public_path('uploads/'.$eform->nik.'/');
-            }
-            $data_image = $image['uploadfoto'];
-        } else {
-            $data_image = $image;
+        $eform = EForm::where('id', $id)->first();
+        if (isset($image['identity']) || isset($image['couple_identity'])) {
+            $path  = public_path('uploads/'.$eform->nik.'/');
         }
+        $data_image = $image['uploadfoto'];
         
         $filename = null;
         if ($data_image) {
@@ -2379,23 +2375,11 @@ class ApiLasController extends Controller
         return $filename;
     }
 
-    function updateimage($image, $id, $atribute) {
+    function updateimage($image, $id) {
         $path = public_path( 'uploads/' . $id . '/' );
         $filename = null;
         if ($image) {
-            // if (!$image->getClientOriginalExtension()) {
-            //     if ($image->getMimeType() == '.pdf') {
-            //         $extension = 'pdf';
-            //     }elseif($image->getMimeType() == '.jpg' || $image->getMimeType() == '.jpeg'){
-            //         $extension = 'jpg';
-            //     }else{
-            //         $extension = 'png';
-            //     }
-            // }else{
-            //     $extension = $image->getClientOriginalExtension();
-            // }
-
-            $filename = $id . '-'.$image->getClientOriginalName();
+            $filename = $image->getClientOriginalName();
             $image->move( $path, $filename );
         }
         return $filename;
