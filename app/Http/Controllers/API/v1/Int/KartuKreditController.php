@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\v1\EFormController;
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
 use App\Models\CustomerDetail;
@@ -16,7 +15,7 @@ use App\Models\User;
 use App\Models\EForm;
 use Asmx;
 
-use App\Http\Controllers\API\v1\Int\KreditEmailGeneratorController;
+use App\Models\KreditEmailGenerator;
 
 class KartuKreditController extends Controller{
 
@@ -347,10 +346,11 @@ class KartuKreditController extends Controller{
     	$apregno = $req['apRegno'];
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
-    	$emailGenerator = new KreditEmailGeneratorController();
+    	$emailGenerator = new KreditEmailGenerator();
     	$message = $emailGenerator
     	->sendEmailVerification($dataKredit,$apregno,'www.google.com');
-
+    	\Log::info('======== data kredit =========');
+   		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
