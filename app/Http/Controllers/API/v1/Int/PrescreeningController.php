@@ -368,7 +368,7 @@ class PrescreeningController extends Controller
                             , "DateOfBirth" => "1975-05-30"
                             , "FullName" => "Ahmad Fitra"
                             , "KTP" => "9987613005750014"
-                            , "PefindoId" => 2152216
+                            , "PefindoId" => 2152217
                         ]
                     ]
                 ];
@@ -399,7 +399,25 @@ class PrescreeningController extends Controller
                         , "descriptions" => "Success"
                         , "contents" => [
                             "cip" => [
-                                "recordlist" => [0]
+                                "recordlist" => [
+                                    [
+                                        "date" => "2017-12-07"
+                                        , "grade" => 11
+                                        , "probabilityofdefault" => 14.73
+                                        , "reasonslist" => [
+                                            [
+                                                "code" => "DIS1"
+                                                , "description" => "Subject disputes the data"
+                                            ]
+                                            , [
+                                                "code" => "NQS1"
+                                                , "description" => "5 or more subscribers have recently requested reports on subject"
+                                            ]
+                                        ]
+                                        , "score" => 606.0
+                                        , "trend" => 3
+                                    ]
+                                ]
                             ]
                         ]
                     ];
