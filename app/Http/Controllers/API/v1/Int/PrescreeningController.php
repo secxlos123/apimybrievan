@@ -74,6 +74,9 @@ class PrescreeningController extends Controller
         }
 
         $pefindo = json_decode((string) $data->pefindo_detail);
+        if ( !$data->pefindo_detail ) {
+            $pefindo = [];
+        }
 
         $data['uploadscore'] = $this->generatePDFUrl( $data );
 
@@ -112,6 +115,9 @@ class PrescreeningController extends Controller
         $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
         $pefindo = json_decode((string) $eform->pefindo_detail);
+        if ( !$data->pefindo_detail ) {
+            $pefindo = [];
+        }
 
         $detail = $eform;
 
