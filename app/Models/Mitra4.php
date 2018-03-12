@@ -83,13 +83,13 @@ class Mitra4 extends Authenticatable  {
 					 ]);
 				$mitra->leftJoin(
 				 DB::raw('(SELECT kode_uker, max(unit_kerja) unit_kerja from uker_tables GROUP BY kode_uker) b'),
-				 'mitra.BRANCH_CODE','=',"CASE
+				 'mitra.BRANCH_CODE','=',DB::raw("CASE
 WHEN LENGTH(kode_uker)=5 THEN b.kode_uker
 WHEN LENGTH(kode_uker)=4 THEN '0'||b.kode_uker
 WHEN LENGTH(kode_uker)=3 THEN '00'||b.kode_uker
 WHEN LENGTH(kode_uker)=2 THEN '000'||b.kode_uker
 WHEN LENGTH(kode_uker)=1 THEN '0000'||b.kode_uker
-END");						
+END"));						
         \Log::info($mitra->toSql());
 
         return $mitra;
