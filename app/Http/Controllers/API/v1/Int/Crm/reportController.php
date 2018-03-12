@@ -19,11 +19,11 @@ class reportController extends Controller
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
         $request['list_branch'] =array_keys($list_kanca);
-        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
+        $pemasar = array_column($this->pemasar_kanwil($request->header('pn'), $region),"SNAME","PERNR");
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
-        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
+        $pemasar = array_column($this->pemasar_kanwil($request->header('pn'), $region),"SNAME","PERNR");
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = Marketing::getReports($request)->get();
@@ -39,7 +39,7 @@ class reportController extends Controller
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
           "uker"=> $value->branch,
-          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )]['SNAME'],
+          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )],
           "product_type"=> $value->product_type,
           "activity_type"=> $value->activity_type,
           "nama"=> $value->nama,
@@ -65,11 +65,11 @@ class reportController extends Controller
         $region = $request->input('region');
         $list_kanca = $this->list_kanca_for_kanwil($region);
         $request['list_branch'] =array_keys($list_kanca);
-        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
+        $pemasar = array_column($this->pemasar_kanwil($request->header('pn'), $region),"SNAME","PERNR");
       }else{
         $list_kanca = $this->list_all_kanca();
         $region = $list_kanca[$request->header('branch')]['region_id'];
-        $pemasar = $this->pemasar_kanwil($request->header('pn'), $region);
+        $pemasar = array_column($this->pemasar_kanwil($request->header('pn'), $region),"SNAME","PERNR");
       }
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       $data = MarketingActivity::with('fu_result')->getReports($request)->get();
@@ -82,7 +82,7 @@ class reportController extends Controller
           "pn"=>$value->pn,
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
-          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )]['SNAME'],
+          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )],
           "activity"=> $value->object_activity,
           "tujuan"=> $value->pn,
           "tanggal"=> $value->start_date,
