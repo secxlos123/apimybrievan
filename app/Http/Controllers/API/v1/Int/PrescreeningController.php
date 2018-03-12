@@ -103,6 +103,8 @@ class PrescreeningController extends Controller
         foreach ( array( 'sicd', 'dhn' ) as $key) {
             if ( !$eform->{$key.'_detail'} ) {
                 ${$key} = $this->dependencies( $key, $eform );
+            } else {
+                ${$key} = json_decode((string) $eform->{$key.'_detail'});
             }
         }
 
@@ -115,7 +117,7 @@ class PrescreeningController extends Controller
         $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
         $pefindo = json_decode((string) $eform->pefindo_detail);
-        if ( !$data->pefindo_detail ) {
+        if ( !$eform->pefindo_detail ) {
             $pefindo = [];
         }
 
