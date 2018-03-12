@@ -841,19 +841,7 @@ class EFormController extends Controller
             $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
             //add scheduleData in Disposisition
-            $scheduleData = array(
-                    'title' => $eform->ref_number
-                    , 'appointment_date' => $eform->appointment_date
-                    , 'user_id' => $eform->user_id
-                    , 'ao_id' => $eform->ao_id
-                    , 'eform_id' => $eform->id
-                    , 'ref_number' => $eform->ref_number
-                    , 'address' => $eform->address
-                    , 'longitude' => $eform->longitude
-                    , 'latitude' => $eform->latitude
-                    , 'desc' => '-'
-                    , 'status' => 'waiting'
-                );
+            $scheduleData = array( 'ao_id' => $eform->ao_id );
             $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
 
             // Credentials for push notification helper
