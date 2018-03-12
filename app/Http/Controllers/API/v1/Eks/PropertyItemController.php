@@ -157,9 +157,9 @@ class PropertyItemController extends Controller
     public function GetAllItem()
     {
         $developer_id = env('DEVELOPER_KEY',1);
-        $items = PropertyItem::select('id','property_type_id','is_available','available_status')->whereRaw("property_type_id in ( select id from property_types where property_id in (select id from properties where developer_id != ? and is_approved = true))",[$developer_id])->get();
+        $items = \DB::select('select id,property_type_id,is_available,available_status from property_items where property_type_id in ( select id from property_types where property_id in (select id from properties where developer_id != ? and is_approved = true))',[$developer_id]);
             return response()->success([
-                'message'  => "List Data Semua Tipe Property",
+                'message'  => "List Data Semua Item Property",
                 'contents' => $items ]);
     }
 }
