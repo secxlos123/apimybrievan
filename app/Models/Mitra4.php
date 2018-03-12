@@ -75,12 +75,21 @@ class Mitra4 extends Authenticatable  {
 				//$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
 				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([
-                    '*',
+                    \DB::Raw('mitra."idMitrakerja",mitra."NAMA_INSTANSI",mitra."NPL",mitra.kode,mitra."BRANCH_CODE",mitra."Jumlah_pegawai",mitra."JENIS_INSTANSI",mitra."Scoring",
+					mitra."KET_Scoring",mitra.jenis_bidang_usaha,mitra.alamat_instansi,mitra.alamat_instansi3,mitra.
+					telephone_instansi,mitra.rating_instansi,mitra.lembaga_pemeringkat,mitra.tanggal_pemeringkat,mitra.go_public,mitra.no_ijin_prinsip,mitra.
+					date_updated,mitra.updated_by,mitra.acc_type,mitra.alamat_instansi2,b."UNIT_KERJA"'),
                      \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
 					 ]);
 				$mitra->leftJoin(
-				 DB::raw('(SELECT kode_uker, max(unit_kerja) unit_kerja from uker_tables GROUP BY kode_uker) "B"'),
-				 'mitra.BRANCH_CODE','=','B.kode_uker');						
+				 DB::raw('(SELECT kode_uker, max(unit_kerja) "UNIT_KERJA" from uker_tables GROUP BY kode_uker) b'),
+				 'mitra.BRANCH_CODE','=',DB::raw("CASE
+WHEN LENGTH(kode_uker)=5 THEN b.kode_uker
+WHEN LENGTH(kode_uker)=4 THEN '0'||b.kode_uker
+WHEN LENGTH(kode_uker)=3 THEN '00'||b.kode_uker
+WHEN LENGTH(kode_uker)=2 THEN '000'||b.kode_uker
+WHEN LENGTH(kode_uker)=1 THEN '0000'||b.kode_uker
+END"));						
         \Log::info($mitra->toSql());
 
         return $mitra;
