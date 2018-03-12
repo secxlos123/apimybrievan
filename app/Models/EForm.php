@@ -47,7 +47,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'pefindo_detail_json', 'selected_pefindo_json' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -116,19 +116,6 @@ class EForm extends Model implements AuditableContract
             return $this->kpr->request_amount;
         }
         return 0;
-    }
-
-    /**
-     * Get Pefindo detail information.
-     *
-     * @return Array
-     */
-    public function getPefindoDetailJsonAttribute()
-    {
-        if( $this->pefindo_detail ) {
-            return json_decode($this->pefindo_detail);
-        }
-        return ['individual'=>[],'couple'=>[]];
     }
 
     /**
