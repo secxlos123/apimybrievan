@@ -118,6 +118,54 @@ class Developer extends Model implements AuditableContract
     }
 
     /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsDeveloper($query, Request $request)
+    {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['dev_id', 'asc'];
+        $project = $request->input('project') ? explode('|', $request->input('project')) : ['0', '50'];
+
+        return $query->from('developers_view_table')
+            ->where(function ($developer) use (&$request, &$query) {
+
+                /**
+                 * Query for search developers.
+                 */
+                if ($request->has('search')) $query->search($request);
+            })
+            ->where(function ($developer) use ($request, $project) {
+
+                /**
+                 * Query for filter by city_id.
+                 */
+                if ($request->has('city_id')) $developer->where('city_id', $request->input('city_id'));
+
+                /**
+                 * Query for for without independent
+                 */
+                if ($request->has('without_independent')) {
+                    if ($request->without_independent) {
+                        // $developer->where('bri', '=', NULL);
+                        $developer->where('bri', '!=', '1');
+                    }
+                }
+                /**
+                 * Query for for limit project
+                 */
+                if ($request->has('project')) $developer->whereBetween('project', $project);
+
+            })
+            ->select('*')
+            ->selectRaw('(select users.image from users where users.id = developers_view_table.dev_id) as image')
+            ->where('dev_id', '>', 1)
+            ->orderBy($sort[0], $sort[1]);
+    }
+
+    /**
      * Scope a query for search user.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
