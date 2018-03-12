@@ -454,7 +454,7 @@ class PrescreeningController extends Controller
                             if (ENV('APP_ENV') == 'local') {
                                 try {
                                     copy(
-                                        $basePath . '/../blank.pdf'
+                                        public_path('blank.pdf')
                                         , $basePath . '/' . $filename
                                     );
 
