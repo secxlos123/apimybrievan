@@ -73,6 +73,11 @@ class PrescreeningController extends Controller
             // }
         }
 
+        $pefindo = json_decode((string) $data->pefindo_detail);
+        if ( !$data->pefindo_detail ) {
+            $pefindo = [];
+        }
+
         $data['uploadscore'] = $this->generatePDFUrl( $data );
 
         return response()->success( [
@@ -81,6 +86,7 @@ class PrescreeningController extends Controller
                 'eform' => $data
                 , 'dhn' => $dhn
                 , 'sicd' => $sicd
+                , 'pefindo' => $pefindo
             ]
         ], 200 );
     }
@@ -96,9 +102,10 @@ class PrescreeningController extends Controller
 
         foreach ( array( 'sicd', 'dhn' ) as $key) {
             if ( !$eform->{$key.'_detail'} ) {
-                $this->dependencies( $key, $eform );
+                ${$key} = $this->dependencies( $key, $eform );
             }
         }
+
         if( env( 'AUTO_PRESCREENING', false ) ){
             if ( !$eform->pefindo_detail ) {
                 $this->pefindo( $eform );
@@ -107,12 +114,23 @@ class PrescreeningController extends Controller
 
         $eform['uploadscore'] = $this->generatePDFUrl( $eform );
 
+        $pefindo = json_decode((string) $eform->pefindo_detail);
+        if ( !$data->pefindo_detail ) {
+            $pefindo = [];
+        }
+
         $detail = $eform;
+
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 
         return response()->success( [
             'message' => 'Data Store Screening e-form',
-            'contents' => $eform
+            'contents' => [
+                'eform' => $eform
+                , 'dhn' => $dhn
+                , 'sicd' => $sicd
+                , 'pefindo' => $pefindo
+            ]
         ], 200 );
     }
 
@@ -263,6 +281,8 @@ class PrescreeningController extends Controller
            $type . '_detail' => json_encode($base)
            , 'selected_' . $type => 0
         ]);
+
+        return $base;
     }
 
     /**
