@@ -424,7 +424,7 @@ class EFormController extends Controller
                       'responseMessage' => "NIK tidak ditemukan"
                     ]);
                 }else{
-                   
+
                     //nama gambar
                     $id = date('YmdHis');
 
@@ -434,7 +434,7 @@ class EFormController extends Controller
                         $ktp = $request->KTP;
                         $slipGaji = $request->SLIP_GAJI;
 
-                        
+
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
                         $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
@@ -448,7 +448,7 @@ class EFormController extends Controller
                         $slipGaji = $request->SLIP_GAJI;
                         $nameTag = $request->NAME_TAG;
                         $limitKartu = $request->KARTU_BANK_LAIN;
-                        
+
 
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
@@ -493,7 +493,7 @@ class EFormController extends Controller
 
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
-                        
+
                         return response()->json([
                             'responseCode' => '01',
                             'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
@@ -521,7 +521,7 @@ class EFormController extends Controller
                         'eform_id' => $eformId
 
                     ]);
-                    
+
                     //send eform ke pefindo
                     // $pefindoController = new PrescreeningController();
                     // $getPefindo = $pefindoController->getPefindo()
@@ -529,8 +529,8 @@ class EFormController extends Controller
                     //cek jumlah kk
                     //pefindo dalam development. sabar ya :)
                     //update eform
-                    
-                   
+
+
                 }
             }else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
@@ -849,8 +849,8 @@ class EFormController extends Controller
                     , 'eform_id' => $eform->id
                     , 'ref_number' => $eform->ref_number
                     , 'address' => $eform->address
-                    , 'latitude' => $eform->longitude
-                    , 'longitude' => $eform->latitude
+                    , 'longitude' => $eform->longitude
+                    , 'latitude' => $eform->latitude
                     , 'desc' => '-'
                     , 'status' => 'waiting'
                 );

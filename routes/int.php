@@ -298,4 +298,31 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
         'uses'  => 'NotificationController@read'
     ]);
 
+    Route::group(['prefix' => 'getall'], function() {
+		    /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('developer', [
+		        'uses'  => 'Int\DeveloperController@GetAllDeveloper'
+		    ]);
+			/**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property', [
+		        'uses'  => 'Eks\PropertyController@GetAllProperty'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-type', [
+		        'uses'  => 'Eks\PropertyTypeController@GetAllType'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-item', [
+		        'uses'  => 'Eks\PropertyItemController@GetAllItem'
+		    ]);
+	    });
+
 });
