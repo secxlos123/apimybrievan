@@ -842,7 +842,8 @@ class EFormController extends Controller
 
             //add scheduleData in Disposisition
             $scheduleData = array( 'ao_id' => $eform->ao_id );
-            $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
+
+            Appointment::where('eform_id', $eform->id)->update($scheduleData);
 
             // Credentials for push notification helper
             $credentials = [
