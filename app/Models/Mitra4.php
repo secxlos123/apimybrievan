@@ -82,7 +82,7 @@ class Mitra4 extends Authenticatable  {
                      \DB::Raw(" case when mitra.kode is not null then 2 else 1 end as new_order ")
 					 ]);
 				$mitra->leftJoin(
-				 DB::raw('(SELECT kode_uker, max(unit_kerja) unit_kerja from uker_tables GROUP BY kode_uker) b'),
+				 DB::raw('(SELECT kode_uker, max(unit_kerja) "UNIT_KERJA" from uker_tables GROUP BY kode_uker) b'),
 				 'mitra.BRANCH_CODE','=',DB::raw("CASE
 WHEN LENGTH(kode_uker)=5 THEN b.kode_uker
 WHEN LENGTH(kode_uker)=4 THEN '0'||b.kode_uker
