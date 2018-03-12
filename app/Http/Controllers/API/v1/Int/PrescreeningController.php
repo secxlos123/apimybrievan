@@ -105,6 +105,7 @@ class PrescreeningController extends Controller
                 ${$key} = $this->dependencies( $key, $eform );
             } else {
                 ${$key} = json_decode((string) $eform->{$key.'_detail'});
+                ${$key} = ${$key}->responseData;
             }
         }
 
@@ -284,7 +285,7 @@ class PrescreeningController extends Controller
            , 'selected_' . $type => 0
         ]);
 
-        return $base;
+        return $base['responseData'];
     }
 
     /**
