@@ -14,6 +14,7 @@ class OtsSeven extends Model implements AuditableContract
 		   * @var [type]
 		   */
 		  protected $fillable = [
+		  	'collateral_id',
 		  	'collateral_status',
 		  	'on_behalf_of',
 		  	'ownership_number',

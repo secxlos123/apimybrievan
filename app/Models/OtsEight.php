@@ -15,6 +15,7 @@ class OtsEight extends Model implements AuditableContract
 		   * @var [type]
 		   */
 		  protected $fillable = [
+            'collateral_id',
 		  	'liquidation_realization',
 		  	'fair_market',
 		  	'liquidation',
