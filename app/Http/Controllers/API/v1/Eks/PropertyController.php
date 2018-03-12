@@ -243,7 +243,7 @@ class PropertyController extends Controller
     public function GetAllProperty()
     {
         $developer_id = env('DEVELOPER_KEY',1);
-        $property = Property::select('id','developer_id','name')->where('developer_id','!=',$developer_id)->where('is_approved',true)->get();
+        $property = DB::select('select id,developer_id,name from properties where developer_id != ? and is_approved = true',[$developer_id]);
             return response()->success([
                 'message'  => "List Data Semua Properties",
                 'contents' => $property ]);

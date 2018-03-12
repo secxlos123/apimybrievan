@@ -92,6 +92,9 @@ class CollateralController extends Controller
         {
           $property->where('name','ilike','%'.$request->input('search').'%');
         });
+      if ($this->request->has('slug')) {
+          $data->where('id',$this->request->input('slug'));
+      }
       $data->orderBy('created_at', 'desc');
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
@@ -114,6 +117,9 @@ class CollateralController extends Controller
       else
       {
           $data->where('region_id',$region['region_id']);
+      }
+      if ($this->request->has('slug')) {
+          $data->where('id',$this->request->input('slug'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
