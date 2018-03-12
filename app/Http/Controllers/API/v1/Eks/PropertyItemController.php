@@ -154,10 +154,11 @@ class PropertyItemController extends Controller
     /**
      * [GetAllType description]
      */
-    public function GetAllItem()
+    public function GetAllItem(Request $request)
     {
         $developer_id = env('DEVELOPER_KEY',1);
-        $items = \DB::select('select id,property_type_id,is_available,available_status from property_items where property_type_id in ( select id from property_types where property_id in (select id from properties where developer_id != ? and is_approved = true))',[$developer_id]);
+        $limit = $request->has('limit') ? $request->input('limit') : 500;
+        $items = \DB::select('select id,property_type_id,is_available,available_status from property_items where property_type_id in ( select id from property_types where property_id in (select id from properties where developer_id != ? and is_approved = true)) order by updated_at desc limit ?',[$developer_id,$limit]);
             return response()->success([
                 'message'  => "List Data Semua Item Property",
                 'contents' => $items ]);
