@@ -111,7 +111,7 @@ class PrescreeningController extends Controller
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 
         return response()->success( [
-            'message' => 'Data Screening e-form',
+            'message' => 'Data Store Screening e-form',
             'contents' => $eform
         ], 200 );
     }
