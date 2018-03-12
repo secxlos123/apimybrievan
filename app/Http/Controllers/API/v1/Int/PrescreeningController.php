@@ -111,7 +111,7 @@ class PrescreeningController extends Controller
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 
         return response()->success( [
-            'message' => 'Data Screening e-form',
+            'message' => 'Data Store Screening e-form',
             'contents' => $eform
         ], 200 );
     }
@@ -351,16 +351,40 @@ class PrescreeningController extends Controller
             $sendName = ($couple ? $customer->personal['couple_name'] : $customer->personal['name']);
             $sendBirthDate = ($couple ? $customer->personal['couple_birth_date'] : $customer->personal['birth_date']);
 
-            $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
-                ->setBody([
-                    'Request' => json_encode( array(
-                        'nomer_id_pefindo' => $sendNik
-                        , 'nama_pefindo' => $sendName
-                        , 'tanggal_lahir_pefindo' => $sendBirthDate
-                        , 'alasan_pefindo' => $reason
-                    ) )
-                ])
-                ->post( 'form_params' );
+            if (ENV('APP_ENV') == 'local') {
+                $getPefindo = [
+                    "code" => "200"
+                    , "descriptions" => "Success"
+                    , "contents" => [
+                        [
+                            "Address" => "KAMPUNG GUNUNG KATUN, WAY KAMBAS"
+                            , "DateOfBirth" => "1975-05-30"
+                            , "FullName" => "RADEN FITRA"
+                            , "KTP" => "1808043005750001"
+                            , "PefindoId" => 2152216
+                        ]
+                        , [
+                            "Address" => "Jl Tumenggung Suryo No. 18 Malang"
+                            , "DateOfBirth" => "1975-05-30"
+                            , "FullName" => "Ahmad Fitra"
+                            , "KTP" => "9987613005750014"
+                            , "PefindoId" => 2152217
+                        ]
+                    ]
+                ];
+
+            } else {
+                $getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
+                    ->setBody([
+                        'Request' => json_encode( array(
+                            'nomer_id_pefindo' => $sendNik
+                            , 'nama_pefindo' => $sendName
+                            , 'tanggal_lahir_pefindo' => $sendBirthDate
+                            , 'alasan_pefindo' => $reason
+                        ) )
+                    ])
+                    ->post( 'form_params' );
+            }
 
             return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : null;
 
@@ -369,16 +393,48 @@ class PrescreeningController extends Controller
             $return = ( $position == 'data' ) ? 0 : 'PDF kosong';
 
             if ( $pefindoId ) {
-                $getPefindo = Asmx::setEndpoint( $endpoint )
-                    ->setBody([
-                        'Request' => json_encode( array(
-                            'id_pefindo' => $pefindoId //2152216
-                            , 'tipesubject_pefindo' => 'individual'
-                            , 'alasan_pefindo' => $reason
-                            , 'nomer_id_pefindo' => $sendNik
-                        ) )
-                    ])
-                    ->post( 'form_params' );
+                if (ENV('APP_ENV') == 'local') {
+                    $getPefindo = [
+                        "code" => "200"
+                        , "descriptions" => "Success"
+                        , "contents" => [
+                            "cip" => [
+                                "recordlist" => [
+                                    [
+                                        "date" => "2017-12-07"
+                                        , "grade" => 11
+                                        , "probabilityofdefault" => 14.73
+                                        , "reasonslist" => [
+                                            [
+                                                "code" => "DIS1"
+                                                , "description" => "Subject disputes the data"
+                                            ]
+                                            , [
+                                                "code" => "NQS1"
+                                                , "description" => "5 or more subscribers have recently requested reports on subject"
+                                            ]
+                                        ]
+                                        , "score" => 606.0
+                                        , "trend" => 3
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ];
+
+                } else {
+                    $getPefindo = Asmx::setEndpoint( $endpoint )
+                        ->setBody([
+                            'Request' => json_encode( array(
+                                'id_pefindo' => $pefindoId //2152216
+                                , 'tipesubject_pefindo' => 'individual'
+                                , 'alasan_pefindo' => $reason
+                                , 'nomer_id_pefindo' => $sendNik
+                            ) )
+                        ])
+                        ->post( 'form_params' );
+
+                }
 
                 if ( $getPefindo["code"] == "200" ) {
                     if ( $position == 'data' ) {
@@ -391,34 +447,50 @@ class PrescreeningController extends Controller
                         }
                     } else {
                         if ( !empty($getPefindo["contents"]) ) {
-                            try {
-                                $filename = ($couple ? 'pefindo-couple.pdf' : 'pefindo-individual.pdf');
-                                $basePath = public_path( 'uploads/' . $eform->nik );
-                                $publicPath = $basePath . '/pefindo.zip';
+                            $filename = ($couple ? 'pefindo-couple.pdf' : 'pefindo-individual.pdf');
+                            $basePath = public_path( 'uploads/' . $eform->nik );
+                            $publicPath = $basePath . '/pefindo.zip';
 
-                                file_put_contents(
-                                    $publicPath
-                                    , base64_decode($getPefindo["contents"])
-                                );
-
-                                $zip = Zip::open( $publicPath )
-                                    ->extract(
-                                        $basePath
+                            if (ENV('APP_ENV') == 'local') {
+                                try {
+                                    copy(
+                                        public_path('blank.pdf')
+                                        , $basePath . '/' . $filename
                                     );
-                                File::delete( $publicPath );
 
-                                copy(
-                                    $basePath . '/report.pdf'
-                                    , $basePath . '/' . $filename
-                                );
+                                    return $filename;
 
-                                File::delete( $basePath . '/report.pdf' );
+                                } catch (Exception $e) {
+                                    return "Gagal generate PDF";
 
-                                return $filename;
+                                }
 
-                            } catch (Exception $e) {
-                                return "Gagal generate PDF";
+                            } else {
+                                try {
+                                    file_put_contents(
+                                        $publicPath
+                                        , base64_decode($getPefindo["contents"])
+                                    );
 
+                                    $zip = Zip::open( $publicPath )
+                                        ->extract(
+                                            $basePath
+                                        );
+                                    File::delete( $publicPath );
+
+                                    copy(
+                                        $basePath . '/report.pdf'
+                                        , $basePath . '/' . $filename
+                                    );
+
+                                    File::delete( $basePath . '/report.pdf' );
+
+                                    return $filename;
+
+                                } catch (Exception $e) {
+                                    return "Gagal generate PDF";
+
+                                }
                             }
                         }
                     }
