@@ -38,6 +38,10 @@ Route::group([ 'prefix' => 'v1/common', 'namespace' => 'API\v1' ], function () {
         'uses'  => 'NotificationController@read'
     ]);
 
+    Route::get('list_developer', 'DropdownController@list_developer');
+
+    Route::get('list_proptype', 'DropdownController@list_proptype');
+
     Route::get('mobile/list-notification', 'NotificationController@unreadMobile');
 	/**
 	 * Route for namespace API\v1\Eks
