@@ -478,6 +478,24 @@ class KartuKreditController extends Controller{
 		$data = $obj->responseData;
 
 		return $data;
+	}
+
+	public function finishAnalisa(Request $req){
+		$apregno = $req->apRegno;
+		$catRekAo = $req->catatanRekomendasiAO;
+		$rekLimitKartu = $req->rekomendasiLimitKartu;
+		$dataKK = KartuKredit::where('appregno','$apregno')->first();
+		$updateKK = $dataKK->update([
+			'is_analyzed'=>true,
+			'catatan_rekomendasi_ao'=>$catRekAo,
+			'rekomendasi_limit_kartu'=>$rekLimitKartu
+		]);
+
+		return response()->json([
+			'responseCode'=>'00',
+			'responseMessage'=>'analisa berhasil',
+			'contents'=>$dataKK
+		]);
 
 	}
 
@@ -517,4 +535,3 @@ class KartuKreditController extends Controller{
 
 }
 
- 
