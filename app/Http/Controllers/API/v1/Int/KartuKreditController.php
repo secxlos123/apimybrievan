@@ -344,6 +344,7 @@ class KartuKreditController extends Controller{
     	// $message = $req['message'];
 
     	$apregno = $req['apRegno'];
+    	echo '====apregno = '.$apregno.'========';
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
