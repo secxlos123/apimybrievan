@@ -14,8 +14,8 @@ class AddMoreColumnKreditDetails extends Migration
     public function up()
     {
         Schema::table('kartu_kredit_details', function (Blueprint $table) {
-            $table->string('nik');
-            $table->string('alamat');
+            $table->string('nik')->nullable();
+            $table->string('alamat')->nullable();
 
         });
     }
