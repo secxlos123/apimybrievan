@@ -57,7 +57,7 @@ class KartuKredit extends Model
         return $this->globalImageCheck( $value );
     }
 
-    public function getImageKTPAttribute( $value ){
+    public function getImageKtpAttribute( $value ){
         return $this->globalImageCheck( $value );
     }
 
