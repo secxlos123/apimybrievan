@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class KreditEmailGenerator{
+class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
 		return '<!DOCTYPE html>
