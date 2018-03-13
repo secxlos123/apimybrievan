@@ -2,9 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use App\Models\EForm;
+use App\Models\KartuKredit;
+
 class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
+      //sementara panggil eform liat nik
+      $eformid = KartuKredit::where('eform_id',$data['eform_id'])->first();
+      $nik = EForm::where('id',$eformid)->first();
+      $data['nik'] = $nik['nik'];
+
+      \Log::info('========data email========');
+      \Log::info($data);
+
 		return '<!DOCTYPE html>
 <html>
    <head>
