@@ -33,6 +33,7 @@ class AuthController extends Controller
         $baseData = $this->reArrangeRequest( $request->all() );
 
         $user = Sentinel::register( $baseData );
+        $user->history()->create(['password'=>$user->password]);
         $activation = Activation::create( $user );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
