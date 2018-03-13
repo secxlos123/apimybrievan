@@ -401,17 +401,17 @@ class KartuKreditController extends Controller{
 
     public function analisaKK(Request $req){
     	$eformId = $req->eform_id;
-    	$dataEform = KartuKredit::where('eform_id',$eformId)->first();
+    	$dataKredit = KartuKredit::where('eform_id',$eformId)->first();
 
-    	$jenisNasabah = $dataEform['jenis_nasabah'];
+    	$jenisNasabah = $dataKredit['jenis_nasabah'];
 
-    	$apregno = $dataEform['appregno'];
+    	$apregno = $dataKredit['appregno'];
     	\Log::info('apregno = '.$apregno);
     	$dataLos = $this->cekDataNasabah($apregno);
 
-    	$npwp = $dataEform['image_npwp'];
-    	$ktp = $dataEform['image_ktp'];
-    	$slipGaji = $dataEform['image_slip_gaji'];
+    	$npwp = $dataKredit['image_npwp'];
+    	$ktp = $dataKredit['image_ktp'];
+    	$slipGaji = $dataKredit['image_slip_gaji'];
 
     	$scoring = $this->getScoring($apregno);
 
@@ -420,6 +420,7 @@ class KartuKreditController extends Controller{
     		return response()->json([
     			'responseCode'=>'00',
     			'responseMessage'=>'sukses',
+    			'contents'=>$dataKredit,
     			'images'=>[
     				'npwp'=>$npwp,
     				'ktp'=>$ktp,
