@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
 class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
