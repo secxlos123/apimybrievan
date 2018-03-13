@@ -484,8 +484,8 @@ class KartuKreditController extends Controller{
 		$apregno = $req->apRegno;
 		$catRekAo = $req->catatanRekomendasiAO;
 		$rekLimitKartu = $req->rekomendasiLimitKartu;
-		$dataKK = KartuKredit::where('appregno','$apregno')->first();
-		$updateKK = KartuKredit::where('appregno','$apregno')->update([
+		$dataKK = KartuKredit::where('appregno',$apregno)->first();
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'is_analyzed'=>true,
 			'catatan_rekomendasi_ao'=>$catRekAo,
 			'rekomendasi_limit_kartu'=>$rekLimitKartu
