@@ -670,27 +670,27 @@ class User extends Authenticatable implements AuditableContract, UserResolver
         {
             $hispassword = $user->history;
             $flag = true;
-            $massage = 'Update Gagal Anda Menggunakan Password Lama.';
-            if (count($hispassword) > 0 && count($hispassword) < 4 ) {
+            if (count($hispassword) > 0 ) {
                 foreach ($hispassword as $key => $value) {
                     if ($hasher->check($password,$value->password)) {
                         $flag = false;
                     }
                 }
-            }elseif (count($hispassword) == 4) {
-                $flag = false;
-                $massage = 'Update Gagal Penggantian Password Masimal 4 Kali.';
             }
             if ($flag) {
                \Sentinel::update($user, array('password' => $password));
-                $user->history()->create(['password'=> bcrypt($password)]);
+               if (count($hispassword) == 4) {
+                    $user->history()->first()->update(['password'=>bcrypt($password)]);
+               }else{
+                    $user->history()->create(['password'=> bcrypt($password)]);
+               }
                 $return['success'] = true;
                 $return['message'] = 'Password Berhasil di Ubah.';
             }
             else
             {
                 $return['success'] = false;
-                $return['message'] = $massage;
+                $return['message'] = 'Update Gagal Anda Menggunakan Password Lama.';
             }
 
         }
