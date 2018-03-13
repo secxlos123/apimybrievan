@@ -73,6 +73,7 @@ class DeveloperAgentController extends Controller
         $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
         $request->merge(['email' => $email , 'password' => bcrypt($password)]);
         $user = User::create($request->all());
+        $user->history()->create($request->only('password'));
         $activation = Activation::create($user);
         Activation::complete($user, $activation->code);
         event(new CustomerRegistered($user, $password,$request->input('role_id')));
