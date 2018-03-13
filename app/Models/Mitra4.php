@@ -75,7 +75,7 @@ class Mitra4 extends Authenticatable  {
 				//$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
 				$mitra->orderBy('NAMA_INSTANSI', 'ASC');
 				$mitra = $mitra->select([
-                    \DB::Raw('mitra."idMitrakerja",mitra."sNAMA_INSTANSI",mitra."NPL",mitra.kode,mitra."BRANCH_CODE",mitra."Jumlah_pegawai",mitra."JENIS_INSTANSI",mitra."Scoring",
+                    \DB::Raw('mitra."idMitrakerja",mitra."NAMA_INSTANSI",mitra."NPL",mitra.kode,mitra."BRANCH_CODE",mitra."Jumlah_pegawai",mitra."JENIS_INSTANSI",mitra."Scoring",
 					mitra."KET_Scoring",mitra.jenis_bidang_usaha,mitra.alamat_instansi,mitra.alamat_instansi3,mitra.
 					telephone_instansi,mitra.rating_instansi,mitra.lembaga_pemeringkat,mitra.tanggal_pemeringkat,mitra.go_public,mitra.no_ijin_prinsip,mitra.
 					date_updated,mitra.updated_by,mitra.acc_type,mitra.alamat_instansi2,b."UNIT_KERJA"'),
