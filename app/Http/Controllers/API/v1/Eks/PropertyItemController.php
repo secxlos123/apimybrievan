@@ -158,7 +158,7 @@ class PropertyItemController extends Controller
     {
         $developer_id = env('DEVELOPER_KEY',1);
         $limit = $request->has('limit') ? $request->input('limit') : 500;
-        $items = \DB::table('property_items')->selectRaw('id,property_type_id,address,is_available,available_status')->whereRaw('property_type_id in ( select id from property_types where property_id in (select id from properties where developer_id != ? and is_approved = true))',[$developer_id])->paginate($limit);
+        $items = \DB::table('property_items')->selectRaw('id,property_type_id,address,price,is_available,available_status')->whereRaw('property_type_id in ( select id from property_types where property_id in (select id from properties where developer_id != ? and is_approved = true))',[$developer_id])->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Item Property",
                 'contents' => $items ]);

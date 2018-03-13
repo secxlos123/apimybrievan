@@ -244,7 +244,7 @@ class PropertyController extends Controller
     {
         $limit = $request->input('limit') ?: 500;
         $developer_id = env('DEVELOPER_KEY',1);
-        $property = DB::table('properties')->selectRaw('id,developer_id,name')->whereRaw('developer_id != ? and is_approved = true',[$developer_id])->paginate($limit);
+        $property = DB::table('properties')->selectRaw('id,prop_id_bri,developer_id,name')->whereRaw('developer_id != ? and is_approved = true',[$developer_id])->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Properties",
                 'contents' => $property ]);

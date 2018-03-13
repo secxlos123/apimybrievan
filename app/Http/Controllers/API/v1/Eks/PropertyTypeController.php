@@ -155,7 +155,7 @@ class PropertyTypeController extends Controller
     {
         $limit = $request->input('limit') ?: 500;
         $developer_id = env('DEVELOPER_KEY',1);
-        $types = \DB::table('property_types')->selectRaw('id,property_id,name')->whereRaw('property_id in (select id from properties where developer_id != ? and is_approved = true)',[$developer_id])->paginate($limit);
+        $types = \DB::table('property_types')->selectRaw('id,property_id,name,building_area,surface_area')->whereRaw('property_id in (select id from properties where developer_id != ? and is_approved = true)',[$developer_id])->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Tipe Property",
                 'contents' => $types ]);
