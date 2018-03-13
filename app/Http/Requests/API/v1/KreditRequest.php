@@ -19,6 +19,7 @@ class KreditRequest extends BaseRequest{
     			//cek segment. ajukan
     			if($this->segment(5)=='ajukankredit'){
     				return [
+    				'penghasilan'=>'required',
     				'PersonalNIK' => 'required',
     				'PersonalAlamatDomisili' => 'required',
     				'PersonalName' => 'required',

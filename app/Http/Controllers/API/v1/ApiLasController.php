@@ -1257,7 +1257,8 @@ class ApiLasController extends Controller
                         if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
                             // update table eforms
                             $eform = EForm::findOrFail($data['eform_id']);
-                            $base_request['pinca_name'] = $data['pinca_name'];
+                            $base_request['is_approved'] = true;
+                            $base_request['pinca_name']  = $data['pinca_name'];
                             $base_request['pinca_position'] = $data['pinca_position'];
                             $eform->update($base_request);
                             \Log::info("-------- putusan update table eforms sukses---------");
@@ -1268,11 +1269,6 @@ class ApiLasController extends Controller
                                 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
                         } elseif ($data['flag_putusan'] == '7') {
-                            // update table eforms
-                            $eform = EForm::findOrFail($data['eform_id']);
-                            $base_request['is_approved'] = true;
-                            $eform->update($base_request);
-                            \Log::info("-------- putusan update table eforms sukses---------");
                             $data_briguna = [
                                 'is_send'     => !isset($data['is_send'])? null:$data['is_send'],
                                 'catatan_adk' => !isset($data['catat_adk'])? "":$data['catat_adk'],
