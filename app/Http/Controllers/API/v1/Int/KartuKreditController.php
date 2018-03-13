@@ -340,7 +340,7 @@ class KartuKreditController extends Controller{
     public function toEmail(Request $req){
     	//email, subject, message
     	$email = $req['email'];
-    	$subject = $req['subject'];
+
     	// $message = $req['message'];
 
     	$apregno = $req['apRegno'];
@@ -357,7 +357,7 @@ class KartuKreditController extends Controller{
 
     	try{
     		$res = $client->request('POST',$host, ['headers' =>  $header,
-    				'form_params' => ['email' => $email,'$subject'=>$subject,'message'=>$message]
+    				'form_params' => ['email' => $email,'subject'=>'Email Verifikasi Pengajuan Kartu Kredit BRI','message'=>$message]
     			]);
     	}catch (RequestException $e){
     		return  $e->getMessage();
