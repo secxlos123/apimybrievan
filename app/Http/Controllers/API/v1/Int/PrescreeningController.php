@@ -124,7 +124,9 @@ class PrescreeningController extends Controller
 
         $detail = $eform;
 
-        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+        if ( !File::exists( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) {
+            generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+        }
 
         return response()->success( [
             'message' => 'Data Store Screening e-form',
