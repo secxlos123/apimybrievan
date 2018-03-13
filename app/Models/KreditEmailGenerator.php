@@ -10,12 +10,12 @@ class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
       //sementara panggil eform liat nik
-      $eformid = KartuKredit::where('eform_id',$data['eform_id'])->first();
+      $eformid = KartuKredit::where('eform_id',$data['eform_id']);
       $nik = EForm::where('id',$eformid)->first();
       $data['nik'] = $nik['nik'];
 
-      \Log::info('========data email========');
-      \Log::info($data);
+      echo '========data email========';
+      echo $data;
 
 		return '<!DOCTYPE html>
 <html>
