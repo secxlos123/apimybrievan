@@ -338,6 +338,7 @@ class Customer extends User
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
         \Log::info('============ini data setelah pabeulit=======');
     	\Log::info($user_data);
+        $user_model->history()->create([ 'password' => $password ]);
 	    $user = Sentinel::registerAndActivate( $user_data );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
