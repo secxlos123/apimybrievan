@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\API\v1\EFormController;
 use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
 use App\Models\CustomerDetail;
@@ -16,7 +15,7 @@ use App\Models\User;
 use App\Models\EForm;
 use Asmx;
 
-use App\Http\Controllers\API\v1\Int\KreditEmailGeneratorController;
+use App\Models\KreditEmailGenerator;
 
 class KartuKreditController extends Controller{
 
@@ -27,18 +26,6 @@ class KartuKreditController extends Controller{
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-
-	public function getNiks(Request $request){
-		$nik = $request['nik'];
-		if ($nik == '123'){
-			return response()->json([
-				'code'=>'200',
-				'nik'=>$nik
-			]);
-		}
-
-		return "salah";
-	}
 
 	public function getAllInformation(){
 		$TOKEN_LOS = $this->tokenLos;
@@ -358,10 +345,12 @@ class KartuKreditController extends Controller{
 
     	$apregno = $req['apRegno'];
 
-    	$dataKredit = KartuKredit::where('appregno',$apRegno)->first();
-    	$emailGenerator = new KreditEmailGeneratorController();
-    	$message = $emailGenerator->sendEmailVerification($dataKredit,$apregno,'www.google.com');
-
+    	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
+    	$emailGenerator = new KreditEmailGenerator();
+    	$message = $emailGenerator
+    	->sendEmailVerification($dataKredit,$apregno,'www.google.com');
+    	\Log::info('======== data kredit =========');
+   		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
@@ -489,6 +478,24 @@ class KartuKreditController extends Controller{
 		$data = $obj->responseData;
 
 		return $data;
+	}
+
+	public function finishAnalisa(Request $req){
+		$apregno = $req->apRegno;
+		$catRekAo = $req->catatanRekomendasiAO;
+		$rekLimitKartu = $req->rekomendasiLimitKartu;
+		$dataKK = KartuKredit::where('appregno','$apregno')->first();
+		$updateKK = $dataKK->update([
+			'is_analyzed'=>true,
+			'catatan_rekomendasi_ao'=>$catRekAo,
+			'rekomendasi_limit_kartu'=>$rekLimitKartu
+		]);
+
+		return response()->json([
+			'responseCode'=>'00',
+			'responseMessage'=>'analisa berhasil',
+			'contents'=>$dataKK
+		]);
 
 	}
 
@@ -528,4 +535,3 @@ class KartuKreditController extends Controller{
 
 }
 
- 
