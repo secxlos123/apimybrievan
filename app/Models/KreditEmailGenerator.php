@@ -15,6 +15,18 @@ class KreditEmailGenerator extends Model{
       $nik = EForm::where('id',$eformid)->first();
       $data['nik'] = $nik['nik'];
 
+      if ($data['jenis_kelamin'] == '1'){
+         $data['jenis_kelamin'] = 'Laki-laki';
+      }else if ($data['jenis_kelamin'] == '2'){
+         $data['jenis_kelamin'] = 'Perempuan';
+      }
+
+      if ($data['status_pernikahan'] == '1'){
+         $data['status_pernikahan'] = 'Menikah';
+      }else if ($data['status_pernikahan'] == '2'){
+         $data['status_pernikahan'] = 'Belum Menikah';
+      }
+
       echo '========data email========';
       echo $data;
 
