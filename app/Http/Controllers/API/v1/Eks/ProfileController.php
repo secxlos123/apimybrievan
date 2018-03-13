@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\ThirdParty;
 use App\Models\Developer;
+use App\Models\UserDeveloper;
 use App\Notifications\EditDeveloper;
 
 class ProfileController extends Controller
@@ -75,21 +76,33 @@ class ProfileController extends Controller
 
         }
 
-        // if ($user->inRole('other')) {
+        else if ($user->inRole('developer-sales')) {
 
-        //     \DB::beginTransaction();
-        //     $thirdparty = ThirdParty::findOrFail( $user->id );
-        //     $thirdparty->update( $request->all() );
-        //     \DB::commit();
+            \DB::beginTransaction();
+            $profile = User::find( $user->id );
 
-        //     if ($thirdparty) {
-        //         return response()->success( [
-        //         'message' => 'Data Pihak ke-3 berhasil dirubah.',
-        //         'contents' => $thirdparty
-        //         ] );
-        //     }
+            $profile->update($request->only('image'));
 
-        // }
+           if ($request->has('name') && $request->input('name') != '') {
+               $profile->update($request->only('first_name','last_name','image','gender','phone','mobile_phone'));
+            }
+
+            $profile->userdeveloper()->updateOrCreate(['user_id'=>$user->id],$request->only('birth_date','join_date'));
+            \DB::commit();
+
+            if ($profile) {
+                return response()->success( [
+                'message' => 'Data Agent berhasil Diubah.',
+                'contents' => $profile
+                ],200 );
+            }else
+            {
+                return response()->success( [
+                'message' => 'Data Agent Tidak Dapat Diubah.'
+                ],422 );
+            }
+
+        }
 
         else if ($user->inRole('developer') || $user->inRole('others')) {
             $type = 'Unknown';

@@ -14,6 +14,7 @@ class OtsTen extends Model implements AuditableContract
 		   * @var [type]
 		   */
 		  protected $fillable = [
+		  	'collateral_id',
 		  	'paripasu',
 		  	'paripasu_bank',
 		  	'insurance',

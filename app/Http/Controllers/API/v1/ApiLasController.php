@@ -1257,7 +1257,8 @@ class ApiLasController extends Controller
                         if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
                             // update table eforms
                             $eform = EForm::findOrFail($data['eform_id']);
-                            $base_request['pinca_name'] = $data['pinca_name'];
+                            $base_request['is_approved'] = true;
+                            $base_request['pinca_name']  = $data['pinca_name'];
                             $base_request['pinca_position'] = $data['pinca_position'];
                             $eform->update($base_request);
                             \Log::info("-------- putusan update table eforms sukses---------");
@@ -1490,7 +1491,7 @@ class ApiLasController extends Controller
             "ket_buka_rekening"     => "Pinjaman" // hardcode
         ];
 
-        $insertDebitur = $this->insertDataDebtPerorangan($content_las_debt);
+        $insertDebitur = $this->insertDataDebtPerorangan($content_las_debt, $request['eform_id']);
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
@@ -1645,11 +1646,6 @@ class ApiLasController extends Controller
                             }
 
                             $param_briguna = [
-                                "uid"                       => $uid, // inquiry user las
-                                "uid_pemrakarsa"            => $uker, // inquiry user las
-                                "tp_produk"                 => $request['tp_produk'],
-                                "id_aplikasi"               => $insertDebitur['items'][0]->ID_APLIKASI,
-                                "cif_las"                   => $insertDebitur['items'][0]->CIF_LAS,
                                 "Tgl_perkiraan_pensiun"     => $request['Tgl_perkiraan_pensiun'],
                                 "Sifat_suku_bunga"          => $request['Sifat_suku_bunga'],
                                 "Briguna_profesi"           => $request['Briguna_profesi'],
@@ -1752,7 +1748,8 @@ class ApiLasController extends Controller
                                 "trans_normal_harian"       => $request['transaksi_normal_harian'],
                                 "pernah_pinjam"             => $request['pernah_pinjam'],
                                 "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'],
-                                "tgl_analisa"               => $request['tgl_analisa'] 
+                                "tgl_analisa"               => $request['tgl_analisa'],
+                                "no_rek_simpanan"           => $request['no_rek_simpanan']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform["branch_id"] = $request['kantor_cabang_id'];
@@ -2282,7 +2279,7 @@ class ApiLasController extends Controller
         }
     }
 
-    function insertDataDebtPerorangan($params) {
+    function insertDataDebtPerorangan($params, $eform_id) {
         try {
             $parameter['JSONData'] = json_encode($params);
             $parameter['flag_sp']  = 1;
@@ -2293,13 +2290,24 @@ class ApiLasController extends Controller
                 'created_at'=> date('Y-m-d H:i:s')
             ];
             $save = \DB::table('json_ws_log')->insert($data_log);
-            \Log::info('berhasil save insertDataDebtPerorangan json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataDebtPerorangan($parameter);
 
             if($resultclient->insertDataDebtPeroranganResult){
                 $datadetail = json_decode($resultclient->insertDataDebtPeroranganResult);
                 $dataResult = (array) $datadetail;
+                if ($dataResult['statusCode'] == '01') {
+                    $param_briguna = [
+                        "uid"             => $params['uid'], // inquiry las
+                        "uid_pemrakarsa"  => $params['kode_cabang'],//inquiry las
+                        "tp_produk"       => $params['tp_produk'],
+                        "id_aplikasi"     => $dataResult['items'][0]->ID_APLIKASI,
+                        "cif_las"         => $dataResult['items'][0]->CIF_LAS
+                    ];
+                    $briguna = \DB::table('briguna')->where('eform_id', $eform_id)->update($param_briguna);
+                    \Log::info('berhasil save insertDataDebtPerorangan json_ws_log dan update id_aplikasi briguna');
+                    // print_r($param_briguna);exit();
+                }
                 return $dataResult;
             }
             $error[0] = 'Gagal Koneksi DB';

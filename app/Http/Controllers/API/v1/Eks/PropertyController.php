@@ -237,4 +237,15 @@ class PropertyController extends Controller
         $data        = $kpr->getListPropertyAgenDev($userId, $credentials['id']);
         return response()->success(['contents' => $data]);
     }
+    /**
+     * [GetAllProperty description]
+     */
+    public function GetAllProperty()
+    {
+        $developer_id = env('DEVELOPER_KEY',1);
+        $property = Property::select('id','developer_id','name')->where('developer_id','!=',$developer_id)->where('is_approved',true)->get();
+            return response()->success([
+                'message'  => "List Data Semua Properties",
+                'contents' => $property ]);
+    }
 }
