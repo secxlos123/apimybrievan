@@ -85,6 +85,9 @@ class Marketing extends Model
               if($request->has('product_type')){
                 $marketing->where('marketings.product_type', '=', $request->input('product_type'));
               }
+              if($request->has('activity_type')){
+                $marketing->where('marketings.activity_type', '=', $request->input('activity_type'));
+              }
               if($request->has('pn')){
                 $marketing->where('marketings.pn', '=', $request->input('pn'));
               }
