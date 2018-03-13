@@ -764,6 +764,7 @@ class Audit extends Model implements AuditContract
                $model_type = ['app\models\collateral','app\models\otsdoc'];
                $auditrail->wherein('auditable_type', $model_type);
                $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+               // $auditrail->where(\DB::raw('lower(modul_name)'), 'not like', '%pengajuan%');
                $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
                $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
 
