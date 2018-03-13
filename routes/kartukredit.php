@@ -24,6 +24,8 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 	Route::post('/toemail','KartuKreditController@toEmail');
 
+	Route::post('/finish-analisa','KartuKreditController@finishAnalisa');
+
 	// Route::post('s')
 
 
