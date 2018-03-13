@@ -240,10 +240,11 @@ class PropertyController extends Controller
     /**
      * [GetAllProperty description]
      */
-    public function GetAllProperty()
+    public function GetAllProperty(Request $request)
     {
+        $limit = $request->input('limit') ?: 500;
         $developer_id = env('DEVELOPER_KEY',1);
-        $property = DB::select('select id,developer_id,name from properties where developer_id != ? and is_approved = true',[$developer_id]);
+        $property = DB::table('properties')->selectRaw('id,developer_id,name')->whereRaw('developer_id != ? and is_approved = true',[$developer_id])->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Properties",
                 'contents' => $property ]);
