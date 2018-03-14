@@ -340,10 +340,12 @@ class KartuKreditController extends Controller{
     public function toEmail(Request $req){
     	//email, subject, message
     	$email = $req['email'];
-    	$subject = $req['subject'];
+
     	// $message = $req['message'];
 
     	$apregno = $req['apRegno'];
+    		
+    	echo '====apregno = '.$apregno.'========';
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
@@ -357,7 +359,7 @@ class KartuKreditController extends Controller{
 
     	try{
     		$res = $client->request('POST',$host, ['headers' =>  $header,
-    				'form_params' => ['email' => $email,'$subject'=>$subject,'message'=>$message]
+    				'form_params' => ['email' => $email,'subject'=>'Email Verifikasi Pengajuan Kartu Kredit BRI','message'=>$message]
     			]);
     	}catch (RequestException $e){
     		return  $e->getMessage();
@@ -401,17 +403,17 @@ class KartuKreditController extends Controller{
 
     public function analisaKK(Request $req){
     	$eformId = $req->eform_id;
-    	$dataEform = KartuKredit::where('eform_id',$eformId)->first();
+    	$dataKredit = KartuKredit::where('eform_id',$eformId)->first();
 
-    	$jenisNasabah = $dataEform['jenis_nasabah'];
+    	$jenisNasabah = $dataKredit['jenis_nasabah'];
 
-    	$apregno = $dataEform['appregno'];
+    	$apregno = $dataKredit['appregno'];
     	\Log::info('apregno = '.$apregno);
     	$dataLos = $this->cekDataNasabah($apregno);
 
-    	$npwp = $dataEform['image_npwp'];
-    	$ktp = $dataEform['image_ktp'];
-    	$slipGaji = $dataEform['image_slip_gaji'];
+    	$npwp = $dataKredit['image_npwp'];
+    	$ktp = $dataKredit['image_ktp'];
+    	$slipGaji = $dataKredit['image_slip_gaji'];
 
     	$scoring = $this->getScoring($apregno);
 
@@ -420,6 +422,7 @@ class KartuKreditController extends Controller{
     		return response()->json([
     			'responseCode'=>'00',
     			'responseMessage'=>'sukses',
+    			'contents'=>$dataKredit,
     			'images'=>[
     				'npwp'=>$npwp,
     				'ktp'=>$ktp,
@@ -477,6 +480,24 @@ class KartuKreditController extends Controller{
 		$data = $obj->responseData;
 
 		return $data;
+	}
+
+	public function finishAnalisa(Request $req){
+		$apregno = $req->apRegno;
+		$catRekAo = $req->catatanRekomendasiAO;
+		$rekLimitKartu = $req->rekomendasiLimitKartu;
+		$dataKK = KartuKredit::where('appregno',$apregno)->first();
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
+			'is_analyzed'=>true,
+			'catatan_rekomendasi_ao'=>$catRekAo,
+			'rekomendasi_limit_kartu'=>$rekLimitKartu
+		]);
+
+		return response()->json([
+			'responseCode'=>'00',
+			'responseMessage'=>'analisa berhasil',
+			'contents'=>$dataKK
+		]);
 
 	}
 
@@ -516,4 +537,3 @@ class KartuKreditController extends Controller{
 
 }
 
- 
