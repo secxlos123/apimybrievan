@@ -165,7 +165,11 @@ class KartuKreditController extends Controller{
 			);
 		}catch(RequestException $e){
 
-      	 	return  $e->getMessage();
+
+      	 	return response()->json([
+      	 		'responseCode'=>'99',
+				'responseMessage'=>$e->getMessage()
+      	 	]);
 		}
 
 		$body = $res->getBody();
@@ -214,7 +218,7 @@ class KartuKreditController extends Controller{
 				]
 			);
 		}catch (RequestException $e){
-			echo "Terjadi kesalahan";
+
 			return  $e->getMessage();
 		}
 
@@ -469,8 +473,10 @@ class KartuKreditController extends Controller{
 				]
 			);
 		}catch (RequestException $e){
-			echo "Terjadi kesalahan";
-			return  $e->getMessage();
+			return response()->json([
+				'responseCode'=>'99',
+				'responseMessage'=>$e->getMessage()
+			]);
 		}
 
 		$body = $res->getBody();
