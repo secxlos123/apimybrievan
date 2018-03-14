@@ -17,6 +17,7 @@ use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
 use App\Models\Crm\Referral;
+use App\Models\Crm\MarketingDeleteRequest;
 
 use RestwsHc;
 
@@ -430,21 +431,73 @@ class MarketingController extends Controller
      */
     public function deleteMarketing(Request $request)
     {
-        $mrk_id = $request['id'];
-        $data = Marketing::find($mrk_id);
+        $mrk_id = $request['marketing_id'];
+        $deleteRequest = MarketingDeleteRequest::where('marketing_id',$mrk_id);
+        if(MarketingDeleteRequest::where('marketing_id',$mrk_id)->where('status','req')->count() != 0){
+          $delete = $deleteRequest->update(['status' => 'deleted']);
+          if($delete) {
 
-        if($data) {
-          $data->delete();
+            return response()->success([
+              'message' => 'Data Marketing berhasil dihapus.',
+              'content' => $deleteRequest
+            ], 201);
+          }
 
-          return response()->success([
-            'message' => 'Data Marketing berhasil dihapus.',
-            'content' => $data
-          ], 201);
+          return response()->error([
+            'message' => 'Data Marketing Tidak Dapat Dihapus.',
+          ], 500);
         }
 
         return response()->error([
-            'message' => 'Data Marketing Tidak Dapat Dihapus.',
+            'message' => 'No Marketing id has requested to delete',
         ], 500);
+    }
+
+    public function store_marketingDeleteRequest(Request $request)
+    {
+      $data['pn'] = $request->header('pn');
+      $data['branch'] = $request->header('branch');
+      $data['marketing_id'] = $request['marketing_id'];
+      $data['status'] = 'req';
+
+      $marketing = Marketing::find($request['marketing_id']);
+      $marketing_pn = substr('00000000'.$marketing['pn'], -8);
+      $header_pn = substr('00000000'.$request->header('pn'), -8);
+
+      if ($marketing_pn == $header_pn && $marketing['branch'] == $request->header('branch')) {
+        $check = MarketingDeleteRequest::where('marketing_id', $data['marketing_id'])->where('status', 'req')->count();
+        if($check==0){
+          $save = MarketingDeleteRequest::create($data);
+
+          if ($save) {
+            return response()->success([
+              'message' => 'Data Marketing Delete Request berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+            ], 201);
+          }
+
+          return response()->error([
+            'message' => 'Data Marketing Delete Request Tidak Dapat Ditambah.',
+          ], 500);
+        } else{
+          return response()->error([
+              'message' => 'Marketing has requested to delete',
+          ], 500);
+        }
+      }else{
+        return response()->error([
+            'message' => 'You are not Marketing owner',
+        ], 500);
+      }
+    }
+
+    public function getMarketingDeleteRequest(Request $request)
+    {
+      $deleteRequest = MarketingDeleteRequest::getRequestDelete($request)->get();
+      return response()->success( [
+          'message' => 'Sukses get Marketing Delete Request',
+          'contents' => $deleteRequest
+        ]);
     }
 
     public function pemasar($pn, $branch, $auth){
