@@ -314,7 +314,7 @@ class KartuKreditController extends Controller{
 
     public function sendSMS(Request $req){
     	$pn = $req['handphone'];
-    	$message = 'Kode unik anda adalah '.$req['message'].'\. periksa email';
+    	$message = 'Kode unik anda adalah '.$req['message'].'\. Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
@@ -344,8 +344,6 @@ class KartuKreditController extends Controller{
     	// $message = $req['message'];
 
     	$apregno = $req['apRegno'];
-    		
-    	echo '====apregno = '.$apregno.'========';
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();

@@ -20,7 +20,7 @@ class KreditRequest extends BaseRequest{
     			if($this->segment(5)=='ajukankredit'){
     				return [
     				'penghasilan'=>'required',
-    				'PersonalNIK' => 'required',
+    				'PersonalNIK' => 'required|numeric|digits:16',
     				'PersonalAlamatDomisili' => 'required',
     				'PersonalName' => 'required',
     				'PersonalTanggalLahir'=>'required',
@@ -36,7 +36,7 @@ class KreditRequest extends BaseRequest{
 					'PersonalNamaGadisKandung'=>'required',
 					'PersonalNoHP'=>'required',
 					'PersonalNoTlpRumah'=>'required',
-					'PersonalEmail'=>'required',
+					'PersonalEmail'=>'required|email',
 					'JobBidangUsaha'=>'required',
 					'JobKategoriPekerjaan'=>'required',
 					'JobStatusPekerjaan'=>'required',
