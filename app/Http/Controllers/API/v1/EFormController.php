@@ -97,7 +97,11 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newForm = EForm::filter( $request )->paginate( $limit );
+        if ($request->has('slug')) {
+            $newForm = EForm::findOrFail($request->input('slug'));
+        }else{
+            $newForm = EForm::filter( $request )->paginate( $limit );
+        }
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newForm
