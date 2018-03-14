@@ -82,6 +82,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::resource('marketing', 'MarketingController', [
     'only' => ['index', 'store']
   ]);
+  Route::post('delete_marketing', 'MarketingController@deleteMarketing');
 
   // Marketing Notes Route
   Route::post('/marketing/note', 'MarketingController@getNote');
