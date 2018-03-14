@@ -316,20 +316,20 @@ class MarketingController extends Controller
         $id = $request['id'];
         $data = Marketing::find($id);
         $marketing=[
-          'id'=> $data->id,
-          'pn'=> $data->pn,
-          'pn_name'=> array_key_exists(substring('00000000'.$data->pn, -8), $pemasar_name) ? $pemasar_name[substring('00000000'.$data->pn, -8)]:'',
-          'product_type'=> $data->product_type,
-          'activity_type'=> $data->activity_type,
-          'target'=> $data->target,
-          'account_id'=> $data->account_id,
-          'nama'=> $data->nama,
-          'nik'=> $data->nik,
-          'cif'=> $data->cif,
-          'status'=> $data->status,
-          'ref_id'=> $data->ref_id,
-          'target_closing_date'=> date('Y-m-d', strtotime($data->target_closing_date)),
-          'created_at' => date('m-Y', strtotime(str_replace('/', '-', $data->created_at)))
+          'id'=> $data['id'],
+          'pn'=> $data['pn'],
+          'pn_name'=> array_key_exists(substr('00000000'.$data['pn'], -8), $pemasar_name) ? $pemasar_name[substr('00000000'.$data['pn'], -8)]:'',
+          'product_type'=> $data['product_type'],
+          'activity_type'=> $data['activity_type'],
+          'target'=> $data['target'],
+          'account_id'=> $data['account_id'],
+          'nama'=> $data['nama'],
+          'nik'=> $data['nik'],
+          'cif'=> $data['cif'],
+          'status'=> $data['status'],
+          'ref_id'=> $data['ref_id'],
+          'target_closing_date'=> date('Y-m-d', strtotime($data['target_closing_date'])),
+          'created_at' => date('m-Y', strtotime(str_replace('/', '-', $data['created_at'])))
         ];
 
         return response()->success( [
