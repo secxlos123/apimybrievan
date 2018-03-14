@@ -314,6 +314,41 @@ class MarketingController extends Controller
         }
 
         $id = $request['id'];
+        foreach (MarketingActivity::where('marketing_id', $id)->with('marketing')->get() as $activity) {
+          $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+          $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+          if($activity->pn != $activity->pn_join){
+            if($activity->pn == $pn) {
+              $ownership = 'main';
+            }else {
+              $ownership = 'join';
+            }
+          }else {
+            $ownership = 'main';
+          }
+          $marketingActivity[]= [
+            'id' => $activity->id,
+            'pn' => $activity->pn,
+            'marketing_activity_type' => $activity->marketing->activity_type,
+            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
+            'object_activity' => $activity->object_activity,
+            'action_activity' => $activity->action_activity,
+            'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+            'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+            'start_time' => date('H:i', strtotime($activity->start_date)),
+            'end_time' => date('H:i', strtotime($activity->end_date)),
+            'longitude' => $activity->longitude,
+            'latitude' => $activity->latitude,
+            'marketing_id' => $activity->marketing_id,
+            'pn_join' => $activity->pn_join,
+            'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
+            'desc' => $activity->desc,
+            'address' => $activity->address,
+            'ownership' => $ownership,
+            'followup'=> $followUp,
+            'rescheduled'=> $rescheduled,
+            ];
+        }
         $data = Marketing::find($id);
         $marketing=[
           'id'=> $data['id'],
@@ -328,6 +363,7 @@ class MarketingController extends Controller
           'cif'=> $data['cif'],
           'status'=> $data['status'],
           'ref_id'=> $data['ref_id'],
+          'activity' => $marketingActivity,
           'target_closing_date'=> date('Y-m-d', strtotime($data['target_closing_date'])),
           'created_at' => date('m-Y', strtotime(str_replace('/', '-', $data['created_at'])))
         ];
