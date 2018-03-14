@@ -14,6 +14,7 @@ class OtsNine extends Model implements AuditableContract
 		   * @var [type]
 		   */
 		  protected $fillable = [
+		  	'collateral_id',
 		  	'certificate_status',
 		  	'receipt_date',
 		  	'information',

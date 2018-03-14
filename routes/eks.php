@@ -19,7 +19,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	/**
 	 * Route for authentication
 	 */
-	Route::group([ 'prefix' => 'auth' ], function () {
+	Route::group([ 'prefix' => 'auth' , 'middleware' => 'throttle-custom:10,10' ], function () {
 
 		/**
 		 * Route for post request login
@@ -243,9 +243,32 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1' ], function() {
 	        'as'    => 'api.user.read_notification.eks',
 	        'uses'  => 'NotificationController@read'
 	    ]);
-		/**
-		 * Route for namespace API\v1\Eks
-		 */
+	    Route::group(['prefix' => 'getall'], function() {
+		    /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('developer', [
+		        'uses'  => 'Int\DeveloperController@GetAllDeveloper'
+		    ]);
+			/**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property', [
+		        'uses'  => 'Eks\PropertyController@GetAllProperty'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-type', [
+		        'uses'  => 'Eks\PropertyTypeController@GetAllType'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-item', [
+		        'uses'  => 'Eks\PropertyItemController@GetAllItem'
+		    ]);
+	    });
 
 	});
 });

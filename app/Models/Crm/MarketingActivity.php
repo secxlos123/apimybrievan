@@ -47,17 +47,27 @@ class MarketingActivity extends Model
 
 
       return $query
-              ->join('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id');
-    }
+              ->orderBy('marketing_activities.id', 'asc')
+              ->join('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id')
+              ->where('marketing_activities.desc', '!=', 'first')
+              ->select('marketing_activities.id', 'marketing_activities.pn', 'marketings.branch', 'marketing_activities.object_activity', 'marketing_activities.action_activity', 'marketing_activities.start_date', 'marketing_activities.end_date', 'marketing_activities.address', 'marketings.activity_type', 'marketings.nama')
 
-    public function scopeGetReportMarketings($query, Request $request)
-    {
-      return $query
-            ->leftJoin('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id')
-            ->where( function($marketing) use($request){
-              if($request->has('pn')){
-                $marketing->where( 'marketings.pn', '=', $request->input( 'pn' ) );
-              }
-            });
+              ->where( function($activities) use($request){
+                if ($request->header('role') != 'fo') {
+                  if($request->has('region')){
+                   if($request->input('branch')=='all' || $request->input('branch')==''){
+                     $activities->whereIn('marketings.branch', $request->input('list_branch'));
+                   }else{
+                     $activities->where('marketings.branch', $request->input('branch'));
+                   }
+                   if($request->has('pn')){
+                     $activities->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+                   }
+                  }
+                }else{
+                  $activities->where( 'marketings.pn', '=', $request->header( 'pn' ) );
+                }
+              })
+              ;
     }
 }

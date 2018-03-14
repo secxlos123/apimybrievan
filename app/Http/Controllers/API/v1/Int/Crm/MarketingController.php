@@ -300,11 +300,40 @@ class MarketingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function detailMarketing(Request $request)
     {
-        $marketing = Marketing::find($id);
+        $pn = $request->header('pn');
+        $branch = $request->header('branch');
+        $auth = $request->header('Authorization');
+        $pemasar = $this->pemasar($pn,$branch,$auth);
+
+        if ($pemasar != null) {
+          $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        } else {
+          $pemasar_name = [];
+        }
+
+        $id = $request['id'];
+        $data = Marketing::find($id);
+        $marketing=[
+          'id'=> $data['id'],
+          'pn'=> $data['pn'],
+          'pn_name'=> array_key_exists(substr('00000000'.$data['pn'], -8), $pemasar_name) ? $pemasar_name[substr('00000000'.$data['pn'], -8)]:'',
+          'product_type'=> $data['product_type'],
+          'activity_type'=> $data['activity_type'],
+          'target'=> $data['target'],
+          'account_id'=> $data['account_id'],
+          'nama'=> $data['nama'],
+          'nik'=> $data['nik'],
+          'cif'=> $data['cif'],
+          'status'=> $data['status'],
+          'ref_id'=> $data['ref_id'],
+          'target_closing_date'=> date('Y-m-d', strtotime($data['target_closing_date'])),
+          'created_at' => date('m-Y', strtotime(str_replace('/', '-', $data['created_at'])))
+        ];
+
         return response()->success( [
-            'message' => 'Sukses',
+            'message' => 'Sukses get detail Marketing',
             'contents' => $marketing
           ]);
     }
@@ -363,9 +392,23 @@ class MarketingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deleteMarketing(Request $request)
     {
-        //
+        $mrk_id = $request['id'];
+        $data = Marketing::find($mrk_id);
+
+        if($data) {
+          $data->delete();
+
+          return response()->success([
+            'message' => 'Data Marketing berhasil dihapus.',
+            'content' => $data
+          ], 201);
+        }
+
+        return response()->error([
+            'message' => 'Data Marketing Tidak Dapat Dihapus.',
+        ], 500);
     }
 
     public function pemasar($pn, $branch, $auth){

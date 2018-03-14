@@ -16,6 +16,7 @@ class TrackingController extends Controller
      */
     public function index($type ,Request $request)
     {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort') ) : ['id', 'asc'];
         $eforms = array();
         if ($type == 'eks') {
             $user = $request->user();
@@ -30,7 +31,7 @@ class TrackingController extends Controller
                     , eforms.product_type as product_type
                     , date(eforms.created_at) as tanggal_pengajuan
                     , kpr.request_amount as jumlah_pengajuan
-                    , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                    , case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
                         when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
@@ -48,6 +49,7 @@ class TrackingController extends Controller
             }
 
             else if( $user->inRole('developer-sales') ) {
+                
                     $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
@@ -58,7 +60,7 @@ class TrackingController extends Controller
                     , eforms.ref_number as ref_number
                     , date(eforms.created_at) as tanggal_pengajuan
                     , kpr.request_amount as jumlah_pengajuan
-                    , case when eforms.is_approved = false and eforms.recommended = true then 'Kredit Ditolak'
+                    , case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
                         when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
@@ -108,7 +110,7 @@ class TrackingController extends Controller
                                 }
                             }
                     })
-                    ->paginate( $request->input( 'limit' ) ?: 10 );
+                    ->orderBy($sort[0], $sort[1])->paginate( $request->input( 'limit' ) ?: 10 );
                 // $limit = $request->input('limit') ?: 10;
                 // $eforms = EForm::Tracking($request)->paginate($limit);
                 // return response()->success(['contents' => $eforms]);

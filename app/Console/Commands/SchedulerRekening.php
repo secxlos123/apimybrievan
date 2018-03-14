@@ -84,58 +84,99 @@ class SchedulerRekening extends Command
     public function handle()
     {
         try {
+            \Log::info('handle running scheduler aman nih coyy');
             $data_briguna = \DB::table("briguna")
-                        ->select(['id','eform_id','id_aplikasi','cif','no_rekening','tgl_putusan'])
+                        ->select(['id','is_send','eform_id','id_aplikasi','cif','no_rekening'])
+                        ->where('is_send','6')
+                        ->whereNotNull('id_aplikasi')
+                        ->whereNull('no_rekening')
+                        ->orWhere('no_rekening','=','')
                         ->orderBy('id','asc')
+                        ->limit('10')
                         ->get()->toArray();
             // print_r($data_briguna);exit();
             if (!empty($data_briguna)) {
-                $message = [
-                    'message'  => 'data briguna kosong',
-                    'contents' => ''
-                ];
-                // print_r($data_briguna);exit();
                 $client = $this->client();
                 foreach ($data_briguna as $key => $value) {
-                    if ((!isset($value->no_rekening) || $value->no_rekening == '') && $value->id_aplikasi != '') {
+                    try {
                         $parameter['id_aplikasi'] = $value->id_aplikasi;
                         $rekening = $client->getStatusInterface($parameter);
-                        \Log::info($rekening);
                         if($rekening->getStatusInterfaceResult){
                             $datadetail = json_decode($rekening->getStatusInterfaceResult);
                             $result = $this->return_conten($datadetail);
-                            // print_r($result);
+                            $message = [
+                                'message'  => $result['descriptions'].' dari brinets',
+                                'contents' => ''
+                            ];
                             \Log::info($result);
+
                             if ($result['code'] == '01') {
                                 $update_data = [
-                                    'eform_id'    => $value->eform_id,
-                                    'is_send'     => 6,
-                                    'no_rekening' => $result['contents']['data'][0]->NO_REKENING,
-                                    'cif'         => $result['contents']['data'][0]->CIF,
-                                    'cif_las'     => $result['contents']['data'][0]->CIF_LAS,
+                                    'eform_id'   => $value->eform_id,
+                                    'is_send'    => 6,
+                                    'no_rekening'=> $result['contents']['data'][0]->NO_REKENING,
+                                    'cif'        => $result['contents']['data'][0]->CIF
                                 ];
 
                                 $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
                                 $briguna->update($update_data);
+
+                                // save json_ws_log
+                                $data_log = [
+                                    'json_data' => 'scheduler update nomer rekening sukses',
+                                    'function_name' => 'updateRekening',
+                                    'created_at'=> date('Y-m-d H:i:s')
+                                ];
+                                $save = \DB::table('json_ws_log')->insert($data_log);
+                                \Log::info('Sukses Update Rekening ALL dan simpan json_ws_log');
                                 $message = [
-                                    'message'  => 'Sukses update briguna',
-                                    'contents' => $briguna
+                                    'message'  => 'Sukses update no_rekening briguna dari brinets',
+                                    'contents' => 'sukses'
                                 ];
                             }
                         }
+                    } catch (Exception $e) {
+                        // save json_ws_log
+                        $data_log = [
+                            'json_data' => 'scheduler update nomer rekening gagal',
+                            'function_name' => 'updateRekening',
+                            'created_at'=> date('Y-m-d H:i:s')
+                        ];
+                        $save = \DB::table('json_ws_log')->insert($data_log);
+                        \Log::info('Gagal Update Rekening ALL dan simpan json_ws_log');
+                        return response()->error([
+                            'message' => 'Koneksi Jaringan Gagal'.$e,
+                            'contents' => ''
+                        ], 400 );
                     }
                 }
-                \Log::info($message);
+                
                 return $message;
             } else {
+                // save json_ws_log
+                $data_log = [
+                    'json_data' => 'Gagal update rekening, karena no rekening sudah tersimpan dilocal mybri',
+                    'function_name' => 'updateRekening',
+                    'created_at'=> date('Y-m-d H:i:s')
+                ];
+                $save = \DB::table('json_ws_log')->insert($data_log);
+                \Log::info('Gagal Update Rekening ALL, karena no rekening sudah tersimpan dilocal mybri');
                 return response()->error([
                     'message' => 'Hasil inquiry data rekening briguna tidak ditemukan',
                     'contents' => ''
                 ], 400 );
             }                
         } catch (Exception $e) {
+            // save json_ws_log
+            $data_log = [
+                'json_data' => 'scheduler update nomer rekening gagal',
+                'function_name' => 'updateRekening',
+                'created_at'=> date('Y-m-d H:i:s')
+            ];
+            $save = \DB::table('json_ws_log')->insert($data_log);
+            \Log::info('Gagal Update Rekening ALL dan simpan json_ws_log');
             return response()->error([
-                'message' => 'Koneksi Jaringan Gagal',
+                'message' => 'Koneksi Jaringan Gagal'.$e,
                 'contents' => ''
             ], 400 );
         }

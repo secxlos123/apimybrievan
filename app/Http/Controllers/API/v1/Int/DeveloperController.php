@@ -33,7 +33,7 @@ class DeveloperController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('has.user.dev', ['except' => ['index', 'store'] ]);
+        $this->middleware('has.user.dev', ['except' => ['index', 'store','GetAllDeveloper'] ]);
     }
 
     /**
@@ -139,7 +139,9 @@ class DeveloperController extends Controller
         else
         {
                 \Log::info($developer->user_id);
-                User::destroy($developer->user_id);
+                if ($method == 'disimpan') {
+                    User::destroy($developer->user_id);
+                }
                 \DB::commit();
                 return response()->error([
                 'message'  => "Data developer Gagal {$method}.",
@@ -188,6 +190,18 @@ class DeveloperController extends Controller
         \Log::info($id);
 
         return $id;
+
+    }
+
+    /**
+     * [GetAllDeveloper description]
+     */
+    public function GetAllDeveloper()
+    {
+        $developer = Developer::select('id','company_name')->get();
+            return response()->success([
+                'message'  => "List Data Semua Developer",
+                'contents' => $developer ]);
 
     }
 }

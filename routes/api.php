@@ -74,7 +74,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		Route::get( 'offices', 'OfficeController@index' );
-		Route::post('SelectCabang', 'SelectCabangController@index');
+		Route::post('SelectCabang', 'SelectCabangController@mitraeksternal');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');
@@ -91,7 +91,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('api_las/update', 'ApiLasController@update_briguna');
 		Route::post('api_las/update_foto', 'ApiLasController@update_foto_briguna');
 		Route::post('api_las/download_image', 'ApiLasController@download');
-		Route::get('api_las/rekening', 'ApiLasController@update_rekening');
+		Route::post('api_las/foto_lainnya', 'ApiLasController@update_foto_lainnya');
 
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]

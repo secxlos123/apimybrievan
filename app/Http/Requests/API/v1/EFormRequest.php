@@ -75,7 +75,7 @@ class EFormRequest extends BaseRequest
                         'appointment_date' => 'required|date',
                         'address' => 'required',
                         'longitude' => 'required',
-                        'latitude' => 'required'
+                        'latitude' => 'required',
                     ];
                 }
                 break;

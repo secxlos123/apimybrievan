@@ -54,21 +54,24 @@ class Marketing extends Model
 
       return $query
             ->orderBy('marketings.id', 'asc')
-            // ->leftJoin('marketing_activities', 'marketing_activities.marketing_id', '=', 'marketings.id')
-            // ->where('desc', '!=', 'first')
-            // ->leftJoin('marketing_activity_followups')
             ->where( function($marketing) use($request){
-              if($request->has('pn')){
-                $marketing->where( 'marketings.pn', '=', $request->input( 'pn' ) );
-              }
-              if($request->has('period_start') && $request->has('period_end')){
-                $marketing->whereBetwen('created_at',[$request->input( 'period_start' ), $request->input( 'period_end' )]);
+              if ($request->header('role') != 'fo') {
+                if($request->has('region')){
+                  if($request->input('branch')=='all' || $request->input('branch')==''){
+                    $marketing->whereIn('branch', $request->input('list_branch'));
+                  }else{
+                    $marketing->where('branch', $request->input('branch'));
+                  }
+                }
+                if($request->has('pn')){
+                  $marketing->where( 'marketings.pn', '=', $request->input( 'pn' ) );
+                }
+              }else{
+                $marketing->where( 'marketings.pn', '=', $request->header( 'pn' ) );
               }
             })
-            // ->select(array_merge([
-            //   'marketings.*','marketing_activities.pn','marketing_activities.pn_join','marketing_activities.desc','marketing_activities.start_date'
-            // ]))
             ;
+
     }
 
     public function scopeGetMarketingSummary($query, Request $request)
@@ -81,6 +84,9 @@ class Marketing extends Model
               }
               if($request->has('product_type')){
                 $marketing->where('marketings.product_type', '=', $request->input('product_type'));
+              }
+              if($request->has('activity_type')){
+                $marketing->where('marketings.activity_type', '=', $request->input('activity_type'));
               }
               if($request->has('pn')){
                 $marketing->where('marketings.pn', '=', $request->input('pn'));

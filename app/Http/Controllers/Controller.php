@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Cartalyst\Sentinel\Native\Facades\Sentinel;
 
 use App\Models\Crm\apiPdmToken;
+use App\Models\ApiPdmTokensBriguna;
 
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
@@ -90,7 +91,38 @@ class Controller extends BaseController
 
       return $briConnect;
     }
+    public function gen_token_briguna()
+    {
+      $client = new Client();
+	    $host = (env('APP_URL') == 'http://api.dev.net/')? 'http://10.35.65.208:81/':config('restapi.apipdm');
+		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
+		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
 
+      $requestBriconnect = $client->request('POST', $host.'/oauth/token',
+        [
+          'form_params' =>
+          [
+            'grant_type'=> 'client_credentials',
+            'client_id'=> $client_id,
+            'client_secret'=> $client_secret
+          ]
+        ]
+      );
+      $briConnect = json_decode($requestBriconnect->getBody()->getContents(), true);
+
+      $apiPdmToken = new ApiPdmTokensBriguna;
+
+      $apiPdmToken->access_token = $briConnect['access_token'];
+      $apiPdmToken->expires_in = date("Y-m-d H:i:s", time() + $briConnect['expires_in']);
+      $apiPdmToken->token_type = $briConnect['token_type'];
+      $apiPdmToken->scope = $briConnect['scope'];
+      $apiPdmToken->clientid = $client_id;
+      $apiPdmToken->clientsecret = $client_secret;
+
+      $apiPdmToken->save();
+
+      return $briConnect;
+    }
     public function byCif($cif, $token)
     {
       $client = new Client();

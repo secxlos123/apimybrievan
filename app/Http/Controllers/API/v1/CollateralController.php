@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\API\v1;
 
 use DB;
-use App\Models\OtsInArea;
 use App\Models\Collateral;
-use App\Models\OtsValuation;
-use Illuminate\Http\Request;
-use App\Models\OtsEnvironment;
-use App\Models\OtsAnotherData;
+use App\Models\OtsInArea;
+use App\Models\OtsAccordingLetterLand;
 use App\Models\OtsBuildingDesc;
+use App\Models\OtsEnvironment;
+use App\Models\OtsValuation;
+use App\Models\OtsSeven;
+use App\Models\OtsEight;
+use App\Models\OtsNine;
+use App\Models\OtsTen;
+use App\Models\OtsAnotherData;
+use App\Models\OtsPhoto;
+use Illuminate\Http\Request;
 use App\Models\UserServices;
 use App\Http\Controllers\Controller;
-use App\Models\OtsOtsAccordingLetterLand;
 use App\Http\Requests\API\v1\Collateral\CreateOts;
 use App\Http\Requests\API\v1\Collateral\CreateCollateral;
 use App\Http\Requests\API\v1\Collateral\ChangeStatusRequest;
@@ -203,28 +208,39 @@ class CollateralController extends Controller
       {
         $dataother = $this->request->other;
       }
-      return DB::transaction(function() use($collateralId,$dataother) {
-        $collateral = $this->collateral->where('status', Collateral::STATUS[1])->findOrFail($collateralId);
-        $collateral->otsInArea()->create($this->request->area);
-        $collateral->otsLetter()->create($this->request->letter);
-        $collateral->otsBuilding()->create($this->request->building);
-        $collateral->otsEnvironment()->create($this->request->environment);
-        $collateral->otsValuation()->create($this->request->valuation);
-        $collateral->otsSeven()->create($this->request->seven);
-        $collateral->otsEight()->create($this->request->eight);
-        $collateral->otsNine()->create($this->request->nine);
-        $collateral->otsTen()->create($this->request->ten);
-        $otsOther = $collateral->otsOther()->create($dataother);
+
+      $sendNotif = false;
+
+      try {
+        DB::beginTransaction();
+
+        $developer_id = env('DEVELOPER_KEY',1);
+        $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
+        \Log::info($collateral);
+        OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->area);
+        OtsAccordingLetterLand::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->letter);
+        OtsBuildingDesc::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->building);
+        OtsEnvironment::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->environment);
+        OtsValuation::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->valuation);
+        OtsSeven::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->seven);
+        OtsEight::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->eight);
+        OtsNine::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->nine);
+        OtsTen::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->ten);
+        $otsOther = OtsAnotherData::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$dataother);
         if (count($dataother['image_area'])>0) {
+          $photo_id = array();
           foreach ($dataother['image_area'] as $key => $value) {
-            \Log::info('======= data foreach ======');
+            \Log::info(' ======= data foreach ======');
             \Log::info($value);
-            $otsOther->images()->create(['ots_other_id'=>$otsOther->id]+$value);
+            $photos = OtsPhoto::create(['ots_other_id'=>$otsOther->id]+$value);
+            $photo_id[]=$photos->id;
           }
+          OtsPhoto::where('ots_other_id', $otsOther->id)->whereNotIn('id', $photo_id)->delete();
+          if ($collateral->developer_id == $developer_id) {
           $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-          if ( $collateralView ) {
+          if ( count($collateralView) > 0 ) {
             $eform = EForm::find($collateralView->eform_id);
-            if ( $eform ) {
+            if ( count($eform) > 0 ) {
               foreach( $otsOther->images as $image ) {
                 $paths = explode('/', $image->image_data);
                 $filename = $paths[ count($paths) - 1 ];
@@ -232,15 +248,23 @@ class CollateralController extends Controller
                   public_path( 'uploads/collateral/other/' . $otsOther->id . '/' . $filename )
                   , public_path( 'uploads/' . $eform->nik . '/' . $filename )
                 );
+                }
               }
             }
           }
         }
-        $otsOther->save();
         $collateral->status = Collateral::STATUS[2];
         $collateral->save();
+        $sendNotif = true;
+        DB::commit();
 
+      } catch (Exception $e) {
+        DB::rollback();
+        \Log::info($e);
 
+      }
+
+      if ( $sendNotif ){
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
             $aksiCollateral = 'collateral_penilaian_ots';
@@ -288,12 +312,12 @@ class CollateralController extends Controller
             }else{
               \Log::info('======= Tidak kirim notification web and mobile karena sudah ada  ======');
             }
-         }
-      //end notif
-        return $this->makeResponse(
-          $this->collateral->withAll()->find($collateralId)
-        );
-      });
+        }
+      }
+
+      return $this->makeResponse(
+        $this->collateral->withAll()->find($collateralId)
+      );
     }
 
     /**
@@ -321,7 +345,7 @@ class CollateralController extends Controller
 
       \DB::beginTransaction();
       $developer_id = env('DEVELOPER_KEY',1);
-      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2]])->findOrFail($collateralId);
+      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2], Collateral::STATUS[4]])->findOrFail($collateralId);
       $property = Property::findOrFail($collateral->property_id);
       $prevStatus = $collateral->status;
       $handleReject = function($prevStatus) {
@@ -344,13 +368,12 @@ class CollateralController extends Controller
         }
           if ($collateral->developer_id == $developer_id && $hasapprove) {
               $sentclas =  EForm::approve( $eformdata->id, $eformdata );
-              \DB::commit();
-              // if ($sentclas['status']) {
-              // \DB::commit();
-              // }else
-              // {
-              // \DB::rollback();
-              // }
+               if ($sentclas['status']) {
+               \DB::commit();
+               }else
+               {
+               \DB::rollback();
+               }
               $eform = $eformdata;
               generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
           }
@@ -377,7 +400,7 @@ class CollateralController extends Controller
             $pushNotif = true;
             if ($action === 'approve')
             {
-              if ($developer_id == 1)
+              if($developer_id != 1)
               {
                 // Notif Akan Dikirim ke Admin Developer
                 $bodyNotif = 'approval collateral';
@@ -391,8 +414,9 @@ class CollateralController extends Controller
                 // Get data from notifications table
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
                 ->orderBy('created_at', 'desc')->first();
-                $pushNotif = false;
-              }else {
+                // $pushNotif = false;
+              }
+
                 // Notif Akan Dikirim ke AO
                 $bodyNotif = 'approval collateral';
                 $status = 'collateral_approve';
@@ -405,14 +429,14 @@ class CollateralController extends Controller
                 // Get data from notifications table
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
                 ->orderBy('created_at', 'desc')->first();
-              }
+
             }
             else if ($action === 'reject')
             {
                 $role = $dataUser['role'];
                 if ($role=='collateral')  //reject penilaian anggunan untuk developer
                 {
-                  if($developer_id == 1)
+                  if($developer_id != 1)
                   {
                     // Notif Akan Dikirim ke Admin Developer
                     $bodyNotif = 'reject collateral';
@@ -425,8 +449,9 @@ class CollateralController extends Controller
                     $userNotif = new UserNotification;
                     // Get data from notifications table
                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
-                    $pushNotif = false;
-                  }else {
+                    // $pushNotif = false;
+                  }
+
                     // Notif Akan Dikirim ke AO
                     $bodyNotif = 'reject collateral';
                     $status    = 'collateral_reject';
@@ -438,7 +463,7 @@ class CollateralController extends Controller
                     $userNotif = new UserNotification;
                     // Get data from notifications table
                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
-                  }
+
                 }
                 else  //reject untuk staf collateral dan ao
                 {

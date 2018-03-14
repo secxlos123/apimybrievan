@@ -47,7 +47,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'pefindo_detail_json', 'selected_pefindo_json' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -119,6 +119,32 @@ class EForm extends Model implements AuditableContract
     }
 
     /**
+     * Get Pefindo detail information.
+     *
+     * @return Array
+     */
+    public function getPefindoDetailJsonAttribute()
+    {
+        if( $this->pefindo_detail ) {
+            return json_decode($this->pefindo_detail);
+        }
+        return ['individual'=>[],'couple'=>[]];
+    }
+
+    /**
+     * Get selected pefindo information.
+     *
+     * @return Array
+     */
+    public function getSelectedPefindoJsonAttribute()
+    {
+        if( $this->selected_pefindo ) {
+            return json_decode($this->selected_pefindo);
+        }
+        return ['individual'=>0];
+    }
+
+    /**
      * Get Status information.
      *
      * @return string
@@ -180,7 +206,7 @@ class EForm extends Model implements AuditableContract
     public function getPefindoColorAttribute( $value )
     {
         $value = $this->pefindo_score;
-        if ( $value >= 250 && $value <= 573 ) {
+        if ( $value >= 250 && $value <= 529 ) {
             return 'Merah';
 
         } elseif ( $value >= 677 && $value <= 900 ) {
@@ -322,16 +348,16 @@ class EForm extends Model implements AuditableContract
 
         // Approve function
         if ( $request->is_approved ) {
-            if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
+            if ( $eform->status_eform == 'Approval2' ) {
+                // Recontest
+                $result = $eform->insertRecontestBRI( '21' );
+                $kprValue = null;
+
+            } else if ($eform->kpr->developer_id != $developer_id && $eform->kpr->developer_name != $developer_name) {
                 $result = $eform->insertCoreBRI(10);
 
             } else if ($eform->kpr->developer_id == $developer_id && $eform->kpr->developer_name == $developer_name && $collateral->approved_by != null ) {
                 $result = $eform->insertCoreBRI(10);
-
-            } else if ( $eform->status_eform == 'Approval2' ) {
-                // Recontest
-                $result = $eform->insertRecontestBRI( '21' );
-                $kprValue = null;
 
             } else {
                 $result = $eform->insertCoreBRI(8);
@@ -604,9 +630,9 @@ class EForm extends Model implements AuditableContract
                 , 'eform_id' => $eform->id
                 , 'ref_number' => $eform->ref_number
                 , 'address' => $eform->address
-                , 'latitude' => $eform->longitude
-                , 'longitude' => $eform->latitude
-                , 'desc' => '-'
+                , 'latitude' => $eform->latitude
+                , 'longitude' => $eform->longitude
+                , 'desc' => $eform->ref_number
                 , 'status' => 'waiting'
             );
 
@@ -1421,7 +1447,7 @@ class EForm extends Model implements AuditableContract
             //"Fid_cif_las" => '',
             "Nama_debitur_agunan_rt" => !( $this->customer_name ) ? '' : $this->customer_name,
             "Jenis_agunan_value_rt" => !($otsBuilding->type) ? '3' : $otsBuilding->type,
-            "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status)?'Ditempati Sendiri':$otsSeven->collateral_status,
+            "Status_agunan_value_agunan_rt" => !($otsSeven->collateral_status) ? 'Ditempati Sendiri' : $otsSeven->collateral_status,
             "Deskripsi_agunan_rt" => !($otsSeven->description) ? '0' : $otsSeven->description,
             "Jenis_mata_uang_agunan_rt" => 'IDR',
             "Nama_pemilik_agunan_rt" => !($otsSeven->on_behalf_of) ? '0' : $otsSeven->on_behalf_of,

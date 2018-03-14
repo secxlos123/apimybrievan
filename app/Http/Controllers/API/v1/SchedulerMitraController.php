@@ -20,9 +20,83 @@ class SchedulerMitraController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-		
+			
+	private function fetch()
+    {
+        $long = number_format('106.86758', 5);
+        $lat = number_format('-6.232423', 5);
+        $return = RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_near_branch_v2',
+                'requestData'   => [
+                    'app_id' => 'mybriapi',
+                    'kode_branch' => "0",
+                    'distance'    => "1000000000000000000",
+
+                    // if request latitude and longitude not present default latitude and longitude cimahi
+                    'latitude'  => $lat,
+                    'longitude' => $long
+                ]
+            ])
+        ])
+        ->post('form_params');
+        return $return;
+    }
+	
 	public function scheduler( Request $request )
 	{
+		try{
+		    $UKERS = $this->fetch();
+			if($UKERS['responseCode']=='00'){
+				 DB::statement('CREATE TABLE uker_table_create(
+					   "id" text,
+					   "unit_kerja" text,
+					   "unit_induk" text,
+					   "kanca_induk" text,
+					   "jenis_uker" text,
+					   "kode_uker" text,
+					   "dati2" text,
+					   "dati1" text,
+					   "alamat" text,
+					   "no_telp" text,
+					   "no_fax" text,
+					   "koordinat" text,
+					   "latitude" float8,
+					   "longitude" float8
+					);');
+					
+					$UKERS = $UKERS['responseData'];
+					foreach($UKERS as $uker){
+							$id = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['id']));
+							$unit_kerja = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['unit_kerja']));
+							$unit_induk = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['unit_induk']));
+							$kanca_induk = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['kanca_induk']));
+							$jenis_uker = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['jenis_uker']));
+							$kode_uker = $uker['kode_uker'];
+							$dati2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['dati2']));
+							$dati1 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['dati1']));
+							$alamat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['alamat']));
+							$no_telp = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['no_telp']));
+							$no_fax = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['no_fax']));
+							$koordinat = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['koordinat']));
+							$latitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['latitude']));
+							$longitude = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$uker['longitude']));
+							
+							DB::statement("INSERT INTO uker_table_create VALUES('".$id."','".$unit_kerja."','".$unit_induk."','"
+											.$kanca_induk."','".$jenis_uker."','".$kode_uker."','"
+											.$dati2."','".$dati1."','".$alamat."','"
+											.$no_telp."','".$no_fax."','".$koordinat."','"
+											.$latitude."','".$longitude."');");
+					}
+					DB::statement("ALTER TABLE uker_tables RENAME TO uker_tablesxxx;");
+							DB::statement("ALTER TABLE uker_table_create RENAME TO uker_tables;");
+							DB::statement("DROP TABLE uker_tablesxxx;");
+			}
+		}catch(Exception $e){
+			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
+			print_r($e);
+			die();
+		}
 		if($request->all()){
 			$paginates = $request->all();
 			$paginates = $paginates['page'];
