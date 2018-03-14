@@ -26,6 +26,13 @@ class KartuKreditController extends Controller{
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
+	public function ajukanKredit(Request $req){
+
+		//cek dedup
+
+		//cek pefindo
+	}
+
 
 	public function getAllInformation(){
 		$TOKEN_LOS = $this->tokenLos;
@@ -502,6 +509,18 @@ class KartuKreditController extends Controller{
 			'responseMessage'=>'analisa berhasil',
 			'contents'=>$dataKK
 		]);
+
+	}
+
+	public function putusanPinca(Request $req){
+		$apregno = $req->apRegno;
+		$putusan = $req->putusan;
+
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
+			'approval'=>$putusan
+		]);
+
+		//kirim ke los.
 
 	}
 

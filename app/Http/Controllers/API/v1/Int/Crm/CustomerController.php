@@ -119,7 +119,8 @@ class CustomerController extends Controller
     {
       $client = new Client();
       $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
-      $request_customer_officer = $client->request('GET', $host.'/customer/officer/'.$request->header('pn'),[
+      $pn = ($request->has('pn'))? $request['pn'] :$request->header('pn');
+      $request_customer_officer = $client->request('GET', $host.'/customer/officer/'.$pn,[
         'headers' =>
         [
           'Authorization' => 'Bearer '.$this->get_token()
