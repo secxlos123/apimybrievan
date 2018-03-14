@@ -363,9 +363,23 @@ class MarketingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deleteMarketing(Request $request)
     {
-        //
+        $mrk_id = $request['id'];
+        $data = Marketing::find($mrk_id);
+
+        if($data) {
+          $data->delete();
+
+          return response()->success([
+            'message' => 'Data Marketing berhasil dihapus.',
+            'content' => $data
+          ], 201);
+        }
+
+        return response()->error([
+            'message' => 'Data Marketing Tidak Dapat Dihapus.',
+        ], 500);
     }
 
     public function pemasar($pn, $branch, $auth){
