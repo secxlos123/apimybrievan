@@ -133,7 +133,7 @@ class AuthController extends Controller
                 if(!$checkedRolePn){
                     $this->userservices->updateOrCreate(['pn'=> $pn],[
                         'pn'=>$pn,
-                        'hilfm'=>$data['hilfm'],
+                        'hilfm'=> $data['hilfm'] == '-' ? 0 : $data['hilfm'],
                         'role'=> $role,
                         'name'=> $data['nama'],
                         'tipe_uker'=> $data['tipe_uker'],
