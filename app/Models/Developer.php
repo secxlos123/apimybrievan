@@ -184,7 +184,7 @@ class Developer extends Model implements AuditableContract
 
     public function getListUserProperties($startList = null, $endList = null, $user_id)
     {
-        $developer = Developer::select('id')->where('user_id', $user_id)->first();
+        $developer = Developer::select('user_id')->where('user_id', $user_id)->first();
         $filter = false;
         if(!empty($developer)){
             if(!empty($startList) && !empty($endList)){
@@ -229,12 +229,13 @@ class Developer extends Model implements AuditableContract
                         ->leftjoin("users", 'users.id', 'user_developers.user_id')
                         ->leftJoin("eforms", 'eforms.sales_dev_id', 'user_developers.user_id')
                         ->leftJoin("kpr", 'kpr.eform_id', 'eforms.id')
-                        ->where('user_developers.admin_developer_id', $developer['id'])
+                        ->where('user_developers.admin_developer_id', $developer['user_id'])
                         ->when($filter, function($query) use ($startList, $endList){
                             return $query->whereBetween('eforms.created_at', [$startList, $endList]);
                         })
                         ->groupBy('first_name', 'last_name', 'user_developers.user_id')
                         ->get();
+        
         return $data;
     }
 }
