@@ -48,6 +48,35 @@ class marketMappingController extends Controller
           'message' => 'Data Market Mapping Tidak Dapat Ditambah.',
       ], 500);
     }
+	
+    public function update_marketMap(Request $request)
+    {
+	$id = $request['market_id'];
+	$market_map = MarketMapping::find($id);
+        $data['category']= $request['category'];
+        $data['district_name']= $request['district_name'];
+        $data['address']= $request['address'];
+        $data['city']= $request['city'];
+        $data['longitude']= $request['longitude'];
+        $data['latitude']= $request['latitude'];
+        $data['pot_account']= $request['pot_account'];
+        $data['pot_fund']= $request['pot_fund'];
+        $data['pot_loan']= $request['pot_loan'];
+        $data['pot_transaction']= $request['pot_transaction'];
+
+        $update = $market_map->update($data);
+        if ($update) {
+                return response()->success([
+                'message' => 'Data Marketing Map berhasil diupdate.',
+                'contents' => collect($update)->merge($request->all()),
+                ], 201);
+        }
+
+        return response()->error([
+                'message' => 'Data Marketing Map Tidak Dapat diupdate.',
+        ], 500);
+
+    }
 
     public function detail_market(Request $request)
     {
