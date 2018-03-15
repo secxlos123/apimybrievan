@@ -47,9 +47,8 @@ class MarketingController extends Controller
         3=>'000',
         4=>'0000'
       ];
-
       $marketings = [];
-      foreach (Marketing::where('pn',$pn)->with('activity')->get() as $marketing) {
+      foreach (Marketing::getMarketing($request)/*where('pn',$pn)*/->with('activity')->get() as $marketing) {
 
         $marketingActivity = [];
 
@@ -146,7 +145,7 @@ class MarketingController extends Controller
       ];
 
       $marketings = [];
-      foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
+      foreach (Marketing::getMarketing($request)->whereIn('pn',$list_pn)->get() as $marketing) {
         $marketingActivity = [];
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
@@ -433,8 +432,8 @@ class MarketingController extends Controller
     {
         $mrk_id = $request['marketing_id'];
         $deleteRequest = MarketingDeleteRequest::where('marketing_id',$mrk_id);
-        if(MarketingDeleteRequest::where('marketing_id',$mrk_id)->where('status','req')->count() != 0){
-          $delete = $deleteRequest->update(['status' => 'deleted']);
+        if(MarketingDeleteRequest::where('marketing_id',$mrk_id)->where('deleted','req')->count() != 0){
+          $delete = $deleteRequest->update(['deleted' => 'deleted']);
           if($delete) {
 
             return response()->success([
@@ -458,14 +457,14 @@ class MarketingController extends Controller
       $data['pn'] = $request->header('pn');
       $data['branch'] = $request->header('branch');
       $data['marketing_id'] = $request['marketing_id'];
-      $data['status'] = 'req';
+      $data['deleted'] = 'req';
 
       $marketing = Marketing::find($request['marketing_id']);
       $marketing_pn = substr('00000000'.$marketing['pn'], -8);
       $header_pn = substr('00000000'.$request->header('pn'), -8);
 
       if ($marketing_pn == $header_pn && $marketing['branch'] == $request->header('branch')) {
-        $check = MarketingDeleteRequest::where('marketing_id', $data['marketing_id'])->where('status', 'req')->count();
+        $check = MarketingDeleteRequest::where('marketing_id', $data['marketing_id'])->where('deleted', 'req')->count();
         if($check==0){
           $save = MarketingDeleteRequest::create($data);
 
