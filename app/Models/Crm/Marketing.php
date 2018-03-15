@@ -45,6 +45,26 @@ class Marketing extends Model
       return $this->hasOne('App\Models\Crm\MarketingActivityFollowup');
     }
 
+    public function scopeGetMarketing($query, Request $request)
+    {
+      $marketingFill = [];
+      foreach ($this->fillable as $fillable) {
+        $marketingFill[] = "marketings.{$fillable}";
+      }
+
+      return $query
+            ->orderBy('marketings.id', 'asc')
+            ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
+            ->select('marketings.*','marketing_delete_requests.deleted')
+            ->where( function($marketing) use($request){
+                $marketing->where( 'marketings.pn', '=', $request->header('pn'));
+                $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
+                $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
+            })
+            ;
+
+    }
+
     public function scopeGetReports($query, Request $request)
     {
       $marketingFill = [];

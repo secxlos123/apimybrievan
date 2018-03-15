@@ -9,7 +9,7 @@ class MarketingDeleteRequest extends Model
 {
     protected $table = 'marketing_delete_requests';
 
-    protected $fillable = ['pn','branch','marketing_id','status'];
+    protected $fillable = ['pn','branch','marketing_id','deleted'];
 
     public function scopeGetRequestDelete($query, Request $request)
     {
@@ -17,7 +17,7 @@ class MarketingDeleteRequest extends Model
             ->orderBy('marketing_delete_requests.created_at', 'asc')
             ->where( function($deleteRequest) use($request){
               $deleteRequest->where( 'marketing_delete_requests.branch', '=', $request->header( 'branch' ) );
-              $deleteRequest->where( 'marketing_delete_requests.status', '=', 'req' );
+              $deleteRequest->where( 'marketing_delete_requests.deleted', '=', 'req' );
             })
             ;
     }
