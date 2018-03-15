@@ -13,7 +13,7 @@ class InsertBriguna extends Migration
      */
     public function up()
     {
-           Schema::create( 'briguna', function ( Blueprint $table ) {
+           Schema::table( 'briguna', function ( Blueprint $table ) {
             $table->text( 'gaji_pensiun' )->nullable();
         } );
     }
