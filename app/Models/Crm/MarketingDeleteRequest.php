@@ -9,7 +9,7 @@ class MarketingDeleteRequest extends Model
 {
     protected $table = 'marketing_delete_requests';
 
-    protected $fillable = ['pn','branch','marketing_id','status'];
+    protected $fillable = ['pn','branch','marketing_id','deleted'];
 
     public function scopeGetRequestDelete($query, Request $request)
     {
