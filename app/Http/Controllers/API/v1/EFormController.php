@@ -147,6 +147,7 @@ class EFormController extends Controller
 				$mitra_relation = $mitra_relation->toArray();
 				$mitra_relation = json_decode(json_encode($mitra_relation), True);
 		  $eform = $eform->toArray();
+		  $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
 		  $eform[0]['mitra'] = $mitra_relation[0];
@@ -700,7 +701,7 @@ class EFormController extends Controller
 						}
 					}
 				}
-            $dataEform =  EForm::where('nik', $request->nik)->get();
+            $dataEform =  EForm::where('nik', $request->nik)->where('product_type','kpr')->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);
