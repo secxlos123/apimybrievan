@@ -1516,7 +1516,7 @@ class EForm extends Model implements AuditableContract
         $request = $data + [
             "nama_pengelola" => !($this->ao_name) ? '': $this->ao_name ,
             "pn_pengelola" => !($this->ao_id) ? '': $this->ao_id,
-            "kode_cabang" => '0206' //!( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
+            "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
         ];
         return $request;
     }

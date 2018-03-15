@@ -2,14 +2,35 @@
 
 namespace App\Models;
 
-class KreditEmailGenerator{
+use Illuminate\Database\Eloquent\Model;
+use App\Models\EForm;
+use App\Models\KartuKredit;
+
+class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
+      //sementara panggil eform liat nik
+      $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
+      $eformid = $selectEformid['eform_id'];
+      $nik = EForm::where('id',$eformid)->first();
+      $data['nik'] = $nik['nik'];
+
+      if ($data['jenis_kelamin'] == '1'){
+         $data['jenis_kelamin'] = 'Laki-laki';
+      }else if ($data['jenis_kelamin'] == '2'){
+         $data['jenis_kelamin'] = 'Perempuan';
+      }
+
+      if ($data['status_pernikahan'] == '1'){
+         $data['status_pernikahan'] = 'Menikah';
+      }else if ($data['status_pernikahan'] == '2'){
+         $data['status_pernikahan'] = 'Belum Menikah';
+      }
+
 		return '<!DOCTYPE html>
 <html>
    <head>
       <meta charset="UTF-8">
-      <title>Excel To HTML using codebeautify.org</title>
    </head>
    <body>
       <table align="center" bgcolor="#fafafa" width="100%" border="0" cellspacing="0" cellpadding="0">
