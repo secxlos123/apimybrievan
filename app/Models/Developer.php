@@ -225,7 +225,7 @@ class Developer extends Model implements AuditableContract
                                  'user_developers.user_id',
                                  DB::raw("COUNT(eforms.id) as eform"),
                                  DB::raw("COUNT(CASE WHEN eforms.status_eform = 'Approval1' THEN 1 END) AS eform_approved"))
-                        ->join("developers", 'developers.id', 'user_developers.admin_developer_id')
+                        ->leftjoin("developers", 'developers.id', 'user_developers.admin_developer_id')
                         ->leftjoin("users", 'users.id', 'user_developers.user_id')
                         ->leftJoin("eforms", 'eforms.sales_dev_id', 'user_developers.user_id')
                         ->leftJoin("kpr", 'kpr.eform_id', 'eforms.id')
