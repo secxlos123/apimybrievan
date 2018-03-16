@@ -25,6 +25,8 @@ class InsertJenisPinjaman3 extends Migration
      */
     public function down()
     {
-        //
+         Schema::table('jenis_pinjaman', function (Blueprint $table) {
+             $table->dropColumn('id');
+        });
     }
 }

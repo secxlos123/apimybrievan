@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class InsertBriguna extends Migration
+class AddColoumCustomerIsFinish extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class InsertBriguna extends Migration
      */
     public function up()
     {
-           Schema::table( 'briguna', function ( Blueprint $table ) {
-            $table->text( 'gaji_pensiun' )->nullable();
+            Schema::table( 'customer_details', function ( Blueprint $table ) {
+            $table->text( 'IsFinish' )->nullable();
         } );
     }
 
@@ -25,8 +25,8 @@ class InsertBriguna extends Migration
      */
     public function down()
     {
-         Schema::table('briguna', function (Blueprint $table) {
-             $table->dropColumn('gaji_pensiun');
-        });
+            Schema::table( 'customer_details', function ( Blueprint $table ) {
+            $table->text( 'IsFinish' )->nullable();
+        } );
     }
 }
