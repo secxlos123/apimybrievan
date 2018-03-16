@@ -15,39 +15,39 @@ class StaffController extends Controller
             return response()->success(
                 [
                     'message' => 'Sukses',
-                    'contents' => {
-                        "current_page": 1,
-                        "data": [
-                            {
-                                "id": "00137746",
-                                "name": "Achmad Irfan Ramadhan"
-                            },
-                            {
-                                "id": "00137746",
-                                "name": "Dedi Idrus"
-                            },
-                            {
-                                "id": "00137746",
-                                "name": "Rosiva Corry Gustina Sitorus"
-                            },
-                            {
-                                "id": "00137746",
-                                "name": "Ryanto Imam Wibowo"
-                            },
-                            {
-                                "id": "00137746",
-                                "name": "Gustiawan Aswinardian"
-                            }
+                    'contents' => [
+                        "current_page" => 1,
+                        "data" => [
+                            [
+                                "id" => "00137746",
+                                "name" => "Achmad Irfan Ramadhan"
+                            ],
+                            [
+                                "id" => "00137746",
+                                "name" => "Dedi Idrus"
+                            ],
+                            [
+                                "id" => "00137746",
+                                "name" => "Rosiva Corry Gustina Sitorus"
+                            ],
+                            [
+                                "id" => "00137746",
+                                "name" => "Ryanto Imam Wibowo"
+                            ],
+                            [
+                                "id" => "00137746",
+                                "name" => "Gustiawan Aswinardian"
+                            ]
                         ],
-                        "from": 1,
-                        "last_page": 1,
-                        "next_page_url": null,
-                        "path": "",
-                        "per_page": 5,
-                        "prev_page_url": null,
-                        "to": 1,
-                        "total": 1
-                    }
+                        "from" => 1,
+                        "last_page" => 1,
+                        "next_page_url" => null,
+                        "path" => "",
+                        "per_page" => 5,
+                        "prev_page_url" => null,
+                        "to" => 1,
+                        "total" => 1
+                    ]
                 ]
                 , 200
             );
