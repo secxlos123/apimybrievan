@@ -49,7 +49,7 @@ class RecontestController extends Controller
             $user_login = \RestwsHc::getUser();
 
             $eform = EForm::find($eform_id);
-        
+
             $typeModule = getTypeModule(EForm::class);
             notificationIsRead($eform_id, $typeModule);
 
@@ -82,6 +82,9 @@ class RecontestController extends Controller
         }
 
         DB::commit();
+
+        set_action_date($eform->id, 'eform-recontest-lkn');
+
         return response()->success( [
             'message' => 'Data LKN Recontest berhasil dikirim',
             'contents' => $recontest

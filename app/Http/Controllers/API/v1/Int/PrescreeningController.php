@@ -128,6 +128,8 @@ class PrescreeningController extends Controller
             generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
         }
 
+        set_action_date($eform->id, 'eform-prescreening');
+
         return response()->success( [
             'message' => 'Data Store Screening e-form',
             'contents' => [
@@ -215,6 +217,9 @@ class PrescreeningController extends Controller
         ]);
 
         $message = 'Berhasil proses prescreening E-Form';
+
+        set_action_date($eform->id, 'eform-prescreening-update');
+
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );

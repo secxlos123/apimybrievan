@@ -665,8 +665,7 @@ class EForm extends Model implements AuditableContract
                 ->where( function( $eform ) use( $request, &$user ) {
                     $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
                         ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%')
-						->orWhere('eforms.user_id', '=', $request->input('search'));
+                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
                 } );
 
         } else {
@@ -1506,6 +1505,16 @@ class EForm extends Model implements AuditableContract
             "kode_cabang" => '0206' //!( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
         ];
         return $request;
+    }
+
+    /**
+     * Get eform date action.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function detail_actions()
+    {
+        return $this->hasMany('App\Models\ActionDate', 'eform_id');
     }
 
     public function user_notifications()
