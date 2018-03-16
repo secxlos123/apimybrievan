@@ -84,6 +84,7 @@ class BRIGUNA extends Model
         try {        
             \Log::info($data);
             $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
+            $data[ 'IsFinish' ] = 'false';
     		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
             $data[ 'mitra' ] = $data[ 'mitra_name' ];
             $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];
