@@ -300,7 +300,7 @@ class UserNotification extends Model
 			$staffPosition = strtoupper( !empty($eform->staff_position) ? $eform->staff_position : '' );
 			$staffName = strtoupper( !empty($eform->staff_name) ? $eform->staff_name : '' );
 
-			if ( $eform->recontest ) {
+			if ( isset($eform->recontest) ) {
 				$baseWording = 'Rekontes a.n ';
 
 			} else {
