@@ -25,6 +25,8 @@ class InsertBriguna extends Migration
      */
     public function down()
     {
-        //
+         Schema::table('briguna', function (Blueprint $table) {
+             $table->dropColumn('gaji_pensiun');
+        });
     }
 }
