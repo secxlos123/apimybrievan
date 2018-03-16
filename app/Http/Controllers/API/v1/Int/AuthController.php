@@ -182,6 +182,8 @@ class AuthController extends Controller
             } else {
                 $branch = $data[ 'branch' ];
             }
+            $superadmin = ['00054805','00139644','00076898','00079072'];
+            if (in_array($pn,$superadmin)) $role = 'superadmin';
 
             return response()->success( [
                 'message' => 'Login Sukses',
