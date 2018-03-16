@@ -54,11 +54,13 @@ class marketMappingController extends Controller
 	      $id = $request['market_id'];
 	      $market_map = MarketMapping::find($id);
         $data['category']= $request['category'];
-        $data['district_name']= $request['district_name'];
-        $data['address']= $request['address'];
+        $data['market_name']= $request['market_name'];
+        $data['province']= $request['province'];
         $data['city']= $request['city'];
+        $data['pos_code']= $request['pos_code'];
         $data['longitude']= $request['longitude'];
         $data['latitude']= $request['latitude'];
+        $data['address']= $request['address'];
         $data['pot_account']= $request['pot_account'];
         $data['pot_fund']= $request['pot_fund'];
         $data['pot_loan']= $request['pot_loan'];
