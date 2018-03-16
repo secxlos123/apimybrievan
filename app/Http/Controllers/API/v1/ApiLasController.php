@@ -1557,7 +1557,6 @@ class ApiLasController extends Controller
                 $insertPrescoring = $this->insertPrescoringBriguna($content_las_prescoring, $request['jenis_pinjaman_id']);
                 \Log::info("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
-                print_r($insertPrescoring);exit();
                 if ($insertPrescoring['statusCode'] == '01') {
                     $jangka = $request['Jangka_waktu'];
                     $tgl_jatuh_tempo = date('dmY',strtotime('+'.$jangka.' months'));
@@ -1786,6 +1785,13 @@ class ApiLasController extends Controller
                             $param_briguna['SK_AWAL']      = $sk_awal;
                             $param_briguna['SK_AKHIR']     = $sk_akhir;
                             $param_briguna['REKOMENDASI']  = $rekomend;
+                            $param_briguna["gaji_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?"":$request['Gaji_per_bulan_pensiun'];
+                            $param_briguna["gaji_bersih_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?"":$request['Gaji_bersih_per_bulan_pensiun'];
+                            $param_briguna["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?"":$request['Pendapatan_profesi_pensiun'];
+                            $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
+                            $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
+                            $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
+                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
                             $eform->update($param_eform);
                             $briguna->update($param_briguna);
                             $result = [
@@ -2223,7 +2229,7 @@ class ApiLasController extends Controller
         }
     }
 
-    function insertPrescoringBriguna($params, $jenis_pinjaman) {
+    function insertPrescoringBriguna($params, $jenis_pinjaman = null) {
         try {
             $parameter['JSON'] = json_encode($params);
             // save json_ws_log
