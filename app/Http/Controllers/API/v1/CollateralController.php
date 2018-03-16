@@ -76,7 +76,9 @@ class CollateralController extends Controller
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
+        if ($user['role']!= 'superadmin') {
         $data->where('staff_id',(int)$this->request->header('pn'));
+        }
       }
       else
       {
@@ -112,7 +114,9 @@ class CollateralController extends Controller
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
+        if ($user['role']!= 'superadmin') {
         $data->where('staff_id',(int) $this->request->header('pn'));
+        }
       }
       else
       {
