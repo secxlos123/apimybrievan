@@ -142,7 +142,6 @@ class DeveloperAgentController extends Controller
     public function update(UpdateRequest $request, $id)
     {
         $user = User::findOrFail($id);
-        \Log::info($request->all());
         $user->update($request->all());
         if ($user) {
             $saveData = UserDeveloper::where('user_id', $user->id)->first();
@@ -178,11 +177,8 @@ class DeveloperAgentController extends Controller
     */
     public function banned(Request $request, $id)
     {
-        $cek = $request->all();
-        \Log::info($cek);
-        \Log::info("---------------------------------------------------");
         $user = User::findOrFail($id);
-        \Log::info($user);
+
         if ($user->is_banned) {
             $user->update( ['is_banned' => false] );
 
@@ -200,17 +196,6 @@ class DeveloperAgentController extends Controller
             ], 200);
 
         }
-        // if($user->is_actived == true) {
-        //     $user->update($request->all());
-        //     Activation::remove($user);
-        // } elseif($user->is_actived == false) {
-        //     $user = User::findOrFail($id);
-        //     $user->update($request->all());
-        //     $activation = Activation::create($user);
-        //     Activation::complete($user, $activation->code);
-        // }
-
-        // $user->update($request->all());
        
     }
 
