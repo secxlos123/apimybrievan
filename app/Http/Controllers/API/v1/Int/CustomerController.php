@@ -258,11 +258,16 @@ class CustomerController extends Controller
                 $message .= ' dan ' . autoApproveForVIP( array(), $detail->id );
             }
 
+            set_action_date($detail->id, 'eform-verification');
+
             return response()->success( [
                 'message' => $message,
                 'contents' => $customer
             ] );
         } else if( $request->verify_status == 'verified' ) {
+
+            set_action_date($detail->id, 'customer-verification');
+
             return response()->success( [
                 'message' => 'Data nasabah telah di verifikasi.',
                 'contents' => []

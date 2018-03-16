@@ -864,6 +864,9 @@ class EFormController extends Controller
             ], 422 );
         }
         DB::commit();
+
+        set_action_date($eform->id, 'eform-disposition');
+
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
             'contents' => $eform
@@ -933,10 +936,16 @@ class EFormController extends Controller
             if ( $currentStatus == 'Approval2' ) {
                 $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+
+                set_action_date($detail->id, 'eform-recontest-approval');
+
             } else {
                 $usersModel = User::FindOrFail($data->user_id);
                 $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+
+                set_action_date($detail->id, 'eform-approval');
+
             }
 
             return response()->success( [
@@ -1003,6 +1012,8 @@ class EFormController extends Controller
             }
             DB::commit();
             $code = 201;
+
+            set_action_date($detail->id, 'customer-verification');
 
         } else {
             DB::rollback();
@@ -1137,6 +1148,11 @@ class EFormController extends Controller
                     }
 
                     pushNotification($credentials, $slug);
+
+                    set_action_date(
+                        $data->id
+                        , 'customer-clas-' . strtolower( $request->input('status') )
+                    );
 
                     return response()->json([
                         "responseCode" => "01",
