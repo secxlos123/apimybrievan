@@ -80,7 +80,7 @@ class KreditRequest extends BaseRequest{
     				];
     			}else if($this->segment(5) == 'updateverifikasikredit'){
     				return [
-    					'PersonalNIK' => 'required',
+						'PersonalNIK' => 'required',
 	    				'PersonalAlamatDomisili' => 'required',
 	    				'PersonalName' => 'required',
 	    				'PersonalTanggalLahir'=>'required',
@@ -119,6 +119,30 @@ class KreditRequest extends BaseRequest{
 						'SubBidangUsaha'=>'required',
 	    				'apregno'=>'required',
     				];
+    			}else if($this->segment(5) == 'putusan-pinca'){
+    				return([
+    					'msg'=>'',
+    					'apRegno'=>'required',
+    					'putusan'=>'required|in:approved,rejected',
+    					'by' => 'required',
+    					'stg' => 'required|in:APRV',
+						'userId' =>'required',
+						'tc' => 'required',
+						'cpId'=> 'required',
+						'networkId'=> 'required',
+						'productId'=>'required',
+						'cardTypeId'=>'required|numeric|digits:3',
+						'plasticId'=>'required',
+						'cpAprLimit'=>'required',
+						'potCode'=>'required',
+						'wvCode'=>'required',
+						'apBillCycle'=>'required',
+						'apImigincator'=>'required',
+						'cpSeq'=>'required',
+						'aprStatus'=>'required',
+						'mode'=>'required',
+						'fwd'=>''
+    				]);
     			}
     			
     			break;
