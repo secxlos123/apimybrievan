@@ -45,7 +45,9 @@ class DashboardController extends Controller
         'id'=>0,
         'status_name'=>'All'
       ];
-      array_push($data['status'],$additional);
+      if (isset($data['status'])) {
+        array_push($data['status'],$additional);
+      }
       // return $data['status'];
       $data['object_activity'] = ObjectActivity::all();
       $data['action_activity'] = ActionActivity::all();
