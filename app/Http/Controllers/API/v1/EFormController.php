@@ -151,6 +151,7 @@ class EFormController extends Controller
 				$mitra_relation = $mitra_relation->toArray();
 				$mitra_relation = json_decode(json_encode($mitra_relation), True);
 		  $eform = $eform->toArray();
+		  $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
 		  //----------personal------------------------
 		  $eform[0]['customer']['personal'] = $customer[0];
 		  $eform[0]['mitra'] = $mitra_relation[0];
@@ -536,9 +537,19 @@ class EFormController extends Controller
 
 
                 }
-            }else if ( $request->product_type == 'briguna' ) {
+            }
+			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
+				$validasis = DB::table('customer_details')
+						 ->leftJoin('eforms')
+						 ->select(DB::raw('customer_details.nik,eforms.product_type,eforms."IsFinish"'))
+						 ->groupBy('customer_details.nik', 'eforms.product_type','eforms."IsFinish"')
+						 ->where('customer_details.nik', $request->nik)
+						 ->get();
+				$validasis = $validasis->toArray();
+				$validasis = json_decode(json_encode($validasis), True);
             /* BRIGUNA */
+				if(!empty($validasis) && $validasis['product_type']=='briguna' && $validasis['IsFinish']='true'){
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
@@ -679,8 +690,16 @@ class EFormController extends Controller
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
+				
+			 } else {
+                    return response()->error( [
+                        'message' => 'User sedang dalam pengajuan',
+                        'contents' => $dataEform
+                    ], 422 );
+                }	
                     \Log::info($kpr);
-        } else {
+        }
+		else {
 			        $branchs = \RestwsHc::setBody([
 					'request' => json_encode([
 						'requestMethod' => 'get_near_branch_v2',
@@ -704,7 +723,7 @@ class EFormController extends Controller
 						}
 					}
 				}
-            $dataEform =  EForm::where('nik', $request->nik)->get();
+            $dataEform =  EForm::where('nik', $request->nik)->where('product_type','kpr')->get();
             // $dataEform = [];
             if (count($dataEform) == 0) {
                 $developer_id = env('DEVELOPER_KEY',1);

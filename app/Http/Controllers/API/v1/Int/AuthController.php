@@ -62,6 +62,9 @@ class AuthController extends Controller
             } else if( in_array( intval($data[ 'hilfm' ]), [ 44 ] ) ) {
                 $role = 'fo';
                 $role_user = 'fo';
+            } else if( in_array( intval($data[ 'hilfm' ]), [ 46 ] ) ) {
+                $role = 'mantri';
+                $role_user = 'mantri';
             } else if( in_array( intval($data[ 'hilfm' ]), [ 5, 11, 12, 14, 19 ] ) ) {
                 $role = 'pinca';
                 $role_user = 'pinca';

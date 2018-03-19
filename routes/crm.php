@@ -82,6 +82,10 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::resource('marketing', 'MarketingController', [
     'only' => ['index', 'store']
   ]);
+  Route::post('/marketing/detail', 'MarketingController@detailMarketing');
+  Route::post('/marketing/store_req_delete', 'MarketingController@store_marketingDeleteRequest');
+  Route::post('/marketing/get_req_delete', 'MarketingController@getMarketingDeleteRequest');
+  Route::post('/marketing/delete', 'MarketingController@deleteMarketing');
 
   // Marketing Notes Route
   Route::post('/marketing/note', 'MarketingController@getNote');
@@ -96,6 +100,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get('/market_mapping', 'marketMappingController@index');
   //marketing store Map
   Route::post('/market_mapping', 'marketMappingController@store');
+  //Update market mapping
+  Route::post('/market_mapping_update', 'marketMappingController@update_marketMap');
   //detail Market
   Route::post('/market_mapping/detail_market', 'marketMappingController@detail_market');
   //sotore Customer market mapping
@@ -105,7 +111,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   //get Customer by market
   Route::post('/market_mapping/customers_by_market', 'marketMappingController@customer_by_market');
 
-
+ 
   //Map Route
   Route::post('/map/market', 'MapController@market_map');
   Route::post('/map/activity', 'MapController@activity_map');

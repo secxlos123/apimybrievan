@@ -26,6 +26,13 @@ class KartuKreditController extends Controller{
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
+	public function ajukanKredit(Request $req){
+
+		//cek dedup
+
+		//cek pefindo
+	}
+
 
 	public function getAllInformation(){
 		$TOKEN_LOS = $this->tokenLos;
@@ -314,7 +321,7 @@ class KartuKreditController extends Controller{
 
     public function sendSMS(Request $req){
     	$pn = $req['handphone'];
-    	$message = 'Kode unik anda adalah '.$req['message'].'\. periksa email';
+    	$message = 'Kode unik anda adalah '.$req['message'].'\. Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
@@ -340,7 +347,7 @@ class KartuKreditController extends Controller{
     public function toEmail(Request $req){
     	//email, subject, message
     	$email = $req['email'];
-    	$subject = $req['subject'];
+
     	// $message = $req['message'];
 
     	$apregno = $req['apRegno'];
@@ -357,7 +364,7 @@ class KartuKreditController extends Controller{
 
     	try{
     		$res = $client->request('POST',$host, ['headers' =>  $header,
-    				'form_params' => ['email' => $email,'$subject'=>$subject,'message'=>$message]
+    				'form_params' => ['email' => $email,'subject'=>'Email Verifikasi Pengajuan Kartu Kredit BRI','message'=>$message]
     			]);
     	}catch (RequestException $e){
     		return  $e->getMessage();
@@ -401,17 +408,17 @@ class KartuKreditController extends Controller{
 
     public function analisaKK(Request $req){
     	$eformId = $req->eform_id;
-    	$dataEform = KartuKredit::where('eform_id',$eformId)->first();
+    	$dataKredit = KartuKredit::where('eform_id',$eformId)->first();
 
-    	$jenisNasabah = $dataEform['jenis_nasabah'];
+    	$jenisNasabah = $dataKredit['jenis_nasabah'];
 
-    	$apregno = $dataEform['appregno'];
+    	$apregno = $dataKredit['appregno'];
     	\Log::info('apregno = '.$apregno);
     	$dataLos = $this->cekDataNasabah($apregno);
 
-    	$npwp = $dataEform['image_npwp'];
-    	$ktp = $dataEform['image_ktp'];
-    	$slipGaji = $dataEform['image_slip_gaji'];
+    	$npwp = $dataKredit['image_npwp'];
+    	$ktp = $dataKredit['image_ktp'];
+    	$slipGaji = $dataKredit['image_slip_gaji'];
 
     	$scoring = $this->getScoring($apregno);
 
@@ -420,6 +427,7 @@ class KartuKreditController extends Controller{
     		return response()->json([
     			'responseCode'=>'00',
     			'responseMessage'=>'sukses',
+    			'contents'=>$dataKredit,
     			'images'=>[
     				'npwp'=>$npwp,
     				'ktp'=>$ktp,
@@ -477,6 +485,36 @@ class KartuKreditController extends Controller{
 		$data = $obj->responseData;
 
 		return $data;
+	}
+
+	public function finishAnalisa(Request $req){
+		$apregno = $req->apRegno;
+		$catRekAo = $req->catatanRekomendasiAO;
+		$rekLimitKartu = $req->rekomendasiLimitKartu;
+		$dataKK = KartuKredit::where('appregno',$apregno)->first();
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
+			'is_analyzed'=>true,
+			'catatan_rekomendasi_ao'=>$catRekAo,
+			'rekomendasi_limit_kartu'=>$rekLimitKartu
+		]);
+
+		return response()->json([
+			'responseCode'=>'00',
+			'responseMessage'=>'analisa berhasil',
+			'contents'=>$dataKK
+		]);
+
+	}
+
+	public function putusanPinca(Request $req){
+		$apregno = $req->apRegno;
+		$putusan = $req->putusan;
+
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
+			'approval'=>$putusan
+		]);
+
+		//kirim ke los.
 
 	}
 
@@ -516,4 +554,3 @@ class KartuKreditController extends Controller{
 
 }
 
- 

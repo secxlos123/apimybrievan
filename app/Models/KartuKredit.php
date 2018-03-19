@@ -24,7 +24,7 @@ class KartuKredit extends Model
     protected $table = 'kartu_kredit_details';
 
     protected $fillable = [
-    	'hp','email','user_id','eform_id',
+    	'hp','email','user_id','eform_id','nik','alamat',
     	'jenis_kelamin','nama','tempat_lahir','telephone',
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
@@ -57,7 +57,7 @@ class KartuKredit extends Model
         return $this->globalImageCheck( $value );
     }
 
-    public function getImageKTPAttribute( $value ){
+    public function getImageKtpAttribute( $value ){
         return $this->globalImageCheck( $value );
     }
 

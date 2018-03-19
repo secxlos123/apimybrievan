@@ -149,7 +149,7 @@ class CustomerController extends Controller
     {
         //DB::beginTransaction();
         $customer = Customer::findOrFail( $id );
-        $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name');
+        $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','product_type');
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
@@ -157,7 +157,10 @@ class CustomerController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         if ($request->has('eform_id')) {
-
+			
+			$productss = '';
+			if(empty($request->product_type)){$productss='';}else{$productss=$request->product_type;}
+			if($request->product_type=='briguna'){}else{
             $developer_id = env('DEVELOPER_KEY',1);
             $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
 
@@ -202,6 +205,7 @@ class CustomerController extends Controller
                 }
             }
                 KPR::updateOrCreate(['eform_id' => $request->eform_id], $baseRequest);
+			}
         }
 
         $zipcode = $this->getZipCode($request->zip_code);

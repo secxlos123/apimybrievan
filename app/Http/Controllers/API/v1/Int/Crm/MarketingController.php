@@ -17,6 +17,7 @@ use App\Models\Crm\ProductType;
 use App\Models\Crm\Status;
 use App\Models\User;
 use App\Models\Crm\Referral;
+use App\Models\Crm\MarketingDeleteRequest;
 
 use RestwsHc;
 
@@ -46,9 +47,8 @@ class MarketingController extends Controller
         3=>'000',
         4=>'0000'
       ];
-
       $marketings = [];
-      foreach (Marketing::where('pn',$pn)->with('activity')->get() as $marketing) {
+      foreach (Marketing::getMarketing($request)/*where('pn',$pn)*/->with('activity')->get() as $marketing) {
 
         $marketingActivity = [];
 
@@ -145,7 +145,7 @@ class MarketingController extends Controller
       ];
 
       $marketings = [];
-      foreach (Marketing::whereIn('pn',$list_pn)->get() as $marketing) {
+      foreach (Marketing::getMarketing($request)->whereIn('pn',$list_pn)->get() as $marketing) {
         $marketingActivity = [];
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
@@ -300,11 +300,76 @@ class MarketingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function detailMarketing(Request $request)
     {
-        $marketing = Marketing::find($id);
+        $pn = $request->header('pn');
+        $branch = $request->header('branch');
+        $auth = $request->header('Authorization');
+        $pemasar = $this->pemasar($pn,$branch,$auth);
+
+        if ($pemasar != null) {
+          $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        } else {
+          $pemasar_name = [];
+        }
+
+        $id = $request['id'];
+        foreach (MarketingActivity::where('marketing_id', $id)->with('marketing')->get() as $activity) {
+          $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
+          $followUp = MarketingActivityFollowup::where('activity_id',$activity->id)->count();
+          if($activity->pn != $activity->pn_join){
+            if($activity->pn == $pn) {
+              $ownership = 'main';
+            }else {
+              $ownership = 'join';
+            }
+          }else {
+            $ownership = 'main';
+          }
+          $marketingActivity[]= [
+            'id' => $activity->id,
+            'pn' => $activity->pn,
+            'marketing_activity_type' => $activity->marketing->activity_type,
+            'pn_name' => array_key_exists($activity->pn, $pemasar_name) ? $pemasar_name[$activity->pn]:'',
+            'object_activity' => $activity->object_activity,
+            'action_activity' => $activity->action_activity,
+            'start_date' => date('Y-m-d', strtotime($activity->start_date)),
+            'end_date' => date('Y-m-d', strtotime($activity->end_date)),
+            'start_time' => date('H:i', strtotime($activity->start_date)),
+            'end_time' => date('H:i', strtotime($activity->end_date)),
+            'longitude' => $activity->longitude,
+            'latitude' => $activity->latitude,
+            'marketing_id' => $activity->marketing_id,
+            'pn_join' => $activity->pn_join,
+            'join_name' => array_key_exists($activity->pn_join,$pemasar_name)? $pemasar_name[$activity->pn_join]: '',
+            'desc' => $activity->desc,
+            'address' => $activity->address,
+            'ownership' => $ownership,
+            'followup'=> $followUp,
+            'rescheduled'=> $rescheduled,
+            ];
+        }
+        $data = Marketing::find($id);
+        $marketing=[
+          'id'=> $data['id'],
+          'pn'=> $data['pn'],
+          'pn_name'=> array_key_exists(substr('00000000'.$data['pn'], -8), $pemasar_name) ? $pemasar_name[substr('00000000'.$data['pn'], -8)]:'',
+          'product_type'=> $data['product_type'],
+          'activity_type'=> $data['activity_type'],
+          'target'=> $data['target'],
+          'account_id'=> $data['account_id'],
+          'nama'=> $data['nama'],
+          'nik'=> $data['nik'],
+          'cif'=> $data['cif'],
+          'status'=> $data['status'],
+          'ref_id'=> $data['ref_id'],
+          'activity' => $marketingActivity,
+          'target_closing_date'=> date('Y-m-d', strtotime($data['target_closing_date'])),
+          'created_at' => date('m-Y', strtotime(str_replace('/', '-', $data['created_at'])))
+        ];
+
         return response()->success( [
-            'message' => 'Sukses',
+            'message' => 'Sukses get detail Marketing',
             'contents' => $marketing
           ]);
     }
@@ -363,9 +428,75 @@ class MarketingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deleteMarketing(Request $request)
     {
-        //
+        $mrk_id = $request['marketing_id'];
+        $deleteRequest = MarketingDeleteRequest::where('marketing_id',$mrk_id);
+        if(MarketingDeleteRequest::where('marketing_id',$mrk_id)->where('deleted','req')->count() != 0){
+          $delete = $deleteRequest->update(['deleted' => 'deleted']);
+          if($delete) {
+
+            return response()->success([
+              'message' => 'Data Marketing berhasil dihapus.',
+              'content' => $deleteRequest
+            ], 201);
+          }
+
+          return response()->error([
+            'message' => 'Data Marketing Tidak Dapat Dihapus.',
+          ], 500);
+        }
+
+        return response()->error([
+            'message' => 'No Marketing id has requested to delete',
+        ], 500);
+    }
+
+    public function store_marketingDeleteRequest(Request $request)
+    {
+      $data['pn'] = $request->header('pn');
+      $data['branch'] = $request->header('branch');
+      $data['marketing_id'] = $request['marketing_id'];
+      $data['deleted'] = 'req';
+
+      $marketing = Marketing::find($request['marketing_id']);
+      $marketing_pn = substr('00000000'.$marketing['pn'], -8);
+      $header_pn = substr('00000000'.$request->header('pn'), -8);
+
+      if ($marketing_pn == $header_pn && $marketing['branch'] == $request->header('branch')) {
+        $check = MarketingDeleteRequest::where('marketing_id', $data['marketing_id'])->where('deleted', 'req')->count();
+        if($check==0){
+          $save = MarketingDeleteRequest::create($data);
+
+          if ($save) {
+            return response()->success([
+              'message' => 'Data Marketing Delete Request berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+            ], 201);
+          }
+
+          return response()->error([
+            'message' => 'Data Marketing Delete Request Tidak Dapat Ditambah.',
+          ], 500);
+        } else{
+          return response()->error([
+              'message' => 'Marketing has requested to delete',
+          ], 500);
+        }
+      }else{
+        return response()->error([
+            'message' => 'You are not Marketing owner',
+        ], 500);
+      }
+    }
+
+    public function getMarketingDeleteRequest(Request $request)
+    {
+      $deleteRequest = MarketingDeleteRequest::getRequestDelete($request)->get();
+      return response()->success( [
+          'message' => 'Sukses get Marketing Delete Request',
+          'contents' => $deleteRequest
+        ]);
     }
 
     public function pemasar($pn, $branch, $auth){

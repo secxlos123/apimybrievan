@@ -16,13 +16,13 @@ class Customer extends User
      *
      * @var array
      */
-    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile' ];
+    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile','IsFinish' ];
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile' ];
+    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile','IsFinish' ];
 
     /**
      * Get information about register simple status.
@@ -274,6 +274,18 @@ class Customer extends User
         return $stat_approved;
     }
 
+	public function getIsFinishAttribute()
+    {
+        $stat_approved = [];
+        $eforms = $this->eforms()->select(['IsFinish'])->get();
+        foreach ($eforms as $eform) {
+            $stat_approved = [
+                'IsFinish' => $eform->IsFinish
+            ];
+        }
+
+        return $stat_approved;
+    }
     /**
      * Get status is_approved for mobile.
      *

@@ -56,7 +56,7 @@ class BRIGUNA extends Model
         'catatan_kk','catatan_ktp','catatan_couple_ktp','catatan_npwp',
         'catatan_sk_awal','catatan_sk_akhir','catatan_skpu','catatan_rekomendasi',
         'catatan_gaji','flag_kk','flag_ktp','flag_couple_ktp','flag_npwp','flag_sk_awal',
-        'flag_sk_akhir','flag_skpu','flag_rekomendasi','flag_slip_gaji','id_foto'
+        'flag_sk_akhir','flag_skpu','flag_rekomendasi','flag_slip_gaji','id_foto','no_rek_simpanan','gaji_pensiun'
 	];
 	
     /**
@@ -84,6 +84,7 @@ class BRIGUNA extends Model
         try {        
             \Log::info($data);
             $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
+            $data[ 'IsFinish' ] = 'false';
     		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
             $data[ 'mitra' ] = $data[ 'mitra_name' ];
             $data[ 'tujuan_penggunaan' ] = $data[ 'tujuan_penggunaan_name' ];

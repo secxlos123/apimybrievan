@@ -150,9 +150,9 @@ class ApiLasController extends Controller
                 return $insert;
                 break;*/
 
-            case 'hitungCRSBrigunaKarya':
+            case 'hitungCRSBriguna':
                 // $hitung = $ApiLas->hitungCRSBrigunaKarya($data);
-                $hitung = $this->hitungCRSBrigunaKarya($data);
+                $hitung = $this->hitungCRSBriguna($data);
                 return $hitung;
                 break;
 
@@ -1257,7 +1257,8 @@ class ApiLasController extends Controller
                         if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
                             // update table eforms
                             $eform = EForm::findOrFail($data['eform_id']);
-                            $base_request['pinca_name'] = $data['pinca_name'];
+                            $base_request['is_approved'] = true;
+                            $base_request['pinca_name']  = $data['pinca_name'];
                             $base_request['pinca_position'] = $data['pinca_position'];
                             $eform->update($base_request);
                             \Log::info("-------- putusan update table eforms sukses---------");
@@ -1268,11 +1269,6 @@ class ApiLasController extends Controller
                                 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
                         } elseif ($data['flag_putusan'] == '7') {
-                            // update table eforms
-                            $eform = EForm::findOrFail($data['eform_id']);
-                            $base_request['is_approved'] = true;
-                            $eform->update($base_request);
-                            \Log::info("-------- putusan update table eforms sukses---------");
                             $data_briguna = [
                                 'is_send'     => !isset($data['is_send'])? null:$data['is_send'],
                                 'catatan_adk' => !isset($data['catat_adk'])? "":$data['catat_adk'],
@@ -1546,7 +1542,19 @@ class ApiLasController extends Controller
                     "Briguna_smart"        => "0",
                     "Kelengkapan_dokumen"  => "1"
                 ];
-                $insertPrescoring = $this->insertPrescoringBriguna($content_las_prescoring);
+
+                if ($request['jenis_pinjaman_id'] == '2') {
+                    $content_las_prescoring["Gaji_per_bulan_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?"":$request['Gaji_per_bulan_pensiun'];
+                    $content_las_prescoring["Gaji_bersih_per_bulan_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?"":$request['Gaji_bersih_per_bulan_pensiun'];
+                    $content_las_prescoring["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?"":$request['Pendapatan_profesi_pensiun'];
+                    $content_las_prescoring["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
+                    $content_las_prescoring["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
+                    $content_las_prescoring["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
+                    $content_las_prescoring["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
+                    $content_las_prescoring["Fid_uid"] = $uid;
+                }
+
+                $insertPrescoring = $this->insertPrescoringBriguna($content_las_prescoring, $request['jenis_pinjaman_id']);
                 \Log::info("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
@@ -1621,7 +1629,7 @@ class ApiLasController extends Controller
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
-                        $hitung= $this->hitungCRSBrigunaKarya($insertDebitur['items'][0]->ID_APLIKASI);
+                        $hitung= $this->hitungCRSBriguna($insertDebitur['items'][0]->ID_APLIKASI, $request['jenis_pinjaman_id']);
                         \Log::info("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
@@ -1777,6 +1785,13 @@ class ApiLasController extends Controller
                             $param_briguna['SK_AWAL']      = $sk_awal;
                             $param_briguna['SK_AKHIR']     = $sk_akhir;
                             $param_briguna['REKOMENDASI']  = $rekomend;
+                            $param_briguna["gaji_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?"":$request['Gaji_per_bulan_pensiun'];
+                            $param_briguna["gaji_bersih_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?"":$request['Gaji_bersih_per_bulan_pensiun'];
+                            $param_briguna["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?"":$request['Pendapatan_profesi_pensiun'];
+                            $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
+                            $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
+                            $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
+                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
                             $eform->update($param_eform);
                             $briguna->update($param_briguna);
                             $result = [
@@ -1994,21 +2009,24 @@ class ApiLasController extends Controller
 
     public function update_foto_lainnya(Request $request) {
         $response = $request->all();
-        // print_r($response);exit();
         if (!empty($response)) {
             try {
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
                 $id_foto = $data_eforms['briguna']['id_foto'];
 
-                // $tgl_jatuh_tempo = date('dmY',strtotime('+180 months'));
-                // print_r($data_eforms['id']);
-                // print_r("<br>");
-                // print_r($tgl_jatuh_tempo);exit();
-                $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
-                $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
-                $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
-                $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
-                $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
+                if (isset($response['lainnya1']) || empty($response['lainnya1'])) {
+                    $foto_lainnya1 = $this->datafoto(!isset($response['lainnya1'])?null:$response['lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
+                    $foto_lainnya2 = $this->datafoto(!isset($response['lainnya2'])?null:$response['lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
+                    $foto_lainnya3 = $this->datafoto(!isset($response['lainnya3'])?null:$response['lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
+                    $foto_lainnya4 = $this->datafoto(!isset($response['lainnya4'])?null:$response['lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
+                    $foto_lainnya5 = $this->datafoto(!isset($response['lainnya5'])?null:$response['lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
+                } else {
+                    $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
+                    $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
+                    $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
+                    $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
+                    $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
+                }
                 
                 $data_briguna['id_foto']  = $id_foto;
                 $data_briguna['lainnya1'] = $foto_lainnya1;
@@ -2123,7 +2141,7 @@ class ApiLasController extends Controller
         }
     }
 
-    function hitungCRSBrigunaKarya($params) {
+    function hitungCRSBriguna($params, $jenis_pinjaman = null) {
         try {
             $parameter['id_Aplikasi'] = $params;
             // save json_ws_log
@@ -2135,12 +2153,20 @@ class ApiLasController extends Controller
             $save = \DB::table('json_ws_log')->insert($data_log);
             \Log::info('berhasil save hitungCRS json_ws_log'.$save);
             $client = $this->client();
-            $resultclient = $client->hitungCRSBrigunaKarya($parameter);
-
-            if($resultclient->hitungCRSBrigunaKaryaResult){
-                $datadetail = json_decode($resultclient->hitungCRSBrigunaKaryaResult);
-                $dataResult = (array) $datadetail;
-                return $dataResult;
+            if ($jenis_pinjaman == '2') {
+                $resultclient = $client->hitungCRSBrigunaUmum($parameter);
+                if($resultclient->hitungCRSBrigunaUmumResult){
+                    $datadetail = json_decode($resultclient->hitungCRSBrigunaUmumResult);
+                    $dataResult = (array) $datadetail;
+                    return $dataResult;
+                }
+            } else {
+                $resultclient = $client->hitungCRSBrigunaKarya($parameter);
+                if($resultclient->hitungCRSBrigunaKaryaResult){
+                    $datadetail = json_decode($resultclient->hitungCRSBrigunaKaryaResult);
+                    $dataResult = (array) $datadetail;
+                    return $dataResult;
+                }
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
@@ -2203,7 +2229,7 @@ class ApiLasController extends Controller
         }
     }
 
-    function insertPrescoringBriguna($params) {
+    function insertPrescoringBriguna($params, $jenis_pinjaman = null) {
         try {
             $parameter['JSON'] = json_encode($params);
             // save json_ws_log
@@ -2215,12 +2241,21 @@ class ApiLasController extends Controller
             $save = \DB::table('json_ws_log')->insert($data_log);
             \Log::info('berhasil save insertPrescoringBriguna json_ws_log'.$save);
             $client = $this->client();
-            $resultclient = $client->insertPrescoringBriguna($parameter);
 
-            if($resultclient->insertPrescoringBrigunaResult){
-                $datadetail = json_decode($resultclient->insertPrescoringBrigunaResult);
-                $dataResult = (array) $datadetail;
-                return $dataResult;
+            if ($jenis_pinjaman == '2') {
+                $resultclient = $client->insertPrescoringBrigunaUmum($parameter);
+                if($resultclient->insertPrescoringBrigunaUmumResult){
+                    $datadetail = json_decode($resultclient->insertPrescoringBrigunaUmumResult);
+                    $dataResult = (array) $datadetail;
+                    return $dataResult;
+                }
+            } else {
+                $resultclient = $client->insertPrescoringBriguna($parameter);
+                if($resultclient->insertPrescoringBrigunaResult){
+                    $datadetail = json_decode($resultclient->insertPrescoringBrigunaResult);
+                    $dataResult = (array) $datadetail;
+                    return $dataResult;
+                }
             }
             $error[0] = 'Gagal Koneksi DB';
             return [
