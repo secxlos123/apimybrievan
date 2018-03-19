@@ -323,6 +323,12 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 			 Route::get('property-item', [
 		        'uses'  => 'Eks\PropertyItemController@GetAllItem'
 		    ]);
+			 /**
+			 * Route for namespace API\v1\Int
+			 */
+			 Route::get('collateral/{type}', [
+		        'uses'  => 'CollateralController@GetAll'
+		    ]);
 	    });
 
 });
