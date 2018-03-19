@@ -27,7 +27,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::post('get_dir_detail', 'dirrpcController@get_dir_detail');
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
 	// if request attemp 5 it will wait 10 minutes
-	Route::group(['middleware' => 'throttle-custom:10,10'], function() {
+	Route::group(['middleware' => 'throttle-custom:7,12'], function() {
 		Route::post( 'auth/login', 'AuthController@store' );
 	});
 
@@ -297,5 +297,32 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
         'as'    => 'api.user.read_notification',
         'uses'  => 'NotificationController@read'
     ]);
+
+    Route::group(['prefix' => 'getall'], function() {
+		    /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('developer', [
+		        'uses'  => 'Int\DeveloperController@GetAllDeveloper'
+		    ]);
+			/**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property', [
+		        'uses'  => 'Eks\PropertyController@GetAllProperty'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-type', [
+		        'uses'  => 'Eks\PropertyTypeController@GetAllType'
+		    ]);
+			 /**
+			 * Route for namespace API\v1\Eks
+			 */
+			 Route::get('property-item', [
+		        'uses'  => 'Eks\PropertyItemController@GetAllItem'
+		    ]);
+	    });
 
 });

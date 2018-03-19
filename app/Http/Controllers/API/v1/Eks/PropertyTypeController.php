@@ -151,10 +151,11 @@ class PropertyTypeController extends Controller
     /**
      * [GetAllType description]
      */
-    public function GetAllType()
+    public function GetAllType(Request $request)
     {
+        $limit = $request->input('limit') ?: 500;
         $developer_id = env('DEVELOPER_KEY',1);
-        $types = PropertyType::select('id','property_id','name')->whereRaw("property_id in (select id from properties where developer_id != ? and is_approved = true)",[$developer_id]);
+        $types = \DB::table('property_types')->selectRaw('id,property_id,name,building_area,surface_area')->whereRaw('property_id in (select id from properties where developer_id != ? and is_approved = true)',[$developer_id])->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Tipe Property",
                 'contents' => $types ]);

@@ -39,7 +39,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo', 'vip_sent'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo', 'vip_sent','IsFinish'
     ];
 
     /**
@@ -47,7 +47,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'pefindo_detail_json', 'selected_pefindo_json' ];
+    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -116,19 +116,6 @@ class EForm extends Model implements AuditableContract
             return $this->kpr->request_amount;
         }
         return 0;
-    }
-
-    /**
-     * Get Pefindo detail information.
-     *
-     * @return Array
-     */
-    public function getPefindoDetailJsonAttribute()
-    {
-        if( $this->pefindo_detail ) {
-            return json_decode($this->pefindo_detail);
-        }
-        return ['individual'=>[],'couple'=>[]];
     }
 
     /**
@@ -678,8 +665,7 @@ class EForm extends Model implements AuditableContract
                 ->where( function( $eform ) use( $request, &$user ) {
                     $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
                         ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%')
-						->orWhere('eforms.user_id', '=', $request->input('search'));
+                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
                 } );
 
         } else {
@@ -1519,6 +1505,16 @@ class EForm extends Model implements AuditableContract
             "kode_cabang" => !( $this->branch_id ) ? '' : substr('0000'.$this->branch_id, -4)
         ];
         return $request;
+    }
+
+    /**
+     * Get eform date action.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function detail_actions()
+    {
+        return $this->hasMany('App\Models\ActionDate', 'eform_id');
     }
 
     public function user_notifications()

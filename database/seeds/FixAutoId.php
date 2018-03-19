@@ -12,7 +12,7 @@ class FixAutoId extends Seeder
     public function run()
     {
         $table = \DB::select('SELECT * FROM information_schema.tables WHERE table_schema=? AND table_type=?', array('public', 'BASE TABLE'));
-        $skiptab = ['role_users', 'jenis_pinjaman', 'tujuan_penggunaan', 'tbl_kodepos', 'pendidikan_terakhir', 'mitra_relation', 'mitra', 'notifications', 'gimmick_sukubunga', 'gimmick_kredit', 'gimmick_pemutus', 'gimmick','view_label', 'view_div', 'view_table','dirrpc_detail','gimmick_detail','dirrpc','dirrpc_detail','mitra2','export_table','mitra_sebelum','mitra_before','mitra_baru','mitra3'];
+        $skiptab = ['role_users', 'jenis_pinjaman', 'tujuan_penggunaan', 'tbl_kodepos', 'pendidikan_terakhir', 'mitra_relation', 'mitra', 'notifications', 'gimmick_sukubunga', 'gimmick_kredit', 'gimmick_pemutus', 'gimmick','view_label', 'view_div', 'view_table','dirrpc_detail','gimmick_detail','dirrpc','dirrpc_detail','mitra2','export_table','mitra_sebelum','mitra_before','mitra_baru','mitra3','uker_tables','ddkoperasi_tingkat2'];
         foreach ($table as $key => $value) {
             $id = $value->table_name . '_id_seq';
             $tab = $value->table_name;

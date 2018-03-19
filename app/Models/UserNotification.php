@@ -299,7 +299,17 @@ class UserNotification extends Model
 			$aoName = strtoupper( !empty($eform->ao_name) ? $eform->ao_name : '' );
 			$staffPosition = strtoupper( !empty($eform->staff_position) ? $eform->staff_position : '' );
 			$staffName = strtoupper( !empty($eform->staff_name) ? $eform->staff_name : '' );
-			$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
+
+			if ( isset($eform->recontest) ) {
+				$baseWording = 'Rekontes a.n ';
+
+			} else {
+				$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ';
+
+			}
+
+			$baseWording .= $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
+
 			$coloring = !empty($eform->prescreening_status) ? $eform->prescreening_status : '' ;
 			$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 			$plafondKredit = !empty($getKPR->request_amount) ? $getKPR->request_amount : 0;

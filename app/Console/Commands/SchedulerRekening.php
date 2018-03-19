@@ -21,19 +21,12 @@ class SchedulerRekening extends Command
      * @var string
      */
     protected $description = 'Update rekening local from brinets';
-
+    protected $soapWrapper;
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    // public function __construct()
-    // {
-    //     parent::__construct();
-    // }
-
-    protected $soapWrapper;
-
     public function __construct(SoapWrapper $soapWrapper) {
         parent::__construct();
         $this->soapWrapper = $soapWrapper;      
@@ -84,7 +77,7 @@ class SchedulerRekening extends Command
     public function handle()
     {
         try {
-            \Log::info('handle running scheduler aman nih coyy');
+            \Log::info('handle running scheduler aman');
             $data_briguna = \DB::table("briguna")
                         ->select(['id','is_send','eform_id','id_aplikasi','cif','no_rekening'])
                         ->where('is_send','6')

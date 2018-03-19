@@ -76,7 +76,9 @@ class CollateralController extends Controller
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
+        if ($user['role']!= 'superadmin') {
         $data->where('staff_id',(int)$this->request->header('pn'));
+        }
       }
       else
       {
@@ -92,6 +94,9 @@ class CollateralController extends Controller
         {
           $property->where('name','ilike','%'.$request->input('search').'%');
         });
+      if ($this->request->has('slug')) {
+          $data->where('id',$this->request->input('slug'));
+      }
       $data->orderBy('created_at', 'desc');
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
@@ -109,11 +114,16 @@ class CollateralController extends Controller
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
+        if ($user['role']!= 'superadmin') {
         $data->where('staff_id',(int) $this->request->header('pn'));
+        }
       }
       else
       {
           $data->where('region_id',$region['region_id']);
+      }
+      if ($this->request->has('slug')) {
+          $data->where('id',$this->request->input('slug'));
       }
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }

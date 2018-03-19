@@ -93,6 +93,8 @@ class KPR extends Model implements AuditableContract
                 'eform' => $eform,
             ];
 
+            set_action_date($eform->id, 'eform-create');
+
             return $data;
         } catch (Exception $e) {
             return $e;

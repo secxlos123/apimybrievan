@@ -97,7 +97,11 @@ class EFormController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-        $newForm = EForm::filter( $request )->paginate( $limit );
+        if ($request->has('slug')) {
+            $newForm = EForm::findOrFail($request->input('slug'));
+        }else{
+            $newForm = EForm::filter( $request )->paginate( $limit );
+        }
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newForm
@@ -425,7 +429,7 @@ class EFormController extends Controller
                       'responseMessage' => "NIK tidak ditemukan"
                     ]);
                 }else{
-                   
+
                     //nama gambar
                     $id = date('YmdHis');
 
@@ -435,7 +439,7 @@ class EFormController extends Controller
                         $ktp = $request->KTP;
                         $slipGaji = $request->SLIP_GAJI;
 
-                        
+
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
                         $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
@@ -449,7 +453,7 @@ class EFormController extends Controller
                         $slipGaji = $request->SLIP_GAJI;
                         $nameTag = $request->NAME_TAG;
                         $limitKartu = $request->KARTU_BANK_LAIN;
-                        
+
 
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
@@ -494,7 +498,7 @@ class EFormController extends Controller
 
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
-                        
+
                         return response()->json([
                             'responseCode' => '01',
                             'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
@@ -522,7 +526,7 @@ class EFormController extends Controller
                         'eform_id' => $eformId
 
                     ]);
-                    
+
                     //send eform ke pefindo
                     // $pefindoController = new PrescreeningController();
                     // $getPefindo = $pefindoController->getPefindo()
@@ -530,12 +534,22 @@ class EFormController extends Controller
                     //cek jumlah kk
                     //pefindo dalam development. sabar ya :)
                     //update eform
-                    
-                   
+
+
                 }
-            }else if ( $request->product_type == 'briguna' ) {
+            }
+			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
+				$validasis = DB::table('customer_details')
+						 ->leftJoin('eforms')
+						 ->select(DB::raw('customer_details.nik,eforms.product_type,eforms."IsFinish"'))
+						 ->groupBy('customer_details.nik', 'eforms.product_type','eforms."IsFinish"')
+						 ->where('customer_details.nik', $request->nik)
+						 ->get();
+				$validasis = $validasis->toArray();
+				$validasis = json_decode(json_encode($validasis), True);
             /* BRIGUNA */
+				if(!empty($validasis) && $validasis['product_type']=='briguna' && $validasis['IsFinish']='true'){
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
@@ -676,8 +690,16 @@ class EFormController extends Controller
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
+				
+			 } else {
+                    return response()->error( [
+                        'message' => 'User sedang dalam pengajuan',
+                        'contents' => $dataEform
+                    ], 422 );
+                }	
                     \Log::info($kpr);
-        } else {
+        }
+		else {
 			        $branchs = \RestwsHc::setBody([
 					'request' => json_encode([
 						'requestMethod' => 'get_near_branch_v2',
@@ -842,20 +864,9 @@ class EFormController extends Controller
             $usersModel->notify(new EFormPenugasanDisposisi($eform));
 
             //add scheduleData in Disposisition
-            $scheduleData = array(
-                    'title' => $eform->ref_number
-                    , 'appointment_date' => $eform->appointment_date
-                    , 'user_id' => $eform->user_id
-                    , 'ao_id' => $eform->ao_id
-                    , 'eform_id' => $eform->id
-                    , 'ref_number' => $eform->ref_number
-                    , 'address' => $eform->address
-                    , 'latitude' => $eform->longitude
-                    , 'longitude' => $eform->latitude
-                    , 'desc' => '-'
-                    , 'status' => 'waiting'
-                );
-            $schedule = Appointment::updateOrCreate(['eform_id' => $eform->id],$scheduleData);
+            $scheduleData = array( 'ao_id' => $eform->ao_id );
+
+            Appointment::where('eform_id', $eform->id)->update($scheduleData);
 
             // Credentials for push notification helper
             $credentials = [
@@ -872,6 +883,9 @@ class EFormController extends Controller
             ], 422 );
         }
         DB::commit();
+
+        set_action_date($eform->id, 'eform-disposition');
+
         return response()->success( [
             'message' => 'E-Form berhasil di disposisi',
             'contents' => $eform
@@ -941,10 +955,16 @@ class EFormController extends Controller
             if ( $currentStatus == 'Approval2' ) {
                 $detail = EForm::with( 'visit_report.mutation.bankstatement', 'recontest' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+
+                set_action_date($detail->id, 'eform-recontest-approval');
+
             } else {
                 $usersModel = User::FindOrFail($data->user_id);
                 $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
                 generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+
+                set_action_date($detail->id, 'eform-approval');
+
             }
 
             return response()->success( [
@@ -1011,6 +1031,8 @@ class EFormController extends Controller
             }
             DB::commit();
             $code = 201;
+
+            set_action_date($detail->id, 'customer-verification');
 
         } else {
             DB::rollback();
@@ -1145,6 +1167,11 @@ class EFormController extends Controller
                     }
 
                     pushNotification($credentials, $slug);
+
+                    set_action_date(
+                        $data->id
+                        , 'customer-clas-' . strtolower( $request->input('status') )
+                    );
 
                     return response()->json([
                         "responseCode" => "01",

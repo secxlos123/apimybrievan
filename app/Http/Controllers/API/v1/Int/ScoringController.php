@@ -394,6 +394,8 @@ class ScoringController extends Controller
         generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
         DB::commit();
 
+        set_action_date($eform->id, 'eform-prescreening');
+
         return response()->success( [
             'message' => $message,
             'contents' => $detail

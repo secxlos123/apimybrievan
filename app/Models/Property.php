@@ -284,7 +284,7 @@ class Property extends Model implements AuditableContract
                  */
                 if ($request->has('bedroom')) {
                     $id = $request->input('bedroom');
-                    if ($id > 4) {
+                    if ($id > 3) {
                         $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= ?) ",array($id));
                     }else{
                         $property->whereRaw("prop_id in (select property_id from property_types where bedroom = ?) ",array($id));
