@@ -379,4 +379,155 @@ class DashboardController extends Controller
 
       return $result;
     }
+
+    public function list_kanwil()
+    {
+        try {
+          $list_kanwil = RestwsHc::setBody([
+            'request' => json_encode([
+              'requestMethod' => 'get_list_kanwil',
+              'requestData' => [
+                'app_id' => 'mybriapi'
+              ],
+            ])
+          ])
+          ->post( 'form_params' );
+
+          if ($list_kanwil['responseCode'] == '00' ) {
+
+            $list_kanwil[ 'responseData' ] = array_map( function( $content ) {
+              return [
+                'region_id' => $content[ 'region' ],
+                'region_name' => $content[ 'rgdesc' ],
+                'branch_id' => $content[ 'branch' ]
+              ];
+            }, $list_kanwil[ 'responseData' ] );
+
+            $kanwil_list = $list_kanwil[ 'responseData' ];
+
+            return $kanwil_list;
+
+          }
+        } catch (\Exception $e) {
+          $error = 'Gagal Get List kanwil';
+          return $error;
+        }
+
+    }
+
+    public function get_kanca_kanwil($region)
+    {
+      try {
+        $requestPost =[
+          'app_id' => 'mybriapi',
+          'region' => $region
+        ];
+
+        $list_kanca_kanwil = RestwsHc::setBody([
+          'request' => json_encode([
+            'requestMethod' => 'get_list_kanca_from_kanwil',
+            'requestData' => $requestPost
+          ])
+        ])
+        ->post( 'form_params' );
+
+        return $list_kanca_kanwil;
+      } catch (\Exception $e) {
+        $error = 'Gagal Get List kanca region '.$region;
+        return $error;
+      }
+
+    }
+
+    public function list_kanca_for_kanwil($region)
+    {
+      $list_all_kanca = [];
+        $len = 5;
+        $con =[
+        1 =>'0',
+        2=>'00',
+        3=>'000',
+        4=>'0000'
+        ];
+
+      $data = $this->get_kanca_kanwil($region);
+      $list_kanca =[];
+      foreach ($data['responseData'] as $key_kanca => $value_kanca) {
+        $list_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] =
+        [
+           'mbdesc' => $value_kanca['mbdesc'],
+           'region_id' => $region
+
+           ]
+        ;
+      }
+      return $list_kanca;
+    }
+
+    public function list_all_kanca()
+    {
+      $list_kanwil = $this->list_kanwil();
+      $list_all_kanca = [];
+        $len = 5;
+        $con =[
+        1 =>'0',
+        2=>'00',
+        3=>'000',
+        4=>'0000'
+        ];
+
+      foreach ($list_kanwil as $key => $value) {
+        $list_kanca = $this->get_kanca_kanwil($value['region_id']);
+        foreach ($list_kanca['responseData'] as $key_kanca => $value_kanca) {
+         $list_all_kanca[$con[$len-strlen($value_kanca['mainbr'])].$value_kanca['mainbr']] =
+         [
+           'mbdesc' => $value_kanca['mbdesc'],
+           'region_id' => $value['region_id']
+
+           ]
+          ;
+        }
+      }
+
+
+      return $list_all_kanca;
+    }
+
+    public function get_uker_kanca($branch_code)
+    {
+      try {
+
+        $requestPost =[
+          'app_id' => 'mybriapi',
+          'branch_code' => $branch_code
+        ];
+
+        $list_uker_kanca = RestwsHc::setBody([
+          'request' => json_encode([
+            'requestMethod' => 'get_list_uker_from_cabang',
+            'requestData' => $requestPost
+          ])
+        ])
+        ->post( 'form_params' );
+
+        return $list_uker_kanca;
+
+      } catch (\Exception $e) {
+        $error = 'Gagal Get List uker kanca '.$branch_code;
+        return $error;
+      }
+
+    }
+
+    public function pemasar_kanwil(Request $request)
+    {
+      $list_kanca = array_keys($this->list_kanca_for_kanwil($region));
+      $region = $request['region'];
+      $list_kanca = array_keys($this->list_kanca_for_kanwil($region));
+      foreach($list_kanca as $kanca){
+        $pemasar[$kanca] = $this->pemasar($request->header('pn'),$kanca);
+      }
+      return $pemasar;
+
+    }
 }
