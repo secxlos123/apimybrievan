@@ -111,7 +111,6 @@ class EFormController extends Controller
 
     public function eformGenerate(Request $request)
     {
-        $limit = $request->input( 'limit' ) ?: 10;
         $user = \RestwsHc::getUser();
         $generateEform = EForm::all();
         if($user['role'] == 'ao'){
@@ -121,14 +120,7 @@ class EFormController extends Controller
         }else{
              $generateEform->where('branch_id', $user['branch_id']);
         }
-        //dd($generateEform);
-        $date = date('Y-m-d-H:i:s');
-        $pdf = PDF::loadView('pdf.dashboard', compact('generateEform'));
-        if($request->input('type') == 1){
-                return $pdf->download('list_pengajuan-'.$date.'.pdf');
-        }else{
-                return $pdf->stream('list_pengajuan-'.$date.'.pdf');
-        }
+        return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
     }
 
 	public function php_ini(){
