@@ -54,7 +54,7 @@ left join collaterals f on f.developer_id = c.id
 left join eforms g on g.user_id = a.user_id
 left join user_services h on h.pn = a.user_id");
 
-         \DB::unprepared("DROP VIEW IF EXISTS auditrail_pengajuankredit");
+\DB::unprepared("DROP VIEW IF EXISTS auditrail_pengajuankredit");
 
  \DB::unprepared("DROP VIEW IF EXISTS auditrail_type_two");
         \DB::unprepared("CREATE VIEW auditrail_type_two AS
@@ -114,12 +114,15 @@ left join user_services h on h.pn = a.user_id
               , a.ip_address
               , a.action_location
               , b.id as eform_id
+              , b.user_id as id_debitur
+              , concat(e.first_name,' ',e.last_name) as debitur
               , b.branch_id
               , d.region_name
               , d.region_id 
         from auditrail_type_two a 
         join eforms b on b.ref_number = a.ref_number
         join kpr c on c.eform_id = b.id
-        join properties d on d.id = c.property_id");
+        join properties d on d.id = c.property_id
+        join users e on e.id = b.user_id");
     }
 }

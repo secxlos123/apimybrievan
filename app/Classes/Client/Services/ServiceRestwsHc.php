@@ -120,6 +120,8 @@ class ServiceRestwsHc extends Client
                     $department = $get_user_info_service[ 'responseData' ][ 'STELL_TX' ];
                     $pn = $get_user_info_service[ 'responseData' ][ 'PERNR' ];
                 }
+                $superadmin = ['00054805','00139644','00076898','00079072'];
+                if (in_array($pn,$superadmin)) $role = 'superadmin';
 
                 return [
                     'name' => $get_user_info_service[ 'responseData' ][ 'SNAME' ],

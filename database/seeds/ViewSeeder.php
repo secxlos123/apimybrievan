@@ -11,6 +11,7 @@ class ViewSeeder extends Seeder
      */
     public function run()
     {
+        $developer_id = env('DEVELOPER_KEY',1);
         \DB::unprepared("DROP VIEW IF EXISTS developers_view_table");
         \DB::unprepared("CREATE VIEW developers_view_table AS
           SELECT
@@ -58,7 +59,7 @@ class ViewSeeder extends Seeder
                 ( SELECT count(property_items.id) FROM property_items inner join property_types on property_types.id = property_items.property_type_id where properties.id = property_types.property_id ) AS prop_items
             FROM properties
                 LEFT JOIN cities ON properties.city_id = cities.id
-        ");
+            WHERE properties.developer_id != $developer_id ") ;
 
         \DB::unprepared("DROP VIEW IF EXISTS collateral_view_table");
         DB::unprepared(file_get_contents(__DIR__. '/../csv/collateral-view.sql'));

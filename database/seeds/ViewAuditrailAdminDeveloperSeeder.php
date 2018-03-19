@@ -68,12 +68,18 @@ class ViewAuditrailAdminDeveloperSeeder extends Seeder
             ,c.manager_name
             ,e.region_id
             ,e.region_name
+            ,f.home_location
+            ,g.user_id as id_debitur
+            , concat(i.first_name,' ',i.last_name) as debitur
             from audits a
             left join user_services h on h.pn = a.user_id
             left join collaterals c on a.auditable_id = c.id
             left join users s on c.developer_id = s.id 
             left join developers d on d.user_id = s.id
-            left join properties e on e.id = c.property_id");
+            left join properties e on e.id = c.property_id
+            join kpr f on f.property_id = c.property_id
+            join eforms g on g.id = f.eform_id
+            join users i on i.id = g.user_id");
         //view audit trail property
         \DB::unprepared("DROP VIEW IF EXISTS auditrail_property");
         \DB::unprepared("CREATE VIEW auditrail_property AS

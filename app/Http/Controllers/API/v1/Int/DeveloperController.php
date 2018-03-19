@@ -196,9 +196,10 @@ class DeveloperController extends Controller
     /**
      * [GetAllDeveloper description]
      */
-    public function GetAllDeveloper()
+    public function GetAllDeveloper(Request $request)
     {
-        $developer = Developer::select('id','company_name')->get();
+        $limit = $request->input('limit') ?: 500;
+        $developer = Developer::select('id','dev_id_bri','company_name')->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Developer",
                 'contents' => $developer ]);
