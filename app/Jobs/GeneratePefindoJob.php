@@ -44,21 +44,29 @@ class GeneratePefindoJob implements ShouldQueue
      */
     public function handle()
     {
-        $message = 'Berhasil proses prescreening E-Form';
+        if ( $this->eform->delay_prescreening == 1 && ENV('DELAY_PRESCREENING', false) ) {
+            $this->eform->update(
+                array_merge(
+                    [ 'delay_prescreening' => 2 ]
+                    , generate_data_prescreening(
+                        $this->eform
+                        , $this->request
+                        , break_pefindo( $this->eform, $this->request )
+                    )
+                )
 
-        $this->eform->update(
-            generate_data_prescreening(
-                $this->eform
-                , $this->request
-                , break_pefindo( $this->eform, $this->request )
-            )
-        );
+            );
 
-        set_action_date($this->eform->id, 'eform-prescreening-update');
+            set_action_date($this->eform->id, 'eform-prescreening-update');
+            $message = 'Berhasil proses prescreening E-Form';
 
-        // auto approve for VIP
-        if ( $this->eform->is_clas_ready ) {
-            $message .= ' dan ' . autoApproveForVIP( array(), $this->eform->id );
+            // auto approve for VIP
+            if ( $this->eform->is_clas_ready ) {
+                $message .= ' dan ' . autoApproveForVIP( array(), $this->eform->id );
+            }
+        } else {
+            $message = 'Prescreening sudah pernah di lakukan';
+
         }
 
         \Log::info("=================== Dispatch Event Prescreening ========================");
