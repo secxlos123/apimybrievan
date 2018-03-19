@@ -1548,7 +1548,7 @@ class ApiLasController extends Controller
                     $content_las_prescoring["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
                     $content_las_prescoring["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
                     $content_las_prescoring["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
-                    $content_las_prescoring["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
+                    $content_las_prescoring["Maksimum_plafond_diberikan"] = !isset($request['Permohonan_kredit'])?"":$request['Permohonan_kredit'];
                     $content_las_prescoring["Fid_uid"] = $uid;
                 }
 
@@ -1785,7 +1785,7 @@ class ApiLasController extends Controller
                             $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
                             $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
                             $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
-                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
+
                             $eform->update($param_eform);
                             $briguna->update($param_briguna);
                             $result = [

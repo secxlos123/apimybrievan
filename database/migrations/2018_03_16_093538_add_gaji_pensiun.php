@@ -19,7 +19,6 @@ class AddGajiPensiun extends Migration
             $table->double('Potongan_per_bulan_pensiun')->nullable();
             $table->double('Maksimum_plafond_pensiun')->nullable();
             $table->double('Maksimum_angsuran_pensiun')->nullable();
-            $table->double('Maksimum_plafond_diberikan')->nullable();
         });
     }
 
@@ -34,7 +33,7 @@ class AddGajiPensiun extends Migration
             $table->dropColumn([
                 'gaji_bersih_pensiun', 'Pendapatan_profesi_pensiun',
                 'Potongan_per_bulan_pensiun', 'Maksimum_plafond_pensiun',
-                'Maksimum_angsuran_pensiun', 'Maksimum_plafond_diberikan'
+                'Maksimum_angsuran_pensiun'
             ]);
         });
     }
