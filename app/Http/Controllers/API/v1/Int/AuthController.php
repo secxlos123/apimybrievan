@@ -136,7 +136,7 @@ class AuthController extends Controller
                 if(!$checkedRolePn){
                     $this->userservices->updateOrCreate(['pn'=> $pn],[
                         'pn'=>$pn,
-                        'hilfm'=>$data['hilfm'],
+                        'hilfm'=> $data['hilfm'] == '-' ? 0 : $data['hilfm'],
                         'role'=> $role,
                         'name'=> $data['nama'],
                         'tipe_uker'=> $data['tipe_uker'],
@@ -185,6 +185,8 @@ class AuthController extends Controller
             } else {
                 $branch = $data[ 'branch' ];
             }
+            $superadmin = ['00054805','00139644','00076898','00079072'];
+            if (in_array($pn,$superadmin)) $role = 'superadmin';
 
             return response()->success( [
                 'message' => 'Login Sukses',
