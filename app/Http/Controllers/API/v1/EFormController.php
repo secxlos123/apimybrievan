@@ -33,6 +33,7 @@ use App\Notifications\VerificationRejectFormNasabah;
 use DB;
 use Brispot;
 use Cache;
+use PDF;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
@@ -107,6 +108,29 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
+
+    public function eformGenerate(Request $request)
+    {
+        $limit = $request->input( 'limit' ) ?: 10;
+        $user = \RestwsHc::getUser();
+        $generateEform = EForm::all();
+        if($user['role'] == 'ao'){
+
+             $generateEform->where('ao_id', $user['pn']);
+
+        }else{
+             $generateEform->where('branch_id', $user['branch_id']);
+        }
+        //dd($generateEform);
+        $date = date('Y-m-d-H:i:s');
+        $pdf = PDF::loadView('pdf.dashboard', compact('generateEform'));
+        if($request->input('type') == 1){
+                return $pdf->download('list_pengajuan-'.$date.'.pdf');
+        }else{
+                return $pdf->stream('list_pengajuan-'.$date.'.pdf');
+        }
+    }
+
 	public function php_ini(){
 		phpinfo();
 	}

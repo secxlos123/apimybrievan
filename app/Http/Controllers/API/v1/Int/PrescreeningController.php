@@ -145,14 +145,23 @@ class PrescreeningController extends Controller
     public function update( Request $request, $prescreening )
     {
         $eform = EForm::findOrFail( $prescreening );
-        $waiting = true;
+        $waiting = false;
+
+        $updateData = [
+            'selected_sicd' => $request->input('select_sicd')
+            , 'selected_dhn' => $request->input('select_dhn')
+        ];
 
         if ( $request->has('select_individual_pefindo') || $request->has('select_couple_pefindo') ) {
             if ( ENV('DELAY_PRESCREENING', false) ) {
-                $waiting = false;
-                dispatch( new GeneratePefindoJob( $eform, $request->all() ) );
+                $waiting = true;
+                $message = 'Prescreening sudah pernah di lakukan';
 
-                $message = 'Hasil prescreening sedang dalam proses';
+                if ( $eform->delay_prescreening == 0 ) {
+                    dispatch( new GeneratePefindoJob( $eform, $request->all() ) );
+                    $updateData[ 'delay_prescreening' ] = 1;
+                    $message = 'Hasil prescreening sedang dalam proses';
+                }
 
             } else {
                 $returnData = break_pefindo( $eform, $request );
@@ -182,12 +191,7 @@ class PrescreeningController extends Controller
 
         }
 
-        $updateData = [
-            'selected_sicd' => $request->input('select_sicd')
-            , 'selected_dhn' => $request->input('select_dhn')
-        ];
-
-        if ( $waiting ) {
+        if ( !$waiting ) {
             $updateData = array_merge(
                 $updateData
                 , generate_data_prescreening( $eform, $request, $returnData )
@@ -375,6 +379,7 @@ class PrescreeningController extends Controller
             'message' => 'Sukses',
             'contents' => array(
                 'auto_prescreening' => env( 'AUTO_PRESCREENING', false )
+                , 'delay_prescreening' => env( 'DELAY_PRESCREENING', false )
             )
         ], 200 );
     }

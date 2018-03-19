@@ -332,3 +332,9 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
 	    });
 
 });
+Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1' ], function () {
+
+			//this route for generatepdf
+			Route::get('genaratePDF', 'EFormController@eformGenerate');
+
+});
