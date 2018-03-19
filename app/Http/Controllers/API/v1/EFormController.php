@@ -852,6 +852,7 @@ class EFormController extends Controller
             $baseRequest = [ 'ao_id' => $ao_id ];
             // Get User Login
             $user_login = \RestwsHc::getUser($ao_id);
+            $baseRequest['pinca_note'] = $request->has('pinca_note') ? $request->pinca_note : 'Tidak Ada Note';
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
 
