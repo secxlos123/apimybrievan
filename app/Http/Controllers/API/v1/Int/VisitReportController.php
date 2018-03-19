@@ -50,7 +50,7 @@ class VisitReportController extends Controller
         $user_login = \RestwsHc::getUser();
 
         $eform = EForm::find($eform_id);
-        
+
         $typeModule = getTypeModule(EForm::class);
         notificationIsRead($eform_id, $typeModule);
 
@@ -79,6 +79,8 @@ class VisitReportController extends Controller
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
         }
 
+        set_action_date($eform->id, 'eform-lkn');
+
         return response()->success( [
             'message' => $message,
             'contents' => $visit_report
@@ -96,10 +98,10 @@ class VisitReportController extends Controller
     {
         $eform = EForm::find($eform_id);
         $message = 'Resend E-Form VIP gagal';
-        
+
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
-            $message = autoApproveForVIP( array(), $eform->id );
+            $message = autoApproveForVIP( array(), $eform->id, true );
         }
 
         return response()->success( [

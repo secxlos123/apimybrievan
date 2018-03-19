@@ -4,6 +4,7 @@ use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 use Illuminate\Support\Facades\Storage;
 use App\Models\UserNotification;
 use App\Models\EForm;
+use App\Models\ActionDate;
 use App\Notifications\ApproveEFormCustomer;
 use App\Notifications\ApproveEFormInternal;
 use App\Notifications\RejectEFormInternal;
@@ -33,6 +34,28 @@ use LaravelFCM\Message\PayloadNotificationBuilder;
 use LaravelFCM\Message\Topics;
 use LaravelFCM\Facades\FCM;
 use App\Events\EForm\Approved;
+
+if (! function_exists('set_action_date')) {
+
+    /**
+     * Generate pdf file.
+     *
+     * @param  integer $id
+     * @param  string $action
+     *
+     * @return array
+     */
+    function set_action_date($id, $action)
+    {
+        $eform = EForm::find( $id );
+        $eform->detail_actions()->updateOrCreate(
+            [
+                'action' => $action
+                , 'execute_at' => date('Y-m-d H:i:s')
+            ]
+        );
+    }
+}
 
 if (! function_exists('csv_to_array')) {
 
@@ -466,7 +489,7 @@ if (! function_exists('autoApproveForVIP')) {
      *
      * @return array
      */
-    function autoApproveForVIP( $request, $eform_id )
+    function autoApproveForVIP( $request, $eform_id, $resend = false )
     {
         if ( !isset( $request['is_approved'] ) ) {
             $request['is_approved'] = true;
@@ -503,6 +526,15 @@ if (! function_exists('autoApproveForVIP')) {
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->find( $eform_id );
 
             generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+
+            if ( $resend ) {
+                set_action_date($eform->id, 'eform-vip-resend');
+
+            } else {
+                set_action_date($detail->id, 'eform-approval');
+                set_action_date($detail->id, 'eform-vip');
+
+            }
 
             return 'E-Form VIP berhasil';
         }

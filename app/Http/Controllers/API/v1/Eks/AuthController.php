@@ -33,6 +33,7 @@ class AuthController extends Controller
         $baseData = $this->reArrangeRequest( $request->all() );
 
         $user = Sentinel::register( $baseData );
+        $user->history()->create(['password'=>$user->password]);
         $activation = Activation::create( $user );
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
@@ -107,9 +108,9 @@ class AuthController extends Controller
              if ($check) {
                 if (!$activation = Activation::completed($check)){
                     return response()->error(['message' => 'Maaf akun anda belum di verifikasi'], 401);
-                } else if ($check->is_banned) {
+                } else if ($check->is_banned || $check->is_actived != TRUE) {
                     return response()->error(['message' => 'Maaf akun anda sedang di banned'], 401);
-                }
+                } 
              }
 
             // attempt to verify the credentials and create a token for the user
