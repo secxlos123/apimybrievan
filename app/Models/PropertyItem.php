@@ -125,6 +125,18 @@ class PropertyItem extends Model implements AuditableContract
                     $item->whereIn('property_type_id',$itemid);
                     }
                 }
+                if ($request->has('property_id')){
+                    $propitem = \DB::table('property_types')->select('id')->where('property_id',$request->input('property_id'))->get();
+                    $propid = array();
+                    if (count($propitem)) {
+                        foreach ($propitem as $key => $value) {
+                            foreach ($value as $key2 => $value2) {
+                                $propid[]= $value2;
+                            }
+                        }
+                    }
+                    $item->whereIn('property_items.property_type_id', $propid);
+                }
                 if ($request->has('property_type_id')) 
                     $item->where('property_items.property_type_id', $request->input('property_type_id'));
 

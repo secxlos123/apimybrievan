@@ -175,6 +175,31 @@ class PropertyType extends Model implements AuditableContract
     }
 
     /**
+     * Get list proptype without non-kerjasama
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  Request $request [description]
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsPropType($query, Request $request)
+    {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        $select = ['id', 'name', 'building_area'];
+        $listPropType = $query
+                    ->where(function($listPropType) use ($request, $query){
+                        if($request->has('search')){
+                        $listPropType->where(\DB::raw('lower(name)'), 'like', '%'.$request->input('search').'%');
+                        }
+                    })
+                    ->where(function($listPropType) use ($request, $query){
+                        $listPropType->where('name', 'not like', 'Non Kerja Sama');
+                    })
+                    ->select($select)
+                    ->orderBy($sort[0], $sort[1]);
+
+        return $listPropType;
+    }
+
+    /**
      * Scope a query for search user.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query

@@ -171,21 +171,12 @@ class Audit extends Model implements AuditContract
                  $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah'];
                  $appointment = 'app\\models\\appointment';
                  $propertyItem = 'app\\models\\propertyitem';
+                 $property = 'app\\models\\property';
+                 $collateral = 'app\models\collateral';
                  $auditrail->whereNotNull('username');
-                 //$auditrail->where('auditable_type', '=', $eform);
-                 //$auditrail->where(\DB::raw('LOWER(old_values)'), '!=', '[]');
                  $auditrail->where(\DB::raw('LOWER(new_values)'), '!=', '[]');
                  $auditrail->whereIn(DB::raw('lower(modul_name)'), $data_action);
-                 $auditrail->where('auditable_type', '!=', $appointment);
-                 $auditrail->where('auditable_type', '!=', $propertyItem);
-
-
-                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%peng%');
-                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%veri%');
-                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%lkn%');
-                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%leads%');
-                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'like', '%si kredit%');
-                 // $auditrail->Orwhere(DB::raw('lower(modul_name)'), 'not like', '%collateral%');
+                 $auditrail->whereNotIn('auditable_type', [$property, $appointment, $collateral]);
                 })
                 // ->orderBy($sort[0], $sort[1]);
                 ->orderBy('created_at', 'desc');
@@ -764,6 +755,7 @@ class Audit extends Model implements AuditContract
                $model_type = ['app\models\collateral','app\models\otsdoc'];
                $auditrail->wherein('auditable_type', $model_type);
                $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%tambah proyek%');
+               // $auditrail->where(\DB::raw('lower(modul_name)'), 'not like', '%pengajuan%');
                $auditrail->where(\DB::raw('LOWER(modul_name)'), 'not like', '%undefined%');
                $auditrail->Orwhere(\DB::raw('LOWER(modul_name)'), 'like', '%ots%');
 
