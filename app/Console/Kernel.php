@@ -35,9 +35,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('SchedulerRekening:updaterekening')
             // ->everyMinute();
-            ->everyFiveMinutes();
-            // ->weekdays()
-            // ->hourlyAt('12');
+            ->weekdays()
+            ->everyFiveMinutes()
+            ->between('07:00', '19:00');
 
         // // test function
         // $schedule->call(function(){
