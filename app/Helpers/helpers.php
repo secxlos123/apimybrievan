@@ -35,6 +35,322 @@ use LaravelFCM\Message\Topics;
 use LaravelFCM\Facades\FCM;
 use App\Events\EForm\Approved;
 
+if (! function_exists('get_pefindo_service')) {
+    /**
+     * Hit pefindo service
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function get_pefindo_service( $eform, $position = 'search', $couple = false, $pefindoId = null )
+    {
+        $customer = $eform->customer;
+        $sendNik = ($couple ? $customer->personal['couple_nik'] : $eform->nik);
+        $reason = 'Prescreening oleh ' . $eform->ao_name . '-' . $eform->ao_name;
+
+        if ( $position == 'search' ) {
+            $sendName = ($couple ? $customer->personal['couple_name'] : $customer->personal['name']);
+            $sendBirthDate = ($couple ? $customer->personal['couple_birth_date'] : $customer->personal['birth_date']);
+
+            if (ENV('APP_ENV') == 'local') {
+                $getPefindo = [
+                    "code" => "200"
+                    , "descriptions" => "Success"
+                    , "contents" => [
+                        [
+                            "Address" => "KAMPUNG GUNUNG KATUN, WAY KAMBAS"
+                            , "DateOfBirth" => "1975-05-30"
+                            , "FullName" => "RADEN FITRA"
+                            , "KTP" => "1808043005750001"
+                            , "PefindoId" => 2152216
+                        ]
+                        , [
+                            "Address" => "Jl Tumenggung Suryo No. 18 Malang"
+                            , "DateOfBirth" => "1975-05-30"
+                            , "FullName" => "Ahmad Fitra"
+                            , "KTP" => "9987613005750014"
+                            , "PefindoId" => 2152217
+                        ]
+                    ]
+                ];
+
+            } else {
+                $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
+                    ->setBody([
+                        'Request' => json_encode( array(
+                            'nomer_id_pefindo' => $sendNik
+                            , 'nama_pefindo' => $sendName
+                            , 'tanggal_lahir_pefindo' => $sendBirthDate
+                            , 'alasan_pefindo' => $reason
+                        ) )
+                    ])
+                    ->post( 'form_params' );
+            }
+
+            return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : null;
+
+        } else {
+            $endpoint = ( $position == 'data' ) ? 'PefindoReportData' : 'GetPdfReport';
+            $return = ( $position == 'data' ) ? 0 : 'PDF kosong';
+
+            if ( $pefindoId ) {
+                if (ENV('APP_ENV') == 'local') {
+                    $getPefindo = [
+                        "code" => "200"
+                        , "descriptions" => "Success"
+                        , "contents" => [
+                            "cip" => [
+                                "recordlist" => [
+                                    [
+                                        "date" => "2017-12-07"
+                                        , "grade" => 11
+                                        , "probabilityofdefault" => 14.73
+                                        , "reasonslist" => [
+                                            [
+                                                "code" => "DIS1"
+                                                , "description" => "Subject disputes the data"
+                                            ]
+                                            , [
+                                                "code" => "NQS1"
+                                                , "description" => "5 or more subscribers have recently requested reports on subject"
+                                            ]
+                                        ]
+                                        , "score" => 606.0
+                                        , "trend" => 3
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ];
+
+                } else {
+                    $getPefindo = \Asmx::setEndpoint( $endpoint )
+                        ->setBody([
+                            'Request' => json_encode( array(
+                                'id_pefindo' => $pefindoId //2152216
+                                , 'tipesubject_pefindo' => 'individual'
+                                , 'alasan_pefindo' => $reason
+                                , 'nomer_id_pefindo' => $sendNik
+                            ) )
+                        ])
+                        ->post( 'form_params' );
+
+                }
+
+                if ( $getPefindo["code"] == "200" ) {
+                    if ( $position == 'data' ) {
+                        if ( isset( $getPefindo['contents']['cip'] ) ) {
+                            if ( isset( $getPefindo['contents']['cip']['recordlist'] ) ) {
+                                if ( isset( $getPefindo['contents']['cip']['recordlist'][0] ) ) {
+                                    return $getPefindo['contents']['cip']['recordlist'][0];
+                                }
+                            }
+                        }
+                    } else {
+                        if ( !empty($getPefindo["contents"]) ) {
+                            $filename = ($couple ? 'pefindo-couple.pdf' : 'pefindo-individual.pdf');
+                            $basePath = public_path( 'uploads/' . $eform->nik );
+                            $publicPath = $basePath . '/pefindo.zip';
+
+                            if (ENV('APP_ENV') == 'local') {
+                                try {
+                                    copy(
+                                        public_path('blank.pdf')
+                                        , $basePath . '/' . $filename
+                                    );
+
+                                    return $filename;
+
+                                } catch (Exception $e) {
+                                    return "Gagal generate PDF";
+
+                                }
+
+                            } else {
+                                try {
+                                    file_put_contents(
+                                        $publicPath
+                                        , base64_decode($getPefindo["contents"])
+                                    );
+
+                                    $zip = \Zip::open( $publicPath )
+                                        ->extract(
+                                            $basePath
+                                        );
+                                    \File::delete( $publicPath );
+
+                                    copy(
+                                        $basePath . '/report.pdf'
+                                        , $basePath . '/' . $filename
+                                    );
+
+                                    \File::delete( $basePath . '/report.pdf' );
+
+                                    return $filename;
+
+                                } catch (Exception $e) {
+                                    return "Gagal generate PDF";
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $return;
+        }
+    }
+}
+
+if (! function_exists('get_pefindo_color')) {
+    /**
+     * Change pefindo score to color
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function get_pefindo_color( $score, $couple = false, $prevData, $index, $risk )
+    {
+        $return = array(
+            'color' => 'Kuning'
+            , 'position' => 2
+            , 'key' => $couple ? 'couple' : 'individual'
+            , 'index' => $index
+            , 'risk' => $risk
+            , 'score' => $score
+        );
+        if ( $score >= 250 && $score <= 529 ) {
+            $return['color'] = 'Merah';
+            $return['position'] = 1;
+
+        } elseif ( $score >= 677 && $score <= 900 ) {
+            $return['color'] = 'Hijau';
+            $return['position'] = 3;
+
+        }
+
+        if ( $couple ) {
+            if ( $prevData['position'] < $return['position'] ) {
+                $return = $prevData;
+            }
+        }
+
+        return $return;
+    }
+}
+
+if (! function_exists('break_pefindo')) {
+    /**
+     * Break pefindo data for insert to eform table
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function break_pefindo( $eform, $request )
+    {
+        $pefindoDetail = json_decode($eform['pefindo_detail']);
+        if ( isset($request['select_individual_pefindo']) ) {
+            $individu = $pefindoDetail->individual[ $request['select_individual_pefindo'] ];
+            $dataIndividu = get_pefindo_service( $eform, 'data', false, $individu->PefindoId );
+            $pdf = get_pefindo_service( $eform, 'pdf', false, $individu->PefindoId );
+            $pefindo = get_pefindo_color( $dataIndividu['score'], false, array(), $request['select_individual_pefindo'], $dataIndividu['reasonslist'] );
+
+        }
+
+        if ( isset($request['select_couple_pefindo']) ) {
+            $couple = $pefindoDetail->couple[ $request['select_couple_pefindo'] ];
+            $dataCouple = get_pefindo_service( $eform, 'data', true, $couple->PefindoId );
+            $pdf .= ',' . get_pefindo_service( $eform, 'pdf', true, $couple->PefindoId );
+            $pefindo = get_pefindo_color( $dataCouple['score'], true, $pefindo, $request['select_couple_pefindo'], $dataCouple['reasonslist'] );
+        }
+
+        $risk = array();
+        if ( isset( $pefindo['risk'] ) ) {
+            foreach ($pefindo['risk'] as $value) {
+                $risk[] = $value['description'];
+            }
+        }
+
+        $risk = implode(', ', $risk);
+        $selected_pefindo = json_encode( array($pefindo['key'] => $pefindo['index']) );
+
+        return [
+            'risk' => $risk
+            , 'pefindo' => $pefindo
+            , 'selected_pefindo' => $selected_pefindo
+            , 'pdf' => $pdf
+        ];
+    }
+}
+
+if (! function_exists('prescreening_result')) {
+    /**
+     * Get prescreening final result
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function prescreening_result( $dhnC, $sicdC, $pefindoC )
+    {
+        $calculate = array($pefindoC, $dhnC, $sicdC);
+
+        if ( in_array('Merah', $calculate) ) {
+            return 3;
+
+        } else if ( in_array('Kuning', $calculate) ) {
+            return 2;
+
+        }
+        return 1;
+    }
+}
+
+if (! function_exists('sicd_color')) {
+    /**
+     * Change SICD collectible to color
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function sicd_color( $collect )
+    {
+        if ( $collect == 1 || $collect == '-' || $collect == null || $collect == '' ) {
+            return 'Hijau';
+
+        } elseif ( $collect == 2 ) {
+            return 'Kuning';
+
+        }
+
+        return 'Merah';
+    }
+}
+
+if (! function_exists('generate_data_prescreening')) {
+    /**
+     * Generate eform prescreening data
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function generate_data_prescreening( $eform, $request, $returnData )
+    {
+        $sicdDetail = json_decode($eform['sicd_detail']);
+        $sicd = $sicdDetail->responseData[ $request['select_sicd'] ];
+
+        $dhnDetail = json_decode($eform['dhn_detail']);
+        $dhn = $dhnDetail->responseData[ $request['select_dhn'] ];
+
+        return [
+            'prescreening_status' => prescreening_result(
+                $dhn->warna
+                , sicd_color( $sicd->bikole )
+                , $returnData[ 'pefindo' ][ 'color' ]
+            )
+            , 'pefindo_score' => $returnData[ 'pefindo' ][ 'score' ]
+            , 'selected_pefindo' => $returnData[ 'selected_pefindo' ]
+            , 'ket_risk' => $returnData[ 'risk' ]
+            , 'uploadscore' => $returnData[ 'pdf' ]
+            , 'is_screening' => 1
+        ];
+    }
+}
+
 if (! function_exists('set_action_date')) {
 
     /**
