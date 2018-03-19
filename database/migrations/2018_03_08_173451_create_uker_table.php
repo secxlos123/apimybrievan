@@ -39,6 +39,6 @@ class CreateUkerTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kartu_kredit_details');
+        Schema::dropIfExists('uker_tables');
     }
 }

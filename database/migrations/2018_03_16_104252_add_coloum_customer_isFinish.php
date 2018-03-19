@@ -26,7 +26,7 @@ class AddColoumCustomerIsFinish extends Migration
     public function down()
     {
             Schema::table( 'customer_details', function ( Blueprint $table ) {
-            $table->text( 'IsFinish' )->nullable();
+            $table->dropColumn( 'IsFinish' );
         } );
     }
 }
