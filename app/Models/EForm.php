@@ -698,7 +698,7 @@ class EForm extends Model implements AuditableContract
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 $name = $request->input('name');
                 if (strtolower($name) != 'all') {
-                    $eform->Where('eforms.ao_id', '000'.$request->input('name'));
+                    $eform->Where('eforms.ao_id', substr('000'.$request->input('name'), -8));
                 }
             } );
         }
@@ -716,7 +716,7 @@ class EForm extends Model implements AuditableContract
         if ( !$request->has('is_screening') ) {
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 if ( $user['role'] == 'ao' ) {
-                    $eform = $eform->where('eforms.ao_id', $user['pn']);
+                    $eform = $eform->where('eforms.ao_id', substr('000'.$user['pn'], -8));
 
                 }
 
@@ -1811,7 +1811,7 @@ class EForm extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
         if (count($user)>0) {
             if ($user['role'] == 'ao') {
-                $data->where('ao_id',$user['pn']);
+                $data->where('ao_id',substr('000'.$user['pn'], -8));
             }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
                 $data->where('branch_id',intval($user['branch_id']));
             }
