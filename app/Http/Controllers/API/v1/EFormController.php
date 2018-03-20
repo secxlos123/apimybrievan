@@ -501,10 +501,10 @@ class EFormController extends Controller
                                 'form_params' => ['nik' => $nik]
                             ]);
                     }catch (RequestException $e){
-                        echo  $e->getMessage();
                         return response()->error([
                             'responseCode'=>'01',
-                            'responseMessage'=> 'Terjadi Kesalahan. Silahkan ajukan kembali'
+
+                            'responseMessage'=> $e->getMessage()
                         ],400);
                     }
 

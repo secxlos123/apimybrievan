@@ -15,6 +15,8 @@ use App\Models\User;
 use App\Models\EForm;
 use Asmx;
 
+use App\Http\Requests\API\v1\KreditRequest;
+
 use App\Models\KreditEmailGenerator;
 
 class KartuKreditController extends Controller{
@@ -37,7 +39,7 @@ class KartuKreditController extends Controller{
 	public function getAllInformation(){
 		$TOKEN_LOS = $this->tokenLos;
 		$client = new Client();
-		$host = '10.107.11.111:9975';
+		$host = $this->hostLos;
 
 		try{
 			$statusPernikahan = $this->getListStatusPernikahan($TOKEN_LOS,$client,$host);
@@ -172,7 +174,11 @@ class KartuKreditController extends Controller{
 			);
 		}catch(RequestException $e){
 
-      	 	return  $e->getMessage();
+
+      	 	return response()->json([
+      	 		'responseCode'=>'99',
+				'responseMessage'=>$e->getMessage()
+      	 	]);
 		}
 
 		$body = $res->getBody();
@@ -221,7 +227,7 @@ class KartuKreditController extends Controller{
 				]
 			);
 		}catch (RequestException $e){
-			echo "Terjadi kesalahan";
+
 			return  $e->getMessage();
 		}
 
@@ -476,8 +482,10 @@ class KartuKreditController extends Controller{
 				]
 			);
 		}catch (RequestException $e){
-			echo "Terjadi kesalahan";
-			return  $e->getMessage();
+			return response()->json([
+				'responseCode'=>'99',
+				'responseMessage'=>$e->getMessage()
+			]);
 		}
 
 		$body = $res->getBody();
@@ -506,15 +514,46 @@ class KartuKreditController extends Controller{
 
 	}
 
-	public function putusanPinca(Request $req){
+	public function putusanPinca(KreditRequest $req){
+		$host = $this->hostLos.'/api/approval';
 		$apregno = $req->apRegno;
+		$msg = $req->msg;
 		$putusan = $req->putusan;
 
+
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
-			'approval'=>$putusan
+			'approval'=>$putusan,
+			'catatan_rekomendasi_pinca'=>$msg
 		]);
 
 		//kirim ke los.
+		$kk = new KartuKredit();
+		$req = $req->all();
+		$data = $kk->createApprovalRequirements($req);
+		$client = new Client();
+		try{
+			$res = $client->request('POST',$host,
+			['headers' => ['access_token'=>$this->tokenLos],
+			'form_params'=> $data
+			]
+			);
+
+		}catch(RequestException $e){
+			return response()->json([
+				'responseCode'=>'99',
+				'responseMessage'=>$e->getMessage()
+			]);
+		}
+
+		$body = $res->getBody();
+    	$obj = json_decode($body);
+
+    	return response()->json([
+    		'responseCode'=>'00',
+    		'responseMessage'=>'Success',
+    		'contents'=>$data
+    	]);
+
 
 	}
 
@@ -530,8 +569,6 @@ class KartuKreditController extends Controller{
                 ])
                 ->post( 'form_params' );
     }
-
-
 
     public function checkEmailVerification(Request $request){
     	$codeVerif = $request->code;

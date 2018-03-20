@@ -61,6 +61,19 @@ class KartuKredit extends Model
         return $this->globalImageCheck( $value );
     }
 
+    public function getImageSlipGajiAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+    public function getImageSlipNametagAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+    public function getImageKartuBankLainAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+
     public function convertToAddDataLosFormat($req,$type){
 
         try{
@@ -277,12 +290,29 @@ class KartuKredit extends Model
 
     }
 
-    function insertEformIdIntoKKDetails($eformid){
-    }
+    public function createApprovalRequirements($req){
+        $data['msg'] = $req['msg'];
+        $data['apRegno'] = $req['apRegno'];
+        $data['mode']= $req['putusan'];
+        $data['by'] = $req['by'];
+        $data['stg'] = $req['stg'];
+        $data['userId'] = $req['userId'];
+        $data['tc'] = $req['tc'];
+        $data['cpId'] = $req['cpId'];
+        $data['networkId']= $req['networkId'];
+        $data['productId']= $req['productId'];
+        $data['cardTypeId'] = $req['cardTypeId'];
+        $data['plasticId'] = $req['plasticId'];
+        $data['cpAprLimit'] = $req['cpAprLimit'];
+        $data['potCode'] = $req['potCode'];
+        $data['wvCode']= $req['wvCode'];
+        $data['apBillCycle']= $req['apBillCycle'];
+        $data['apImigincator']= $req['apImigincator'];
+        $data['cpSeq'] = $req['cpSeq'];
+        $data['aprStatus']= $req['aprStatus'];
+        $data['fwd']='';
 
-    public function eformStatusFail(){
-        //update table eform field status_eform jadi 'fail-dedup' kalau gagal di dedup
+        return $data;
     }
-
 
 }
