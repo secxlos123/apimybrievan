@@ -20,8 +20,8 @@ class AddGajiPensiun extends Migration
             $table->double('Maksimum_plafond_pensiun')->nullable();
             $table->double('Maksimum_angsuran_pensiun')->nullable();
             $table->double('Maksimum_plafond_diberikan')->nullable();
-            $table->double('jenis_rekening')->nullable();
-            $table->double('nama_bank_lain')->nullable();
+            $table->string('jenis_rekening')->nullable();
+            $table->string('nama_bank_lain')->nullable();
         });
     }
 
