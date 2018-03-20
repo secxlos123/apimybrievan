@@ -863,6 +863,13 @@ class EFormController extends Controller
         try {
             DB::beginTransaction();
             $eform = EForm::findOrFail( $id );
+            if (!empty($eform->ao_id)) {
+                $message = 'Redisposisi';
+            }
+            else
+            {
+                $message = 'Disposisi';
+            }
             $ao_id = substr( '00000000' . $request->ao_id, -8 );
 
             $baseRequest = [ 'ao_id' => $ao_id ];
@@ -904,7 +911,7 @@ class EFormController extends Controller
         set_action_date($eform->id, 'eform-disposition');
 
         return response()->success( [
-            'message' => 'E-Form berhasil di disposisi',
+            'message' => 'E-Form berhasil di '.$message,
             'contents' => $eform
         ], 201);
     }
