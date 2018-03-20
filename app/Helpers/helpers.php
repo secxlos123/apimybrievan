@@ -709,6 +709,40 @@ if (! function_exists('getMessage')) {
     }
 }
 
+if (! function_exists('pushNotificationCRM')) {
+  function pushNotificationCRM($data, $type)
+  {
+    if(env('PUSH_NOTIFICATION', false)){
+        $methodType($data);
+    }
+  }
+
+  function marketingNote( $data ) {
+    $notificationBuilder = new PayloadNotificationBuilder( 'New Marketing Note' );
+    $notificationBuilder->setBody( '' )//message descriptiom
+                        ->setSound('default');
+
+    $dataBuilder = new PlayloadDataBuilder();
+    $dataBuilder->addData([
+      'slug' => $data['marketing_id'],
+      'type' => 'marketing_note'
+    ]);
+
+    $notification = $notificationBuilder->build();
+    $data = $dataBuilder->build();
+
+    $topic = new Topics();
+    $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))
+          ->andTopic( 'CRM_'.$data['pn']);
+
+    $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
+    $topicResponse->isSuccess();
+    $topicResponse->shouldRetry();
+    $topicResponse->error();
+
+  }
+}
+
 if (! function_exists('pushNotification')) {
 
     /**

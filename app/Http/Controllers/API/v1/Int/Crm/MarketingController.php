@@ -552,6 +552,8 @@ class MarketingController extends Controller
 
       $save = MarketingNote::create($data);
       if ($save) {
+
+          pushNotificationCRM($data, 'marketingNote');
           return response()->success([
               'message' => 'Marketing Notes berhasil ditambah.',
               'contents' => collect($save)->merge($request->all()),
