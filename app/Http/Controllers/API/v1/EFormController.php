@@ -112,15 +112,26 @@ class EFormController extends Controller
     public function eformGenerate(Request $request)
     {
         $user = \RestwsHc::getUser();
-        $generateEform = EForm::all();
-        if($user['role'] == 'ao'){
-
+        if($request->has('startdate') && $request->has('enddate')){
+            $startdate = $request->input('startdate');
+            $enddate = $request->input('enddate');
+            $generateEform = EForm::whereBetween('created_at',[$startdate, $enddate])->get();
+            if($user['role'] == 'ao'){
              $generateEform->where('ao_id', $user['pn']);
-
+            }else{
+                 $generateEform->where('branch_id', $user['branch_id']);
+            }
+            return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
         }else{
+            $generateEform = Eform::all();
+            if($user['role'] == 'ao'){
+             $generateEform->where('ao_id', $user['pn']);
+            }else{
              $generateEform->where('branch_id', $user['branch_id']);
+            }
+            return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
         }
-        return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
+        
     }
 
 	public function php_ini(){
