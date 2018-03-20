@@ -28,6 +28,6 @@ class CreateLosMybriLogTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('los_mybri_log');
     }
 }
