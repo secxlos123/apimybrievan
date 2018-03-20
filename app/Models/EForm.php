@@ -39,7 +39,7 @@ class EForm extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo', 'vip_sent','IsFinish'
+        'nik', 'user_id', 'internal_id', 'ao_id', 'appointment_date', 'longitude', 'latitude', 'branch_id', 'product_type', 'prescreening_status', 'is_approved', 'pros', 'cons', 'additional_parameters', 'address', 'token', 'status', 'response_status', 'recommended', 'recommendation', 'is_screening', 'pefindo_score', 'uploadscore', 'ket_risk', 'dhn_detail', 'sicd_detail', 'status_eform', 'branch', 'ao_name', 'ao_position', 'pinca_name', 'pinca_position', 'prescreening_name', 'prescreening_position', 'selected_sicd','ref_number', 'sales_dev_id', 'send_clas_date', 'selected_dhn', 'clas_position', 'pefindo_detail', 'selected_pefindo', 'vip_sent','IsFinish','pinca_note','delay_prescreening'
     ];
 
     /**
@@ -698,7 +698,7 @@ class EForm extends Model implements AuditableContract
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 $name = $request->input('name');
                 if (strtolower($name) != 'all') {
-                    $eform->Where('eforms.ao_id', '000'.$request->input('name'));
+                    $eform->Where('eforms.ao_id', substr('000'.$request->input('name'), -8));
                 }
             } );
         }
@@ -716,7 +716,7 @@ class EForm extends Model implements AuditableContract
         if ( !$request->has('is_screening') ) {
             $eform = $eform->where( function( $eform ) use( $request, &$user ) {
                 if ( $user['role'] == 'ao' ) {
-                    $eform = $eform->where('eforms.ao_id', $user['pn']);
+                    $eform = $eform->where('eforms.ao_id', substr('000'.$user['pn'], -8));
 
                 }
 
@@ -1811,7 +1811,7 @@ class EForm extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
         if (count($user)>0) {
             if ($user['role'] == 'ao') {
-                $data->where('ao_id',$user['pn']);
+                $data->where('ao_id',substr('000'.$user['pn'], -8));
             }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
                 $data->where('branch_id',intval($user['branch_id']));
             }
