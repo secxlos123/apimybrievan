@@ -33,6 +33,7 @@ use App\Notifications\VerificationRejectFormNasabah;
 use DB;
 use Brispot;
 use Cache;
+use PDF;
 use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
@@ -107,6 +108,21 @@ class EFormController extends Controller
             'contents' => $newForm
         ], 200 );
     }
+
+    public function eformGenerate(Request $request)
+    {
+        $user = \RestwsHc::getUser();
+        $generateEform = EForm::all();
+        if($user['role'] == 'ao'){
+
+             $generateEform->where('ao_id', $user['pn']);
+
+        }else{
+             $generateEform->where('branch_id', $user['branch_id']);
+        }
+        return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
+    }
+
 	public function php_ini(){
 		phpinfo();
 	}
@@ -852,6 +868,7 @@ class EFormController extends Controller
             $baseRequest = [ 'ao_id' => $ao_id ];
             // Get User Login
             $user_login = \RestwsHc::getUser($ao_id);
+            $baseRequest['pinca_note'] = $request->has('pinca_note') ? $request->pinca_note : 'Tidak Ada Note';
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
 
