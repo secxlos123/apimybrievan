@@ -838,4 +838,43 @@ class CollateralController extends Controller
      ] );
     }
 
+    public function GetAll(Request $request, $type = null)
+    {
+      $developer_id = env('DEVELOPER_KEY',1);
+      $limit = $request->has('limit') ? $request->input('limit') : 10;
+      $temp = [];
+      if ($type == 'nonindex') {
+          $non = $this->collateral->GetLists($this->request)->where('developer_id',$developer_id)->limit($limit)->get()->toArray();
+          foreach ($non as $key => $value) {
+              $ots = $this->collateral->withAll()->FindOrFail($value['collaterals_id'])->toArray();
+              $visitreport = VisitReport::where('eform_id',$value['eform_id'])->first()->toArray();
+              unset($visitreport['id']);
+              $all = array_merge($ots,$value,$visitreport);
+              $temp[]= $all;
+            }
+          $page = $request->input('page', 1);
+          $perPage = $limit;
+          $offset = ($page * $perPage) - $perPage;
+          $data =  new \Illuminate\Pagination\LengthAwarePaginator(
+          array_slice($temp, $offset, $perPage, true),
+          count($temp),
+          $perPage,
+          $page,
+          ['path' => $request->url(), 'query' => $request->query()]
+        );
+        }else if ($type == 'index')
+        {
+          $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id)->paginate($limit);
+        }
+        else
+        {
+          return response()->error( [
+          'message' => 'Type Collateral Tidak Valid'
+          ],422 );
+        }
+      return response()->success( [
+        'contents' => $data
+        ] );
+    }
+
 }
