@@ -61,6 +61,19 @@ class KartuKredit extends Model
         return $this->globalImageCheck( $value );
     }
 
+    public function getImageSlipGajiAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+    public function getImageSlipNametagAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+    public function getImageKartuBankLainAttribute( $value ){
+        return $this->globalImageCheck( $value );
+    }
+
+
     public function convertToAddDataLosFormat($req,$type){
 
         try{
