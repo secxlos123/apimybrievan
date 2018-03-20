@@ -15,7 +15,7 @@ use App\Models\User;
 use App\Models\EForm;
 use Asmx;
 
-use App\Http\Requests\API\V1\KreditRequest;
+use App\Http\Requests\API\v1\KreditRequest;
 
 use App\Models\KreditEmailGenerator;
 
