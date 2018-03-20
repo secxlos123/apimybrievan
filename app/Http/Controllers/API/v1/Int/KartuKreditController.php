@@ -15,7 +15,7 @@ use App\Models\User;
 use App\Models\EForm;
 use Asmx;
 
-use App\Http\Requests\API\V1\KreditRequest;
+use App\Http\Requests\API\v1\KreditRequest;
 
 use App\Models\KreditEmailGenerator;
 
@@ -515,7 +515,7 @@ class KartuKreditController extends Controller{
 	}
 
 	public function putusanPinca(KreditRequest $req){
-		$host = $this->$hostLos.'/api/approval';
+		$host = $this->hostLos.'/api/approval';
 		$apregno = $req->apRegno;
 		$msg = $req->msg;
 		$putusan = $req->putusan;
@@ -533,7 +533,7 @@ class KartuKreditController extends Controller{
 		$client = new Client();
 		try{
 			$res = $client->request('POST',$host,
-			['headers' => ['access_token'=>$this->$tokenLos],
+			['headers' => ['access_token'=>$this->tokenLos],
 			'form_params'=> $data
 			]
 			);

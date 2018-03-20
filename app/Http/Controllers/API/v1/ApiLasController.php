@@ -1548,7 +1548,7 @@ class ApiLasController extends Controller
                     $content_las_prescoring["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
                     $content_las_prescoring["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
                     $content_las_prescoring["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
-                    $content_las_prescoring["Maksimum_plafond_diberikan"] = !isset($request['Permohonan_kredit'])?"":$request['Permohonan_kredit'];
+                    $content_las_prescoring["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
                     $content_las_prescoring["Fid_uid"] = $uid;
                 }
 
@@ -1755,7 +1755,11 @@ class ApiLasController extends Controller
                                 "pernah_pinjam"             => $request['pernah_pinjam'],
                                 "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'],
                                 "tgl_analisa"               => $request['tgl_analisa'],
-                                "no_rek_simpanan"           => $request['no_rek_simpanan']
+                                "no_rek_simpanan"           => $request['no_rek_simpanan'],
+                                "jenis_rekening"            => $request['jenis_rekening'],
+                                "nama_bank_lain"            => $request['nama_bank_lain'],
+                                "nama_bank_lain_name"       => $request['nama_bank_lain_name'],
+                                "Sektor_ekonomi_sid_name"   => $request['Sektor_ekonomi_sid_name']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform["branch_id"] = $request['kantor_cabang_id'];
@@ -1785,6 +1789,7 @@ class ApiLasController extends Controller
                             $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
                             $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
                             $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
+                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
 
                             $eform->update($param_eform);
                             $briguna->update($param_briguna);

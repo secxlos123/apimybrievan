@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddColoumCustomerIsFinish extends Migration
+class AddPincaNote extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddColoumCustomerIsFinish extends Migration
      */
     public function up()
     {
-            Schema::table( 'customer_details', function ( Blueprint $table ) {
-            $table->text( 'IsFinish' )->nullable();
-        } );
+        Schema::table('eforms', function (Blueprint $table) {
+            $table->text( 'pinca_note' )->nullable();
+        });
     }
 
     /**
@@ -25,8 +25,8 @@ class AddColoumCustomerIsFinish extends Migration
      */
     public function down()
     {
-            Schema::table( 'customer_details', function ( Blueprint $table ) {
-            $table->dropColumn( 'IsFinish' );
-        } );
+        Schema::table('eforms', function (Blueprint $table) {
+            $table->dropColumn( 'pinca_note' );
+        });
     }
 }
