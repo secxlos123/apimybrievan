@@ -76,6 +76,11 @@ class Marketing extends Model
             ->orderBy('marketings.id', 'asc')
             ->where( function($marketing) use($request){
               if ($request->header('role') != 'fo') {
+                if ($request->has('start_date') && $request->has('end_date')) {
+                  $from = date($request->input('start_date') . ' 00:00:00', time());
+                  $to = date($request->input('end_date') . ' 23:60:00', time());
+                  $marketing->whereBetween('created_at', array($from, $to));
+                }
                 if($request->has('region')){
                   if($request->input('branch')=='all' || $request->input('branch')==''){
                     $marketing->whereIn('branch', $request->input('list_branch'));
