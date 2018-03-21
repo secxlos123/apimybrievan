@@ -21,9 +21,10 @@ class KreditRequest extends BaseRequest{
     				return [
     				'jenis_nasabah'=>'required|in:nasabah,debitur',
     				'pilihan_kartu'=>'required',
-    				'penghasilan_perbulan'=>'required',
-    				'jumlah_penerbit_kartu'=>'required',
-    				'limit_tertinggi'=>'required_if:jumlah_penerbit_kartu,1',
+    				'penghasilan_perbulan'=>'required|in:<=10juta,>10juta',
+    				'memiliki_kk_bank_lain' =>'required|boolean',
+    				'jumlah_penerbit_kartu'=>'required_if:memiliki_kk_bank_lain,True|required_if:memiliki_kk_bank_lain,true|required_if:penghasilan_perbulan,<=10juta',
+    				'limit_tertinggi'=>'required_if:jumlah_penerbit_kartu,1|required_if:memiliki_kk_bank_lain,True|required_if:memiliki_kk_bank_lain,true',
     				'PersonalNIK' => 'required|numeric|digits:16',
     				'PersonalName' => 'required',
     				'PersonalTempatLahir'=>'required',
@@ -42,7 +43,6 @@ class KreditRequest extends BaseRequest{
 
     				'ao_id'=>'required',
     				'branch_id'=>'required',
-    				'pn'=>'required',
 
     	// 			'PersonalAlamatDomisili' => 'required',
     				

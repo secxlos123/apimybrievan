@@ -65,7 +65,7 @@ class KartuKredit extends Model
         return $this->globalImageCheck( $value );
     }
 
-    public function getImageSlipNametagAttribute( $value ){
+    public function getImageNametagAttribute( $value ){
         return $this->globalImageCheck( $value );
     }
 
