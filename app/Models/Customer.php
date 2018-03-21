@@ -277,15 +277,14 @@ class Customer extends User
 	public function getIsFinishAttribute()
     {
         $stat_approved = [];
-        $eforms = $this->eforms()->select(['IsFinish'])->get();
-		$stat_approved = $eforms[0]['IsFinish'];
+        $eforms = $this->eforms()->select(['IsFinish'])->first();
 /*         foreach ($eforms as $eform) {
             $stat_approved = [
                 'IsFinish' => $eform->IsFinish
             ];
         }
  */
-        return $stat_approved;
+        return $eforms;
     }
     /**
      * Get status is_approved for mobile.
