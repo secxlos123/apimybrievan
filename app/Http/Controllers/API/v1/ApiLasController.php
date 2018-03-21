@@ -1757,7 +1757,9 @@ class ApiLasController extends Controller
                                 "tgl_analisa"               => $request['tgl_analisa'],
                                 "no_rek_simpanan"           => $request['no_rek_simpanan'],
                                 "jenis_rekening"            => $request['jenis_rekening'],
-                                "nama_bank_lain"            => $request['nama_bank_lain']
+                                "nama_bank_lain"            => $request['nama_bank_lain'],
+                                "nama_bank_lain_name"       => $request['nama_bank_lain_name'],
+                                "Sektor_ekonomi_sid_name"   => $request['Sektor_ekonomi_sid_name']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform["branch_id"] = $request['kantor_cabang_id'];
