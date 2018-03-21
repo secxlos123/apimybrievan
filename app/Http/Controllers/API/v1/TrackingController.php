@@ -28,11 +28,11 @@ class TrackingController extends Controller
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
-                    , case when eforms.product_type='briguna then '' when eforms.product_type='kpr' then developers.company_name end as developer_name
+                    , case when eforms.product_type='briguna' then '' when eforms.product_type='kpr' then developers.company_name end as developer_name
                     , case when eforms.product_type='briguna' then '' when eforms.product_type='kpr' then kpr.property_item_name end as property_name
                     , eforms.product_type as product_type
                     , date(eforms.created_at) as tanggal_pengajuan
-					, case when eforms.product_type='briguna' then briguna.request_amount when eforms.product_type='kpr then kpr.request_amount end as jumlah_pengajuan
+					, case when eforms.product_type='briguna' then briguna.request_amount when eforms.product_type='kpr' then kpr.request_amount end as jumlah_pengajuan
                     , case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
                         when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
@@ -65,13 +65,13 @@ class TrackingController extends Controller
                     $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
-                    , case when eforms.product_type='briguna then '' when eforms.product_type='kpr' then developers.company_name end as developer_name
+                    , case when eforms.product_type='briguna' then '' when eforms.product_type='kpr' then developers.company_name end as developer_name
                     , case when eforms.product_type='briguna' then '' when eforms.product_type='kpr' then kpr.property_item_name end as property_name
 					, case when eforms.product_type='briguna' then briguna.request_amount when eforms.product_type='kpr then kpr.request_amount end as nominal
                     , eforms.product_type as product_type
                     , eforms.ref_number as ref_number
                     , date(eforms.created_at) as tanggal_pengajuan
-					, case when eforms.product_type='briguna' then briguna.request_amount when eforms.product_type='kpr then kpr.request_amount end as jumlah_pengajuan
+					, case when eforms.product_type='briguna' then briguna.request_amount when eforms.product_type='kpr' then kpr.request_amount end as jumlah_pengajuan
                     , case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
                         when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
