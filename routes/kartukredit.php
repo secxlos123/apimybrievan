@@ -3,7 +3,9 @@
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
     Route::get('get-data','KartuKreditController@example');
 
-    Route::post('ajukankredit', 'KartuKreditController@ajukanKredit');
+    
+
+
 
    	Route::get('get-dropdown-info','KartuKreditController@getAllInformation');
 
@@ -31,6 +33,9 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 
     Route::group(['middleware' => 'api.auth'], function() {
+
+    	Route::post('ajukankredit', 'KartuKreditController@ajukanKredit');
+    	
     	Route::post('/putusan-pinca','KartuKreditController@putusanPinca');
     });
 });
