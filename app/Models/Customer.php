@@ -278,13 +278,14 @@ class Customer extends User
     {
         $stat_approved = [];
         $eforms = $this->eforms()->select(['IsFinish'])->first();
+		$stat_approved = $eforms[0]['IsFinish'];
 /*         foreach ($eforms as $eform) {
             $stat_approved = [
                 'IsFinish' => $eform->IsFinish
             ];
         }
  */
-        return $eforms;
+        return $stat_approved;
     }
     /**
      * Get status is_approved for mobile.
