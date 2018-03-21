@@ -29,10 +29,47 @@ class KartuKreditController extends Controller{
 	public $hostPefindo = '10.35.65.167:6969';
 
 	public function ajukanKredit(Request $req){
+		//cek users
+		$nik = $request->PersonalNIK;
+		if ($this->checkUser($nik)){
+			//cek dedup
+			
+		}
+		
 
-		//cek dedup
+		
 
 		//cek pefindo
+	}
+
+	function checkUser($nik){
+        $check = CustomerDetail::where('nik', $nik)->get();
+        if(count($check) == 0){
+            return response()->json([
+            	//user gak ketemu. crate baru dulu
+            		'responseCode'=>'01',
+                    'message' => 'Data dengan nik tersebut tidak ditemukan'
+                    ]);
+        }
+        return true;
+	}
+
+	function checkDedup($nik){
+
+		 $header = ['access_token'=> $this->tokenLos];
+			 $client = new Client();
+			 try{
+                $res = $client->request('POST',$this->hostLos, ['headers' =>  $header,
+                        'form_params' => ['nik' => $nik]
+                    ]);
+            }catch (RequestException $e){
+                return response()->error([
+                    'responseCode'=>'99',
+                    'responseMessage'=> $e->getMessage()
+                ],400);
+            }
+
+            return true;
 	}
 
 
