@@ -44,12 +44,12 @@ class TrackingController extends Controller
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
 					->leftJoin('kpr', function($join)
                          {
-							 $join->on('eforms.product_type', '=', 'kpr');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 							 $join->on('kpr.eform_id', '=', 'eforms.id');
 						 })
 					->leftJoin('briguna', function($join)
                          {
-							 $join->on('eforms.product_type', '=', 'briguna');
+							 $join->on('eforms.product_type', '=', DB::raw("'briguna'"));
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
 						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
@@ -83,12 +83,12 @@ class TrackingController extends Controller
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
 					->leftJoin('kpr', function($join)
                          {
-							 $join->on('eforms.product_type', '=', 'kpr');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 							 $join->on('kpr.eform_id', '=', 'eforms.id');
 						 })
 					->leftJoin('briguna', function($join)
                          {
-							 $join->on('eforms.product_type', '=', 'briguna');
+							 $join->on('eforms.product_type', '=', DB::raw("'briguna'"));
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
 						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
