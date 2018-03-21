@@ -588,4 +588,17 @@ class DashboardController extends Controller
 			], 200 );
 
     }
+
+    public function pemasar_cabang(Request $request)
+    {
+      $pn = $request->header('pn');
+      $kanca = $request->input('branch');
+      $pemasar = $this->officer($pn,$kanca);
+
+			return response()->success( [
+					'message' => 'Sukses get list pemasar cabang',
+					'contents' => $pemasar
+			], 200 );
+
+    }
 }
