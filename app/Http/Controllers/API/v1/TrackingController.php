@@ -85,12 +85,12 @@ class TrackingController extends Controller
                          {
 							 $join->on('eforms.product_type', '=', 'kpr');
 							 $join->on('kpr.eform_id', '=', 'eforms.id');
-						 }
+						 })
 					->leftJoin('briguna', function($join)
                          {
 							 $join->on('eforms.product_type', '=', 'briguna');
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
-						 }
+						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
                     ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
                     ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
