@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Asmx;
 
-class MitraList extends Model
+class Mitra0 extends Model
 {
     /**
      * The table name.
@@ -29,8 +29,10 @@ class MitraList extends Model
      * @var array
      */
 	 
+
+					
     protected $fillable = [  	
-						'idMitrakerja','NAMA_INSTANSI','kode','NPL','BRANCH_CODE','Jumlah_pegawai','JENIS_INSTANSI','UNIT_KERJA',
+					'idMitrakerja','NAMA_INSTANSI','kode','NPL','BRANCH_CODE','Jumlah_pegawai','JENIS_INSTANSI','UNIT_KERJA',
 					'Scoring','KET_Scoring','jenis_bidang_usaha','alamat_instansi','alamat_instansi2','alamat_instansi3','telephone_instansi',
 					'rating_instansi','lembaga_pemeringkat','go_public','no_ijin_prinsip','date_updated','updated_by','acc_type'];
 	
@@ -56,33 +58,16 @@ class MitraList extends Model
      *
      * @return void
      */
-    public function scopeFilter( $query, Request $request )
-    {
-        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id_header', 'asc'];
-        $user = \RestwsHc::getUser();
+    public static function create( $data ) {
+	  try {        
 
-        if ( $sort[0] == "id_header" ) {
-            $sort = ['id_header', 'asc'];
-        }
-
-		 $dir = $query->where( function( $dir ) use( $request ) {
-            if ( $request->has('NAMA_INSTANSI') ) {
-                $dir = $dir->where('mitra_header.NAMA_INSTANSI', $request->input('NAMA_INSTANSI'));
-			}
-            if ( $request->has('UNIT_KERJA') ) {
-                $dir = $dir->where('mitra_header.UNIT_KERJA', $request->input('UNIT_KERJA'));
-			}
-        } );
-
-				 $dir = $dir->join('mitra_detail', 'mitra_header.id_detail', '=', 'mitra_detail.id_detail');
-        $dir = $dir->orderBy('mitra_header.'.$sort[0], $sort[1]);
-
-        \Log::info($dir->toSql());
-        \Log::info($dir->getBindings());
-
-        return $dir;
+        $gimmick = ( new static )->newQuery()->create($data);
+            return $gimmick;
+     } catch (Exception $e) {
+            return $e;    
     }
 
-  
+       
+    }
 
 }
