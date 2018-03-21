@@ -151,13 +151,19 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail( $id );
         $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','product_type');
 
+        $mergeRequest[ 'phone' ] = 0;
+        if ( !empty($request->input('phone')) ) {
+            $mergeRequest[ 'phone' ] = preg_replace("/[^0-9,.]/", "", $request->input('phone') );
+        }
+        $request->merge($mergeRequest);
+
         // Get User Login
         $user_login = \RestwsHc::getUser();
         $baseRequest['ao_name'] = $user_login['name'];
         $baseRequest['ao_position'] = $user_login['position'];
 
         if ($request->has('eform_id')) {
-			
+
 			$productss = '';
 			if(empty($request->product_type)){$productss='';}else{$productss=$request->product_type;}
 			if($request->product_type=='briguna'){}else{
