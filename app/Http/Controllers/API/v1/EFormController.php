@@ -112,15 +112,26 @@ class EFormController extends Controller
     public function eformGenerate(Request $request)
     {
         $user = \RestwsHc::getUser();
-        $generateEform = EForm::all();
-        if($user['role'] == 'ao'){
-
+        if($request->has('startdate') && $request->has('enddate')){
+            $startdate = $request->input('startdate');
+            $enddate = $request->input('enddate');
+            $generateEform = EForm::whereBetween('created_at',[$startdate, $enddate])->get();
+            if($user['role'] == 'ao'){
              $generateEform->where('ao_id', $user['pn']);
-
+            }else{
+                 $generateEform->where('branch_id', $user['branch_id']);
+            }
+            return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
         }else{
+            $generateEform = Eform::all();
+            if($user['role'] == 'ao'){
+             $generateEform->where('ao_id', $user['pn']);
+            }else{
              $generateEform->where('branch_id', $user['branch_id']);
+            }
+            return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
         }
-        return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
+        
     }
 
 	public function php_ini(){
@@ -863,6 +874,13 @@ class EFormController extends Controller
         try {
             DB::beginTransaction();
             $eform = EForm::findOrFail( $id );
+            if (!empty($eform->ao_id)) {
+                $message = 'Redisposisi';
+            }
+            else
+            {
+                $message = 'Disposisi';
+            }
             $ao_id = substr( '00000000' . $request->ao_id, -8 );
 
             $baseRequest = [ 'ao_id' => $ao_id ];
@@ -904,7 +922,7 @@ class EFormController extends Controller
         set_action_date($eform->id, 'eform-disposition');
 
         return response()->success( [
-            'message' => 'E-Form berhasil di disposisi',
+            'message' => 'E-Form berhasil di '.$message,
             'contents' => $eform
         ], 201);
     }

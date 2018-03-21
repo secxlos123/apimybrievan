@@ -278,7 +278,7 @@ class Customer extends User
     {
         $stat_approved = [];
         $eforms = $this->eforms()->select(['IsFinish'])->get();
-		$stat_approved = $eforms->IsFinish;
+		$stat_approved = $eforms[0]['IsFinish'];
 /*         foreach ($eforms as $eform) {
             $stat_approved = [
                 'IsFinish' => $eform->IsFinish
