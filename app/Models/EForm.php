@@ -151,6 +151,10 @@ class EForm extends Model implements AuditableContract
             return 'Pencairan';
 
         } elseif( $this->is_approved ) {
+            if ( $this->visit_report->use_reason == 13 && !$this->vip_sent ) {
+                return 'Kirim Ulang VIP';
+            }
+
             return 'Proses CLF';
 
         } elseif( $this->visit_report ) {
