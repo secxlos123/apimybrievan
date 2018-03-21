@@ -51,7 +51,7 @@ class MarketingActivity extends Model
               ->join('marketings', 'marketings.id', '=', 'marketing_activities.marketing_id')
               ->leftJoin('marketing_activity_followups', 'marketing_activity_followups.activity_id', '=', 'marketing_activities.id')
               ->where('marketing_activities.desc', '!=', 'first')
-              ->select('marketing_activities.id', 'marketing_activities.pn', 'marketings.branch', 'marketing_activities.object_activity', 'marketing_activities.action_activity', 'marketing_activities.start_date', 'marketing_activities.end_date', 'marketing_activities.address', 'marketings.activity_type', 'marketings.nama', 'marketing_activity_followups.fu_result', 'marketing_activity_followups.desc', 'marketing_activity_followups.account_number', 'marketing_activity_followups.amount')
+              ->select('marketing_activities.id', 'marketing_activities.pn', 'marketings.branch', 'marketing_activities.object_activity', 'marketing_activities.action_activity', 'marketing_activities.start_date', 'marketing_activities.end_date', 'marketing_activities.address', 'marketings.activity_type', 'marketings.nama', 'marketing_activity_followups.fu_result', 'marketing_activity_followups.desc', 'marketing_activity_followups.account_number', 'marketing_activity_followups.amount' , 'marketing_activity_followups.created_at')
 
               ->where( function($activities) use($request){
                 if ($request->header('role') != 'fo') {
