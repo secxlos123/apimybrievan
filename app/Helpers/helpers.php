@@ -855,7 +855,7 @@ if (! function_exists('autoApproveForVIP')) {
             return 'E-Form VIP berhasil';
         }
 
-        return isset($response['message']) ? $response['message'] : 'E-Form VIP gagal';
+        return isset($response['message']) ? $response['message'] . " dan Kirim Ulang VIP" : 'E-Form VIP gagal';
     }
 }
 
