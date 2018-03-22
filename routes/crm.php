@@ -15,7 +15,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
 
   //route $pemasar
-  Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');
+  Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');//by officer login
+  Route::post('pemasar_kanwil', 'DashboardController@pemasar_kanwil')->name('crm.pemasar_kanwil');
+  Route::post('pemasar_cabang', 'DashboardController@pemasar_cabang')->name('crm.pemasar_cabang');
   Route::get('kinerja_pemasar', 'DashboardController@kinerja_pemasar');
 
   //route account
@@ -111,11 +113,11 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   //get Customer by market
   Route::post('/market_mapping/customers_by_market', 'marketMappingController@customer_by_market');
 
- 
   //Map Route
   Route::post('/map/market', 'MapController@market_map');
   Route::post('/map/activity', 'MapController@activity_map');
 
   //sales kit
   Route::get( '/sales_kit', 'DashboardController@sales_kit');
+  //Route::get( '/view_report', 'viewController@index');
 });
