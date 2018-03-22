@@ -784,7 +784,8 @@ class EFormController extends Controller
 
                     if ( $getKanwil['responseCode'] == '00' ) {
                         foreach ($getKanwil['responseData'] as $kanwil) {
-                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                            $branchid = substr( '00000' . $kanwil['branch'], -5 );
+                            if ( $branchid == $request->input('branch_id') ) {
                                 $baseProperty['region_id'] = $kanwil['region'];
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
                                 }
