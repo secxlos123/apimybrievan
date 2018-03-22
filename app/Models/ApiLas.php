@@ -133,11 +133,14 @@ class ApiLas extends Model
                     \DB::Raw("case when eforms.ao_id is not null or eforms.ao_id != '' 
                         then 'Disposisi Pengajuan'
                         else 'Pengajuan Kredit' end as status_pengajuan"),
-                    \DB::Raw("case when briguna.tp_produk = '1' then 'Briguna Karya/Umum'
+                    \DB::Raw("case when (briguna.tp_produk = '1' and briguna.jenis_pinjaman_id = '1') 
+                        then 'Briguna Karya'
+                        when (briguna.tp_produk = '1' and briguna.jenis_pinjaman_id = '2') 
+                        then 'Briguna Umum'
                         when briguna.tp_produk = '2' then 'Briguna Purna'
                         when briguna.tp_produk = '10' then 'Briguna Micro'
                         when briguna.tp_produk = '22' then 'Briguna Talangan'
-                        when briguna.tp_produk = '28' then 'Briguna Karyawan BRI'
+                        when briguna.tp_produk = '28' then 'Briguna Pekerja BRI'
                         else 'Lainnya' end as product"),
                     \DB::Raw("case when briguna.is_send = 0 then 'APPROVAL'
                         when briguna.is_send = 1 then 'APPROVED'
@@ -180,11 +183,14 @@ class ApiLas extends Model
                     \DB::Raw("case when eforms.ao_id is not null or eforms.ao_id != '' 
                         then 'Disposisi Pengajuan'
                         else 'Pengajuan Kredit' end as status_pengajuan"),
-                    \DB::Raw("case when briguna.tp_produk = '1' then 'Briguna Karya/Umum'
+                    \DB::Raw("case when (briguna.tp_produk = '1' and briguna.jenis_pinjaman_id = '1')
+                        then 'Briguna Karya'
+                        when (briguna.tp_produk = '1' and briguna.jenis_pinjaman_id = '2') 
+                        then 'Briguna Umum'
                         when briguna.tp_produk = '2' then 'Briguna Purna'
                         when briguna.tp_produk = '10' then 'Briguna Micro'
                         when briguna.tp_produk = '22' then 'Briguna Talangan'
-                        when briguna.tp_produk = '28' then 'Briguna Karyawan BRI'
+                        when briguna.tp_produk = '28' then 'Briguna Pekerja BRI'
                         else 'Lainnya' end as product"),
                     \DB::Raw("case when briguna.is_send = 0 then 'APPROVAL'
                         when briguna.is_send = 1 then 'APPROVED'

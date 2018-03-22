@@ -1256,19 +1256,25 @@ class ApiLasController extends Controller
                     if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
                         if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
                             // update table eforms
-                            $eform = EForm::findOrFail($data['eform_id']);
-                            $base_request['IsFinish'] = true;
-                            $base_request['pinca_name']  = $data['pinca_name'];
-                            $base_request['pinca_position'] = $data['pinca_position'];
-                            $eform->update($base_request);
-                            \Log::info("-------- putusan update table eforms sukses---------");
-
+                            $eform_request['pinca_name']  = $data['pinca_name'];
+                            $eform_request['pinca_position'] = $data['pinca_position'];
+                            if ($data['is_send'] == '1') {
+                                $eform_request['status_eform'] = "Approval1";
+                                $eform_request['response_status'] = "Disetujui Briguna";
+                            } elseif ($data['is_send'] == '3') {
+                                $eform_request['status_eform'] = "Rejected";
+                                $eform_request['response_status'] = "Ditolak Briguna";
+                            }
                             $data_briguna = [
                                 'is_send'    => !isset($data['is_send'])? null:$data['is_send'],
                                 'tgl_putusan'=> !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
                                 'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
                             ];
                         } elseif ($data['flag_putusan'] == '7') {
+                            if ($data['is_send'] == '6') {
+                                $eform_request['status_eform'] = "Disbursed";
+                                $eform_request['response_status'] = "Disbursed Briguna";
+                            }
                             $data_briguna = [
                                 'is_send'    => !isset($data['is_send'])? null:$data['is_send'],
                                 'catatan_adk'=> !isset($data['catat_adk'])? "":$data['catat_adk'],
@@ -1280,9 +1286,12 @@ class ApiLasController extends Controller
                             ];
                         }
                         // update table briguna
+                        $eform_request['IsFinish'] = true;
+                        $eform = EForm::findOrFail($data['eform_id']);
+                        $eform->update($eform_request);
                         $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
                         $briguna->update($data_briguna);
-                        \Log::info("-------- putusan update table briguna sukses---------");
+                        \Log::info("----- putusan update table eform dan briguna sukses -----");
                         $result = $dataResult;
 						if($data['flag_putusan']=='2' || $data['flag_putusan']=='6'){
 							$eform_sms = \DB::table('eforms')
@@ -1394,16 +1403,15 @@ class ApiLasController extends Controller
 
     public function insertAllAnalisa($request) {
         \Log::info($request);
-        $ApiLas  = new ApiLas();
+        // $ApiLas  = new ApiLas();
         $user_pn = request()->header('pn');
         $pn      = substr('00000000'. $user_pn, -8 );
         $inquiryUserLAS = $this->loginLAS($pn);
+        $uid = "";
+        $uker= "";
         if ($inquiryUserLAS['code'] == '01') {
             $uid  = $inquiryUserLAS['contents']['data'][0]->uid;
             $uker = substr($inquiryUserLAS['contents']['data'][0]->kode_cabang, -5);
-        } else {
-            $uid = "";
-            $uker= "";
         }
 
         // insert data debitur
@@ -1488,7 +1496,6 @@ class ApiLasController extends Controller
             "tujuan_membuka_rekening"=> "ZZ", // hardcode
             "ket_buka_rekening"     => "Pinjaman" // hardcode
         ];
-
         $insertDebitur = $this->insertDataDebtPerorangan($content_las_debt, $request['eform_id']);
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
@@ -1702,17 +1709,10 @@ class ApiLasController extends Controller
                                 "grade"                     => $hitung['items'][0]->grade,
                                 "cutoff"                    => $hitung['items'][0]->cutoff,
                                 "definisi"                  => $hitung['items'][0]->definisi,
-                                // "NPWP_nasabah"              => $request['NPWP_nasabah'],
                                 "NIP"                       => $request['nip'],
                                 "Status_Pekerjaan"          => $request['status_pekerjaan'],
                                 "Nama_atasan_Langsung"      => empty($request['nama_atasan_langsung'])?"":$request['nama_atasan_langsung'],
                                 "Jabatan_atasan"            => empty($request['jabatan_atasan'])?"":$request['jabatan_atasan'],
-                                // "KK"                        => $request['KK'],
-                                // "SLIP_GAJI"                 => $request['SLIP_GAJI'],
-                                // "SK_AWAL"                   => $request['SK_AWAL'],
-                                // "SK_AKHIR"                  => $request['SK_AKHIR'],
-                                // "REKOMENDASI"               => $request['REKOMENDASI'],
-                                // "SKPG"                      => $request['SKPG'],
                                 "request_amount"            => $request['Permohonan_kredit'],
                                 "mitra_id"                  => $request['mitra_id'],
                                 "mitra"                     => $request['mitra_name'],
@@ -1739,7 +1739,6 @@ class ApiLasController extends Controller
                                 "jumlah_debitur"            => $request['jumlah_debitur'],
                                 "scoring_mitra"             => $request['scoring_mitra'],
                                 "is_send"                   => 0,
-                                // baru
                                 "usia_mpp"                  => $request['usia_mpp'],
                                 "lama_menetap"              => $request['lama_menetap'],
                                 "kode_pos"                  => $request['kode_pos'],
@@ -1763,10 +1762,12 @@ class ApiLasController extends Controller
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform["branch_id"] = $request['kantor_cabang_id'];
+                            $param_eform["status_eform"] = "Menunggu Putusan";
+                            $param_eform["response_status"] = "Menunggu Putusan Briguna";
                             $briguna  = BRIGUNA::where("eform_id","=",$eform_id);
                             $eform    = EForm::findOrFail($eform_id);
 
-                            //------------hapus file----------------------------------
+                            //------------hapus ataupun update file--------------------------------
                             $brigunas = $briguna->get();
                             $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah']);
                             $kk   = $this->datafoto($request['KK'],$brigunas[0]['id_foto'],$brigunas[0]['KK']);
@@ -1899,6 +1900,13 @@ class ApiLasController extends Controller
         $response = $request->all();
         if (!empty($response)) {
             try {
+                if (isset($response['is_send']) && $response['is_send'] == '4') {
+                    $eform_request['IsFinish'] = true;
+                    $eform_request['status_eform'] = "Rejected";
+                    $eform_request['response_status'] = "Ditolak Briguna";
+                    $eform = EForm::findOrFail($data['eform_id']);
+                    $eform->update($eform_request);
+                }
                 $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
                 $briguna->update($response);
                 $message = [
