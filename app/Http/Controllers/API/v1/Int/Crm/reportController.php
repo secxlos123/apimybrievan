@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
 use App\Models\Crm\MarketingActivityFollowup;
+use App\Models\Crm\MarketingNote;
 use DB;
 use RestwsHc;
 
@@ -43,6 +44,7 @@ class reportController extends Controller
           "product_type"=> $value->product_type,
           "activity_type"=> $value->activity_type,
           "nama"=> $value->nama,
+          "catatan" => MarketingNote::where('id',$value->nama),
           "target"=> $value->target,
           "rekening" => $result['account_number'],
           "volume_rekening" => $result['amount'],
@@ -101,8 +103,7 @@ class reportController extends Controller
       ], 200 );
     }
 
-    public function list_kanwil()
-  	{
+    public function list_kanwil(){
         try {
           $list_kanwil = RestwsHc::setBody([
             'request' => json_encode([
@@ -136,8 +137,7 @@ class reportController extends Controller
 
   	}
 
-  	public function get_kanca_kanwil($region)
-  	{
+  	public function get_kanca_kanwil($region){
       try {
         $requestPost =[
           'app_id' => 'mybriapi',
@@ -160,8 +160,7 @@ class reportController extends Controller
 
   	}
 
-    public function list_kanca_for_kanwil($region)
-    {
+    public function list_kanca_for_kanwil($region){
       $list_all_kanca = [];
 
       $data = $this->get_kanca_kanwil($region);
@@ -178,8 +177,7 @@ class reportController extends Controller
       return $list_kanca;
     }
 
-    public function list_all_kanca()
-    {
+    public function list_all_kanca(){
       $list_kanwil = $this->list_kanwil();
       $list_all_kanca = [];
 
@@ -200,8 +198,7 @@ class reportController extends Controller
       return $list_all_kanca;
     }
 
-  	public function get_uker_kanca($branch_code)
-  	{
+  	public function get_uker_kanca($branch_code){
       try {
 
         $requestPost =[
@@ -259,8 +256,7 @@ class reportController extends Controller
       return $result;
     }
 
-    public function pemasar_kanwil($pn, $region)
-    {
+    public function pemasar_kanwil($pn, $region){
       $list_kanca = array_keys($this->list_kanca_for_kanwil($region));
       foreach($list_kanca as $kanca){
         foreach($this->pemasar($pn,$kanca) as $value){
