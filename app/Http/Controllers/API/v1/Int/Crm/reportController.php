@@ -44,7 +44,7 @@ class reportController extends Controller
           "product_type"=> $value->product_type,
           "activity_type"=> $value->activity_type,
           "nama"=> $value->nama,
-          "catatan" => MarketingNote::where('id',$value->nama),
+          "catatan" => MarketingNote::where('marketing_id',$value->id)->get(),
           "target"=> $value->target,
           "rekening" => $result['account_number'],
           "volume_rekening" => $result['amount'],
