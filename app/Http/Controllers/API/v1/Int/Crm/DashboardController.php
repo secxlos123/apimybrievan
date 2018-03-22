@@ -521,15 +521,84 @@ class DashboardController extends Controller
 
     }
 
+    public function officer($pn, $branch){
+      $list_ao = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_tenaga_pemasar',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $list_fo = RestwsHc::setBody([
+        'request' => json_encode([
+          'requestMethod' => 'get_list_fo',
+          'requestData' => [
+            'id_user' => $pn,
+            'kode_branch' => $branch
+          ],
+        ])
+      ])->post('form_params');
+
+      $ao = $list_ao['responseData'];
+      $fo = $list_fo['responseData'];
+
+      if ($ao != null && $fo != null) {
+        $result = array_merge_recursive($fo,$ao);
+      } else {
+        $result = [];
+      }
+
+      return $result;
+    }
+
     public function pemasar_kanwil(Request $request)
     {
-      $list_kanca = array_keys($this->list_kanca_for_kanwil($region));
-      $region = $request['region'];
-      $list_kanca = array_keys($this->list_kanca_for_kanwil($region));
-      foreach($list_kanca as $kanca){
-        $pemasar[$kanca] = $this->pemasar($request->header('pn'),$kanca);
+      $requestPost =[
+				'app_id' => 'mybriapi',
+				'region' => $request->input('region')
+			];
+
+			$data = RestwsHc::setBody([
+						'request' => json_encode([
+								'requestMethod' => 'get_list_kanca_from_kanwil',
+								'requestData' => $requestPost
+						])
+				])
+				->post( 'form_params' );
+
+      $list_kanca =[];
+      foreach ($data['responseData'] as $key_kanca => $value_kanca) {
+        $list_kanca[] =
+        substr( '00000' . $value_kanca['mainbr'], -5 )
+        ;
       }
-      return $pemasar;
+
+      foreach($list_kanca as $kanca){
+        foreach($this->officer($request->header('pn'),$kanca) as $value){
+        $pemasar[]= $value;
+        }
+      }
+
+			return response()->success( [
+					'message' => 'Sukses get list pemasar kanwil',
+					'contents' => $pemasar
+			], 200 );
+
+    }
+
+    public function pemasar_cabang(Request $request)
+    {
+      $pn = $request->header('pn');
+      $kanca = $request->input('branch');
+      $pemasar = $this->officer($pn,$kanca);
+
+			return response()->success( [
+					'message' => 'Sukses get list pemasar cabang',
+					'contents' => $pemasar
+			], 200 );
 
     }
 }
