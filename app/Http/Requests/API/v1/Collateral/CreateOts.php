@@ -168,10 +168,10 @@ class CreateOts extends FormRequest
     {
       return [
         'environment.designated_land' => 'required',
-        'environment.designated_pln' => '',
-        'environment.designated_phone' => '',
-        'environment.designated_pam' => '',
-        'environment.designated_telex' => '',
+        'environment.designated_pln' => 'required_without_all:environment.designated_phone,environment.designated_pam,environment.designated_telex',
+        'environment.designated_phone' => 'required_without_all:environment.designated_pln,environment.designated_pam,environment.designated_telex',
+        'environment.designated_pam' => 'required_without_all:environment.designated_pln,environment.designated_phone,environment.designated_telex',
+        'environment.designated_telex' => 'required_without_all:environment.designated_pln,environment.designated_phone,environment.designated_pam',
         'environment.other_designated' => 'required',
         'environment.nearest_location' => 'required',
         'environment.other_guide' => 'required',
