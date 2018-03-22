@@ -568,7 +568,7 @@ class EFormController extends Controller
 			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
 				$validasis = DB::table('customer_details')
-						 ->leftJoin('eforms')
+                         ->leftJoin("eforms", "eforms.user_id", "=", "customer_details.user_id")
 						 ->select(DB::raw('customer_details.nik,eforms.product_type,eforms."IsFinish"'))
 						 ->groupBy('customer_details.nik', 'eforms.product_type','eforms."IsFinish"')
 						 ->where('customer_details.nik', $request->nik)
