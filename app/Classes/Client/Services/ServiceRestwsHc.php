@@ -155,7 +155,8 @@ class ServiceRestwsHc extends Client
         $region = array();
         if ( $getKanwil['responseCode'] == '00' ) {
                         foreach ($getKanwil['responseData'] as $kanwil) {
-                            if ( $kanwil['branch'] ==  $branch) {
+                            $branchid = substr( '00000' . $kanwil['branch'], -5 );
+                            if ( $branchid ==  $branch) {
                                 $region['region_id'] = $kanwil['region'];
                                 }
                             }
