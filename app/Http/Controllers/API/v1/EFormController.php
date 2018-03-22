@@ -568,7 +568,11 @@ class EFormController extends Controller
 			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
 				$validasis = DB::table('customer_details')
+<<<<<<< HEAD
 						 ->leftJoin('eforms','customer_details.user_id','=','eforms.user_id')
+=======
+                         ->leftJoin("eforms", "eforms.user_id", "=", "customer_details.user_id")
+>>>>>>> d085653fd88c1d46d18125cbb23dbec5b8481558
 						 ->select(DB::raw('customer_details.nik,eforms.product_type,eforms."IsFinish"'))
 						 ->groupBy('customer_details.nik', 'eforms.product_type','eforms."IsFinish"')
 						 ->where('customer_details.nik', $request->nik)
@@ -784,7 +788,8 @@ class EFormController extends Controller
 
                     if ( $getKanwil['responseCode'] == '00' ) {
                         foreach ($getKanwil['responseData'] as $kanwil) {
-                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                            $branchid = substr( '00000' . $kanwil['branch'], -5 );
+                            if ( $branchid == $request->input('branch_id') ) {
                                 $baseProperty['region_id'] = $kanwil['region'];
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
                                 }
