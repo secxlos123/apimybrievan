@@ -584,9 +584,10 @@ class EFormController extends Controller
 						 ->get();
 						$hasil = $hasil->toArray();
 						$hasil = json_decode(json_encode($hasil), True);
+						$c = count($hasil)-1;
 						if(empty($hasil)){
 							$validasi_eform = 'true';
-						}elseif(!empty($hasil)&&$hasil['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
+						}elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
 							if($hasil['product_type']=='briguna'){
 								if($hasil['IsFinish']=='true'){
 								$validasi_eform = 'true';
@@ -596,6 +597,7 @@ class EFormController extends Controller
 				}
             /* BRIGUNA */
 				if($validasi_eform=='true'){
+					$baseRequest['IsFinish'] = 'false';
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
