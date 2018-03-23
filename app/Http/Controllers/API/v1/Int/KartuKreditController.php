@@ -612,7 +612,7 @@ class KartuKreditController extends Controller{
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{
-                $res = $client->request('POST',$this->hostLos.'/listreject', 
+                $res = $client->request('POST',$this->hostLos.'/api/listreject', 
                 	['headers' =>  $header
                     ]);
             }catch (RequestException $e){
