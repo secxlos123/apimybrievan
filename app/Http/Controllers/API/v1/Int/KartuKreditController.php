@@ -68,7 +68,7 @@ class KartuKreditController extends Controller{
                     'responseMessage'=> $e->getMessage()
                 ],400);
             }
-            
+
 
             return true;
 	}
@@ -553,21 +553,37 @@ class KartuKreditController extends Controller{
 	}
 
 	public function putusanPinca(KreditRequest $req){
-		$host = $this->hostLos.'/api/approval';
+		
 		$apregno = $req->apRegno;
 		$msg = $req->msg;
 		$putusan = $req->putusan;
 
 
+		$kk = new KartuKredit();
+		$req = $req->all();
+		
+
+		if ($putusan == 'approved'){
+			$host = $this->hostLos.'/api/approval';
+
+			$data = $kk->createApprovedRequirements($req);
+
+		}else{
+			$host = $this->hostLos.'/api/reject';
+			$isAppr = false;
+			$data = $kk->createRejectedRequirements($req);
+		}
+		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
 
+		$updateEform = EForm::where('id','679')->update([
+			'is_approved'=>$isAppr
+		]);
+
 		//kirim ke los.
-		$kk = new KartuKredit();
-		$req = $req->all();
-		$data = $kk->createApprovalRequirements($req);
 		$client = new Client();
 		try{
 			$res = $client->request('POST',$host,
@@ -580,7 +596,7 @@ class KartuKreditController extends Controller{
 			return response()->json([
 				'responseCode'=>'99',
 				'responseMessage'=>$e->getMessage()
-			]);
+			]);	
 		}
 
 		$body = $res->getBody();
@@ -589,7 +605,7 @@ class KartuKreditController extends Controller{
     	return response()->json([
     		'responseCode'=>'00',
     		'responseMessage'=>'Success',
-    		'contents'=>$data
+    		'contents'=>$obj
     	]);
 
 
@@ -606,6 +622,34 @@ class KartuKreditController extends Controller{
                     ) )
                 ])
                 ->post( 'form_params' );
+    }
+
+    public function listReject(){
+    	$header = ['access_token'=> $this->tokenLos];
+    	$client = new Client();
+			 try{
+                $res = $client->request('POST',$this->hostLos.'/api/listreject', 
+                	['headers' =>  $header
+                    ]);
+            }catch (RequestException $e){
+                return response()->json([
+                    'responseCode'=>'99',
+                    'responseMessage'=> $e->getMessage()
+                ]);
+            }
+
+            $body = $res->getBody();
+			$obj = json_decode($body);
+
+			if ($obj->responseCode == 0){
+				$data = $obj->responseData;
+				return response()->json([
+					'responseCode'=>'00',
+					'responseMessage'=>'Success',
+					'contents' => $data
+				]);
+			}
+			
     }
 
     public function checkEmailVerification(Request $request){

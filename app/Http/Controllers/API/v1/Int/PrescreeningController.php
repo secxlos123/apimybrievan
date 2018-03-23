@@ -118,12 +118,6 @@ class PrescreeningController extends Controller
             $pefindo = [];
         }
 
-        $detail = $eform;
-
-        if ( !\File::exists( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) {
-            generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
-        }
-
         set_action_date($eform->id, 'eform-prescreening');
 
         return response()->success( [
@@ -144,12 +138,16 @@ class PrescreeningController extends Controller
      */
     public function update( Request $request, $prescreening )
     {
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
         $eform = EForm::findOrFail( $prescreening );
         $waiting = false;
 
         $updateData = [
             'selected_sicd' => $request->input('select_sicd')
             , 'selected_dhn' => $request->input('select_dhn')
+            , 'prescreening_name' => $user_login['name']
+            , 'prescreening_position' => $user_login['position']
         ];
 
         if ( $request->has('select_individual_pefindo') || $request->has('select_couple_pefindo') ) {
@@ -203,6 +201,13 @@ class PrescreeningController extends Controller
         }
 
         $eform->update( $updateData );
+
+        if ( !$waiting ) {
+            $detail = $eform;
+            if ( !\File::exists( public_path( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) ) {
+                generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+            }
+        }
 
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
