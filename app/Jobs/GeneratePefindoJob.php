@@ -64,6 +64,12 @@ class GeneratePefindoJob implements ShouldQueue
             if ( $this->eform->is_clas_ready ) {
                 $message .= ' dan ' . autoApproveForVIP( array(), $this->eform->id );
             }
+
+            $detail = $this->eform;
+
+            if ( !\File::exists( public_path( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) ) {
+                generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+            }
         } else {
             $message = 'Prescreening sudah pernah di lakukan';
 

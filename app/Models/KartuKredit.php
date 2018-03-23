@@ -290,27 +290,23 @@ class KartuKredit extends Model
 
     }
 
-    public function createApprovalRequirements($req){
+    public function createApprovedRequirements($req){
         $data['msg'] = $req['msg'];
         $data['apRegno'] = $req['apRegno'];
-        $data['mode']= $req['putusan'];
         $data['by'] = $req['by'];
-        $data['stg'] = $req['stg'];
         $data['userId'] = $req['userId'];
-        $data['tc'] = $req['tc'];
-        $data['cpId'] = $req['cpId'];
-        $data['networkId']= $req['networkId'];
-        $data['productId']= $req['productId'];
-        $data['cardTypeId'] = $req['cardTypeId'];
-        $data['plasticId'] = $req['plasticId'];
         $data['cpAprLimit'] = $req['cpAprLimit'];
         $data['potCode'] = $req['potCode'];
         $data['wvCode']= $req['wvCode'];
         $data['apBillCycle']= $req['apBillCycle'];
-        $data['apImigincator']= $req['apImigincator'];
-        $data['cpSeq'] = $req['cpSeq'];
-        $data['aprStatus']= $req['aprStatus'];
-        $data['fwd']='';
+
+        return $data;
+    }
+
+    public function createRejectedRequirements($req){
+        $data['apRegno'] = $req['apRegno'];
+        $data['userId'] = $req['userId'];
+        $data['rjCode'] = $req['rjCode'];
 
         return $data;
     }

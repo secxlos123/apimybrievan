@@ -46,6 +46,6 @@ class MitraPerjanjianKerjamasa extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('marketing_notes');
+        Schema::dropIfExists('mitra_perjanjian');
     }
 }
