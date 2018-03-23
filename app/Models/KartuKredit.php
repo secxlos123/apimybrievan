@@ -98,23 +98,23 @@ class KartuKredit extends Model
 
             $personalNoTlpRumah = $req['PersonalNoTlpRumah'];
             $personalEmail= $req['PersonalEmail'];
-            $jobBidangUsaha = '0';
-            $jobKategoriPekerjaan = '0';
-            $jobStatusPekerjaan = '0';
+            $jobBidangUsaha = $req['JobBidangUsaha'];
+            $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
+            $jobStatusPekerjaan = $req['JobStatusPekerjaan'];
 
-            $jobTotalPekerja = '0';
-            $jobNamaPerusahaan = '0';
-            $jobPangkat = '0';
-            $jobLamaKerjaYY = '0';
-            $jobLamaKerjaMM = '0';
+            $jobTotalPekerja = $req['JobTotalPekerja'];
+            $jobNamaPerusahaan = $req['JobNamaPerusahaan'];
+            $jobPangkat = $req['JobPangkat'];
+            $jobLamaKerjaYY = $req['JobLamaKerjaYY'];
+            $jobLamaKerjaMM = $req['JobLamaKerjaMM'];
 
-            $jobAlamatKantor = '0';
-            $jobKodePos = '0';
-            $financeGajiPerbulan = '0';
-            $financeGajiPertahun = '0';
-            $financePendapatanLainPerbulan = '0';
+            $jobAlamatKantor = $req['JobAlamatKantor'];
+            $jobKodePos = $req['JobKodePos'];
+            $financeGajiPerbulan = $req['FinanceGajiPerbulan'];
+            $financeGajiPertahun = $req['FinanceGajiPertahun'];
+            $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
 
-            $financeJumlahTanggungan = '0';
+            $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
             $emergencyNama = $req['EmergencyNama'];
             $emergencyHubunganKeluarga = $req['EmergencyHubunganKeluarga'];
             $emergencyAlamat = $req['EmergencyAlamat'];
