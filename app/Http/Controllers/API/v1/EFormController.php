@@ -568,8 +568,8 @@ class EFormController extends Controller
 			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
 				$user_idsss = DB::table('customer_details')
-							 ->select(DB::raw('customer_details.nik'))
-							 ->groupBy('customer_details.nik')
+							 ->select(DB::raw('customer_details.user_id'))
+							 ->groupBy('customer_details.user_id')
 							 ->where('customer_details.nik', $request->nik)
 							 ->get();
 				$user_idsss = $user_idsss->toArray();
