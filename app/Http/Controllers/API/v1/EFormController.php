@@ -567,16 +567,35 @@ class EFormController extends Controller
             }
 			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
-				$validasis = DB::table('customer_details')
-                         ->select(['customer_details.nik','eforms.product_type','eforms.IsFinish'])
-                         ->leftJoin("eforms", "eforms.user_id", "=", "customer_details.user_id")
-                         ->groupBy('customer_details.nik', 'eforms.product_type','eforms.IsFinish')
-                         ->where('customer_details.nik', $request->nik)
+				$user_idsss = DB::table('customer_details')
+							 ->select(DB::raw('customer_details.nik'))
+							 ->groupBy('customer_details.nik')
+							 ->where('customer_details.nik', $request->nik)
+							 ->get();
+				$user_idsss = $validasis->toArray();
+				$user_idsss = json_decode(json_encode($validasis), True);
+				
+				$validasi_eform = 'false';
+				if(!empty($user_idsss)){
+					$hasil = DB::table('eforms')
+						 ->select(DB::raw('eforms.product_type,eforms."IsFinish"'))
+						 ->groupBy('eforms.product_type','eforms."IsFinish"')
+						 ->where('eforms.user_id', $user_idsss)
 						 ->get();
-				$validasis = $validasis->toArray();
-				$validasis = json_decode(json_encode($validasis), True);
+						$hasil = $hasil->toArray();
+						$hasil = json_decode(json_encode($hasil), True);
+						if(empty($hasil)){
+							$validasi_eform = 'true';
+						}elseif(!empty($hasil)&&$hasil['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
+							if($hasil['product_type']=='briguna'){
+								if($hasil['IsFinish']=='true'){
+								$validasi_eform = 'true';
+								}
+							}
+						}
+				}
             /* BRIGUNA */
-				if(!empty($validasis) && $validasis[0]['product_type']=='briguna' && $validasis[0]['IsFinish']=='true'){
+				if($validasi_eform=='true'){
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
