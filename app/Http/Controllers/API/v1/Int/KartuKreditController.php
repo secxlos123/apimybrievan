@@ -558,10 +558,6 @@ class KartuKreditController extends Controller{
 		$msg = $req->msg;
 		$putusan = $req->putusan;
 
-		$updateKK = KartuKredit::where('appregno',$apregno)->update([
-			'approval'=>$putusan,
-			'catatan_rekomendasi_pinca'=>$msg
-		]);
 
 		$kk = new KartuKredit();
 		$req = $req->all();
@@ -569,12 +565,23 @@ class KartuKreditController extends Controller{
 
 		if ($putusan == 'approved'){
 			$host = $this->hostLos.'/api/approval';
+
 			$data = $kk->createApprovedRequirements($req);
 
 		}else{
 			$host = $this->hostLos.'/api/reject';
+			$isAppr = false;
 			$data = $kk->createRejectedRequirements($req);
 		}
+		//kirim ke db mybri
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
+			'approval'=>$putusan,
+			'catatan_rekomendasi_pinca'=>$msg
+		]);
+
+		$updateEform = EForm::where('id','679')->update([
+			'is_approved'=>$isAppr
+		]);
 
 		//kirim ke los.
 		$client = new Client();
