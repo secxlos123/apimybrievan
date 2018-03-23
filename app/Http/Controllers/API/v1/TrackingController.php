@@ -59,8 +59,16 @@ class TrackingController extends Controller
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
 						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                    ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
-                    ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+					->leftJoin('developers', function($join)
+                         {
+							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+						 })
+					->leftJoin('visit_reports', function($join)
+                         {
+							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+						 })
+                    //->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
+                    //->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                     ->where( "eforms.user_id", $user->id )
                     ->paginate( $request->input( 'limit' ) ?: 10 );
 

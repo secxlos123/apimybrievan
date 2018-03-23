@@ -525,7 +525,7 @@ class KartuKreditController extends Controller{
 				'responseMessage'=>$e->getMessage()
 			]);
 		}
-
+		
 		$body = $res->getBody();
 		$obj = json_decode($body);
 		$data = $obj->responseData;
