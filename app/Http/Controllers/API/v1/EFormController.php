@@ -738,6 +738,7 @@ class EFormController extends Controller
                 ];
 				
 			 } else {
+                    $dataEform =  EForm::where('nik', $request->nik)->get();
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
                         'contents' => $dataEform

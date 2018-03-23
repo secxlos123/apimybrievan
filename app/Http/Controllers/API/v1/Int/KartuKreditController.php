@@ -68,7 +68,7 @@ class KartuKreditController extends Controller{
                     'responseMessage'=> $e->getMessage()
                 ],400);
             }
-            
+
 
             return true;
 	}
@@ -606,6 +606,34 @@ class KartuKreditController extends Controller{
                     ) )
                 ])
                 ->post( 'form_params' );
+    }
+
+    public function listReject(){
+    	$header = ['access_token'=> $this->tokenLos];
+    	$client = new Client();
+			 try{
+                $res = $client->request('POST',$this->hostLos.'/api/listreject', 
+                	['headers' =>  $header
+                    ]);
+            }catch (RequestException $e){
+                return response()->json([
+                    'responseCode'=>'99',
+                    'responseMessage'=> $e->getMessage()
+                ]);
+            }
+
+            $body = $res->getBody();
+			$obj = json_decode($body);
+
+			if ($obj->responseCode == 0){
+				$data = $obj->responseData;
+				return response()->json([
+					'responseCode'=>'00',
+					'responseMessage'=>'Success',
+					'contents' => $data
+				]);
+			}
+			
     }
 
     public function checkEmailVerification(Request $request){
