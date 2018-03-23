@@ -198,11 +198,12 @@ class PrescreeningController extends Controller
 
         $eform->update( $updateData );
 
-        $detail = $eform;
-
-        // if ( !\File::exists( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) {
-        // }
-        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+        if ( !$waiting ) {
+            $detail = $eform;
+            if ( !\File::exists( public_path( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) ) {
+                generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+            }
+        }
 
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
