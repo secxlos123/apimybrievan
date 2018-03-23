@@ -568,15 +568,15 @@ class EFormController extends Controller
 			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
 				$validasis = DB::table('customer_details')
-						 ->leftJoin('eforms')
-						 ->select(DB::raw('customer_details.nik,eforms.product_type,eforms."IsFinish"'))
-						 ->groupBy('customer_details.nik', 'eforms.product_type','eforms."IsFinish"')
-						 ->where('customer_details.nik', $request->nik)
+                         ->select(['customer_details.nik','eforms.product_type','eforms.IsFinish'])
+                         ->leftJoin("eforms", "eforms.user_id", "=", "customer_details.user_id")
+                         ->groupBy('customer_details.nik', 'eforms.product_type','eforms.IsFinish')
+                         ->where('customer_details.nik', $request->nik)
 						 ->get();
 				$validasis = $validasis->toArray();
 				$validasis = json_decode(json_encode($validasis), True);
             /* BRIGUNA */
-				if(!empty($validasis) && $validasis['product_type']=='briguna' && $validasis['IsFinish']='true'){
+				if(!empty($validasis) && $validasis[0]['product_type']=='briguna' && $validasis[0]['IsFinish']=='true'){
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
@@ -719,6 +719,7 @@ class EFormController extends Controller
                 ];
 				
 			 } else {
+                    $dataEform =  EForm::where('nik', $request->nik)->get();
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
                         'contents' => $dataEform
@@ -784,7 +785,8 @@ class EFormController extends Controller
 
                     if ( $getKanwil['responseCode'] == '00' ) {
                         foreach ($getKanwil['responseData'] as $kanwil) {
-                            if ( $kanwil['branch'] == $request->input('branch_id') ) {
+                            $branchid = substr( '00000' . $kanwil['branch'], -5 );
+                            if ( $branchid == $request->input('branch_id') ) {
                                 $baseProperty['region_id'] = $kanwil['region'];
                                 $baseProperty['region_name'] = $kanwil['rgdesc'];
                                 }

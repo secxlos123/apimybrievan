@@ -95,6 +95,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		 Route::resource( 'register_mitra', 'mitra\RegisterMitraController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+		 Route::resource( 'registrasi_perjanjian', 'mitra\RegisterPerjanjianController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		 Route::resource( 'fasilitas_mitra', 'mitra\FasilitasMitraController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );

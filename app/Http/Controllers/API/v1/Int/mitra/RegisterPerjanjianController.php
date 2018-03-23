@@ -7,10 +7,13 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Models\User;
-use App\Models\Mitra\ScoringMitra;
+use App\Models\Mitra\registrasi_perjanjian;
+/* use App\Models\Mitra\MitraHeader;
+use App\Models\Mitra\MitraDetail;
+use App\Models\Mitra\MitraPemutus; */
 use DB;
 
-class ScoringProsesController extends Controller
+class RegisterPerjanjianController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,29 +30,10 @@ class ScoringProsesController extends Controller
             'contents' => $newForm
         ], 200 );
     }
-	  public function getallmitra( Request $request )
-    {
-		
-        $baseRequest = $request->all();
-		$all = DB::table('mitra_utama')
-                     ->select('*')
-					 ->join('mitra_detail_fasilitas', 'mitra_utama.idMitrakerja', '=', 'mitra_detail_fasilitas.id_header')
-					 ->join('mitra_detail_dasar', 'mitra_utama.idMitrakerja', '=', 'mitra_detail_dasar.id_header')
-					 ->join('mitra_detail_data','mitra_utama.idMitrakerja','=','mitra_detail_data.id_header')
-					 ->join('mitra_detail_payroll','mitra_utama.idMitrakerja','=','mitra_detail_payroll.id_header')
-					 ->join('mitra_pemutus','mitra_utama.idMitrakerja','=','mitra_pemutus.id_header')
-					 ->limit(1)
-                     ->where('idMitrakerja', $baseRequest['id_header'])
-                     ->get();
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $all
-        ], 200 );
-    }
 
     public function uploadimage($image,$id,$atribute) {
         //$eform = EForm::findOrFail($id);
-        $path = public_path( 'uploads/' . $id . '/' );
+        $path = public_path( 'uploads/mitra/' . $id . '/' );
 
         if ( ! empty( $this->attributes[ $atribute ] ) ) {
             File::delete( $path . $this->attributes[ $atribute ] );
@@ -59,6 +43,10 @@ class ScoringProsesController extends Controller
             if (!$image->getClientOriginalExtension()) {
                 if ($image->getMimeType() == '.pdf') {
                     $extension = '.pdf';
+                }elseif ($image->getMimeType() == '.jpg') {
+                    $extension = 'jpg';
+                }elseif ($image->getMimeType() == '.jpeg') {
+                    $extension = 'jpeg';
                 }else{
                     $extension = 'png';
                 }
@@ -72,12 +60,28 @@ class ScoringProsesController extends Controller
         return $filename;
     }
 
-    public function store( GimmickRequest $request )
+    public function store( Request $request )
     {
+		try{
         $baseRequest = $request->all();
-		$mitra_scoring = ScoringMitra::create( $baseRequest['scoring_mitra'] );
-		
-		return $mitra_scoring;
+			$upload_perjanjian = $this->uploadimage($baseRequest['upload_perjanjian'],$baseRequest['id_header'],'upload_perjanjian');
+			$baseRequest['upload_perjanjian'] = $upload_perjanjian;
+			$registrasi_perjanjian = registrasi_perjanjian::create( $baseRequest );
+			$penilaian_update = DB::table('mitra_detail_dasar')
+            ->where('id_header','=', $request->id_header)
+			->update(['status' => 'perjanjian']);
+			$return = [
+                    'message' => 'Registrasi Perjanjian berhasil Diajukan.',
+                    'contents' => 'Sukses'
+                ];
+		} catch (Exception $e) {
+            DB::rollback();
+           $return = [
+                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi.',
+                    'contents' => 'Gagal'
+                ];
+        }
+		return $return;
     }
 
 }
