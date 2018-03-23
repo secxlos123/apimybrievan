@@ -612,8 +612,8 @@ class KartuKreditController extends Controller{
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{
-                $res = $client->request('POST',$this->hostLos, ['headers' =>  $header,
-                        'form_params' => ['nik' => $nik]
+                $res = $client->request('POST',$this->hostLos.'/listreject', 
+                	['headers' =>  $header
                     ]);
             }catch (RequestException $e){
                 return response()->json([
