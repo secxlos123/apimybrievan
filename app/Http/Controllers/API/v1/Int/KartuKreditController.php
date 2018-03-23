@@ -553,21 +553,30 @@ class KartuKreditController extends Controller{
 	}
 
 	public function putusanPinca(KreditRequest $req){
-		$host = $this->hostLos.'/api/approval';
+		
 		$apregno = $req->apRegno;
 		$msg = $req->msg;
 		$putusan = $req->putusan;
-
 
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
 
-		//kirim ke los.
 		$kk = new KartuKredit();
 		$req = $req->all();
-		$data = $kk->createApprovalRequirements($req);
+		
+
+		if ($putusan == 'approved'){
+			$host = $this->hostLos.'/api/approval';
+			$data = $kk->createApprovedRequirements($req);
+
+		}else{
+			$host = $this->hostLos.'/api/reject';
+			$data = $kk->createRejectedRequirements($req);
+		}
+
+		//kirim ke los.
 		$client = new Client();
 		try{
 			$res = $client->request('POST',$host,
@@ -580,7 +589,7 @@ class KartuKreditController extends Controller{
 			return response()->json([
 				'responseCode'=>'99',
 				'responseMessage'=>$e->getMessage()
-			]);
+			]);	
 		}
 
 		$body = $res->getBody();
@@ -589,7 +598,7 @@ class KartuKreditController extends Controller{
     	return response()->json([
     		'responseCode'=>'00',
     		'responseMessage'=>'Success',
-    		'contents'=>$data
+    		'contents'=>$obj
     	]);
 
 
