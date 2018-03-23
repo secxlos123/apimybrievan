@@ -78,7 +78,7 @@ class Marketing extends Model
               if ($request->header('role') != 'fo') {
                 if ($request->has('start_date') && $request->has('end_date')) {
                   $from = date($request->input('start_date') . ' 00:00:00', time());
-                  $to = date($request->input('end_date') . ' 23:60:00', time());
+                  $to = date($request->input('end_date') . ' 23:59:59', time());
                   $marketing->whereBetween('created_at', array($from, $to));
                 }
                 if($request->has('region')){

@@ -151,6 +151,12 @@ class EForm extends Model implements AuditableContract
             return 'Pencairan';
 
         } elseif( $this->is_approved ) {
+            if ( $this->visit_report ) {
+                if ( $this->visit_report->use_reason == 13 && !$this->vip_sent ) {
+                    return 'Kirim Ulang VIP';
+                }
+            }
+
             return 'Proses CLF';
 
         } elseif( $this->visit_report ) {
@@ -653,7 +659,7 @@ class EForm extends Model implements AuditableContract
                 } else if( $request->status == 'Rekomend' ) {
                     $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
 
-                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
+                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2' || $request->status == 'Disbursed' || $request->status=='Menunggu Putusan') {
                     $eform->where('status_eform', $request->status);
 
                 }

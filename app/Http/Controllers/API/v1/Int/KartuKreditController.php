@@ -29,10 +29,48 @@ class KartuKreditController extends Controller{
 	public $hostPefindo = '10.35.65.167:6969';
 
 	public function ajukanKredit(Request $req){
+		//cek users
+		$nik = $request->PersonalNIK;
+		if ($this->checkUser($nik)){
+			//cek dedup
+			
+		}
+		
 
-		//cek dedup
+		
 
 		//cek pefindo
+	}
+
+	function checkUser($nik){
+        $check = CustomerDetail::where('nik', $nik)->get();
+        if(count($check) == 0){
+            return response()->json([
+            	//user gak ketemu. crate baru dulu
+            		'responseCode'=>'01',
+                    'message' => 'Data dengan nik tersebut tidak ditemukan'
+                    ]);
+        }
+        return true;
+	}
+
+	function checkDedup($nik){
+
+		 $header = ['access_token'=> $this->tokenLos];
+			 $client = new Client();
+			 try{
+                $res = $client->request('POST',$this->hostLos, ['headers' =>  $header,
+                        'form_params' => ['nik' => $nik]
+                    ]);
+            }catch (RequestException $e){
+                return response()->error([
+                    'responseCode'=>'99',
+                    'responseMessage'=> $e->getMessage()
+                ],400);
+            }
+
+
+            return true;
 	}
 
 
@@ -385,32 +423,32 @@ class KartuKreditController extends Controller{
     	]);
     }
 
-    public function checkDedup($nik){
-    	// $nik = $req['nik'];
-    	$host = '10.107.11.111:9975/api/nik';
-    	$header = ['access_token'=> $this->tokenLos];
-    	$client = new Client();
+    // public function checkDedup($nik){
+    // 	// $nik = $req['nik'];
+    // 	$host = '10.107.11.111:9975/api/nik';
+    // 	$header = ['access_token'=> $this->tokenLos];
+    // 	$client = new Client();
 
-    	try{
-    		$res = $client->request('POST',$host, ['headers' =>  $header,
-    				'form_params' => ['nik' => $nik]
-    			]);
-    	}catch (RequestException $e){
-    		return  $e->getMessage();
-    	}
+    // 	try{
+    // 		$res = $client->request('POST',$host, ['headers' =>  $header,
+    // 				'form_params' => ['nik' => $nik]
+    // 			]);
+    // 	}catch (RequestException $e){
+    // 		return  $e->getMessage();
+    // 	}
 
-    	$body = $res->getBody();
-    	$obj = json_decode($body);
-    	$responseCode = $obj->responseCode;
+    // 	$body = $res->getBody();
+    // 	$obj = json_decode($body);
+    // 	$responseCode = $obj->responseCode;
 
-    	if ($responseCode == 0 || $responseCode == 00){
-    		//langsung merah. update eform.
-    		return response()->json([
-    			'responseCode' => 01,
-    			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
-    		]);
-    	}
-    }
+    // 	if ($responseCode == 0 || $responseCode == 00){
+    // 		//langsung merah. update eform.
+    // 		return response()->json([
+    // 			'responseCode' => 01,
+    // 			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
+    // 		]);
+    // 	}
+    // }
 
     public function analisaKK(Request $req){
     	$eformId = $req->eform_id;
@@ -568,6 +606,34 @@ class KartuKreditController extends Controller{
                     ) )
                 ])
                 ->post( 'form_params' );
+    }
+
+    public function listReject(){
+    	$header = ['access_token'=> $this->tokenLos];
+    	$client = new Client();
+			 try{
+                $res = $client->request('POST',$this->hostLos.'/api/listreject', 
+                	['headers' =>  $header
+                    ]);
+            }catch (RequestException $e){
+                return response()->json([
+                    'responseCode'=>'99',
+                    'responseMessage'=> $e->getMessage()
+                ]);
+            }
+
+            $body = $res->getBody();
+			$obj = json_decode($body);
+
+			if ($obj->responseCode == 0){
+				$data = $obj->responseData;
+				return response()->json([
+					'responseCode'=>'00',
+					'responseMessage'=>'Success',
+					'contents' => $data
+				]);
+			}
+			
     }
 
     public function checkEmailVerification(Request $request){
