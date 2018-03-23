@@ -572,8 +572,8 @@ class EFormController extends Controller
 							 ->groupBy('customer_details.nik')
 							 ->where('customer_details.nik', $request->nik)
 							 ->get();
-				$user_idsss = $validasis->toArray();
-				$user_idsss = json_decode(json_encode($validasis), True);
+				$user_idsss = $user_idsss->toArray();
+				$user_idsss = json_decode(json_encode($user_idsss), True);
 				
 				$validasi_eform = 'false';
 				if(!empty($user_idsss)){
