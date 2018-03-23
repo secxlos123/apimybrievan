@@ -68,6 +68,7 @@ class KartuKreditController extends Controller{
                     'responseMessage'=> $e->getMessage()
                 ],400);
             }
+            
 
             return true;
 	}
@@ -422,32 +423,32 @@ class KartuKreditController extends Controller{
     	]);
     }
 
-    public function checkDedup($nik){
-    	// $nik = $req['nik'];
-    	$host = '10.107.11.111:9975/api/nik';
-    	$header = ['access_token'=> $this->tokenLos];
-    	$client = new Client();
+    // public function checkDedup($nik){
+    // 	// $nik = $req['nik'];
+    // 	$host = '10.107.11.111:9975/api/nik';
+    // 	$header = ['access_token'=> $this->tokenLos];
+    // 	$client = new Client();
 
-    	try{
-    		$res = $client->request('POST',$host, ['headers' =>  $header,
-    				'form_params' => ['nik' => $nik]
-    			]);
-    	}catch (RequestException $e){
-    		return  $e->getMessage();
-    	}
+    // 	try{
+    // 		$res = $client->request('POST',$host, ['headers' =>  $header,
+    // 				'form_params' => ['nik' => $nik]
+    // 			]);
+    // 	}catch (RequestException $e){
+    // 		return  $e->getMessage();
+    // 	}
 
-    	$body = $res->getBody();
-    	$obj = json_decode($body);
-    	$responseCode = $obj->responseCode;
+    // 	$body = $res->getBody();
+    // 	$obj = json_decode($body);
+    // 	$responseCode = $obj->responseCode;
 
-    	if ($responseCode == 0 || $responseCode == 00){
-    		//langsung merah. update eform.
-    		return response()->json([
-    			'responseCode' => 01,
-    			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
-    		]);
-    	}
-    }
+    // 	if ($responseCode == 0 || $responseCode == 00){
+    // 		//langsung merah. update eform.
+    // 		return response()->json([
+    // 			'responseCode' => 01,
+    // 			'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
+    // 		]);
+    // 	}
+    // }
 
     public function analisaKK(Request $req){
     	$eformId = $req->eform_id;

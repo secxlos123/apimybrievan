@@ -36,10 +36,10 @@ class MitraListing extends Authenticatable  {
 			}
         } );
 				$dir = $dir->select([
-                    \DB::Raw('mitra_utama."NAMA_INSTANSI",mitra_utama."UNIT_KERJA",mitra_detail_dasar.status,mitra_detail_fasilitas_perbankan.nomor_perjanjian_kerjasama_bri,mitra_detail_dasar.golongan_mitra')
+                    \DB::Raw('mitra_utama."idMitrakerja",mitra_utama."NAMA_INSTANSI",mitra_utama."UNIT_KERJA",mitra_detail_dasar.status,mitra_detail_fasilitas_perbankan.nomor_perjanjian_kerjasama_bri,mitra_detail_dasar.golongan_mitra')
 					 ]);
 				 $dir = $dir->groupBy([\DB::Raw('mitra_utama."NAMA_INSTANSI",mitra_utama."UNIT_KERJA",mitra_detail_dasar."status",
-						mitra_detail_fasilitas_perbankan.nomor_perjanjian_kerjasama_bri,mitra_detail_dasar.golongan_mitra')]);
+						mitra_detail_fasilitas_perbankan.nomor_perjanjian_kerjasama_bri,mitra_detail_dasar.golongan_mitra,mitra_utama."idMitrakerja"')]);
 				 $dir = $dir->join('mitra_detail_fasilitas', 'mitra_utama.idMitrakerja', '=', 'mitra_detail_fasilitas.id_header');
 				 $dir = $dir->join('mitra_detail_fasilitas_perbankan', DB::raw('cast("mitra_detail_fasilitas".fasilitas_bank as int)'), '=', 'mitra_detail_fasilitas_perbankan.id');
 				 $dir = $dir->join('mitra_detail_dasar', 'mitra_utama.idMitrakerja', '=', 'mitra_detail_dasar.id_header');
