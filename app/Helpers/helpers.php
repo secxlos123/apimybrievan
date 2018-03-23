@@ -1029,7 +1029,7 @@ if (! function_exists('pushNotificationCRM')) {
   function pushNotificationCRM($data, $type)
   {
     if(env('PUSH_NOTIFICATION', false)){
-        $methodType($data);
+        $type($data);
     }
   }
 
@@ -1038,7 +1038,7 @@ if (! function_exists('pushNotificationCRM')) {
     $notificationBuilder->setBody( '' )//message descriptiom
                         ->setSound('default');
 
-    $dataBuilder = new PlayloadDataBuilder();
+    $dataBuilder = new PayloadDataBuilder();
     $dataBuilder->addData([
       'slug' => $data['marketing_id'],
       'type' => 'marketing_note'
