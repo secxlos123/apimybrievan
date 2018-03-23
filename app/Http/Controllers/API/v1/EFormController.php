@@ -584,9 +584,10 @@ class EFormController extends Controller
 						 ->get();
 						$hasil = $hasil->toArray();
 						$hasil = json_decode(json_encode($hasil), True);
+						$c = count($hasil)-1;
 						if(empty($hasil)){
 							$validasi_eform = 'true';
-						}elseif(!empty($hasil)&&$hasil[0]['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
+						}elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
 							if($hasil['product_type']=='briguna'){
 								if($hasil['IsFinish']=='true'){
 								$validasi_eform = 'true';
