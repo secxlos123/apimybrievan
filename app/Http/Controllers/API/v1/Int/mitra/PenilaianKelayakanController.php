@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Models\User;
-use App\Models\Mitra\MitraHeader;
+use App\Models\Mitra\MitraKelayakan;
 use DB;
 
 class PenilaianKelayakanController extends Controller
@@ -40,12 +40,27 @@ class PenilaianKelayakanController extends Controller
 
     public function store( GimmickRequest $request )
     {
-		$data_header = $request->all();
-		$penilaian_update = DB::table('mitra_header')
-            ->where('id_header', $data_header['penilaian_kelayakan']['id_header'])
-            ->update(['rekomendasi_unit_kerja' => $data_header['penilaian_kelayakan']['rekomendasi_unit_kerja']]);
+	try{
+		$baseRequest = $request->all();
+		$baseRequest['penilaian_kelayakan']['id_header'] = $baseRequest['penilaian_kelayakan']['id_mitra'];
+		$mitra = MitraKelayakan::create( $baseRequest['penilaian_kelayakan'] );
 		
-		return $penilaian_update;
+		$penilaian_update = DB::table('mitra_detail_dasar')
+            ->where('id_header','=', $baseRequest['penilaian_kelayakan']['id_header'])
+			->update(['status' => 'penilaian']);
+		
+			$return = [
+                    'message' => 'Data Berhasil Diberi Penilaian.',
+                    'contents' => 'Sukses'
+                ];
+		} catch (Exception $e) {
+            DB::rollback();
+           $return = [
+                    'message' => 'Terjadi Kesalahan Silahkan Tunggu Beberapa Saat Dan Ulangi.',
+                    'contents' => 'Gagal'
+                ];
+        }
+		return $return;
     }
 
 }
