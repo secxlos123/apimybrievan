@@ -1058,14 +1058,14 @@ if (! function_exists('pushNotificationCRM')) {
 
   }
 
-  function newMarketing( $data ) {
-    $notificationBuilder = new PayloadDataBuilder( 'New Marketing');
+  function newMarketing( $sendData ) {
+    $notificationBuilder = new PayloadNotificationBuilder( 'New Marketing');
     $notificationBuilder->setBody('')// message descriptions
                         ->setSound('default');
 
     $dataBuilder = new PayloadDataBuilder();
     $dataBuilder->addData([
-      'slug' => $sendData['id'],
+      'slug' => $sendData['branch'],
       'type' => 'new_marketing'
     ]);
 
