@@ -172,6 +172,8 @@ class KartuKredit extends Model
 
             'PersonalNoTlpRumah' => $personalNoTlpRumah,
             'PersonalEmail' => $personalEmail,
+
+
             
             'EmergencyNama' =>$emergencyNama,
             'EmergencyHubunganKeluarga' =>$emergencyHubunganKeluarga,
@@ -182,11 +184,7 @@ class KartuKredit extends Model
             
         ];
 
-        if ($type == 'update'){
-            $informasiLos['appNumber'] = $appNumber;
-            $informasiLos['subBidangUsaha'] = $subBidangUsaha;
-            
-            $informasiLos['JobBidangUsaha'] = $jobBidangUsaha;
+         $informasiLos['JobBidangUsaha'] = $jobBidangUsaha;
             $informasiLos['JobKategoriPekerjaan'] = $jobKategoriPekerjaan;
             $informasiLos['JobStatusPekerjaan'] = $jobStatusPekerjaan;
             $informasiLos['JobTotalPekerja'] = $jobTotalPekerja ;
@@ -200,6 +198,12 @@ class KartuKredit extends Model
             $informasiLos['FinanceGajiPertahun'] = $financeGajiPertahun;
             $informasiLos['FinancePendapatanLainPerbulan'] = $financePendapatanLainPerbulan;
             $informasiLos['FinanceJumlahTanggungan'] = $financeJumlahTanggungan;
+
+        if ($type == 'update'){
+            $informasiLos['appNumber'] = $appNumber;
+            $informasiLos['subBidangUsaha'] = $subBidangUsaha;
+            
+           
            
         }else{
             $informasiLos['CardType'] = $cardType;
