@@ -195,7 +195,7 @@ class KartuKredit extends Model
             $informasiLos['FinanceGajiPerbulan'] = $financeGajiPerbulan;
             $informasiLos['FinanceGajiPertahun'] = $financeGajiPertahun;
             $informasiLos['FinancePendapatanLainPerbulan'] = $financePendapatanLainPerbulan;
-            $informasiLos['financeJumlahTanggungan'] = $financeJumlahTanggungan;
+            $informasiLos['FinanceJumlahTanggungan'] = $financeJumlahTanggungan;
            
         }else{
             $informasiLos['CardType'] = $cardType;
