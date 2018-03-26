@@ -48,7 +48,7 @@ class TrackingController extends Controller
                         when visit_reports.id is not null and eforms.product_type='kpr' then 'Proses Analisa Pengajuan'
                         when eforms.ao_id is not null then 'Pengajuan Diterima'
                         else 
-						(case when eforms.product_type='briguna' and eforms.status is not null then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)
+						(case when eforms.product_type='briguna' and eforms.status_eform is not null then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)
 						 end as status
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
@@ -187,7 +187,7 @@ class TrackingController extends Controller
 				when eforms.status_eform = 'Disbursed' then 'Disbursed'
 				when eforms.ao_id is not null and eforms.product_type='kpr' then 'Disposisi Pengajuan' 
 				else 
-				(case when eforms.product_type='briguna'  and eforms.status is not null then 'MenungguPutusan' else 	'Pengajuan Kredit' end)					
+				(case when eforms.product_type='briguna'  and eforms.status_eform is not null then 'MenungguPutusan' else 	'Pengajuan Kredit' end)					
 				end";
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
                 , eforms.ao_name as ao
