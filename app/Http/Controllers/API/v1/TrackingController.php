@@ -190,7 +190,7 @@ class TrackingController extends Controller
 				(case when eforms.product_type='briguna' then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)					
 				end";
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
-                , eforms.ao_namesss as ao
+                , eforms.ao_name as ao
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                 , case when eforms.product_type='kpr' then developers.company_name
                       else ''
@@ -229,7 +229,7 @@ class TrackingController extends Controller
 							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
                 ->where( "eforms.ao_id", $request->header('pn') )
-                ->where( function($item) use (&$request, $statusQuery) {
+//                ->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
                         if ( $request->input('status') != "All" ) {
                             $status = 'Pengajuan Kredit';
@@ -256,7 +256,8 @@ class TrackingController extends Controller
                             $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
                         }
                     }
-
+				//tambahan update
+				->where( function($item) use (&$request) {
                     if($request->has('search')){
                         $lowerSearch = '%' . strtolower($request->input('search')) . '%';
                         $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
@@ -265,7 +266,8 @@ class TrackingController extends Controller
                         $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
                         $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'ilike', $lowerSearch);
                     }
-                })
+				})
+  //              })
                 ->paginate( $request->input( 'limit' ) ?: 10 );
         }
         \Log::info($eforms);
