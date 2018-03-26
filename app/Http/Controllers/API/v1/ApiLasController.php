@@ -1548,7 +1548,8 @@ class ApiLasController extends Controller
                     "Kelengkapan_dokumen"  => "1"
                 ];
 
-                if ($request['jenis_pinjaman_id'] == '2') {
+                if (isset($request['jenis_pinjaman_id']) && $request['jenis_pinjaman_id'] == '2') {
+                    $jenis_pinjaman_id = '2';
                     $content_las_prescoring["Gaji_per_bulan_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?"":$request['Gaji_per_bulan_pensiun'];
                     $content_las_prescoring["Gaji_bersih_per_bulan_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?"":$request['Gaji_bersih_per_bulan_pensiun'];
                     $content_las_prescoring["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?"":$request['Pendapatan_profesi_pensiun'];
@@ -1557,9 +1558,13 @@ class ApiLasController extends Controller
                     $content_las_prescoring["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
                     $content_las_prescoring["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
                     $content_las_prescoring["Fid_uid"] = $uid;
+                } else if ($request['tp_produk'] == '28') {
+                    $jenis_pinjaman_id = '5';
+                } else {
+                    $jenis_pinjaman_id = '1';
                 }
 
-                $insertPrescoring = $this->insertPrescoringBriguna($content_las_prescoring, $request['jenis_pinjaman_id']);
+                $insertPrescoring = $this->insertPrescoringBriguna($content_las_prescoring, $jenis_pinjaman_id);
                 \Log::info("-------- masuk insert prescoring ---------");
                 \Log::info($insertPrescoring);
                 if ($insertPrescoring['statusCode'] == '01') {
@@ -1634,7 +1639,7 @@ class ApiLasController extends Controller
                     \Log::info($insertKredit);
                     if ($insertKredit['statusCode'] == '01') {
                         // Hitung CRS
-                        $hitung= $this->hitungCRSBriguna($insertDebitur['items'][0]->ID_APLIKASI, $request['jenis_pinjaman_id']);
+                        $hitung= $this->hitungCRSBriguna($insertDebitur['items'][0]->ID_APLIKASI, $jenis_pinjaman_id);
                         \Log::info("-------- masuk hitungCRS ---------");
                         \Log::info($hitung);
                         if ($hitung['statusCode'] == '01') {
@@ -1717,7 +1722,7 @@ class ApiLasController extends Controller
                                 "mitra_id"                  => $request['mitra_id'],
                                 "mitra"                     => $request['mitra_name'],
                                 "tujuan_penggunaan_id"      => $request['Penggunaan_kredit'],
-                                "jenis_pinjaman_id"         => $request['jenis_pinjaman_id'],
+                                "jenis_pinjaman_id"         => $jenis_pinjaman_id,
                                 "year"                      => $request['Jangka_waktu'],
                                 "angsuran_usulan"           => $request['Angsuran_usulan'],
                                 "maksimum_plafond"          => $request['Maksimum_plafond'],
@@ -1754,11 +1759,11 @@ class ApiLasController extends Controller
                                 "pernah_pinjam"             => $request['pernah_pinjam'],
                                 "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'],
                                 "tgl_analisa"               => $request['tgl_analisa'],
-                                "no_rek_simpanan"           => $request['no_rek_simpanan'],
-                                "jenis_rekening"            => $request['jenis_rekening'],
-                                "nama_bank_lain"            => $request['nama_bank_lain'],
-                                "nama_bank_lain_name"       => $request['nama_bank_lain_name'],
-                                "Sektor_ekonomi_sid_name"   => $request['Sektor_ekonomi_sid_name']
+                                "no_rek_simpanan"           => !isset($request['no_rek_simpanan'])?"":$request['no_rek_simpanan'],
+                                "jenis_rekening"            => !isset($request['jenis_rekening'])?"":$request['jenis_rekening'],
+                                "nama_bank_lain"            => !isset($request['nama_bank_lain'])?"":$request['nama_bank_lain'],
+                                "nama_bank_lain_name"       => !isset($request['nama_bank_lain_name'])?"":$request['nama_bank_lain_name'],
+                                "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform["branch_id"] = $request['kantor_cabang_id'];
@@ -1784,13 +1789,13 @@ class ApiLasController extends Controller
                             $param_briguna['SK_AWAL']      = $sk_awal;
                             $param_briguna['SK_AKHIR']     = $sk_akhir;
                             $param_briguna['REKOMENDASI']  = $rekomend;
-                            $param_briguna["gaji_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?"":$request['Gaji_per_bulan_pensiun'];
-                            $param_briguna["gaji_bersih_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?"":$request['Gaji_bersih_per_bulan_pensiun'];
-                            $param_briguna["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?"":$request['Pendapatan_profesi_pensiun'];
-                            $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?"":$request['Potongan_per_bulan_pensiun'];
-                            $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?"":$request['Maksimum_plafond_pensiun'];
-                            $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?"":$request['Maksimum_angsuran_pensiun'];
-                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?"":$request['Maksimum_plafond_diberikan'];
+                            $param_briguna["gaji_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?0:$request['Gaji_per_bulan_pensiun'];
+                            $param_briguna["gaji_bersih_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?0:$request['Gaji_bersih_per_bulan_pensiun'];
+                            $param_briguna["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?0:$request['Pendapatan_profesi_pensiun'];
+                            $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?0:$request['Potongan_per_bulan_pensiun'];
+                            $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?0:$request['Maksimum_plafond_pensiun'];
+                            $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?0:$request['Maksimum_angsuran_pensiun'];
+                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?0:$request['Maksimum_plafond_diberikan'];
 
                             $eform->update($param_eform);
                             $briguna->update($param_briguna);
