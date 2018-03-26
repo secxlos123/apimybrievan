@@ -190,7 +190,7 @@ class TrackingController extends Controller
 				(case when eforms.product_type='briguna' then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)					
 				end";
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
-                , eforms.ao_name as ao
+                , eforms.ao_namessss as ao
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
                 , case when eforms.product_type='kpr' then developers.company_name
                       else ''
