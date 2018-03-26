@@ -228,7 +228,7 @@ class TrackingController extends Controller
 							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
 							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
-                ->where( "eforms.ao_id", $request->header('pn') )
+                ->where( "eforms.ao_id", $request->header('pn') );
 //                ->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
                         if ( $request->input('status') != "All" ) {
@@ -257,7 +257,7 @@ class TrackingController extends Controller
                         }
                     }
 				//tambahan update
-				->where( function($item) use (&$request) {
+				$item->where( function($item) use (&$request) {
                     if($request->has('search')){
                         $lowerSearch = '%' . strtolower($request->input('search')) . '%';
                         $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
