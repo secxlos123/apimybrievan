@@ -165,8 +165,18 @@ class TrackingController extends Controller
 
             }
         }
+
             if( $request->header('pn') ) {
-                $statusQuery = "case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak' when eforms.status_eform = 'Approval1' then 'Kredit Disetujui' when eforms.status_eform = 'Approval2' then 'Rekontes Kredit' when eforms.is_approved = true then 'Proses CLF' when visit_reports.id is not null then 'Prakarsa' when eforms.ao_id is not null then 'Disposisi Pengajuan' else 'Pengajuan Kredit' end";
+                $statusQuery = "case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak' 
+				when eforms.status_eform = 'Approval1' then 'Kredit Disetujui' 
+				when eforms.status_eform = 'Approval2' then 'Rekontes Kredit' 
+				when eforms.is_approved = true then 'Proses CLF' when visit_reports.id is not null then 'Prakarsa' 				
+				when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
+                when eforms.is_approved = true then 'Proses Analisa Pengajuan'
+				when eforms.status_eform = 'Approval' then 'Disetujui Briguna'
+				when eforms.status_eform = 'Disbursed' then 'Disbursed'
+				(case when eforms.product_type='briguna' then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)	
+				when eforms.ao_id is not null then 'Disposisi Pengajuan' else 'Pengajuan Kredit' end";
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
                 , eforms.ao_name as ao
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
