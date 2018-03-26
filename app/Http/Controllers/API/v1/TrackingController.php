@@ -66,10 +66,12 @@ class TrackingController extends Controller
 					->leftJoin('developers', function($join)
                          {
 							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
 					->leftJoin('visit_reports', function($join)
                          {
 							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
                     //->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
                     //->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
@@ -118,8 +120,16 @@ class TrackingController extends Controller
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
 						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                    ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
-                    ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+                ->leftJoin('developers', function($join)
+                         {
+							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
+					->leftJoin('visit_reports', function($join)
+                         {
+							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
                     ->where( "eforms.sales_dev_id", $user->id )
                     ->where(function($item) use (&$request){
                         if($request->has('status'))
@@ -211,10 +221,12 @@ class TrackingController extends Controller
                 ->leftJoin('developers', function($join)
                          {
 							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
 					->leftJoin('visit_reports', function($join)
                          {
 							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
                 ->where( "eforms.ao_id", $request->header('pn') )
                 ->where( function($item) use (&$request, $statusQuery) {
