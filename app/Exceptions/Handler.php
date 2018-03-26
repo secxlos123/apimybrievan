@@ -50,10 +50,11 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         // send email if error
-        if ( ENV("APPLICATION_POSITION", 'development') == "production" ) {
+        $applicationPosition = ENV("APPLICATION_POSITION", 'local');
+        if ( $applicationPosition == "production" || $applicationPosition == "development" ) {
             Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
             {
-                $message->subject("[" . ENV("APPLICATION_POSITION", 'development') . "] API myBRI Error Exception ");
+                $message->subject(ENV("APPLICATION_POSITION", 'development') . " API myBRI Error Exception");
                 $message->from("error@mybri.bri.co.id", 'Error Exception');
                 $message->to("rachmat.ramadhan@wgs.co.id");
             });
