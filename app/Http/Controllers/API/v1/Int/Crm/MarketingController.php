@@ -257,7 +257,6 @@ class MarketingController extends Controller
 
       if ($save) {
 
-          pushNotificationCRM($data, 'new_marketing');
           $this->first_activity($request->header('pn'), $save->id, $request);
 
           return response()->success([

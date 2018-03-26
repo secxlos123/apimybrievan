@@ -1059,13 +1059,13 @@ if (! function_exists('pushNotificationCRM')) {
   }
 
   function newMarketing( $data ) {
-    $notificationBuilder = new PlayloadDataBuilder( 'New Marketing');
+    $notificationBuilder = new PayloadDataBuilder( 'New Marketing');
     $notificationBuilder->setBody('')// message descriptions
                         ->setSound('default');
 
-    $dataBuilder = new PlayloadDataBuilder();
+    $dataBuilder = new PayloadDataBuilder();
     $dataBuilder->addData([
-      'slug' => $data['id'],
+      'slug' => $sendData['id'],
       'type' => 'new_marketing'
     ]);
 
@@ -1074,7 +1074,7 @@ if (! function_exists('pushNotificationCRM')) {
 
     $topic = new Topics();
     $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))
-          ->andTopic('CRM_'.$data['branch']);
+          ->andTopic('CRM_'.$sendData['branch']);
 
     $topicResponse = FCM::sendToTopic($topic, null, $notification, $data);
     $topicResponse->isSuccess();

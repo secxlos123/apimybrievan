@@ -912,6 +912,9 @@ class EFormController extends Controller
             $baseRequest['pinca_note'] = $request->has('pinca_note') ? $request->pinca_note : 'Tidak Ada Note';
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
+            if (isset($request->tgl_disposisi)) {
+                $baseRequest['tgl_disposisi'] = $request->tgl_disposisi;
+            }
 
             $eform->update( $baseRequest );
 
