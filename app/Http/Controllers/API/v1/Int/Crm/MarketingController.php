@@ -313,7 +313,7 @@ class MarketingController extends Controller
         } else {
           $pemasar_name = [];
         }
-
+$marketingActivity=[];
         $id = $request['id'];
         foreach (MarketingActivity::where('marketing_id', $id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
