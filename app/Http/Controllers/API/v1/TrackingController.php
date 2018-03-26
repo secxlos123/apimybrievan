@@ -253,13 +253,13 @@ class TrackingController extends Controller
                                 $status = 'Menunggu Putusan';
                             }
 
-                            $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
+                            $item->whereRaw('('.$statusQuery . " = '" . $status . "'))(");
                         }
                     }
 
                     if($request->has('search')){
                         $lowerSearch = '%' . strtolower($request->input('search')) . '%';
-                        $item->where(\DB::raw('(LOWER(users.first_name)'), 'ilike', $lowerSearch);
+                        $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
                         $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'ilike', $lowerSearch);
                         $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'ilike', $lowerSearch);
                         $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
