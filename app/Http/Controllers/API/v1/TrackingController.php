@@ -225,7 +225,7 @@ class TrackingController extends Controller
                                 $status = 'Rekontes Kredit';
                             }elseif($request->input('status') == 'Disbursed') {
                                 $status = 'Disbursed';
-                            }elseif($request->input('status') == 'Menunggu Putusan') {
+                            }elseif($request->input('status') == 'MenungguPutusan') {
                                 $status = 'Menunggu Putusan';
                             }
 
