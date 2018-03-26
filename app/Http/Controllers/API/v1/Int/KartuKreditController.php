@@ -293,7 +293,7 @@ class KartuKreditController extends Controller{
     	
     	$request = $req->all();
     	$eform_id = $request['eform_id'];
-    	$request['apregno'] = $this->getApregnoFromKKDetails($eform_id);
+    	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
 
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
@@ -317,7 +317,7 @@ class KartuKreditController extends Controller{
 		//update data user
 		//get user id from eform
 		$eformData = EForm::where('id',$eform_id)->first();
-		$apregno = $request['apregno'];
+		$apregno = $request['appNumber'];
 
 		//update eform response status
 		$updateStatus = EForm::where('id',$eform_id)

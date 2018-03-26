@@ -110,7 +110,7 @@ class KartuKredit extends Model
             
 
             if ($type == 'update'){
-                $appNumber = $req['apregno'];
+                $appNumber = $req['appNumber'];
                 $subBidangUsaha = $req['subBidangUsaha'];
 
                 $jobBidangUsaha = $req['JobBidangUsaha'];
@@ -141,6 +141,8 @@ class KartuKredit extends Model
                 $jobKodePos = '0';
                 $financeGajiPerbulan = '0';
                 $financeGajiPertahun = '0';
+                $financePendapatanLainPerbulan = '0';
+                $financeJumlahTanggungan = '0';
             }
             
         }catch (Exception $e){
