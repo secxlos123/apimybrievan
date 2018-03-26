@@ -177,9 +177,24 @@ class TrackingController extends Controller
                 , " . $statusQuery . " as status
                 ")
                 ->leftJoin("users", "users.id", "=", "eforms.user_id")
-                ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
-                ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+				->leftJoin('kpr', function($join)
+                         {
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+							 $join->on('kpr.eform_id', '=', 'eforms.id');
+						 })
+				->leftJoin('briguna', function($join)
+                         {
+							 $join->on('eforms.product_type', '=', DB::raw("'briguna'"));
+							 $join->on('briguna.eform_id', '=', 'eforms.id');
+						 })
+                ->leftJoin('developers', function($join)
+                         {
+							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+						 })
+					->leftJoin('visit_reports', function($join)
+                         {
+							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+						 })
                 ->where( "eforms.ao_id", $request->header('pn') )
                 ->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
@@ -199,6 +214,10 @@ class TrackingController extends Controller
                                 $status = 'Kredit Disetujui';
                             } elseif($request->input('status') == 'Approval2') {
                                 $status = 'Rekontes Kredit';
+                            }elseif($request->input('status') == 'Disbursed') {
+                                $status = 'Disbursed';
+                            }elseif($request->input('status') == 'Menunggu Putusan') {
+                                $status = 'Menunggu Putusan';
                             }
 
                             $item->whereRaw($statusQuery . " = '" . $status . "'");
