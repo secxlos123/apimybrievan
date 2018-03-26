@@ -293,7 +293,7 @@ class KartuKreditController extends Controller{
     	
     	$request = $req->all();
     	$eform_id = $request['eform_id'];
-    	$request['apregno'] = $this->getApregnoFromKKDetails($eform_id);
+    	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
 
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
