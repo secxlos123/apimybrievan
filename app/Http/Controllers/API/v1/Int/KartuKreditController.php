@@ -563,26 +563,6 @@ class KartuKreditController extends Controller{
 		$req = $req->all();
 		
 
-		if ($putusan == 'approved'){
-			$host = $this->hostLos.'/api/approval';
-			$isAppr = true;
-			$data = $kk->createApprovedRequirements($req);
-
-		}else{
-			$host = $this->hostLos.'/api/reject';
-			$isAppr = false;
-			$data = $kk->createRejectedRequirements($req);
-		}
-		//kirim ke db mybri
-		$updateKK = KartuKredit::where('appregno',$apregno)->update([
-			'approval'=>$putusan,
-			'catatan_rekomendasi_pinca'=>$msg
-		]);
-
-		$updateEform = EForm::where('id','679')->update([
-			'is_approved'=>$isAppr
-		]);
-
 		//kirim ke los.
 		$client = new Client();
 		try{
@@ -598,6 +578,27 @@ class KartuKreditController extends Controller{
 				'responseMessage'=>$e->getMessage()
 			]);	
 		}
+
+		if ($putusan == 'approved'){
+			$host = $this->hostLos.'/api/approval';
+			$data = $kk->createApprovedRequirements($req);
+
+		}else{
+			$host = $this->hostLos.'/api/reject';
+			$data = $kk->createRejectedRequirements($req);
+		}
+		//kirim ke db mybri
+		$updateKK = KartuKredit::where('appregno',$apregno)->update([
+			'approval'=>$putusan,
+			'catatan_rekomendasi_pinca'=>$msg
+		]);
+
+		$eformId = $req['eform_id'];
+		$updateEform = EForm::where('id',$eform_id)->update([
+			'is_approved'=>true
+		]);
+
+		
 
 		$body = $res->getBody();
     	$obj = json_decode($body);
