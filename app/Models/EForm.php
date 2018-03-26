@@ -999,8 +999,8 @@ class EForm extends Model implements AuditableContract
             );
         } else {
             if ( $endpoint == 'InsertIntoAnalis' ) {
-                $this->vip_sent = false;
-                $this->save();
+                // $this->vip_sent = false;
+                // $this->save();
 
             }
         }
