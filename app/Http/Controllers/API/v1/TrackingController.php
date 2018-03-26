@@ -187,7 +187,7 @@ class TrackingController extends Controller
 				when eforms.status_eform = 'Disbursed' then 'Disbursed'
 				when eforms.ao_id is not null and eforms.product_type='kpr' then 'Disposisi Pengajuan' 
 				else 
-				(case when eforms.product_type='briguna' then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)					
+				(case when eforms.product_type='briguna' then 'MenungguPutusan' else 	'Pengajuan Kredit' end)					
 				end";
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
                 , eforms.ao_name as ao
