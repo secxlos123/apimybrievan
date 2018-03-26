@@ -219,7 +219,7 @@ class UserNotification extends Model
 
 		if ( !empty($count) ) {
 			if( !empty($query) ) {
-				return $query->count();
+				return $query->where('notifications.is_read', false)->count();
 			}
 
 			return 0;
