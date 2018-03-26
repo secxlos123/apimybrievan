@@ -260,7 +260,7 @@ class TrackingController extends Controller
                             }elseif($request->input('status') == 'Disbursed') {
                                 $status = 'Disbursed';
                             }elseif($request->input('status') == 'MenungguPutusan') {
-                                $status = 'Menunggu Putusan';
+                                $status = 'MenungguPutusan';
                             }
 
                             $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
