@@ -439,7 +439,7 @@ $marketingActivity=[];
 
             return response()->success([
               'message' => 'Data Marketing berhasil dihapus.',
-              'content' => $deleteRequest
+              'content' => $mrk_id
             ], 201);
           }
 
