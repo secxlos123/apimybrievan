@@ -253,7 +253,7 @@ class TrackingController extends Controller
                                 $status = 'Menunggu Putusan';
                             }
 
-                            $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
+                            $item->whereRaw('('.$statusQuery . " = '" . $status . "'))(");
                         }
                     }
 
