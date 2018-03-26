@@ -110,7 +110,7 @@ class KartuKredit extends Model
             
 
             if ($type == 'update'){
-                $appNumber = $req['apregno'];
+                $appNumber = $req['appNumber'];
                 $subBidangUsaha = $req['subBidangUsaha'];
 
                 $jobBidangUsaha = $req['JobBidangUsaha'];
