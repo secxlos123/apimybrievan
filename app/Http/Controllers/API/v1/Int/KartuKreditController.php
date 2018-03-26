@@ -595,7 +595,7 @@ class KartuKreditController extends Controller{
 		]);
 
 		$eformId = $req['eform_id'];
-		$updateEform = EForm::where('id',$eform_id)->update([
+		$updateEform = EForm::where('id',$eformid)->update([
 			'is_approved'=>true
 		]);
 
