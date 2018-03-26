@@ -43,9 +43,13 @@ class TrackingController extends Controller
                         when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
+						when eforms.status_eform = 'Approval' then 'Disetujui Briguna'
+						when eforms.status_eform = 'Disbursed' then 'Disbursed'
                         when visit_reports.id is not null and eforms.product_type='kpr' then 'Proses Analisa Pengajuan'
                         when eforms.ao_id is not null then 'Pengajuan Diterima'
-                        else 'Pengajuan Kredit' end as status
+                        else 
+						(case when eforms.product_type='briguna' then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)
+						 end as status
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
 					->leftJoin('kpr', function($join)
