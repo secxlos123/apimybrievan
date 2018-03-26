@@ -562,7 +562,15 @@ class KartuKreditController extends Controller{
 		$kk = new KartuKredit();
 		$req = $req->all();
 		
+		if ($putusan == 'approved'){
+			$host = $this->hostLos.'/api/approval';
+			$data = $kk->createApprovedRequirements($req);
 
+		}else{
+			$host = $this->hostLos.'/api/reject';
+			$data = $kk->createRejectedRequirements($req);
+		}
+		
 		//kirim ke los.
 		$client = new Client();
 		try{
@@ -579,14 +587,7 @@ class KartuKreditController extends Controller{
 			]);	
 		}
 
-		if ($putusan == 'approved'){
-			$host = $this->hostLos.'/api/approval';
-			$data = $kk->createApprovedRequirements($req);
-
-		}else{
-			$host = $this->hostLos.'/api/reject';
-			$data = $kk->createRejectedRequirements($req);
-		}
+		
 		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'approval'=>$putusan,
