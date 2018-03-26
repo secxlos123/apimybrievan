@@ -50,14 +50,14 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         // send email if error
-        // if ( ENV("APP_ENV") == "production" ) {
-        //     Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
-        //     {
-        //         $message->subject("API myBRI Error Exception " . ENV("APPLICATION_POSITION", 'development'));
-        //         $message->from("error@mybri.bri.co.id", 'Error Exception');
-        //         $message->to("rachmat.ramadhan@wgs.co.id");
-        //     });
-        // }
+        if ( ENV("APPLICATION_POSITION", 'development') == "production" ) {
+            Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
+            {
+                $message->subject("[" . ENV("APPLICATION_POSITION", 'development') . "] API myBRI Error Exception ");
+                $message->from("error@mybri.bri.co.id", 'Error Exception');
+                $message->to("rachmat.ramadhan@wgs.co.id");
+            });
+        }
 
         \DB::rollback();
         if( $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ) {
