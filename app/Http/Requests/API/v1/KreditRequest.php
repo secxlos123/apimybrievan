@@ -78,7 +78,7 @@ class KreditRequest extends BaseRequest{
 					// 'EmergencyNoTlp'=>'required',
     				
     				];
-    			}else if($this->segment(5) == 'updateverifikasikredit'){
+    			}else if($this->segment(5) == 'update-data-los'){
     				return [
 						'PersonalNIK' => 'required',
 	    				'PersonalAlamatDomisili' => 'required',
@@ -116,8 +116,9 @@ class KreditRequest extends BaseRequest{
 						'EmergencyAlamat'=>'required',
 						'EmergencyKota'=>'required',
 						'EmergencyNoTlp'=>'required',
-						'SubBidangUsaha'=>'required',
-	    				'apregno'=>'required',
+						'subBidangUsaha'=>'required',
+						'eform_id'=>'required',
+	    				// 'apregno'=>'required',
     				];
     			}else if($this->segment(5) == 'putusan-pinca'){
     				return([

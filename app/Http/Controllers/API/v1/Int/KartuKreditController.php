@@ -285,7 +285,7 @@ class KartuKreditController extends Controller{
 
     }
 
-    public function updateDataLos(Request $req){
+    public function updateDataLos(KreditRequest $req){
     	//saat verifikasi
     	$header = ['access_token'=> $this->tokenLos];
     	$host = '10.107.11.111:9975/api/updateData';
@@ -595,7 +595,7 @@ class KartuKreditController extends Controller{
 		]);
 
 		$eformId = $req['eform_id'];
-		$updateEform = EForm::where('id',$eform_id)->update([
+		$updateEform = EForm::where('id',$eformId)->update([
 			'is_approved'=>true
 		]);
 
