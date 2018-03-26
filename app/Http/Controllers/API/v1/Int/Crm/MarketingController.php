@@ -439,7 +439,7 @@ $marketingActivity=[];
 
             return response()->success([
               'message' => 'Data Marketing berhasil dihapus.',
-              'content' => $mrk_id
+              'content' => ["marketing_id" => $mrk_id]
             ], 201);
           }
 
