@@ -565,7 +565,7 @@ class KartuKreditController extends Controller{
 
 		if ($putusan == 'approved'){
 			$host = $this->hostLos.'/api/approval';
-
+			$isAppr = true;
 			$data = $kk->createApprovedRequirements($req);
 
 		}else{
