@@ -175,7 +175,7 @@ class TrackingController extends Controller
                 when eforms.is_approved = true then 'Proses Analisa Pengajuan'
 				when eforms.status_eform = 'Approval' then 'Disetujui Briguna'
 				when eforms.status_eform = 'Disbursed' then 'Disbursed'
-				when eforms.ao_id is not null then 'Disposisi Pengajuan' 
+				when eforms.ao_id is not null and eforms.product_type='kpr' then 'Disposisi Pengajuan' 
 				else 
 				(case when eforms.product_type='briguna' then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)					
 				end";
