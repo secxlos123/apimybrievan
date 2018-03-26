@@ -315,7 +315,7 @@ class KartuKreditController extends Controller{
 		// $data = $obj->responseData;
 
 		//update data user
-		//get user id from eform
+		//get user  from eform
 		$eformData = EForm::where('id',$eform_id)->first();
 		$apregno = $request['appNumber'];
 
