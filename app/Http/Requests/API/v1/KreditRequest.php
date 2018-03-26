@@ -78,7 +78,7 @@ class KreditRequest extends BaseRequest{
 					// 'EmergencyNoTlp'=>'required',
     				
     				];
-    			}else if($this->segment(5) == 'updateverifikasikredit'){
+    			}else if($this->segment(5) == 'update-data-los'){
     				return [
 						'PersonalNIK' => 'required',
 	    				'PersonalAlamatDomisili' => 'required',
