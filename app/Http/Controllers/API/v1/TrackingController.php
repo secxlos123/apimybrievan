@@ -167,17 +167,22 @@ class TrackingController extends Controller
         }
             if( $request->header('pn') ) {
                 $statusQuery = "case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak' when eforms.status_eform = 'Approval1' then 'Kredit Disetujui' when eforms.status_eform = 'Approval2' then 'Rekontes Kredit' when eforms.is_approved = true then 'Proses CLF' when visit_reports.id is not null then 'Prakarsa' when eforms.ao_id is not null then 'Disposisi Pengajuan' else 'Pengajuan Kredit' end";
-
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
                 , eforms.ao_name as ao
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
-                , developers.company_name as developer_name
-                , kpr.property_item_name as property_name
+                , case when eforms.product_type='kpr' then developers.company_name
+                      else ''
+                      end as developer_name
+                 , case when eforms.product_type='kpr' then kpr.property_item_name
+                      else ''
+                      end as property_name
                 , eforms.product_type as product_type
                 , eforms.ref_number as ref_number
                 , eforms.prescreening_status
                 , date(eforms.created_at) as tanggal_pengajuan
-                , kpr.request_amount as jumlah_pengajuan
+                , case when eforms.product_type='kpr' then kpr.request_amount
+                      else  briguna.request_amount
+                      end as jumlah_pengajuan
                 , " . $statusQuery . " as status
                 ")
                 ->leftJoin("users", "users.id", "=", "eforms.user_id")
