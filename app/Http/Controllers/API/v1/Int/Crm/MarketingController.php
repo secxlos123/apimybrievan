@@ -145,7 +145,7 @@ class MarketingController extends Controller
       ];
 
       $marketings = [];
-      foreach (Marketing::getMarketing($request)->whereIn('pn',$list_pn)->get() as $marketing) {
+      foreach (Marketing::getMarketing($request)->where('marketings.branch',$branch)->get() as $marketing) {
         $marketingActivity = [];
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
