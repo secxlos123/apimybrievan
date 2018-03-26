@@ -228,8 +228,18 @@ class TrackingController extends Controller
 							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
 							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
 						 })
-                ->where( "eforms.ao_id", $request->header('pn') );
-//                ->where( function($item) use (&$request, $statusQuery) {
+                ->where( "eforms.ao_id", $request->header('pn') )
+				->where( function($item) use (&$request) {
+                    if($request->has('search')){
+                        $lowerSearch = '%' . strtolower($request->input('search')) . '%';
+                        $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'ilike', $lowerSearch);
+                    }
+				})
+				->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
                         if ( $request->input('status') != "All" ) {
                             $status = 'Pengajuan Kredit';
@@ -253,21 +263,10 @@ class TrackingController extends Controller
                                 $status = 'Menunggu Putusan';
                             }
 
-                            $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
+                            $items->whereRaw('('.$statusQuery . " = '" . $status . "')");
                         }
                     }
-				//tambahan update
-				$item->where( function($item) use (&$request) {
-                    if($request->has('search')){
-                        $lowerSearch = '%' . strtolower($request->input('search')) . '%';
-                        $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'ilike', $lowerSearch);
-                    }
-				})
-  //              })
+              })
                 ->paginate( $request->input( 'limit' ) ?: 10 );
         }
         \Log::info($eforms);
