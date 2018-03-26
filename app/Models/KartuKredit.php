@@ -98,23 +98,8 @@ class KartuKredit extends Model
 
             $personalNoTlpRumah = $req['PersonalNoTlpRumah'];
             $personalEmail= $req['PersonalEmail'];
-            $jobBidangUsaha = '0';
-            $jobKategoriPekerjaan = '0';
-            $jobStatusPekerjaan = '0';
-
-            $jobTotalPekerja = '0';
-            $jobNamaPerusahaan = '0';
-            $jobPangkat = '0';
-            $jobLamaKerjaYY = '0';
-            $jobLamaKerjaMM = '0';
-
-            $jobAlamatKantor = '0';
-            $jobKodePos = '0';
-            $financeGajiPerbulan = '0';
-            $financeGajiPertahun = '0';
-            $financePendapatanLainPerbulan = '0';
-
-            $financeJumlahTanggungan = '0';
+            
+            
             $emergencyNama = $req['EmergencyNama'];
             $emergencyHubunganKeluarga = $req['EmergencyHubunganKeluarga'];
             $emergencyAlamat = $req['EmergencyAlamat'];
@@ -125,10 +110,41 @@ class KartuKredit extends Model
             
 
             if ($type == 'update'){
-                $appNumber = $req['apregno'];
+                $appNumber = $req['appNumber'];
                 $subBidangUsaha = $req['subBidangUsaha'];
+
+                $jobBidangUsaha = $req['JobBidangUsaha'];
+                $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
+                $jobStatusPekerjaan = $req['JobStatusPekerjaan'];
+                $jobTotalPekerja =  $req['JobTotalPekerja'];
+                $jobNamaPerusahaan = $req['JobNamaPerusahaan'];
+                $jobPangkat = $req['JobPangkat'];
+                $jobLamaKerjaYY = $req['JobLamaKerjaYY'];
+                $jobLamaKerjaMM = $req['JobLamaKerjaMM'];
+                $jobAlamatKantor = $req['JobAlamatKantor'];
+                $jobKodePos = $req['JobKodePos'];
+                $financeGajiPerbulan = $req['FinanceGajiPerbulan'];
+                $financeGajiPertahun = $req['FinanceGajiPertahun'];
+                $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
+                $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
+
             }else{
                 $cardType = $req['CardType'];
+
+                $jobBidangUsaha = '0';
+                $jobKategoriPekerjaan = '0';
+                $jobStatusPekerjaan = '0';
+                $jobTotalPekerja = '0';
+                $jobNamaPerusahaan = '0';
+                $jobPangkat = '0';
+                $jobLamaKerjaYY = '0';
+                $jobLamaKerjaMM = '0';
+                $jobAlamatKantor = '0';
+                $jobKodePos = '0';
+                $financeGajiPerbulan = '0';
+                $financeGajiPertahun = '0';
+                $financePendapatanLainPerbulan = '0';
+                $financeJumlahTanggungan = '0';
             }
             
         }catch (Exception $e){
@@ -156,23 +172,7 @@ class KartuKredit extends Model
 
             'PersonalNoTlpRumah' => $personalNoTlpRumah,
             'PersonalEmail' => $personalEmail,
-            'JobBidangUsaha' => $jobBidangUsaha,
-            'JobKategoriPekerjaan'=>$jobKategoriPekerjaan,
-            'JobStatusPekerjaan'=>$jobStatusPekerjaan,
-
-            'JobTotalPekerja' => $jobTotalPekerja,
-            'JobNamaPerusahaan' => $jobNamaPerusahaan,
-            'JobPangkat' => $jobPangkat,
-            'JobLamaKerjaYY' => $jobLamaKerjaYY,
-            'JobLamaKerjaMM' => $jobLamaKerjaMM,
-
-            'JobAlamatKantor'=>$jobAlamatKantor,
-            'JobKodePos'=>$jobKodePos,
-            'FinanceGajiPerbulan' =>$financeGajiPerbulan,
-            'FinanceGajiPertahun'=>$financeGajiPertahun,
-            'FinancePendapatanLainPerbulan'=>$financePendapatanLainPerbulan,
-
-            'FinanceJumlahTanggungan' =>$financeJumlahTanggungan,
+            
             'EmergencyNama' =>$emergencyNama,
             'EmergencyHubunganKeluarga' =>$emergencyHubunganKeluarga,
             'EmergencyAlamat' =>$emergencyAlamat,
@@ -185,6 +185,22 @@ class KartuKredit extends Model
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
+            
+            $informasiLos['JobBidangUsaha'] = $jobBidangUsaha;
+            $informasiLos['JobKategoriPekerjaan'] = $jobKategoriPekerjaan;
+            $informasiLos['JobStatusPekerjaan'] = $jobStatusPekerjaan;
+            $informasiLos['JobTotalPekerja'] = $jobTotalPekerja ;
+            $informasiLos['JobNamaPerusahaan'] = $jobNamaPerusahaan ;
+            $informasiLos['JobPangkat'] = $jobPangkat ;
+            $informasiLos['JobLamaKerjaYY'] = $jobLamaKerjaYY ;
+            $informasiLos['JobLamaKerjaMM'] = $jobLamaKerjaMM ;
+            $informasiLos['JobAlamatKantor'] = $jobAlamatKantor;
+            $informasiLos['JobKodePos'] = $jobKodePos;
+            $informasiLos['FinanceGajiPerbulan'] = $financeGajiPerbulan;
+            $informasiLos['FinanceGajiPertahun'] = $financeGajiPertahun;
+            $informasiLos['FinancePendapatanLainPerbulan'] = $financePendapatanLainPerbulan;
+            $informasiLos['FinanceJumlahTanggungan'] = $financeJumlahTanggungan;
+           
         }else{
             $informasiLos['CardType'] = $cardType;
         }
