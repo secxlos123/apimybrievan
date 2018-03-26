@@ -253,11 +253,11 @@ class TrackingController extends Controller
                                 $status = 'Menunggu Putusan';
                             }
 
-                            $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
+                            $eforms->whereRaw('('.$statusQuery . " = '" . $status . "')");
                         }
                     }
 				//tambahan update
-				$item->where( function($item) use (&$request) {
+				$eforms->where( function($item) use (&$request) {
                     if($request->has('search')){
                         $lowerSearch = '%' . strtolower($request->input('search')) . '%';
                         $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
