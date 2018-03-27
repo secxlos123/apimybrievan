@@ -438,11 +438,9 @@ class KartuKreditController extends Controller{
      public function checkEmailVerification(Request $request){
      	$req = $request->all();
     	$codeVerif = $request->code;
-    	$apRegno = $request->apRegno;
+    	$apRegno = $request->apregno;
     	$data = KartuKredit::where('appregno',$apRegno)->first();
     	$correctCode = $data['verification_code'];
-    	echo ($correctCode);
-    	echo ($codeVerif);
 
     	if ($codeVerif == $correctCode){
     		$eformid = $data['eform_id'];
