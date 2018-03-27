@@ -157,7 +157,7 @@ class AuthController extends Controller
                 if(!$userservices){
                     return response()->error( [
                         'message' => 'PN atau Password Salah',
-                        'contents'=> []
+                        'contents'=> 'PN atau Password Salah'
                     ], 422 );
 
                 }else {
@@ -206,7 +206,7 @@ class AuthController extends Controller
         } else {
             return response()->error( [
                 'message' => isset($data) ? $data : 'Gagal Terhubung Dengan Server',
-                'contents'=> []
+                'contents'=> isset($data) ? $data : 'Gagal Terhubung Dengan Server'
             ], 422 );
         }
 
