@@ -578,16 +578,16 @@ class EFormController extends Controller
 				$validasi_eform = 'false';
 				if(!empty($user_idsss)){
 					$hasil = DB::table('eforms')
-						 ->select(DB::raw('eforms.product_type,eforms."IsFinish"'))
-						 ->groupBy(DB::raw('eforms.product_type,eforms."IsFinish"'))
-						 ->where('eforms.user_id', $user_idsss)
+						 ->select(DB::raw('eforms."product_type",eforms."IsFinish"'))
+						 ->groupBy(DB::raw('eforms."product_type",eforms."IsFinish"'))
+						 ->where('eforms."user_id"', $user_idsss)
 						 ->get();
 						$hasil = $hasil->toArray();
 						$hasil = json_decode(json_encode($hasil), True);
 						$c = count($hasil)-1;
 						if(empty($hasil)){
 							$validasi_eform = 'true';
-						}elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
+						}elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'&&$hasil[$c]['product_type']=='briguna'){
 							if($hasil['product_type']=='briguna'){
 								if($hasil['IsFinish']=='true'){
 								$validasi_eform = 'true';
