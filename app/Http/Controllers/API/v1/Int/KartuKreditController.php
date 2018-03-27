@@ -35,10 +35,6 @@ class KartuKreditController extends Controller{
 			//cek dedup
 			
 		}
-		
-
-		
-
 		//cek pefindo
 	}
 
@@ -390,7 +386,7 @@ class KartuKreditController extends Controller{
     	$obj = json_decode($body);
 
     	return response()->json([
-    		'responseCode' => '01',
+    		'responseCode' => '00',
     		'contents' =>$obj
     	]);
     }
@@ -407,7 +403,7 @@ class KartuKreditController extends Controller{
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,'api.dev.net/api/v1/int/kk/verifyemail');
+    	->sendEmailVerification($dataKredit,$apregno,'apimybri.bri.co.id/api/v1/int/kk/verifyemail');
     	\Log::info('======== data kredit =========');
    		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
@@ -426,7 +422,7 @@ class KartuKreditController extends Controller{
     	$obj = json_decode($body);
 
     	return response()->json([
-    		'responseCode' => '01',
+    		'responseCode' => '00',
     		'contents' =>$obj
     	]);
     }
@@ -438,29 +434,42 @@ class KartuKreditController extends Controller{
 		return true;
     }
 
+    function isVerified($eform_id){
+    	$ef = EForm::where('id',$eform_id)->first();
+    	$ver = $ef['response_status'];
+    	if($ver == 'verified'){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+
      public function checkEmailVerification(Request $request){
      	$req = $request->all();
     	$codeVerif = $request->code;
     	$apRegno = $request->apregno;
     	$data = KartuKredit::where('appregno',$apRegno)->first();
     	$correctCode = $data['verification_code'];
+    	$eformid = $data['eform_id'];
 
-    	if ($codeVerif == $correctCode){
-    		$eformid = $data['eform_id'];
-    		//update ke eform
-    		$updateEform = $this->verify($eformid);
-
-    		return "Email telah tervirifikasi";
-    		// return response()->json([
-    		// 	'responseCode'=>'00',
-    		// 	'responseMessage'=>'Kode Benar'
-    		// ]);
+    	if($this->isVerified($eformid)){
+    		return "Email telah diverifikasi";
     	}else{
-    		return response()->json([
-    			'responseCode'=>'01',
-    			'responseMessage'=>'Kode Salah'
-    		]);
+    		if ($codeVerif == $correctCode){
+    			//update ke eform
+    			$updateEform = $this->verify($eformid);
+
+    			return "Email telah tervirifikasi";
+    		}else{
+    			return response()->json([
+    				'responseCode'=>'01',
+    				'responseMessage'=>'Kode Salah'
+    			]);
+    		}
     	}
+
+
+    	
     }
 
     // public function checkDedup($nik){
@@ -652,19 +661,6 @@ class KartuKreditController extends Controller{
 
 
 	}
-
-    public function pefindo(){
-    	$getPefindo = Asmx::setEndpoint( 'SmartSearchIndividual' )
-                ->setBody([
-                    'Request' => json_encode( array(
-                        'nomer_id_pefindo' => '3312123007890001'
-                        , 'nama_pefindo' => 'YOGA HERAWAN'
-                        , 'tanggal_lahir_pefindo' => '30-07-1989'
-                        , 'alasan_pefindo' => 'tes dev kartu kredit'
-                    ) )
-                ])
-                ->post( 'form_params' );
-    }
 
     public function listReject(){
     	$header = ['access_token'=> $this->tokenLos];
