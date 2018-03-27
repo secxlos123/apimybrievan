@@ -295,6 +295,8 @@ class KartuKreditController extends Controller{
     	$eform_id = $request['eform_id'];
     	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
 
+
+
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
 
@@ -309,6 +311,9 @@ class KartuKreditController extends Controller{
 		}catch (RequestException $e){
 			return  $e->getMessage();
 		}
+		//update resoinse status jadi pending
+		$updateStatus = EForm::where('id',$eform_id)
+		->update(['response_status'=>'pending']);
 
 		$body = $res->getBody();
 		$obj = json_decode($body);
@@ -360,7 +365,7 @@ class KartuKreditController extends Controller{
     	$pn = $req['handphone'];
     	$apregno = $req['apRegno'];
     	$code = $this->generateSmsCode();
-    	$message = 'Kode unik anda adalah '.$code.' \. Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
+    	$message = 'Kode unik anda adalah '.$code.' . Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
 
     	//save code ke kredit details
     	$updateCode = KartuKredit::where('appregno',$apregno)->update([
