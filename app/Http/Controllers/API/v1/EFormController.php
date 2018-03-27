@@ -131,7 +131,7 @@ class EFormController extends Controller
             }
             return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
         }
-        
+
     }
 
 	public function php_ini(){
@@ -247,7 +247,7 @@ class EFormController extends Controller
             $status= 'Kredit Ditolak';
         }
         if( $eform[0]['is_approved'] && $customer[0]['is_verified'] ) {
-            $status= 'Proses CLF';
+            $status= 'Proses CLS';
         }
         if( $eform[0]['ao_id'] ) {
             $status= 'Disposisi Pengajuan';
@@ -499,6 +499,19 @@ class EFormController extends Controller
 
                     $baseRequest['id_foto'] = $id;
 
+                    //create eform
+                    $kk = new KartuKredit();
+                    //insert ke table eform
+                    $eformCreate = $kk->createEform($baseRequest);
+                    $eformId = $eformCreate['id'];
+                    \Log::info("===========create eform==========");
+                    //insert ke table kartu_kredit_details
+                    $baseRequest['eform_id'] = $eformId;
+                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
+                    \Log::info("========crate kk details=============");
+                    \Log::info($eformCreate);
+
+
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
@@ -514,7 +527,6 @@ class EFormController extends Controller
                     }catch (RequestException $e){
                         return response()->error([
                             'responseCode'=>'01',
-
                             'responseMessage'=> $e->getMessage()
                         ],400);
                     }
@@ -525,6 +537,9 @@ class EFormController extends Controller
 
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
+                        $updateEform = EForm::where('id',$eformId)->update([
+                            'prescreening_status'=>3
+                        ]);
 
                         return response()->json([
                             'responseCode' => '01',
@@ -533,17 +548,6 @@ class EFormController extends Controller
                     }
 
                     //berhasil lewat dedup
-
-                    $kk = new KartuKredit();
-                    //insert ke table eform
-                    $eformCreate = $kk->createEform($baseRequest);
-                    $eformId = $eformCreate['id'];
-                    \Log::info("===========create eform==========");
-                    //insert ke table kartu_kredit_details
-                    $baseRequest['eform_id'] = $eformId;
-                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
-                    \Log::info("========crate kk details=============");
-                    \Log::info($eformCreate);
 
                     DB::commit();
 
@@ -568,25 +572,25 @@ class EFormController extends Controller
 			else if ( $request->product_type == 'briguna' ) {
             \Log::info("=======================================================");
 				$user_idsss = DB::table('customer_details')
-							 ->select(DB::raw('customer_details.nik'))
-							 ->groupBy('customer_details.nik')
+							 ->select(DB::raw('customer_details.user_id'))
+							 ->groupBy('customer_details.user_id')
 							 ->where('customer_details.nik', $request->nik)
 							 ->get();
-				$user_idsss = $validasis->toArray();
-				$user_idsss = json_decode(json_encode($validasis), True);
-				
+				$user_idsss = $user_idsss->toArray();
+				$user_idsss = json_decode(json_encode($user_idsss), True);
 				$validasi_eform = 'false';
 				if(!empty($user_idsss)){
 					$hasil = DB::table('eforms')
-						 ->select(DB::raw('eforms.product_type,eforms."IsFinish"'))
-						 ->groupBy('eforms.product_type','eforms."IsFinish"')
-						 ->where('eforms.user_id', $user_idsss)
+						 ->select(DB::raw('eforms."product_type",eforms."IsFinish"'))
+						 ->groupBy(DB::raw('eforms."product_type",eforms."IsFinish"'))
+						 ->where('eforms.user_id', $user_idsss[0])
 						 ->get();
 						$hasil = $hasil->toArray();
 						$hasil = json_decode(json_encode($hasil), True);
+						$c = count($hasil)-1;
 						if(empty($hasil)){
 							$validasi_eform = 'true';
-						}elseif(!empty($hasil)&&$hasil['IsFinish']=='true'&&$hasil['product_type']=='briguna'){
+						}elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'&&$hasil[$c]['product_type']=='briguna'){
 							if($hasil['product_type']=='briguna'){
 								if($hasil['IsFinish']=='true'){
 								$validasi_eform = 'true';
@@ -596,6 +600,7 @@ class EFormController extends Controller
 				}
             /* BRIGUNA */
 				if($validasi_eform=='true'){
+					$baseRequest['IsFinish'] = 'false';
 					$data_new['branch']=$request->input('branch_id');
 						$listExisting = $this->ListBranch($data_new);
 /* 					  if ( count(apiPdmToken::all()) > 0 ) {
@@ -736,14 +741,14 @@ class EFormController extends Controller
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
-				
+
 			 } else {
                     $dataEform =  EForm::where('nik', $request->nik)->get();
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
                         'contents' => $dataEform
                     ], 422 );
-                }	
+                }
                     \Log::info($kpr);
         }
 		else {
@@ -910,6 +915,9 @@ class EFormController extends Controller
             $baseRequest['pinca_note'] = $request->has('pinca_note') ? $request->pinca_note : 'Tidak Ada Note';
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
+            if (isset($request->tgl_disposisi)) {
+                $baseRequest['tgl_disposisi'] = $request->tgl_disposisi;
+            }
 
             $eform->update( $baseRequest );
 

@@ -43,9 +43,13 @@ class TrackingController extends Controller
                         when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
+						when eforms.status_eform = 'Approval' then 'Disetujui Briguna'
+						when eforms.status_eform = 'Disbursed' then 'Disbursed'
                         when visit_reports.id is not null and eforms.product_type='kpr' then 'Proses Analisa Pengajuan'
                         when eforms.ao_id is not null then 'Pengajuan Diterima'
-                        else 'Pengajuan Kredit' end as status
+                        else
+						(case when eforms.product_type='briguna' and eforms.status_eform is not null then 'Menunggu Putusan' else 	'Pengajuan Kredit' end)
+						 end as status
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
 					->leftJoin('kpr', function($join)
@@ -59,15 +63,25 @@ class TrackingController extends Controller
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
 						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                    ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
-                    ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+					->leftJoin('developers', function($join)
+                         {
+							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
+					->leftJoin('visit_reports', function($join)
+                         {
+							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
+                    //->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
+                    //->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
                     ->where( "eforms.user_id", $user->id )
                     ->paginate( $request->input( 'limit' ) ?: 10 );
 
             }
 
             else if( $user->inRole('developer-sales') ) {
-                
+
                     $eforms = \DB::table('eforms')->selectRaw("eforms.id
                     , eforms.ao_name as ao
                     , concat(users.first_name, ' ', users.last_name) as nama_pemohon
@@ -106,8 +120,16 @@ class TrackingController extends Controller
 							 $join->on('briguna.eform_id', '=', 'eforms.id');
 						 })
                     //->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                    ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
-                    ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+                ->leftJoin('developers', function($join)
+                         {
+							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
+					->leftJoin('visit_reports', function($join)
+                         {
+							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
                     ->where( "eforms.sales_dev_id", $user->id )
                     ->where(function($item) use (&$request){
                         if($request->has('status'))
@@ -153,27 +175,71 @@ class TrackingController extends Controller
 
             }
         }
-            if( $request->header('pn') ) {
-                $statusQuery = "case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak' when eforms.status_eform = 'Approval1' then 'Kredit Disetujui' when eforms.status_eform = 'Approval2' then 'Rekontes Kredit' when eforms.is_approved = true then 'Proses CLF' when visit_reports.id is not null then 'Prakarsa' when eforms.ao_id is not null then 'Disposisi Pengajuan' else 'Pengajuan Kredit' end";
 
+            if( $request->header('pn') ) {
+                $statusQuery = "case when (eforms.is_approved = false and eforms.recommended = true) or eforms.status_eform = 'Rejected' then 'Kredit Ditolak'
+				when eforms.status_eform = 'Approval1' then 'Kredit Disetujui'
+				when eforms.status_eform = 'Approval2' then 'Rekontes Kredit'
+				when eforms.is_approved = true then 'Proses CLS' when visit_reports.id is not null then 'Prakarsa'
+				when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
+                when eforms.is_approved = true then 'Proses Analisa Pengajuan'
+				when eforms.status_eform = 'Approval' then 'Disetujui Briguna'
+				when eforms.status_eform = 'Disbursed' then 'Disbursed'
+				when eforms.ao_id is not null and eforms.product_type='kpr' then 'Disposisi Pengajuan'
+				else
+				(case when eforms.product_type='briguna'  and eforms.status_eform is not null then 'MenungguPutusan' else 	'Pengajuan Kredit' end)
+				end";
                 $eforms = \DB::table('eforms')->selectRaw("eforms.id
                 , eforms.ao_name as ao
                 , concat(users.first_name, ' ', users.last_name) as nama_pemohon
-                , developers.company_name as developer_name
-                , kpr.property_item_name as property_name
+                , case when eforms.product_type='kpr' then developers.company_name
+                      else ''
+                      end as developer_name
+                 , case when eforms.product_type='kpr' then kpr.property_item_name
+                      else ''
+                      end as property_name
                 , eforms.product_type as product_type
                 , eforms.ref_number as ref_number
                 , eforms.prescreening_status
                 , date(eforms.created_at) as tanggal_pengajuan
-                , kpr.request_amount as jumlah_pengajuan
+                , case when eforms.product_type='kpr' then kpr.request_amount
+                      else  briguna.request_amount
+                      end as jumlah_pengajuan
                 , " . $statusQuery . " as status
                 ")
                 ->leftJoin("users", "users.id", "=", "eforms.user_id")
-                ->leftJoin("kpr", "kpr.eform_id", "=", "eforms.id")
-                ->leftJoin("developers", "developers.user_id", "=", "kpr.developer_id")
-                ->leftJoin("visit_reports", "eforms.id", "=", "visit_reports.eform_id")
+				->leftJoin('kpr', function($join)
+                         {
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+							 $join->on('kpr.eform_id', '=', 'eforms.id');
+						 })
+				->leftJoin('briguna', function($join)
+                         {
+							 $join->on('eforms.product_type', '=', DB::raw("'briguna'"));
+							 $join->on('briguna.eform_id', '=', 'eforms.id');
+						 })
+                ->leftJoin('developers', function($join)
+                         {
+							 $join->on('developers.user_id', '=', 'kpr.developer_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
+					->leftJoin('visit_reports', function($join)
+                         {
+							 $join->on('eforms.id', '=', 'visit_reports.eform_id');
+							 $join->on('eforms.product_type', '=', DB::raw("'kpr'"));
+						 })
                 ->where( "eforms.ao_id", $request->header('pn') )
-                ->where( function($item) use (&$request, $statusQuery) {
+				->where( function($item) use (&$request) {
+                    if($request->has('search')){
+                        $lowerSearch = '%' . strtolower($request->input('search')) . '%';
+                        $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
+                        $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'ilike', $lowerSearch);
+                    }
+				})
+				->where( function($item) use (&$request, $statusQuery) {
                     if($request->has('status')){
                         if ( $request->input('status') != "All" ) {
                             $status = 'Pengajuan Kredit';
@@ -184,28 +250,23 @@ class TrackingController extends Controller
                             } elseif($request->input('status') == "Rekomend") {
                                 $status = 'Pengajuan Kredit';
                             } elseif($request->input('status') == "Submit") {
-                                $status = 'Proses CLF';
+                                $status = 'Proses CLS';
                             } elseif($request->input('status') == "Initiate") {
                                 $status = 'Prakarsa';
                             } elseif($request->input('status') == "Approval1") {
                                 $status = 'Kredit Disetujui';
                             } elseif($request->input('status') == 'Approval2') {
                                 $status = 'Rekontes Kredit';
+                            }elseif($request->input('status') == 'Disbursed') {
+                                $status = 'Disbursed';
+                            }elseif($request->input('status') == 'MenungguPutusan') {
+                                $status = 'MenungguPutusan';
                             }
 
-                            $item->whereRaw($statusQuery . " = '" . $status . "'");
+                            $item->whereRaw('('.$statusQuery . " = '" . $status . "')");
                         }
                     }
-
-                    if($request->has('search')){
-                        $lowerSearch = '%' . strtolower($request->input('search')) . '%';
-                        $item->where(\DB::raw('LOWER(users.first_name)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(users.last_name)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(kpr.property_item_name)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(eforms.product_type)'), 'ilike', $lowerSearch);
-                        $item->Orwhere(\DB::raw('LOWER(eforms.ref_number)'), 'ilike', $lowerSearch);
-                    }
-                })
+              })
                 ->paginate( $request->input( 'limit' ) ?: 10 );
         }
         \Log::info($eforms);

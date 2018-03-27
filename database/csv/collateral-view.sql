@@ -46,10 +46,10 @@ CASE WHEN kpr.active_kpr = 3 THEN '>2'
     WHEN kpr.active_kpr = 2 THEN '2'
     WHEN kpr.active_kpr = 1 THEN '1'
     ELSE 'Tidak Ada' END AS active_kpr_preview,
-CASE WHEN (eforms.is_approved = false AND eforms.recommended = true) OR eforms.status_eform = 'Rejected' THEN 'Kredit Ditolak'  
+CASE WHEN (eforms.is_approved = false AND eforms.recommended = true) OR eforms.status_eform = 'Rejected' THEN 'Kredit Ditolak'
     WHEN eforms.status_eform = 'Approval1' THEN 'Kredit Disetujui'
     WHEN eforms.status_eform = 'Approval2' THEN 'Rekontes Kredit'
-    WHEN eforms.is_approved = true THEN 'Proses CLF'
+    WHEN eforms.is_approved = true THEN 'Proses CLS'
     WHEN visit_reports.id is not null THEN 'Prakarsa'
     WHEN eforms.ao_id is not null THEN 'Disposisi Pengajuan'
     ELSE 'Pengajuan Kredit' END AS status_tracking,
@@ -72,8 +72,11 @@ CASE WHEN kpr.status_property::int = 1 THEN 'Baru'
 CASE WHEN kpr.kpr_type_property::int = 1 THEN 'Rumah Tapak'
     WHEN kpr.kpr_type_property::int = 2 THEN 'Rumah Susun/Apartment'
     WHEN kpr.kpr_type_property::int = 3 THEN 'Rumah Toko'
-    ELSE 'Tidak Ada' END AS kpr_type_property_name
-from users
+    ELSE 'Tidak Ada' END AS kpr_type_property_name,
+CASE WHEN eforms.send_clas_date is not null THEN age(eforms.send_clas_date,eforms.created_at::date)
+    ELSE age(eforms.created_at::date) END AS aging
+
+FROM users
 LEFT JOIN customer_details ON customer_details.user_id = users.id
 LEFT JOIN eforms ON eforms.user_id = users.id
 LEFT JOIN kpr ON kpr.eform_id = eforms.id
@@ -81,4 +84,9 @@ LEFT JOIN visit_reports ON visit_reports.eform_id = eforms.id
 LEFT JOIN collaterals ON collaterals.property_id = kpr.property_id
 WHERE eforms.id is not null AND collaterals.id is not null AND visit_reports.id is not null
 GROUP BY users.id , customer_details.id , eforms.id , kpr.id , visit_reports.id , collaterals.id
-ORDER BY collaterals.created_at
+ORDER BY CASE WHEN eforms.status_eform in ('Rejected') THEN 5
+        WHEN collaterals.status in ('ditolak') THEN 4
+        WHEN eforms.status_eform in ('Approval2', 'Approval1', 'approved') THEN 3
+        WHEN collaterals.staff_id is not null THEN 2
+        ELSE 1 END,
+        eforms.created_at ASC;

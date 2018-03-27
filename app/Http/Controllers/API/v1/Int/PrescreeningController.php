@@ -138,12 +138,16 @@ class PrescreeningController extends Controller
      */
     public function update( Request $request, $prescreening )
     {
+        // Get User Login
+        $user_login = \RestwsHc::getUser();
         $eform = EForm::findOrFail( $prescreening );
         $waiting = false;
 
         $updateData = [
             'selected_sicd' => $request->input('select_sicd')
             , 'selected_dhn' => $request->input('select_dhn')
+            , 'prescreening_name' => $user_login['name']
+            , 'prescreening_position' => $user_login['position']
         ];
 
         if ( $request->has('select_individual_pefindo') || $request->has('select_couple_pefindo') ) {

@@ -92,10 +92,10 @@ return [
 		'sqlsrv_prod' => [
             'driver' => 'sqlsrv',
             'host' => env('DB_HOST_LAS_PROD', '172.21.53.70'),
-            'database' => env('DB_DATABASE_LAS', 'forge'),
-            'port' => env('DB_PORT_LAS', '1433'),
-            'username' => env('DB_USERNAME_LAS', 'forge'),
-            'password' => env('DB_PASSWORD_LAS', ''),
+            'database' => env('DB_DATABASE_LAS_PROD', 'forge'),
+            'port' => env('DB_PORT_LAS_PROD', '1433'),
+            'username' => env('DB_USERNAME_LAS_PROD', 'forge'),
+            'password' => env('DB_PASSWORD_LAS_PROD', ''),
             'charset' => 'utf8',
             'prefix' => '',
         ]
