@@ -41,7 +41,7 @@ class EFormRequest extends BaseRequest
                 if( $this->segment(6) == 'disposition' ) {
                     return [
                         'ao_id' => 'required',
-                        'pinca_note' => 'required'
+                        // 'pinca_note' => 'required' // request briguna
                     ];
                 } else if( $this->segment( 6 ) == 'approve' ) {
                     return [

@@ -145,7 +145,7 @@ class MarketingController extends Controller
       ];
 
       $marketings = [];
-      foreach (Marketing::getMarketing($request)->whereIn('pn',$list_pn)->get() as $marketing) {
+      foreach (Marketing::getMarketingBranch($request)->where('marketings.branch',$branch)->get() as $marketing) {
         $marketingActivity = [];
         foreach (MarketingActivity::where('marketing_id', $marketing->id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
@@ -257,9 +257,8 @@ class MarketingController extends Controller
 
       if ($save) {
 
-          pushNotificationCRM($data, 'new_marketing');
           $this->first_activity($request->header('pn'), $save->id, $request);
-
+          pushNotificationCRM($data, 'newMarketing');
           return response()->success([
               'message' => 'Data Marketing berhasil ditambah.',
               'contents' => collect($save)->merge($request->all()),
@@ -314,7 +313,7 @@ class MarketingController extends Controller
         } else {
           $pemasar_name = [];
         }
-
+$marketingActivity=[];
         $id = $request['id'];
         foreach (MarketingActivity::where('marketing_id', $id)->with('marketing')->get() as $activity) {
           $rescheduled = rescheduleActivity::where('activity_id',$activity->id)->count();
@@ -440,7 +439,7 @@ class MarketingController extends Controller
 
             return response()->success([
               'message' => 'Data Marketing berhasil dihapus.',
-              'content' => $deleteRequest
+              'contents' => ["marketing_id" => $mrk_id]
             ], 201);
           }
 

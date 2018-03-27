@@ -3,9 +3,6 @@
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
     Route::get('get-data','KartuKreditController@example');
 
-    
-
-
 
    	Route::get('get-dropdown-info','KartuKreditController@getAllInformation');
 
@@ -17,21 +14,17 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 	Route::get('cek-data-nasabah/{apRegno}','KartuKreditController@cekDataNasabah');
 
-	
-
-	Route::get('/pefindo', 'KartuKreditController@pefindo');
 
 	Route::post('/eform', 'KartuKreditController@eform');
 
 	
 
 	Route::post('/toemail','KartuKreditController@toEmail');
+	Route::post('/tosms', 'KartuKreditController@sendSMS');
+	Route::get('/verifyemail', 'KartuKreditController@checkEmailVerification');
 
 	Route::get('/listreject','KartuKreditController@listReject');
 
-	
-
-	// Route::post('s')
 
 
     Route::group(['middleware' => 'api.auth'], function() {

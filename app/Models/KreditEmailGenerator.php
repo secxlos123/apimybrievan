@@ -179,7 +179,7 @@ class KreditEmailGenerator extends Model{
                         <td>
                            <form action="'.$host.'">
                               <label for="email">Verification Code:</label>
-                              <input type="text" class="form-control" id="email" placeholder="Enter Verification Code" name="email">
+                              <input type="text" class="form-control" id="email" placeholder="Enter Verification Code" name="code">
                               <input type="hidden" name="apregno" value="'.$apregno.'">
                               <button type="submit" class="btn btn-default">Submit</button>
                            </form>

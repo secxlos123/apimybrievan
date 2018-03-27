@@ -47,7 +47,11 @@ class GeneratePefindoJob implements ShouldQueue
         if ( $this->eform->delay_prescreening == 1 && ENV('DELAY_PRESCREENING', false) ) {
             $this->eform->update(
                 array_merge(
-                    [ 'delay_prescreening' => 2 ]
+                    [
+                        'delay_prescreening' => 2
+                        , 'prescreening_name' => $this->eform->ao_name
+                        , 'prescreening_position' => $this->eform->ao_position
+                    ]
                     , generate_data_prescreening(
                         $this->eform
                         , $this->request
@@ -66,10 +70,8 @@ class GeneratePefindoJob implements ShouldQueue
             }
 
             $detail = $this->eform;
+            generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
 
-            if ( !\File::exists( public_path( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) ) {
-                generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
-            }
         } else {
             $message = 'Prescreening sudah pernah di lakukan';
 

@@ -78,10 +78,16 @@ class KreditRequest extends BaseRequest{
 					// 'EmergencyNoTlp'=>'required',
     				
     				];
-    			}else if($this->segment(5) == 'updateverifikasikredit'){
+    			}else if($this->segment(5) == 'update-data-los'){ // verifikasi
     				return [
 						'PersonalNIK' => 'required',
-	    				'PersonalAlamatDomisili' => 'required',
+	    				'PersonalAlamatDomisili' => 'required|max:255',
+	    				'PersonalAlamatDomisili2' =>'max:255', 
+						'PersonalAlamatDomisili3' =>'max:255',
+						'Camat' => '',
+						'Lurah' => '',
+						'Rt'=> '',
+						'Rw' => '',
 	    				'PersonalName' => 'required',
 	    				'PersonalTanggalLahir'=>'required',
 	    				'PersonalTempatLahir'=>'required',
@@ -116,32 +122,22 @@ class KreditRequest extends BaseRequest{
 						'EmergencyAlamat'=>'required',
 						'EmergencyKota'=>'required',
 						'EmergencyNoTlp'=>'required',
-						'SubBidangUsaha'=>'required',
-	    				'apregno'=>'required',
+						'subBidangUsaha'=>'required',
+						'eform_id'=>'required',
+	    				// 'apregno'=>'required',
     				];
     			}else if($this->segment(5) == 'putusan-pinca'){
     				return([
     					'msg'=>'',
     					'apRegno'=>'required',
     					'putusan'=>'required|in:approved,rejected',
-    					'by' => 'required',
-    					'stg' => 'required|in:APRV',
+    					'by' => 'required_if:putusan,approved',
 						'userId' =>'required',
-						'tc' => 'required',
-						'cpId'=> 'required',
-						'networkId'=> 'required',
-						'productId'=>'required',
-						'cardTypeId'=>'required|numeric|digits:3',
-						'plasticId'=>'required',
-						'cpAprLimit'=>'required',
-						'potCode'=>'required',
-						'wvCode'=>'required',
-						'apBillCycle'=>'required',
-						'apImigincator'=>'required',
-						'cpSeq'=>'required',
-						'aprStatus'=>'required',
-						'mode'=>'required',
-						'fwd'=>''
+						'cpAprLimit'=>'required_if:putusan,approved',
+						'potCode'=>'required_if:putusan,approved',
+						'wvCode'=>'required_if:putusan,approved',
+						'apBillCycle'=>'required_if:putusan,approved',
+						'rjCode'=>'required_if:putusan,rejected',
     				]);
     			}
     			
