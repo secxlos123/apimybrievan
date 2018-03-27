@@ -363,7 +363,9 @@ class KartuKreditController extends Controller{
 
     public function sendSMS(Request $req){
     	$pn = $req['handphone'];
-    	$apregno = $req['apRegno'];
+    	$eformid = $req['eform_id'];
+		$kk = KartuKredit::where('eform_id',$eformid)->first();
+    	$apregno = $kk['appregno'];
     	$code = $this->generateSmsCode();
     	$message = 'Kode unik anda adalah '.$code.' . Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
 
@@ -396,10 +398,11 @@ class KartuKreditController extends Controller{
     public function toEmail(Request $req){
     	//email, subject, message
     	$email = $req['email'];
+    	$eformid = $req['eform_id'];
 
     	// $message = $req['message'];
-
-    	$apregno = $req['apRegno'];
+    	$kk = KartuKredit::where('eform_id',$eformid)->first();
+    	$apregno = $kk['appregno'];
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
@@ -446,10 +449,12 @@ class KartuKreditController extends Controller{
     		$eformid = $data['eform_id'];
     		//update ke eform
     		$updateEform = $this->verify($eformid);
-    		return response()->json([
-    			'responseCode'=>'00',
-    			'responseMessage'=>'Kode Benar'
-    		]);
+
+    		return "Email telah tervirifikasi";
+    		// return response()->json([
+    		// 	'responseCode'=>'00',
+    		// 	'responseMessage'=>'Kode Benar'
+    		// ]);
     	}else{
     		return response()->json([
     			'responseCode'=>'01',
