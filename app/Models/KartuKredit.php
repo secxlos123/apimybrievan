@@ -85,7 +85,6 @@ class KartuKredit extends Model
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
 
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
-             
 
             $personalJenisKelamin = $req['PersonalJenisKelamin'];
             $personalStatusTempatTinggal = $req['PersonalStatusTempatTinggal'];
@@ -101,7 +100,6 @@ class KartuKredit extends Model
 
             $personalNoTlpRumah = $req['PersonalNoTlpRumah'];
             $personalEmail= $req['PersonalEmail'];
-            
             
             $emergencyNama = $req['EmergencyNama'];
             $emergencyHubunganKeluarga = $req['EmergencyHubunganKeluarga'];
@@ -129,7 +127,7 @@ class KartuKredit extends Model
                 $jobCamat = $req['JobCamat'];
                 $jobLurah = $req['JobLurah'];
                 $jobRt = $req['JobRt'];
-                $jobRw = $req['jobRw'];
+                $jobRw = $req['JobRw'];
 
                 $jobBidangUsaha = $req['JobBidangUsaha'];
                 $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
@@ -145,7 +143,6 @@ class KartuKredit extends Model
                 $financeGajiPertahun = $req['FinanceGajiPertahun'];
                 $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
                 $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
-
 
             }else{
                 $cardType = $req['CardType'];

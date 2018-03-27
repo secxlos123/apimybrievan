@@ -499,6 +499,19 @@ class EFormController extends Controller
 
                     $baseRequest['id_foto'] = $id;
 
+                    //create eform
+                    $kk = new KartuKredit();
+                    //insert ke table eform
+                    $eformCreate = $kk->createEform($baseRequest);
+                    $eformId = $eformCreate['id'];
+                    \Log::info("===========create eform==========");
+                    //insert ke table kartu_kredit_details
+                    $baseRequest['eform_id'] = $eformId;
+                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
+                    \Log::info("========crate kk details=============");
+                    \Log::info($eformCreate);
+
+
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
@@ -514,7 +527,6 @@ class EFormController extends Controller
                     }catch (RequestException $e){
                         return response()->error([
                             'responseCode'=>'01',
-
                             'responseMessage'=> $e->getMessage()
                         ],400);
                     }
@@ -525,6 +537,9 @@ class EFormController extends Controller
 
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
+                        $updateEform = EForm::where('id',$eformId)->update([
+                            'prescreening_status'=>3
+                        ]);
 
                         return response()->json([
                             'responseCode' => '01',
@@ -533,17 +548,6 @@ class EFormController extends Controller
                     }
 
                     //berhasil lewat dedup
-
-                    $kk = new KartuKredit();
-                    //insert ke table eform
-                    $eformCreate = $kk->createEform($baseRequest);
-                    $eformId = $eformCreate['id'];
-                    \Log::info("===========create eform==========");
-                    //insert ke table kartu_kredit_details
-                    $baseRequest['eform_id'] = $eformId;
-                    $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
-                    \Log::info("========crate kk details=============");
-                    \Log::info($eformCreate);
 
                     DB::commit();
 
@@ -574,7 +578,6 @@ class EFormController extends Controller
 							 ->get();
 				$user_idsss = $user_idsss->toArray();
 				$user_idsss = json_decode(json_encode($user_idsss), True);
-
 				$validasi_eform = 'false';
 				if(!empty($user_idsss)){
 					$hasil = DB::table('eforms')
