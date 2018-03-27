@@ -124,6 +124,13 @@ class KartuKredit extends Model
 
                 $rw = $req['Rw'];
 
+                $jobAlamatKantor2 = $req['JobAlamatKantor2'];
+                $jobAlamatKantor3 = $req['JobAlamatKantor3'];
+                $jobCamat = $req['JobCamat'];
+                $jobLurah = $req['JobLurah'];
+                $jobRt = $req['JobRt'];
+                $jobRw = $req['jobRw'];
+
                 $jobBidangUsaha = $req['JobBidangUsaha'];
                 $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
                 $jobStatusPekerjaan = $req['JobStatusPekerjaan'];
@@ -221,6 +228,13 @@ class KartuKredit extends Model
             $informasiLos['Lurah']= $lurah;
             $informasiLos['Rt'] = $rt;
             $informasiLos['Rw'] = $rw;
+
+            $informasiLos['JobAlamatKantor2'] = $jobAlamatKantor2;
+            $informasiLos['JobAlamatKantor3'] = $jobAlamatKantor3;
+            $informasiLos['JobCamat'] = $jobCamat;
+            $informasiLos['JobLurah'] = $jobLurah;
+            $informasiLos['JobRt'] = $jobRt;
+            $informasiLos['JobRw'] = $jobRw;
             
            
            
