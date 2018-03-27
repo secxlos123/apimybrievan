@@ -46,10 +46,10 @@ CASE WHEN kpr.active_kpr = 3 THEN '>2'
     WHEN kpr.active_kpr = 2 THEN '2'
     WHEN kpr.active_kpr = 1 THEN '1'
     ELSE 'Tidak Ada' END AS active_kpr_preview,
-CASE WHEN (eforms.is_approved = false AND eforms.recommended = true) OR eforms.status_eform = 'Rejected' THEN 'Kredit Ditolak'  
+CASE WHEN (eforms.is_approved = false AND eforms.recommended = true) OR eforms.status_eform = 'Rejected' THEN 'Kredit Ditolak'
     WHEN eforms.status_eform = 'Approval1' THEN 'Kredit Disetujui'
     WHEN eforms.status_eform = 'Approval2' THEN 'Rekontes Kredit'
-    WHEN eforms.is_approved = true THEN 'Proses CLF'
+    WHEN eforms.is_approved = true THEN 'Proses CLS'
     WHEN visit_reports.id is not null THEN 'Prakarsa'
     WHEN eforms.ao_id is not null THEN 'Disposisi Pengajuan'
     ELSE 'Pengajuan Kredit' END AS status_tracking,
