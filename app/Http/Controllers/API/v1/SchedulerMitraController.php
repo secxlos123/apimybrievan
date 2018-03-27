@@ -111,7 +111,7 @@ class SchedulerMitraController extends Controller
 		//----------prod-----------------------
 				$servernyalas = '';
 			  $host = env('APP_URL');
-			  if($host == 'http://api.dev.net/' || $host='http://localhost'){	
+			  if($host == 'http://api.dev.net/'){	
 					$servernyalas = 'sqlsrv';
 			}else{
 					$servernyalas = 'sqlsrv_prod';
@@ -209,6 +209,9 @@ class SchedulerMitraController extends Controller
 					$alamatinstansi = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI));
 					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI2));
 					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI3));
+					$idinstansibri = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ID_INSTANSI_BRI));
+					$telephone_instansi_bri = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->TELEPON_INSTANSI));
+					$rating_instansi_bri = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->RATING_INSTANSI));
 					
 					if(strlen($kode_uker)=='5'){
 						$kode_uker = $kode_uker;
@@ -225,10 +228,10 @@ class SchedulerMitraController extends Controller
 										} 
 										$kode_uker = $branchut;	
 					}
-					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
+					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$idinstansibri."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
 					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',
-					'".$alamatinstansi."','".$alamatinstansi3."','".$data->TELEPON_INSTANSI."','".$data->RATING_INSTANSI."',
+					'".$alamatinstansi."','".$alamatinstansi3."','".$telephone_instansi_bri."','".$rating_instansi_bri."',
 					'".$lembagapemeringkat."','".$tglpemeringkat."','".$gopublic."',
 					'".$noijinprinsip."','".$dateupdate."','".$updateby."','".$acctype."','".$alamatinstansi2."');");
 				}catch(Exception $e) {

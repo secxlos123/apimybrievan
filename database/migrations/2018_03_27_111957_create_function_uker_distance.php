@@ -13,7 +13,8 @@ class CreateFunctionUkerDistance extends Migration
      */
     public function up()
     {
-        DB::unprepared("CREATE OR REPLACE FUNCTION distance_uker(i float8,j float8, k INT)  BEGIN  
+        DB::unprepared("CREATE OR REPLACE FUNCTION distance_uker(i float8,j float8, k INT )  
+        	RETURNS TABLE(kode_uker TEXT) AS $$
 			DECLARE
 			 var_r record;
 			BEGIN
@@ -35,7 +36,7 @@ class CreateFunctionUkerDistance extends Migration
 						  RETURN NEXT;
 						END LOOP;
 			END
-		END");
+		$$ LANGUAGE plpgsql");
     }
 
     /**
