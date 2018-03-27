@@ -539,7 +539,7 @@ class EFormController extends Controller
                         //langsung merah. update eform.
                         $updateEform = EForm::where('id',$eformId)->update([
                             'prescreening_status'=>3
-                        ])
+                        ]);
 
                         return response()->json([
                             'responseCode' => '01',
