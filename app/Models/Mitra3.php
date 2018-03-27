@@ -33,15 +33,15 @@ class Mitra3 extends Authenticatable  {
 									$branchcis = $BRANCH_CODE;
 									$k = strlen($BRANCH_CODE);
 									$branchut2 = '';
-									try{
+									$p = '';
 									for($l=$k;$l<5;$l++){
 										if(substr($BRANCH_CODE,0,$l+1)!='0'){
 											$branchut2 = 'lempar';
+											$p = $l;
+											goto tangkep;
 										}
 									}
-									}catch($branchut2=='lempar'){
-										$branchcis2 = substr($BRANCH_CODE,$l,5);
-									}
+									tangkep : $branchcis2 = substr($BRANCH_CODE,$l,5);
 									/* for($i=0;$i<5;$i++){
 										$cek = substr($BRANCH_CODE,$i,1);
 										if($cek!=0){
