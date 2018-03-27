@@ -84,6 +84,9 @@ class KartuKredit extends Model
             $personalTanggalLahir = $req['PersonalTanggalLahir'];
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
 
+            $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
+             
+
             $personalJenisKelamin = $req['PersonalJenisKelamin'];
             $personalStatusTempatTinggal = $req['PersonalStatusTempatTinggal'];
             $personalKewarganegaraan = $req['PersonalKewarganegaraan'];
@@ -113,6 +116,14 @@ class KartuKredit extends Model
                 $appNumber = $req['appNumber'];
                 $subBidangUsaha = $req['subBidangUsaha'];
 
+                $personalAlamatDomisili2 = $req['PersonalAlamatDomisili2'];
+                $personalAlamatDomisili3 = $req['PersonalAlamatDomisili3'];
+                $camat = $req['Camat'];
+                $lurah = $req['Lurah'];
+                $rt = $req['Rt'];
+
+                $rw = $req['Rw'];
+
                 $jobBidangUsaha = $req['JobBidangUsaha'];
                 $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
                 $jobStatusPekerjaan = $req['JobStatusPekerjaan'];
@@ -127,6 +138,7 @@ class KartuKredit extends Model
                 $financeGajiPertahun = $req['FinanceGajiPertahun'];
                 $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
                 $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
+
 
             }else{
                 $cardType = $req['CardType'];
@@ -184,24 +196,31 @@ class KartuKredit extends Model
             
         ];
 
-         $informasiLos['JobBidangUsaha'] = $jobBidangUsaha;
-            $informasiLos['JobKategoriPekerjaan'] = $jobKategoriPekerjaan;
-            $informasiLos['JobStatusPekerjaan'] = $jobStatusPekerjaan;
-            $informasiLos['JobTotalPekerja'] = $jobTotalPekerja ;
-            $informasiLos['JobNamaPerusahaan'] = $jobNamaPerusahaan ;
-            $informasiLos['JobPangkat'] = $jobPangkat ;
-            $informasiLos['JobLamaKerjaYY'] = $jobLamaKerjaYY ;
-            $informasiLos['JobLamaKerjaMM'] = $jobLamaKerjaMM ;
-            $informasiLos['JobAlamatKantor'] = $jobAlamatKantor;
-            $informasiLos['JobKodePos'] = $jobKodePos;
-            $informasiLos['FinanceGajiPerbulan'] = $financeGajiPerbulan;
-            $informasiLos['FinanceGajiPertahun'] = $financeGajiPertahun;
-            $informasiLos['FinancePendapatanLainPerbulan'] = $financePendapatanLainPerbulan;
-            $informasiLos['FinanceJumlahTanggungan'] = $financeJumlahTanggungan;
+        $informasiLos['JobBidangUsaha'] = $jobBidangUsaha;
+        $informasiLos['JobKategoriPekerjaan'] = $jobKategoriPekerjaan;
+        $informasiLos['JobStatusPekerjaan'] = $jobStatusPekerjaan;
+        $informasiLos['JobTotalPekerja'] = $jobTotalPekerja ;
+        $informasiLos['JobNamaPerusahaan'] = $jobNamaPerusahaan ;
+        $informasiLos['JobPangkat'] = $jobPangkat ;
+        $informasiLos['JobLamaKerjaYY'] = $jobLamaKerjaYY ;
+        $informasiLos['JobLamaKerjaMM'] = $jobLamaKerjaMM ;
+        $informasiLos['JobAlamatKantor'] = $jobAlamatKantor;
+        $informasiLos['JobKodePos'] = $jobKodePos;
+        $informasiLos['FinanceGajiPerbulan'] = $financeGajiPerbulan;
+        $informasiLos['FinanceGajiPertahun'] = $financeGajiPertahun;
+        $informasiLos['FinancePendapatanLainPerbulan'] = $financePendapatanLainPerbulan;
+        $informasiLos['FinanceJumlahTanggungan'] = $financeJumlahTanggungan;
 
         if ($type == 'update'){
             $informasiLos['appNumber'] = $appNumber;
             $informasiLos['subBidangUsaha'] = $subBidangUsaha;
+
+            $informasiLos['PersonalAlamatDomisili2'] = $personalAlamatDomisili2;
+            $informasiLos['PersonalAlamatDomisili3'] = $personalAlamatDomisili3;
+            $informasiLos['Camat'] =$camat;
+            $informasiLos['Lurah']= $lurah;
+            $informasiLos['Rt'] = $rt;
+            $informasiLos['Rw'] = $rw;
             
            
            
