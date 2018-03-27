@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
     {
         // send email if error
         $applicationPosition = ENV("APPLICATION_POSITION", 'local');
-        if ( $applicationPosition == "production" || $applicationPosition == "development" ) {
+        if ( $applicationPosition == "production" ) {
             if ( ! $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
                 Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
                 {
