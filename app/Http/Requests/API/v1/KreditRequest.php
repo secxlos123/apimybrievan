@@ -78,10 +78,16 @@ class KreditRequest extends BaseRequest{
 					// 'EmergencyNoTlp'=>'required',
     				
     				];
-    			}else if($this->segment(5) == 'update-data-los'){
+    			}else if($this->segment(5) == 'update-data-los'){ // verifikasi
     				return [
 						'PersonalNIK' => 'required',
 	    				'PersonalAlamatDomisili' => 'required',
+	    				'PersonalAlamatDomisili2' =>'', 
+						'PersonalAlamatDomisili3' =>'',
+						'Camat' => '',
+						'Lurah' => '',
+						'Rt'=> '',
+						'Rw' => '',
 	    				'PersonalName' => 'required',
 	    				'PersonalTanggalLahir'=>'required',
 	    				'PersonalTempatLahir'=>'required',
