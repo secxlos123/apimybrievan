@@ -157,7 +157,7 @@ class EForm extends Model implements AuditableContract
                 }
             }
 
-            return 'Proses CLF';
+            return 'Proses CLS';
 
         } elseif( $this->visit_report ) {
             return 'Prakarsa';

@@ -564,7 +564,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
                 , \DB::Raw("
                     case when e.id is null then 'Tidak Ada Pengajuan'
                     when e.is_approved = false and e.recommended = true then 'Kredit Ditolak'
-                    when e.is_approved = true then 'Proses CLF'
+                    when e.is_approved = true then 'Proses CLS'
                     when v.id is not null then 'Prakarsa'
                     when e.ao_id is null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as application_status

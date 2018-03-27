@@ -878,7 +878,7 @@ if (! function_exists('getMessage')) {
             case 'eform_approve_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLF.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLS.',
                 ];
                 break;
             case 'eform_approve_ao':
@@ -896,7 +896,7 @@ if (! function_exists('getMessage')) {
             case 'eform_reject_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLF.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLS.',
                 ];
                 break;
             case 'eform_reject_ao':
