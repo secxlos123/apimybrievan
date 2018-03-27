@@ -441,6 +441,8 @@ class KartuKreditController extends Controller{
     	$apRegno = $request->apRegno;
     	$data = KartuKredit::where('appregno',$apRegno)->first();
     	$correctCode = $data['verification_code'];
+    	log($correctCode);
+    	log($codeVerif);
 
     	if ($codeVerif == $correctCode){
     		$eformid = $data['eform_id'];
