@@ -320,21 +320,10 @@ class KartuKreditController extends Controller{
 		$apregno = $request['appNumber'];
 
 		//update eform response status
-		$updateStatus = EForm::where('id',$eform_id)
-		->update(['response_status'=>'verified']);
-		
-
-		$updatedData = $this->updateUserTable($apregno);
-
-		// $updateLos = User::where('id',$eform_id)
-		// ->update('');
-
-
+		// $updateStatus = EForm::where('id',$eform_id)
+		// ->update(['response_status'=>'verified']);
 		return response()->json($obj);
 
-    }
-    function updateUserTable($apregno){
-    	//ganti semua user
     }
 
     function getApregnoFromKKDetails($eform_id){
@@ -363,9 +352,20 @@ class KartuKreditController extends Controller{
 
     }
 
+    function generateSmsCode(){
+    	return '123456';
+    }
+
     public function sendSMS(Request $req){
     	$pn = $req['handphone'];
-    	$message = 'Kode unik anda adalah '.$req['message'].'\. Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
+    	$apregno = $req['apRegno'];
+    	$code = $this->generateSmsCode();
+    	$message = 'Kode unik anda adalah '.$code.' \. Periksa dan isi kode verifikasi pada field verifikasi yang kami sediakan pada email';
+
+    	//save code ke kredit details
+    	$updateCode = KartuKredit::where('appregno',$apregno)->update([
+    		'verification_code'=>$code
+    	]);
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
@@ -399,7 +399,7 @@ class KartuKreditController extends Controller{
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,'www.google.com');
+    	->sendEmailVerification($dataKredit,$apregno,'api.dev.net/api/v1/int/kk/');
     	\Log::info('======== data kredit =========');
    		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
@@ -421,6 +421,36 @@ class KartuKreditController extends Controller{
     		'responseCode' => '01',
     		'contents' =>$obj
     	]);
+    }
+
+
+    function verify($eform_id){
+    	$updateStatus = EForm::where('id',$eform_id)
+		->update(['response_status'=>'verified']);
+		return true;
+    }
+
+     public function checkEmailVerification(Request $request){
+    	$codeVerif = $request->code;
+    	$apRegno = $request->apRegno;
+    	$data = KartuKredit::where('appregno',$apRegno)->first();
+    	$correctCode = $data['verification_code'];
+
+    	if ($codeVerif == $correctCode){
+    		$eformid = $data['eform_id'];
+    		//update ke eform
+    		$updateEform = $this->verify($eformid);
+
+    		return response()->json([
+    			'responseCode'=>'00',
+    			'responseMessage'=>'Kode Benar'
+    		]);
+    	}else{
+    		return response()->json([
+    			'responseCode'=>'01',
+    			'responseMessage'=>'Kode Salah'
+    		]);
+    	}
     }
 
     // public function checkDedup($nik){
@@ -481,8 +511,8 @@ class KartuKreditController extends Controller{
     			'score'=>$scoring
     		]);
     	}else{
-    		$nametag = $dataEform['image_nametag'];
-    		$kartuBankLain = $dataEform['image_kartu_bank_lain'];
+    		$nametag = $dataKredit['image_nametag'];
+    		$kartuBankLain = $dataKredit['image_kartu_bank_lain'];
 
     		return response()->json([
     			'responseCode'=>'00',
@@ -654,24 +684,7 @@ class KartuKreditController extends Controller{
 			
     }
 
-    public function checkEmailVerification(Request $request){
-    	$codeVerif = $request->code;
-    	$apRegno = $request->apRegno;
-    	$data = KartuKredit::where('appregno',$apRegno)->first();
-    	$correctCode = $data['verification_code'];
-
-    	if ($codeVerif == $correctCode){
-    		return response()->json([
-    			'responseCode'=>'00',
-    			'responseMessage'=>'Kode Benar'
-    		]);
-    	}else{
-    		return response()->json([
-    			'responseCode'=>'01',
-    			'responseMessage'=>'Kode Salah'
-    		]);
-    	}
-    }
+  
 
 }
 
