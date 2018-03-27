@@ -580,7 +580,7 @@ class EFormController extends Controller
 					$hasil = DB::table('eforms')
 						 ->select(DB::raw('eforms."product_type",eforms."IsFinish"'))
 						 ->groupBy(DB::raw('eforms."product_type",eforms."IsFinish"'))
-						 ->where('eforms."user_id"', $user_idsss)
+						 ->where('eforms.user_id', $user_idsss)
 						 ->get();
 						$hasil = $hasil->toArray();
 						$hasil = json_decode(json_encode($hasil), True);
