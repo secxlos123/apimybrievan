@@ -20,7 +20,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 	 * Route for authentication
 	 */
 	// Route::group([ 'prefix' => 'auth' , 'middleware' => 'throttle-custom:7,12' ], function () {
-
+	Route::group([ 'prefix' => 'auth' , 'middleware' => 'throttle-custom:7,12' ], function () {
 		/**
 		 * Route for post request login
 		 */
@@ -30,6 +30,7 @@ Route::group([ 'prefix' => 'v1/eks', 'namespace' => 'API\v1\Eks' ], function() {
 		 * Route for post request register
 		 */
 		Route::post( 'register', 'AuthController@register' );
+	});
 	// });
 
 	/**
