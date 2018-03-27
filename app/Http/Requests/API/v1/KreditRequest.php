@@ -81,9 +81,9 @@ class KreditRequest extends BaseRequest{
     			}else if($this->segment(5) == 'update-data-los'){ // verifikasi
     				return [
 						'PersonalNIK' => 'required',
-	    				'PersonalAlamatDomisili' => 'required',
-	    				'PersonalAlamatDomisili2' =>'', 
-						'PersonalAlamatDomisili3' =>'',
+	    				'PersonalAlamatDomisili' => 'required|max:255',
+	    				'PersonalAlamatDomisili2' =>'max:255', 
+						'PersonalAlamatDomisili3' =>'max:255',
 						'Camat' => '',
 						'Lurah' => '',
 						'Rt'=> '',
