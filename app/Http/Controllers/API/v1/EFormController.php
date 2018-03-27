@@ -574,7 +574,6 @@ class EFormController extends Controller
 							 ->get();
 				$user_idsss = $user_idsss->toArray();
 				$user_idsss = json_decode(json_encode($user_idsss), True);
-
 				$validasi_eform = 'false';
 				if(!empty($user_idsss)){
 					$hasil = DB::table('eforms')
