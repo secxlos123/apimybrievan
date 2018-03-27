@@ -43,6 +43,17 @@ class Mitra4 extends Authenticatable  {
 								$branchcis ='';
 								if(strlen($BRANCH_CODE)=='5'){
 									$branchcis = $BRANCH_CODE;
+									$k = strlen($BRANCH_CODE);
+									$branchut2 = '';
+									$p = '';
+									for($l=$k;$l<5;$l++){
+										if(substr($BRANCH_CODE,0,$l+1)!='0'){
+											$branchut2 = 'lempar';
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis2 = substr($BRANCH_CODE,$p,5);
 									/* for($i=0;$i<5;$i++){
 										$cek = substr($BRANCH_CODE,$i,1);
 										if($cek!=0){
@@ -61,6 +72,7 @@ class Mitra4 extends Authenticatable  {
 											}
 										} 
 										$branchcis = $branchut;	
+										$branchcis2 = $BRANCH_CODE;
 								}
 								\Log::info($branchcis);
 						 }
