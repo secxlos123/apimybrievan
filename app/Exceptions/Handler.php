@@ -51,13 +51,15 @@ class Handler extends ExceptionHandler
     {
         // send email if error
         $applicationPosition = ENV("APPLICATION_POSITION", 'local');
-        if ( $applicationPosition == "production" || $applicationPosition == "development" ) {
-            Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
-            {
-                $message->subject(ENV("APPLICATION_POSITION", 'development') . " API myBRI Error Exception");
-                $message->from("error@mybri.bri.co.id", 'Error Exception');
-                $message->to("rachmat.ramadhan@wgs.co.id");
-            });
+        if ( $applicationPosition == "production" ) {
+            if ( ! $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
+                {
+                    $message->subject(ENV("APPLICATION_POSITION", 'development') . " API myBRI Error Exception");
+                    $message->from("error@mybri.bri.co.id", 'Error Exception');
+                    $message->to("rachmat.ramadhan@wgs.co.id");
+                });
+            }
         }
 
         \DB::rollback();

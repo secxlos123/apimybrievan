@@ -61,8 +61,8 @@ class Marketing extends Model
             ->orderBy('marketings.id', 'asc')
             ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
             ->select('marketings.*','marketing_delete_requests.deleted')
+            ->where( 'marketings.pn', '=', $request->header('pn'))
             ->where( function($marketing) use($request){
-                $marketing->where( 'marketings.pn', '=', $request->header('pn'));
                 $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
                 $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
             })
