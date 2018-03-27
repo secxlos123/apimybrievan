@@ -297,12 +297,14 @@ class Customer extends User
     {
         $stat_approved = '';
         $eform = $this->eforms()->select(['is_approved', 'IsFinish', 'product_type'])->first();
-        if ( strtolower($eform->product_type) == "briguna" ) {
-            $stat_approved = $eform->IsFinish;
+        if ( $eform ) {
+            if ( strtolower($eform->product_type) == "briguna" ) {
+                $stat_approved = $eform->IsFinish;
 
-        } else {
-            $stat_approved = $eform->is_approved;
+            } else {
+                $stat_approved = $eform->is_approved;
 
+            }
         }
         return $stat_approved;
     }
