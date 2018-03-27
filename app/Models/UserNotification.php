@@ -411,14 +411,14 @@ class UserNotification extends Model
 				// Pengajuan di terima oleh MP/Pinca di myBRI
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' telah direkomendasi [' . $pincaPosition . '] untuk diproses lebih lanjut oleh CLF' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' telah direkomendasi [' . $pincaPosition . '] untuk diproses lebih lanjut oleh CLS' );
 				break;
 
 			case 'App\Notifications\RejectEFormInternal':
 				// Pengajuan di tolak oleh MP/Pinca
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLF' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLS' );
 				break;
 
 			case 'App\Notifications\RejectEFormCustomer':
@@ -426,7 +426,7 @@ class UserNotification extends Model
 				// dari MP/Pinca
 				// ke nasabah
 				$append = array(
-					'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLF'
+					'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLS'
 					, 'message_external' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
 				);
 				break;
@@ -469,7 +469,7 @@ class UserNotification extends Model
 				// Pengajuan di tolak di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF' );
+				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLS' );
 				break;
 
 			case 'App\Notifications\RejectEFormCLASCustomer':
@@ -477,7 +477,7 @@ class UserNotification extends Model
 				// dari CLAS
 				// ke nasabah
 				$append = array(
-					'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF'
+					'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLS'
 					, 'message_external' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut'
 				);
 				break;
@@ -598,7 +598,7 @@ class UserNotification extends Model
 				// Submit LKN recontest
 				// dari CLAS
 				// ke AO
-				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF' );
+				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLS' );
 				break;
 
 			case 'App\Notifications\CollateralDisposition':

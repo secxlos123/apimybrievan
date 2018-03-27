@@ -131,7 +131,7 @@ class EFormController extends Controller
             }
             return response()->success(['message' => 'Sukses', 'contents' => $generateEform ]);
         }
-        
+
     }
 
 	public function php_ini(){
@@ -247,7 +247,7 @@ class EFormController extends Controller
             $status= 'Kredit Ditolak';
         }
         if( $eform[0]['is_approved'] && $customer[0]['is_verified'] ) {
-            $status= 'Proses CLF';
+            $status= 'Proses CLS';
         }
         if( $eform[0]['ao_id'] ) {
             $status= 'Disposisi Pengajuan';
@@ -574,7 +574,7 @@ class EFormController extends Controller
 							 ->get();
 				$user_idsss = $user_idsss->toArray();
 				$user_idsss = json_decode(json_encode($user_idsss), True);
-				
+
 				$validasi_eform = 'false';
 				if(!empty($user_idsss)){
 					$hasil = DB::table('eforms')
@@ -738,14 +738,14 @@ class EFormController extends Controller
                     'message' => 'Data e-form briguna berhasil ditambahkan.',
                     'contents' => $kpr
                 ];
-				
+
 			 } else {
                     $dataEform =  EForm::where('nik', $request->nik)->get();
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
                         'contents' => $dataEform
                     ], 422 );
-                }	
+                }
                     \Log::info($kpr);
         }
 		else {

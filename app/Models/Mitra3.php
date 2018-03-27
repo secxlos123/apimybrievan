@@ -28,8 +28,20 @@ class Mitra3 extends Authenticatable  {
 						 if( $request->has( 'BRANCH_CODE' ) ) {
 								$BRANCH_CODE = $request->input('BRANCH_CODE');
 								$branchcis ='';
+								$branchcis2 = '';
 								if(strlen($BRANCH_CODE)=='5'){
 									$branchcis = $BRANCH_CODE;
+									$k = strlen($BRANCH_CODE);
+									$branchut2 = '';
+									try{
+									for($l=$k;$l<5;$l++){
+										if(substr($BRANCH_CODE,0,$l+1)!='0'){
+											$branchut2 = 'lempar';
+										}
+									}
+									catch($branchut2=='lempar'){
+										$branchcis2 = substr($BRANCH_CODE,$l,5);
+									}
 									/* for($i=0;$i<5;$i++){
 										$cek = substr($BRANCH_CODE,$i,1);
 										if($cek!=0){
@@ -48,9 +60,10 @@ class Mitra3 extends Authenticatable  {
 											}
 										} 
 										$branchcis = $branchut;	
+										$branchcis2 = $BRANCH_CODE;
 								}
 								\Log::info($branchcis);
-								$mitra->Where('BRANCH_CODE', $branchcis);
+								$mitra->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
 						 }
 						 
 						 if( $request->has( 'search' ) ) {
