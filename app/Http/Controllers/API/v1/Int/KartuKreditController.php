@@ -399,7 +399,7 @@ class KartuKreditController extends Controller{
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,'api.dev.net/api/v1/int/kk/');
+    	->sendEmailVerification($dataKredit,$apregno,'api.dev.net/api/v1/int/kk/verifyemail');
     	\Log::info('======== data kredit =========');
    		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
