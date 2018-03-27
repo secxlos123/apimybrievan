@@ -445,11 +445,11 @@ class KartuKreditController extends Controller{
     		$eformid = $data['eform_id'];
     		//update ke eform
     		$updateEform = $this->verify($eformid);
-
-    		return response()->json([
-    			'responseCode'=>'00',
-    			'responseMessage'=>'Kode Benar'
-    		]);
+    		return "berhasil";
+    		// return response()->json([
+    		// 	'responseCode'=>'00',
+    		// 	'responseMessage'=>'Kode Benar'
+    		// ]);
     	}else{
     		return response()->json([
     			'responseCode'=>'01',
