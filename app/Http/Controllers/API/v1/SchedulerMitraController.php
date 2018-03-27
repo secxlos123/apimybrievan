@@ -210,6 +210,21 @@ class SchedulerMitraController extends Controller
 					$alamatinstansi2 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI2));
 					$alamatinstansi3 = iconv("UTF-8", "UTF-8//IGNORE",str_replace("'","",$data->ALAMAT_INSTANSI3));
 					
+					if(strlen($kode_uker)=='5'){
+						$kode_uker = $kode_uker;
+					}else{
+						$branchut = '';
+						$o = strlen($kode_uker);
+										$branchut = '';
+										for($y=$o;$y<5;$y++){
+											if($y==$o){
+												$branchut = '0'.$kode_uker;
+											}else{
+												$branchut = '0'.$branchut;
+											}
+										} 
+										$kode_uker = $branchut;	
+					}
 					$sql .= DB::statement("INSERT INTO mitra_create VALUES('".$data->ID_INSTANSI_BRI."','".$namainstansi."','".$kodeinstansi."',
 										'".$posisinpl."','".$kodeuker."',
 					'".$jumlahkaryawan."','".$jenisinstansi."','','70','','".$jenisbidangusaha."',

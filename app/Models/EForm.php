@@ -221,8 +221,13 @@ class EForm extends Model implements AuditableContract
         $date = Carbon::now();
 
         if ($this->created_at) {
-            if ($this->send_clas_date) {
+            $stopAge = $this->detail_actions()->aging()->first();
+            if ( $stopAge ) {
+                $date = Carbon::createFromFormat('Y-m-d H:i:s', $stopAge->execute_at);
+
+            } else if ($this->send_clas_date) {
                 $date = Carbon::createFromFormat('Y-m-d', $this->send_clas_date);
+
             }
 
             $days = $this->created_at->diffInDays($date);
