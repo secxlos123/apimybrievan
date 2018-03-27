@@ -39,7 +39,7 @@ class Mitra3 extends Authenticatable  {
 											$branchut2 = 'lempar';
 										}
 									}
-									catch($branchut2=='lempar'){
+									}catch($branchut2=='lempar'){
 										$branchcis2 = substr($BRANCH_CODE,$l,5);
 									}
 									/* for($i=0;$i<5;$i++){
