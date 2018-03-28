@@ -40,6 +40,11 @@ class Marketing extends Model
       return $this->hasMany('App\Models\Crm\MarketingActivity');
     }
 
+    public function notes()
+    {
+      return $this->hasMany('App\Models\Crm\MarketingNote');
+    }
+
     public function followUp()
     {
       return $this->hasOne('App\Models\Crm\MarketingActivityFollowup');
@@ -56,8 +61,27 @@ class Marketing extends Model
             ->orderBy('marketings.id', 'asc')
             ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
             ->select('marketings.*','marketing_delete_requests.deleted')
+            ->where( 'marketings.pn', '=', $request->header('pn'))
             ->where( function($marketing) use($request){
-                $marketing->where( 'marketings.pn', '=', $request->header('pn'));
+                $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
+                $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
+            })
+            ;
+
+    }
+
+    public function scopeGetMarketingBranch($query, Request $request)
+    {
+      $marketingFill = [];
+      foreach ($this->fillable as $fillable) {
+        $marketingFill[] = "marketings.{$fillable}";
+      }
+
+      return $query
+            ->orderBy('marketings.id', 'asc')
+            ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
+            ->select('marketings.*','marketing_delete_requests.deleted')
+            ->where( function($marketing) use($request){
                 $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
                 $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
             })

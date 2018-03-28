@@ -31,4 +31,17 @@ class ActionDate extends Model
     {
         return $this->belongsTo( EForm::class, 'eform_id');
     }
+
+    /**
+     * Get stoper for aging
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function scopeAging( $query )
+    {
+        return $query
+            ->whereIn('action', ['customer-clas-approval1', 'customer-clas-rejected'])
+            ->orderBy('execute_at');
+    }
+
 }

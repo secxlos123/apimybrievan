@@ -878,7 +878,7 @@ if (! function_exists('getMessage')) {
             case 'eform_approve_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLF.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLS.',
                 ];
                 break;
             case 'eform_approve_ao':
@@ -896,7 +896,7 @@ if (! function_exists('getMessage')) {
             case 'eform_reject_clas':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLF.',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLS.',
                 ];
                 break;
             case 'eform_reject_ao':
@@ -1058,14 +1058,14 @@ if (! function_exists('pushNotificationCRM')) {
 
   }
 
-  function newMarketing( $data ) {
-    $notificationBuilder = new PayloadDataBuilder( 'New Marketing');
+  function newMarketing( $sendData ) {
+    $notificationBuilder = new PayloadNotificationBuilder( 'New Marketing');
     $notificationBuilder->setBody('')// message descriptions
                         ->setSound('default');
 
     $dataBuilder = new PayloadDataBuilder();
     $dataBuilder->addData([
-      'slug' => $sendData['id'],
+      'slug' => $sendData['branch'],
       'type' => 'new_marketing'
     ]);
 
