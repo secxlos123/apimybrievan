@@ -1261,7 +1261,7 @@ class ApiLasController extends Controller
                             if ($data['is_send'] == '1') {
                                 $eform_request['status_eform'] = "Approval1";
                                 $eform_request['response_status'] = "Disetujui Briguna";
-                            } elseif ($data['is_send'] == '3') {
+                            } elseif ($data['is_send'] == '3' || $data['is_send'] == '4') {
                                 $eform_request['status_eform'] = "Rejected";
                                 $eform_request['response_status'] = "Ditolak Briguna";
                             }
@@ -1909,7 +1909,7 @@ class ApiLasController extends Controller
                     $eform_request['IsFinish'] = true;
                     $eform_request['status_eform'] = "Rejected";
                     $eform_request['response_status'] = "Ditolak Briguna";
-                    $eform = EForm::findOrFail($data['eform_id']);
+                    $eform = EForm::findOrFail($response['eform_id']);
                     $eform->update($eform_request);
                 }
                 $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
