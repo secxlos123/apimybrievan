@@ -295,7 +295,7 @@ class Customer extends User
 
     public function getIsApprovedMobileAttribute()
     {
-        $stat_approved = '';
+        $stat_approved = null;
         $eform = $this->eforms()->select(['is_approved', 'IsFinish', 'product_type'])->first();
         if ( $eform ) {
             if ( strtolower($eform->product_type) == "briguna" ) {
