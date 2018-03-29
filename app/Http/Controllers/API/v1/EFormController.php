@@ -916,7 +916,7 @@ class EFormController extends Controller
             $baseRequest['ao_name'] = $user_login['name'];
             $baseRequest['ao_position'] = $user_login['position'];
             if (isset($request->tgl_disposisi)) {
-                $baseRequest['tgl_disposisi'] = $request->tgl_disposisi;
+                $baseRequest['tgl_disposisi'] = date('Y-m-d H:i:s');
             }
 
             $eform->update( $baseRequest );

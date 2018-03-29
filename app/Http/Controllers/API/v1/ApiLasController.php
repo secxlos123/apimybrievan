@@ -1261,7 +1261,7 @@ class ApiLasController extends Controller
                             if ($data['is_send'] == '1') {
                                 $eform_request['status_eform'] = "Approval1";
                                 $eform_request['response_status'] = "Disetujui Briguna";
-                            } elseif ($data['is_send'] == '3') {
+                            } elseif ($data['is_send'] == '3' || $data['is_send'] == '4') {
                                 $eform_request['status_eform'] = "Rejected";
                                 $eform_request['response_status'] = "Ditolak Briguna";
                             }
@@ -1909,7 +1909,7 @@ class ApiLasController extends Controller
                     $eform_request['IsFinish'] = true;
                     $eform_request['status_eform'] = "Rejected";
                     $eform_request['response_status'] = "Ditolak Briguna";
-                    $eform = EForm::findOrFail($data['eform_id']);
+                    $eform = EForm::findOrFail($response['eform_id']);
                     $eform->update($eform_request);
                 }
                 $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
@@ -2000,19 +2000,19 @@ class ApiLasController extends Controller
             try {
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
                 $id_foto = $data_eforms['briguna']['id_foto'];
-                if (isset($response['lainnya1']) || empty($response['lainnya1'])) {
+                /*if (isset($response['lainnya1']) || empty($response['lainnya1'])) {
                     $foto_lainnya1 = $this->datafoto(!isset($response['lainnya1'])?null:$response['lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
                     $foto_lainnya2 = $this->datafoto(!isset($response['lainnya2'])?null:$response['lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
                     $foto_lainnya3 = $this->datafoto(!isset($response['lainnya3'])?null:$response['lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
                     $foto_lainnya4 = $this->datafoto(!isset($response['lainnya4'])?null:$response['lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
                     $foto_lainnya5 = $this->datafoto(!isset($response['lainnya5'])?null:$response['lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
-                } else {
-                    $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
-                    $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
-                    $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
-                    $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
-                    $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
-                }
+                } else {*/
+                    $foto_lainnya1 = $this->datafoto(!isset($response['foto_lainnya1'])?null:$response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
+                    $foto_lainnya2 = $this->datafoto(!isset($response['foto_lainnya2'])?null:$response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
+                    $foto_lainnya3 = $this->datafoto(!isset($response['foto_lainnya3'])?null:$response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
+                    $foto_lainnya4 = $this->datafoto(!isset($response['foto_lainnya4'])?null:$response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
+                    $foto_lainnya5 = $this->datafoto(!isset($response['foto_lainnya5'])?null:$response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
+                // }
                 
                 $data_briguna['id_foto']  = $id_foto;
                 $data_briguna['lainnya1'] = $foto_lainnya1;
