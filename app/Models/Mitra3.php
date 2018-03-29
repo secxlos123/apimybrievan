@@ -66,7 +66,7 @@ class Mitra3 extends Authenticatable  {
 								
 					$mitra->where( function($item) use (&$request, $branchcis, $branchcis2) {
 							$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
-					}
+					})
 								//$mitra->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
 						 }
 						 
@@ -75,7 +75,7 @@ class Mitra3 extends Authenticatable  {
 									$lowerSearch = '%' .trim(strtolower($request->input('search'))). '%';
 									$item->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',[$lowerSearch]);
 										//$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
-								}
+								})
 		 						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
 						 }
 						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
