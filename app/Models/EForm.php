@@ -655,10 +655,12 @@ class EForm extends Model implements AuditableContract
                 if( $request->status == 'Submit' ) {
                     $eform->whereIsApproved( true );
 
-                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2' || $request->status == 'Disbursed' || $request->status=='MenungguPutusan') {
+                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2' || $request->status == 'Disbursed') {
                     $eform->where('status_eform', $request->status);
 
-                } else if( $request->status == 'Initiate' ) {
+                } else if( $request->status=='MenungguPutusan' ){
+					$eform->where('status_eform', 'Menunggu Putusan');
+				}else if( $request->status == 'Initiate' ) {
                     $eform->has( 'visit_report' )->whereIsApproved( false );
 
                 } else if( $request->status == 'Dispose' ) {
