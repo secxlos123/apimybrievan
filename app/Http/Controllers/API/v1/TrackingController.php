@@ -105,7 +105,7 @@ class TrackingController extends Controller
                         when eforms.status_eform = 'Pencairan' then 'Proses Pencairan'
                         when eforms.is_approved = true then 'Proses Analisa Pengajuan'
                         when visit_reports.id is not null then 'Proses Analisa Pengajuan'
-                        when eforms.ao_id is not null then 'Pengajuan Diterima'
+                        when eforms.ao_id is not null and eforms.product_type='kpr' then 'Pengajuan Diterima'
                         else 'Pengajuan Kredit' end as status
                     ")
                     ->leftJoin("users", "users.id", "=", "eforms.user_id")
