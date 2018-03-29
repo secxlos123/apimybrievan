@@ -63,13 +63,22 @@ class Mitra3 extends Authenticatable  {
 										$branchcis2 = $BRANCH_CODE;
 								}
 								\Log::info($branchcis);
-								$mitra->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
+								
+					$mitra->where( function($item) use (&$request, $branchcis, $branchcis2) {
+							$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
+					}
+								//$mitra->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
 						 }
 						 
 						 if( $request->has( 'search' ) ) {
-		 						$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
+								$mitra->where( function($item) use (&$request) {
+									$lowerSearch = '%' .trim(strtolower($request->input('search'))). '%';
+									$item->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',[$lowerSearch]);
+										//$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
+								}
+		 						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
 						 }
-						$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
+						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
 
 //paging
         } );
