@@ -64,11 +64,12 @@ class Mitra3 extends Authenticatable  {
 								}
 								\Log::info($branchcis);
 								
-					$mitra->where( function($item) use (&$request, $branchcis, $branchcis2) {
-							$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
-					})
+					
 								//$mitra->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
 						 }
+					$mitra->where( function($item) use (&$request, $branchcis, $branchcis2) {
+						$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
+					})
 						 
 						 if( $request->has( 'search' ) ) {
 								$mitra->where( function($item) use (&$request) {
@@ -81,7 +82,7 @@ class Mitra3 extends Authenticatable  {
 						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
 
 //paging
-        } );
+        } )
 			
 	//			$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$request->input('search').')%');
 	if( $request->has( 'sort' ) ) {
