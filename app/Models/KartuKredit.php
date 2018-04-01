@@ -85,7 +85,6 @@ class KartuKredit extends Model
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
 
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
-             
 
             $personalJenisKelamin = $req['PersonalJenisKelamin'];
             $personalStatusTempatTinggal = $req['PersonalStatusTempatTinggal'];
@@ -101,7 +100,6 @@ class KartuKredit extends Model
 
             $personalNoTlpRumah = $req['PersonalNoTlpRumah'];
             $personalEmail= $req['PersonalEmail'];
-            
             
             $emergencyNama = $req['EmergencyNama'];
             $emergencyHubunganKeluarga = $req['EmergencyHubunganKeluarga'];
@@ -124,6 +122,13 @@ class KartuKredit extends Model
 
                 $rw = $req['Rw'];
 
+                $jobAlamatKantor2 = $req['JobAlamatKantor2'];
+                $jobAlamatKantor3 = $req['JobAlamatKantor3'];
+                $jobCamat = $req['JobCamat'];
+                $jobLurah = $req['JobLurah'];
+                $jobRt = $req['JobRt'];
+                $jobRw = $req['JobRw'];
+
                 $jobBidangUsaha = $req['JobBidangUsaha'];
                 $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
                 $jobStatusPekerjaan = $req['JobStatusPekerjaan'];
@@ -138,7 +143,6 @@ class KartuKredit extends Model
                 $financeGajiPertahun = $req['FinanceGajiPertahun'];
                 $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
                 $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
-
 
             }else{
                 $cardType = $req['CardType'];
@@ -221,6 +225,13 @@ class KartuKredit extends Model
             $informasiLos['Lurah']= $lurah;
             $informasiLos['Rt'] = $rt;
             $informasiLos['Rw'] = $rw;
+
+            $informasiLos['JobAlamatKantor2'] = $jobAlamatKantor2;
+            $informasiLos['JobAlamatKantor3'] = $jobAlamatKantor3;
+            $informasiLos['JobCamat'] = $jobCamat;
+            $informasiLos['JobLurah'] = $jobLurah;
+            $informasiLos['JobRt'] = $jobRt;
+            $informasiLos['JobRw'] = $jobRw;
             
            
            
