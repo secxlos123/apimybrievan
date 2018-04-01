@@ -23,7 +23,7 @@ class ResetPassword extends Mailable
      *
      * @return void
      */
-    public function __construct(array $mail)
+    public function __construct( array $mail )
     {
         $this->mail = $mail;
     }
@@ -35,10 +35,6 @@ class ResetPassword extends Mailable
      */
     public function build()
     {
-        if (env('APP_ENV') == 'production') {
-            return $this->view( 'mails.reset-password_simple', $this->mail );
-        }
-        
-        return $this->view('mails.reset-password', $this->mail);
+        return $this->view( 'mails.reset-password_simple', $this->mail );
     }
 }

@@ -44,7 +44,6 @@ class CustomerRequest extends BaseRequest
                     'couple_name' => 'required_if:status,2',
                     'couple_birth_place_id' => 'required_if:status,2',
                     'couple_birth_date' => 'required_if:status,2|date',
-                    // 'couple_identity' => 'required_if:status,2|image'
                 ];
                 break;
 
@@ -63,7 +62,6 @@ class CustomerRequest extends BaseRequest
                         'email'=>'email',
                         'address'=>'required_if:verify_status,verify',
                         'mother_name'=>'required_if:verify_status,verify',
-                        // 'phone'=>'string|regex:/^[0-9]+$/|max:15',
                         'mobile_phone'=>'required|string|regex:/^[0-9]+$/|min:9|max:12',
                         'couple_nik'=>'required_if:status,2',
                         'couple_name'=>'required_if:status,2',
@@ -82,9 +80,6 @@ class CustomerRequest extends BaseRequest
                         'work_duration_month' => 'required_if:verify_status,verify',
                         'office_address'=>'required_if:verify_status,verify',
                         'salary'=>'required_if:verify_status,verify',
-                        //'other_salary'=>'required_if:verify_status,verify',
-                        //'loan_installment'=>'required_if:verify_status,verify',
-                        //'dependent_amount'=>'required_if:verify_status,verify',
                         'couple_salary'=>'',
                         'couple_other_salary'=>'',
                         'couple_loan_installment'=>'',
@@ -100,21 +95,6 @@ class CustomerRequest extends BaseRequest
                         'zip_code' => 'required|kode_pos|numeric',
                         'zip_code_current' => 'required|kode_pos|numeric',
                         'zip_code_office' => 'required|kode_pos|numeric'
-
-                        // 'verify_status' => 'required|in:verify,verified',
-                        // 'cif_number' => '',
-                        // 'first_name' => 'required_if:verify_status,verify',
-                        // 'last_name' => '',
-                        // 'gender' => 'required_if:verify_status,verify',
-                        // // 'birth_place_id' => 'required_if:verify_status,verify',
-                        // 'birth_date' => 'required_if:verify_status,verify',
-                        // 'phone' => 'required_if:verify_status,verify',
-                        // 'mobile_phone' => 'required_if:verify_status,verify|regex:(08)',
-                        // 'address' => 'required_if:verify_status,verify',
-                        // // 'citizenship_id' => 'required_if:verify_status,verify',
-                        // // 'status' => 'required_if:verify_status,verify|in:1,2,3',
-                        // 'address_status' => 'required_if:verify_status,verify',
-                        // 'mother_name' => 'required_if:verify_status,verify'
                     ];
                 } else {
                     return [
@@ -126,7 +106,6 @@ class CustomerRequest extends BaseRequest
                         'address' => 'required',
                         'gender' => 'required|in:L,P',
                         'city_id' => 'required|numeric|exists:cities,id',
-                        //'phone' => 'required',
                         'citizenship_id' => 'required',
                         'citizenship_name' => 'required',
                         'status' => 'required|in:1,2,3',
@@ -134,7 +113,6 @@ class CustomerRequest extends BaseRequest
                         'couple_name' => 'required_if:status,2',
                         'couple_birth_place_id' => 'required_if:status,2',
                         'couple_birth_date' => 'required_if:status,2|date',
-                        // 'couple_identity' => 'required_if:status,2|image',
                         'address_status' => 'required',
                         'mother_name' => 'required',
                         'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
@@ -152,9 +130,6 @@ class CustomerRequest extends BaseRequest
                         'work_duration' => 'required',
                         'office_address' => 'required',
                         'salary' => 'required|numeric',
-                        //'other_salary' => 'required|numeric',
-                        //'loan_installment' => 'required',
-                        //'dependent_amount' => 'required',
                         'salary_slip' => 'required|file',
                         'identity' => 'mimes:jpeg,png,jpg,zip,pdf',
                         'image' => 'image|mimes:jpg,jpeg,png',
@@ -168,9 +143,7 @@ class CustomerRequest extends BaseRequest
                 break;
 
             default:
-                return [
-                    //
-                ];
+                return [];
                 break;
         }
     }

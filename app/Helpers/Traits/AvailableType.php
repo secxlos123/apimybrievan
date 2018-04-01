@@ -10,7 +10,15 @@ trait AvailableType
      * @var array
      */
     protected $types = [
-        'int' => ['ao', 'mp', 'pinca'],
-        'eks' => ['developer', 'customer', 'others']
+        "int" => [
+            "ao"
+            , "mp"
+            , "pinca"
+        ]
+        , "eks" => [
+            "developer"
+            , "customer"
+            , "others"
+        ]
     ];
 }

@@ -12,8 +12,8 @@ class ApiAuthorizationException extends Exception
      * @param  \Illuminate\Http\Request
      * @return \Illuminate\Http\Response
      */
-    public function render($request)
+    public function render( $request )
     {
-        return response()->error(['message' => 'Anda tidak memiliki akses!!!'], 403);
+        return response()->error( [ "message" => "Anda tidak memiliki akses!!!" ], 403 );
     }
 }

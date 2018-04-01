@@ -30,8 +30,8 @@ class AsmxServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('bri.asmx', function ($app) {
-            return new ServiceAsmx(new HttpClient);
+        $this->app->singleton( "bri.asmx", function ( $app ) {
+            return new ServiceAsmx( new HttpClient );
         });
     }
 
@@ -42,6 +42,6 @@ class AsmxServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['bri.asmx'];
+        return [ "bri.asmx" ];
     }
 }

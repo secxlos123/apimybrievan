@@ -23,15 +23,13 @@ class EformSeeder extends Seeder
 	    		$eform = factory(App\Models\EForm::class, 5)->create([
 	    			'user_id' => $user->id
 	    		]);
-	    		
-	    		
+    	    });
 
-	    });
-   		DB::commit();
+       		DB::commit();
     	} catch (Exception $e) {
     		dd($e->getMessage());
             DB::rollback();
     	}
-        
+
     }
 }

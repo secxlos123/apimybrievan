@@ -88,7 +88,6 @@ class OtsDoc extends Model implements AuditableContract
         if ($callbackPosition) {
             $doFunction = isset($this->attributes[ $attribute ]);
         }
-        \Log::info("========================handling upload=============================");
         $base = $this->collateral_id ? $this->collateral_id : self::$folder;
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
             $path = public_path( 'uploads/collateral/'.$this->collateral_id.'/' );

@@ -17,7 +17,7 @@ class OtsPhoto extends Model implements AuditableContract
 		'image_data'
 	];
 	public static $folder = '';
-	
+
 	/**
 	 * Relation with otsOther
 	 * @return \Illuminate\Database\Eloquent\BelongsTo
@@ -73,7 +73,6 @@ class OtsPhoto extends Model implements AuditableContract
 		if ($callbackPosition) {
 			$doFunction = isset($this->attributes[$attribute]);
 		}
-		\Log::info("========================handling upload=============================");
 		if (isset($this->attributes[$attribute]) && gettype($image) == 'object') {
 			$path = public_path('uploads/collateral/other/' . $this->ots_other_id . '/');
 			if (!empty($this->attributes[$attribute])) {

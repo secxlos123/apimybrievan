@@ -44,13 +44,13 @@ class GeneratePefindoJob implements ShouldQueue
      */
     public function handle()
     {
-        if ( $this->eform->delay_prescreening == 1 && ENV('DELAY_PRESCREENING', false) ) {
+        if ( $this->eform->delay_prescreening == 1 && ENV( "DELAY_PRESCREENING", false ) ) {
             $this->eform->update(
                 array_merge(
                     [
-                        'delay_prescreening' => 2
-                        , 'prescreening_name' => $this->eform->ao_name
-                        , 'prescreening_position' => $this->eform->ao_position
+                        "delay_prescreening" => 2
+                        , "prescreening_name" => $this->eform->ao_name
+                        , "prescreening_position" => $this->eform->ao_position
                     ]
                     , generate_data_prescreening(
                         $this->eform
@@ -61,25 +61,25 @@ class GeneratePefindoJob implements ShouldQueue
 
             );
 
-            set_action_date($this->eform->id, 'eform-prescreening-update');
-            $message = 'Berhasil proses prescreening E-Form';
+            set_action_date( $this->eform->id, "eform-prescreening-update" );
+            $message = "Berhasil proses prescreening E-Form";
 
             // auto approve for VIP
             if ( $this->eform->is_clas_ready ) {
-                $message .= ' dan ' . autoApproveForVIP( array(), $this->eform->id );
+                $message .= " dan " . autoApproveForVIP( array(), $this->eform->id );
             }
 
             $detail = $this->eform;
-            generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+            generate_pdf( "uploads/". $detail->nik, "prescreening.pdf", view( "pdf.prescreening", compact( "detail" ) ) );
 
         } else {
-            $message = 'Prescreening sudah pernah di lakukan';
+            $message = "Prescreening sudah pernah di lakukan";
 
         }
 
-        \Log::info("=================== Dispatch Event Prescreening ========================");
+        \Log::info( "=== Dispatch Event Prescreening ===" );
         \Log::info( $this->eform->ref_number . " : " . $message );
-        \Log::info("=================== End ========================");
+        \Log::info( "=== End ===" );
     }
 
     /**
@@ -90,8 +90,8 @@ class GeneratePefindoJob implements ShouldQueue
      */
     public function failed(Exception $exception)
     {
-        \Log::info("=================== Dispatch Event Prescreening ========================");
+        \Log::info( "=== Dispatch Event Prescreening ===" );
         \Log::info( $exception );
-        \Log::info("=================== End ========================");
+        \Log::info( "=== End ===" );
     }
 }

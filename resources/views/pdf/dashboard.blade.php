@@ -200,15 +200,14 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
                             <div class="color-orange">List Pengajuan</div>
                             <div class="color-blue">BRI</div>
                             <br/>
-                            
+
                         </td>
                         <td class="logo-bri full-width">
-                           
+
                         </td>
                     </tr>
                 </tbody>
@@ -253,7 +252,7 @@
                     @endforeach
                 </tbody>
             </table>
-                
+
                 </div>
                 <br/>
             </div>

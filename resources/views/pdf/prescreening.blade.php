@@ -171,7 +171,6 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
                             <div class="color-orange">e-Prescreening</div>
                             <div class="color-blue">BRI</div>
@@ -198,7 +197,7 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <td class="title" colspan="2">Hasil Prescreening</td>
+                        <td class="title" colspan="2">Data Calon Nasabah</td>
                     </tr>
                 </tbody>
             </table>
@@ -206,13 +205,65 @@
             <table>
                 <tbody>
                     <tr>
+                        <td class="label">Nama Calon Nasabah</td>
+                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                    </tr>
+                    <tr>
                         <td class="label">NIK</td>
                         <td class="break-word">: {{ $detail->customer->personal['nik'] }}</td>
                     </tr>
                     <tr>
-                        <td class="label">Nama Calon Nasabah</td>
-                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                        <td class="label">Tanggal Lahir</td>
+                        <td class="break-word">: {{ $detail->customer->personal['birth_date'] }}</td>
                     </tr>
+                    <tr>
+                        <td class="label">Alamat</td>
+                        <td class="break-word">: {{ $detail->customer->personal['address'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @if( $detail->customer->personal['status_id'] == '2' )
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Calon Nasabah</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="label">Nama Pasangan Calon Nasabah</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">NIK</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_nik'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tanggal Lahir</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_birth_date'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Alamat</td>
+                            <td class="break-word">: {{ $detail->customer->personal['address'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Hasil Prescreening</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
                     <tr>
                         <td class="label">Hasil Prescreening</td>
                         <td class="break-word">: <span class="{{ $detail->prescreening_status }}">{{ $detail->prescreening_status }}</span></td>

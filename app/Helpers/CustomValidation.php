@@ -6,7 +6,6 @@ use App\Helpers\Traits\AvailableType;
 use App\Models\PropertyType;
 use App\Models\User;
 use Illuminate\Validation\Validator;
-use Asmx;
 
 class CustomValidation extends Validator
 {
@@ -20,9 +19,9 @@ class CustomValidation extends Validator
      * @param array $parameters
      * @return boolean
      */
-    public function validateHash($attribute, $value, $parameters)
+    public function validateHash( $attribute, $value, $parameters )
     {
-        return \Hash::check($value, $parameters[0]);
+        return \Hash::check( $value, $parameters[0] );
     }
 
     /**
@@ -33,11 +32,11 @@ class CustomValidation extends Validator
      * @param array $parameters
      * @return boolean
      */
-    public function validateEmailByType($attribute, $value, $parameters)
+    public function validateEmailByType( $attribute, $value, $parameters )
     {
-        if ($user = User::findEmail($value)) {
+        if ( $user = User::findEmail( $value ) ) {
             $role = $user->roles->first()->slug;
-            return in_array($role, $this->types[$parameters[0]]);
+            return in_array( $role, $this->types[$parameters[0]] );
         }
 
         return !$user;
@@ -51,9 +50,9 @@ class CustomValidation extends Validator
      * @param array $parameters
      * @return boolean
      */
-    public function validateAlphaSpaces($attribute, $value, $parameters)
+    public function validateAlphaSpaces( $attribute, $value, $parameters )
     {
-        return preg_match('/^[\pL\s]+$/u', $value);
+        return preg_match( "/^[\pL\s]+$/u", $value );
     }
 
     /**
@@ -65,25 +64,27 @@ class CustomValidation extends Validator
      * @param array $parameters
      * @return boolean
      */
-    public function validateKodePos($attribute, $value, $parameters)
+    public function validateKodePos( $attribute, $value, $parameters )
     {
-        if (ENV('APP_ENV') == 'local') {
+        if ( ENV('APP_ENV') == 'local' ) {
             return true;
         }
 
-        $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
-             'search' => $value,
-        ] )->post();
+        $zip_code_service = \Asmx::setEndpoint( 'GetDataKodePos' )
+            ->setQuery( [ 'search' => $value ] )
+            ->post();
+
         $result = false;
-        $zip_code_list = $zip_code_service[ 'contents' ];
-        if (count($zip_code_list['data'])>0) {
-            foreach ($zip_code_list['data'] as $key => $zipcode) {
-                if ($zipcode['kode_pos'] == $value) {
+
+        if ( count( $zip_code_service['contents']['data'] ) > 0 ) {
+            foreach ( $zip_code_service['contents']['data'] as $key => $zipcode ) {
+                if ( $zipcode['kode_pos'] == $value ) {
                     $result = true;
                 }
             }
         }
-        return  $result;
+
+        return $result;
     }
 
     /**
@@ -94,9 +95,9 @@ class CustomValidation extends Validator
      * @param array $parameters
      * @return boolean
      */
-    public function validateDeveloperOwned($attribute, $value, $parameters)
+    public function validateDeveloperOwned( $attribute, $value, $parameters )
     {
-        $propertyType = PropertyType::developerOwned($parameters[0], [$attribute => $value]);
-        return (bool) $propertyType->count();
+        $propertyType = PropertyType::developerOwned( $parameters[0], [ $attribute => $value ] );
+        return ( bool ) $propertyType->count();
     }
 }

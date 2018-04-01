@@ -49,7 +49,7 @@ abstract class Client
      * @param  \GuzzleHttp\Client  $http
      * @return void
      */
-    public function __construct(HttpClient $http)
+    public function __construct( HttpClient $http )
     {
         $this->http = $http;
 
@@ -63,9 +63,7 @@ abstract class Client
      */
     public function headers()
     {
-        return $this->headers = [
-            // 'client_key'   => config('restapi.key'),
-        ];
+        return $this->headers = [];
     }
 
     /**
@@ -75,7 +73,7 @@ abstract class Client
      */
     public function uri()
     {
-        return config('restapi.uri').$this->endpoint;
+        return config( "restapi.uri" ) . $this->endpoint;
     }
 
     /**
@@ -84,7 +82,7 @@ abstract class Client
      * @param  \GuzzleHttp\Client  $http
      * @return App\RestMiddleware\Client
      */
-    public function setEndpoint($endpoint = '')
+    public function setEndpoint( $endpoint = "" )
     {
         $this->endpoint = $endpoint;
 
@@ -97,9 +95,9 @@ abstract class Client
      * @param  array  $headers
      * @return App\RestMiddleware\Client
      */
-    public function setHeaders(array $headers)
+    public function setHeaders( array $headers )
     {
-        $this->headers = array_merge($this->headers(), $headers);
+        $this->headers = array_merge( $this->headers(), $headers );
 
         return $this;
     }
@@ -110,7 +108,7 @@ abstract class Client
      * @param  mixed  $body
      * @return App\RestMiddleware\Client
      */
-    public function setBody($body)
+    public function setBody( $body )
     {
         $this->body = $body;
 
@@ -123,9 +121,9 @@ abstract class Client
      * @param  array  $query
      * @return App\RestMiddleware\Client
      */
-    public function setQuery(array $query)
+    public function setQuery( array $query )
     {
-        $this->query = http_build_query($query);
+        $this->query = http_build_query( $query );
 
         return $this;
     }
@@ -136,14 +134,14 @@ abstract class Client
      * @param  string  $query
      * @return App\RestMiddleware\Client
      */
-    public function setMethod($method)
+    public function setMethod( $method )
     {
-        switch ($method) {
-            case 'multipart':
-                $methods = ['method' => 'POST', 'more_content' => [['name' => '_method', 'contents' => 'put']]];
+        switch ( $method ) {
+            case "multipart":
+                $methods = [ "method" => "POST", "more_content" => [ [ "name" => "_method", "contents" => "put" ] ] ];
                 break;
             default:
-                $methods = ['method' => 'PUT'];
+                $methods = [ "method" => "PUT" ];
                 break;
         }
 
@@ -158,16 +156,23 @@ abstract class Client
     public function get()
     {
         try {
-            $request  = $this->http->request('GET', $this->uri(), [
-                'headers'  => $this->headers,
-                'query'    => $this->query
-            ]);
-            $response = json_decode($request->getBody(), true);
-        } catch (ClientException $e) {
+            $request  = $this->http->request(
+                "GET"
+                , $this->uri()
+                , [
+                    "headers" => $this->headers
+                    , "query" => $this->query
+                ]
+            );
+            $response = json_decode( $request->getBody(), true );
+
+        } catch ( ClientException $e ) {
             $body = $e->getResponse()->getBody();
-            $response = json_decode($body->getContents(), true);
-        } catch (ServerException $e) {
-            abort(500);
+            $response = json_decode( $body->getContents(), true );
+
+        } catch ( ServerException $e ) {
+            abort( 500 );
+
         }
 
         return $response;
@@ -178,20 +183,27 @@ abstract class Client
      *
      * @return \Illuminate\Http\Response
      */
-    public function post($type = 'json')
+    public function post( $type = "json" )
     {
         try {
-            $request  = $this->http->request('POST', $this->uri(), [
-                'headers'  => $this->headers,
-                'query'    => $this->query,
-                $type      => $this->body
-            ]);
-            $response = json_decode($request->getBody(), true);
-        } catch (ClientException $e) {
+            $request  = $this->http->request(
+                "POST"
+                , $this->uri()
+                , [
+                    "headers" => $this->headers
+                    , "query" => $this->query
+                    , $type => $this->body
+                ]
+            );
+            $response = json_decode( $request->getBody(), true );
+
+        } catch ( ClientException $e ) {
             $body = $e->getResponse()->getBody();
-            $response = json_decode($body->getContents(), true);
-        } catch (ServerException $e) {
-            abort(500);
+            $response = json_decode( $body->getContents(), true );
+
+        } catch ( ServerException $e ) {
+            abort( 500 );
+
         }
 
         return $response;
@@ -202,23 +214,30 @@ abstract class Client
      *
      * @return \Illuminate\Http\Response
      */
-    public function put($type = 'json')
+    public function put( $type = "json" )
     {
-        $method = $this->setMethod($type);
-        $body = array_key_exists('more_content', $method) ? array_merge($this->body, $method['more_content']) : $this->body;
+        $method = $this->setMethod( $type );
+        $body = array_key_exists( "more_content", $method ) ? array_merge( $this->body, $method["more_content"] ) : $this->body;
 
         try {
-            $request  = $this->http->request($method['method'], $this->uri(), [
-                'headers'  => $this->headers,
-                'query'    => $this->query,
-                $type      => $body
-            ]);
-            $response = json_decode($request->getBody(), true);
-        } catch (ClientException $e) {
+            $request  = $this->http->request(
+                $method["method"]
+                , $this->uri()
+                , [
+                    "headers" => $this->headers
+                    , "query" => $this->query
+                    , $type => $body
+                ]
+            );
+            $response = json_decode( $request->getBody(), true );
+
+        } catch ( ClientException $e ) {
             $body = $e->getResponse()->getBody();
-            $response = json_decode($body->getContents(), true);
-        } catch (ServerException $e) {
-            abort(500);
+            $response = json_decode( $body->getContents(), true );
+
+        } catch ( ServerException $e ) {
+            abort( 500 );
+
         }
 
         return $response;
@@ -232,17 +251,24 @@ abstract class Client
     public function deleted()
     {
         try {
-            $request  = $this->http->request('DELETE', $this->uri(), [
-                'headers'  => $this->headers,
-                'query'    => $this->query,
-                'json'     => $this->body
-            ]);
-            $response = json_decode($request->getBody(), true);
-        } catch (ClientException $e) {
+            $request  = $this->http->request(
+                "DELETE"
+                , $this->uri()
+                , [
+                    "headers" => $this->headers
+                    , "query" => $this->query
+                    , "json" => $this->body
+                ]
+            );
+            $response = json_decode( $request->getBody(), true );
+
+        } catch ( ClientException $e ) {
             $body = $e->getResponse()->getBody();
-            $response = json_decode($body->getContents(), true);
-        } catch (ServerException $e) {
-            abort(500);
+            $response = json_decode( $body->getContents(), true );
+
+        } catch ( ServerException $e ) {
+            abort( 500 );
+
         }
 
         return $response;

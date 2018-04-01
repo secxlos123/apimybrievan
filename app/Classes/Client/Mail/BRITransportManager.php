@@ -14,20 +14,22 @@ class BRITransportManager extends TransportManager
      */
     protected function createBriDriver()
     {
-        $config = $this->app['config']->get('services.bri', []);
-        $configs = $this->app['config']->get('restapi', []);
+        $config = $this->app["config"]->get( "services.bri", [] );
 
-        if ( empty($config['domain']) ) {
-            $config['domain'] = $configs['restwshc'];
+        $configs = $this->app["config"]->get( "restapi", [] );
+
+        if ( empty( $config["domain"] ) ) {
+            $config["domain"] = $configs["restwshc"];
         }
 
-        if ( empty($config['secret']) ) {
-            $config['secret'] = $configs['key'];
+        if ( empty( $config["secret"] ) ) {
+            $config["secret"] = $configs["key"];
         }
 
         return new BRITransport(
-            $this->guzzle($config),
-            $config['secret'], $config['domain']
+            $this->guzzle( $config )
+            , $config["secret"]
+            , $config["domain"]
         );
     }
 

@@ -13,31 +13,30 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\EForm\RejectedEform' => [
-            'App\Listeners\EForm\Rejected\RejectedToCustomer',
-        ],
-        'App\Events\Customer\CustomerRegister' => [
-            'App\Listeners\Customer\Register\SendMailNotification',
-        ],
-        'App\Events\Customer\CustomerReset' => [
-            'App\Listeners\Customer\CustomerResetNotification',
-        ],
-        'App\Events\Customer\CustomerRegistered' => [
-            'App\Listeners\Customer\SendMailNotification',
-        ],
-        'App\Events\Customer\CustomerVerify' => [
-            'App\Listeners\Customer\VerifyMailNotification',
-        ],
-        'App\Events\EForm\Approved' => [
-            'App\Listeners\EForm\Approved\MailNotificationToCustomer',
-        ],
-        'App\Events\EForm\VerifyEForm' => [
-            'App\Listeners\EForm\VerifyEFormCustomer',
-        ],
-        'App\Events\Developer\CreateOrUpdate' => [
-            'App\Listeners\Developer\CreateOrUpdate',
-        ],
-        
+        "App\Events\EForm\RejectedEform" => [
+            "App\Listeners\EForm\Rejected\RejectedToCustomer"
+        ]
+        , "App\Events\Customer\CustomerRegister" => [
+            "App\Listeners\Customer\Register\SendMailNotification"
+        ]
+        , "App\Events\Customer\CustomerReset" => [
+            "App\Listeners\Customer\CustomerResetNotification"
+        ]
+        , "App\Events\Customer\CustomerRegistered" => [
+            "App\Listeners\Customer\SendMailNotification"
+        ]
+        , "App\Events\Customer\CustomerVerify" => [
+            "App\Listeners\Customer\VerifyMailNotification"
+        ]
+        , "App\Events\EForm\Approved" => [
+            "App\Listeners\EForm\Approved\MailNotificationToCustomer"
+        ]
+        , "App\Events\EForm\VerifyEForm" => [
+            "App\Listeners\EForm\VerifyEFormCustomer"
+        ]
+        , "App\Events\Developer\CreateOrUpdate" => [
+            "App\Listeners\Developer\CreateOrUpdate"
+        ]
     ];
 
     /**
@@ -49,8 +48,8 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        foreach (config('app.observers') as $model => $observer) {
-            $model::observe($observer);
+        foreach ( config( "app.observers" ) as $model => $observer ) {
+            $model::observe( $observer );
         }
     }
 }

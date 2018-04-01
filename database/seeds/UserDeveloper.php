@@ -99,7 +99,7 @@ class UserDeveloper extends Seeder
 
             $user->roles()->attach(4);
             $activation = Activation::create($user);
-            Activation::complete($user, $activation->code);            
+            Activation::complete($user, $activation->code);
 
             $developer = $user->developer()->create([
                 "id" => 2,

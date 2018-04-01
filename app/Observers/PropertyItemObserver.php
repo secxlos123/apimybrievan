@@ -12,11 +12,8 @@ class PropertyItemObserver
      * @param  PropertyType  $property_item
      * @return void
      */
-    public function saved(PropertyItem $property_item)
+    public function saved( PropertyItem $property_item )
     {
-        /**
-         * This logic for saving many photos
-         */
-        saving_photos($property_item, 'units');
+        saving_photos( $property_item, "units" );
     }
 }
