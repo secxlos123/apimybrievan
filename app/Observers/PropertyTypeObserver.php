@@ -14,9 +14,6 @@ class PropertyTypeObserver
      */
     public function saved(PropertyType $property_type)
     {
-        /**
-         * This logic for saving many photos
-         */
-        saving_photos($property_type, 'types');
+        saving_photos( $property_type, "types" );
     }
 }

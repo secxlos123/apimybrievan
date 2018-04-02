@@ -41,13 +41,10 @@ class EFormRequest extends BaseRequest
                 if( $this->segment(6) == 'disposition' ) {
                     return [
                         'ao_id' => 'required',
-                        // 'pinca_note' => 'required' // request briguna
                     ];
                 } else if( $this->segment( 6 ) == 'approve' ) {
                     return [
                         'recommendation'=> 'required'
-                        // 'pros' => 'required',
-                        // 'cons' => 'required'
                     ];
                 } else {
                     return [
@@ -70,7 +67,6 @@ class EFormRequest extends BaseRequest
                         'active_kpr' => 'required_if:product_type,kpr,required|numeric',
                         'dp' => 'required_if:product_type,kpr,required',
                         'request_amount' => 'required_if:product_type,kpr,required',
-                        //'nik' => 'required|exists:customer_details,nik',
                         'nik' => 'required',
                         'branch_id' => 'required',
                         'appointment_date' => 'required|date',

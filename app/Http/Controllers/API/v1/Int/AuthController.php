@@ -17,6 +17,7 @@ class AuthController extends Controller
       $this->user = $user;
       $this->userservices = $userservices;
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -43,8 +44,6 @@ class AuthController extends Controller
         ] )->post( 'form_params' );
 
         $data = $login[ 'responseData' ];
-        // print_r($login);exit();
-        \Log::info($login);
 
         if( $login[ 'responseCode' ] == '00' ) {
             if( in_array( intval($data[ 'hilfm' ]), [ 37, 38, 39, 41, 42, 43 ] ) ) {
@@ -56,9 +55,6 @@ class AuthController extends Controller
                 if( in_array( intval($data[ 'hilfm' ]), [ 49, 51 ] ) ) {
                     $role_user = 'amp';
                 }
-            // } else if( in_array( intval($data[ 'hilfm' ]), [ 21, 50 ] ) ) {
-            //     $role = 'mp';
-            // new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 44 ] ) ) {
                 $role = 'fo';
                 $role_user = 'fo';
@@ -75,9 +71,6 @@ class AuthController extends Controller
                 } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
                     $role_user = 'wapincasus';
                 }
-            // } else if( in_array( intval($data[ 'hilfm' ]), [ 12, 14 ] ) ) {
-            //     $role = 'pinca';
-            // new role
             } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
                 $role = 'pinwil';
                 $role_user = 'pinwil';
@@ -93,7 +86,6 @@ class AuthController extends Controller
             } else if( in_array( intval($data[ 'hilfm' ]), [54] ) ) {
                 $role = 'spvadk';
                 $role_user = 'spvadk';
-            // end new role
             } else if( in_array( intval($data[ 'hilfm' ]), [ 59 ] ) ) {
                 $role = 'prescreening';
                 $role_user = 'prescreening';
@@ -107,24 +99,10 @@ class AuthController extends Controller
             } else if( in_array( intval($data[ 'hilfm' ]), [18] ) ) {
                 $role = 'collateral';
                 $role_user = 'collateral';
-            // hilfm adk tambah filter posisi
             } else if( in_array( intval($data[ 'hilfm' ]), [58, 61] ) ) {
-                // $adk = explode(' ', $data['posisi']);
-                // print_r($adk);
-                // print_r($data);exit();
-                // if ( in_array( strtolower($adk[1]), [ 'adm.kredit' ] ) ) {
-                    // $role = 'adk';
-                // }
                 $role = 'adk';
                 $role_user = 'adk';
             } else {
-                // $request->headers->set( 'pn', $pn );
-                // $this->destroy( $request );
-                // return response()->success( [
-                //     'message' => 'Unauthorized',
-                //     'contents'=> []
-                // ], 401 );
-                // Ini Buat Handle Semua User Bisa Masuk Role Staff
                 $role = 'other';
                 $role_user = 'staff';
             }
@@ -162,14 +140,6 @@ class AuthController extends Controller
 
                 }else {
                      return response()->success( [
-                        /*'message' => [
-                            'token' => 'Bearer ' . $userservices[ 'password' ],
-                            'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),
-                            'name' => $userservices[ 'name' ],
-                            'branch' => $userservices['branch_id'],
-                            'role' => $userservices['role'],
-                            'position' => $userservices['posisi'],
-                            'uker' => $userservices['tipe_uker']],*/
                         'contents'=> [
                             'token' => 'Bearer ' . $userservices[ 'password' ],
                             'pn' => substr( '00000000' . $userservices[ 'pn' ], -8 ),

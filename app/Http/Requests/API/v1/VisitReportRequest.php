@@ -25,18 +25,9 @@ class VisitReportRequest extends BaseRequest
     {
         return [
             'eform_id' => 'required|exists:eforms,id|unique:visit_reports,eform_id',
-            // 'visitor_name' => 'required',
-            // 'place' => 'required',
-            // 'date' => 'required|date|after_or_equal:today',
-            // 'name' => 'required',
-            // 'job' => 'required',
-            // 'phone' => 'required',
-            // 'account' => 'required',
-            // 'amount' => 'required',
             'npwp_number' => 'required',
             'purpose_of_visit' => 'required',
             'visit_result' => 'required',
-            //'source_income'=>'required',
             'source' => 'required|in:fixed,nonfixed',
             'income' => 'required_if:source,nonfixed',
             'income_salary' => 'required_if:source,fixed',

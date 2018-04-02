@@ -31,16 +31,18 @@ class SendMailNotification
     {
         $activation_code = $event->activation_code;
         $user = $event->user;
-        $url = '';
-        if( $activation_code ) {
-            $url = env( 'MAIN_APP_URL', 'http://mybri.bri.co.id' ) . '/activate/' . $user->id . '/' . $activation_code;
+        $url = "";
+        if ( $activation_code ) {
+            $url = env( "MAIN_APP_URL", "http://mybri.bri.co.id" ) . "/activate/" . $user->id . "/" . $activation_code;
         }
+
         $mail = [
-            'url' => $url,
-            'email' => $user->email,
-            'name' => $user->full_name,
-            'created_at' => $user->created_at
+            "url" => $url
+            , "email" => $user->email
+            , "name" => $user->full_name
+            , "created_at" => $user->created_at
         ];
-        Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
+
+        Mail::to( $mail["email"] )->send( new Register( $mail ) );
     }
 }

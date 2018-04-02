@@ -13,7 +13,7 @@ use DB;
 class UploadtambahController extends Controller
 {
 
-   
+
     public function uploadimage($image,$id,$atribute) {
         //$eform = EForm::findOrFail($id);
         $path = public_path( 'uploads/' . $id . '/' );
@@ -41,7 +41,7 @@ class UploadtambahController extends Controller
         return $filename;
     }
 
-  	
+
     public function upload( EFormRequest $request )
     {
         DB::beginTransaction();
@@ -50,13 +50,13 @@ class UploadtambahController extends Controller
             // Get User Login
             $user_login = \RestwsHc::getUser();
 
-          
+
             \Log::info("=======================================================");
-           	
+
 			$x = $request->tambahandata;
 			$baseData = $request->all();
 			for($i=0;$i<$x;$i++){
-				$uploadtambahan = $baseData['datatambahan'.$i];				
+				$uploadtambahan = $baseData['datatambahan'.$i];
 				$id = date('YmdHis');
 				$uploadtambahan = $this->uploadimage($uploadtambahan,$id,'datatambahan');
 					if($i==0){
@@ -66,14 +66,14 @@ class UploadtambahController extends Controller
 					}
                }
 				$upload = BRIGUNA::where("eform_id","=",$eform_id);
-                $upload->update($baseRequest);			
-				
+                $upload->update($baseRequest);
+
                 $return = [
                     'message' => 'Upload data tambahan berhasil.',
                     'contents' => $upload
                 ];
                     \Log::info($upload);
-         
+
             DB::commit();
     } catch (Exception $e) {
             DB::rollback();

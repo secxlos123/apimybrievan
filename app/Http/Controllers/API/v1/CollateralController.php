@@ -71,8 +71,6 @@ class CollateralController extends Controller
     {
       $user = \RestwsHc::getUser();
       $region = \RestwsHc::getRegion(intval($user['branch_id']));
-      \Log::info($user);
-      \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->withAll()->where('developer_id','!=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
@@ -109,8 +107,6 @@ class CollateralController extends Controller
     {
       $user = \RestwsHc::getUser();
       $region = \RestwsHc::getRegion(intval($user['branch_id']));
-      \Log::info($user);
-      \Log::info($region);
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
@@ -226,7 +222,6 @@ class CollateralController extends Controller
 
         $developer_id = env('DEVELOPER_KEY',1);
         $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
-        \Log::info($collateral);
         OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->area);
         OtsAccordingLetterLand::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->letter);
         OtsBuildingDesc::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->building);
@@ -240,8 +235,6 @@ class CollateralController extends Controller
         if (count($dataother['image_area'])>0) {
           $photo_id = array();
           foreach ($dataother['image_area'] as $key => $value) {
-            \Log::info(' ======= data foreach ======');
-            \Log::info($value);
             $photos = OtsPhoto::create(['ots_other_id'=>$otsOther->id]+$value);
             $photo_id[]=$photos->id;
           }
@@ -278,7 +271,7 @@ class CollateralController extends Controller
         if(env('PUSH_NOTIFICATION', false)){
             //cek notif collateral
             $aksiCollateral = 'collateral_penilaian_ots';
-            $cekNotifColltaeralOTS=[];//UserNotification::where('slug',$collateralId)->where('type_module',$aksiCollateral)->first();
+            $cekNotifColltaeralOTS=[];
             if(empty($cekNotifColltaeralOTS))
             {
               \Log::info('=======notification web and mobile sent to manager collateral  ======');
@@ -287,7 +280,6 @@ class CollateralController extends Controller
               if(!empty($dataCollateral->manager_id))
               {
                   $manager_id = $dataCollateral->manager_id; //id manager collateral
-                  //*
                   //insert data from notifications table
                   $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
                   if($getDataEform){
@@ -307,7 +299,6 @@ class CollateralController extends Controller
                                                  ->orderBy('created_at', 'desc')->first();
                   $id = $notificationData['id'];
                   $message = getMessage('collateral_penilaian');
-                  //*/
                   $credentials = [
                      'headerNotif' => $message['title'],
                      'bodyNotif' => $message['body'],
@@ -424,7 +415,6 @@ class CollateralController extends Controller
                 // Get data from notifications table
                 $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
                 ->orderBy('created_at', 'desc')->first();
-                // $pushNotif = false;
               }
 
                 // Notif Akan Dikirim ke AO
@@ -459,7 +449,6 @@ class CollateralController extends Controller
                     $userNotif = new UserNotification;
                     // Get data from notifications table
                     $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral_manager_approving')->orderBy('created_at', 'desc')->first();
-                    // $pushNotif = false;
                   }
 
                     // Notif Akan Dikirim ke AO
@@ -555,7 +544,6 @@ class CollateralController extends Controller
         \Log::info('=======notif disposisi ke staff colleteral atau ao ======');
         $dataInput = $this->request->all();
         $staff_id = $dataInput['staff_id'];
-        //*
         //insert data from notifications table collateral disposition
         $type = 'collateral_disposition';
         $dataCollateral = Collateral::where('id',$collateralId)->first();

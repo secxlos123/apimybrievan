@@ -35,9 +35,6 @@ class EFormVerification extends Mailable
      */
     public function build()
     {
-        if (env('APP_ENV') == 'production') {
-            return $this->view( 'mails.eform_verification_simple', $this->mail );
-        }
-        return $this->view( 'mails.eform_verification', $this->mail );
+        return $this->view( 'mails.eform_verification_simple', $this->mail );
     }
 }

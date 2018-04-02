@@ -47,12 +47,6 @@ class PrescreeningController extends Controller
 
         } else {
             $dhn = $dhn->responseData;
-
-            // change request by Mas Singh
-            // if ( $user_login['role'] == 'ao' ) {
-            // } else {
-            //     $dhn = array($dhn->responseData[ intval($data->selected_dhn) ]);
-            // }
         }
 
         $sicd = json_decode((string) $data->sicd_detail);
@@ -61,12 +55,6 @@ class PrescreeningController extends Controller
 
         } else {
             $sicd = $sicd->responseData;
-
-            // change request by Mas Singh
-            // if ( $user_login['role'] == 'ao' ) {
-            // } else {
-            //     $sicd = array($sicd->responseData[ intval($data->selected_sicd) ]);
-            // }
         }
 
         $pefindo = json_decode((string) $data->pefindo_detail);

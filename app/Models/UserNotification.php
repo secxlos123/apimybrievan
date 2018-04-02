@@ -100,7 +100,6 @@ class UserNotification extends Model
 			->whereIn(
 				'notifications.type'
 				, array(
-					// 'App\Notifications\ApproveEFormCustomer'
 					'App\Notifications\ApproveEFormCLASCustomer'
 					, 'App\Notifications\RejectEFormCustomer'
 					, 'App\Notifications\RejectEFormCLASCustomer'
@@ -255,8 +254,6 @@ class UserNotification extends Model
 			if ( in_array( $role, ['pinca', 'ao'] ) ) {
 				$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 			}
-			// \Log::info($query->getBindings());
-			// \Log::info($query->toSql());
 
 			return $query;
 		}

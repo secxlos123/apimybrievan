@@ -102,7 +102,6 @@ class Developer extends Model implements AuditableContract
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
-                        // $developer->where('bri', '=', NULL);
                         $developer->where('bri', '!=', '1');
                     }
                 }
@@ -149,7 +148,6 @@ class Developer extends Model implements AuditableContract
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
-                        // $developer->where('bri', '=', NULL);
                         $developer->where('bri', '!=', '1');
                     }
                 }
@@ -220,7 +218,7 @@ class Developer extends Model implements AuditableContract
         }
 
         $data = DB::table('user_developers')
-                        ->select('users.first_name', 
+                        ->select('users.first_name',
                                  'users.last_name',
                                  'user_developers.user_id',
                                  DB::raw("COUNT(eforms.id) as eform"),
@@ -235,7 +233,7 @@ class Developer extends Model implements AuditableContract
                         })
                         ->groupBy('first_name', 'last_name', 'user_developers.user_id')
                         ->get();
-        
+
         return $data;
     }
 }

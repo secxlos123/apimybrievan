@@ -34,10 +34,12 @@ Route::get('/get-asmx', function() {
 	return \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
 });
 
-Route::get('/routes', function () {
-	$routeCollection = Route::getRoutes();
-	return view('routes', compact('routeCollection'));
-});
+if ( ENV( "APPLICATION_POSITION" ) != "production" ) {
+	Route::get('/routes', function () {
+		$routeCollection = Route::getRoutes();
+		return view('routes', compact('routeCollection'));
+	});
+}
 
 Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
 	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr', 'recontest' )
@@ -81,16 +83,8 @@ Route::get('/resend_verification/{ref_number}', function ($ref_number) {
 });
 
 Route::get('email', function () {
-	 $mail = [ 'url' => 'aktivasi akun 3', 'email' => 'rahmatramadhan13@gmail.com'];
-	 $send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
-
-	//$mail = [
-        //'email' => 'rahmatramadhan13@gmail.com',
-         //'name' => 'mohammad rachmat ramadhan plus dua',
-       //  'url' => env( 'MAIN_APP_URL', 'https://mybri.stagingapps.net' ) . '/eform/ashkda23878923uhy7dh32kct23'
-     //];
-
-	//$send = Mail::to( $mail[ 'email' ] )->send( new VerificationEFormCustomer( $mail ) );
+	$mail = [ 'url' => 'aktivasi akun 3', 'email' => 'rahmatramadhan13@gmail.com'];
+	$send = Mail::to( $mail[ 'email' ] )->send( new Register( $mail ) );
 	dd($send);
 });
 
@@ -129,51 +123,43 @@ Route::get( '/getbidangpekerjaan', function() {
 } );
 
 Route::get( '/uploads-apk', function() {
-	// print_r(ini_get('post_max_size'));
-	// print_r(asset('uploads/apk/int/int000001.apk'));
-	// // if (file_exists(asset('uploads/apk/int/int000001.apk'))) {
-	// // 	print_r('aya');
-	// // }else{
-	// // 	print_r('euweuh');
-	// // }
 	$data = ApkLogs::all();
 	return view('uploads-apk.form', compact('data'));
 } )->name('uploads-apk');
 
 Route::post( '/post-apk', function(ApkRequest $request) {
+	if (isset($request->apkEks) && $request->apkEks) {
+		$destinationPath = 'uploads/apk/eks';
+		$fileEks = $request->apkEks;
+		$fileName = 'eks'.$request->versionEks.$request->versionNumEks.'.apk';
+		$fileEks->move($destinationPath,$fileName);
 
-		if (isset($request->apkEks) && $request->apkEks) {
-			$destinationPath = 'uploads/apk/eks';
-			$fileEks = $request->apkEks;
-			$fileName = 'eks'.$request->versionEks.$request->versionNumEks.'.apk';
-			$fileEks->move($destinationPath,$fileName);
+		$insertEks = new ApkLogs();
+		$insertEks->apk_type = 'eks';
+		$insertEks->version_type = ($request->versionEks == 01) ? 'prod' : 'dev';
+		$insertEks->version_number = $request->versionNumEks;
+		$insertEks->file_name = $fileName;
+		$insertEks->save();
 
-			$insertEks = new ApkLogs();
-			$insertEks->apk_type = 'eks';
-			$insertEks->version_type = ($request->versionEks == 01) ? 'prod' : 'dev';
-			$insertEks->version_number = $request->versionNumEks;
-			$insertEks->file_name = $fileName;
-			$insertEks->save();
+		\Session::flash('status', 'apk eksternal berhasil disimpan');
 
-			\Session::flash('status', 'apk eksternal berhasil disimpan');
+	}
+	if (isset($request->apkInt) && $request->apkInt) {
+		$destinationPath = 'uploads/apk/int';
+		$fileInt = $request->apkInt;
+		$fileName = 'int'.$request->versionInt.$request->versionNumInt.'.apk';
+		$fileInt->move($destinationPath,$fileName);
 
-		}
-		if (isset($request->apkInt) && $request->apkInt) {
-			$destinationPath = 'uploads/apk/int';
-			$fileInt = $request->apkInt;
-			$fileName = 'int'.$request->versionInt.$request->versionNumInt.'.apk';
-			$fileInt->move($destinationPath,$fileName);
+		$insertInt = new ApkLogs();
+		$insertInt->apk_type = 'int';
+		$insertInt->version_type = ($request->versionInt == 01) ? 'prod' : 'dev';
+		$insertInt->version_number = $request->versionNumInt;
+		$insertInt->file_name = $fileName;
+		$insertInt->save();
 
-			$insertInt = new ApkLogs();
-			$insertInt->apk_type = 'int';
-			$insertInt->version_type = ($request->versionInt == 01) ? 'prod' : 'dev';
-			$insertInt->version_number = $request->versionNumInt;
-			$insertInt->file_name = $fileName;
-			$insertInt->save();
-
-			\Session::flash('status', 'apk internal berhasil disimpan');
-		}
-		return redirect()->route('uploads-apk');
+		\Session::flash('status', 'apk internal berhasil disimpan');
+	}
+	return redirect()->route('uploads-apk');
 
 } );
 

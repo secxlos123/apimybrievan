@@ -287,7 +287,6 @@ class CustomerDetail extends Model implements AuditableContract
         if ($callbackPosition) {
             $doFunction = isset($this->attributes[ $attribute ]);
         }
-        \Log::info("========================handling upload=============================");
         $base = $this->nik ? $this->nik : self::$folder;
         if ( isset($this->attributes[ $attribute ]) && gettype($image) == 'object' ) {
             $path = public_path( 'uploads/' . $base . '/' );

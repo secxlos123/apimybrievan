@@ -76,9 +76,7 @@ class ScoringController extends Controller
      public function uploadimage($image,$id){
         $eform = EForm::where('id', $id)->first();
         $path = public_path( 'uploads/' . $eform->nik . '/' );
-        // if ( ! empty( $this->attributes[ 'uploadscore' ] ) ) {
-        //     File::delete( $path . $this->attributes[ 'uploadscore' ] );
-        // }
+
         $filename = null;
         if ($image) {
             if (!$image->getClientOriginalExtension()) {
@@ -90,7 +88,6 @@ class ScoringController extends Controller
             }else{
                 $extension = $image->getClientOriginalExtension();
             }
-            // log::info('image = '.$image->getMimeType());
             $filename = $id . '-pefindo-report.' . $extension;
             $image->move( $path, $filename );
         }
@@ -101,9 +98,7 @@ class ScoringController extends Controller
      public function uploadimagemulti($image,$id,$i){
         $eform = EForm::where('id', $id)->first();
         $path = public_path( 'uploads/' . $eform->nik . '/' );
-        // if ( ! empty( $this->attributes[ 'uploadscore'.$i ] ) ) {
-        //     File::delete( $path . $this->attributes[ 'uploadscore'.$i ] );
-        // }
+
         if (!$image->getClientOriginalExtension()) {
             if ($image->getMimeType() == '.pdf') {
                 $extension = '.pdf';
@@ -113,7 +108,7 @@ class ScoringController extends Controller
         }else{
             $extension = $image->getClientOriginalExtension();
         }
-        // log::info('image = '.$image->getMimeType());
+
         $filename = $id.'-'.$i.'-pefindo-report.' . $extension;
         $image->move( $path, $filename );
         return $filename;
@@ -157,9 +152,7 @@ class ScoringController extends Controller
         }
         }
         unset($dats['countupload']);
-        //$request->uploadscore = $filename;
 
-        //---------here
         $dats['uploadscore'] = $filename;
         if ($filename2 != '') {
             $dats['uploadscore'] .= ','.$filename2;

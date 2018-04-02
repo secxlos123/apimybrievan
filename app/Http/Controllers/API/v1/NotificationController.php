@@ -38,32 +38,30 @@ class NotificationController extends Controller
     	$user_id = ( request()->header( 'userid' ) != '' ) ? request()->header( 'userid' ) : 0 ;
         $ArrGetDataNotification = [];
 
-        if (ENV('APP_ENV') == 'local') {
-            $branch_id = substr($branch_id,-3);
-            $pn = '000'.$pn;
+        if ( ENV('APP_ENV') == 'local' ) {
+            $branch_id = substr( $branch_id, -3 );
+            $pn = '000' . $pn;
         }
 
-        $getDataNotification = $this->userNotification->getUnreads( $branch_id,
-                                                                    $role,
-                                                                    $pn,
-                                                                    $user_id);
-        if($getDataNotification){
-            foreach ($getDataNotification->get() as $value) {
+        $getDataNotification = $this->userNotification->getUnreads( $branch_id, $role, $pn, $user_id );
+
+        if ( $getDataNotification ) {
+            foreach ( $getDataNotification->get() as $value ) {
                 $ArrGetDataNotification[] = [
-                                        'id' => $value->id,
-                                        'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],
-                                        'subject' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message'],
-                                        'subject_external' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external'],
-                                        'type' => $value->type,
-                                        'notifiable_id' => $value->notifiable_id,
-                                        'notifiable_type' => $value->notifiable_type,
-                                        'role_name' => $value->role_name,
-                                        'branch_id' => $value->branch_id,
-                                        'data' => $value->data,
-                                        'created_at' => $value->created_at->diffForHumans(),
-                                        'is_read' => (bool) $value->is_read,
-                                        'read_at' => $value->read_at,
-                                    ];
+                    'id' => $value->id,
+                    'url' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['url'],
+                    'subject' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message'],
+                    'subject_external' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external'],
+                    'type' => $value->type,
+                    'notifiable_id' => $value->notifiable_id,
+                    'notifiable_type' => $value->notifiable_type,
+                    'role_name' => $value->role_name,
+                    'branch_id' => $value->branch_id,
+                    'data' => $value->data,
+                    'created_at' => $value->created_at->diffForHumans(),
+                    'is_read' => (bool) $value->is_read,
+                    'read_at' => $value->read_at,
+                ];
             }
         }
     	return  response()->success( [
@@ -81,16 +79,15 @@ class NotificationController extends Controller
         $limit = (empty($request->limit) ? 10 : $request->limit);
 
         if ($type == "eks") {
-            $data   = $this->userNotification->getUnreadsMobile(null, $role, null, $user_id, $limit, false);
-        }else {
-            $user     = \RestwsHc::getUser();
-            $branchID = substr($branch_id, -3);
-            $pn       = "000".$pn;
-
+            $data = $this->userNotification->getUnreadsMobile(null, $role, null, $user_id, $limit, false);
+        } else {
+            $user = \RestwsHc::getUser();
+            $branchID = substr( $branch_id, -3 );
+            $pn = "000" . $pn;
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
         }
 
-        if($data){
+        if ( $data ) {
             foreach ($data as $key => $value) {
                 $data[$key]['message'] = [
                     'title' => $value['data']['message']['title']
