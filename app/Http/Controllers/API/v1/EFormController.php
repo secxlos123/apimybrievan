@@ -542,7 +542,7 @@ class EFormController extends Controller
                         ]);
 
                         return response()->json([
-                            'responseCode' => '01',
+                            'responseCode' => '02',
                             'responseMessage' => 'Nasabah pernah mengajukan kartu kredit 6 bulan terakhir'
                         ]);
                     }
