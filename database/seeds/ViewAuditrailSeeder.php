@@ -21,15 +21,6 @@ when event = 'updated' and lower(auditable_type) = 'app\models\appointment' and 
 when event = 'created' and lower(auditable_type) = 'app\models\appointment' and slug = 'developer-sales' then 'Penjadwalan baru via Eform AgenDev'
 when event = 'created' and lower(auditable_type) = 'app\models\appointment' and role = 'ao' then 'Penjadwalan baru via Eform AO'
 when event = 'updated' and lower(auditable_type) = 'app\models\appointment' and role = 'ao' then 'Ubah Penjadwalan via AO'
--- when event = 'created' and lower(auditable_type) = 'app\models\eform' and slug = 'customer' then 'Tambah Eform via Nasabah' 
--- when event = 'created' and lower(auditable_type) = 'app\models\eform' and slug = 'developer-sales' then 'Tambah Eform via AgenDev'
--- when event = 'created' and lower(auditable_type) = 'app\models\eform' and role = 'ao' then 'Tambah Eform via AO'
--- when event = 'created' and lower(auditable_type) = 'app\models\user' and role = 'ao' then 'Tambah Leads via AO'
--- when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 'developer-sales' then 'Tambah Leads via AgenDev'
--- when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 'developer' then 'Tambah Agen Developer'
--- when event = 'created' and lower(auditable_type) = 'app\models\user' and slug is null then 'Register Nasabah'
--- when event = 'updated' and lower(auditable_type) = 'app\models\customerdetail' and slug = 'customer' then 'Update Data Pribadi Nasabah'
--- when event = 'updated' and lower(auditable_type) = 'app\models\eform' and role = 'staff' then 'Disposisi'
 end as modul_name
 , a.action
 , a.event
@@ -60,17 +51,6 @@ left join user_services h on h.pn = a.user_id");
         \DB::unprepared("CREATE VIEW auditrail_type_two AS
          select a.id
 , a.created_at
-/*, case
-when event = 'created' and lower(auditable_type) = 'app\\models\\eform' and slug = 'customer' then 'Tambah Eform via Nasabah' 
-when event = 'created' and lower(auditable_type) = 'app\\models\\eform' and slug = 'developer-sales' then 'Tambah Eform via AgenDev'
-when event = 'created' and lower(auditable_type) = 'app\\models\\eform' and role = 'ao' then 'Tambah Eform via AO'
-when event = 'created' and lower(auditable_type) = 'app\\models\\user' and role = 'ao' then 'Tambah Leads via AO'
-when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 'developer-sales' then 'Tambah Leads via AgenDev'
-when event = 'created' and lower(auditable_type) = 'app\models\user' and slug = 'developer' then 'Tambah Agen Developer'
-when event = 'created' and lower(auditable_type) = 'app\models\user' and slug is null then 'Register Nasabah'
-when event = 'updated' and lower(auditable_type) = 'app\models\customerdetail' and slug = 'customer' then 'Update Data Pribadi Nasabah'
-when event = 'updated' and lower(auditable_type) = 'app\\models\\eform' and role = 'staff' then 'Disposisi' else a.action
-end as modul_name*/
 , a.action as modul_name
 , a.event
 , a.user_id
@@ -78,7 +58,6 @@ end as modul_name*/
 , a.url
 , case when b.first_name is not null then concat(b.first_name,' ',b.last_name) else h.name end as username
 , case when e.slug is not null then e.slug else h.role end as role
-/*, case when g.ref_number is not null then g.ref_number else i.ref_number end as ref_number */
 , i.ref_number as ref_number
 , c.company_name
 , case when c.id = '1' then 'Non Kerja Sama' when c.id >1 then 'Kerja Sama' else '' end as developer
@@ -118,8 +97,8 @@ left join user_services h on h.pn = a.user_id
               , concat(e.first_name,' ',e.last_name) as debitur
               , b.branch_id
               , d.region_name
-              , d.region_id 
-        from auditrail_type_two a 
+              , d.region_id
+        from auditrail_type_two a
         join eforms b on b.ref_number = a.ref_number
         join kpr c on c.eform_id = b.id
         join properties d on d.id = c.property_id

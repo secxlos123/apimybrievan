@@ -104,6 +104,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			'only' => ['index','store', 'update']
 		]);
 		Route::get('schedule/{id}', ['as' => 'schedule.detail', 'uses' => 'AppointmentController@detail']);
+
 		/**
 		 * Route group for controller when uses trait ManageUserTrait
 		 */
@@ -130,7 +131,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('collateral/notifotsnonindex/{developerId}/{propertyId}', ['as' => 'collateral.notifotsnonindex', 'uses' => 'CollateralController@NotifOtsNonindex']);
 		Route::get('collateral/notifots/{developerId}/{propertyId}', ['as' => 'collateral.notifots', 'uses' => 'CollateralController@NotifOts']);
         Route::get('collateral/collateralnotif/{collateralId}', ['as' => 'collateral.shownotif', 'uses' => 'CollateralController@notifCollateral']);
-        Route::get('collateral/getIdCollateral/{property_id}', ['as' => 'collateral.getIdCollateral', 'uses' => 'CollateralController@getIdCollateral']);        
+        Route::get('collateral/getIdCollateral/{property_id}', ['as' => 'collateral.getIdCollateral', 'uses' => 'CollateralController@getIdCollateral']);
 
 		/**
 		 * Collateral ots routes
@@ -141,6 +142,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::get('/{collateralId}', ['as' => 'collateral.ots.show', 'uses' => 'CollateralController@getOts'])
 				->where('collateralId', '[0-9]+');
 		});
+
 		/**
 		 * Collateral ots Doc routes
 		 */

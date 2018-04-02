@@ -18,12 +18,11 @@ class CollateralController extends Controller
     {
     	$limit = $request->input('limit') ?: 10;
         $collateral = Collateral::GetLists($request)->paginate($limit);
-            return response()->success([
-                'contents' => $collateral,
-            ], 200);
-        
-    }
+        return response()->success([
+            'contents' => $collateral,
+        ], 200);
 
+    }
 
     /**
      * Display a listing of the resource.
@@ -34,9 +33,9 @@ class CollateralController extends Controller
     public function show($id)
     {
         $collateral = Collateral::GetDetails($id);
-            return response()->success([
-                'contents' => $collateral,
-            ], 200);
-        
+        return response()->success([
+            'contents' => $collateral,
+        ], 200);
+
     }
 }

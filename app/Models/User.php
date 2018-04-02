@@ -300,7 +300,6 @@ class User extends Authenticatable implements AuditableContract, UserResolver
     protected function createOrUpdate(Request $request, $user, $relation = null)
     {
         if ( ! $user instanceof $this ) {
-            //$password = str_random(8);
             $email = strtolower($request->email);
             $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
             $request->merge(['email'=> $email , 'password' => bcrypt($password)]);
@@ -751,8 +750,6 @@ class User extends Authenticatable implements AuditableContract, UserResolver
             return !($user_int) ? $user : ltrim($user_int['pn'], '0') ;
         }
         $headers = apache_request_headers();
-        \Log::info($user);
         return array_key_exists('pn', $headers) ? ltrim($headers['pn'], '0') : $user;
-        // return true;
     }
 }

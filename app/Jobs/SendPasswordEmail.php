@@ -42,7 +42,7 @@ class SendPasswordEmail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $user, $password, $type)
+    public function __construct( User $user, $password, $type )
     {
         $this->user = $user;
         $this->password = $password;
@@ -56,12 +56,12 @@ class SendPasswordEmail implements ShouldQueue
      */
     public function handle()
     {
-        $mail = ['email' => $this->user->email, 'password' => $this->password, 'name' => $this->user->fullname];
-        $send = Mail::to($mail['email']);
+        $mail = [ "email" => $this->user->email, "password" => $this->password, "name" => $this->user->fullname ];
+        $send = Mail::to( $mail["email"] );
 
-        switch ($this->type) {
-            case 'reset': return $send->send(new ResetPassword($mail));
-            case 'registered': return $send->send(new Registered($mail));
+        switch ( $this->type ) {
+            case "reset": return $send->send( new ResetPassword( $mail ) );
+            case "registered": return $send->send( new Registered( $mail ) );
         }
     }
 }

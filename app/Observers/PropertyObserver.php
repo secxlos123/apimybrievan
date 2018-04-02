@@ -13,13 +13,13 @@ class PropertyObserver
      * @param  Property  $property
      * @return void
      */
-    public function saved(Property $property)
+    public function saved( Property $property )
     {
-        if (request()->hasFile('photo') && $property->photo) Storage::delete($property->photo->path);
+        if ( request()->hasFile( "photo" ) && $property->photo ) Storage::delete( $property->photo->path );
 
-        if (request()->hasFile('photo')) {
-            $path = request()->file('photo')->store('', 'properties');
-            $property->photo()->create( compact('path') );
+        if ( request()->hasFile( "photo" ) ) {
+            $path = request()->file( "photo" )->store( "", "properties" );
+            $property->photo()->create( compact( "path" ) );
         }
     }
 }

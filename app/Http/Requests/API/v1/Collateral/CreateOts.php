@@ -190,7 +190,6 @@ class CreateOts extends FormRequest
         'seven.collateral_status' => 'required',
         'seven.on_behalf_of' => 'required',
         'seven.ownership_number' => 'required',
-        //'seven.location' => 'required',
         'seven.city_id' => 'required|regex:/^[\d.]+$/|exists:cities,id',
         'seven.address_collateral' => 'required',
         'seven.description' => 'required',

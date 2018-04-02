@@ -1261,7 +1261,7 @@ class ApiLasController extends Controller
                             if ($data['is_send'] == '1') {
                                 $eform_request['status_eform'] = "Approval1";
                                 $eform_request['response_status'] = "Disetujui Briguna";
-                            } elseif ($data['is_send'] == '3') {
+                            } elseif ($data['is_send'] == '3' || $data['is_send'] == '4') {
                                 $eform_request['status_eform'] = "Rejected";
                                 $eform_request['response_status'] = "Ditolak Briguna";
                             }
@@ -1766,12 +1766,12 @@ class ApiLasController extends Controller
                                 "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name']
                             ];
                             $eform_id = $request['eform_id'];
-                            $param_eform["branch_id"] = $request['kantor_cabang_id'];
-                            $param_eform["status_eform"] = "Menunggu Putusan";
-                            $param_eform["response_status"] = "Menunggu Putusan Briguna";
-                            $briguna  = BRIGUNA::where("eform_id","=",$eform_id);
-                            $eform    = EForm::findOrFail($eform_id);
-
+                            $param_eform['branch_id'] = $request['kantor_cabang_id'];
+                            $param_eform['status_eform'] = "Menunggu Putusan";
+                            $param_eform['response_status'] = "Menunggu Putusan Briguna";
+                            $eform   = EForm::where('id',$eform_id)->first();
+                            $briguna = BRIGUNA::where('eform_id',$eform_id);
+                            $detail  = CustomerDetail::where('user_id',$eform['user_id'])->first();
                             //------------hapus ataupun update file--------------------------------
                             $brigunas = $briguna->get();
                             $npwp = $this->datafoto($request['NPWP_nasabah'],$brigunas[0]['id_foto'],$brigunas[0]['NPWP_nasabah']);
@@ -1789,15 +1789,18 @@ class ApiLasController extends Controller
                             $param_briguna['SK_AWAL']      = $sk_awal;
                             $param_briguna['SK_AKHIR']     = $sk_akhir;
                             $param_briguna['REKOMENDASI']  = $rekomend;
-                            $param_briguna["gaji_pensiun"] = !isset($request['Gaji_per_bulan_pensiun'])?0:$request['Gaji_per_bulan_pensiun'];
-                            $param_briguna["gaji_bersih_pensiun"] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?0:$request['Gaji_bersih_per_bulan_pensiun'];
-                            $param_briguna["Pendapatan_profesi_pensiun"] = !isset($request['Pendapatan_profesi_pensiun'])?0:$request['Pendapatan_profesi_pensiun'];
-                            $param_briguna["Potongan_per_bulan_pensiun"] = !isset($request['Potongan_per_bulan_pensiun'])?0:$request['Potongan_per_bulan_pensiun'];
-                            $param_briguna["Maksimum_plafond_pensiun"] = !isset($request['Maksimum_plafond_pensiun'])?0:$request['Maksimum_plafond_pensiun'];
-                            $param_briguna["Maksimum_angsuran_pensiun"] = !isset($request['Maksimum_angsuran_pensiun'])?0:$request['Maksimum_angsuran_pensiun'];
-                            $param_briguna["Maksimum_plafond_diberikan"] = !isset($request['Maksimum_plafond_diberikan'])?0:$request['Maksimum_plafond_diberikan'];
+                            $param_briguna['gaji_pensiun'] = !isset($request['Gaji_per_bulan_pensiun'])?0:$request['Gaji_per_bulan_pensiun'];
+                            $param_briguna['gaji_bersih_pensiun'] = !isset($request['Gaji_bersih_per_bulan_pensiun'])?0:$request['Gaji_bersih_per_bulan_pensiun'];
+                            $param_briguna['Pendapatan_profesi_pensiun'] = !isset($request['Pendapatan_profesi_pensiun'])?0:$request['Pendapatan_profesi_pensiun'];
+                            $param_briguna['Potongan_per_bulan_pensiun'] = !isset($request['Potongan_per_bulan_pensiun'])?0:$request['Potongan_per_bulan_pensiun'];
+                            $param_briguna['Maksimum_plafond_pensiun'] = !isset($request['Maksimum_plafond_pensiun'])?0:$request['Maksimum_plafond_pensiun'];
+                            $param_briguna['Maksimum_angsuran_pensiun'] = !isset($request['Maksimum_angsuran_pensiun'])?0:$request['Maksimum_angsuran_pensiun'];
+                            $param_briguna['Maksimum_plafond_diberikan'] = !isset($request['Maksimum_plafond_diberikan'])?0:$request['Maksimum_plafond_diberikan'];
+                            $param_detail['salary'] = !isset($request['Gaji_per_bulan'])?0:$request['Gaji_per_bulan'];
+                            $param_detail['loan_installment'] = !isset($request['Potongan_per_bulan'])?0:$request['Potongan_per_bulan'];
 
                             $eform->update($param_eform);
+                            $detail->update($param_detail);
                             $briguna->update($param_briguna);
                             $result = [
                                 'code'         => $kirim['statusCode'], 
@@ -1909,7 +1912,7 @@ class ApiLasController extends Controller
                     $eform_request['IsFinish'] = true;
                     $eform_request['status_eform'] = "Rejected";
                     $eform_request['response_status'] = "Ditolak Briguna";
-                    $eform = EForm::findOrFail($data['eform_id']);
+                    $eform = EForm::findOrFail($response['eform_id']);
                     $eform->update($eform_request);
                 }
                 $briguna = BRIGUNA::where("eform_id", "=", $response['eform_id']);
@@ -2000,19 +2003,11 @@ class ApiLasController extends Controller
             try {
                 $data_eforms = EForm::where('id',$response['eform_id'])->first();
                 $id_foto = $data_eforms['briguna']['id_foto'];
-                if (isset($response['lainnya1']) || empty($response['lainnya1'])) {
-                    $foto_lainnya1 = $this->datafoto(!isset($response['lainnya1'])?null:$response['lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
-                    $foto_lainnya2 = $this->datafoto(!isset($response['lainnya2'])?null:$response['lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
-                    $foto_lainnya3 = $this->datafoto(!isset($response['lainnya3'])?null:$response['lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
-                    $foto_lainnya4 = $this->datafoto(!isset($response['lainnya4'])?null:$response['lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
-                    $foto_lainnya5 = $this->datafoto(!isset($response['lainnya5'])?null:$response['lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
-                } else {
-                    $foto_lainnya1 = $this->datafoto($response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
-                    $foto_lainnya2 = $this->datafoto($response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
-                    $foto_lainnya3 = $this->datafoto($response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
-                    $foto_lainnya4 = $this->datafoto($response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
-                    $foto_lainnya5 = $this->datafoto($response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
-                }
+                $foto_lainnya1 = $this->datafoto(!isset($response['foto_lainnya1'])?null:$response['foto_lainnya1'],$id_foto,$data_eforms['briguna']['lainnya1']);
+                $foto_lainnya2 = $this->datafoto(!isset($response['foto_lainnya2'])?null:$response['foto_lainnya2'],$id_foto,$data_eforms['briguna']['lainnya2']);
+                $foto_lainnya3 = $this->datafoto(!isset($response['foto_lainnya3'])?null:$response['foto_lainnya3'],$id_foto,$data_eforms['briguna']['lainnya3']);
+                $foto_lainnya4 = $this->datafoto(!isset($response['foto_lainnya4'])?null:$response['foto_lainnya4'],$id_foto,$data_eforms['briguna']['lainnya4']);
+                $foto_lainnya5 = $this->datafoto(!isset($response['foto_lainnya5'])?null:$response['foto_lainnya5'],$id_foto,$data_eforms['briguna']['lainnya5']);
                 
                 $data_briguna['id_foto']  = $id_foto;
                 $data_briguna['lainnya1'] = $foto_lainnya1;

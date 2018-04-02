@@ -30,8 +30,8 @@ class RestwsHcServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('bri.restwshc', function ($app) {
-            return new ServiceRestwsHc(new HttpClient);
+        $this->app->singleton( "bri.restwshc", function ( $app ) {
+            return new ServiceRestwsHc( new HttpClient );
         });
     }
 
@@ -42,6 +42,6 @@ class RestwsHcServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['bri.restwshc'];
+        return [ "bri.restwshc" ];
     }
 }

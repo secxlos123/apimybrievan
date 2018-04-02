@@ -49,7 +49,7 @@ class DeveloperController extends Controller
         } else {
           $developers = Developer::where('id', $id)->get();
         }
-        \Log::info($developers);
+
         $developers->transform(function ($developer) {
             $temp = $developer->toArray();
             if (!empty($developer->image)) {
@@ -69,11 +69,9 @@ class DeveloperController extends Controller
 
             }
 
-            \Log::info($temp);
             return $temp;
         });
 
-        \Log::info($developers);
         return response()->success(['contents' => !$id ? $developers : $developers->first()]);
     }
 
@@ -126,33 +124,29 @@ class DeveloperController extends Controller
         // event( new CreateOrUpdate ( $user['developer'] ) );
         \DB::beginTransaction();
         try {
-        $insert = $this->sentDeveloperToCelas($user);
-        $developer = Developer::findOrFail($user['developer']['id']);
-        if($insert['code'] ==  '200' ){
-                $developer->update(['dev_id_bri' => $insert['contents']]);
-                 \DB::commit();
-                return response()->success([
-                'message'  => "Data developer berhasil {$method}.",
-                'contents' => array_except($user, 'developer')
-            ]);
-        }
-        else
-        {
-                \Log::info($developer->user_id);
+            $insert = $this->sentDeveloperToCelas($user);
+            $developer = Developer::findOrFail($user['developer']['id']);
+            if($insert['code'] ==  '200' ){
+                    $developer->update(['dev_id_bri' => $insert['contents']]);
+                     \DB::commit();
+                    return response()->success([
+                    'message'  => "Data developer berhasil {$method}.",
+                    'contents' => array_except($user, 'developer')
+                ]);
+            } else {
                 if ($method == 'disimpan') {
                     User::destroy($developer->user_id);
                 }
                 \DB::commit();
                 return response()->error([
-                'message'  => "Data developer Gagal {$method}.",
-                'contents' => array_except($user, 'developer')
-            ]);
-        }
+                    'message'  => "Data developer Gagal {$method}.",
+                    'contents' => array_except($user, 'developer')
+                ]);
+            }
+
         }catch (\Exception $e) {
-            \Log::info('====================== catch Developer =====================');
-            \Log::info($e);
             \DB::rollBack();
-           return response()->error([
+            return response()->error([
                 'message'  => "Data developer Gagal Di Tambah.",
             ]);
         }
@@ -186,8 +180,6 @@ class DeveloperController extends Controller
         $id = \Asmx::setEndpoint('InsertDataPihakKetiga')
             ->setBody(['request' => json_encode($current)])
             ->post('form_params');
-        \Log::info('================== response  Celas Add Developer=========');
-        \Log::info($id);
 
         return $id;
 
@@ -200,9 +192,9 @@ class DeveloperController extends Controller
     {
         $limit = $request->input('limit') ?: 500;
         $developer = Developer::select('id','dev_id_bri','company_name')->paginate($limit);
-            return response()->success([
-                'message'  => "List Data Semua Developer",
-                'contents' => $developer ]);
-
+        return response()->success([
+            'message'  => "List Data Semua Developer",
+            'contents' => $developer
+        ]);
     }
 }

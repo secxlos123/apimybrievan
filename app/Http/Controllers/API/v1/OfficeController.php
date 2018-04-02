@@ -38,11 +38,8 @@ class OfficeController extends Controller
                     $offices[] = $branch;
                 }
             }
-            // $offices = collect($branchs['responseData'])->reject(function ($branch) use($search) {
-            //     // Client mintanya kantor cabang aja, klo mau nambah tinggal tambah KCP atau KP
-            //     return (( !in_array($branch['jenis_uker'], ['KC']) ) && (  ) ;
-            // })->slice($offset, $perPage)->values();
         }
+
         /**
          * Generate pagination
          */

@@ -110,9 +110,6 @@ class ProfileController extends Controller
                 $dev = Developer::where(['user_id'=> $user->id])->first();
                 $type = \App\Models\Developer::class;
 
-                //$usersModel = User::FindOrFail($user->id);
-                //$usersModel->notify(new EditDeveloper($dev));   /*send notification*/
-
             } elseif ($user->inRole('others')) {
                $type = \App\Models\ThirdParty::class;
                $dev = $user;

@@ -35,10 +35,6 @@ class Registered extends Mailable
      */
     public function build()
     {
-        if (env('APP_ENV') == 'production') {
-            return $this->view( 'mails.registered_simple', $this->mail );
-        }
-
-        return $this->view( 'mails.registered', $this->mail );
+        return $this->view( 'mails.registered_simple', $this->mail );
     }
 }

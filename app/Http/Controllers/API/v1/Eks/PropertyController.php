@@ -187,7 +187,6 @@ class PropertyController extends Controller
             $current = [
                 'tipe_project' => 'KPR',
                 'nama_project' => $property->name,
-                // 'alamat_project' => $property->address,
                 'pic_project' => $property->pic_name ?: '',
                 'pks_project' => $property->developer->pks_number ?: '-',
                 'deskripsi_project' => substr($property->description, 255),

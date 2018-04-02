@@ -192,7 +192,6 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
                             <div class="color-orange">e-Collateral</div>
                             <div class="color-blue">BRI</div>
