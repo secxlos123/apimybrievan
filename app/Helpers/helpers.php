@@ -90,7 +90,7 @@ if (! function_exists('get_pefindo_service')) {
 
         } else {
             $endpoint = ( $position == 'data' ) ? 'PefindoReportData' : 'GetPdfReport';
-            $return = ( $position == 'data' ) ? 0 : 'PDF kosong';
+            $return = ( $position == 'data' ) ? 0 : null;
 
             if ( $pefindoId ) {
                 if (ENV('APP_ENV') == 'local') {
