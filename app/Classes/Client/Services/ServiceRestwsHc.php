@@ -89,6 +89,9 @@ class ServiceRestwsHc extends Client
 
                     }
 
+                } else if ( in_array( $hilfm, [ 98 ] ) ) {
+                    $role = "direksi";
+
                 } else if ( in_array( $hilfm, [ 3 ] ) ) {
                     $role = "pinwil";
 
