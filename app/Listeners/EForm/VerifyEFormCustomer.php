@@ -33,12 +33,12 @@ class VerifyEFormCustomer
         $customer = $eform->customer;
 
         $mail = [
-            'email' => $customer->email,
-            'name' => $customer->fullname,
-            'ref_number' => $eform->ref_number,
-            'status' => $eform->response_status == 'approve' ? 'persetujuan' : 'konfirmasi'
+            "email" => $customer->email
+            , "name" => $customer->fullname
+            , "ref_number" => $eform->ref_number
+            , "status" => $eform->response_status == "approve" ? "persetujuan" : "konfirmasi"
         ];
-        
-        Mail::to( $mail[ 'email' ] )->send( new ConfirmationEFormCustomer( $mail ) );
+
+        Mail::to( $mail["email"] )->send( new ConfirmationEFormCustomer( $mail ) );
     }
 }

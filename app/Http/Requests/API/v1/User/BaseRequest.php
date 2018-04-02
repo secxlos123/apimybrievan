@@ -23,10 +23,9 @@ class BaseRequest extends FormRequest
      */
     public function rules()
     {
-        return [ 
-            'data' => 'required|json',           
+        return [
+            'data' => 'required|json',
             'first_name' => 'required',
-            // 'phone' => 'required|digits:12|numeric',
             'mobile_phone' => 'required|string|regex:/^[0-9]+$/|min:9|max:12',
             'gender' => 'required|in:L,P',
             'office_id' => 'required|exists:offices,id',

@@ -31,7 +31,7 @@ class ViewController extends Controller
 			if(!empty($table_view[$i]['div_name'])){
 				$divname = 'name="'.$table_view[$i]['div_name'].'"';
 			}
-			
+
 			if(!empty($table_view[$i]['div_id'])){
 				$divid = 'id="'.$table_view[$i]['div_id'].'"';
 			}
@@ -67,7 +67,7 @@ class ViewController extends Controller
 				}
 				$view1 .= $this->generate_table($table_view,$i);
 				$view1 .= '</div></div>';
-			}elseif($table_view[$i]['kolom']=='0'){			
+			}elseif($table_view[$i]['kolom']=='0'){
 				$view1 .= '<div class="row"><div class="col-md-6" '.$divid.' '.$divname.'><div class="form-horizontal"></div></div></div>';
 			}elseif($table_view[$i]['kolom']=='single'){
 				if($table_view[$i]['first']=='1'){
@@ -85,7 +85,7 @@ class ViewController extends Controller
             'contents' => $view
         ], 200 );
     }
-	
+
 	public function generate_table($table_view,$i){
 		$view1 = '';
 				if($table_view[$i]['type']=='select'){
@@ -114,21 +114,15 @@ class ViewController extends Controller
 			$label = '<label class="'.$class.'">'.$value.'</label>';
 			return $label;
     }
-	
+
     public function labeling($view)
     {
 			$form = '<div class="form-group '.$view['name'].'">';
 			if(!empty($view['label'])){
 			$form .= $this->label($view['label_class'],$view['label_value']);
 			}
-//			if(!empty($view['div'])){
-//			$form .= '<div class="'.$view['div_class'].'">';
-//			}
-//			if(!empty($view['div'])){
-//			$form .= '</div>';
-//			}
 			$form .= '</div>';
-	
+
 		return $form;
     }
     public function text($view)
@@ -140,7 +134,7 @@ class ViewController extends Controller
 			if(!empty($view['div'])){
 			$form .= '<div class="'.$view['div_class'].'">';
 			}
-			$form .=	'<input type="text" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+			$form .=	'<input type="text" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"
 						value="'.$view['value'].'" '.$view['etc'].'>';
 			if(!empty($view['div'])){
 			$form .= '</div>';
@@ -157,7 +151,7 @@ class ViewController extends Controller
 			if(!empty($view['div'])){
 			$form .= '<div class="'.$view['div_class'].'">';
 			}
-			$form .=	'<input type="file" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+			$form .=	'<input type="file" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"
 						value="'.$view['value'].'" '.$view['etc'].'>';
 			if(!empty($view['div'])){
 			$form .= '</div>';
@@ -165,7 +159,7 @@ class ViewController extends Controller
 			$form .= '</div>';
 		return $form;
     }
-	
+
 	 public function hidden($view)
     {
 			$form = '<div class="form-group '.$view['name'].'">';
@@ -175,7 +169,7 @@ class ViewController extends Controller
 			if(!empty($view['div'])){
 			$form .= '<div class="'.$view['div_class'].'">';
 			}
-			$form .=	'<input type="hidden" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+			$form .=	'<input type="hidden" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"
 						value="'.$view['value'].'" '.$view['etc'].'>';
 			if(!empty($view['div'])){
 			$form .= '</div>';
@@ -192,7 +186,7 @@ class ViewController extends Controller
 			if(!empty($view['div'])){
 			$form .= '<div class="'.$view['div_class'].'">';
 			}
-			$form .=	'<input type="number" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'" 
+			$form .=	'<input type="number" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"
 						value="'.$view['value'].'" '.$view['etc'].'>';
 			if(!empty($view['div'])){
 			$form .= '</div>';
@@ -213,10 +207,10 @@ class ViewController extends Controller
 			$table = '';
 			foreach ($isitable as $value) {
 				$table .= '<th>'.$value.'</th>';
-			} 
+			}
 			$form .=	'<table id="'.$view['id_table'].'" name="'.$view['name'].'" class="'.$view['class'].'"><thead class="bg-primary"><tr>'
 						.$table.'</tr></thead><tbody></tbody></table>';
-			
+
 			if(!empty($view['div'])){
 			$form .= '</div>';
 			}
@@ -255,9 +249,6 @@ class ViewController extends Controller
 				$radios = explode(",",$radio[$i]);
 				$form .= '<div class="col-md-3"><input type="radio" name="'.$view['name'].'" id="'.$view['id_table'].'" value="'.$radios['0'].'"'.$view['etc'].'>'.$radios['1'].'</div>';
 			}
-			
-/* 			$form .= 	'<select class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'">
-						'.$view['value'].'</select>'; */
 			if(!empty($view['div'])){
 			$form .= '</div>';
 			}
@@ -281,7 +272,7 @@ class ViewController extends Controller
 			$form .= '</div>';
 		return $form;
     }
-	 
+
 
 
 }

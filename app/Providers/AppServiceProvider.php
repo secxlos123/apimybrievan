@@ -13,13 +13,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ( ENV('APP_ENV') == "locals" ) {
+        if ( ENV("APP_ENV") == "locals" ) {
             \DB::listen(function ($query) {
-                \Log::info('--------------------- start query -------------------------');
-                \Log::info('query : ' . $query->sql);
-                \Log::info('bindings : ' . json_encode($query->bindings));
-                \Log::info('time : ' . $query->time);
-                \Log::info('--------------------- end query -------------------------');
+                \Log::info("--- start query ---");
+                \Log::info("query : " . $query->sql);
+                \Log::info("bindings : " . json_encode($query->bindings));
+                \Log::info("time : " . $query->time);
+                \Log::info("--- end query ---");
             });
         };
     }
@@ -31,6 +31,5 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
     }
 }

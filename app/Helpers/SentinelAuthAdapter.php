@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Helpers;
 
@@ -15,39 +15,44 @@ class SentinelAuthAdapter implements AuthInterface
      * @param  array  $credentials
      * @return bool
      */
-    public function byCredentials(array $credentials = [])
+    public function byCredentials( array $credentials = [] )
     {
         try {
-            $user = Sentinel::authenticate($credentials);
+            $user = Sentinel::authenticate( $credentials );
             return $user instanceof UserInterface;
+
         } catch (Exception $e) {
             return false;
+
         }
     }
+
     /**
      * Authenticate a user via the id
      *
      * @param  mixed  $id
      * @return bool
      */
-    public function byId($id)
+    public function byId( $id )
     {
         try {
-            $user = Sentinel::findById($id);
-           if (count($user) > 0) {
-            Sentinel::login($user);
-            return $user instanceof UserInterface && Sentinel::check();
-           }
-           else
-           {
-            Sentinel::logout($user);
-            return false;
-           }
+            $user = Sentinel::findById( $id );
+            if ( count( $user ) > 0 ) {
+                Sentinel::login( $user );
+                return $user instanceof UserInterface && Sentinel::check();
 
-        } catch (Exception $e) {
+            } else {
+                Sentinel::logout( $user );
+                return false;
+
+            }
+
+        } catch ( Exception $e ) {
             return false;
+
         }
     }
+
     /**
      * Get the currently authenticated user
      *

@@ -28,7 +28,7 @@ class suratrekomendasi extends Mailable
      * @return $this
      */
     public function build()
-    {	
+    {
 /* 		$file = storage_path('../public/img/Surat_Kuasa_Potong_Upah.pdf');
 		$file2 = storage_path('../public/img/Surat_Rekomendasi_Atasan.pdf'); */
 		$k = $this->view('mails.suratrekomendasi');

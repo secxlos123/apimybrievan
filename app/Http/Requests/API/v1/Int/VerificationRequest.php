@@ -23,18 +23,6 @@ class VerificationRequest extends BaseRequest
      */
     public function rules()
     {
-        switch ( strtolower( $this->method() ) ) {
-            case 'post':
-                return [
-                    // 'nik' => 'required|numeric|digits:16'
-                ];
-                break;
-            
-            default:
-                return [
-                    //
-                ];
-                break;
-        }
+        return [];
     }
 }

@@ -23,13 +23,6 @@ class CreateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            // 'city_id' => 'required|regex:/^[\d.]+$/|exists:cities,id',
-            // 'company_name' => 'required',
-            // 'summary' => 'required',
-            // 'logo' => 'required|file',
-            // 'phone' => 'required|regex:/^[\d.]+$/',
-            // 'mobile_phone' => 'required|regex:/^[\d.]+$/'
-        ];
+        return [];
     }
 }

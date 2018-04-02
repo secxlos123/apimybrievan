@@ -17,10 +17,10 @@ class CustomerEksController extends Controller
         $this->customer = $customer;
         $this->eform = $eform;
     }
-   
+
      /**
      * [customer description]
-     * 
+     *
      * @param  Request $request [description]
      * @return [type]           [description]
      */
@@ -30,7 +30,6 @@ class CustomerEksController extends Controller
 
         $customer = $this->customer->find($eform->user_id)->detail;
         $customer_data = $this->customer->find($eform->user_id);
-        //$eform = $this->eform->where('user_id',$id)->first();
 
         $data = [
             'no_ref' => $eform->ref_number,
@@ -77,7 +76,7 @@ class CustomerEksController extends Controller
             'kpr'=>$eform->kpr,
             'source_income'=>$customer->source_income
         ];
-      
+
     	return response()->success(['contents' => $data]);
     }
 }

@@ -52,7 +52,7 @@ class GimmickRequest extends BaseRequest
 					'jabatan' => 'required|numeric', */
                      ];
                 break;
-            
+
             case 'put':
                 if( $this->segment( 6 ) == 'verify' ) {
                     return [
@@ -66,7 +66,7 @@ class GimmickRequest extends BaseRequest
                     ];
                 }
                 break;
-            
+
             default:
                 return [
                     //

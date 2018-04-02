@@ -174,9 +174,7 @@ class Collateral extends Model implements AuditableContract
     protected static function boot()
     {
         parent::boot();
-        // static::creating(function($model) {
-        //   $model->status = 'pending';
-        // });
+
         static::updating(function($model) {
             if (!$model->approved_by) {
                 unset($model->approved_by);

@@ -48,7 +48,7 @@ class BRITransport extends Transport
     {
         $this->key = $key;
         $this->client = $client;
-        $this->setDomain($domain);
+        $this->setDomain( $domain );
     }
 
     /**
@@ -56,36 +56,26 @@ class BRITransport extends Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
-       if ( ENV('APP_ENV') != 'local' ) {
-            \Log::info('=========================================ini data masukan================'); 
-            \Log::info($message); 
-            $data = $this->beforeSendPerformed($message); 
-            \Log::info('=========================================ini data before masukan================'); 
-            \Log::info($data);
-            /**
-             * Wait for testing
-             */
-
-            //\RestwsHc::setBody($this->payload($message))->post('form_params');
-            \Log::info('=========================================sent data================');
-            $res = $this->client->post($this->url.'/send_emailv2',
-                ['form_params' => [
-                  'headers' => ['Content-type' => 'application/x-www-form-urlencoded'] ,
-                  'app_id'  => 'mybriapi',
-                  'subject' => $message->getSubject(),
-                  'content' => $message->getBody(),
-                  'to' => array_keys($message->getTo())[0]
-                  ],
-                ]);
-            \Log::info('========================================Respon data Service================');
-            \Log::info($res->getStatusCode());
-            \Log::info('=========================================Respon Content data Service================');
-          \Log::info($res->getBody()->getContents());
-            \Log::info('=========================================ini data sent sendPerformed================');
-            $sent = $this->sendPerformed($message);
-            \Log::info($sent);
+        if ( ENV("APP_ENV") != "local" ) {
+            $data = $this->beforeSendPerformed( $message );
+            $res = $this->client->post(
+                $this->url . "/send_emailv2"
+                , [
+                    "form_params" => [
+                        "headers" => [
+                            "Content-type" => "application/x-www-form-urlencoded"
+                        ]
+                        , "app_id"  => "mybriapi"
+                        , "subject" => $message->getSubject()
+                        , "content" => $message->getBody()
+                        , "to" => array_keys( $message->getTo() )[0]
+                    ],
+                ]
+            );
+            $this->getMessageLog( $res );
+            $sent = $this->sendPerformed( $message );
         }
-        return $this->numberOfRecipients($message);
+        return $this->numberOfRecipients( $message );
     }
 
     /**
@@ -98,16 +88,10 @@ class BRITransport extends Transport
     protected function payload(Swift_Mime_Message $message)
     {
         return [
-             // 'request' => [
-             //    'requestMethod' => 'send_emailv2',
-             //     'requestData' =>  [
-                    'app_id'  => 'mybriapi',
-                    'subject' => $message->getSubject(),
-                    'content' => $message->getBody(),
-                    'to' => array_keys($message->getTo())[0],
-             //     ]
-             // ]
-
+            "app_id"  => "mybriapi",
+            "subject" => $message->getSubject(),
+            "content" => $message->getBody(),
+            "to" => array_keys( $message->getTo() )[0],
         ];
     }
 
@@ -123,16 +107,16 @@ class BRITransport extends Transport
     {
         $to = [];
 
-        if ($message->getTo()) {
-            $to = array_merge($to, array_keys($message->getTo()));
+        if ( $message->getTo() ) {
+            $to = array_merge( $to, array_keys( $message->getTo() ) );
         }
 
-        if ($message->getCc()) {
-            $to = array_merge($to, array_keys($message->getCc()));
+        if ( $message->getCc() ) {
+            $to = array_merge( $to, array_keys( $message->getCc() ) );
         }
 
-        if ($message->getBcc()) {
-            $to = array_merge($to, array_keys($message->getBcc()));
+        if ( $message->getBcc() ) {
+            $to = array_merge( $to, array_keys( $message->getBcc() ) );
         }
 
         return $to;
@@ -180,5 +164,19 @@ class BRITransport extends Transport
         $this->url = $domain;
 
         return $this->domain = $domain;
+    }
+
+    /**
+     * Get Response Log
+     *
+     * @return void
+     **/
+    public function getMessageLog( $res )
+    {
+        \Log::info( "=== Response code Email Service ===" );
+        \Log::info( $res->getStatusCode() );
+        \Log::info( "=== Response content Email Service ===" );
+        \Log::info( $res->getBody()->getContents() );
+        \Log::info( "=== End Email Service ===" );
     }
 }

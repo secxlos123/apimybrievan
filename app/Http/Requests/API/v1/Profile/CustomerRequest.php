@@ -36,20 +36,14 @@ class CustomerRequest extends FormRequest
                     }
 
         return [
-             // 'nik' => 'required|numeric|digits:16|unique:customer_details,nik' . $additional,
              'name' => 'alpha_spaces',
              'birth_place_id' => 'exists:cities,id',
              'birth_date' => 'date',
-             // 'address' => 'required',
-             // 'city_id' => 'numeric|exists:cities,id',
              'gender' => 'in:L,P',
-             // 'citizenship_id' => 'required',
              'status' => 'in:1,2,3',
              'address_status'=>'in:0,1,3',
-             // // 'phone' => 'digits:12|numeric',
              'mobile_phone' => 'string|regex:/^[0-9]+$/|min:9|max:12',
              'identity' => 'mimes:jpeg,png,jpg,zip,pdf',
-             // 'mother_name'=>''
             ];
         }
         else if ($this->segment( 6 ) == 'work')
@@ -95,14 +89,7 @@ class CustomerRequest extends FormRequest
         }
         else if ($this->segment( 6 ) == 'other')
         {
-            return[
-              // 'npwp'=>'required',
-              // 'family_card'=>'required'
-             // 'couple_identity'=>'required_if:status_id,2',
-             // 'marrital_certificate'=>'required_if:status_id,2',
-             // 'diforce_certificate'=>'required_if:status_id,3',
-             // 'status_id'=>'required'
-            ];
+            return[];
         }
         elseif ($this->user()->inRole('developer'))
         {

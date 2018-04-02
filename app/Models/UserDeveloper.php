@@ -54,15 +54,12 @@ class UserDeveloper extends Model implements AuditableContract
      */
     public function scopeGetLists($query, Request $request)
     {
-
-       // $userdeveloperfill = $this->userdeveloperfill();
-
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
 
         return $query
                 ->from('agen_developers_view_table')
                 ->where(function ($developer) use (&$request, &$query){
-                  
+
                   /**
                    * Query for search developers.
                    */
@@ -80,7 +77,7 @@ class UserDeveloper extends Model implements AuditableContract
                 $developer->where('admin_developer_id', $request->user()->id);
                 })
                 ->orderBy($sort[0], $sort[1]);
-            
+
     }
 
     /**

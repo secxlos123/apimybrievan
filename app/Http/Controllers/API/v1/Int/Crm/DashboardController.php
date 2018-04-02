@@ -190,7 +190,8 @@ class DashboardController extends Controller
       $db_ext->setConnection('mysql2');
       $data = $db_ext->all();
       $sales_kit = [];
-      $img_url ='http://10.35.65.111/brispot/uploads/saleskit_sme/';
+      $host = (env('APP_URL') == 'http://api.dev.net/')? 'http://10.35.65.111':'http://pinjaman.bri.co.id';
+      $img_url = $host.'/brispot/uploads/saleskit_sme/';
 
       foreach ($data as $key => $value) {
         $sales_kit[]=[
