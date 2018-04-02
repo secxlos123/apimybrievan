@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Auditable;
+use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Collateral extends Model implements AuditableContract
@@ -31,6 +32,28 @@ class Collateral extends Model implements AuditableContract
         'ditolak'
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [ 'aging' ];
+
+    /**
+     * Get eform aging detail information.
+     *
+     * @return string
+     */
+    public function getAgingAttribute()
+    {
+        $days = 0;
+        $date = Carbon::now();
+
+        if ($this->created_at) {
+            $days = $this->created_at->diffInDays($date);
+        }
+        return $days . ' hari ';
+    }
 
     /**
      * Relation with developer

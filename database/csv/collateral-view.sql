@@ -40,6 +40,7 @@ collaterals.staff_name,
 collaterals.status,
 collaterals.is_staff,
 collaterals.approved_by,
+collaterals.created_at,
 (select name from cities where cities.id = customer_details.birth_place_id) AS birthplace,
 (select region_id from properties where properties.id = kpr.property_id ) AS region_id,
 CASE WHEN kpr.active_kpr = 3 THEN '>2'
