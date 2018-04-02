@@ -150,7 +150,7 @@ class EForm extends Model implements AuditableContract
         } elseif ( $this->status_eform == 'Disbursed' ) {
             return 'Disbursed Briguna';
 
-        } elseif ( $this->status_eform == 'MenungguPutusan' ) {
+        } elseif ( $this->status_eform == 'Menunggu Putusan' ) {
             return 'Menunggu Putusan';
 
         } elseif ( $this->status_eform == 'Pencairan' ) {
