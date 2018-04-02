@@ -89,11 +89,17 @@ class ServiceRestwsHc extends Client
 
                     }
 
+                } else if ( in_array( $hilfm, [ 98 ] ) ) {
+                    $role = "direksi";
+
                 } else if ( in_array( $hilfm, [ 3 ] ) ) {
                     $role = "pinwil";
 
                 } else if ( in_array( $hilfm, [ 9 ] ) ) {
                     $role = "wapinwil";
+
+                } else if ( in_array( $hilfm, [ 53 ] ) ) {
+                    $role = "spvkanwil";
 
                 } else if ( in_array( $hilfm, [ 66, 71, 75 ] ) ) {
                     $role = "cs";

@@ -71,12 +71,18 @@ class AuthController extends Controller
                 } else if( in_array( intval($data[ 'hilfm' ]), [11] ) ) {
                     $role_user = 'wapincasus';
                 }
+            } else if( in_array( intval($data[ 'hilfm' ]), [98] ) ) {
+                $role = 'direksi';
+                $role_user = 'direksi';
             } else if( in_array( intval($data[ 'hilfm' ]), [3] ) ) {
                 $role = 'pinwil';
                 $role_user = 'pinwil';
             } else if( in_array( intval($data[ 'hilfm' ]), [9] ) ) {
                 $role = 'wapinwil';
                 $role_user = 'wapinwil';
+            } else if( in_array( intval($data[ 'hilfm' ]), [53] ) ) {
+                $role = 'spvkanwil';
+                $role_user = 'spvkanwil';
             } else if( in_array( intval($data[ 'hilfm' ]), [66, 71, 75] ) ) {
                 $role = 'cs';
                 $role_user = 'cs';
