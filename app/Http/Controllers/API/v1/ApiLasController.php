@@ -1253,9 +1253,9 @@ class ApiLasController extends Controller
                         $kode_sms = '3';
                     }
 
-                    if(isset($datadetail->statusCode) && $datadetail->statusCode=='01'){
+                    if(isset($datadetail->statusCode) && $datadetail->statusCode == '01') {
+                        // putusan pencairan ya atau tolak
                         if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
-                            // update table eforms
                             $eform_request['pinca_name']  = $data['pinca_name'];
                             $eform_request['pinca_position'] = $data['pinca_position'];
                             if ($data['is_send'] == '1') {
@@ -1266,23 +1266,30 @@ class ApiLasController extends Controller
                                 $eform_request['response_status'] = "Ditolak Briguna";
                             }
                             $data_briguna = [
-                                'is_send'    => !isset($data['is_send'])? null:$data['is_send'],
-                                'tgl_putusan'=> !isset($data['tgl_putusan'])? "":$data['tgl_putusan'],
-                                'catatan_pemutus' => !isset($data['catatan_pemutus'])? "":$data['catatan_pemutus']
+                                'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
+                                'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus']
                             ];
+                        // pencairan brinets
                         } elseif ($data['flag_putusan'] == '7') {
                             if ($data['is_send'] == '6') {
                                 $eform_request['status_eform'] = "Disbursed";
                                 $eform_request['response_status'] = "Disbursed Briguna";
                             }
                             $data_briguna = [
-                                'is_send'    => !isset($data['is_send'])? null:$data['is_send'],
-                                'catatan_adk'=> !isset($data['catat_adk'])? "":$data['catat_adk'],
+                                'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                'catatan_adk'=> !isset($data['catat_adk'])?"":$data['catat_adk'],
                                 'tgl_pencairan' => date('Y-m-d H:i:s')
                             ];
                         } else {
+                            // kembali ke ao
+                            if($data['flag_putusan'] == '5') {
+                                $eform_request['is_approved']  = false;
+                                $eform_request['status_eform'] = "";
+                                $eform_request['response_status'] = "";
+                            }
                             $data_briguna = [
-                                'is_send'   => !isset($data['is_send'])? null:$data['is_send']
+                                'is_send'   => !isset($data['is_send'])?null:$data['is_send']
                             ];
                         }
                         // update table briguna
@@ -1766,7 +1773,8 @@ class ApiLasController extends Controller
                                 "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name']
                             ];
                             $eform_id = $request['eform_id'];
-                            $param_eform['branch_id'] = $request['kantor_cabang_id'];
+                            $param_eform['is_approved']  = true;
+                            $param_eform['branch_id']    = $request['kantor_cabang_id'];
                             $param_eform['status_eform'] = "Menunggu Putusan";
                             $param_eform['response_status'] = "Menunggu Putusan Briguna";
                             $eform   = EForm::where('id',$eform_id)->first();

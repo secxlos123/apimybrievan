@@ -157,8 +157,13 @@ class ApiLas extends Model
                         when briguna.is_send = 12 then 'AGREE BY PINCA'
                         when briguna.is_send = 13 then 'AGREE BY WAPINWIL'
                         when briguna.is_send = 14 then 'AGREE BY WAPINCASUS'
-                        when briguna.is_send = 15 then 'NAIK KETINGKAT LEBIH TINGGI'
-                        when briguna.is_send = 16 then 'MENGEMBALIKAN DATA KE AO'
+                        when briguna.is_send = 15 then 'NAIK KETINGKAT LEBIH TINGGI BY AMP'
+                        when briguna.is_send = 16 then 'NAIK KETINGKAT LEBIH TINGGI BY MP'
+                        when briguna.is_send = 17 then 'NAIK KETINGKAT LEBIH TINGGI BY PINCAPEM'
+                        when briguna.is_send = 18 then 'NAIK KETINGKAT LEBIH TINGGI BY PINCA'
+                        when briguna.is_send = 19 then 'NAIK KETINGKAT LEBIH TINGGI BY WAPINWIL'
+                        when briguna.is_send = 20 then 'NAIK KETINGKAT LEBIH TINGGI BY WAPINCASUS'
+                        when briguna.is_send = 21 then 'MENGEMBALIKAN DATA KE AO'
                         else '-' end as status_putusan")
                     ])
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
@@ -207,8 +212,13 @@ class ApiLas extends Model
                         when briguna.is_send = 12 then 'AGREE BY PINCA'
                         when briguna.is_send = 13 then 'AGREE BY WAPINWIL'
                         when briguna.is_send = 14 then 'AGREE BY WAPINCASUS'
-                        when briguna.is_send = 15 then 'NAIK KETINGKAT LEBIH TINGGI'
-                        when briguna.is_send = 16 then 'MENGEMBALIKAN DATA KE AO'
+                        when briguna.is_send = 15 then 'NAIK KETINGKAT LEBIH TINGGI BY AMP'
+                        when briguna.is_send = 16 then 'NAIK KETINGKAT LEBIH TINGGI BY MP'
+                        when briguna.is_send = 17 then 'NAIK KETINGKAT LEBIH TINGGI BY PINCAPEM'
+                        when briguna.is_send = 18 then 'NAIK KETINGKAT LEBIH TINGGI BY PINCA'
+                        when briguna.is_send = 19 then 'NAIK KETINGKAT LEBIH TINGGI BY WAPINWIL'
+                        when briguna.is_send = 20 then 'NAIK KETINGKAT LEBIH TINGGI BY WAPINCASUS'
+                        when briguna.is_send = 21 then 'MENGEMBALIKAN DATA KE AO'
                         else '-' end as status_putusan")
                     ])
                  ->join('briguna', 'eforms.id', '=', 'briguna.eform_id')
