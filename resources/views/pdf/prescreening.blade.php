@@ -286,16 +286,31 @@
                     </table>
 
                     @php( $selected = empty($detail->selected_pefindo) ? null : json_decode($detail->selected_pefindo) )
+                    @php( $scoreAll = empty($detail->pefindo_score_all) ? null : json_decode($detail->pefindo_score_all) )
 
                     @foreach( $pefindoAll as $index => $pefindo )
+                        @php( $selectedData = isset($selected->{$key}) ? $selected->{$key} : -1 )
                         <table>
                             <tbody>
                                 <tr>
-                                    <td class="label"> Pefindo ID </td>
+                                    <td class="label"> Pefindo ID</td>
                                     <td class="break-word">: {{ $pefindo->PefindoId }}
-                                        {!! isset($selected->{$key}[$index]) ? ' <strong>(Dipilih)</strong>' : '' !!}
+                                        {!! $selectedData == $index ? ' <strong>(Dipilih)</strong>' : '' !!}
                                     </td>
                                 </tr>
+                                @if( isset($scoreAll->{$key}) )
+                                    @php( $scoreAllArray = (object) $scoreAll->{$key} )
+                                    @if( isset($scoreAllArray->{$index}) )
+                                        @php( $color = isset($scoreAllArray->{$index}->color) ? $scoreAllArray->{$index}->color : '' )
+                                        @php( $score = isset($scoreAllArray->{$index}->score) ? $scoreAllArray->{$index}->score : 0 )
+                                        <tr>
+                                            <td class="label"> Hasil Pefindo </td>
+                                            <td class="break-word">: {{ $score }} ( <span class="{{ $color }}">{{ $color }}</span> )
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endif
+
                                 <tr>
                                     <td class="label"> Nama Lengkap </td>
                                     <td class="break-word">: {{ $pefindo->FullName }}</td>

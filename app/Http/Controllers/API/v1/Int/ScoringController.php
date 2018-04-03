@@ -356,6 +356,7 @@ class ScoringController extends Controller
         $dats['selected_sicd'] = $selected;
         $dats['selected_dhn'] = $selectedDHN;
         $dats['is_screening'] = 1;
+        $dats['pefindo_score_all'] = json_encode(['individual' => ["0" => ['color' => $pefindoC, 'score' => $score]]]);
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
