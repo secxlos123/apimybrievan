@@ -254,43 +254,26 @@ class ApiLasController extends Controller
                                 $result = $this->return_conten($datadetail);
                                 return $result;
                             }
-                            $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
                             return [
                                 'code' => 04, 
-                                'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
-                                'contents' => [
-                                    'data' => $error
-                                ]
+                                'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
                             ];
-                        }
-                        catch(SoapFault $f){
-                            $error[0] = 'Gagal Koneksi Jaringan';
+                        } catch(SoapFault $f) {
                             return [
-                                'code' => 04, 
-                                'descriptions' => 'Gagal Koneksi Jaringan',
-                                'contents' => [
-                                    'data' => $error
-                                ]
+                                'code' => 05, 
+                                'descriptions' => 'Gagal Koneksi Jaringan'
                             ];
                         }
                     } else {
-                        $error[0] = 'Hasil Inquiry Kosong / Anda belum memiliki user LAS';
                         return [
                             'code' => 04, 
-                            'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS',
-                            'contents' => [
-                                'data' => $error
-                            ]
+                            'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS'
                         ];
                     }
                 }
-                $error[0] = 'Uknown request data';
                 return [
                     'code' => 05, 
-                    'descriptions' => 'Uknown request data',
-                    'contents' => [
-                        'data' => $error
-                    ]
+                    'descriptions' => 'Uknown request data'
                 ];
                 break;
 
@@ -319,34 +302,20 @@ class ApiLasController extends Controller
                             $result = $this->return_conten($datadetail);
                             return $result;
                         }
-                        $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
                         return [
                             'code' => 04, 
-                            'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
-                            'contents' => [
-                                'data' => $error
-                            ]
+                            'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
                         ];
-                    }
-                    catch(SoapFault $f){
-                        $error[0] = 'Gagal Koneksi Jaringan';
+                    } catch(SoapFault $f) {
                         return [
-                            'code' => 04, 
-                            'descriptions' => 'Gagal Koneksi Jaringan',
-                            'contents' => [
-                                'data' => $error
-                            ]
+                            'code' => 05, 
+                            'descriptions' => 'Gagal Koneksi Jaringan'
                         ];
                     }
                 }
-
-                $error[0] = 'Uknown request data';
                 return [
                     'code' => 05, 
-                    'descriptions' => 'Uknown request data',
-                    'contents' => [
-                        'data' => $error
-                    ]
+                    'descriptions' => 'Uknown request data'
                 ];
                 break;
 
@@ -1274,7 +1243,7 @@ class ApiLasController extends Controller
                         } elseif ($data['flag_putusan'] == '7') {
                             if ($data['is_send'] == '6') {
                                 $eform_request['status_eform'] = "Disbursed";
-                                $eform_request['response_status'] = "Disbursed Briguna";
+                                $eform_request['response_status'] = "Pencairan Briguna";
                             }
                             $data_briguna = [
                                 'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
