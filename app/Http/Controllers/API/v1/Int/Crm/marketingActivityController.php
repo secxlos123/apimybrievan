@@ -51,6 +51,7 @@ class marketingActivityController extends Controller
         }
 
         $fu_result = MarketingActivityFollowup::where('activity_id',$activity->id)->first();
+        $url = env('APP_URL').'uploads/crm/lkn/';
 
         $marketingActivity[]= [
           'id' => $activity->id,
@@ -80,6 +81,7 @@ class marketingActivityController extends Controller
           'account_number'=> $fu_result['account_number'],
           'amount'=> $fu_result['amount'],
           'target_commitment_date'=> $fu_result['target_commitment_date'],
+          'img_lkn'=> $url.$fu_result['img_lkn'],
           ];
       }
 
