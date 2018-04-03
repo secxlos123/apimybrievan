@@ -1124,7 +1124,7 @@
                         <tbody>
                             <tr>
                                 <td class="label">Tanggal</td>
-                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsInArea->created_at)) }}</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->created_at)) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1154,7 +1154,7 @@
                             </tr>
                             <tr>
                                 <td class="label">Tanggal</td>
-                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->created_at)) }}</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->updated_at)) }}</td>
                             </tr>
                         </tbody>
                     </table>

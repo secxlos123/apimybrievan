@@ -227,7 +227,7 @@
                 <table class="full-width">
                     <tbody>
                         <tr>
-                            <td class="title" colspan="2">Data Calon Nasabah</td>
+                            <td class="title" colspan="2">Data Pasangan Calon Nasabah</td>
                         </tr>
                     </tbody>
                 </table>
@@ -277,20 +277,25 @@
 
             @if( $detail->pefindo_detail )
                 @foreach( json_decode($detail->pefindo_detail) as $key => $pefindoAll )
-                    @if( count($pefindoAll) > 1 )
-                        <table class="full-width">
-                            <tbody>
-                                <tr>
-                                    <td class="title" colspan="2">Pefindo {{ $key == 'individual' ? 'Calon Debitur' : 'Pasangan Calon Debitur' }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="card-box-head"></div>
-                    @endif
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="title" colspan="2">Pefindo {{ $key == 'individual' ? 'Calon Debitur' : 'Pasangan Calon Debitur' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    @php( $selected = empty($detail->selected_pefindo) ? null : json_decode($detail->selected_pefindo) )
 
                     @foreach( $pefindoAll as $index => $pefindo )
                         <table>
                             <tbody>
+                                <tr>
+                                    <td class="label"> Pefindo ID </td>
+                                    <td class="break-word">: {{ $pefindo->PefindoId }}
+                                        {!! isset($selected->{$key}[$index]) ? ' <strong>(Dipilih)</strong>' : '' !!}
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class="label"> Nama Lengkap </td>
                                     <td class="break-word">: {{ $pefindo->FullName }}</td>
