@@ -86,7 +86,7 @@ class reportController extends Controller
           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
           "fo_name"=> array_key_exists(substr('00000000'.$value->pn,-8), $pemasar) ? $pemasar[substr( '00000000' . $value->pn, -8 )]:"",
           "activity"=> $value->object_activity,
-          "tujuan"=> $value->pn,
+          "tujuan"=> $value->action_activity,
           "tanggal"=> $value->start_date,
           "alamat"=> $value->address,
           "marketing_type" => $value->activity_type,
