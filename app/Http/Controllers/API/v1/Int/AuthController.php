@@ -122,6 +122,7 @@ class AuthController extends Controller
                         'pn'=>$pn,
                         'hilfm'=> $data['hilfm'] == '-' ? 0 : $data['hilfm'],
                         'role'=> $role,
+                        'role_user'=> $role_user,
                         'name'=> $data['nama'],
                         'tipe_uker'=> $data['tipe_uker'],
                         'htext'=> $data['htext'],
@@ -152,6 +153,7 @@ class AuthController extends Controller
                             'name' => $userservices[ 'name' ],
                             'branch' => $userservices['branch_id'],
                             'role' => $userservices['role'],
+                            'role_user' => $userservices['role'],
                             'position' => $userservices['posisi'],
                             'uker' => $userservices['tipe_uker']
                         ]
