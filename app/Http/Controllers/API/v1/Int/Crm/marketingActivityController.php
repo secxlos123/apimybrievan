@@ -349,13 +349,21 @@ class marketingActivityController extends Controller
         $followUp['fu_result'] = $request['fu_result'];
 
         if($request['fu_result']=='Done'){
-          $followUp['account_number'] = (is_array($request['account_number']) || is_object($request['account_number'])) ?   implode (", ", $request['account_number']) : $request['account_number'] ; 
+          $followUp['account_number'] = (is_array($request['account_number']) || is_object($request['account_number'])) ?   implode (", ", $request['account_number']) : $request['account_number'] ;
           $followUp['amount'] = $request['amount'];
           $followUp['target_commitment_date'] = $request['target_commitment_date'];
         }
 
         $followUp['longitude'] = $request['longitude'];
         $followUp['latitude'] = $request['latitude'];
+
+        if ($request->hasFile('img_lkn')) {
+          $image = $request->file('img_lkn');
+          $name = md5($image->getClientOriginalName()).'-'.time().'.'.$image->getClientOriginalExtension();
+          $destinationPath = public_path('uploads/crm/lkn');
+          $image->move($destinationPath, $name);
+          $followUp['img_lkn'] = $name;
+        }
 
         $save = MarketingActivityFollowup::create($followUp);
 
