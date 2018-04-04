@@ -86,33 +86,33 @@ class OtsEight extends Model implements AuditableContract
      *
      * @return string
      */
-    public function getTypeBindingAttribute( )
+    public function getTypeBindingAttribute( $value )
     {
-        if ( $this->type_binding == "Hak Tanggungan" ) {
+        if ( $value == "Hak Tanggungan" ) {
             return "01";
 
-        } else if ( $this->type_binding == "Gadai" ) {
+        } else if ( $value == "Gadai" ) {
             return "02";
 
-        } else if ( $this->type_binding == "Feduciare Elgendom Overdracht (FEO)" ) {
+        } else if ( $value == "Feduciare Elgendom Overdracht (FEO)" ) {
             return "03";
 
-        } else if ( $this->type_binding == "SKMHT (Surat Kuasa Memberikan Hak Tanggungan)" ) {
+        } else if ( $value == "SKMHT (Surat Kuasa Memberikan Hak Tanggungan)" ) {
             return "04";
 
-        } else if ( $this->type_binding == "Cessie" ) {
+        } else if ( $value == "Cessie" ) {
             return "05";
 
-        } else if ( $this->type_binding == "Belum Diikat" ) {
+        } else if ( $value == "Belum Diikat" ) {
             return "06";
 
-        } else if ( $this->type_binding == "Lain - Lain" ) {
+        } else if ( $value == "Lain - Lain" ) {
             return "09";
 
-        } else if ( $this->type_binding == "Fidusia dengan UU" ) {
+        } else if ( $value == "Fidusia dengan UU" ) {
             return "10";
 
-        } else if ( $this->type_binding == "Fidusia dengan PJ08" ) {
+        } else if ( $value == "Fidusia dengan PJ08" ) {
             return "11";
 
         }
