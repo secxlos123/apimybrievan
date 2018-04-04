@@ -151,6 +151,7 @@ class Customer extends User
             'pendidikan_terakhir' => $this->detail ? $this->detail->pendidikan_terakhir : '',
             'address_domisili' => $this->detail ? $this->detail->address_domisili : '',
             'mobile_phone_couple' => $this->detail ? $this->detail->mobile_phone_couple : '',
+            'IsFinish' => $this->eforms ? $this->eforms->IsFinish : '',
         ];
 
         return $personal_data;
