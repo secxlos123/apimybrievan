@@ -160,7 +160,7 @@ class PrescreeningController extends Controller
             if ( $score >= 250 && $score <= 529 ) {
                 $pefindoC = 'Merah';
 
-            } elseif ( $score >= 677 && $score <= 900 ) {
+            } elseif ( ( $score >= 677 && $score <= 900 ) || $score == 999 ) {
                 $pefindoC = 'Hijau';
 
             }
