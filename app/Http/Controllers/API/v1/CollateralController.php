@@ -90,7 +90,7 @@ class CollateralController extends Controller
       if ($this->request->has('search'))
         $data->whereHas('property',function($property) use ($request)
         {
-          $property->where('name','ilike','%'.$request->input('search').'%');
+          $property->where(\DB::raw('LOWER(name)'),'ilike','%'.$request->input('search').'%');
         });
       if ($this->request->has('slug')) {
           $data->where('id',$this->request->input('slug'));
@@ -121,6 +121,7 @@ class CollateralController extends Controller
       if ($this->request->has('slug')) {
           $data->where('id',$this->request->input('slug'));
       }
+      
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
