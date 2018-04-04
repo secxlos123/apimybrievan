@@ -13,7 +13,7 @@ class CreateMitraPenilaianPerjanjian extends Migration
      */
     public function up()
     {
-        Schema::create( 'mitra_perjanjian', function ( Blueprint $table ) {
+        Schema::create( 'mitra_penilaian_perjanjian', function ( Blueprint $table ) {
             $table->increments( 'id' );
             $table->text( 'perjanjian_layanan' );
             $table->text( 'jenis_perjanjian' );
@@ -45,6 +45,6 @@ class CreateMitraPenilaianPerjanjian extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists( 'mitra_perjanjian' );
+        Schema::dropIfExists( 'mitra_penilaian_perjanjian' );
     }
 }

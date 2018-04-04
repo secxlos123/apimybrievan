@@ -208,7 +208,7 @@ if (! function_exists('get_pefindo_color')) {
      *
      * @return \Illuminate\Http\Response
      */
-    function get_pefindo_color( $score, $couple = false, $prevData, $index, $risk )
+    function get_pefindo_color( $score, $couple = false, $prevData, $index, $risk, $selected = false )
     {
         $return = array(
             'color' => 'Kuning'
@@ -226,6 +226,10 @@ if (! function_exists('get_pefindo_color')) {
             $return['color'] = 'Hijau';
             $return['position'] = 3;
 
+        }
+
+        if ( $selected ) {
+            return  $return;
         }
 
         if ( $couple ) {
@@ -247,12 +251,19 @@ if (! function_exists('break_pefindo')) {
     function break_pefindo( $eform, $request )
     {
         $pefindoDetail = json_decode($eform['pefindo_detail']);
+        $pefindoScoreDetail = [];
         if ( isset($request['select_individual_pefindo']) ) {
             $individu = $pefindoDetail->individual[ $request['select_individual_pefindo'] ];
             $dataIndividu = get_pefindo_service( $eform, 'data', false, $individu->PefindoId );
             $pdf = get_pefindo_service( $eform, 'pdf', false, $individu->PefindoId );
             $pefindo = get_pefindo_color( $dataIndividu['score'], false, array(), $request['select_individual_pefindo'], $dataIndividu['reasonslist'] );
-
+            $lastDataIndividu = $pefindo;
+            $pefindoScoreDetail['individual'] = [
+                (String) $request['select_individual_pefindo'] => [
+                    'score' => ($lastDataIndividu['score']) ? $lastDataIndividu['score'] : 0
+                    , 'color' => ($lastDataIndividu['color']) ? $lastDataIndividu['color'] : 0
+                ]
+            ];
         }
 
         if ( isset($request['select_couple_pefindo']) ) {
@@ -260,7 +271,15 @@ if (! function_exists('break_pefindo')) {
             $dataCouple = get_pefindo_service( $eform, 'data', true, $couple->PefindoId );
             $pdf .= ',' . get_pefindo_service( $eform, 'pdf', true, $couple->PefindoId );
             $pefindo = get_pefindo_color( $dataCouple['score'], true, $pefindo, $request['select_couple_pefindo'], $dataCouple['reasonslist'] );
+            $lastDataCouple = get_pefindo_color( $dataCouple['score'], true, $pefindo, $request['select_couple_pefindo'], $dataCouple['reasonslist'], true );
+            $pefindoScoreDetail['couple'] = [
+                (String) $request['select_couple_pefindo'] => [
+                    'score' => ($lastDataCouple['score']) ? $lastDataCouple['score'] : 0
+                    , 'color' => ($lastDataCouple['color']) ? $lastDataCouple['color'] : 0
+                ]
+            ];
         }
+
 
         $risk = array();
         if ( isset( $pefindo['risk'] ) ) {
@@ -277,6 +296,7 @@ if (! function_exists('break_pefindo')) {
             , 'pefindo' => $pefindo
             , 'selected_pefindo' => $selected_pefindo
             , 'pdf' => $pdf
+            , 'pefindo_score_all' => $pefindoScoreDetail
         ];
     }
 }
@@ -346,6 +366,7 @@ if (! function_exists('generate_data_prescreening')) {
             , 'selected_pefindo' => $returnData[ 'selected_pefindo' ]
             , 'ket_risk' => $returnData[ 'risk' ]
             , 'uploadscore' => $returnData[ 'pdf' ]
+            , 'pefindo_score_all' => json_encode($returnData[ 'pefindo_score_all' ])
             , 'is_screening' => 1
         ];
     }
