@@ -59,7 +59,7 @@ class PrescreeningController extends Controller
 
         $pefindo = json_decode((string) $data->pefindo_detail);
         if ( !$data->pefindo_detail ) {
-            $pefindo = [];
+            $pefindo = (object) [];
         }
 
         $data['uploadscore'] = $this->generatePDFUrl( $data );
@@ -103,7 +103,7 @@ class PrescreeningController extends Controller
 
         $pefindo = json_decode((string) $eform->pefindo_detail);
         if ( !$eform->pefindo_detail ) {
-            $pefindo = [];
+            $pefindo = (object) [];
         }
 
         set_action_date($eform->id, 'eform-prescreening');
@@ -173,8 +173,15 @@ class PrescreeningController extends Controller
                     ]
                 , 'selected_pefindo' => 0
                 , 'pdf' => $eform->uploadscore
+                , 'pefindo_score_all' => [
+                        'individual' => [
+                            "0" => [
+                                'color' => $pefindoC
+                                , 'score' => $score
+                            ]
+                        ]
+                    ]
             ];
-
         }
 
         if ( !$waiting ) {
