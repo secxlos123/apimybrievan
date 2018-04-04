@@ -1262,7 +1262,7 @@ class ApiLasController extends Controller
                             ];
                         }
                         // update table briguna
-                        $eform_request['IsFinish'] = true;
+                        $eform_request['IsFinish'] = "true";
                         $eform = EForm::findOrFail($data['eform_id']);
                         $eform->update($eform_request);
                         $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
@@ -1888,7 +1888,7 @@ class ApiLasController extends Controller
         if (!empty($response)) {
             try {
                 if (isset($response['is_send']) && $response['is_send'] == '4') {
-                    $eform_request['IsFinish'] = true;
+                    $eform_request['IsFinish'] = "true";
                     $eform_request['status_eform'] = "Rejected";
                     $eform_request['response_status'] = "Ditolak Briguna";
                     $eform = EForm::findOrFail($response['eform_id']);
