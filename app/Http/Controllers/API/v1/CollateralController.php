@@ -118,12 +118,6 @@ class CollateralController extends Controller
       {
           $data->where('region_id',$region['region_id']);
       }
-      if ($this->request->has('search')){
-        $data->whereHas('property',function($property) use ($request)
-        {
-          $property->where(\DB::raw('LOWER(name)'),'ilike','%'.$request->input('search').'%');
-        });
-      }
       if ($this->request->has('slug')) {
           $data->where('id',$this->request->input('slug'));
       }
