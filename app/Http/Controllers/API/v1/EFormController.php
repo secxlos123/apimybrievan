@@ -584,12 +584,12 @@ class EFormController extends Controller
                         $c = count($hasil)-1;
                         if(empty($hasil)){
                             $validasi_eform = 'true';
-                        }elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'&&$hasil[$c]['product_type']=='briguna'){
-                            if($hasil['product_type']=='briguna'){
+                        }elseif(!empty($hasil)&&$hasil[$c]['IsFinish']=='true'){
+//                            if($hasil['product_type']=='briguna'){
                                 if($hasil['IsFinish']=='true'){
                                 $validasi_eform = 'true';
                                 }
-                            }
+//                            }
                         }
                 }
             /* BRIGUNA */

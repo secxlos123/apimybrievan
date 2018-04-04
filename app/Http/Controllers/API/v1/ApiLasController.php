@@ -1262,7 +1262,7 @@ class ApiLasController extends Controller
                             ];
                         }
                         // update table briguna
-                        $eform_request['IsFinish'] = true;
+                        $eform_request['IsFinish'] = "true";
                         $eform = EForm::findOrFail($data['eform_id']);
                         $eform->update($eform_request);
                         $briguna = BRIGUNA::where("eform_id", "=", $data['eform_id']);
@@ -1730,13 +1730,13 @@ class ApiLasController extends Controller
                                 "kecamatan_dom"             => $request['kecamatan_domisili'],
                                 "kota"                      => $request['kabupaten'],
                                 "kota_dom"                  => $request['kabupaten_domisili'],
-                                "propinsi"                  => $request['propinsi'],
-                                "propinsi_dom"              => $request['propinsi_domisili'],
                                 "perjanjian_pisah_harta"    => $request['perjanjian_pisah_harta'],
                                 "trans_normal_harian"       => $request['transaksi_normal_harian'],
                                 "pernah_pinjam"             => $request['pernah_pinjam'],
                                 "tgl_mulai_kerja"           => $request['tgl_mulai_bekerja'],
                                 "tgl_analisa"               => $request['tgl_analisa'],
+                                "propinsi"                  => !isset($request['propinsi'])?"":$request['propinsi'],
+                                "propinsi_dom"              => !isset($request['propinsi_domisili'])?"":$request['propinsi_domisili'],
                                 "no_rek_simpanan"           => !isset($request['no_rek_simpanan'])?"":$request['no_rek_simpanan'],
                                 "jenis_rekening"            => !isset($request['jenis_rekening'])?"":$request['jenis_rekening'],
                                 "nama_bank_lain"            => !isset($request['nama_bank_lain'])?"":$request['nama_bank_lain'],
@@ -1888,7 +1888,7 @@ class ApiLasController extends Controller
         if (!empty($response)) {
             try {
                 if (isset($response['is_send']) && $response['is_send'] == '4') {
-                    $eform_request['IsFinish'] = true;
+                    $eform_request['IsFinish'] = "true";
                     $eform_request['status_eform'] = "Rejected";
                     $eform_request['response_status'] = "Ditolak Briguna";
                     $eform = EForm::findOrFail($response['eform_id']);
