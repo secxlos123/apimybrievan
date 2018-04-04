@@ -121,6 +121,7 @@ class CollateralController extends Controller
       if ($this->request->has('slug')) {
           $data->where('id',$this->request->input('slug'));
       }
+      
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
     }
 
