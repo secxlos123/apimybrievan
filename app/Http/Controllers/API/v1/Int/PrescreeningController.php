@@ -199,9 +199,7 @@ class PrescreeningController extends Controller
 
         if ( !$waiting ) {
             $detail = $eform;
-            if ( !\File::exists( public_path( 'uploads/'. $detail->nik, 'prescreening.pdf' ) ) ) {
-                generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
-            }
+            generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
         }
 
         // auto approve for VIP
