@@ -109,7 +109,7 @@ class Customer extends User
      */
     public function getPersonalAttribute()
     {
-		$IsFinish = DB::table('eforms')->select("eforms.IsFinish")->where("user_id",$this->detail->user_id)where('id',(\DB::Raw("(select max(id) from eforms where user_id='".$this->detail->user_id."')")))->get();
+		$IsFinish = DB::table('eforms')->select("eforms.IsFinish")->where("user_id",$this->detail->user_id)->where('id',(\DB::Raw("(select max(id) from eforms where user_id='".$this->detail->user_id."')")))->get();
         $personal_data = [
             'user_id' => $this->detail ? $this->detail->user_id : '',
             'name' => $this->fullname,
