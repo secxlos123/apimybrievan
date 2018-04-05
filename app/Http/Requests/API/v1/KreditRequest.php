@@ -91,6 +91,7 @@ class KreditRequest extends BaseRequest{
 						'EmergencyNoTlp'=>'required',
 						'subBidangUsaha'=>'required',
 						'eform_id'=>'required',
+						'PersonalKota'=>'required',
 	    				// 'apregno'=>'required',
     				];
     			}else if($this->segment(5) == 'putusan-pinca'){
