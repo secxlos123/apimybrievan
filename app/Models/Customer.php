@@ -109,7 +109,7 @@ class Customer extends User
      */
     public function getPersonalAttribute()
     {
-		$IsFinish = DB::table('customer_detail')->where('user_id',$this->detail->user_id)->max('IsFinish')->get();
+		$IsFinish = DB::table('customer_details')->where('user_id',$this->detail->user_id)->max('IsFinish')->get();
         $personal_data = [
             'user_id' => $this->detail ? $this->detail->user_id : '',
             'name' => $this->fullname,
