@@ -29,8 +29,6 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
     Route::group(['middleware' => 'api.auth'], function() {
 
-    	Route::post('ajukankredit', 'KartuKreditController@ajukanKredit');
-
     	Route::post('/putusan-pinca','KartuKreditController@putusanPinca');
     	Route::post('add-data-los','KartuKreditController@sendUserDataToLos');
 		Route::post('/update-data-los', 'KartuKreditController@updateDataLos');
