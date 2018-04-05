@@ -43,39 +43,6 @@ class KreditRequest extends BaseRequest{
 
     				'ao_id'=>'required',
     				'branch_id'=>'required',
-
-    	// 			'PersonalAlamatDomisili' => 'required',
-    				
-    				
-    	// 			'PersonalJenisKelamin'=>'required',
-    	// 			'PersonalStatusTempatTinggal'=>'required',
-    	// 			'PersonalKewarganegaraan'=>'required', 
-					// 'PersonalLamaMenempatiRumahMM'=>'required',
-					// 'PersonalLamaMenempatiRumahYY'=>'required',
-					// 'PersonalPendidikanTerakhir'=>'required',
-					// 'PersonalKodePos'=>'required',
-					
-					// 'PersonalNoTlpRumah'=>'required',
-					
-					// 'JobBidangUsaha'=>'required',
-					// 'JobKategoriPekerjaan'=>'required',
-					// 'JobStatusPekerjaan'=>'required',
-					// 'JobTotalPekerja'=>'required',
-					// 'JobNamaPerusahaan'=>'required',
-					// 'JobPangkat'=>'required',
-					// 'JobLamaKerjaYY'=>'required',
-					// 'JobLamaKerjaMM'=>'required',
-					// 'JobAlamatKantor'=>'required',
-					// 'JobKodePos'=>'required',
-					// 'FinanceGajiPerbulan'=>'required',
-					// 'FinanceGajiPertahun'=>'required',
-					// 'FinancePendapatanLainPerbulan'=>'required',
-					// 'FinanceJumlahTanggungan'=>'required',
-					// 'EmergencyNama'=>'required',
-					// 'EmergencyHubunganKeluarga'=>'required',
-					// 'EmergencyAlamat'=>'required',
-					// 'EmergencyKota'=>'required',
-					// 'EmergencyNoTlp'=>'required',
     				
     				];
     			}else if($this->segment(5) == 'update-data-los'){ // verifikasi

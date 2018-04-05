@@ -106,6 +106,8 @@ class ViewController extends Controller
 					$view1 .= $this->hidden($table_view[$i]);
 				}elseif($table_view[$i]['type']=='number'){
 					$view1 .= $this->number($table_view[$i]);
+				}elseif($table_view[$i]['type']=='password'){
+					$view1 .= $this->password($table_view[$i]);
 				}
 				return $view1;
 	}
@@ -135,6 +137,23 @@ class ViewController extends Controller
 			$form .= '<div class="'.$view['div_class'].'">';
 			}
 			$form .=	'<input type="text" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"
+						value="'.$view['value'].'" '.$view['etc'].'>';
+			if(!empty($view['div'])){
+			$form .= '</div>';
+			}
+			$form .= '</div>';
+		return $form;
+    }
+	public function password($view)
+    {
+			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+			if(!empty($view['div'])){
+			$form .= '<div class="'.$view['div_class'].'">';
+			}
+			$form .=	'<input type="password" class="'.$view['class'].'" name="'.$view['name'].'" id="'.$view['id_table'].'"
 						value="'.$view['value'].'" '.$view['etc'].'>';
 			if(!empty($view['div'])){
 			$form .= '</div>';
