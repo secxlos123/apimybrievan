@@ -299,7 +299,7 @@ class DashboardController extends Controller
         $list_pn =[];
       }
 
-      $data = Marketing::getMarketingSummary($request)->whereIn('pn',$list_pn)->get();
+      $data = Marketing::getMarketingSummary($request)->whereIn('marketings.pn',$list_pn)->get();
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=

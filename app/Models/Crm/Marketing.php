@@ -127,6 +127,10 @@ class Marketing extends Model
     {
       $summary_marketing = [];
       return $query
+            ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
+            ->select('marketings.*')
+            ->where( 'marketing_delete_requests.deleted', '=', 'req')
+            ->orWhere( 'marketing_delete_requests.deleted', '=', null)
             ->where(function($marketing) use($request){
               if($request->has('month')){
                 $marketing->whereMonth('marketings.created_at', '=', $request->input('month'));
