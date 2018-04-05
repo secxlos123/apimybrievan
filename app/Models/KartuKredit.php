@@ -144,6 +144,8 @@ class KartuKredit extends Model
                 $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
                 $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
 
+                $personalKota = $req['PersonalKota'];
+
             }else{
                 $cardType = $req['CardType'];
 
@@ -232,6 +234,8 @@ class KartuKredit extends Model
             $informasiLos['JobLurah'] = $jobLurah;
             $informasiLos['JobRt'] = $jobRt;
             $informasiLos['JobRw'] = $jobRw;
+
+            $informasiLos['PersonalKota'] = $personalKota;
             
            
            
