@@ -283,7 +283,11 @@ class DashboardController extends Controller
     public function marketing_summary(Request $request)
     {
       $pn = $request->header('pn');
-      $branch = $request->header('branch');
+      if ($request->has('branch')) {
+        $branch = $request['branch'];
+      } else {
+        $branch = $request->header('branch');
+      }
       $auth = $request->header('Authorization');
       $pemasar = $this->pemasar_branch($pn,$branch);
 
