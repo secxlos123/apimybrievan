@@ -70,9 +70,10 @@ class EFormRequest extends BaseRequest
                         'nik' => 'required',
                         'branch_id' => 'required',
                         'appointment_date' => 'required|date',
-                        'address' => 'required',
-                        'longitude' => 'required',
-                        'latitude' => 'required',
+                        'address' => 'required_if:product_type,kpr,briguna',
+                        'longitude' => 'required_if:product_type,kpr,brigunas',
+                        'latitude' => 'required_if:product_type,kpr,briguna',
+                        
                     ];
                 }
                 break;
