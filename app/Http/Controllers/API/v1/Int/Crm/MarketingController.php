@@ -239,7 +239,11 @@ class MarketingController extends Controller
      */
     public function store(Request $request)
     {
-      $data['pn'] = $request->header('pn');
+      if ($request->has('pn')) {
+        $data['pn'] = $request['pn'];
+      } else {
+        $data['pn'] = $request->header('pn');
+      }
       $data['branch'] = $request->header('branch');
       $data['product_type'] = $request['product_type'];
       $data['activity_type'] = $request['activity_type'];
