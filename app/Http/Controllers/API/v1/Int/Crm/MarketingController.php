@@ -95,6 +95,7 @@ class MarketingController extends Controller
 
         $marketings[]=[
           'id'=> $marketing->id,
+          'branch'=> $marketing->branch,
           'pn'=> $marketing->pn,
           'pn_name' => array_key_exists($ext_nul[8-strlen($marketing->pn)].$marketing->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($marketing->pn)].$marketing->pn]:'',
           'product_type'=> $marketing->product_type,
@@ -125,10 +126,13 @@ class MarketingController extends Controller
     public function by_branch(Request $request)
     {
       $pn = $request->header('pn');
-      $branch = $request->header('branch');
       $auth = $request->header('Authorization');
+      if ($request->has('branch')) {
+        $branch = $request['branch'];
+      }else {
+        $branch = $request->header('branch');
+      }
       $pemasar = $this->pemasar($pn,$branch,$auth);
-
       if ($pemasar != null) {
         $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
         $list_pn = array_column($pemasar, 'PERNR');
@@ -185,6 +189,7 @@ class MarketingController extends Controller
 
         $marketings[]=[
           'id'=> $marketing->id,
+          'branch'=> $marketing->branch,
           'pn'=> $marketing->pn,
           'pn_name'=> array_key_exists($ext_nul[8-strlen($marketing->pn)].$marketing->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($marketing->pn)].$marketing->pn]:'',
           'product_type'=> $marketing->product_type,
