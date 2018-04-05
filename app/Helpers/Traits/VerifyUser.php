@@ -23,13 +23,13 @@ trait VerifyUser
      */
 	public function __construct()
 	{
-		$this->params = request()->segment(3);
+		$this->params = request()->segment( 3 );
 	}
 
-	public function verify(Request $request, $token)
+	public function verify( Request $request, $token )
 	{
-		$user = \JWTAuth::toUser($token);
+		$user = \JWTAuth::toUser( $token );
 		$role = $user->roles->first()->slug;
-		return in_array($role, $this->types[$this->params]);
+		return in_array( $role, $this->types[$this->params] );
 	}
 }

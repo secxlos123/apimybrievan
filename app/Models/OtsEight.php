@@ -33,16 +33,14 @@ class OtsEight extends Model implements AuditableContract
 
     protected $appends = ['type_binding_name'];
 
-
-
-		   /**
-		   * Relation with collateral
-		   * @return \Illuminate\Database\Eloquent\BelongsTo
-		   */
-		  public function collateral()
-		  {
-		    return $this->belongsTo(Collateral::class, 'collateral_id');
-		  }
+	/**
+	 * Relation with collateral
+	 * @return \Illuminate\Database\Eloquent\BelongsTo
+	 */
+	public function collateral()
+	{
+        return $this->belongsTo(Collateral::class, 'collateral_id');
+	}
 
     /**
      * Get type binding name
@@ -81,5 +79,44 @@ class OtsEight extends Model implements AuditableContract
         }
 
         return "-";
+    }
+
+    /**
+     * Get type binding name
+     *
+     * @return string
+     */
+    public function getTypeBindingAttribute( $value )
+    {
+        if ( $value == "Hak Tanggungan" ) {
+            return "01";
+
+        } else if ( $value == "Gadai" ) {
+            return "02";
+
+        } else if ( $value == "Feduciare Elgendom Overdracht (FEO)" ) {
+            return "03";
+
+        } else if ( $value == "SKMHT (Surat Kuasa Memberikan Hak Tanggungan)" ) {
+            return "04";
+
+        } else if ( $value == "Cessie" ) {
+            return "05";
+
+        } else if ( $value == "Belum Diikat" ) {
+            return "06";
+
+        } else if ( $value == "Lain - Lain" ) {
+            return "09";
+
+        } else if ( $value == "Fidusia dengan UU" ) {
+            return "10";
+
+        } else if ( $value == "Fidusia dengan PJ08" ) {
+            return "11";
+
+        }
+
+        return $this->type_binding;
     }
 }

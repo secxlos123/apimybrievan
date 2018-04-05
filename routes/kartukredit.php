@@ -8,31 +8,34 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 	Route::post('get-nik','KartuKreditController@checkNIK');
 
-	Route::post('add-data-los','KartuKreditController@sendUserDataToLos');
+	
 
 	Route::get('/nik-los/{nik}', 'KartuKreditController@checkDedup');
 
 	Route::get('cek-data-nasabah/{apRegno}','KartuKreditController@cekDataNasabah');
 
-	Route::post('/update-data-los', 'KartuKreditController@updateDataLos');
-
-	Route::get('/pefindo', 'KartuKreditController@pefindo');
 
 	Route::post('/eform', 'KartuKreditController@eform');
 
-	Route::post('/analisa', 'KartuKreditController@analisaKK');
+	
 
 	Route::post('/toemail','KartuKreditController@toEmail');
+	Route::post('/tosms', 'KartuKreditController@sendSMS');
+	Route::get('/verifyemail', 'KartuKreditController@checkEmailVerification');
 
-	Route::post('/finish-analisa','KartuKreditController@finishAnalisa');
+	Route::get('/listreject','KartuKreditController@listReject');
 
-	// Route::post('s')
 
 
     Route::group(['middleware' => 'api.auth'], function() {
-    	 //cari nik di mybri(nasabah), kalau ada balikin, kalau engga cari lagi di crm baru balikin
-        // Route::post('get-nik','KartuKreditController@checkNIK');
 
+    	Route::post('ajukankredit', 'KartuKreditController@ajukanKredit');
+
+    	Route::post('/putusan-pinca','KartuKreditController@putusanPinca');
+    	Route::post('add-data-los','KartuKreditController@sendUserDataToLos');
+		Route::post('/update-data-los', 'KartuKreditController@updateDataLos');
+		Route::post('/analisa', 'KartuKreditController@analisaKK');
+		Route::post('/finish-analisa','KartuKreditController@finishAnalisa');
     });
 });
 

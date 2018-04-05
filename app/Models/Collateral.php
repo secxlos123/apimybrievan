@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Auditable;
+use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
 class Collateral extends Model implements AuditableContract
@@ -31,6 +32,28 @@ class Collateral extends Model implements AuditableContract
         'ditolak'
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [ 'aging' ];
+
+    /**
+     * Get eform aging detail information.
+     *
+     * @return string
+     */
+    public function getAgingAttribute()
+    {
+        $days = 0;
+        $date = Carbon::now();
+
+        if ($this->created_at) {
+            $days = $this->created_at->diffInDays($date);
+        }
+        return $days . ' hari ';
+    }
 
     /**
      * Relation with developer
@@ -174,9 +197,7 @@ class Collateral extends Model implements AuditableContract
     protected static function boot()
     {
         parent::boot();
-        // static::creating(function($model) {
-        //   $model->status = 'pending';
-        // });
+
         static::updating(function($model) {
             if (!$model->approved_by) {
                 unset($model->approved_by);
@@ -201,8 +222,7 @@ class Collateral extends Model implements AuditableContract
                 if ($request->has('status')) $collaterals->where('status', $request->input('status'));
 
                 if ($request->has('search')) {
-                    $collaterals->Where('last_name', 'ilike', '%'.$request->input('search').'%')
-                    ->orWhere('first_name', 'ilike', '%'.$request->input('search').'%')
+                    $collaterals->Where(\DB::raw("concat(first_name, ' ' , last_name)"), 'ilike', '%'.$request->input('search').'%')
                     ->orWhere('ref_number', 'ilike', '%'.$request->input('search').'%');
                 }
             })

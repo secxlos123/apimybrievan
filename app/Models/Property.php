@@ -284,7 +284,7 @@ class Property extends Model implements AuditableContract
                  */
                 if ($request->has('bedroom')) {
                     $id = $request->input('bedroom');
-                    if ($id > 4) {
+                    if ($id > 3) {
                         $property->whereRaw("prop_id in (select property_id from property_types where bedroom >= ?) ",array($id));
                     }else{
                         $property->whereRaw("prop_id in (select property_id from property_types where bedroom = ?) ",array($id));
@@ -340,7 +340,6 @@ class Property extends Model implements AuditableContract
                  */
                 if ($request->has('without_independent')){
                     if ($request->without_independent) {
-                        // $property->where('bri', '=', NULL);
                         $property->where('bri', '!=', '1');
                     }
                 }
@@ -355,7 +354,6 @@ class Property extends Model implements AuditableContract
                             $property->where('is_approved',false);
                         }
                     }
-                // jgn di hapus sengaja di disable untuk prod
                 else{
                          $property->where('is_approved',true);
                      }

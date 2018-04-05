@@ -100,7 +100,6 @@ class UserNotification extends Model
 			->whereIn(
 				'notifications.type'
 				, array(
-					// 'App\Notifications\ApproveEFormCustomer'
 					'App\Notifications\ApproveEFormCLASCustomer'
 					, 'App\Notifications\RejectEFormCustomer'
 					, 'App\Notifications\RejectEFormCLASCustomer'
@@ -219,7 +218,7 @@ class UserNotification extends Model
 
 		if ( !empty($count) ) {
 			if( !empty($query) ) {
-				return $query->count();
+				return $query->where('notifications.is_read', false)->count();
 			}
 
 			return 0;
@@ -255,8 +254,6 @@ class UserNotification extends Model
 			if ( in_array( $role, ['pinca', 'ao'] ) ) {
 				$query->select('notifications.id', 'notifications.type', 'notifications.notifiable_id', 'notifications.notifiable_type', 'notifications.data', 'notifications.read_at', 'notifications.created_at', 'notifications.updated_at', 'notifications.branch_id', 'notifications.role_name', 'notifications.slug','notifications.type_module','notifications.is_read', 'eforms.is_approved', 'eforms.ao_id', 'eforms.ref_number');
 			}
-			// \Log::info($query->getBindings());
-			// \Log::info($query->toSql());
 
 			return $query;
 		}
@@ -299,7 +296,17 @@ class UserNotification extends Model
 			$aoName = strtoupper( !empty($eform->ao_name) ? $eform->ao_name : '' );
 			$staffPosition = strtoupper( !empty($eform->staff_position) ? $eform->staff_position : '' );
 			$staffName = strtoupper( !empty($eform->staff_name) ? $eform->staff_name : '' );
-			$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ' . $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
+
+			if ( isset($eform->recontest) ) {
+				$baseWording = 'Rekontes a.n ';
+
+			} else {
+				$baseWording = strtoupper( !empty($eform->product_type) ? $eform->product_type : '' ) . ' a.n ';
+
+			}
+
+			$baseWording .= $this->data['user_name'] . ' (' . $this->data['ref_number'] . ')';
+
 			$coloring = !empty($eform->prescreening_status) ? $eform->prescreening_status : '' ;
 			$getKPR = KPR::where( 'eform_id', $this->slug )->first();
 			$plafondKredit = !empty($getKPR->request_amount) ? $getKPR->request_amount : 0;
@@ -401,14 +408,14 @@ class UserNotification extends Model
 				// Pengajuan di terima oleh MP/Pinca di myBRI
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' telah direkomendasi [' . $pincaPosition . '] untuk diproses lebih lanjut oleh CLF' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' telah direkomendasi [' . $pincaPosition . '] untuk diproses lebih lanjut oleh CLS' );
 				break;
 
 			case 'App\Notifications\RejectEFormInternal':
 				// Pengajuan di tolak oleh MP/Pinca
 				// dari MP/Pinca
 				// ke ao
-				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLF' );
+				$append = array( 'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLS' );
 				break;
 
 			case 'App\Notifications\RejectEFormCustomer':
@@ -416,7 +423,7 @@ class UserNotification extends Model
 				// dari MP/Pinca
 				// ke nasabah
 				$append = array(
-					'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLF'
+					'message' => 'Pengajuan ' . $baseWording . ' tidak direkomendasi ' . $pincaPosition . ' untuk diproses lebih lanjut oleh CLS'
 					, 'message_external' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut.'
 				);
 				break;
@@ -459,7 +466,7 @@ class UserNotification extends Model
 				// Pengajuan di tolak di CLAS
 				// dari CLAS
 				// ke AO, MP/Pinca
-				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF' );
+				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLS' );
 				break;
 
 			case 'App\Notifications\RejectEFormCLASCustomer':
@@ -467,7 +474,7 @@ class UserNotification extends Model
 				// dari CLAS
 				// ke nasabah
 				$append = array(
-					'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF'
+					'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLS'
 					, 'message_external' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat kami setujui. Mohon hubungi tenaga pemasar kami untuk keterangan lebih lanjut'
 				);
 				break;
@@ -588,7 +595,7 @@ class UserNotification extends Model
 				// Submit LKN recontest
 				// dari CLAS
 				// ke AO
-				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLF' );
+				$append = array( 'message' => 'Mohon maaf pengajuan ' . $baseWording . ' belum dapat disetujui oleh CLS' );
 				break;
 
 			case 'App\Notifications\CollateralDisposition':

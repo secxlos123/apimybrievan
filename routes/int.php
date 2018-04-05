@@ -26,10 +26,11 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::post('get_dir', 'dirrpcController@get_dir');
 	Route::post('get_dir_detail', 'dirrpcController@get_dir_detail');
 	Route::post('SendPushNotification', 'SendNotificationController@SendNotification');
+
 	// if request attemp 5 it will wait 10 minutes
-	Route::group(['middleware' => 'throttle-custom:10,10'], function() {
+	// Route::group(['middleware' => 'throttle-custom:7,12'], function() {
 		Route::post( 'auth/login', 'AuthController@store' );
-	});
+	// });
 
 	// route that require login session
 	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
@@ -37,7 +38,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('debitur-list', 'CustomerController@listDebitur');
 		Route::post('dashboard-internal', 'DashboardController@getDataDashboardInternal');
 		Route::get('debitur-detail', 'CustomerController@detailDebitur');
-		//Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
+
 		Route::group( [ 'prefix' => 'auth' ], function () {
 			Route::delete( 'logout', 'AuthController@destroy' );
 		} );
@@ -52,13 +53,6 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::resource('thirdparty', 'ThirdpartyController',[
 			'only' => ['index','store', 'update']
 		]);
-
-		/**
-		* Route collateral (Collateral)
-		*/
-		// Route::resource('collateral', 'CollateralController',[
-		// 	'only' => ['index','show']
-		// ]);
 
 		Route::resource( 'customer', 'CustomerController', [
 			'only' => [ 'destroy' ]
@@ -93,6 +87,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		 Route::resource( 'register_mitra', 'mitra\RegisterMitraController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
+		 Route::resource( 'registrasi_perjanjian', 'mitra\RegisterPerjanjianController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		 Route::resource( 'fasilitas_mitra', 'mitra\FasilitasMitraController', [
@@ -297,5 +294,44 @@ Route::group(['prefix' => 'v1/int', 'namespace' => 'API\v1',
         'as'    => 'api.user.read_notification',
         'uses'  => 'NotificationController@read'
     ]);
+
+    Route::group(['prefix' => 'getall'], function() {
+	    /**
+		 * Route for namespace API\v1\Eks
+		 */
+		 Route::get('developer', [
+	        'uses'  => 'Int\DeveloperController@GetAllDeveloper'
+	    ]);
+		/**
+		 * Route for namespace API\v1\Eks
+		 */
+		 Route::get('property', [
+	        'uses'  => 'Eks\PropertyController@GetAllProperty'
+	    ]);
+		 /**
+		 * Route for namespace API\v1\Eks
+		 */
+		 Route::get('property-type', [
+	        'uses'  => 'Eks\PropertyTypeController@GetAllType'
+	    ]);
+		 /**
+		 * Route for namespace API\v1\Eks
+		 */
+		 Route::get('property-item', [
+	        'uses'  => 'Eks\PropertyItemController@GetAllItem'
+	    ]);
+		 /**
+		 * Route for namespace API\v1\Int
+		 */
+		 Route::get('collateral/{type}', [
+	        'uses'  => 'CollateralController@GetAll'
+	    ]);
+    });
+
+});
+Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1' ], function () {
+
+	//this route for generatepdf
+	Route::get('genaratePDF', 'EFormController@eformGenerate');
 
 });

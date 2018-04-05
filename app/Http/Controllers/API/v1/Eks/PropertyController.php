@@ -187,7 +187,6 @@ class PropertyController extends Controller
             $current = [
                 'tipe_project' => 'KPR',
                 'nama_project' => $property->name,
-                // 'alamat_project' => $property->address,
                 'pic_project' => $property->pic_name ?: '',
                 'pks_project' => $property->developer->pks_number ?: '-',
                 'deskripsi_project' => substr($property->description, 255),
@@ -240,10 +239,11 @@ class PropertyController extends Controller
     /**
      * [GetAllProperty description]
      */
-    public function GetAllProperty()
+    public function GetAllProperty(Request $request)
     {
+        $limit = $request->has('limit')?$request->input('limit'): 500;
         $developer_id = env('DEVELOPER_KEY',1);
-        $property = Property::select('id','developer_id','name')->where('developer_id','!=',$developer_id)->where('is_approved',true)->get();
+        $property = DB::table('properties')->selectRaw('id,prop_id_bri,developer_id,name')->whereRaw('developer_id != ? and is_approved = true',[$developer_id])->paginate($limit);
             return response()->success([
                 'message'  => "List Data Semua Properties",
                 'contents' => $property ]);

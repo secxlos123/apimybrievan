@@ -113,7 +113,7 @@ class AppointmentController extends Controller
     {
         $postTaken = ['title', 'appointment_date', 'user_id', 'ao_id', 'eform_id', 'ref_number', 'address', 'latitude', 'longitude', 'guest_name', 'desc', 'status'];
         $save = Appointment::create($request->only($postTaken));
-        // $save = $request->only($postTaken);
+
         if ($save) {
             $typeModule = getTypeModule(Appointment::class);
             notificationIsRead($save->eform_id, $typeModule);
@@ -122,7 +122,6 @@ class AppointmentController extends Controller
             $usersModel->notify(new NewSchedulerCustomer($save));
 
             // Push Notification
-            /*{}*/
             $credentials = [
                 'data'  => [
                     'user_id'    => $request->user_id,
@@ -209,13 +208,13 @@ class AppointmentController extends Controller
     {
         $data = Appointment::find($id);
         if ($data) {
-            $Update = Appointment::updateOrCreate(array('id' => $id), $request->all());
-
+            $Update = $data->update($request->all());
+            $data->save();
             $typeModule = getTypeModule(Appointment::class);
             notificationIsRead($id, $typeModule);
 
-            $usersModel = User::FindOrFail($Update->user_id);     /*send notification*/
-            $usersModel->notify(new UpdateSchedulerCustomer($Update));
+            $usersModel = User::FindOrFail($data->user_id);     /*send notification*/
+            $usersModel->notify(new UpdateSchedulerCustomer($data));
 
             if($type == 'int'){
                 $role = 'ao';
@@ -224,7 +223,7 @@ class AppointmentController extends Controller
             }
 
             $credentials = [
-                'data'  => $Update,
+                'data'  => $data,
                 'role'  => $role,
             ];
 

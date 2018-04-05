@@ -31,12 +31,13 @@ class MailNotificationToCustomer
     {
         $eform = $event->eform;
         $customer = $eform->customer;
+
         $mail = [
-            'email' => $customer->email,
-            'name' => $customer->fullname,
-            'ref_number' => $eform->ref_number
+            "email" => $customer->email
+            , "name" => $customer->fullname
+            , "ref_number" => $eform->ref_number
         ];
-        
-        Mail::to( $mail[ 'email' ] )->send( new ApprovedEformCustomer( $mail ) );
+
+        Mail::to( $mail["email"] )->send( new ApprovedEformCustomer( $mail ) );
     }
 }

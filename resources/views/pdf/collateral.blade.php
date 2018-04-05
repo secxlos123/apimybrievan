@@ -192,7 +192,6 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
                             <div class="color-orange">e-Collateral</div>
                             <div class="color-blue">BRI</div>
@@ -1125,7 +1124,7 @@
                         <tbody>
                             <tr>
                                 <td class="label">Tanggal</td>
-                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->otsInArea->created_at)) }}</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->created_at)) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1155,7 +1154,7 @@
                             </tr>
                             <tr>
                                 <td class="label">Tanggal</td>
-                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->created_at)) }}</td>
+                                <td class="break-word">: {{ date('d M Y', strtotime($collateral->updated_at)) }}</td>
                             </tr>
                         </tbody>
                     </table>

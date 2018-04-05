@@ -171,7 +171,6 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <!-- Gambar logo cuma dummy, pake external link -->
                         <td class="logo-mybri full-width">
                             <div class="color-orange">e-Prescreening</div>
                             <div class="color-blue">BRI</div>
@@ -198,7 +197,7 @@
             <table class="full-width">
                 <tbody>
                     <tr>
-                        <td class="title" colspan="2">Hasil Prescreening</td>
+                        <td class="title" colspan="2">Data Calon Nasabah</td>
                     </tr>
                 </tbody>
             </table>
@@ -206,13 +205,65 @@
             <table>
                 <tbody>
                     <tr>
+                        <td class="label">Nama Calon Nasabah</td>
+                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                    </tr>
+                    <tr>
                         <td class="label">NIK</td>
                         <td class="break-word">: {{ $detail->customer->personal['nik'] }}</td>
                     </tr>
                     <tr>
-                        <td class="label">Nama Calon Nasabah</td>
-                        <td class="break-word">: {{ $detail->customer->personal['name'] }}</td>
+                        <td class="label">Tanggal Lahir</td>
+                        <td class="break-word">: {{ $detail->customer->personal['birth_date'] }}</td>
                     </tr>
+                    <tr>
+                        <td class="label">Alamat</td>
+                        <td class="break-word">: {{ $detail->customer->personal['address'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @if( $detail->customer->personal['status_id'] == '2' )
+                <table class="full-width">
+                    <tbody>
+                        <tr>
+                            <td class="title" colspan="2">Data Pasangan Calon Nasabah</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="label">Nama Pasangan Calon Nasabah</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">NIK</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_nik'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tanggal Lahir</td>
+                            <td class="break-word">: {{ $detail->customer->personal['couple_birth_date'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Alamat</td>
+                            <td class="break-word">: {{ $detail->customer->personal['address'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
+            <table class="full-width">
+                <tbody>
+                    <tr>
+                        <td class="title" colspan="2">Hasil Prescreening</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <tbody>
                     <tr>
                         <td class="label">Hasil Prescreening</td>
                         <td class="break-word">: <span class="{{ $detail->prescreening_status }}">{{ $detail->prescreening_status }}</span></td>
@@ -226,20 +277,40 @@
 
             @if( $detail->pefindo_detail )
                 @foreach( json_decode($detail->pefindo_detail) as $key => $pefindoAll )
-                    @if( count($pefindoAll) > 1 )
-                        <table class="full-width">
-                            <tbody>
-                                <tr>
-                                    <td class="title" colspan="2">Pefindo {{ $key == 'individual' ? 'Calon Debitur' : 'Pasangan Calon Debitur' }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="card-box-head"></div>
-                    @endif
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="title" colspan="2">Pefindo {{ $key == 'individual' ? 'Calon Debitur' : 'Pasangan Calon Debitur' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    @php( $selected = empty($detail->selected_pefindo) ? null : json_decode($detail->selected_pefindo) )
+                    @php( $scoreAll = empty($detail->pefindo_score_all) ? null : json_decode($detail->pefindo_score_all) )
 
                     @foreach( $pefindoAll as $index => $pefindo )
+                        @php( $selectedData = isset($selected->{$key}) ? $selected->{$key} : -1 )
                         <table>
                             <tbody>
+                                <tr>
+                                    <td class="label"> Pefindo ID</td>
+                                    <td class="break-word">: {{ $pefindo->PefindoId }}
+                                        {!! $selectedData == $index ? ' <strong>(Dipilih)</strong>' : '' !!}
+                                    </td>
+                                </tr>
+                                @if( isset($scoreAll->{$key}) )
+                                    @php( $scoreAllArray = (object) $scoreAll->{$key} )
+                                    @if( isset($scoreAllArray->{$index}) )
+                                        @php( $color = isset($scoreAllArray->{$index}->color) ? $scoreAllArray->{$index}->color : '' )
+                                        @php( $score = isset($scoreAllArray->{$index}->score) ? $scoreAllArray->{$index}->score : 0 )
+                                        <tr>
+                                            <td class="label"> Hasil Pefindo </td>
+                                            <td class="break-word">: {{ $score }} ( <span class="{{ $color }}">{{ $color }}</span> )
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endif
+
                                 <tr>
                                     <td class="label"> Nama Lengkap </td>
                                     <td class="break-word">: {{ $pefindo->FullName }}</td>

@@ -29,11 +29,17 @@ class ScoringProsesController extends Controller
     }
 	  public function getallmitra( Request $request )
     {
+		
         $baseRequest = $request->all();
-		$all = DB::table('mitra_header')
+		$all = DB::table('mitra_utama')
                      ->select('*')
-					 ->join('mitra_detail', 'mitra_detail.id_detail', '=', 'mitra_header.id_detail')
-                     ->where('id_header', $baseRequest['id_header'])
+					 ->join('mitra_detail_fasilitas', 'mitra_utama.idMitrakerja', '=', 'mitra_detail_fasilitas.id_header')
+					 ->join('mitra_detail_dasar', 'mitra_utama.idMitrakerja', '=', 'mitra_detail_dasar.id_header')
+					 ->join('mitra_detail_data','mitra_utama.idMitrakerja','=','mitra_detail_data.id_header')
+					 ->join('mitra_detail_payroll','mitra_utama.idMitrakerja','=','mitra_detail_payroll.id_header')
+					 ->join('mitra_pemutus','mitra_utama.idMitrakerja','=','mitra_pemutus.id_header')
+					 ->limit(1)
+                     ->where('idMitrakerja', $baseRequest['id_header'])
                      ->get();
         return response()->success( [
             'message' => 'Sukses',

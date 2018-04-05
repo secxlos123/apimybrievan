@@ -27,14 +27,10 @@ class KreditEmailGenerator extends Model{
          $data['status_pernikahan'] = 'Belum Menikah';
       }
 
-      echo '========data email========';
-      echo $data;
-
 		return '<!DOCTYPE html>
 <html>
    <head>
       <meta charset="UTF-8">
-      <title>Excel To HTML using codebeautify.org</title>
    </head>
    <body>
       <table align="center" bgcolor="#fafafa" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -183,7 +179,7 @@ class KreditEmailGenerator extends Model{
                         <td>
                            <form action="'.$host.'">
                               <label for="email">Verification Code:</label>
-                              <input type="text" class="form-control" id="email" placeholder="Enter Verification Code" name="email">
+                              <input type="text" class="form-control" id="email" placeholder="Enter Verification Code" name="code">
                               <input type="hidden" name="apregno" value="'.$apregno.'">
                               <button type="submit" class="btn btn-default">Submit</button>
                            </form>

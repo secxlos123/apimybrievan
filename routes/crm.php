@@ -15,7 +15,9 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
 
   //route $pemasar
-  Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');
+  Route::post('pemasar', 'DashboardController@pemasar')->name('crm.pemasar');//by officer login
+  Route::post('pemasar_kanwil', 'DashboardController@pemasar_kanwil')->name('crm.pemasar_kanwil');
+  Route::post('pemasar_cabang', 'DashboardController@pemasar_cabang')->name('crm.pemasar_cabang');
   Route::get('kinerja_pemasar', 'DashboardController@kinerja_pemasar');
 
   //route account
@@ -82,8 +84,10 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::resource('marketing', 'MarketingController', [
     'only' => ['index', 'store']
   ]);
-  Route::post('detail_marketing', 'MarketingController@detailMarketing');
-  Route::post('delete_marketing', 'MarketingController@deleteMarketing');
+  Route::post('/marketing/detail', 'MarketingController@detailMarketing');
+  Route::post('/marketing/store_req_delete', 'MarketingController@store_marketingDeleteRequest');
+  Route::post('/marketing/get_req_delete', 'MarketingController@getMarketingDeleteRequest');
+  Route::post('/marketing/delete', 'MarketingController@deleteMarketing');
 
   // Marketing Notes Route
   Route::post('/marketing/note', 'MarketingController@getNote');
@@ -98,6 +102,8 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::get('/market_mapping', 'marketMappingController@index');
   //marketing store Map
   Route::post('/market_mapping', 'marketMappingController@store');
+  //Update market mapping
+  Route::post('/market_mapping_update', 'marketMappingController@update_marketMap');
   //detail Market
   Route::post('/market_mapping/detail_market', 'marketMappingController@detail_market');
   //sotore Customer market mapping
@@ -107,11 +113,11 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   //get Customer by market
   Route::post('/market_mapping/customers_by_market', 'marketMappingController@customer_by_market');
 
-
   //Map Route
   Route::post('/map/market', 'MapController@market_map');
   Route::post('/map/activity', 'MapController@activity_map');
 
   //sales kit
   Route::get( '/sales_kit', 'DashboardController@sales_kit');
+  //Route::get( '/view_report', 'viewController@index');
 });

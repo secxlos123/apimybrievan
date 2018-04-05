@@ -13,6 +13,7 @@ use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Contracts\UserResolver;
 use App\Models\UserDetail;
+use App\Models\HistoryPassword;
 
 class User extends Authenticatable implements AuditableContract, UserResolver
 {
@@ -78,6 +79,16 @@ class User extends Authenticatable implements AuditableContract, UserResolver
     public function customer_detail()
     {
         return $this->hasOne( CustomerDetail::class, 'user_id' );
+    }
+
+    /**
+     * The directories belongs to broadcasts.
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function history()
+    {
+        return $this->hasMany( HistoryPassword::class, 'user_id' );
     }
 
     /**
@@ -289,11 +300,11 @@ class User extends Authenticatable implements AuditableContract, UserResolver
     protected function createOrUpdate(Request $request, $user, $relation = null)
     {
         if ( ! $user instanceof $this ) {
-            //$password = str_random(8);
             $email = strtolower($request->email);
             $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
             $request->merge(['email'=> $email , 'password' => bcrypt($password)]);
             $user = $this->create($request->all());
+            $user->history()->create($request->only('password'));
             $activation = Activation::create($user);
             Activation::complete($user, $activation->code);
             event(new CustomerRegistered($user, $password, $request->input('role_id')));
@@ -552,7 +563,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
                 , \DB::Raw("
                     case when e.id is null then 'Tidak Ada Pengajuan'
                     when e.is_approved = false and e.recommended = true then 'Kredit Ditolak'
-                    when e.is_approved = true then 'Proses CLF'
+                    when e.is_approved = true then 'Proses CLS'
                     when v.id is not null then 'Prakarsa'
                     when e.ao_id is null then 'Disposisi Pengajuan'
                     else 'Pengajuan Kredit' end as application_status
@@ -651,15 +662,36 @@ class User extends Authenticatable implements AuditableContract, UserResolver
 
         if (!$hasher->check($oldPassword, $user->password) || $password != $passwordConf)
         {
-             $return['success'] = false;
+            $return['success'] = false;
             $return['message'] = 'Password Lama Tidak Valid';
         }
         else
         {
+            $hispassword = $user->history;
+            $flag = true;
+            if (count($hispassword) > 0 ) {
+                foreach ($hispassword as $key => $value) {
+                    if ($hasher->check($password,$value->password)) {
+                        $flag = false;
+                    }
+                }
+            }
+            if ($flag) {
+               \Sentinel::update($user, array('password' => $password));
+               if (count($hispassword) == 4) {
+                    $user->history()->first()->update(['password'=>bcrypt($password)]);
+               }else{
+                    $user->history()->create(['password'=> bcrypt($password)]);
+               }
+                $return['success'] = true;
+                $return['message'] = 'Password Berhasil di Ubah.';
+            }
+            else
+            {
+                $return['success'] = false;
+                $return['message'] = 'Update Gagal Anda Menggunakan Password Lama.';
+            }
 
-           \Sentinel::update($user, array('password' => $password));
-            $return['success'] = true;
-            $return['message'] = 'Password Berhasil di Ubah.';
         }
 
         return $return;
@@ -718,8 +750,6 @@ class User extends Authenticatable implements AuditableContract, UserResolver
             return !($user_int) ? $user : ltrim($user_int['pn'], '0') ;
         }
         $headers = apache_request_headers();
-        \Log::info($user);
         return array_key_exists('pn', $headers) ? ltrim($headers['pn'], '0') : $user;
-        // return true;
     }
 }

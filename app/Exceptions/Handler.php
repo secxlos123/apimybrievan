@@ -19,12 +19,12 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
-        \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-        \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
+        \Illuminate\Auth\AuthenticationException::class
+        , \Illuminate\Auth\Access\AuthorizationException::class
+        , \Symfony\Component\HttpKernel\Exception\HttpException::class
+        , \Illuminate\Database\Eloquent\ModelNotFoundException::class
+        , \Illuminate\Session\TokenMismatchException::class
+        , \Illuminate\Validation\ValidationException::class
     ];
 
     /**
@@ -35,9 +35,9 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report( Exception $exception )
     {
-        parent::report($exception);
+        parent::report( $exception );
     }
 
     /**
@@ -47,52 +47,43 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render( $request, Exception $exception )
     {
         // send email if error
-        // if ( ENV("APP_ENV") == "production" ) {
-        //     Mail::send('mails.ErrorException', array('exception' => $exception), function($message)
-        //     {
-        //         $message->subject("API myBRI Error Exception " . ENV("APPLICATION_POSITION", 'development'));
-        //         $message->from("error@mybri.bri.co.id", 'Error Exception');
-        //         $message->to("rachmat.ramadhan@wgs.co.id");
-        //     });
-        // }
+        $applicationPosition = ENV( "APPLICATION_POSITION", "local" );
+        if ( $applicationPosition == "production" ) {
+            if ( ! $exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException ) {
+                Mail::send( "mails.ErrorException", array( "exception" => $exception ), function( $message )
+                    {
+                        $message->subject(ENV("APPLICATION_POSITION", "development") . " API myBRI Error Exception");
+                        $message->from("error@mybri.bri.co.id", "Error Exception");
+                        $message->to("rachmat.ramadhan@wgs.co.id");
+                    }
+                );
+            }
+        }
 
         \DB::rollback();
         if( $exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ) {
-            return response()->error( [
-                'message' => 'Data tidak ditemukan',
-            ], 404 );
+            return response()->error( [ "message" => "Data tidak ditemukan" ], 404 );
+
         } else if( $exception instanceof \App\Exceptions\BRIServiceException ) {
-            return response()->error( [
-                'message' => 'BRI Request error',
-            ], 404 );
+            return response()->error( [ "message" => "BRI Request error" ], 404 );
+
         } else if( $exception instanceof ApiAuthorizationException ) {
-            return $exception->render($request);
+            return $exception->render( $request );
+
         } else if( $exception instanceof \Swift_TransportException ) {
-            return response()->error( [
-                'message' => 'Gagal mengirim email'
-            ], 404 );
+            return response()->error( [ "message" => "Gagal mengirim email" ], 404 );
+
         } else if ($exception instanceof NotFoundHttpException) {
-            return response()->error( [
-                'message' => 'Url Tidak Valid'
-            ], 404 );
+            return response()->error( [ "message" => "Url Tidak Valid" ], 404 );
+
         } else if ($exception instanceof \GuzzleHttp\Exception\ConnectException) {
-            return response()->error( [
-                'message' => 'Request Time Out'
-            ], 408 );
+            return response()->error( [ "message" => "Request Time Out" ], 408 );
+
         }
-        // if( $exception instanceof \Illuminate\Http\Exception\HttpResponseException ) {
-        //     return response()->json( [
-        //         'Url' => $request->fullUrl(),
-        //         'Method' => $request->method(),
-        //         'File' => $exception->getFile(),
-        //         'Line' => $exception->getLine(),
-        //         'Message' => $exception->getMessage(),
-        //         'Full Description' => $exception
-        //     ], 400 );
-        // }
+
         return parent::render( $request, $exception );
     }
 
@@ -103,12 +94,12 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Illuminate\Http\Response
      */
-    protected function unauthenticated($request, AuthenticationException $exception)
+    protected function unauthenticated( $request, AuthenticationException $exception )
     {
-        if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+        if ( $request->expectsJson() ) {
+            return response()->json( [ "error" => "Unauthenticated." ], 401 );
         }
 
-        return redirect()->guest('login');
+        return redirect()->guest( "login" );
     }
 }

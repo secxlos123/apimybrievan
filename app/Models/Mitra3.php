@@ -28,8 +28,20 @@ class Mitra3 extends Authenticatable  {
 						 if( $request->has( 'BRANCH_CODE' ) ) {
 								$BRANCH_CODE = $request->input('BRANCH_CODE');
 								$branchcis ='';
+								$branchcis2 = '';
 								if(strlen($BRANCH_CODE)=='5'){
 									$branchcis = $BRANCH_CODE;
+									$k = strlen($BRANCH_CODE);
+									$branchut2 = '';
+									$p = '';
+									for($l=$k;$l<5;$l++){
+										if(substr($BRANCH_CODE,0,$l+1)!='0'){
+											$branchut2 = 'lempar';
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis2 = substr($BRANCH_CODE,$p,5);
 									/* for($i=0;$i<5;$i++){
 										$cek = substr($BRANCH_CODE,$i,1);
 										if($cek!=0){
@@ -48,17 +60,27 @@ class Mitra3 extends Authenticatable  {
 											}
 										} 
 										$branchcis = $branchut;	
+										$branchcis2 = $BRANCH_CODE;
 								}
 								\Log::info($branchcis);
-								$mitra->Where('BRANCH_CODE', $branchcis);
+								
+					
+								//$mitra->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
 						 }
+					$mitra->where( function($item) use (&$request, $branchcis, $branchcis2) {
+						$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
+					});
 						 
+					$mitra->where( function($item) use (&$request) {
 						 if( $request->has( 'search' ) ) {
-		 						$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
+									$lowerSearch = '%' .trim(strtolower($request->input('search'))). '%';
+									$item->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',[$lowerSearch]);
+										//$item->Where('BRANCH_CODE', $branchcis)->orWhere('BRANCH_CODE',$branchcis2);
+		 						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
 						 }
-						$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
+					});
 
-//paging
+						//$mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',['%'.trim(strtolower($request->input('search'))).'%']);
         } );
 			
 	//			$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$request->input('search').')%');

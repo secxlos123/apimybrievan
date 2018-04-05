@@ -13,8 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        '\App\Console\Commands\SchedulerRekening'
-        , '\App\Console\Commands\BackupDatabaseCommand'
+        "\App\Console\Commands\SchedulerRekening"
+        , "\App\Console\Commands\BackupDatabaseCommand"
     ];
 
     /**
@@ -23,26 +23,20 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule( Schedule $schedule )
     {
-        // $schedule->command('inspire')->hourly();
-        if ( env( 'BACKUP_DATABASE', false ) ) {
-            $schedule->command('db:backup daily')
-                ->dailyAt('00:00');
-            $schedule->command('db:backup monthly')
-                ->monthlyOn(1, '00:00');
+        if ( env( "BACKUP_DATABASE", false ) ) {
+            $schedule->command( "db:backup daily" )
+                ->dailyAt( "00:00" );
+
+            $schedule->command( "db:backup monthly" )
+                ->monthlyOn( 1, "00:00" );
         }
 
-        $schedule->command('SchedulerRekening:updaterekening')
-            // ->everyMinute();
-            ->everyFiveMinutes();
-            // ->weekdays()
-            // ->hourlyAt('12');
-
-        // // test function
-        // $schedule->call(function(){
-        //     \Log::info("salah masuk");
-        // })->everyMinute();
+        $schedule->command( "SchedulerRekening:updaterekening" )
+            ->weekdays()
+            ->everyFiveMinutes()
+            ->between( "07:00", "19:00" );
     }
 
     /**
@@ -52,6 +46,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        require base_path('routes/console.php');
+        require base_path( "routes/console.php" );
     }
 }

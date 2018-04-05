@@ -37,7 +37,7 @@ class SendNotificationController extends Controller
 	            $request, $validator
 	        );
 	    }
-		
+
 		$data = $request->all();
 
 	    $notificationBuilder = new PayloadNotificationBuilder($data['title']);
@@ -51,15 +51,6 @@ class SendNotificationController extends Controller
 
 		$topicResponse = FCM::sendToTopic($topic, null, $notification, null);
         dd($topicResponse);
-
-    	//$push = $this->sendpush($data['title'], $data['body'], $data, $data['token']);
-        /*
-
-
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => ['data'=>$kodepost]
-        ], 200 );*/
 
 	}
 
@@ -83,12 +74,12 @@ class SendNotificationController extends Controller
 
 	    $downstreamResponse = FCM::sendTo($token, $option, $notification, $data);
 		return response()->success( [
-				            'status' =>'1',
-				            'sucess' =>$downstreamResponse->numberSuccess(),
-						  	'fail' => $downstreamResponse->numberFailure(), 
-						  	'msg' => $downstreamResponse->tokensWithError(),
-				        ], 200 );
-	    
+            'status' =>'1',
+            'sucess' =>$downstreamResponse->numberSuccess(),
+		  	'fail' => $downstreamResponse->numberFailure(),
+		  	'msg' => $downstreamResponse->tokensWithError(),
+        ], 200 );
+
 	}
 
 

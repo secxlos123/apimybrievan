@@ -16,7 +16,8 @@ class MarketingActivityFollowup extends Model
       'amount',
       'target_commitment_date',
       'longitude',
-      'latitude'
+      'latitude',
+      'img_lkn'
     ];
 
     public function activity()

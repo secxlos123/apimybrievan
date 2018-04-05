@@ -147,9 +147,14 @@ class CustomerController extends Controller
      */
     public function verify( CustomerRequest $request, $id )
     {
-        //DB::beginTransaction();
         $customer = Customer::findOrFail( $id );
         $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','product_type');
+
+        $mergeRequest[ 'phone' ] = 0;
+        if ( !empty($request->input('phone')) ) {
+            $mergeRequest[ 'phone' ] = preg_replace("/[^0-9,.]/", "", $request->input('phone') );
+        }
+        $request->merge($mergeRequest);
 
         // Get User Login
         $user_login = \RestwsHc::getUser();
@@ -157,7 +162,7 @@ class CustomerController extends Controller
         $baseRequest['ao_position'] = $user_login['position'];
 
         if ($request->has('eform_id')) {
-			
+
 			$productss = '';
 			if(empty($request->product_type)){$productss='';}else{$productss=$request->product_type;}
 			if($request->product_type=='briguna'){}else{
@@ -227,7 +232,6 @@ class CustomerController extends Controller
         $customer->verify( $request->except('join_income','developer','property','status_property', 'price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','kpr_type_property_name','active_kpr_name','down_payment') );
 
         $eform = EForm::generateToken( $customer->personal['user_id'] );
-        // DB::commit();
 
         if( $request->verify_status == 'verify' ) {
 
@@ -245,28 +249,23 @@ class CustomerController extends Controller
             generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
             event( new VerifyEForm( $verify['contents'] ) );
 
-            // else // uncomment function below
-
-            // event( new CustomerVerify( $customer, $eform ) );
-            // $credentials = [
-            //  "data"    => $eform,
-            // ];
-            // pushNotification($credentials, "verifyCustomer");
-            // $message = 'Email telah dikirim kepada nasabah untuk verifikasi data nasabah.';
-
-            // end
-
             $message = 'Data nasabah telah di verifikasi';
+
             // auto approve for VIP
             if ( $detail->is_clas_ready ) {
                 $message .= ' dan ' . autoApproveForVIP( array(), $detail->id );
             }
+
+            set_action_date($detail->id, 'eform-verification');
 
             return response()->success( [
                 'message' => $message,
                 'contents' => $customer
             ] );
         } else if( $request->verify_status == 'verified' ) {
+
+            set_action_date($detail->id, 'customer-verification');
+
             return response()->success( [
                 'message' => 'Data nasabah telah di verifikasi.',
                 'contents' => []
@@ -321,7 +320,7 @@ class CustomerController extends Controller
         $zip_code_service = Asmx::setEndpoint( 'GetDataKodePos' )->setQuery( [
              'search' => $value,
         ] )->post();
-        \Log::info($zip_code_service);
+
         $datazip = array();
         $zip_code_list = $zip_code_service['contents'];
 		$zip_code_list['data'] = array_map(function ($content) {
@@ -331,15 +330,13 @@ class CustomerController extends Controller
 				'kecamatan' => $content['kecamatan'],
 			];
 		}, $zip_code_list['data']);
-		\Log::info($zip_code_list);
         if (count($zip_code_list['data'])>0) {
-        foreach ($zip_code_list['data'] as $key => $zipcode) {
+            foreach ($zip_code_list['data'] as $key => $zipcode) {
                 if ($zipcode['id'] == $value) {
                 	$datazip = $zip_code_list['data'][0];
                 }
             }
         }
-        \Log::info($datazip);
         return $datazip;
     }
 }

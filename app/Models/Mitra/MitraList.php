@@ -14,7 +14,7 @@ class MitraList extends Model
      *
      * @var string
      */
-    protected $table = 'mitra_header';
+    protected $table = 'mitra_utama';
 
     /**
      * Disabling timestamp feature.
@@ -30,16 +30,9 @@ class MitraList extends Model
      */
 	 
     protected $fillable = [  	
-		'registrasi_mitra_header','jenis_mitra','golongan_mitra','induk_mitra','anak_perusahaan_wilayah',
-		'anak_perusahaan_kabupaten','id_mitra','email','payroll','bank_payroll','status','id_detail','id_approval_pemutus','id_header',
-						'alamat_mitra','no_telp_mitra','deskripsi_mitra','hp_mitra','bendaharawan_mitra',
-						'telp_bendaharawan_mitra','hp_bendaharawan_mitra','jml_pegawai','thn_pegawai',
-						'tgl_pendirian','akta_pendirian','akta_perubahan','npwp_usaha','laporan_keuangan','legalitas_perusahaan',
-						'no_rek_mitra','tipe_account','tgl_pembayaran','tgl_gajian','jenis_pengajuan','bank_jenis_pinjaaman',
-						'fasilitas_bank','upload_fasilitas_bank','ijin_perinsip','upload_ijin','daftar_ijin','fasilitas_lainnya',
-						'deskripsi_fasilitas_lainnya','nomor_pks_notaril','nomor_perjanjian_kerjasama_bri',
-						'nomor_perjanjian_kerjasama_ketiga','tgl_perjanjian','tgl_perjanjian_backdate','ijin_prinsip','id_detail',		
-						'pemutus','jabatan','pemeriksa','jabatan_pemeriksa','status','id_approval'];
+						'idMitrakerja','NAMA_INSTANSI','kode','NPL','BRANCH_CODE','Jumlah_pegawai','JENIS_INSTANSI','UNIT_KERJA',
+					'Scoring','KET_Scoring','jenis_bidang_usaha','alamat_instansi','alamat_instansi2','alamat_instansi3','telephone_instansi',
+					'rating_instansi','lembaga_pemeringkat','go_public','no_ijin_prinsip','date_updated','updated_by','acc_type'];
 	
     /**
      * The attributes that should be hidden for arrays.
@@ -73,16 +66,14 @@ class MitraList extends Model
         }
 
 		 $dir = $query->where( function( $dir ) use( $request ) {
-            if ( $request->has('jenis_mitra') ) {
-                $dir = $dir->where('mitra_header.jenis_mitra', $request->input('jenis_mitra'));
+            if ( $request->has('NAMA_INSTANSI') ) {
+                $dir = $dir->where('mitra_header.NAMA_INSTANSI', $request->input('NAMA_INSTANSI'));
 			}
-            if ( $request->has('anak_perusahaan_wilayah') ) {
-                $dir = $dir->where('mitra_header.anak_perusahaan_wilayah', $request->input('anak_perusahaan_wilayah'));
-			}
-            if ( $request->has('anak_perusahaan_kabupaten') ) {
-                $dir = $dir->where('mitra_header.anak_perusahaan_kabupaten', $request->input('anak_perusahaan_kabupaten'));
+            if ( $request->has('UNIT_KERJA') ) {
+                $dir = $dir->where('mitra_header.UNIT_KERJA', $request->input('UNIT_KERJA'));
 			}
         } );
+
 				 $dir = $dir->join('mitra_detail', 'mitra_header.id_detail', '=', 'mitra_detail.id_detail');
         $dir = $dir->orderBy('mitra_header.'.$sort[0], $sort[1]);
 

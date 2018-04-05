@@ -22,7 +22,6 @@ class ChangesKreditDetailsNull extends Migration
             $table->string('jenis_kelamin')->nullable()->change();
             $table->string('tanggal_lahir')->nullable();
             $table->string('nama')->nullable()->change();
-            $table->string('tempat_lahir')->nullable()->change();
             $table->string('telephone')->nullable()->change();
             $table->string('pendidikan')->nullable()->change();
 

@@ -16,13 +16,13 @@ class Customer extends User
      *
      * @var array
      */
-    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile' ];
+    protected $visible = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile','IsFinish' ];
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile' ];
+    protected $appends = [ 'is_simple', 'is_completed', 'is_verified', 'personal', 'work', 'financial', 'contact', 'other', 'schedule', 'is_approved', 'is_approved_mobile','IsFinish' ];
 
     /**
      * Get information about register simple status.
@@ -151,6 +151,7 @@ class Customer extends User
             'pendidikan_terakhir' => $this->detail ? $this->detail->pendidikan_terakhir : '',
             'address_domisili' => $this->detail ? $this->detail->address_domisili : '',
             'mobile_phone_couple' => $this->detail ? $this->detail->mobile_phone_couple : '',
+            'IsFinish' => $this->eforms ? $this->eforms->IsFinish : '',
         ];
 
         return $personal_data;
@@ -274,6 +275,19 @@ class Customer extends User
         return $stat_approved;
     }
 
+	public function getIsFinishAttribute()
+    {
+        $stat_approved = [];
+        $eforms = $this->eforms()->select(['IsFinish'])->first();
+		$stat_approved = $eforms[0]['IsFinish'];
+/*         foreach ($eforms as $eform) {
+            $stat_approved = [
+                'IsFinish' => $eform->IsFinish
+            ];
+        }
+ */
+        return $stat_approved;
+    }
     /**
      * Get status is_approved for mobile.
      *
@@ -282,12 +296,17 @@ class Customer extends User
 
     public function getIsApprovedMobileAttribute()
     {
-        $stat_approved = '';
-        $eforms = $this->eforms()->select(['is_approved'])->get();
-        foreach ($eforms as $eform) {
-            $stat_approved = $eform->is_approved;
-        }
+        $stat_approved = null;
+        $eform = $this->eforms()->select(['is_approved', 'IsFinish', 'product_type'])->first();
+        if ( $eform ) {
+            if ( strtolower($eform->product_type) == "briguna" ) {
+                $stat_approved = $eform->IsFinish;
 
+            } else {
+                $stat_approved = $eform->is_approved;
+
+            }
+        }
         return $stat_approved;
     }
 
@@ -327,22 +346,16 @@ class Customer extends User
      * @return void
      */
     public static function create( $data ) {
-    	\Log::info('==========ini data awal=======');
-    	\Log::info($data);
         $email = strtolower($data['email']);
         $data['email'] = $email;
-        //$data['product_leads'] = isset($data['product_leads']) ? $data['product_leads'] : null;
         $user_model = new User;
         $password = str_random( 8 );
         $separate_array_keys = array_flip( $user_model->fillable );
         $user_data = array_intersect_key( $data, $separate_array_keys ) + [ 'password' => $password ];
-        \Log::info('============ini data setelah pabeulit=======');
-    	\Log::info($user_data);
-	    $user = Sentinel::registerAndActivate( $user_data );
+        $user = Sentinel::registerAndActivate( $user_data );
+        $user->history()->create(['password' => bcrypt($password) ]);
         $role = Sentinel::findRoleBySlug( 'customer' );
         $role->users()->attach( $user );
-	    \Log::info('==========ini data separate====');
-	    \Log::info($separate_array_keys);
 
         $product = true;
         if (isset($data['product_leads'])) {
@@ -358,8 +371,6 @@ class Customer extends User
 
         }
 
-      	\Log::info('==========ini data insert ke detail=======');
-	    \Log::info($customer_data);
         CustomerDetail::create( $customer_data );
         // send mail notification
         $customer = static::find( $user->id );

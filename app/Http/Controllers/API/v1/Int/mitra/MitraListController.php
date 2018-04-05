@@ -10,7 +10,7 @@ use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\User;
-use App\Models\Mitra\MitraList;
+use App\Models\Mitra\MitraListing;
 use DB;
 
 class MitraListController extends Controller
@@ -24,7 +24,7 @@ class MitraListController extends Controller
     {
         \Log::info($request->all());
         $limit = $request->input( 'limit' ) ?: 10;
-			$newDir = MitraList::filter( $request )->paginate( $limit );
+			$newDir = MitraListing::filter( $request )->paginate( $limit );
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newDir

@@ -102,7 +102,6 @@ class Developer extends Model implements AuditableContract
                  */
                 if ($request->has('without_independent')) {
                     if ($request->without_independent) {
-                        // $developer->where('bri', '=', NULL);
                         $developer->where('bri', '!=', '1');
                     }
                 }
@@ -114,6 +113,53 @@ class Developer extends Model implements AuditableContract
             })
             ->select('*')
             ->selectRaw('(select users.image from users where users.id = developers_view_table.dev_id) as image')
+            ->orderBy($sort[0], $sort[1]);
+    }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetListsDeveloper($query, Request $request)
+    {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['dev_id', 'asc'];
+        $project = $request->input('project') ? explode('|', $request->input('project')) : ['0', '50'];
+
+        return $query->from('developers_view_table')
+            ->where(function ($developer) use (&$request, &$query) {
+
+                /**
+                 * Query for search developers.
+                 */
+                if ($request->has('search')) $query->search($request);
+            })
+            ->where(function ($developer) use ($request, $project) {
+
+                /**
+                 * Query for filter by city_id.
+                 */
+                if ($request->has('city_id')) $developer->where('city_id', $request->input('city_id'));
+
+                /**
+                 * Query for for without independent
+                 */
+                if ($request->has('without_independent')) {
+                    if ($request->without_independent) {
+                        $developer->where('bri', '!=', '1');
+                    }
+                }
+                /**
+                 * Query for for limit project
+                 */
+                if ($request->has('project')) $developer->whereBetween('project', $project);
+
+            })
+            ->select('*')
+            ->selectRaw('(select users.image from users where users.id = developers_view_table.dev_id) as image')
+            ->where('dev_id', '>', 1)
             ->orderBy($sort[0], $sort[1]);
     }
 
@@ -136,7 +182,7 @@ class Developer extends Model implements AuditableContract
 
     public function getListUserProperties($startList = null, $endList = null, $user_id)
     {
-        $developer = Developer::select('id')->where('user_id', $user_id)->first();
+        $developer = Developer::select('user_id')->where('user_id', $user_id)->first();
         $filter = false;
         if(!empty($developer)){
             if(!empty($startList) && !empty($endList)){
@@ -172,21 +218,22 @@ class Developer extends Model implements AuditableContract
         }
 
         $data = DB::table('user_developers')
-                        ->select('users.first_name', 
+                        ->select('users.first_name',
                                  'users.last_name',
                                  'user_developers.user_id',
                                  DB::raw("COUNT(eforms.id) as eform"),
                                  DB::raw("COUNT(CASE WHEN eforms.status_eform = 'Approval1' THEN 1 END) AS eform_approved"))
-                        ->join("developers", 'developers.id', 'user_developers.admin_developer_id')
+                        ->leftjoin("developers", 'developers.id', 'user_developers.admin_developer_id')
                         ->leftjoin("users", 'users.id', 'user_developers.user_id')
                         ->leftJoin("eforms", 'eforms.sales_dev_id', 'user_developers.user_id')
                         ->leftJoin("kpr", 'kpr.eform_id', 'eforms.id')
-                        ->where('user_developers.admin_developer_id', $developer['id'])
+                        ->where('user_developers.admin_developer_id', $developer['user_id'])
                         ->when($filter, function($query) use ($startList, $endList){
                             return $query->whereBetween('eforms.created_at', [$startList, $endList]);
                         })
                         ->groupBy('first_name', 'last_name', 'user_developers.user_id')
                         ->get();
+
         return $data;
     }
 }
