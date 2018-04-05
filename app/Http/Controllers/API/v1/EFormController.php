@@ -477,7 +477,6 @@ class EFormController extends Controller
                         $nameTag = $request->NAME_TAG;
                         $limitKartu = $request->KARTU_BANK_LAIN;
 
-
                         $npwp = $this->uploadimage($npwp,$id,'NPWP');
                         $ktp = $this->uploadimage($ktp,$id,'KTP');
 
@@ -505,6 +504,13 @@ class EFormController extends Controller
                     $kkDetailsCreate = $kk->createKartuKreditDetails($baseRequest);
                     \Log::info("========crate kk details=============");
                     \Log::info($eformCreate);
+
+
+                    //lengkapi data kredit di eform
+                    $rangeLimit = $kkDetailsCreate['range_limit'];
+                    $eform = EForm::where('id',$eformId)->update([
+                        'kk_details'=>'{range_limit:'.$rangeLimit.'}'
+                    ]);
 
 
                     //cek dedup

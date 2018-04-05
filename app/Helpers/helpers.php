@@ -222,7 +222,7 @@ if (! function_exists('get_pefindo_color')) {
             $return['color'] = 'Merah';
             $return['position'] = 1;
 
-        } elseif ( $score >= 677 && $score <= 900 ) {
+        } elseif ( ( $score >= 677 && $score <= 900 ) || $score == 999 ) {
             $return['color'] = 'Hijau';
             $return['position'] = 3;
 
