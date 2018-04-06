@@ -2032,23 +2032,14 @@ class ApiLasController extends Controller
                 $result = $this->return_conten($datadetail);
                 return $result;
             }
-            $error[0] = 'Hasil Inquiry Kosong / Anda belum memiliki user LAS';
             return [
                 'code' => 04, 
-                'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS',
-                'contents' => [
-                    'data' => $error
-                ]
+                'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
-                'code' => 04, 
-                'descriptions' => 'Gagal Koneksi Jaringan',
-                'contents' => [
-                    'data' => $error
-                ]
+                'code' => 05, 
+                'descriptions' => 'Gagal Koneksi Jaringan'
             ];
         }        
     }
@@ -2068,7 +2059,6 @@ class ApiLasController extends Controller
             ];
             $save = \DB::table('json_ws_log')->insert($data_log);
             \Log::info('berhasil save kirimPemutus json_ws_log'.$save);
-
             $client = $this->client();
             $resultclient = $client->kirimPemutus($parameter);
             if($resultclient->kirimPemutusResult){
@@ -2076,23 +2066,14 @@ class ApiLasController extends Controller
                 $dataResult = (array) $datadetail;
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2124,23 +2105,14 @@ class ApiLasController extends Controller
                     return $dataResult;
                 }
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2158,29 +2130,19 @@ class ApiLasController extends Controller
             \Log::info('berhasil save insertDataKreditBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataKreditBriguna($parameter);
-
             if($resultclient->insertDataKreditBrigunaResult){
                 $datadetail = json_decode($resultclient->insertDataKreditBrigunaResult);
                 $dataResult = (array) $datadetail;
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2197,7 +2159,6 @@ class ApiLasController extends Controller
             $save = \DB::table('json_ws_log')->insert($data_log);
             \Log::info('berhasil save insertPrescoringBriguna json_ws_log'.$save);
             $client = $this->client();
-
             if ($jenis_pinjaman == '2') {
                 $resultclient = $client->insertPrescoringBrigunaUmum($parameter);
                 if($resultclient->insertPrescoringBrigunaUmumResult){
@@ -2213,23 +2174,14 @@ class ApiLasController extends Controller
                     return $dataResult;
                 }
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2247,29 +2199,19 @@ class ApiLasController extends Controller
             \Log::info('berhasil save insertPrescreeningBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertPrescreeningBriguna($parameter);
-
-            if($resultclient->insertPrescreeningBrigunaResult){
+            if($resultclient->insertPrescreeningBrigunaResult) {
                 $datadetail = json_decode($resultclient->insertPrescreeningBrigunaResult);
                 $dataResult = (array) $datadetail;
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2287,8 +2229,7 @@ class ApiLasController extends Controller
             $save = \DB::table('json_ws_log')->insert($data_log);
             $client = $this->client();
             $resultclient = $client->insertDataDebtPerorangan($parameter);
-
-            if($resultclient->insertDataDebtPeroranganResult){
+            if($resultclient->insertDataDebtPeroranganResult) {
                 $datadetail = json_decode($resultclient->insertDataDebtPeroranganResult);
                 $dataResult = (array) $datadetail;
                 if ($dataResult['statusCode'] == '01') {
@@ -2304,28 +2245,19 @@ class ApiLasController extends Controller
                 }
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
 
-    function datafoto($request, $id_foto, $exist_field){
+    function datafoto($request, $id_foto, $exist_field) {
         $path  = public_path( 'uploads/' . $id_foto );
         $image = substr($request, -4);
         if ($image == '.jpg' || $image == '.pdf' || $image == 'jpeg' || $image == '.png' || $image == '.gif') {

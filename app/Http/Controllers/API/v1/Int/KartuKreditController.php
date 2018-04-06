@@ -556,16 +556,25 @@ class KartuKreditController extends Controller{
 		return $data;
 	}
 
-	public function finishAnalisa(Request $req){
+	public function finishAnalisa(KreditRequest $req){
 		$apregno = $req->apRegno;
+		$eformId= $req->eform_id;
 		$catRekAo = $req->catatanRekomendasiAO;
 		$rekLimitKartu = $req->rekomendasiLimitKartu;
+		$rangeLimit =  $req->range_limit;
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'is_analyzed'=>true,
 			'catatan_rekomendasi_ao'=>$catRekAo,
-			'rekomendasi_limit_kartu'=>$rekLimitKartu
+			'rekomendasi_limit_kartu'=>$rekLimitKartu,
+			'pilihan_kartu'=>$req->cardType,
+			'range_limit'=>$rangeLimit
 		]);
+
+		 //lengkapi data kredit di eform
+        $eform = EForm::where('id',$eformId)->update([
+            'kk_details'=>'{"range_limit":"'.$rangeLimit.'"}'
+        ]);
 
 		return response()->json([
 			'responseCode'=>'00',
