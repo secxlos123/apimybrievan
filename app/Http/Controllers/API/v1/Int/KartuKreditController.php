@@ -556,7 +556,7 @@ class KartuKreditController extends Controller{
 		return $data;
 	}
 
-	public function finishAnalisa(Request $req){
+	public function finishAnalisa(KreditRequest $req){
 		$apregno = $req->apRegno;
 		$catRekAo = $req->catatanRekomendasiAO;
 		$rekLimitKartu = $req->rekomendasiLimitKartu;
@@ -564,7 +564,9 @@ class KartuKreditController extends Controller{
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'is_analyzed'=>true,
 			'catatan_rekomendasi_ao'=>$catRekAo,
-			'rekomendasi_limit_kartu'=>$rekLimitKartu
+			'rekomendasi_limit_kartu'=>$rekLimitKartu,
+			'pilihan_kartu'=>$req->cardType,
+			'range_limit'=>$req->range_limit
 		]);
 
 		return response()->json([
