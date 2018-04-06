@@ -114,6 +114,7 @@ class KreditRequest extends BaseRequest{
 						'rekomendasiLimitKartu'=>'required',
 						'cardType'=>'required',
 						'range_limit'=>'required',
+						'eform_id'=>'required'
     				]);
     			}
     			
