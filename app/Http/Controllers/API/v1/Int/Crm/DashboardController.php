@@ -283,7 +283,11 @@ class DashboardController extends Controller
     public function marketing_summary(Request $request)
     {
       $pn = $request->header('pn');
-      $branch = $request->header('branch');
+      if ($request->has('branch')) {
+        $branch = $request['branch'];
+      } else {
+        $branch = $request->header('branch');
+      }
       $auth = $request->header('Authorization');
       $pemasar = $this->pemasar_branch($pn,$branch);
 
@@ -295,7 +299,7 @@ class DashboardController extends Controller
         $list_pn =[];
       }
 
-      $data = Marketing::getMarketingSummary($request)->whereIn('pn',$list_pn)->get();
+      $data = Marketing::getMarketingSummary($request)->whereIn('marketings.pn',$list_pn)->get();
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=

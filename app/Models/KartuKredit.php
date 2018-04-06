@@ -29,7 +29,7 @@ class KartuKredit extends Model
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
-    	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
+    	'memiliki_kk_bank_lain','range_limit','nama_ibu_kandung',
         'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
         'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir'
     ];
@@ -144,6 +144,8 @@ class KartuKredit extends Model
                 $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
                 $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
 
+                $personalKota = $req['PersonalKota'];
+
             }else{
                 $cardType = $req['CardType'];
 
@@ -232,6 +234,8 @@ class KartuKredit extends Model
             $informasiLos['JobLurah'] = $jobLurah;
             $informasiLos['JobRt'] = $jobRt;
             $informasiLos['JobRw'] = $jobRw;
+
+            $informasiLos['PersonalKota'] = $personalKota;
             
            
            
@@ -311,7 +315,7 @@ class KartuKredit extends Model
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
         $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
         
-        $data['limit_tertinggi'] = $req['range_kartu'];
+        $data['range_limit'] = $req['range_kartu'];
         $data['jenis_nasabah'] = $req['jenis_nasabah'];
         $data['hp'] = $req['hp'];
         $data['email'] = $req['email'];
@@ -333,7 +337,7 @@ class KartuKredit extends Model
 
         $kkDetails = KartuKredit::create($data);
         
-        $kkDetails['range_kartu'] = $kkDetails['limit_tertinggi'];
+        $kkDetails['range_kartu'] = $kkDetails['range_limit'];
         \Log::info('=======kk details=========');
         \Log::info($kkDetails);
         return $kkDetails;

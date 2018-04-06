@@ -109,6 +109,13 @@ class Customer extends User
      */
     public function getPersonalAttribute()
     {
+		if(!empty($this->eforms->IsFinish)){
+			$IsFinish = DB::table('eforms')->select("eforms.IsFinish")->where("user_id",$this->detail->user_id)
+						->where('id',(\DB::Raw("(select max(id) from eforms where user_id='".$this->detail->user_id."')")))->get()->toArray();
+			$IsFinish = json_decode(json_encode($IsFinish), True);
+		}else{
+			$IsFinish[0]['IsFinish'] = '';
+		}
         $personal_data = [
             'user_id' => $this->detail ? $this->detail->user_id : '',
             'name' => $this->fullname,
@@ -151,7 +158,7 @@ class Customer extends User
             'pendidikan_terakhir' => $this->detail ? $this->detail->pendidikan_terakhir : '',
             'address_domisili' => $this->detail ? $this->detail->address_domisili : '',
             'mobile_phone_couple' => $this->detail ? $this->detail->mobile_phone_couple : '',
-            'IsFinish' => $this->eforms ? $this->eforms->IsFinish : '',
+            'IsFinish' => $IsFinish[0]['IsFinish'] ? $IsFinish[0]['IsFinish'] : '',
         ];
 
         return $personal_data;

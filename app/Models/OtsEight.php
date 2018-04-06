@@ -117,6 +117,6 @@ class OtsEight extends Model implements AuditableContract
 
         }
 
-        return $this->type_binding;
+       return $value;
     }
 }
