@@ -573,7 +573,8 @@ class KartuKreditController extends Controller{
 
 		 //lengkapi data kredit di eform
         $eform = EForm::where('id',$eformId)->update([
-            'kk_details'=>'{"range_limit":"'.$rangeLimit.'"}'
+            'kk_details'=>'{"range_limit":"'.$rangeLimit.'",
+            "is_analyzed:":"true"}'
         ]);
 
 		return response()->json([
