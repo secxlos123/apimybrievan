@@ -509,7 +509,7 @@ class EFormController extends Controller
                     //lengkapi data kredit di eform
                     $rangeLimit = $kkDetailsCreate['range_limit'];
                     $eform = EForm::where('id',$eformId)->update([
-                        'kk_details'=>'{range_limit:'.$rangeLimit.'}'
+                        'kk_details'=>'{"range_limit":"'.$rangeLimit.'","is_analyzed:":"false"}'
                     ]);
 
 

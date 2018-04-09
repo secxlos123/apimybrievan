@@ -22,6 +22,8 @@ use DB;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
+use App\Models\KartuKredit;
+
 class EForm extends Model implements AuditableContract
 {
     use Auditable;
@@ -61,7 +63,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $casts = [ 'additional_parameters' => 'array' ];
+    protected $casts = [ 'additional_parameters' => 'object' ];
 
     /**
      * Get AO detail information.
