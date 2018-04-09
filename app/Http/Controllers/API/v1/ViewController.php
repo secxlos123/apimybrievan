@@ -43,7 +43,16 @@ class ViewController extends Controller
 				if($table_view[$i]['last']=='1'){
 					$view1 .= '</div></div></div>';
 				}
-
+			
+			}elseif($table_view[$i]['kolom']=='button_modify'){
+				if($table_view[$i]['first']=='1'){
+					$view1 .= '<div class="row"><div class="col-md-12"><div class="form-horizontal" '.$divid.' '.$divname.'>';
+				}
+					$view1 .= $this->generate_table($table_view,$i);
+				if($table_view[$i]['last']=='1'){
+					$view1 .= '</div></div></div>';
+				}
+			
 			}elseif($table_view[$i]['kolom']=='2'){
 				if($table_view[$i]['first']=='1'){
 					$view1 .= '<div class="row"><div class="'.$table_view[$i]['div_class'].'" '.$divid.' '.$divname.'><div class="form-horizontal">';
@@ -96,6 +105,8 @@ class ViewController extends Controller
 					$view1 .= $this->table($table_view[$i]);
 				}elseif($table_view[$i]['type']=='button'){
 					$view1 .= $this->button($table_view[$i]);
+				}elseif($table_view[$i]['type']=='button_modify'){
+					$view1 .= $this->button_modify($table_view[$i]);
 				}elseif($table_view[$i]['type']=='label'){
 					$view1 .= $this->labeling($table_view[$i]);
 				}elseif($table_view[$i]['type']=='radio'){
@@ -277,6 +288,23 @@ class ViewController extends Controller
 	    public function button($view)
     {
 			$form = '<div class="form-group '.$view['name'].'">';
+			if(!empty($view['label'])){
+			$form .= $this->label($view['label_class'],$view['label_value']);
+			}
+			if(!empty($view['div'])){
+			$form .= '<div class="'.$view['div_class'].'">';
+			}
+			$form .= '<button type="button" class="'.$view['class'].'" id="'.$view['id_table'].'" name="'.$view['name'].'" '.
+						$view['etc'].$view['value'].' </button>';
+			if(!empty($view['div'])){
+			$form .= '</div>';
+			}
+			$form .= '</div>';
+		return $form;
+    }
+	   public function button_modify($view)
+    {
+			$form = '<div>';
 			if(!empty($view['label'])){
 			$form .= $this->label($view['label_class'],$view['label_value']);
 			}
