@@ -71,7 +71,7 @@ class SentSMSNotifController extends Controller
 				$produk = 'Sms Dev';
 			}else{
 				$divisi = 'KRK';
-				$produk = 'Kredit';
+				$produk = 'Kredit Konsumer';
 			}
 
 		//$data = $request->all();
