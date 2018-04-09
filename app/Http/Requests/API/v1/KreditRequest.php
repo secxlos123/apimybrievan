@@ -107,6 +107,15 @@ class KreditRequest extends BaseRequest{
 						'apBillCycle'=>'required_if:putusan,approved',
 						'rjCode'=>'required_if:putusan,rejected',
     				]);
+    			}else if($this->segment(5) == 'finish-analisa'){
+    				return([
+    					'apRegno'=>'required',
+    					'catatanRekomendasiAO'=>'',
+						'rekomendasiLimitKartu'=>'required',
+						'cardType'=>'required',
+						'range_limit'=>'required',
+						'eform_id'=>'required'
+    				]);
     			}
     			
     			break;

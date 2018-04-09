@@ -148,7 +148,6 @@ class KartuKredit extends Model
 
             }else{
                 $cardType = $req['CardType'];
-
                 $jobBidangUsaha = '0';
                 $jobKategoriPekerjaan = '0';
                 $jobStatusPekerjaan = '0';
