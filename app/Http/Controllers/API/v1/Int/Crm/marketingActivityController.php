@@ -366,7 +366,7 @@ class marketingActivityController extends Controller
           $image->move($destinationPath, $name);
           $followUp['img_lkn'] = $name;
         }
-
+        $request['img_filename'] = $name;
         $save = MarketingActivityFollowup::create($followUp);
 
 
