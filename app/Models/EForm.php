@@ -63,7 +63,7 @@ class EForm extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $casts = [ 'additional_parameters' => 'object' ];
+    protected $casts = [ 'additional_parameters' => 'array' ];
 
     /**
      * Get AO detail information.
