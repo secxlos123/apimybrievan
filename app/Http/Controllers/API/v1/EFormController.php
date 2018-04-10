@@ -580,7 +580,7 @@ class EFormController extends Controller
 
                     //cek pefindo
                     $eform = $eformCreate;
-                    $pefindo = this.pefindo($eform);
+                    $pefindo = $this->pefindo($eform);
 
                     DB::commit();
 
