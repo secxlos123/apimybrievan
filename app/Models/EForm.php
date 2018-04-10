@@ -684,7 +684,7 @@ class EForm extends Model implements AuditableContract
                 ->where( function( $eform ) use( $request, &$user ) {
                     $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
                         ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('users.id', '=', $request->input('search'))
+                        // ->orWhere('users.id', '=', $request->input('search'))
                         ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
                 } );
 
