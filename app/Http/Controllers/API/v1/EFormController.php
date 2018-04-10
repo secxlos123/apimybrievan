@@ -550,6 +550,11 @@ class EFormController extends Controller
 
                     //berhasil lewat dedup
 
+                    //cek pefindo
+                    $eform = $eformCreate;
+                    $presc = new PrescreeningController();
+                    $pefindo = $presc->pefindo($eform);
+
                     DB::commit();
 
                     return response()->json([
