@@ -24,6 +24,7 @@ class Marketing extends Model
       'cif',
       'nama',
       'status',
+      'ref_id',
       'target_closing_date'
     ];
 
