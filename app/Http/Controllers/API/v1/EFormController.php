@@ -391,6 +391,34 @@ class EFormController extends Controller
       }
     }
 
+    public function pefindo( $eform )
+    {
+        $personal = $eform->customer->personal;
+
+        $pefindo = get_pefindo_service( $eform, 'search', false, null );
+        $pefindoCouple = array();
+
+        try {
+            if ( $personal['status_id'] == 2 ) {
+                $pefindoCouple = get_pefindo_service( $eform, 'search', true );
+
+            }
+        } catch (Exception $e) {
+            \Log::info("=====================data ".$type." pasangan salaaah====================");
+            \Log::info($e);
+        }
+
+        $eform->update([
+            'pefindo_detail' => json_encode(
+                array(
+                    'individual' => $pefindo
+                    , 'couple' => $pefindoCouple
+                )
+            )
+            , 'selected_pefindo' => 0
+        ]);
+    }
+
     public function store( EFormRequest $request )
     {
         if ($request->product_type != 'kartu_kredit'){
@@ -552,8 +580,7 @@ class EFormController extends Controller
 
                     //cek pefindo
                     $eform = $eformCreate;
-                    $presc = new PrescreeningController();
-                    $pefindo = $presc->pefindo($eform);
+                    $pefindo = $this->pefindo($eform);
 
                     DB::commit();
 
