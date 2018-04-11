@@ -178,7 +178,7 @@ class PropertyItem extends Model implements AuditableContract
                 (select properties.developer_id from properties where properties.id = 
                 (select property_types.property_id from property_types where property_types.id = property_type_id
                 )))) limit 1 ) as prop_status,
-                (select properties.is_approved from properties where properties.developer_id = (select developers.id from developers where developers.id = (select properties.developer_id from properties where properties.id = (select property_types.property_id from property_types where property_types.id = property_type_id )))) as is_approved, property_items.available_status")
+                (select properties.is_approved from properties where properties.developer_id = (select developers.id from developers where developers.id = (select properties.developer_id from properties where properties.id = (select property_types.property_id from property_types where property_types.id = property_type_id ))) limit 1 ) as is_approved, property_items.available_status")
             ->orderBy($sort[0], $sort[1]);
             // \Log::info("=================query property unit=====================");
             // \Log::info($query->toSql());
