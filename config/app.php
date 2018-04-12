@@ -173,6 +173,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         LaravelFCM\FCMServiceProvider::class,
         ZanySoft\Zip\ZipServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -260,6 +261,7 @@ return [
         'FCMGroup'     => LaravelFCM\Facades\FCMGroup::class, // Optional
         'Zip'          => ZanySoft\Zip\ZipFacade::class,
         'RestwsSm'     => App\Classes\Client\Facades\RestwsSm::class,
+        'Image'        => Intervention\Image\Facades\Image::class,
 
     ],
 
