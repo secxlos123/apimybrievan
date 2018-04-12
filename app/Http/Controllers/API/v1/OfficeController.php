@@ -24,7 +24,7 @@ class OfficeController extends Controller
         $perPage = $request->get('limit', 10000); // Number of items per page
         $offset  = ($page * $perPage) - $perPage;
         $offices = [];
-
+        \Log::info($branchs['responseData']);
         if ($branchs['responseData'] != '') {
             foreach ($branchs['responseData'] as $branch) {
                 $search = true;
@@ -35,10 +35,6 @@ class OfficeController extends Controller
                 }
 
                 if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
-                    $offices[] = $branch;
-                }
-
-                if ( ( $search ) && ( $branch['jenis_uker'] == "KP" ) ) {
                     $offices[] = $branch;
                 }
             }
