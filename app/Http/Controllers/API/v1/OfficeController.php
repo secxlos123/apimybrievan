@@ -36,8 +36,6 @@ class OfficeController extends Controller
 
                 if ( ( $search ) && ( $branch['jenis_uker'] == "KC" ) ) {
                     $offices[] = $branch;
-                }else{
-                    $offices[] = $branch;
                 }
             }
         }
