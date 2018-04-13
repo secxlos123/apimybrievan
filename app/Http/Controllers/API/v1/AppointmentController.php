@@ -208,6 +208,9 @@ class AppointmentController extends Controller
      */
     public function update(Request $request, $type, $id)
     {
+      \Log::info("===============UPDATE Schedule===============");
+      \Log::info($id);
+      \Log::info($request->all());
         $data = Appointment::find($id);
         if ($data) {
             $Update = $data->update($request->all());
