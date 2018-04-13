@@ -83,6 +83,12 @@ class Marketing extends Model
             ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
             ->select('marketings.*','marketing_delete_requests.deleted')
             ->where( function($marketing) use($request){
+              if($request->has('month')){
+                $marketing->whereMonth('marketings.created_at', '=', $request->input('month'));
+              }
+              if($request->has('year')){
+                $marketing->whereYear('marketings.created_at', '=', $request->input('year'));
+              }
                 $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
                 $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
             })
@@ -135,6 +141,9 @@ class Marketing extends Model
             ->where(function($marketing) use($request){
               if($request->has('month')){
                 $marketing->whereMonth('marketings.created_at', '=', $request->input('month'));
+              }
+              if($request->has('year')){
+                $marketing->whereYear('marketings.created_at', '=', $request->input('year'));
               }
               if($request->has('product_type')){
                 $marketing->where('marketings.product_type', '=', $request->input('product_type'));
