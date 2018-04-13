@@ -585,7 +585,7 @@ class EFormController extends Controller
                     //create pefindo detail ke eform
                     $pefindo = $this->pefindo($eform);
 
-                    
+                    //update pefindo status
                     $updateEform = EForm::where('id',$eformId)->update([
                             'prescreening_status'=>1]);
 
