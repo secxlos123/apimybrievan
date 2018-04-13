@@ -112,6 +112,8 @@ class AppointmentController extends Controller
     public function store(CreateRequest $request)
     {
         $postTaken = ['title', 'appointment_date', 'user_id', 'ao_id', 'eform_id', 'ref_number', 'address', 'latitude', 'longitude', 'guest_name', 'desc', 'status'];
+        \Log::info("===========================POST Schedule=======================");
+        \Log::info($request->only($postTaken));
         $save = Appointment::create($request->only($postTaken));
 
         if ($save) {
