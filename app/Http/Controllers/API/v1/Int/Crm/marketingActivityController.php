@@ -386,7 +386,7 @@ class marketingActivityController extends Controller
         if ($save) {
             return response()->success([
                 'message' => 'Data Tindakan berhasil ditambah.',
-                'contents' => collect($save)->merge($request->all()),
+                'contents' => collect($save),
             ], 201);
         }
 
