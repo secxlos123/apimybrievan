@@ -147,6 +147,8 @@ class CustomerController extends Controller
      */
     public function verify( CustomerRequest $request, $id )
     {
+        \Log::info("=======Verify Customer========");
+        \Log::info($request->all());
         $customer = Customer::findOrFail( $id );
         $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','product_type');
 
