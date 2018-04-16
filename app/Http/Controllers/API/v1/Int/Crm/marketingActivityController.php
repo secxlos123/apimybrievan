@@ -365,8 +365,8 @@ class marketingActivityController extends Controller
           $destinationPath = public_path('uploads/crm/lkn');
           $image->move($destinationPath, $name);
           $followUp['img_lkn'] = $name;
+          $request['img_filename'] = $name;
         }
-        $request['img_filename'] = $name;
         $save = MarketingActivityFollowup::create($followUp);
 
 
