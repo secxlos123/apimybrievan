@@ -365,8 +365,8 @@ class marketingActivityController extends Controller
           $destinationPath = public_path('uploads/crm/lkn');
           $image->move($destinationPath, $name);
           $followUp['img_lkn'] = $name;
+          $request['img_filename'] = $name;
         }
-        $request['img_filename'] = $name;
         $save = MarketingActivityFollowup::create($followUp);
 
 
@@ -386,7 +386,7 @@ class marketingActivityController extends Controller
         if ($save) {
             return response()->success([
                 'message' => 'Data Tindakan berhasil ditambah.',
-                'contents' => collect($save)->merge($request->all()),
+                'contents' => collect($save),
             ], 201);
         }
 

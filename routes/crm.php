@@ -10,6 +10,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post('/branch/list_uker_kanca', 'branchController@get_uker_kanca');
   Route::post('/marketing_summary', 'DashboardController@marketing_summary');
   Route::post('/marketing_summary_v2', 'DashboardController@marketing_summary_v2');
+  Route::post('/marketing_summary_amount', 'DashboardController@marketing_summary_amount');
   // route reporting Crm
   Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
   Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
@@ -119,5 +120,5 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //sales kit
   Route::get( '/sales_kit', 'DashboardController@sales_kit');
-  //Route::get( '/view_report', 'viewController@index');
+  // Route::get( '/view_report', 'viewController@index');
 });

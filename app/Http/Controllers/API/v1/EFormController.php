@@ -582,12 +582,17 @@ class EFormController extends Controller
 
                     //cek pefindo
                     $eform = $eformCreate;
+                    //create pefindo detail ke eform
                     $pefindo = $this->pefindo($eform);
+
+                    //update pefindo status
+                    $updateEform = EForm::where('id',$eformId)->update([
+                            'prescreening_status'=>1]);
 
                     DB::commit();
 
                     return response()->json([
-                        'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
+                        'responseMessage' => 'Nasabah sukses melewati proses dedup.',
                         //balikin eform buat eform list di android
                         'eform_id' => $eformId
 
