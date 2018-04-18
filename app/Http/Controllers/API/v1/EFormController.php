@@ -267,7 +267,7 @@ class EFormController extends Controller
 
           // $eform[0]['Url'] = env('APP_URL').'/uploads/';
           // keperluan tot
-          $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = 'http://103.63.96.167/api/uploads/';
 
           $eform[0]['nominal'] = $eform[0]['request_amount'];
           $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
