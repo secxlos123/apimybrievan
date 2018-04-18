@@ -1146,7 +1146,9 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if($eform->product_type=='briguna'){
+        if ($eform->product_type == 'kartu_kredit'){
+          $delete = EForm::where('id',$eform)->delete();
+        }else if($eform->product_type=='briguna'){
             try{
 
                 $customer = DB::table('customer_details')
