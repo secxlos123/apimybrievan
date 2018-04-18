@@ -31,7 +31,8 @@ class KartuKredit extends Model
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
     	'memiliki_kk_bank_lain','range_limit','nama_ibu_kandung',
         'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
-        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir'
+        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir',
+        'los_score','analyzed_status'
     ];
 
     protected $hidden = [
@@ -274,6 +275,8 @@ class KartuKredit extends Model
         $ef['product_type'] = $req['product_type'];
         $ef['response_status'] = 'unverified'; 
 
+        $ef['ao_name'] = $req['ao_name'];
+
         $ef = $this->overwriteEmptyRecord($ef);
         $eform = EForm::create($ef);
         \Log::info($eform);
@@ -294,7 +297,7 @@ class KartuKredit extends Model
         if ($req['jenis_nasabah'] == 'debitur'){
             $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
-            $data['image_slip_gaji'] = 'SLIP_GAJI';
+            $data['image_slip_gaji'] = $req['SLIP_GAJI'];
             $data['image_nametag'] = '-';
             $data['image_kartu_bank_lain'] = '-';
         }else{
