@@ -110,6 +110,7 @@ class KreditRequest extends BaseRequest{
     			}else if($this->segment(5) == 'finish-analisa'){
     				return([
     					'apRegno'=>'required',
+    					'los_score'=>'required',
     					'catatanRekomendasiAO'=>'',
 						'rekomendasiLimitKartu'=>'required',
 						'cardType'=>'required',

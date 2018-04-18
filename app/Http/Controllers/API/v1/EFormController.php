@@ -589,6 +589,10 @@ class EFormController extends Controller
                     $updateEform = EForm::where('id',$eformId)->update([
                             'prescreening_status'=>1]);
 
+                    //cek jumlah kk
+                    //pefindo dalam development. sabar ya :)
+                    //update eform
+
                     DB::commit();
 
                     return response()->json([
@@ -597,15 +601,6 @@ class EFormController extends Controller
                         'eform_id' => $eformId
 
                     ]);
-
-                    //send eform ke pefindo
-                    // $pefindoController = new PrescreeningController();
-                    // $getPefindo = $pefindoController->getPefindo()
-
-                    //cek jumlah kk
-                    //pefindo dalam development. sabar ya :)
-                    //update eform
-
                 }
 
             } else if ( $request->product_type == 'briguna' ) {
@@ -1151,7 +1146,9 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if($eform->product_type=='briguna'){
+        if ($eform->product_type == 'kartu_kredit'){
+          $delete = EForm::where('id',$eform)->delete();
+        }else if($eform->product_type=='briguna'){
             try{
 
                 $customer = DB::table('customer_details')
