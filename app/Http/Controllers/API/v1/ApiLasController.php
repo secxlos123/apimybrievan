@@ -1224,7 +1224,7 @@ class ApiLasController extends Controller
 
                     if(isset($datadetail->statusCode) && $datadetail->statusCode == '01') {
                         // putusan pencairan ya atau tolak
-                        if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
+                        if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6' || $data['flag_putusan'] == '5') {
                             $eform_request['pinca_name']  = $data['pinca_name'];
                             $eform_request['pinca_position'] = $data['pinca_position'];
                             if ($data['is_send'] == '1') {
@@ -1233,6 +1233,11 @@ class ApiLasController extends Controller
                             } elseif ($data['is_send'] == '3' || $data['is_send'] == '4') {
                                 $eform_request['status_eform'] = "Rejected";
                                 $eform_request['response_status'] = "Ditolak Briguna";
+                            // kembali ke ao
+                            } elseif ($data['flag_putusan'] == '5') {
+                                $eform_request['is_approved']  = false;
+                                $eform_request['status_eform'] = "";
+                                $eform_request['response_status'] = "";
                             }
                             $data_briguna = [
                                 'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
@@ -1251,12 +1256,6 @@ class ApiLasController extends Controller
                                 'tgl_pencairan' => date('Y-m-d H:i:s')
                             ];
                         } else {
-                            // kembali ke ao
-                            if($data['flag_putusan'] == '5') {
-                                $eform_request['is_approved']  = false;
-                                $eform_request['status_eform'] = "";
-                                $eform_request['response_status'] = "";
-                            }
                             $data_briguna = [
                                 'is_send'   => !isset($data['is_send'])?null:$data['is_send']
                             ];
@@ -1741,7 +1740,9 @@ class ApiLasController extends Controller
                                 "jenis_rekening"            => !isset($request['jenis_rekening'])?"":$request['jenis_rekening'],
                                 "nama_bank_lain"            => !isset($request['nama_bank_lain'])?"":$request['nama_bank_lain'],
                                 "nama_bank_lain_name"       => !isset($request['nama_bank_lain_name'])?"":$request['nama_bank_lain_name'],
-                                "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name']
+                                "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name'],
+                                "ket_agama"   => !isset($request['ket_agama'])?"":$request['ket_agama'],
+                                "catatan_analisa" => !isset($request['catatan_analisa'])?"":$request['catatan_analisa']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform['is_approved']  = true;

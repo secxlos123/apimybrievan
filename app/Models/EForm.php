@@ -1039,12 +1039,16 @@ class EForm extends Model implements AuditableContract
         $mount = !( $customer_work->work_duration_month ) ? 0 : $customer_work->work_duration_month;
         $lama_usaha = $year *12 + $mount;
 
-        if ( $lkn->use_reason == 13 ) {
-            $npwp = !( $lkn->npwp_number_masking ) ? '99.999.999.9-999.999' : $lkn->npwp_number_masking;
+        if( $lkn ){
+            if ( $lkn->use_reason == 13 ) {
+                $npwp = !( $lkn->npwp_number_masking ) ? '99.999.999.9-999.999' : $lkn->npwp_number_masking;
 
+            } else {
+                $npwp = !( $lkn->npwp_number ) ? '' : $lkn->npwp_number;
+
+            }
         } else {
-            $npwp = !( $lkn->npwp_number ) ? '' : $lkn->npwp_number;
-
+            $npwp = '';
         }
 
         $request = $data + [

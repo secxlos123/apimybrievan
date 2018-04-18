@@ -562,19 +562,37 @@ class KartuKreditController extends Controller{
 		$catRekAo = $req->catatanRekomendasiAO;
 		$rekLimitKartu = $req->rekomendasiLimitKartu;
 		$rangeLimit =  $req->range_limit;
+		$losScore = $req->los_score;
+		$losResult = $this->losScoreResult($losScore);
+
+		if ($losResult == 'proceed'){
+			$anStatus = 'analyzed';
+		}else{
+			$anStatus = 'rejected';
+		}
+
+
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'is_analyzed'=>true,
 			'catatan_rekomendasi_ao'=>$catRekAo,
 			'rekomendasi_limit_kartu'=>$rekLimitKartu,
 			'pilihan_kartu'=>$req->cardType,
-			'range_limit'=>$rangeLimit
+			'range_limit'=>$rangeLimit,
+			'los_score' =>$losScore,
+			'analyzed_status'=>$anStatus
 		]);
 
 		 //lengkapi data kredit di eform
+		$newData = [
+			'range_limit'=>$rangeLimit,
+			'is_analyzed'=> 'true',
+			'los_score' =>$losScore,
+			'analyzed_status'=>$anStatus
+		];
+		$jsonData = json_encode($newData);
         $eform = EForm::where('id',$eformId)->update([
-            'kk_details'=>'{"range_limit":"'.$rangeLimit.'",
-            "is_analyzed":"true"}'
+            'kk_details'=>$jsonData
         ]);
 
 		return response()->json([
@@ -583,6 +601,14 @@ class KartuKreditController extends Controller{
 			'contents'=>$dataKK
 		]);
 
+	}
+
+	function losScoreResult($score){
+		if ($score >= '550'){
+			return 'proceed';
+		}else{
+			return 'end';
+		}
 	}
 
 	public function putusanPinca(KreditRequest $req){

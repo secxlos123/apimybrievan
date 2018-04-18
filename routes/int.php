@@ -101,6 +101,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		 Route::resource( 'penilaian_kelayakan', 'mitra\PenilaianKelayakanController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
+		 Route::resource( 'approval_mitra', 'mitra\ApprovalMitraController', [
+			'except' => [ 'edit', 'create', 'destroy' ]
+		] );
 		 Route::resource( 'input_kolektif', 'mitra\eksternal\InputKolektifController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
