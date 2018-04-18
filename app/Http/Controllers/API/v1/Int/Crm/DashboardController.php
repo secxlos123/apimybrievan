@@ -354,6 +354,80 @@ class DashboardController extends Controller
       ], 200);
     }
 
+    public function marketing_summary_amount(Request $request)
+    {
+      $pn = $request->header('pn');
+      if ($request->has('branch')) {
+        $branch = $request['branch'];
+      } else {
+        $branch = $request->header('branch');
+      }
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar_branch($pn,$branch);
+
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+        $list_pn = array_column($pemasar, 'PERNR');
+      } else {
+        $pemasar_name = [];
+        $list_pn =[];
+      }
+
+      $data = Marketing::getMarketingSummary($request)->whereIn('marketings.pn',$list_pn)->get();
+      $total = [];
+      foreach ($data as $key => $value) {
+        $total[$value->pn][]=
+          $value->target
+        ;
+      }
+      $status = [];
+      foreach ($data as $key => $value) {
+        $status[$value->pn][$value->status][]=
+          $value->target
+        ;
+      }
+
+      $data_summary = [];
+      $ext_nul = [
+        1=>'0',
+        2=>'00',
+        3=>'000',
+        4=>'0000'
+      ];
+      $activity = [];
+      $lkn = [];
+      foreach ($data as $key => $value) {
+        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
+        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
+        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)? Marketing::find($value->id)->target:0;
+        $data_summary[$value->pn]=[
+          'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
+          'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
+          'Total'=>array_sum($total[$value->pn]),
+          'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?array_sum($status[$value->pn]['Prospek']):0,
+          'On Progress'=>array_sum(array_values($lkn[$value->pn])),
+          'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
+          'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?array_sum($status[$value->pn]['Batal']):0
+        ];
+      }
+      $marketing_summary = [];
+      foreach ($data_summary as $key => $value) {
+        $marketing_summary[]=$value;
+      }
+
+      if (!empty($marketing_summary)) {
+          return response()->success([
+              'message' => 'Sukses get Marketing Summary.',
+              'contents' => $marketing_summary,
+          ], 200);
+      }
+
+      return response()->error([
+          'message' => 'Marketing Summary tidak ditemukan.',
+          'contents' => $marketing_summary,
+      ], 200);
+    }
+
     public function pemasar_branch($pn, $branch){
       $list_ao = RestwsHc::setBody([
         'request' => json_encode([

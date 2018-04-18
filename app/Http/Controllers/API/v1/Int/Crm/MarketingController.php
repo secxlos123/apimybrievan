@@ -253,7 +253,7 @@ class MarketingController extends Controller
       $data['nik'] = ($request['nik'] == "") ? null : $request['nik'];
       $data['cif'] = ($request['cif'] == "") ? null : $request['cif'];
       $data['status'] = $request['status'];
-      $data['ref_id'] = $request['ref_id'];
+      $data['ref_id'] = isset($request['ref_id']) ? $request['ref_id']: 'null';
       $data['target_closing_date'] = date('Y-m-d', strtotime($request['target_closing_date']));
 
       $save = Marketing::create($data);
