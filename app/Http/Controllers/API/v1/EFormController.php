@@ -267,7 +267,7 @@ class EFormController extends Controller
 
           // $eform[0]['Url'] = env('APP_URL').'/uploads/';
           // keperluan tot
-          $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = 'http://103.63.96.167/api/uploads/';
 
           $eform[0]['nominal'] = $eform[0]['request_amount'];
           $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
@@ -1146,7 +1146,9 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if($eform->product_type=='briguna'){
+        if ($eform->product_type == 'kartu_kredit'){
+          $delete = EForm::where('id',$eform)->delete();
+        }else if($eform->product_type=='briguna'){
             try{
 
                 $customer = DB::table('customer_details')
