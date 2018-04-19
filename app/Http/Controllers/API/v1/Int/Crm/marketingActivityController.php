@@ -14,6 +14,7 @@ use App\Models\Crm\ActionActivity;
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
 use App\Models\Crm\Referral;
+use App\Models\Crm\PhoneDuration;
 
 class marketingActivityController extends Controller
 {
@@ -271,6 +272,51 @@ class marketingActivityController extends Controller
       ], 500);
     }
 
+    /**
+    * Store a newly created resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function store_phoneDuration(Request $request)
+    {
+      $data['pn'] = $request->header('pn');
+      if ($request->has('cif')) {
+        $data['cif'] = $request['cif'];
+      } else {
+        $data['nik'] = $request['nik'];
+      }
+      $data['phone_number'] = $request['phone_number'];
+      $data['duration'] = $request['duration'];
+
+      $save = PhoneDuration::create($data);
+
+      if ($save) {
+          return response()->success([
+              'message' => 'Data Activity Phone duration berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Data Activity Phone duration Tidak Dapat Ditambah.',
+      ], 500);
+    }
+
+    /**
+    * Store a newly created resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function phoneDuration_byCustomer(Request $request)
+    {
+      $listPhoneActivity = PhoneDuration::getListDurationByCustomer($request)->get();
+      return response()->success( [
+          'message' => 'Sukses get list Phone Activity by Customer',
+          'contents' => $listPhoneActivity
+        ]);
+    }
     /**
      * Display the specified resource.
      *
