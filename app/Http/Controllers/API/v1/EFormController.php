@@ -1147,7 +1147,38 @@ class EFormController extends Controller
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
         if ($eform->product_type == 'kartu_kredit'){
-          $delete = EForm::where('id',$eform)->delete();
+          // $delete = EForm::where('id',$eform)->delete();
+          try{
+                $customer = DB::table('customer_details')
+                         ->select('users.*','customer_details.*')
+                         ->join('users', 'users.id', '=', 'customer_details.user_id')
+                         ->where('customer_details.user_id', $eform->user_id)
+                         ->get();
+
+                \Log::info($customer);
+
+                $customer = $customer->toArray();
+                $customer = json_decode(json_encode($customer), True);
+
+
+                $kk = KartuKredit::
+                         where('eform_id', $request->eform_id)
+                         ->get();
+
+                $kk = $kk->toArray();
+                $kk = json_decode(json_encode($kk), True);
+                
+                User::destroy($eform->user_id);
+                DB::commit();
+                return response()->success( [
+                    'message' => 'Hapus User Berhasil',
+                ], 200 );
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'User Tidak Dapat Dihapus',
+                    ], 422 );
+            }
         }else if($eform->product_type=='briguna'){
             try{
 
