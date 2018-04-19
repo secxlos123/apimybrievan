@@ -1155,6 +1155,8 @@ class EFormController extends Controller
                          ->where('customer_details.user_id', $eform->user_id)
                          ->get();
 
+                \Log::info($customer);
+
                 $customer = $customer->toArray();
                 $customer = json_decode(json_encode($customer), True);
 
@@ -1163,7 +1165,7 @@ class EFormController extends Controller
                          where('eform_id', $request->eform_id)
                          ->get();
 
-                $kk = $briguna->toArray();
+                $kk = $kk->toArray();
                 $kk = json_decode(json_encode($kk), True);
                 
                 User::destroy($eform->user_id);
