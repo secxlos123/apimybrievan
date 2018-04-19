@@ -359,7 +359,13 @@ class PrescreeningController extends Controller
 
         foreach (explode(',', $eform->uploadscore) as $value) {
             if ($value != '') {
-                $html .= asset('uploads/'.$eform->nik.'/'.$value) . ',';
+                $host = env('APP_URL');
+                if($host == 'http://103.63.96.167/api/'){     
+                    $html .= 'http://103.63.96.167/api/uploads/'.$eform->nik.'/'.$value. ',';
+                }else{
+                    $html .= asset('uploads/'.$eform->nik.'/'.$value) . ',';
+                }
+                
             }
         }
 
