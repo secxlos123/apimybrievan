@@ -267,7 +267,7 @@ class EFormController extends Controller
 
           // $eform[0]['Url'] = env('APP_URL').'/uploads/';
           // keperluan tot
-          $eform[0]['Url'] = 'http://api.dev.net/uploads/';
+          $eform[0]['Url'] = 'http://103.63.96.167/api/uploads/';
 
           $eform[0]['nominal'] = $eform[0]['request_amount'];
           $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
@@ -391,34 +391,6 @@ class EFormController extends Controller
         $token = $apiPdmToken['access_token'];
         return $token;
       }
-    }
-
-    public function pefindo( $eform )
-    {
-        $personal = $eform->customer->personal;
-
-        $pefindo = get_pefindo_service( $eform, 'search', false, null );
-        $pefindoCouple = array();
-
-        try {
-            if ( $personal['status_id'] == 2 ) {
-                $pefindoCouple = get_pefindo_service( $eform, 'search', true );
-
-            }
-        } catch (Exception $e) {
-            \Log::info("=====================data ".$type." pasangan salaaah====================");
-            \Log::info($e);
-        }
-
-        $eform->update([
-            'pefindo_detail' => json_encode(
-                array(
-                    'individual' => $pefindo
-                    , 'couple' => $pefindoCouple
-                )
-            )
-            , 'selected_pefindo' => 0
-        ]);
     }
 
     public function store( EFormRequest $request )
@@ -580,14 +552,9 @@ class EFormController extends Controller
 
                     //berhasil lewat dedup
 
-                    //cek pefindo
-                    $eform = $eformCreate;
-                    //create pefindo detail ke eform
-                    $pefindo = $this->pefindo($eform);
-
-                    //update pefindo status
-                    $updateEform = EForm::where('id',$eformId)->update([
-                            'prescreening_status'=>1]);
+                    //cek jumlah kk
+                    //pefindo dalam development. sabar ya :)
+                    //update eform
 
                     DB::commit();
 
@@ -597,15 +564,6 @@ class EFormController extends Controller
                         'eform_id' => $eformId
 
                     ]);
-
-                    //send eform ke pefindo
-                    // $pefindoController = new PrescreeningController();
-                    // $getPefindo = $pefindoController->getPefindo()
-
-                    //cek jumlah kk
-                    //pefindo dalam development. sabar ya :)
-                    //update eform
-
                 }
 
             } else if ( $request->product_type == 'briguna' ) {
@@ -1151,7 +1109,40 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if($eform->product_type=='briguna'){
+        if ($eform->product_type == 'kartu_kredit'){
+          // $delete = EForm::where('id',$eform)->delete();
+          try{
+                $customer = DB::table('customer_details')
+                         ->select('users.*','customer_details.*')
+                         ->join('users', 'users.id', '=', 'customer_details.user_id')
+                         ->where('customer_details.user_id', $eform->user_id)
+                         ->get();
+
+                \Log::info($customer);
+
+                $customer = $customer->toArray();
+                $customer = json_decode(json_encode($customer), True);
+
+
+                $kk = KartuKredit::
+                         where('eform_id', $request->eform_id)
+                         ->get();
+
+                $kk = $kk->toArray();
+                $kk = json_decode(json_encode($kk), True);
+                
+                User::destroy($eform->user_id);
+                DB::commit();
+                return response()->success( [
+                    'message' => 'Hapus User Berhasil',
+                ], 200 );
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'User Tidak Dapat Dihapus',
+                    ], 422 );
+            }
+        }else if($eform->product_type=='briguna'){
             try{
 
                 $customer = DB::table('customer_details')
