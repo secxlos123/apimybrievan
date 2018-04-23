@@ -354,7 +354,8 @@ class KartuKreditController extends Controller{
     }
 
     function generateSmsCode(){
-    	return '123456';
+    	$code =mt_rand(102030, 999999);
+    	return $code;
     }
 
     public function sendSMS(Request $req){
