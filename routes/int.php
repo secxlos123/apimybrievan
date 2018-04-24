@@ -19,6 +19,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	Route::get('getBank', 'SelectListController@getBank');
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
 	Route::post('mitraall', 'mitra\ScoringProsesController@getallmitra');
+	Route::post('getregistrasi_perjanjian', 'mitra\ApprovalPKSController@getdata');
 	Route::post('hapus_dir', 'dirrpcController@hapus_dir');
 	Route::post('hapus_detail_dir', 'dirrpcController@hapus_detail_dir');
 	Route::post('update_detail', 'dirrpcController@update_detail');
@@ -33,7 +34,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 	// });
 
 	// route that require login session
-	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
+	Route::group( [ 'middleware' => [ 'api.auth', 'file' ] ], function () {
 		Route::get( 'check-token', 'TokenController@index' );
 		Route::get('debitur-list', 'CustomerController@listDebitur');
 		Route::post('dashboard-internal', 'DashboardController@getDataDashboardInternal');

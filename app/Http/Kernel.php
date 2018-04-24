@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'property.access' => \App\Http\Middleware\PropertyTypeAccess::class,
         'property-type.access' => \App\Http\Middleware\PropertyItemAccess::class,
         'ipcheck' => \App\Http\Middleware\IpWhiteList::class,
+        'file' => \App\Http\Middleware\FileMiddleware::class,
     ];
 }
