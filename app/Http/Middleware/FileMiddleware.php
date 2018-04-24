@@ -25,13 +25,13 @@ class FileMiddleware
         \Log::info("=================DEVICE-ID============");
         \Log::info($device);
         \Log::info("=================HOST============");
-        \Log::info($request->server("HTTP_HOST"));
+        \Log::info($request->server());
         \Log::info("=================ACCESS_FILE============");
         \Log::info($access);
         \Log::info("=================Authorization============");
         \Log::info($header);
         if($device == "NULL"){
-            if ($request->ip() !== $access) {
+            if ($request->ip() !== $ip) {
                 \Log::info("============IP-FALSE-CLOSE-ACCESS===================");
                 return response()->json(['error' => 401, 'message' => 'Unauthorized action. <Permision Denied>'], 401);
                 // chmod(public_path('uploads'), 0644);
