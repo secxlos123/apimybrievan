@@ -81,7 +81,7 @@ class CustomerDetail extends Model implements AuditableContract
         if( ! empty( $filename ) ) {
             $image = 'uploads/' . $this->nik . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
-                $path = $image;
+                $path = 'files/' . $this->nik . '/' . $filename;;
             }
         }
 

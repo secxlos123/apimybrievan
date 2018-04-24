@@ -11,12 +11,14 @@ class branchController extends Controller
 {
 	public function list_kanwil(Request $request)
 	{
+			if ( $request->has('device_id') ) {
+				$sendRequest['device_id'] = $request->device_id;
+			}
+			$sendRequest['app_id'] = 'mybriapi';
     	$list_kanwil = RestwsHc::setBody([
             'request' => json_encode([
                 'requestMethod' => 'get_list_kanwil',
-                'requestData' => [
-                   'app_id' => 'mybriapi'
-                ],
+                'requestData' => $sendRequest,
             ])
         ])
         ->post( 'form_params' );
@@ -62,6 +64,10 @@ class branchController extends Controller
 				'region' => $request['region']
 			];
 
+			if ( $request->has('device_id') ) {
+				$requestPost['device_id'] = $request->device_id;
+			}
+
 			$list_kanca_kanwil = RestwsHc::setBody([
 						'request' => json_encode([
 								'requestMethod' => 'get_list_kanca_from_kanwil',
@@ -82,6 +88,10 @@ class branchController extends Controller
 				'app_id' => 'mybriapi',
 				'branch_code' => $request['branch_code']
 			];
+
+			if ( $request->has('device_id') ) {
+				$requestPost['device_id'] = $request->device_id;
+			}
 
 			$list_uker_kanca = RestwsHc::setBody([
 						'request' => json_encode([
