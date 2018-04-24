@@ -311,10 +311,32 @@ class marketingActivityController extends Controller
     */
     public function phoneDuration_byCustomer(Request $request)
     {
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+      } else {
+        $pemasar_name = [];
+      }
+
       $listPhoneActivity = PhoneDuration::getListDurationByCustomer($request)->get();
+      $data = [];
+
+      foreach ($listPhoneActivity as $key => $value) {
+        $data []= [
+          'pn' => $value->pn,
+          'officer' =>array_key_exists($value->pn, $pemasar_name) ? $pemasar_name[$value->pn]:'',
+          'nik' => $value->nik,
+          'cif' => $value->cif,
+          'phone_number' => $value->phone_number,
+          'duration' => $value->duration
+        ];
+      }
       return response()->success( [
           'message' => 'Sukses get list Phone Activity by Customer',
-          'contents' => $listPhoneActivity
+          'contents' => $data
         ]);
     }
     /**
