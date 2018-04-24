@@ -21,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
                 \Log::info("time : " . $query->time);
                 \Log::info("--- end query ---");
             });
+        } else if ( ENV("APP_ENV") == "production" && ENV('IS_SSL') == 0 ) {
+            \DB::listen(function ($query) {
+                \Log::info("--- start query ---");
+                \Log::info("query : " . $query->sql);
+                \Log::info("bindings : " . json_encode($query->bindings));
+                \Log::info("time : " . $query->time);
+                \Log::info("--- end query ---");
+            });
         } else {
             \URL::forceScheme('https');
         }
