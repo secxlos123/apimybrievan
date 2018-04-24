@@ -63,6 +63,6 @@ class Photo extends Model implements AuditableContract
             default: $disk = 'uploads'; break;
         }
         
-        return url('uploads'.'/'.$disk.'/'.$this->attributes['path']);
+        return url('files'.'/'.$disk.'/'.$this->attributes['path']);
     }
 }

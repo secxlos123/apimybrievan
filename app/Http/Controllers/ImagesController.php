@@ -97,23 +97,61 @@ class ImagesController extends Controller
         // }else{
         $header = $request->ip();
         $server = $request->server();
-        // $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
-        // \Log::info("====client : ".$header);
-        // \Log::info("====ENV-IP : ".$ip);
-        // \Log::info("====================SERVER==================");
-        // \Log::info($server);
+        $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
+        $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
+        \Log::info("====client : ".$header);
+        \Log::info("====ENV-IP : ".$ip);
+        \Log::info("====================SERVER==================");
+        \Log::info($server);
+        \Log::info("====================REQUEST==================");
+        \Log::info($request->header('Authorization'));
+        \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
+        \Log::info($secure);
 
         // \Log::info("====host : ".$request->getSchemeAndHttpHost());
-        //if($header == $ip ){
+        if($secure != 1 ){
         $storagePath = public_path('uploads/'.$folder.'/'.$file);
         //dd($storagePath);
         return Image::make($storagePath)->response();
-        //}else{
-            // return response()->error([
-            //     'message' => "you can't access this site !",
-          //  ]);
-        // }
+        }else{
+            return response()->error([
+                'message' => "you can't access this site !",
+           ]);
+        }
        // }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show4(Request $request, $folder, $id, $file)
+    {
+        $header = $request->ip();
+        $server = $request->server();
+        $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
+        $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
+        \Log::info("====client : ".$header);
+        \Log::info("====ENV-IP : ".$ip);
+        \Log::info("====================SERVER==================");
+        \Log::info($server);
+        \Log::info("====================REQUEST==================");
+        \Log::info($request->header('Authorization'));
+        \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
+        \Log::info($secure);
+        
+        // dd($storagePath);
+        if($secure != 1 ){
+        // $storagePath = public_path('uploads/'.$folder.'/'.$file);
+        $storagePath = public_path('uploads/'.$folder.'/'.$id.'/'.$file);
+        return Image::make($storagePath)->response();
+        }else{
+            return response()->error([
+                'message' => "you can't access this site !",
+           ]);
+        }
     }
 
     /**
