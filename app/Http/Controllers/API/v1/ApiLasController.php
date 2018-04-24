@@ -1239,11 +1239,20 @@ class ApiLasController extends Controller
                                 $eform_request['status_eform'] = "";
                                 $eform_request['response_status'] = "";
                             }
-                            $data_briguna = [
-                                'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
-                                'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
-                                'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus']
-                            ];
+
+                            if (isset($data['catatan_adk'])) {
+                                $data_briguna = [
+                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                    'tgl_pencairan'=> !isset($data['tgl_pencairan'])?"":$data['tgl_pencairan'],
+                                    'catatan_adk' => !isset($data['catatan_adk'])?"":$data['catatan_adk']
+                                ];
+                            } else {
+                                $data_briguna = [
+                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                    'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
+                                    'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus']
+                                ];
+                            }
                         // pencairan brinets
                         } elseif ($data['flag_putusan'] == '7') {
                             if ($data['is_send'] == '6') {
