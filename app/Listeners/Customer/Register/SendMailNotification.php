@@ -33,8 +33,13 @@ class SendMailNotification
         $user = $event->user;
         $url = "";
         if ( $activation_code ) {
-            $url = env( "MAIN_APP_URL", "http://mybri.bri.co.id/" ) . "activate/" . $user->id . "/" . $activation_code;
-            // $url = "http://103.63.96.167/api". "/activate/" . $user->id . "/" . $activation_code;
+
+            $host = env('APP_URL');
+            if($host == 'http://103.63.96.167/api/'){
+                $url = "http://103.63.96.167/external". "/activate/" . $user->id . "/" . $activation_code;
+            }else{
+                $url = env("MAIN_APP_URL", "http://mybri.bri.co.id/") . "activate/" . $user->id . "/" . $activation_code;
+            }
         }
 
         $mail = [

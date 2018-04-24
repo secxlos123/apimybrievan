@@ -1899,7 +1899,7 @@ class ApiLasController extends Controller
                 $briguna->update($response);
                 $message = [
                     'message' => 'Sukses update briguna',
-                    'contents' => $briguna
+                    'contents' => $briguna->get()
                 ];
 
                 return response()->success($message, 200);
@@ -1960,7 +1960,7 @@ class ApiLasController extends Controller
                 $briguna->update($data_briguna);
                 $message = [
                     'message' => 'Sukses update eforms atau briguna',
-                    'contents' => $briguna
+                    'contents' => $briguna->get()
                 ];
                 return response()->success($message, 200);
             } catch (Exception $e) {
