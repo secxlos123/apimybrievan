@@ -62,9 +62,20 @@ class Controller extends BaseController
     public function gen_token()
     {
       $client = new Client();
-	    $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
-		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
-		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
+      $url = env('APP_URL');
+      // Keperluan TOT
+      if($url == 'http://api.dev.net/' || $url == 'http://103.63.96.167/api/'){
+        $host = config('restapi.apipdmdev');
+        $client_id = config('restapi.pdm_client_id_dev');
+        $client_secret = config('restapi.pdm_client_secret_dev');
+      } else {
+        $host = config('restapi.apipdm');
+        $client_id = config('restapi.pdm_client_id');
+        $client_secret = config('restapi.pdm_client_secret');
+      }
+	   //  $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+		  // $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
+		  // $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
 
       $requestBriconnect = $client->request('POST', $host.'/oauth/token',
         [

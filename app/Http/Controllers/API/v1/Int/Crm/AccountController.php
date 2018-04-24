@@ -268,7 +268,7 @@ class AccountController extends Controller
     {
       $pn = $request->header('pn');
       $branch = $request->header('branch');
-      $referral = Referral::where('officer_ref', $pn)->get();
+      $referral = Referral::where('officer_ref', $pn)->orWhere('created_by', $pn)->get();
       return response()->success( [
           'message' => 'Sukses get data referral by officer',
           'contents' => $referral
