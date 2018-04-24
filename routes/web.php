@@ -169,6 +169,7 @@ Route::get( '/seteform', function() {
 	] )->post( 'form_params' );
 	dd( $cek );
 } );
- Route::group( ['middleware' => 'file' ], function () {
+ // Route::group( ['middleware' => 'file' ], function () {
 Route::get('files/{folder}/{nik}', 'ImagesController@show3');
- });
+Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
+ // });

@@ -784,7 +784,7 @@ class AuditrailController extends Controller
                 $image = array();
                 foreach ($files as $file) {
                     if ( !empty($file) ) {
-                        $image[]['name'] = url('uploads/'.$request->nik.'/'.$file->getFilename());
+                        $image[]['name'] = url('files/'.$request->nik.'/'.$file->getFilename());
                     }
                 }
                 return response()->success(['message' => 'Success','contents' => $image], 200);
