@@ -97,6 +97,7 @@ class KreditRequest extends BaseRequest{
     			}else if($this->segment(5) == 'putusan-pinca'){
     				return([
     					'msg'=>'',
+    					'limit'=>''
     					'apRegno'=>'required',
     					'putusan'=>'required|in:approved,rejected',
     					'by' => 'required_if:putusan,approved',
