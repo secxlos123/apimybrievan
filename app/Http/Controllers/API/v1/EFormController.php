@@ -1155,10 +1155,17 @@ class EFormController extends Controller
                          ->join('users', 'users.id', '=', 'customer_details.user_id')
                          ->where('customer_details.user_id', $eform->user_id)
                          ->get();
-
+			
                 $customer = $customer->toArray();
                 $customer = json_decode(json_encode($customer), True);
 
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'User tidak ditemukan',
+                    ], 422 );
+            }
+			try{
 
                 $briguna = DB::table('briguna')
                          ->select('year','request_amount')
@@ -1177,7 +1184,13 @@ class EFormController extends Controller
                 $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
                                 \Log::info($testing);
 
-
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'Data pengajuan tidak ditemukan',
+                    ], 422 );
+            }
+			try{
                     User::destroy($eform->user_id);
                   DB::commit();
                 return response()->success( [
