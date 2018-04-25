@@ -1246,6 +1246,14 @@ class ApiLasController extends Controller
                                     'tgl_pencairan'=> !isset($data['tgl_pencairan'])?"":$data['tgl_pencairan'],
                                     'catatan_adk' => !isset($data['catatan_adk'])?"":$data['catatan_adk']
                                 ];
+                            } elseif (!isset($data['catatan_adk']) && $data['flag_putusan'] == '5') {
+                                $data_briguna = [
+                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                    'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
+                                    'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus'],
+                                    'catatan_adk' => null,
+                                    'tgl_pencairan' => null
+                                ];
                             } else {
                                 $data_briguna = [
                                     'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
