@@ -111,7 +111,7 @@ class SchedulerMitraController extends Controller
 		//----------prod-----------------------
 				$servernyalas = '';
 			  $host = env('APP_URL');
-			  if($host == 'http://api.dev.net/'){	
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/'){	
 					$servernyalas = 'sqlsrv';
 			}else{
 					$servernyalas = 'sqlsrv_prod';

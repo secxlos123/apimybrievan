@@ -617,7 +617,7 @@ class KartuKreditController extends Controller{
 		$apregno = $req->apRegno;
 		$msg = $req->msg;
 		$putusan = $req->putusan;
-
+		$limit = $req->limit;
 
 		$kk = new KartuKredit();
 		$req = $req->all();
@@ -625,6 +625,9 @@ class KartuKreditController extends Controller{
 		if ($putusan == 'approved'){
 			$host = $this->hostLos.'/api/approval';
 			$data = $kk->createApprovedRequirements($req);
+			$updateLimit = KartuKredit::where('appregno',$apregno)->update([
+			'rekomendasi_limit_kartu'=>$limit
+		]);
 
 		}else{
 			$host = $this->hostLos.'/api/reject';

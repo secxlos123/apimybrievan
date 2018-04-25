@@ -41,9 +41,9 @@ class PropertyItem extends Model implements AuditableContract
         'address' => 'required',
         'status'  => 'required|in:new,second',
         'price'   => 'required|numeric',
-        'first_unit'   => 'required|numeric',
-        'last_unit'   => 'required|numeric',
-        'unit_size'   => 'required|numeric',
+        //'first_unit'   => 'required|numeric',
+        //'last_unit'   => 'required|numeric',
+        //'unit_size'   => 'required|numeric',
         'photos.*'=> 'image|max:5024',
     ];
 
