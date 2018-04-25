@@ -88,25 +88,33 @@ class ImagesController extends Controller
      */
     public function show3(Request $request, $folder, $file)
     {
-       // dd(substr($file, -3));
-        // $cekpdf = substr($file, -3);
-        // if($cekpdf == 'pdf'){
-        //     return response()->error([
-        //         'message' => "you can't access this site !",
-        //     ]);
-        // }else{
+       //dd(substr($file, -3));
+        $cekpdf = substr($file, -3);
+        if($cekpdf == 'pdf'){
+            $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
+            // \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
+            // \Log::info($secure);
+            if($secure != NULL ){
+                    return response()->download(public_path('uploads/'.$folder.'/'.$file), null, [], null);
+                }else{
+                    return response()->error([
+                    'message' => "you can't access this site !",
+                ]);
+            }
+        }
+        // else{
         $header = $request->ip();
         $server = $request->server();
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-        \Log::info("====client : ".$header);
-        \Log::info("====ENV-IP : ".$ip);
-        \Log::info("====================SERVER==================");
-        \Log::info($server);
-        \Log::info("====================REQUEST==================");
-        \Log::info($request->header('Authorization'));
-        \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
-        \Log::info($secure);
+        // \Log::info("====client : ".$header);
+        // \Log::info("====ENV-IP : ".$ip);
+        // \Log::info("====================SERVER==================");
+        // \Log::info($server);
+        // \Log::info("====================REQUEST==================");
+        // \Log::info($request->header('Authorization'));
+        // \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
+        // \Log::info($secure);
 
         // \Log::info("====host : ".$request->getSchemeAndHttpHost());
         if($secure != 1 ){
