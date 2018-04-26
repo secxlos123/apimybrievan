@@ -33,13 +33,13 @@ class AppServiceProvider extends ServiceProvider
         // } else {
         //     \URL::forceScheme('https');
         // }
-        $host = $request->getSchemeAndHttpHost();
-        $cek = substr($host, 0,8);
-        \Log::info($cek);
-        if( $cek == 'https://' ){
-            \Log::info("HTTPS");
-            \URL::forceScheme('https');
-        }
+        // $host = $request->getSchemeAndHttpHost();
+        // $cek = substr($host, 0,8);
+        // \Log::info($cek);
+        // if( $cek == 'https://' ){
+        //     \Log::info("HTTPS");
+        //     \URL::forceScheme('https');
+        // }
     }
 
     /**

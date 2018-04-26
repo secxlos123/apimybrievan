@@ -86,16 +86,17 @@ class NotificationController extends Controller
             $pn = "000" . $pn;
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
         }
-
+        \Log::info("=====LIST NOTIF MOBILE======");
+        \Log::info($data);
         if ( $data ) {
             foreach ($data as $key => $value) {
                 $data[$key]['message'] = [
-                    'title' => $value['data']['message']['title']
-                    , 'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message']
+                    // 'title' => $value['data']['message']['title']
+                     'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message']
                 ];
                 $data[$key]['message_external'] = [
-                    'title' => $value['data']['message']['title']
-                    , 'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external']
+                    // 'title' => $value['data']['message']['title']
+                     'body' => $value->getSubject($value->is_approved, $value->ref_number,$user_id)['message_external']
                 ];
             }
         }
