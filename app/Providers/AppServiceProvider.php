@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Request $request)
     {
+
         // if ( ENV("APP_ENV") == "local" && ENV('IS_SSL') == 0 ) {
         //     \DB::listen(function ($query) {
         //         \Log::info("--- start query ---");
@@ -40,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         //     \Log::info("HTTPS");
         //     \URL::forceScheme('https');
         // }
+
     }
 
     /**
