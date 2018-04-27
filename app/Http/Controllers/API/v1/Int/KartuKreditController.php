@@ -403,8 +403,10 @@ class KartuKreditController extends Controller{
 
     	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
+    	// $routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
+    	$routes = 'api.dev.net/api/v1/int/kk/verifyemail';
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,'apimybri.bri.co.id/api/v1/int/kk/verifyemail');
+    	->sendEmailVerification($dataKredit,$apregno,$routes);
     	\Log::info('======== data kredit =========');
    		\Log::info($dataKredit);
     	$host = '10.107.11.111:9975/notif/toemail';
