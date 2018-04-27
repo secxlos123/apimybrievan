@@ -377,13 +377,13 @@ class DashboardController extends Controller
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
-          $value->target
+          str_replace(".", "", $value->target)
         ;
       }
       $status = [];
       foreach ($data as $key => $value) {
         $status[$value->pn][$value->status][]=
-          $value->target
+          str_replace(".", "", $value->target)
         ;
       }
 
