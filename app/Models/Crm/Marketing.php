@@ -63,9 +63,9 @@ class Marketing extends Model
             ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
             ->select('marketings.*','marketing_delete_requests.deleted')
             ->where( 'marketings.pn', '=', $request->header('pn'))
-            ->where( 'marketing_delete_requests.deleted', '!=', 'deleted')
             ->where( function($marketing) use($request){
-
+                $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
+                $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
             })
             ;
 
@@ -104,9 +104,6 @@ class Marketing extends Model
 
       return $query
             ->orderBy('marketings.id', 'asc')
-            ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
-            ->select('marketings.*','marketing_delete_requests.deleted')
-            ->where( 'marketing_delete_requests.deleted', '!=', 'deleted')
             ->where( function($marketing) use($request){
               if ($request->header('role') != 'fo') {
                 if ($request->has('start_date') && $request->has('end_date')) {
@@ -138,7 +135,8 @@ class Marketing extends Model
       return $query
             ->leftJoin('marketing_delete_requests', 'marketing_delete_requests.marketing_id', '=', 'marketings.id')
             ->select('marketings.*')
-            ->where( 'marketing_delete_requests.deleted', '!=', 'deleted')
+            ->where( 'marketing_delete_requests.deleted', '=', 'req')
+            ->orWhere( 'marketing_delete_requests.deleted', '=', null)
             ->where(function($marketing) use($request){
               if($request->has('month')){
                 $marketing->whereMonth('marketings.created_at', '=', $request->input('month'));
