@@ -89,8 +89,10 @@ class Marketing extends Model
               if ($request->has('year')) {
                 $marketing->whereYear('marketings.created_at', '=', $request->input('year'));
               }
+              $marketing->where( 'marketing_delete_requests.deleted', '=', 'req');
+              $marketing->orWhere( 'marketing_delete_requests.deleted', '=', null);
             })
-            ->where( 'marketing_delete_requests.deleted', '!=', 'deleted')
+            // ->where( 'marketing_delete_requests.deleted', '!=', 'deleted')
             ;
 
     }
