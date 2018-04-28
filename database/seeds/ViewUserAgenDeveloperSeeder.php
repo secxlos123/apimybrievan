@@ -23,6 +23,7 @@ class ViewUserAgenDeveloperSeeder extends Seeder
             	 a.last_login,
             	 b.birth_date,
             	 b.join_date,
+                 b.bound_project,
             	 b.admin_developer_id  
             	 FROM users a 
 				 LEFT JOIN  user_developers b on a.id = b.user_id");
