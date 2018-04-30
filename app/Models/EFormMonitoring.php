@@ -92,6 +92,7 @@ class EFormMonitoring extends Model implements AuditableContract
 
         return '';
     }
+	
 
     /**
      * Get AO detail information.
@@ -225,6 +226,7 @@ class EFormMonitoring extends Model implements AuditableContract
      */
     public function getAgingAttribute()
     {
+		$x = $this->recontest();
         $days = 0;
         $date = Carbon::now();
 
@@ -240,7 +242,8 @@ class EFormMonitoring extends Model implements AuditableContract
 
             $days = $this->created_at->diffInDays($date);
         }
-        return $days . ' hari ';
+		$x['aging']['waktu_aging'] = $days . ' hari ';
+        return $x;
     }
 
     /**
@@ -274,12 +277,14 @@ class EFormMonitoring extends Model implements AuditableContract
      */
     public function getIsRecontestAttribute()
     {
-        if( $this->recontest ) {
+        if( $this->recontest() ) {
             return true;
         }
 
         return false;
     }
+	
+  
 
     /**
      * Get depedencies VIP CLAS status.
@@ -829,18 +834,37 @@ class EFormMonitoring extends Model implements AuditableContract
      */
     public function recontest()
     {
-        return $this->hasOne( Recontest::class, 'eform_id' );
+		
+		$aging = $this->getAtributeAging(json_decode($this->hasMany( Monitoring\Action_dates::class, 'eform_id' )->get(), true));
+		$recontest =  json_decode($this->hasOne( Recontest::class, 'eform_id' )->get(), true);
+		$return = ['aging'=>$aging,'recontest'=>$recontest];
+        return $return;
+//        return $this->hasOne( Recontest::class, 'eform_id' );
     }
-
+	public function getAtributeAging($value){
+		$return = array();
+		foreach ($value as $data){
+			$data_action = str_replace('eform-','',$data['action']);
+			$return[] = ['id'=>$data['id'],'eform_id'=>$data['eform_id'],'action'=>$data_action,'execute_at'=>$data['execute_at'],'created_at'=>$data['created_at'],'updated_at'=>$data['updated_at']];
+		}
+		return $return;
+	}
+	public function getAtributeDeveloper($value){
+		$return = array();
+		foreach ($value as $data){
+			$return = ['id'=>$data['id'],'company_name'=>$data['company_name']];
+		}
+		return $return;
+	}
     public function briguna()
     {
         return $this->hasOne( BRIGUNA::class, 'eform_id' );
     }
 
 	
-    public function aging()
+    public function ActionDate()
     {
-        return $this->hasOne( Action_dates::class, 'eform_id' );
+        return $this->hasOne( ActionDate::class, 'eform_id' );
     }
     /**
      * The relation to visit report.
