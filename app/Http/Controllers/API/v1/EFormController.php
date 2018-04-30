@@ -10,6 +10,7 @@ use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
+use App\Models\EFormMonitoring;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
@@ -102,6 +103,20 @@ class EFormController extends Controller
             $newForm = EForm::findOrFail($request->input('slug'));
         }else{
             $newForm = EForm::filter( $request )->paginate( $limit );
+        }
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newForm
+        ], 200 );
+    }
+
+	    public function monitoring( Request $request )
+    {
+        $limit = $request->input( 'limit' ) ?: 10;
+        if ($request->has('slug')) {
+            $newForm = EFormMonitoring::findOrFail($request->input('slug'));
+        }else{
+            $newForm = EFormMonitoring::filter( $request )->paginate( $limit );
         }
         return response()->success( [
             'message' => 'Sukses',
