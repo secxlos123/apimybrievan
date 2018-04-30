@@ -105,10 +105,16 @@ class Controller extends BaseController
     public function gen_token_briguna()
     {
       $client = new Client();
-	    $host = (env('APP_URL') == 'http://api.dev.net/')? 'http://10.35.65.208:81/':config('restapi.apipdm');
-		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
-		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
-
+	  
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='https://apimybridev.bri.co.id/'){
+		  $host = 'http://10.35.65.208:81/';
+		  $client_id = config('restapi.pdm_client_id_dev');
+		  $client_secret = config('restapi.pdm_client_secret_dev');
+	  }else{
+		  $host = config('restapi.apipdm');
+		  $client_id = config('restapi.pdm_client_id');
+		  $client_secret = config('restapi.pdm_client_secret');
+	  }
       $requestBriconnect = $client->request('POST', $host.'/oauth/token',
         [
           'form_params' =>
