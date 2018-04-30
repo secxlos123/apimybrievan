@@ -127,6 +127,7 @@ class Controller extends BaseController
         ]
       );
       $briConnect = json_decode($requestBriconnect->getBody()->getContents(), true);
+	  print_r($briConnect);die();
 
       $apiPdmToken = new ApiPdmTokensBriguna;
 
