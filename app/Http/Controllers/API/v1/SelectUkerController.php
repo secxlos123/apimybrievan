@@ -81,6 +81,8 @@ class SelectUkerController extends Controller
 		 
       if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='https://apimybridev.bri.co.id/'){
 		$urls = 'http://10.35.65.208:81/';
+	}elseif($host=='http://localhost'){
+		$urls = 'http://api.briconnect.bri.co.id/';  
 	}else{
 		$urls = 'http://api.briconnect.bri.co.id/';  
 	  }

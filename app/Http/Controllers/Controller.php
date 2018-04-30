@@ -106,14 +106,15 @@ class Controller extends BaseController
     {
       $client = new Client();
 	  $host = env('APP_URL');
-      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='https://apimybridev.bri.co.id/'){
+	  
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id/'){
 		  $host = 'http://10.35.65.208:81/';
 		  $client_id = config('restapi.pdm_client_id_dev');
 		  $client_secret = config('restapi.pdm_client_secret_dev');
 	  }else{
 		  $host = config('restapi.apipdm');
 		  $client_id = config('restapi.pdm_client_id');
-		  $client_secret = config('restapi.pdm_client_secret');;
+		  $client_secret = config('restapi.pdm_client_secret');
 	  };
       $requestBriconnect = $client->request('POST', $host.'/oauth/token',
         [
