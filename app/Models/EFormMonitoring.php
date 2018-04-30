@@ -838,6 +838,10 @@ class EFormMonitoring extends Model implements AuditableContract
     }
 
 	
+    public function aging()
+    {
+        return $this->hasOne( Action_dates::class, 'eform_id' );
+    }
     /**
      * The relation to visit report.
      *
