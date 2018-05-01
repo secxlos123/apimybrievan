@@ -172,4 +172,6 @@ Route::get( '/seteform', function() {
  // Route::group( ['middleware' => 'file' ], function () {
 Route::get('files/{folder}/{nik}', 'ImagesController@show3');
 Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
+Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
+// Route::get('files/{nik}/{pdf}/mybri/{key}', 'ImagesController@show2');
  // });
