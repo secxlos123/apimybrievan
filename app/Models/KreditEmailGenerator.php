@@ -121,11 +121,11 @@ class KreditEmailGenerator extends Model{
                               <td>Rp. '.$data['tiering_gaji'].'</td>
                            </tr>
                            <tr>
-                              <td align="center">Data Pengajuan</td>
+                              <td align="center">DATA PENGAJUAN</td>
                            </tr>
                            <tr>
-                              <td>Tiering Pendapatan : </td>
-                              <td>Rp. '.$data['jenis_kartu'].'</td>
+                              <td>Jenis Kartu Kredit : </td>
+                              <td>'.$data['jenis_kartu'].'</td>
                               
                            </tr>
                            
