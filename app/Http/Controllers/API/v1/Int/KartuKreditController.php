@@ -291,6 +291,12 @@ class KartuKreditController extends Controller{
     	$eform_id = $request['eform_id'];
     	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
 
+    	$alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2'].' '.$request['PersonalAlamatDomisili3'.', RT/RW '.$request['RT'].'/'.$request['RW'].', Kecamatan '.$request['Camat']];
+
+    	//update data di eform
+    	$update = EForm::where(id,$eform_id)->update([
+    		'address',$alamatDom
+    	]);
 
 
     	$kk = new KartuKredit();

@@ -114,8 +114,6 @@ class KartuKredit extends Model
             $personalTanggalLahir = $req['PersonalTanggalLahir'];
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
 
-            $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
-
             $personalJenisKelamin = $req['PersonalJenisKelamin'];
             $personalStatusTempatTinggal = $req['PersonalStatusTempatTinggal'];
             $personalKewarganegaraan = $req['PersonalKewarganegaraan'];
