@@ -297,7 +297,7 @@ class KartuKreditController extends Controller{
 
     	//update data di eform
     	$update = EForm::where('id',$eform_id)->update([
-    		'address',$alamatDom
+    		'address'=>$alamatDom
     	]);
 
 
