@@ -49,7 +49,7 @@ class EFormMonitoring extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json', 'kanwils' ];
+    protected $appends = [ 'recontestdata', 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json', 'kanwils' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -642,6 +642,11 @@ class EFormMonitoring extends Model implements AuditableContract
      *
      * @return     \Illuminate\Database\Eloquent\Relations\HasOne
      */
+	  public function getRecontestdataAttribute()
+    {
+		$recontest =  $this->hasOne( Recontest::class, 'eform_id' )->get();
+        return $recontest;
+    }
     public function recontest()
     {
 		
