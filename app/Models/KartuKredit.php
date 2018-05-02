@@ -35,13 +35,19 @@ class KartuKredit extends Model
         'los_score','analyzed_status'
     ];
 
-    protected $appends = ['jenis_kartu'];
+    protected $appends = ['jenis_kartu','alamat_lengkap'];
 
     protected $hidden = [
         'id','updated_at'
     ];
 
     public $timestamps = false;
+
+    public function getAlamatLengkapAttribute($value){
+        $ef = EForm::where('id',$this->eform_id)->first();
+        $alamat = $ef['address'];
+        return $alamat;
+    }
 
     public function getJenisKartuAttribute($value){
         $kode = $this->pilihan_kartu;
