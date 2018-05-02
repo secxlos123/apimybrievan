@@ -64,7 +64,7 @@ class KreditEmailGenerator extends Model{
                      <td align="center">
                         <span>Hai,'.$data['nama'].'</span>
                         <br>
-                        Berikut, data permohonan anda:
+                        Berikut, data permohonan kartu kredit anda:
                         <br>
                         <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
                            <tr>
@@ -119,6 +119,14 @@ class KreditEmailGenerator extends Model{
                            <tr>
                               <td>Tiering Pendapatan : </td>
                               <td>Rp. '.$data['tiering_gaji'].'</td>
+                           </tr>
+                           <tr>
+                              <td align="center">Data Pengajuan</td>
+                           </tr>
+                           <tr>
+                              <td>Tiering Pendapatan : </td>
+                              <td>Rp. '.$data['jenis_kartu'].'</td>
+                              
                            </tr>
                            
                           
