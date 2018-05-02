@@ -296,7 +296,7 @@ class KartuKreditController extends Controller{
     	$request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
 
     	//update data di eform
-    	$update = EForm::where(id,$eform_id)->update([
+    	$update = EForm::where('id',$eform_id)->update([
     		'address',$alamatDom
     	]);
 
