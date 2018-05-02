@@ -242,7 +242,7 @@ class EFormMonitoring extends Model implements AuditableContract
 
             $days = $this->created_at->diffInDays($date);
         }
-		$x['aging']['waktu_aging'] = $days . ' hari ';
+		$x['waktu_aging'] = $days . ' hari ';
         return $x;
     }
 
@@ -649,19 +649,26 @@ class EFormMonitoring extends Model implements AuditableContract
     }
     public function recontest()
     {
-		
-		$aging = $this->getAtributeAging(json_decode($this->hasMany( Monitoring\Action_dates::class, 'eform_id' )->get(), true));
+		$aging = $this->getAtributeAging($this->hasMany( Monitoring\Action_dates::class, 'eform_id' )->get());
 		$return = ['aging'=>$aging];
         return $return;
 //        return $this->hasOne( Recontest::class, 'eform_id' );
     }
 	public function getAtributeAging($value){
 		$return = array();
+		$i = 0;
+		$go = array();
 		foreach ($value as $data){
 			$data_action = str_replace('eform-','',$data['action']);
-			$return[] = ['id'=>$data['id'],'eform_id'=>$data['eform_id'],'action'=>$data_action,'execute_at'=>$data['execute_at'],'created_at'=>$data['created_at'],'updated_at'=>$data['updated_at']];
+			$return['id'] = $data['id'];
+			$return['eform_id'] = $data['eform_id'];
+			$return['data_action'] = $data_action;
+			$return['created_at'] = $data['created_at'];
+			$return['updated_at'] = $data['updated_at'];
+			$go['x'.$i] = $return;
+			$i = (int) $i+1;
 		}
-		return $return;
+		return $go;
 	}
 	public function getAtributeDeveloper($value){
 		$return = array();
