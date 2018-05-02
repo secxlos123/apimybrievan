@@ -35,11 +35,34 @@ class KartuKredit extends Model
         'los_score','analyzed_status'
     ];
 
+    protected $appends = ['jenis_kartu'];
+
     protected $hidden = [
         'id','updated_at'
     ];
 
     public $timestamps = false;
+
+    public function getJenisKartuAttribute($value){
+        $kode = $this->pilihan_kartu;
+        switch ($kode) {
+            case '102':
+                return 'Easy Card';
+                break;
+            case '302':
+                return 'Platinum';
+                break;
+            case '203':
+                return 'World Class';
+                break;
+            case '502':
+                return 'Touch';
+                break;
+            default :
+                return 'Tidak Terdeteksi';
+                break;
+        }
+    }
 
     function globalImageCheck( $filename ){
         $path =  'img/noimage.jpg';
