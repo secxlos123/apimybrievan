@@ -24,7 +24,7 @@ class UserDeveloper extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'user_id', 'birth_date', 'join_date', 'admin_developer_id'
+        'user_id', 'birth_date', 'join_date', 'admin_developer_id', 'bound_project'
     ];
 
     /**

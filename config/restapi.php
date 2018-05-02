@@ -36,7 +36,7 @@ return [
     | CLIENT_APIPDM
     |--------------------------------------------------------------------------
     */
-    'apipdm' => 'http://api.briconnect.bri.co.id',
+    'apipdm' => 'http://api.briconnect.bri.co.id/',
      'apipdmdev' => 'http://10.35.65.208:81',
 
     'pdm_client_id' => '3f60d2edcd0399e6ea25290fe4022e0af91e5016',

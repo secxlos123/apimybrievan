@@ -73,7 +73,7 @@ class DeveloperAgentController extends Controller
         Activation::complete($user, $activation->code);
         event(new CustomerRegistered($user, $password,$request->input('role_id')));
         $token = JWTAuth::fromUser( $user );
-         \Log::info($token);
+         //\Log::info($token);
         $user->roles()->sync($request->input('role_id'));
 
         if ($user) {
@@ -82,6 +82,7 @@ class DeveloperAgentController extends Controller
             $saveData->birth_date = $request->birth_date;
             $saveData->join_date = $request->join_date;
             $saveData->admin_developer_id = $request->user()->id;
+            $saveData->bound_project = $request->bound_project;
             $saveData->save();
             return response()->success([
                 'message' => 'Data agent developer berhasil ditambah.',
@@ -142,6 +143,7 @@ class DeveloperAgentController extends Controller
             $saveData = UserDeveloper::where('user_id', $user->id)->first();
             $saveData->birth_date = date("Y-m-d", strtotime($request->birth_date));
             $saveData->join_date = date("Y-m-d", strtotime($request->join_date));
+            $saveData->bound_project = $request->bound_project;
             $saveData->save();
             return response()->success([
                 'message' => 'Data agent developer berhasil diubah.',
