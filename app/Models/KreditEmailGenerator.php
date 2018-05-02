@@ -64,7 +64,7 @@ class KreditEmailGenerator extends Model{
                      <td align="center">
                         <span>Hai,'.$data['nama'].'</span>
                         <br>
-                        Berikut, data permohonan kartu kredit anda:
+                        Berikut data permohonan kartu kredit anda:
                         <br>
                         <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
                            <tr>
@@ -81,7 +81,7 @@ class KreditEmailGenerator extends Model{
                            </tr>
                            <tr>
                               <td>Alamat : </td>
-                              <td>'.$data['alamat'].'</td>
+                              <td>'.$data['alamat_lengkap'].'</td>
                            </tr>
                            <tr>
                               <td>No. Telepon : </td>
