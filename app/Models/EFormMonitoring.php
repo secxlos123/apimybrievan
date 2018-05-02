@@ -651,8 +651,7 @@ class EFormMonitoring extends Model implements AuditableContract
     {
 		
 		$aging = $this->getAtributeAging(json_decode($this->hasMany( Monitoring\Action_dates::class, 'eform_id' )->get(), true));
-		$recontest =  json_decode($this->hasOne( Recontest::class, 'eform_id' )->get(), true);
-		$return = ['aging'=>$aging,'recontest'=>$recontest];
+		$return = ['aging'=>$aging];
         return $return;
 //        return $this->hasOne( Recontest::class, 'eform_id' );
     }
