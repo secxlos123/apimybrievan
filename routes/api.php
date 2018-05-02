@@ -22,7 +22,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 		Route::post('hapusbriguna', 'EFormController@hapuseform');
 		Route::post('get_token', 'EFormController@get_token');
-		Route::get('monitoring', 'EFormController@monitoring');
+		Route::get('int/monitoring', 'EFormController@monitoring');
 		Route::post('getBranch', 'SelectUkerController@getBranch');
 		Route::post('smsnotif', 'SentSMSNotifController@sentsms');
 		Route::post('select', 'SelectController@select');
