@@ -88,7 +88,10 @@ class SchedulerMitraController extends Controller
         
         $token = $apiPdmToken['access_token'];
         $listExisting = $this->ListBranch($token);
-		return $listExisting;
+		return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $listExisting
+        ]);
 	}
 	}
 	public function scheduler( Request $request )
