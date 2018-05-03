@@ -11,6 +11,7 @@ use App\Models\Office;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use RestwsHc;
+use App\Models\ApiPdmTokensBriguna;
 use Cache;
 
 class SchedulerMitraController extends Controller
@@ -43,8 +44,67 @@ class SchedulerMitraController extends Controller
         return $return;
     }
 	
+	public function ListBranch($data, $token)
+    {
+		 $host = env('APP_URL');
+		 
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id/'){
+		$urls = 'http://10.35.65.208:81/';
+	}else{
+		$urls = 'http://api.briconnect.bri.co.id/';  
+	 }
+      $client = new Client();
+	$requestListExisting = $client->request('GET', $urls.'bribranch/region/v3',
+				[
+				  'headers' =>
+				  [
+					'Authorization' => 'Bearer '.$token
+				  ]
+				]
+			  );
+	  $listExisting = json_decode($requestListExisting->getBody()->getContents(), true);
+
+      return $listExisting;
+    }
+	
+	public function kanwilsss(){
+	  if ( count(ApiPdmTokensBriguna::all()) > 0 ) {
+        $apiPdmToken = ApiPdmTokensBriguna::latest('id')->first()->toArray();
+      } else {
+        $this->gen_token_briguna();
+        $apiPdmToken = ApiPdmTokensBriguna::latest('id')->first()->toArray();
+      }
+      if ($apiPdmToken['expires_in'] >= date("Y-m-d H:i:s")) {
+        $token = $apiPdmToken['access_token'];
+        $listExisting = $this->ListBranch($token);
+
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $listExisting
+        ]);
+      } else {
+        $briConnect = $this->gen_token_briguna();
+        $apiPdmToken = ApiPdmTokensBriguna::latest('id')->first()->toArray();
+        
+        $token = $apiPdmToken['access_token'];
+        $listExisting = $this->ListBranch($token);
+		return $listExisting;
+	}
+	}
 	public function scheduler( Request $request )
 	{
+		
+		try{
+			$kanwilsss = $this->kanwilsss();
+			print_r($kanwilss);die();
+			if($kanwilsss['responseCode']=='00'){
+				
+			}
+		}catch(Exception $e){
+			$logsql = DB::statement("INSERT INTO log_mitra VALUES((select count(*)+1 from log_mitra),now(),'".$time_first."',localtime,'".$e."')");
+			print_r($e);
+			die();
+		}
 		try{
 		    $UKERS = $this->fetch();
 			if($UKERS['responseCode']=='00'){
