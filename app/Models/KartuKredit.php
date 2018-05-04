@@ -43,6 +43,10 @@ class KartuKredit extends Model
 
     public $timestamps = false;
 
+     public function eform(){
+        return $this->belongsTo('App\Models\EForm', 'eform_id');
+    }
+
     public function getAlamatLengkapAttribute($value){
         $ef = EForm::where('id',$this->eform_id)->first();
         $alamat = $ef['address'];
@@ -72,9 +76,9 @@ class KartuKredit extends Model
 
     function globalImageCheck( $filename ){
         $path =  'img/noimage.jpg';
-        $id = substr ($filename,0,14);
+        $nik =  $this->nik;
         if( ! empty( $filename ) ) {
-            $image = 'uploads/' . $id . '/' . $filename;
+            $image = 'uploads/' . $nik . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -362,6 +366,7 @@ class KartuKredit extends Model
         $data['eform_id'] = $req['eform_id'];
         $data['pn'] = $req['ao_id'];
         $data['tanggal_lahir'] = $req['ttl'];
+        $data['nik'] = $nik; 
 
 
         $kkDetails = KartuKredit::create($data);
