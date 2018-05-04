@@ -690,7 +690,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
             else
             {
                 $return['success'] = false;
-                $return['message'] = 'Update Gagal Anda Menggunakan Password Lama.';
+                $return['message'] = 'Ubah Password Gagal, Password Baru harus berbeda dari 4 password sebelumnya.';
             }
 
         }
