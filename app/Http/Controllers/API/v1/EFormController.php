@@ -110,9 +110,65 @@ class EFormController extends Controller
         ], 200 );
     }
 
+	public function xmlaswin(){
+		$x = '<xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="NewDataSet">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="ListProgram" msdata:UseCurrentLocale="true">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="ListProgram">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ID" type="xs:long" minOccurs="0"/>
+                            <xs:element name="NAMA_PROGRAM" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+<diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+    <DocumentElement xmlns="">
+        <ListProgram diffgr:id="ListProgram1" msdata:rowOrder="0">
+            <ID>2</ID>
+            <NAMA_PROGRAM>BRIGUNA KARYA BRI LIFE </NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram2" msdata:rowOrder="1">
+            <ID>3</ID>
+            <NAMA_PROGRAM>BRIGUNA Karya Heksa</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram3" msdata:rowOrder="2">
+            <ID>10</ID>
+            <NAMA_PROGRAM>BRIGUNA Purna BRI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram4" msdata:rowOrder="3">
+            <ID>11</ID>
+            <NAMA_PROGRAM>Briguna Umum BRI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram5" msdata:rowOrder="4">
+            <ID>12</ID>
+            <NAMA_PROGRAM>Briguna Umum HELI</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram6" msdata:rowOrder="5">
+            <ID>13</ID>
+            <NAMA_PROGRAM>Briguna Umum BNI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram7" msdata:rowOrder="6">
+            <ID>14</ID>
+            <NAMA_PROGRAM>BRIGUNA Purna HELI</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram8" msdata:rowOrder="7">
+            <ID>15</ID>
+            <NAMA_PROGRAM>BRIGUNA Pensiun Heksa Life</NAMA_PROGRAM>
+        </ListProgram>
+    </DocumentElement>
+</diffgr:diffgram>';
+return $x;
+	}
 	    public function monitoring( Request $request )
     {
-        $limit = $request->input( 'limit' ) ?: 10;
+
+	$limit = $request->input( 'limit' ) ?: 10;
         if ($request->has('slug')) {
             $newForm = EFormMonitoring::findOrFail($request->input('slug'));
         }else{
@@ -360,6 +416,28 @@ class EFormController extends Controller
         ] );
     }
 
+    public function uploadKKImage($image,$nik,$type,$time){
+      $path = public_path('uploads/'.$nik.'/');
+      $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            $filename = $time. '-'.$type.'.' . $extension;
+            $image->move( $path, $filename );
+        }
+        return $filename;
+
+    }
+
     public function uploadimage($image,$id,$atribute)
     {
         $path = public_path( 'uploads/' . $id . '/' );
@@ -476,18 +554,19 @@ class EFormController extends Controller
                     ]);
                 } else {
                     //nama gambar
-                    $id = date('YmdHis');
-
+                    $time = date('YmdHis');
+                    $nik = $request->nik;
                     //cek debitur atau nasabah. ambil gambar
                     if ($request->jenis_nasabah == 'debitur'){
+                        
                         $npwp = $request->NPWP;
                         $ktp = $request->KTP;
                         $slipGaji = $request->SLIP_GAJI;
 
-
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
-                        $ktp = $this->uploadimage($ktp,$id,'KTP');
-                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
+                        // uploadKKImage($image,$nik,$type,$time)
+                        $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
+                        $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
+                        $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
@@ -499,12 +578,11 @@ class EFormController extends Controller
                         $nameTag = $request->NAME_TAG;
                         $limitKartu = $request->KARTU_BANK_LAIN;
 
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
-                        $ktp = $this->uploadimage($ktp,$id,'KTP');
-
-                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
-                        $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                        $kartuBankLain = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
+                        $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
+                        $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
+                        $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
+                        $nameTag = $this->uploadimage($nameTag,$nik,'NAME_TAG',$time);
+                        $kartuBankLain = $this->uploadimage($limitKartu,$nik,"KARTU_BANK_LAIN",$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;

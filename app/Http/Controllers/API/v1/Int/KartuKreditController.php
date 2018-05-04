@@ -14,6 +14,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\User;
 use App\Models\EForm;
 use Asmx;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use App\Http\Requests\API\v1\KreditRequest;
 
@@ -21,22 +22,20 @@ use App\Models\KreditEmailGenerator;
 
 class KartuKreditController extends Controller{
 
-
-
 	public $hostLos = '10.107.11.111:9975';
 	public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-	public function ajukanKredit(Request $req){
-		//cek users
-		$nik = $request->PersonalNIK;
-		if ($this->checkUser($nik)){
-			//cek dedup
-			
-		}
-		//cek pefindo
-	}
+	public function contohemail(){
+      // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/qrcode.png');
+
+      // return 'a';
+		// $data = EForm::find(1)->kartukredit()->all();
+		$data = EForm::with('kartukredit')->get();
+		return response()->json($data);
+    }
+
 
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
@@ -667,7 +666,7 @@ class KartuKreditController extends Controller{
 		
 		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
-			'approval'=>$putusan,
+			'approval'=>$,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
 
