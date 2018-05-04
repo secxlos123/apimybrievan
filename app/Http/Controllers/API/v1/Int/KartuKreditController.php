@@ -291,8 +291,7 @@ class KartuKreditController extends Controller{
     	$eform_id = $request['eform_id'];
     	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
 
-
-
+    	
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
 
@@ -311,6 +310,15 @@ class KartuKreditController extends Controller{
 		$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'pending']);
 
+		$alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2']
+    	.' '.
+    	$request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
+
+    	//update data di eform
+    	$update = EForm::where('id',$eform_id)->update([
+    		'address'=>$alamatDom
+    	]);
+
 		$body = $res->getBody();
 		$obj = json_decode($body);
 		// $data = $obj->responseData;
@@ -325,6 +333,10 @@ class KartuKreditController extends Controller{
 		// ->update(['response_status'=>'verified']);
 		return response()->json($obj);
 
+    }
+
+    function sendFinishVerificationEmail(){
+    	
     }
 
     function getApregnoFromKKDetails($eform_id){
