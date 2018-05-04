@@ -31,7 +31,8 @@ class KartuKreditController extends Controller{
       // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/qrcode.png');
 
       // return 'a';
-		$data = EForm::find(1)->kartukredit();
+		// $data = EForm::find(1)->kartukredit()->all();
+		$data = EForm::with('kartukredit')->get();
 		return response()->json($data);
     }
 
