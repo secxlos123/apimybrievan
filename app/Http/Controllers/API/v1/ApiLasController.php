@@ -40,9 +40,9 @@ class ApiLasController extends Controller
         
         switch ($method) {
             case 'insertDataDebtPerorangan':
-                // if (!empty($data)) {
                     $data = $respons;
-                    /*$data['kodepos']            = '';
+                /*if (!empty($data)) {
+                    $data['kodepos']            = '';
                     $data['kelurahan']          = '';
                     $data['kecamatan']          = '';
                     $data['kabupaten']          = '';
@@ -114,17 +114,17 @@ class ApiLasController extends Controller
                     $data['gaji'] = $gaji;
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
-                // } 
-                // $error[0] = 'Uknown request data';
-                // return [
-                //     'code' => 05, 
-                //     'descriptions' => 'Uknown request data',
-                //     'contents' => [
-                //         'data' => $error
-                //     ]
-                // ];
-                // print_r($data);exit();
-                // $insert = $ApiLas->insertDataDebtPerorangan($data);
+                /*} 
+                $error[0] = 'Uknown request data';
+                return [
+                    'code' => 05, 
+                    'descriptions' => 'Uknown request data',
+                    'contents' => [
+                        'data' => $error
+                    ]
+                ];
+                print_r($data);exit();
+                $insert = $ApiLas->insertDataDebtPerorangan($data);*/
                 break;
 
             case 'insertPrescreeningBriguna':
@@ -319,6 +319,110 @@ class ApiLasController extends Controller
                 ];
                 break;
 
+            case 'LAS_DETAIL_PROGRAM_BRIGUNA' :
+                if (!empty($data)) {
+                    try {
+                        $params["FID_PROGRAM"]= $data['FID_PROGRAM'];
+                        $params["FID_APLIKASI"]= $data['FID_APLIKASI'];
+                        $params["LOAN_TYPE"]= $data['LOAN_TYPE'];
+                        $params["PLAFON"]= $data['PLAFON']; 
+                        $params["TANGGAL_LAHIR"]= $data['TANGGAL_LAHIR'];// format yyyyMMdd
+                        $params["JANGKA_WAKTU"]= $data['JANGKA_WAKTU']; 
+                        $params["BUNGA_PINJAMAN"]= $data['BUNGA_PINJAMAN'];
+                        $url = config('restapi.asmx_ajko');
+                        $client = new \SoapClient($url);
+                        $resultclient = $client->LAS_DETAIL_PROGRAM_BRIGUNA($params);
+                        $datadetail = $resultclient->LAS_DETAIL_PROGRAM_BRIGUNAResult;
+                        $result = (array) $datadetail;
+                        return $result;
+                    } catch (Exception $e) {
+                        return [
+                            'Response_code' => 04, 
+                            'Response_message' => 'Gagal Koneksi Jaringan'
+                        ];
+                    }
+                }
+
+                return [
+                    'Response_code' => 05, 
+                    'Response_message' => 'Uknown request data'
+                ];
+                break;
+
+            case 'LAS_LIST_PROGRAM_BRIGUNA' :
+                try {                    
+                    $url = config('restapi.asmx_ajko');
+                    $client = new \SoapClient($url);
+                    $resultclient = $client->LAS_LIST_PROGRAM_BRIGUNA();
+                    if($resultclient->LAS_LIST_PROGRAM_BRIGUNAResult){
+                        $subject = '
+                            <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+                                <document xmlns="">
+                                    <ListProgram diffgr:id="ListProgram1" msdata:rowOrder="0">
+                                        <ID>2</ID>
+                                        <NAMA_PROGRAM>BRIGUNA KARYA BRI LIFE </NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram2" msdata:rowOrder="1">
+                                        <ID>3</ID>
+                                        <NAMA_PROGRAM>BRIGUNA Karya Heksa</NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram3" msdata:rowOrder="2">
+                                        <ID>10</ID>
+                                        <NAMA_PROGRAM>BRIGUNA Purna BRI Life</NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram4" msdata:rowOrder="3">
+                                        <ID>11</ID>
+                                        <NAMA_PROGRAM>Briguna Umum BRI Life</NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram5" msdata:rowOrder="4">
+                                        <ID>12</ID>
+                                        <NAMA_PROGRAM>Briguna Umum HELI</NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram6" msdata:rowOrder="5">
+                                        <ID>13</ID>
+                                        <NAMA_PROGRAM>Briguna Umum BNI Life</NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram7" msdata:rowOrder="6">
+                                        <ID>14</ID>
+                                        <NAMA_PROGRAM>BRIGUNA Purna HELI</NAMA_PROGRAM>
+                                    </ListProgram>
+                                    <ListProgram diffgr:id="ListProgram8" msdata:rowOrder="7">
+                                        <ID>15</ID>
+                                        <NAMA_PROGRAM>BRIGUNA Pensiun Heksa Life</NAMA_PROGRAM>
+                                    </ListProgram>
+                                </document>
+                            </diffgr:diffgram>
+                        ';
+                        // $xml = new \SimpleXMLElement($subject);
+                        // $data = json_decode(json_encode($xml),TRUE);
+                        $xml  = simplexml_load_string($subject,"SimpleXMLElement",LIBXML_NOCDATA);
+                        $data = json_decode(json_encode($xml),TRUE);
+                        $datadetail = $resultclient->LAS_LIST_PROGRAM_BRIGUNAResult;
+                        // print_r($datadetail);
+                        // print_r($data);
+                        // print_r($xml);
+                        // exit();
+                        // $xml = simplexml_load_string($datadetail->DT1->any);
+                        $xml = new \SimpleXMLElement($datadetail->DT1->any);
+                        $array = json_decode(json_encode($xml), TRUE);
+                        // print_r($data);
+                        print_r($array);
+                        exit();
+                        $result = (array) $datadetail;
+                        return $result;
+                    }
+                    return [
+                        'Response_code' => 04, 
+                        'Response_message' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
+                    ];
+                } catch (Exception $e) {
+                    return [
+                        'Response_code' => 05, 
+                        'Response_message' => 'Gagal Koneksi Jaringan'
+                    ];
+                }
+                break;
+
             case 'inquiryPremiAJKO':
                 if (!empty($data)) {
                     $params = [
@@ -363,8 +467,7 @@ class ApiLasController extends Controller
                                 'data' => $error
                             ]
                         ];
-                    }
-                    catch(SoapFault $f){
+                    } catch(SoapFault $f) {
                         $error[0] = 'Gagal Koneksi Jaringan';
                         return [
                             'code' => 04, 
