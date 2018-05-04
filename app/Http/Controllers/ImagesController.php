@@ -46,16 +46,14 @@ class ImagesController extends Controller
      */
     public function show($file)
     {
-       // dd(substr($file, -3));
         $cekpdf = substr($file, -3);
         if($cekpdf == 'pdf'){
             return response()->error([
                 'message' => "you can't access this site !",
             ]);
         }else{
-        $storagePath = public_path('uploads/'.$file);
-        //dd($storagePath);
-        return Image::make($storagePath)->response();
+            $storagePath = public_path('uploads/'.$file);
+            return Image::make($storagePath)->response();
         }
     }
 
@@ -65,18 +63,17 @@ class ImagesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show2($folder, $file)
+    public function show2($nik, $pdf, $key)
     {
-       // dd(substr($file, -3));
-        $cekpdf = substr($file, -3);
-        if($cekpdf == 'pdf'){
+        $date = date('dmy');
+        \Log::info($date);
+        if($key == "key=".$date){
+            return response()->download(public_path('uploads/'.$nik.'/'.$pdf), null, [], null);
+        }else{
             return response()->error([
                 'message' => "you can't access this site !",
-            ]);
-        }else{
-        $storagePath = public_path('uploads/'.$folder.'/'.$file);
-        //dd($storagePath);
-        return Image::make($storagePath)->response();
+                'contents' => ["scure" => "Permission Denied Access"]
+           ]);
         }
     }
 
@@ -88,45 +85,34 @@ class ImagesController extends Controller
      */
     public function show3(Request $request, $folder, $file)
     {
-       //dd(substr($file, -3));
         $cekpdf = substr($file, -3);
         if($cekpdf == 'pdf'){
             $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-            // \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
-            // \Log::info($secure);
-            if($secure != NULL ){
+            if($secure == NULL ){
+                $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
                     return response()->download(public_path('uploads/'.$folder.'/'.$file), null, [], null);
                 }else{
                     return response()->error([
-                    'message' => "you can't access this site !",
+                'message' => "you can't access this site !",
+                'contents' => ["scure" => "Permission Denied Access"]
                 ]);
             }
         }
-        // else{
+        
         $header = $request->ip();
         $server = $request->server();
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-        // \Log::info("====client : ".$header);
-        // \Log::info("====ENV-IP : ".$ip);
-        // \Log::info("====================SERVER==================");
-        // \Log::info($server);
-        // \Log::info("====================REQUEST==================");
-        // \Log::info($request->header('Authorization'));
-        // \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
-        // \Log::info($secure);
-
-        // \Log::info("====host : ".$request->getSchemeAndHttpHost());
+        
         if($secure != 1 ){
-        $storagePath = public_path('uploads/'.$folder.'/'.$file);
-        //dd($storagePath);
-        return Image::make($storagePath)->response();
+            $storagePath = public_path('uploads/'.$folder.'/'.$file);
+            return Image::make($storagePath)->response();
         }else{
             return response()->error([
                 'message' => "you can't access this site !",
+                'contents' => ["scure" => "Permission Denied Access"]
            ]);
         }
-       // }
     }
 
     /**
@@ -141,23 +127,38 @@ class ImagesController extends Controller
         $server = $request->server();
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-        \Log::info("====client : ".$header);
-        \Log::info("====ENV-IP : ".$ip);
-        \Log::info("====================SERVER==================");
-        \Log::info($server);
-        \Log::info("====================REQUEST==================");
-        \Log::info($request->header('Authorization'));
-        \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
-        \Log::info($secure);
-        
-        // dd($storagePath);
+
         if($secure != 1 ){
-        // $storagePath = public_path('uploads/'.$folder.'/'.$file);
-        $storagePath = public_path('uploads/'.$folder.'/'.$id.'/'.$file);
-        return Image::make($storagePath)->response();
+            $storagePath = public_path('uploads/'.$folder.'/'.$id.'/'.$file);
+            return Image::make($storagePath)->response();
         }else{
             return response()->error([
                 'message' => "you can't access this site !",
+                'contents' => ["scure" => "Permission Denied Access"]
+           ]);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show5(Request $request, $folder, $other, $id, $file)
+    {
+        $header = $request->ip();
+        $server = $request->server();
+        $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
+        $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
+    
+        if($secure != 1 ){
+            $storagePath = public_path('uploads/'.$folder.'/'.$other.'/'.$id.'/'.$file);
+            return Image::make($storagePath)->response();
+        }else{
+            return response()->error([
+                'message' => "you can't access this site !",
+                'contents' => ["scure" => "Permission Denied Access"]
            ]);
         }
     }

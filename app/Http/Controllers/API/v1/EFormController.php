@@ -1189,7 +1189,15 @@ class EFormController extends Controller
 
                 $briguna = $briguna->toArray();
                 $briguna = json_decode(json_encode($briguna), True);
-                $message = ['no_hp'=>$customer[0]['mobile_phone'],
+
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'Data pengajuan tidak ditemukan',
+                    ], 422 );
+            }
+			try{			
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],
                             'plafond'=>$briguna[0]['request_amount'],
                             'year'=>$briguna[0]['year'],
                             'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
@@ -1202,7 +1210,7 @@ class EFormController extends Controller
             } catch (\Exception $e) {
                     DB::rollback();
                     return response()->error( [
-                        'message' => 'Data pengajuan tidak ditemukan',
+                        'message' => 'Gagal Mengirimkan SMS',
                     ], 422 );
             }
 			try{
