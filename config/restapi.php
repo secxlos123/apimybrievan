@@ -10,7 +10,9 @@ return [
 
     'asmx'      => env('CLIENT_ASMX', 'http://10.35.65.167:6969/service.asmx/'),
 
-    'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.165:1104/service.asmx/'),
+    'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.165:1104/service.asmx?wsdl'),
+
+    'asmx_ajko'      => env('CLIENT_ASMX_AJKO', 'http://10.35.65.97:1555/services.asmx?wsdl'),
 
     'Brispot'      => env('CLIENT_BRISPOT', 'http://api.briconnect.bri.co.id/bribranch/'),
     // 'asmx_las'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.167:1104/service.asmx/'),
