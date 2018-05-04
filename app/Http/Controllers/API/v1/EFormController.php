@@ -110,9 +110,125 @@ class EFormController extends Controller
         ], 200 );
     }
 
+	public function xmlaswin(){
+		$x = '<xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="NewDataSet">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="ListProgram" msdata:UseCurrentLocale="true">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="ListProgram">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ID" type="xs:long" minOccurs="0"/>
+                            <xs:element name="NAMA_PROGRAM" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+<diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+    <DocumentElement xmlns="">
+        <ListProgram diffgr:id="ListProgram1" msdata:rowOrder="0">
+            <ID>2</ID>
+            <NAMA_PROGRAM>BRIGUNA KARYA BRI LIFE </NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram2" msdata:rowOrder="1">
+            <ID>3</ID>
+            <NAMA_PROGRAM>BRIGUNA Karya Heksa</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram3" msdata:rowOrder="2">
+            <ID>10</ID>
+            <NAMA_PROGRAM>BRIGUNA Purna BRI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram4" msdata:rowOrder="3">
+            <ID>11</ID>
+            <NAMA_PROGRAM>Briguna Umum BRI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram5" msdata:rowOrder="4">
+            <ID>12</ID>
+            <NAMA_PROGRAM>Briguna Umum HELI</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram6" msdata:rowOrder="5">
+            <ID>13</ID>
+            <NAMA_PROGRAM>Briguna Umum BNI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram7" msdata:rowOrder="6">
+            <ID>14</ID>
+            <NAMA_PROGRAM>BRIGUNA Purna HELI</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram8" msdata:rowOrder="7">
+            <ID>15</ID>
+            <NAMA_PROGRAM>BRIGUNA Pensiun Heksa Life</NAMA_PROGRAM>
+        </ListProgram>
+    </DocumentElement>
+</diffgr:diffgram>';
+return $x;
+	}
 	    public function monitoring( Request $request )
     {
-        $limit = $request->input( 'limit' ) ?: 10;
+$xml = <<<XML
+<?xml version="1.0"?>
+<xs:schema xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="NewDataSet">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="ListProgram" msdata:UseCurrentLocale="true">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="ListProgram">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ID" type="xs:long" minOccurs="0"/>
+                            <xs:element name="NAMA_PROGRAM" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+<diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+    <DocumentElement xmlns="">
+        <ListProgram diffgr:id="ListProgram1" msdata:rowOrder="0">
+            <ID>2</ID>
+            <NAMA_PROGRAM>BRIGUNA KARYA BRI LIFE </NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram2" msdata:rowOrder="1">
+            <ID>3</ID>
+            <NAMA_PROGRAM>BRIGUNA Karya Heksa</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram3" msdata:rowOrder="2">
+            <ID>10</ID>
+            <NAMA_PROGRAM>BRIGUNA Purna BRI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram4" msdata:rowOrder="3">
+            <ID>11</ID>
+            <NAMA_PROGRAM>Briguna Umum BRI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram5" msdata:rowOrder="4">
+            <ID>12</ID>
+            <NAMA_PROGRAM>Briguna Umum HELI</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram6" msdata:rowOrder="5">
+            <ID>13</ID>
+            <NAMA_PROGRAM>Briguna Umum BNI Life</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram7" msdata:rowOrder="6">
+            <ID>14</ID>
+            <NAMA_PROGRAM>BRIGUNA Purna HELI</NAMA_PROGRAM>
+        </ListProgram>
+        <ListProgram diffgr:id="ListProgram8" msdata:rowOrder="7">
+            <ID>15</ID>
+            <NAMA_PROGRAM>BRIGUNA Pensiun Heksa Life</NAMA_PROGRAM>
+        </ListProgram>
+    </DocumentElement>
+</diffgr:diffgram>
+XML;
+$test = simplexml_load_string($xml);
+
+$arr = json_decode( json_encode($test) , 1);
+print_r($arr);die();
+$sxml = new \SimpleXMLElement($xml, 0, true);
+print_r($sxml);die();
+	$limit = $request->input( 'limit' ) ?: 10;
         if ($request->has('slug')) {
             $newForm = EFormMonitoring::findOrFail($request->input('slug'));
         }else{
