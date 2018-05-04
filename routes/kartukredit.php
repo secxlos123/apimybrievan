@@ -1,8 +1,13 @@
 <?php
 
-Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
-    Route::get('get-data','KartuKreditController@example');
+Route::get('/contoh',function(){
+    	return view('example');
+    });
 
+Route::get('/contohemail','API\v1\Int\KartuKreditController@contohemail');
+
+Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
+    
 
    	Route::get('get-dropdown-info','KartuKreditController@getAllInformation');
 

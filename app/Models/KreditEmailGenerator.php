@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EForm;
 use App\Models\KartuKredit;
+use GuzzleHttp\Client;
 
 class KreditEmailGenerator extends Model{
 
@@ -89,7 +90,7 @@ class KreditEmailGenerator extends Model{
                            </tr>
                            <tr>
                               <td>No. Handphone : </td>
-                              <td>0'.$data['hp'].'</td>
+                              <td>'.$data['hp'].'</td>
                            </tr>
                            <tr>
                               <td>Nama Gadis Ibu Kandung : </td>
@@ -208,6 +209,7 @@ class KreditEmailGenerator extends Model{
 
 	}
 
+    
    public function sendFinishVerificationEmail($data,$apregno,$qrcode){
       return '<!DOCTYPE html>
 <html>
@@ -366,13 +368,9 @@ class KreditEmailGenerator extends Model{
                         <td height="20px"></td>
                      </tr>
                      <tr>
-                        <td>
-                           <form action="'.$host.'">
-                              <label for="email">Verification Code:</label>
-                              <input type="text" class="form-control" id="email" placeholder="Enter Verification Code" name="code">
-                              <input type="hidden" name="apregno" value="'.$apregno.'">
-                              <button type="submit" class="btn btn-default">Submit</button>
-                           </form>
+                        <td>'.
+                        QrCode::size(100)->generate(Request::url()).
+                           '
                         </td>
                      </tr>
                   </tbody>

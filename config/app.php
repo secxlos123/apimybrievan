@@ -192,7 +192,10 @@ return [
         App\Providers\AsmxLasServiceProvider::class,
         App\Providers\DbwsRestServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
-        App\Providers\RestwsSmServiceProvider::class
+        App\Providers\RestwsSmServiceProvider::class,
+
+        // QRCODE
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
 
     ],
 
@@ -262,6 +265,9 @@ return [
         'Zip'          => ZanySoft\Zip\ZipFacade::class,
         'RestwsSm'     => App\Classes\Client\Facades\RestwsSm::class,
         'Image'        => Intervention\Image\Facades\Image::class,
+
+        // qrcode
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
 
     ],
 
