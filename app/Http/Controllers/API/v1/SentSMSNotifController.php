@@ -66,7 +66,7 @@ class SentSMSNotifController extends Controller
 		\Log::info('==========sent sms==============');
 //		\Log::info($request);
 		$host = env('APP_URL');
-			if($host == 'http://api.dev.net/'){		
+			 if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='https://apimybridev.bri.co.id/'){
 				$divisi = 'SIT';
 				$produk = 'Sms Dev';
 			}else{
