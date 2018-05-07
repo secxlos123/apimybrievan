@@ -98,6 +98,26 @@ return [
             'password' => env('DB_PASSWORD_LAS_PROD', ''),
             'charset' => 'utf8',
             'prefix' => '',
+        ],
+		'sqlsrv_clas_prod' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_CLAS_PROD', '172.18.41.118'),
+            'database' => env('DB_DATABASE_CLAS_PROD', 'forge'),
+            'port' => env('DB_PORT_CLAS_PROD', '1433'),
+            'username' => env('DB_USERNAME_CLAS_PROD', 'forge'),
+            'password' => env('DB_PASSWORD_CLAS_PROD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+        ],
+		'sqlsrv_clas' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_CLAS', '10.35.65.167'),
+            'database' => env('DB_DATABASE_CLAS', 'forge'),
+            'port' => env('DB_PORT_CLAS', '1433'),
+            'username' => env('DB_USERNAME_CLAS', 'forge'),
+            'password' => env('DB_PASSWORD_CLAS', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
         ]
 
     ],
