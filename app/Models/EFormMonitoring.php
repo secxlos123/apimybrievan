@@ -133,10 +133,12 @@ class EFormMonitoring extends Model implements AuditableContract
 			  
 					$catatan_analis = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('catatan_analis')->where('fid_aplikasi',$fid_aplikasi)->get();
 				$analisa = array();
-				foreach ($catatan_analis->items() as $data) {
-					$analisa = $data->CATATAN_ANALIS
+			if(count($catatan_analis)!=0){
+				foreach ($catatan_analis as $data) {
+					$analisa = $data->CATATAN_ANALIS;
 				}
 					return $analisa; die();
+			}
 			}
 			return '';die();
 		}
@@ -161,10 +163,12 @@ class EFormMonitoring extends Model implements AuditableContract
 			  
 					$catatan_pemutus = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('catatan_pemutus')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
 				$analisa = array();
-				foreach ($catatan_pemutus->items() as $data) {
-					$analisa = $data->CATATAN_PEMUTUS
+			if(count($catatan_pemutus)!=0){
+				foreach ($catatan_pemutus as $data) {
+					$analisa = $data->CATATAN_PEMUTUS;
 				}
 					return $analisa; die();
+			}
 			}
 			return '';die();
 		}
@@ -188,10 +192,12 @@ class EFormMonitoring extends Model implements AuditableContract
 			  
 					$penilaian_agunan = DB::connection($servernyaclas)->table('CLS_KPR_MODEL71')->select('SEBESAR')->where('fid_aplikasi',$fid_aplikasi)->get();
 				$analisa = array();
-				foreach ($penilaian_agunan->items() as $data) {
-					$analisa = $data->SEBESAR
+			if(count($penilaian_agunan)!=0){
+				foreach ($penilaian_agunan as $data) {
+					$analisa = $data->SEBESAR;
 				}
 					return $analisa; die();
+			}
 			}
 			return '';die();
 		}
@@ -203,7 +209,7 @@ class EFormMonitoring extends Model implements AuditableContract
 			$dataclas2 = array();
 			$dataclas3 = array();
 			if(count($this->additional_parameters)>0){
-				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+				$fid_cif_las = $this->additional_parameters['fid_cif_las'];
 			\Log::info("-------------------connect to clas-----------------");
 				$servernyaclas = '';
 			  $host = env('APP_URL');
@@ -215,8 +221,9 @@ class EFormMonitoring extends Model implements AuditableContract
 			  
 					$plafond_usulan = DB::connection($servernyaclas)->table('LAS_T_APLIKASI')->select('PLAFOND_INDUK')->where('FID_CIF_LAS',$fid_cif_las)->get();
 				$putusan = array();
-				foreach ($plafond_usulan->items() as $data) {
-					$putusan = $data->PLAFOND_INDUK
+			if(count($plafond_usulan)!=0){
+				foreach ($plafond_usulan as $data) {
+					$putusan = $data->PLAFOND_INDUK;
 				}
 					return $putusan; die();
 			}
@@ -224,7 +231,7 @@ class EFormMonitoring extends Model implements AuditableContract
 		}
 		
 		
-			public function getPlafondUsulanAttribute()
+			public function getCatatanTolakAttribute()
 		{
 			$dataclas = array();
 			$dataclas1 = array();
@@ -247,10 +254,12 @@ class EFormMonitoring extends Model implements AuditableContract
 								->where('LAS_T_STATUS_APLIKASI.fid_st_aplikasi','17')
 								->where('LAS_T_STATUS_APLIKASI.fid_aplikasi',$fid_aplikasi)->get();
 				$putusan = array();
-				foreach ($catatan_tolak->items() as $data) {
-					$putusan = $data->CATATAN_PEMUTUS
+			if(count($catatan_tolak)!=0){
+				foreach ($catatan_tolak as $data) {
+					$putusan = $data->CATATAN_PEMUTUS;
 				}
 					return $putusan; die();
+			}
 			}
 			return '';die();
 		}
