@@ -32,7 +32,7 @@ class KartuKreditController extends Controller{
 
       // return 'a';
 		// $data = EForm::find(1)->kartukredit()->get();
-		$data = EForm::where('id',2014)->with('kartukredit')->get();
+		$data = EForm::where('product_type','kartu_kredit')->with('kartukredit')->get();
 		return response()->json($data);
     }
 
