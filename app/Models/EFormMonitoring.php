@@ -196,7 +196,7 @@ class EFormMonitoring extends Model implements AuditableContract
 				foreach ($penilaian_agunan as $data) {
 					$analisa = $data->SEBESAR;
 				}
-					return $analisa; die();
+					return $this-nominal.'/'.$analisa; die();
 			}
 			}
 			return '';die();
