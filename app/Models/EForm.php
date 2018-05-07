@@ -847,6 +847,10 @@ class EForm extends Model implements AuditableContract
         return $this->hasOne( KPR::class, 'eform_id' );
     }
 
+    public function kartukredit(){
+        return $this->hasOne(KartuKredit::class, 'eform_id');
+    }
+
     /**
      * Update EForm from CLAS.
      *

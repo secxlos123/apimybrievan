@@ -98,7 +98,7 @@ class ApiLasController extends Controller
                             }
                         }
                     }*/
-
+                    
                     if ($request['transaksi_normal_harian'] == '1') {
                         $gaji = "G1";
                     } else if ($request['transaksi_normal_harian'] == '2') {
@@ -114,16 +114,7 @@ class ApiLasController extends Controller
                     $data['gaji'] = $gaji;
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
-                /*} 
-                $error[0] = 'Uknown request data';
-                return [
-                    'code' => 05, 
-                    'descriptions' => 'Uknown request data',
-                    'contents' => [
-                        'data' => $error
-                    ]
-                ];
-                print_r($data);exit();
+                /*}
                 $insert = $ApiLas->insertDataDebtPerorangan($data);*/
                 break;
 
@@ -355,61 +346,26 @@ class ApiLasController extends Controller
                     $client = new \SoapClient($url);
                     $resultclient = $client->LAS_LIST_PROGRAM_BRIGUNA();
                     if($resultclient->LAS_LIST_PROGRAM_BRIGUNAResult){
-                        $subject = '
-                            <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
-                                <document xmlns="">
-                                    <ListProgram diffgr:id="ListProgram1" msdata:rowOrder="0">
-                                        <ID>2</ID>
-                                        <NAMA_PROGRAM>BRIGUNA KARYA BRI LIFE </NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram2" msdata:rowOrder="1">
-                                        <ID>3</ID>
-                                        <NAMA_PROGRAM>BRIGUNA Karya Heksa</NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram3" msdata:rowOrder="2">
-                                        <ID>10</ID>
-                                        <NAMA_PROGRAM>BRIGUNA Purna BRI Life</NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram4" msdata:rowOrder="3">
-                                        <ID>11</ID>
-                                        <NAMA_PROGRAM>Briguna Umum BRI Life</NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram5" msdata:rowOrder="4">
-                                        <ID>12</ID>
-                                        <NAMA_PROGRAM>Briguna Umum HELI</NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram6" msdata:rowOrder="5">
-                                        <ID>13</ID>
-                                        <NAMA_PROGRAM>Briguna Umum BNI Life</NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram7" msdata:rowOrder="6">
-                                        <ID>14</ID>
-                                        <NAMA_PROGRAM>BRIGUNA Purna HELI</NAMA_PROGRAM>
-                                    </ListProgram>
-                                    <ListProgram diffgr:id="ListProgram8" msdata:rowOrder="7">
-                                        <ID>15</ID>
-                                        <NAMA_PROGRAM>BRIGUNA Pensiun Heksa Life</NAMA_PROGRAM>
-                                    </ListProgram>
-                                </document>
-                            </diffgr:diffgram>
-                        ';
+                        $datadetail = $resultclient->LAS_LIST_PROGRAM_BRIGUNAResult;
+                        $data_xml = '<?xml version="1.0" encoding="utf-8"?><body>'.$datadetail->DT1->any.'</body>';
+                        
+                        $document = new \DOMDocument();
+                        $document->loadXml($data_xml);
+                        $listProgram = $document->getElementsByTagName('ListProgram');
+                        $arr_program = array();
+                        foreach ($listProgram as $program) {
+                            $xmlId = $program->getElementsByTagName('ID');
+                            $xmlNamaProgram = $program->getElementsByTagName('NAMA_PROGRAM');
+                            $arr_program['ListProgram'][] = array('id' => $xmlId->item(0)->nodeValue, 'nama_program' => $xmlNamaProgram->item(0)->nodeValue);
+                        }
+                        // print_r($arr_program);
+                        // exit();
                         // $xml = new \SimpleXMLElement($subject);
                         // $data = json_decode(json_encode($xml),TRUE);
-                        $xml  = simplexml_load_string($subject,"SimpleXMLElement",LIBXML_NOCDATA);
-                        $data = json_decode(json_encode($xml),TRUE);
-                        $datadetail = $resultclient->LAS_LIST_PROGRAM_BRIGUNAResult;
-                        // print_r($datadetail);
-                        // print_r($data);
-                        // print_r($xml);
-                        // exit();
-                        // $xml = simplexml_load_string($datadetail->DT1->any);
-                        $xml = new \SimpleXMLElement($datadetail->DT1->any);
-                        $array = json_decode(json_encode($xml), TRUE);
-                        // print_r($data);
-                        print_r($array);
-                        exit();
-                        $result = (array) $datadetail;
-                        return $result;
+                        // $xml  = simplexml_load_string($subject,"SimpleXMLElement",LIBXML_NOCDATA);
+                        // $data = json_decode(json_encode($xml),TRUE);
+                        // $result = (array) $datadetail;
+                        return $arr_program;
                     }
                     return [
                         'Response_code' => 04, 
@@ -1595,6 +1551,18 @@ class ApiLasController extends Controller
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
+            // Get Premi Asuransi AJKO
+            $param_premi = [
+                'FID_PROGRAM'  => !isset($request['FID_PROGRAM'])?0:$request['FID_PROGRAM'],
+                'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
+                'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?0:$request['Kode_fasilitas'],
+                'PLAFON'       => !isset($request['Plafond_usulan'])?0:$request['Plafond_usulan'],
+                'TANGGAL_LAHIR'=> !isset($request['tgl_lahir2'])?'19700512':$request['tgl_lahir2'],// format date 19701231
+                'JANGKA_WAKTU' => !isset($request['Jangka_waktu'])?0:$request['Jangka_waktu'],
+                'BUNGA_PINJAMAN'=> !isset($request['Suku_bunga'])?0:$request['Suku_bunga']
+            ];
+            $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
+            // print_r($premi);exit();
             // insert prescreening
             $content_prescreening = [
                 "Fid_aplikasi"           => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
@@ -1682,10 +1650,10 @@ class ApiLasController extends Controller
                         "Provisi_kredit"        => !isset($request['Provisi_kredit'])?"":$request['Provisi_kredit'],
                         "Biaya_administrasi"    => !isset($request['Biaya_administrasi'])?"":$request['Biaya_administrasi'],
                         "Penalty"               => !isset($request['Penalty'])?"":$request['Penalty'],
-                        "Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
-                        "Premi_asuransi_jiwa"   => !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'],
-                        "Premi_beban_bri"       => !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'],
-                        "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],
+                        "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$premi['NamaPerusahaanAsuransi'],
+                        "Premi_asuransi_jiwa"   => !isset($premi['PremiStandart'])?"":$premi['PremiStandart'],
+                        "Premi_beban_bri"       => !isset($premi['PremiBRI'])?"":$premi['PremiBRI'],
+                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'],
                         "Flag_promo"       => !isset($request['promo'])?"":$request['promo'],
                         "Fid_promo"        => !isset($request['nama_program_promo'])?"":$request['nama_program_promo'],
                         "Pengadilan_terdekat"   => !isset($request['Pengadilan_terdekat'])?"":$request['Pengadilan_terdekat'],
@@ -1784,10 +1752,10 @@ class ApiLasController extends Controller
                                 "Provisi_kredit"            => $request['Provisi_kredit'],
                                 "Biaya_administrasi"        => $request['Biaya_administrasi'],
                                 "Penalty"                   => $request['Penalty'],
-                                "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
-                                "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
-                                "Premi_beban_bri"           => $request['Premi_beban_bri'],
-                                "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+                                "Perusahaan_asuransi"       => $premi['NamaPerusahaanAsuransi'],
+                                "Premi_asuransi_jiwa"       => $premi['PremiStandart'],
+                                "Premi_beban_bri"           => $premi['PremiBRI'],
+                                "Premi_beban_debitur"       => $premi['PremiDebitur'],
                                 "Flag_promo"                => $request['promo'],
                                 "Fid_promo"                 => $request['nama_program_promo'],
                                 "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
@@ -1912,7 +1880,11 @@ class ApiLasController extends Controller
                                         'score'       => $hitung['items'][0]->score,
                                         'grade'       => $hitung['items'][0]->grade,
                                         'cutoff'      => $hitung['items'][0]->cutoff,
-                                        'definisi'    => $hitung['items'][0]->definisi
+                                        'definisi'    => $hitung['items'][0]->definisi,
+                                        'premi'       => $premi['PremiStandart'],
+                                        'premi_bri'   => $premi['PremiBRI'],
+                                        'premi_debitur'   => $premi['PremiDebitur'],
+                                        'nama_perusahaan' => $premi['NamaPerusahaanAsuransi']
                                     ]
                                 ]
                             ];
@@ -2438,5 +2410,35 @@ class ApiLasController extends Controller
             $image->move( $path, $filename );
         }
         return $filename;
+    }
+
+    function LAS_DETAIL_PROGRAM_BRIGUNA($data) {
+        if (!empty($data)) {
+            try {
+                $params["FID_PROGRAM"]= $data['FID_PROGRAM'];
+                $params["FID_APLIKASI"]= $data['FID_APLIKASI'];
+                $params["LOAN_TYPE"]= $data['LOAN_TYPE'];
+                $params["PLAFON"]= $data['PLAFON']; 
+                $params["TANGGAL_LAHIR"]= $data['TANGGAL_LAHIR'];// format yyyyMMdd
+                $params["JANGKA_WAKTU"]= $data['JANGKA_WAKTU']; 
+                $params["BUNGA_PINJAMAN"]= $data['BUNGA_PINJAMAN'];
+                $url = config('restapi.asmx_ajko');
+                $client = new \SoapClient($url);
+                $resultclient = $client->LAS_DETAIL_PROGRAM_BRIGUNA($params);
+                $datadetail = $resultclient->LAS_DETAIL_PROGRAM_BRIGUNAResult;
+                $result = (array) $datadetail;
+                return $result;
+            } catch (Exception $e) {
+                return [
+                    'Response_code' => 04, 
+                    'Response_message' => 'Gagal Koneksi Jaringan'
+                ];
+            }
+        }
+
+        return [
+            'Response_code' => 05, 
+            'Response_message' => 'Uknown request data'
+        ];
     }
 }

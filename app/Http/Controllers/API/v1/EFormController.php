@@ -416,6 +416,28 @@ return $x;
         ] );
     }
 
+    public function uploadKKImage($image,$nik,$type,$time){
+      $path = public_path('uploads/'.$nik.'/');
+      $filename = null;
+        if ($image) {
+            if (!$image->getClientOriginalExtension()) {
+                if ($image->getMimeType() == '.pdf') {
+                    $extension = 'pdf';
+                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                    $extension = 'jpg';
+                }else{
+                    $extension = 'png';
+                }
+            }else{
+                $extension = $image->getClientOriginalExtension();
+            }
+            $filename = $time. '-'.$type.'.' . $extension;
+            $image->move( $path, $filename );
+        }
+        return $filename;
+
+    }
+
     public function uploadimage($image,$id,$atribute)
     {
         $path = public_path( 'uploads/' . $id . '/' );
@@ -532,18 +554,19 @@ return $x;
                     ]);
                 } else {
                     //nama gambar
-                    $id = date('YmdHis');
-
+                    $time = date('YmdHis');
+                    $nik = $request->nik;
                     //cek debitur atau nasabah. ambil gambar
                     if ($request->jenis_nasabah == 'debitur'){
+                        
                         $npwp = $request->NPWP;
                         $ktp = $request->KTP;
                         $slipGaji = $request->SLIP_GAJI;
 
-
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
-                        $ktp = $this->uploadimage($ktp,$id,'KTP');
-                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
+                        // uploadKKImage($image,$nik,$type,$time)
+                        $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
+                        $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
+                        $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
@@ -555,12 +578,11 @@ return $x;
                         $nameTag = $request->NAME_TAG;
                         $limitKartu = $request->KARTU_BANK_LAIN;
 
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
-                        $ktp = $this->uploadimage($ktp,$id,'KTP');
-
-                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
-                        $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                        $kartuBankLain = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
+                        $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
+                        $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
+                        $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
+                        $nameTag = $this->uploadimage($nameTag,$nik,'NAME_TAG',$time);
+                        $kartuBankLain = $this->uploadimage($limitKartu,$nik,"KARTU_BANK_LAIN",$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
