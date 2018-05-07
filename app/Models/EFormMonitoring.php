@@ -163,7 +163,7 @@ class EFormMonitoring extends Model implements AuditableContract
 								->where('CLS_T_HISTORY_PUTUSAN.jenis_putusan','putusan kredit')
 								->where('LAS_T_STATUS_APLIKASI.fid_st_aplikasi','17')
 								->where('LAS_T_STATUS_APLIKASI.fid_aplikasi',$fid_aplikasi)->get();
-					$dataclas = ['plafond_usulan'=>,'catatan_tolak'=>$dataclas2['catatan_pemutus']];
+					$dataclas = ['plafond_usulan'=>$dataclas['plafon_induk'],'catatan_tolak'=>$dataclas2['catatan_pemutus']];
 					return ['putusan'=>$dataclas]; die(); 
 			}
 				return ['putusan'=>'']; die();
