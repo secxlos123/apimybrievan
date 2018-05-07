@@ -128,10 +128,10 @@ class EFormMonitoring extends Model implements AuditableContract
 					$servernyaclas = 'sqlsrv_clas_prod';
 			  }
 			  
-					$catatan_analis = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('catatan_analis')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$catatan_analis = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('CATATAN_ANALIS')->where('fid_aplikasi',$fid_aplikasi)->get();
 				$analisa = array();
-			if(count($catatan_analis)>=1 || $catatan_analis!=null || $catatan_analis!='')
-				foreach ($catatan_analis as $data) {
+			if(count($catatan_analis)>=1 || $catatan_analis!=null || $catatan_analis!=''){
+				foreach ($catatan_analis as $data) {	
 					$analisa = $data->CATATAN_ANALIS;
 				}
 					return $analisa; die();
@@ -155,7 +155,7 @@ class EFormMonitoring extends Model implements AuditableContract
 					$servernyaclas = 'sqlsrv_clas_prod';
 			  }
 			  
-					$catatan_pemutus = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('catatan_pemutus')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$catatan_pemutus = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CATATAN_PEMUTUS')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
 				$analisa = array();
 			if(count($catatan_pemutus)>=1 || $catatan_pemutus!=null || $catatan_pemutus!=''){
 				foreach ($catatan_pemutus as $data) {
@@ -234,7 +234,7 @@ class EFormMonitoring extends Model implements AuditableContract
 					$servernyaclas = 'sqlsrv_clas_prod';
 			  }
 			  
-					$catatan_tolak = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CLS_T_HISTORY_PUTUSAN.catatan_pemutus')
+					$catatan_tolak = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CLS_T_HISTORY_PUTUSAN.CATATAN_PEMUTUS')
 								->join('LAS_T_STATUS_APLIKASI','LAS_T_STATUS_APLIKASI.fid_aplikasi','=','CLS_T_HISTORY_PUTUSAN.fid_aplikasi')
 								->where('CLS_T_HISTORY_PUTUSAN.jenis_putusan','putusan kredit')
 								->where('LAS_T_STATUS_APLIKASI.fid_st_aplikasi','17')
