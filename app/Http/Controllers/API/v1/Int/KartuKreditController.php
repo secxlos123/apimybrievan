@@ -30,9 +30,7 @@ class KartuKreditController extends Controller{
 	public function contohemail(){
       // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/tempQrcode/qrcode.png');
 
-      // return 'a';
-		// $data = EForm::find(1)->kartukredit()->get();
-		$data = EForm::with('kartukredit')->get();
+		$data = EForm::where('product_type','kartu_kredit')->with('kartukredit')->get();
 		return response()->json($data);
     }
 
@@ -472,7 +470,10 @@ class KartuKreditController extends Controller{
     		if ($codeVerif == $correctCode){
     			//update ke eform
     			$updateEform = $this->verify($eformid);
-
+    			$eform = EForm::where('id',$eformid)->first();
+    			$refNumber = $eform['ref_number'];
+    			$nik =  $eform['nik'];
+    			$createQrcode = $this->createQrcode($refNumber,$nik);
     			return "Email telah tervirifikasi";
     		}else{
     			return response()->json([
@@ -481,9 +482,12 @@ class KartuKreditController extends Controller{
     			]);
     		}
     	}
+    }
 
-
-    	
+    function createQrcode($refnumber,$nik){
+    	$filename = $refnumber.'-qrcode.png';
+    	QrCode::format('png')->size(250)->generate($refnumber.$nik, public_path('uploads/'.$nik.'/'.$filename));
+    	return true;
     }
 
     public function analisaKK(Request $req){
