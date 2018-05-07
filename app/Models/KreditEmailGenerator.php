@@ -209,8 +209,25 @@ class KreditEmailGenerator extends Model{
 
 	}
 
-    
    public function sendFinishVerificationEmail($data,$apregno,$qrcode){
+
+      $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
+      $eformid = $selectEformid['eform_id'];
+      $nik = EForm::where('id',$eformid)->first();
+      $data['nik'] = $nik['nik'];
+
+      if ($data['jenis_kelamin'] == '1'){
+         $data['jenis_kelamin'] = 'Laki-laki';
+      }else if ($data['jenis_kelamin'] == '2'){
+         $data['jenis_kelamin'] = 'Perempuan';
+      }
+
+      if ($data['status_pernikahan'] == '1'){
+         $data['status_pernikahan'] = 'Menikah';
+      }else if ($data['status_pernikahan'] == '2'){
+         $data['status_pernikahan'] = 'Belum Menikah';
+      }
+
       return '<!DOCTYPE html>
 <html>
    <head>
@@ -368,9 +385,8 @@ class KreditEmailGenerator extends Model{
                         <td height="20px"></td>
                      </tr>
                      <tr>
-                        <td>'.
-                        QrCode::size(100)->generate(Request::url()).
-                           '
+                        <td>
+                           <img src="'.$data['qrcode'].'" width="150" height="150" alt="qrcode" />
                         </td>
                      </tr>
                   </tbody>
