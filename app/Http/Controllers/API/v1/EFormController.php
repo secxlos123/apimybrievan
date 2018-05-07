@@ -364,9 +364,6 @@ class EFormController extends Controller
     public function uploadKKImage($image,$nik,$type,$time){
       $path = public_path('uploads/'.$nik.'/');
       $filename = null;
-      if ( ! empty( $this->attributes[ $atribute ] ) ) {
-            File::delete( $path . $this->attributes[ $atribute ] );
-      }
       if ($image) {
           if (!$image->getClientOriginalExtension()) {
               if ($image->getMimeType() == '.pdf') {
