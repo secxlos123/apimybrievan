@@ -49,7 +49,7 @@ class EFormMonitoring extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'recontestdata', 'customer_name', 'mobile_phone', 'nominal', 'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json', 'kanwils' ];
+    protected $appends = [ 'recontestdata', 'customer_name', 'mobile_phone', 'analisa', 'putusan', 'disbushr', 'nominal',  'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json', 'kanwils' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -113,7 +113,74 @@ class EFormMonitoring extends Model implements AuditableContract
      *
      * @return string
      */
-    public function getNominalAttribute()
+	 
+	public function getAnalisaAttribute()
+		{
+			$dataclas = array();
+			$dataclas1 = array();
+			$dataclas2 = array();
+			$dataclas3 = array();
+			if(count($this->additional_parameters)>0){
+				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+			\Log::info("-------------------connect to clas-----------------");
+				$servernyaclas = '';
+			  $host = env('APP_URL');
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id'){	
+					$servernyaclas = 'sqlsrv_clas';
+			}else{
+					$servernyaclas = 'sqlsrv_clas_prod';
+			  }
+			  
+					$dataclas1 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('catatan_analis')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas2 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('catatan_pemutus')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas3 = DB::connection($servernyaclas)->table('CLS_KPR_MODEL71')->select('penilaian_agunan')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas = ['catatan_analis'=>$dataclas1['catatan_analis'],'catatan_reviewer'=>$dataclas2,'penilaian_agunan'=>$dataclas3['penilaian_agunan']];
+					return ['analisa'=>$dataclas]; die();
+			}
+			return ['analisa'=>''];die();
+		}
+		
+	public function getPutusanAttribute()
+		{
+			$dataclas = array();
+			$dataclas1 = array();
+			$dataclas2 = array();
+			$dataclas3 = array();
+			if(count($this->additional_parameters)>0){
+				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+			\Log::info("-------------------connect to clas-----------------");
+				$servernyaclas = '';
+			  $host = env('APP_URL');
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id'){	
+					$servernyaclas = 'sqlsrv_clas';
+			}else{
+					$servernyaclas = 'sqlsrv_clas_prod';
+			  }
+			  
+					$dataclas1 = DB::connection($servernyaclas)->table('LAST_T_APLIKASI')->select('plafond_induk')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas2 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CLS_T_HISTORY_PUTUSAN.catatan_pemutus')
+								->join('LAS_T_STATUS_APLIKASI','LAS_T_STATUS_APLIKASI.fid_aplikasi','=','CLS_T_HISTORY_PUTUSAN.fid_aplikasi')
+								->where('CLS_T_HISTORY_PUTUSAN.jenis_putusan','putusan kredit')
+								->where('LAS_T_STATUS_APLIKASI.fid_st_aplikasi','17')
+								->where('LAS_T_STATUS_APLIKASI.fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas = ['plafond_usulan'=>,'catatan_tolak'=>$dataclas2['catatan_pemutus']];
+					return ['putusan'=>$dataclas]; die(); 
+			}
+				return ['putusan'=>'']; die();
+		}
+	public function getDisbushrAttribute()
+		{
+			 $disbursed = DB::table('action_dates')
+                         ->select('action_dates.created_at')
+                         ->where('action_dates.action', 'eform-Disbursed')
+						 ->where('action_dates.eform_id', $this->eform_id)
+                         ->get();
+                $disbursed = $disbursed->toArray();
+                $disbursed = json_decode(json_encode($disbursed), True);
+				return $disbursed;
+		}
+    
+	public function getNominalAttribute()
     {
         if( $this->kpr ) {
             return $this->kpr->request_amount;
