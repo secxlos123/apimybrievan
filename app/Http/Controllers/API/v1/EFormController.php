@@ -445,7 +445,7 @@ class EFormController extends Controller
     {
         if ($request->product_type != 'kartu_kredit'){
           
-          \Log::info('step 0');
+          
             $nik = $request->nik;
             $check = CustomerDetail::where('nik', $nik)->get();
             $data = Eform::where('nik', $nik)->get();
@@ -496,7 +496,7 @@ class EFormController extends Controller
 
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
-
+                \Log::info('step 0');
                 //cek nik di customer detail, kalau gak ada di create
                 $nik = $request->nik;
                 $checkNik = CustomerDetail::where('nik',$nik)->get();
