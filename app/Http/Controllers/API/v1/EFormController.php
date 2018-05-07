@@ -335,12 +335,7 @@ class EFormController extends Controller
     {
         $recontest = (empty(request()->header('recontest')) ? false : true);
         $eform = EForm::findOrFail($eform_id);
-        if($eform['product_type'] == 'kartu_kredit'){
-          $eform = EForm::with('kartukredit')->get();
-          return response()->success([
-            'contents'=>$eform
-          ]);
-        }else if ( $eform['product_type'] == 'briguna' ) {
+        if ( $eform['product_type'] == 'briguna' ) {
             $another_array = [];
             $another_array['id'] = $eform_id;
             $another_array['user_id'] = $eform['user_id'];
@@ -369,22 +364,25 @@ class EFormController extends Controller
     public function uploadKKImage($image,$nik,$type,$time){
       $path = public_path('uploads/'.$nik.'/');
       $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = 'pdf';
-                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
-                    $extension = 'jpg';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
-            $filename = $time. '-'.$type.'.' . $extension;
-            $image->move( $path, $filename );
-        }
-        return $filename;
+      if ( ! empty( $this->attributes[ $atribute ] ) ) {
+            File::delete( $path . $this->attributes[ $atribute ] );
+      }
+      if ($image) {
+          if (!$image->getClientOriginalExtension()) {
+              if ($image->getMimeType() == '.pdf') {
+                  $extension = 'pdf';
+              }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                  $extension = 'jpg';
+              }else{
+                  $extension = 'png';
+              }
+          }else{
+              $extension = $image->getClientOriginalExtension();
+          }
+          $filename = $time. '-'.$type.'.' . $extension;
+          $image->move( $path, $filename );
+      }
+      return $filename;
 
     }
 
