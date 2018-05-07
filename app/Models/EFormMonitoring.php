@@ -148,6 +148,7 @@ class EFormMonitoring extends Model implements AuditableContract
 			$dataclas3 = array();
 			if(count($this->additional_parameters)>0){
 				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+				$fid_cif_las = $this->additional_parameters['fid_cif_las'];
 			\Log::info("-------------------connect to clas-----------------");
 				$servernyaclas = '';
 			  $host = env('APP_URL');
@@ -157,7 +158,7 @@ class EFormMonitoring extends Model implements AuditableContract
 					$servernyaclas = 'sqlsrv_clas_prod';
 			  }
 			  
-					$dataclas1 = DB::connection($servernyaclas)->table('LAST_T_APLIKASI')->select('plafond_induk')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas1 = DB::connection($servernyaclas)->table('LAS_T_APLIKASI')->select('PLAFOND_INDUK')->where('FID_CIF_LAS',$fid_cif_las)->get();
 					$dataclas2 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CLS_T_HISTORY_PUTUSAN.catatan_pemutus')
 								->join('LAS_T_STATUS_APLIKASI','LAS_T_STATUS_APLIKASI.fid_aplikasi','=','CLS_T_HISTORY_PUTUSAN.fid_aplikasi')
 								->where('CLS_T_HISTORY_PUTUSAN.jenis_putusan','putusan kredit')
