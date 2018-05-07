@@ -107,6 +107,7 @@ class Controller extends BaseController
       $client = new Client();
 	  $host = env('APP_URL');
 	  
+        \Log::info($host);
       if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id/'){
 		  $host = 'http://10.35.65.208:81/';
 		  $client_id = config('restapi.pdm_client_id_dev');
