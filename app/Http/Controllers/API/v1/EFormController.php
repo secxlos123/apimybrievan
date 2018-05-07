@@ -531,8 +531,8 @@ class EFormController extends Controller
                         $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
                         $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
                         $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
-                        $nameTag = $this->uploadimage($nameTag,$nik,'NAME_TAG',$time);
-                        $kartuBankLain = $this->uploadimage($limitKartu,$nik,"KARTU_BANK_LAIN",$time);
+                        $nameTag = $this->uploadKKImage($nameTag,$nik,'NAME_TAG',$time);
+                        $kartuBankLain = $this->uploadKKImage($limitKartu,$nik,"KARTU_BANK_LAIN",$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
@@ -541,7 +541,7 @@ class EFormController extends Controller
                         $baseRequest['KARTU_BANK_LAIN'] = $kartuBankLain;
                     }
 
-                    $baseRequest['id_foto'] = $id;
+                    // $baseRequest['id_foto'] = $id;
 
                     //create eform
                     $kk = new KartuKredit();
