@@ -472,7 +472,9 @@ class KartuKreditController extends Controller{
     		if ($codeVerif == $correctCode){
     			//update ke eform
     			$updateEform = $this->verify($eformid);
-
+    			$refNumber = EForm::where('id',$eformid)->first();
+    			$refNumber = $refNumber['ref_number'];
+    			$createQrcode = $this->createQrcode($refNumber);
     			return "Email telah tervirifikasi";
     		}else{
     			return response()->json([
@@ -481,8 +483,9 @@ class KartuKreditController extends Controller{
     			]);
     		}
     	}
+    }
 
-
+    function createQrcode($refnumber){
     	
     }
 

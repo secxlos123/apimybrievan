@@ -32,7 +32,7 @@ class KartuKredit extends Model
     	'memiliki_kk_bank_lain','range_limit','nama_ibu_kandung',
         'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
         'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir',
-        'los_score','analyzed_status'
+        'los_score','analyzed_status','qrcode'
     ];
 
     protected $appends = ['jenis_kartu','alamat_lengkap'];
