@@ -512,7 +512,8 @@ class EFormController extends Controller
                     $time = date('YmdHis');
                     $nik = $request->nik;
                     //cek debitur atau nasabah. ambil gambar
-                    if ($request->jenis_nasabah == 'debitur'){
+                    try {
+                      if ($request->jenis_nasabah == 'debitur'){
                         
                         $npwp = $request->NPWP;
                         $ktp = $request->KTP;
@@ -619,6 +620,13 @@ class EFormController extends Controller
                         'eform_id' => $eformId
 
                     ]);
+                      
+                    } catch (Exception $e) {
+                        return response()->error([
+                          'responseMessage'=> $e
+                        ]);
+                    }
+                    
                 }
 
             } else if ( $request->product_type == 'briguna' ) {
