@@ -669,6 +669,26 @@ class KartuKreditController extends Controller{
 			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
+		//tampilin ke eform
+		$dataKK = KartuKredit::where('appregno',$apregno)->first();
+		$eformId= $req->eform_id;
+		$rangeLimit =  $dataKK->range_limit;
+		$losScore = $dataKK->los_score;
+		$anStatus = $dataKK->analyzed_status;
+
+
+		$newData = [
+			'range_limit'=>$rangeLimit,
+			'is_analyzed'=> 'true',
+			'los_score' =>$losScore,
+			'analyzed_status'=>$anStatus,
+			'approval'=>$putusan
+		];
+
+		$jsonData = json_encode($newData);
+        $eform = EForm::where('id',$eformId)->update([
+            'kk_details'=>$jsonData
+        ]);
 
 		$eformId = $req['eform_id'];
 		$updateEform = EForm::where('id',$eformId)->update([
