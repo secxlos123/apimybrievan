@@ -53,6 +53,19 @@ class KartuKredit extends Model
         return $alamat;
     }
 
+    public function getQrcodeAttribute($filename){
+        $nik =  $this->nik;
+        $path =  'img/noimage.jpg';
+        if( ! empty( $filename ) ) {
+            $image = 'uploads/' . $nik . '/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
+            }
+        }
+
+        return url( $path );
+    }
+
     public function getJenisKartuAttribute($value){
         $kode = $this->pilihan_kartu;
         switch ($kode) {
