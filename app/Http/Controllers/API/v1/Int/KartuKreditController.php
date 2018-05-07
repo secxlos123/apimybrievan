@@ -28,10 +28,10 @@ class KartuKreditController extends Controller{
 	public $hostPefindo = '10.35.65.167:6969';
 
 	public function contohemail(){
-      // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/qrcode.png');
+      // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/tempQrcode/qrcode.png');
 
       // return 'a';
-		// $data = EForm::find(1)->kartukredit()->all();
+		// $data = EForm::find(1)->kartukredit()->get();
 		$data = EForm::with('kartukredit')->get();
 		return response()->json($data);
     }
@@ -666,7 +666,7 @@ class KartuKreditController extends Controller{
 		
 		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
-			'approval'=>$,
+			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
 
