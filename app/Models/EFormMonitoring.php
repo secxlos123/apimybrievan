@@ -133,7 +133,7 @@ class EFormMonitoring extends Model implements AuditableContract
 			  
 					$dataclas1 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('catatan_analis')->where('fid_aplikasi',$fid_aplikasi)->get();
 					$dataclas2 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('catatan_pemutus')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
-					$dataclas3 = DB::connection($servernyaclas)->table('CLS_KPR_MODEL71')->select('penilaian_agunan')->where('fid_aplikasi',$fid_aplikasi)->get();
+					$dataclas3 = DB::connection($servernyaclas)->table('CLS_KPR_MODEL71')->select('SEBESAR')->where('fid_aplikasi',$fid_aplikasi)->get();
 					$dataclas = ['catatan_analis'=>$dataclas1['catatan_analis'],'catatan_reviewer'=>$dataclas2,'penilaian_agunan'=>$dataclas3['penilaian_agunan']];
 					return ['analisa'=>$dataclas]; die();
 			}
