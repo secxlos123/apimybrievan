@@ -49,7 +49,7 @@ class EFormMonitoring extends Model implements AuditableContract
      *
      * @var array
      */
-    protected $appends = [ 'recontestdata', 'customer_name', 'mobile_phone', 'analisa', 'putusan', 'disbushr', 'nominal',  'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json', 'kanwils' ];
+    protected $appends = [ 'recontestdata', 'customer_name', 'mobile_phone', 'catatan_analis', 'catatan_reviewer', 'penilaian_agunan', 'plafond_usulan', 'catatan_tolak', 'disbushr', 'nominal',  'status', 'aging', 'is_visited', 'pefindo_color', 'is_recontest', 'is_clas_ready', 'selected_pefindo_json', 'kanwils' ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -114,7 +114,7 @@ class EFormMonitoring extends Model implements AuditableContract
      * @return string
      */
 	 
-	public function getAnalisaAttribute()
+	public function getCatatanAnalisAttribute()
 		{
 			$dataclas = array();
 			$dataclas1 = array();
@@ -131,16 +131,18 @@ class EFormMonitoring extends Model implements AuditableContract
 					$servernyaclas = 'sqlsrv_clas_prod';
 			  }
 			  
-					$dataclas1 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('catatan_analis')->where('fid_aplikasi',$fid_aplikasi)->get();
-					$dataclas2 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('catatan_pemutus')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
-					$dataclas3 = DB::connection($servernyaclas)->table('CLS_KPR_MODEL71')->select('SEBESAR')->where('fid_aplikasi',$fid_aplikasi)->get();
-					$dataclas = ['catatan_analis'=>$dataclas1['catatan_analis'],'catatan_reviewer'=>$dataclas2,'penilaian_agunan'=>$dataclas3['penilaian_agunan']];
-					return ['analisa'=>$dataclas]; die();
+					$catatan_analis = DB::connection($servernyaclas)->table('CLS_T_HISTORY_ANALIS')->select('catatan_analis')->where('fid_aplikasi',$fid_aplikasi)->get();
+				$analisa = array();
+				foreach ($catatan_analis->items() as $data) {
+					$analisa = $data->CATATAN_ANALIS
+				}
+					return $analisa; die();
 			}
-			return ['analisa'=>''];die();
+			return '';die();
 		}
 		
-	public function getPutusanAttribute()
+		
+	public function getCatatanReviewerAttribute()
 		{
 			$dataclas = array();
 			$dataclas1 = array();
@@ -148,27 +150,111 @@ class EFormMonitoring extends Model implements AuditableContract
 			$dataclas3 = array();
 			if(count($this->additional_parameters)>0){
 				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
-				$fid_cif_las = $this->additional_parameters['fid_cif_las'];
 			\Log::info("-------------------connect to clas-----------------");
 				$servernyaclas = '';
 			  $host = env('APP_URL');
-			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id'){	
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id/'){	
 					$servernyaclas = 'sqlsrv_clas';
 			}else{
 					$servernyaclas = 'sqlsrv_clas_prod';
 			  }
 			  
-					$dataclas1 = DB::connection($servernyaclas)->table('LAS_T_APLIKASI')->select('PLAFOND_INDUK')->where('FID_CIF_LAS',$fid_cif_las)->get();
-					$dataclas2 = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CLS_T_HISTORY_PUTUSAN.catatan_pemutus')
+					$catatan_pemutus = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('catatan_pemutus')->where('jenis_putusan','reviewer')->where('putusan_pemutus','Belum Diputus')->where('fid_aplikasi',$fid_aplikasi)->get();
+				$analisa = array();
+				foreach ($catatan_pemutus->items() as $data) {
+					$analisa = $data->CATATAN_PEMUTUS
+				}
+					return $analisa; die();
+			}
+			return '';die();
+		}
+		
+	public function getPenilaianAgunanAttribute()
+		{
+			$dataclas = array();
+			$dataclas1 = array();
+			$dataclas2 = array();
+			$dataclas3 = array();
+			if(count($this->additional_parameters)>0){
+				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+			\Log::info("-------------------connect to clas-----------------");
+				$servernyaclas = '';
+			  $host = env('APP_URL');
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id/'){	
+					$servernyaclas = 'sqlsrv_clas';
+			}else{
+					$servernyaclas = 'sqlsrv_clas_prod';
+			  }
+			  
+					$penilaian_agunan = DB::connection($servernyaclas)->table('CLS_KPR_MODEL71')->select('SEBESAR')->where('fid_aplikasi',$fid_aplikasi)->get();
+				$analisa = array();
+				foreach ($penilaian_agunan->items() as $data) {
+					$analisa = $data->SEBESAR
+				}
+					return $analisa; die();
+			}
+			return '';die();
+		}
+		
+			public function getPlafondUsulanAttribute()
+		{
+			$dataclas = array();
+			$dataclas1 = array();
+			$dataclas2 = array();
+			$dataclas3 = array();
+			if(count($this->additional_parameters)>0){
+				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+			\Log::info("-------------------connect to clas-----------------");
+				$servernyaclas = '';
+			  $host = env('APP_URL');
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id/'){	
+					$servernyaclas = 'sqlsrv_clas';
+			}else{
+					$servernyaclas = 'sqlsrv_clas_prod';
+			  }
+			  
+					$plafond_usulan = DB::connection($servernyaclas)->table('LAS_T_APLIKASI')->select('PLAFOND_INDUK')->where('FID_CIF_LAS',$fid_cif_las)->get();
+				$putusan = array();
+				foreach ($plafond_usulan->items() as $data) {
+					$putusan = $data->PLAFOND_INDUK
+				}
+					return $putusan; die();
+			}
+			return '';die();
+		}
+		
+		
+			public function getPlafondUsulanAttribute()
+		{
+			$dataclas = array();
+			$dataclas1 = array();
+			$dataclas2 = array();
+			$dataclas3 = array();
+			if(count($this->additional_parameters)>0){
+				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
+			\Log::info("-------------------connect to clas-----------------");
+				$servernyaclas = '';
+			  $host = env('APP_URL');
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id/'){	
+					$servernyaclas = 'sqlsrv_clas';
+			}else{
+					$servernyaclas = 'sqlsrv_clas_prod';
+			  }
+			  
+					$catatan_tolak = DB::connection($servernyaclas)->table('CLS_T_HISTORY_PUTUSAN')->select('CLS_T_HISTORY_PUTUSAN.catatan_pemutus')
 								->join('LAS_T_STATUS_APLIKASI','LAS_T_STATUS_APLIKASI.fid_aplikasi','=','CLS_T_HISTORY_PUTUSAN.fid_aplikasi')
 								->where('CLS_T_HISTORY_PUTUSAN.jenis_putusan','putusan kredit')
 								->where('LAS_T_STATUS_APLIKASI.fid_st_aplikasi','17')
 								->where('LAS_T_STATUS_APLIKASI.fid_aplikasi',$fid_aplikasi)->get();
-					$dataclas = ['plafond_usulan'=>$dataclas['plafon_induk'],'catatan_tolak'=>$dataclas2['catatan_pemutus']];
-					return ['putusan'=>$dataclas]; die(); 
+				$putusan = array();
+				foreach ($catatan_tolak->items() as $data) {
+					$putusan = $data->CATATAN_PEMUTUS
+				}
+					return $putusan; die();
 			}
-				return ['putusan'=>'']; die();
+			return '';die();
 		}
+	
 	public function getDisbushrAttribute()
 		{
 			 $disbursed = DB::table('action_dates')
