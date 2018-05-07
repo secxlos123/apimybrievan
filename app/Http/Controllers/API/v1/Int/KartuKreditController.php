@@ -32,7 +32,7 @@ class KartuKreditController extends Controller{
 
       // return 'a';
 		// $data = EForm::find(1)->kartukredit()->get();
-		$data = EForm::with('kartukredit')->get();
+		$data = EForm::where('id',2014)->with('kartukredit')->get();
 		return response()->json($data);
     }
 
@@ -486,7 +486,7 @@ class KartuKreditController extends Controller{
     }
 
     function createQrcode($refnumber){
-    	
+
     }
 
     public function analisaKK(Request $req){
