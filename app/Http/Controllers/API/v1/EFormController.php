@@ -390,7 +390,12 @@ return $x;
     {
         $recontest = (empty(request()->header('recontest')) ? false : true);
         $eform = EForm::findOrFail($eform_id);
-        if ( $eform['product_type'] == 'briguna' ) {
+        if($eform['product_type'] == 'kartu_kredit'){
+          $eform = EForm::with('kartukredit')->get();
+          return response()->success([
+            'contents'=>$eform
+          ]);
+        }else if ( $eform['product_type'] == 'briguna' ) {
             $another_array = [];
             $another_array['id'] = $eform_id;
             $another_array['user_id'] = $eform['user_id'];
