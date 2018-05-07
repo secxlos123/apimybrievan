@@ -116,10 +116,7 @@ class EFormMonitoring extends Model implements AuditableContract
 	 
 	public function getCatatanAnalisAttribute()
 		{
-			$dataclas = array();
-			$dataclas1 = array();
-			$dataclas2 = array();
-			$dataclas3 = array();
+			$catatan_analis = array();
 			if(count($this->additional_parameters)>0){
 				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
 			\Log::info("-------------------connect to clas-----------------");
@@ -146,10 +143,7 @@ class EFormMonitoring extends Model implements AuditableContract
 		
 	public function getCatatanReviewerAttribute()
 		{
-			$dataclas = array();
-			$dataclas1 = array();
-			$dataclas2 = array();
-			$dataclas3 = array();
+			$catatan_pemutus = array();
 			if(count($this->additional_parameters)>0){
 				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
 			\Log::info("-------------------connect to clas-----------------");
@@ -175,10 +169,7 @@ class EFormMonitoring extends Model implements AuditableContract
 		
 	public function getPenilaianAgunanAttribute()
 		{
-			$dataclas = array();
-			$dataclas1 = array();
-			$dataclas2 = array();
-			$dataclas3 = array();
+			$penilaian_agunan = array();
 			if(count($this->additional_parameters)>0){
 				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
 			\Log::info("-------------------connect to clas-----------------");
@@ -204,10 +195,7 @@ class EFormMonitoring extends Model implements AuditableContract
 		
 			public function getPlafondUsulanAttribute()
 		{
-			$dataclas = array();
-			$dataclas1 = array();
-			$dataclas2 = array();
-			$dataclas3 = array();
+			$plafond_usulan = array();
 			if(count($this->additional_parameters)>0){
 				$fid_cif_las = $this->additional_parameters['fid_cif_las'];
 			\Log::info("-------------------connect to clas-----------------");
@@ -233,10 +221,7 @@ class EFormMonitoring extends Model implements AuditableContract
 		
 			public function getCatatanTolakAttribute()
 		{
-			$dataclas = array();
-			$dataclas1 = array();
-			$dataclas2 = array();
-			$dataclas3 = array();
+			$catatan_tolak = array();
 			if(count($this->additional_parameters)>0){
 				$fid_aplikasi = $this->additional_parameters['fid_aplikasi'];
 			\Log::info("-------------------connect to clas-----------------");
