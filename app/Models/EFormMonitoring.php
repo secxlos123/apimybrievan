@@ -125,7 +125,7 @@ class EFormMonitoring extends Model implements AuditableContract
 			\Log::info("-------------------connect to clas-----------------");
 				$servernyaclas = '';
 			  $host = env('APP_URL');
-			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id'){	
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id/'){	
 					$servernyaclas = 'sqlsrv_clas';
 			}else{
 					$servernyaclas = 'sqlsrv_clas_prod';
@@ -152,7 +152,7 @@ class EFormMonitoring extends Model implements AuditableContract
 			\Log::info("-------------------connect to clas-----------------");
 				$servernyaclas = '';
 			  $host = env('APP_URL');
-			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id'){	
+			  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='http://apimybridev.bri.co.id'){	
 					$servernyaclas = 'sqlsrv_clas';
 			}else{
 					$servernyaclas = 'sqlsrv_clas_prod';
