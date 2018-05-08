@@ -453,7 +453,7 @@ class KartuKreditController extends Controller{
     function verify($eform_id){
     	$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'verified']);
-		$updateStatus->save();
+
 		return true;
     }
 
