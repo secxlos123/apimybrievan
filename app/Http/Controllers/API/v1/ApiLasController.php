@@ -1650,10 +1650,14 @@ class ApiLasController extends Controller
                         "Provisi_kredit"        => !isset($request['Provisi_kredit'])?"":$request['Provisi_kredit'],
                         "Biaya_administrasi"    => !isset($request['Biaya_administrasi'])?"":$request['Biaya_administrasi'],
                         "Penalty"               => !isset($request['Penalty'])?"":$request['Penalty'],
-                        "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$premi['NamaPerusahaanAsuransi'],
+						"Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
+                        "Premi_asuransi_jiwa"   => !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'],
+                        "Premi_beban_bri"       => !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'],
+                        "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],
+                       /*  "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$premi['NamaPerusahaanAsuransi'],
                         "Premi_asuransi_jiwa"   => !isset($premi['PremiStandart'])?"":$premi['PremiStandart'],
                         "Premi_beban_bri"       => !isset($premi['PremiBRI'])?"":$premi['PremiBRI'],
-                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'],
+                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'], */
                         "Flag_promo"       => !isset($request['promo'])?"":$request['promo'],
                         "Fid_promo"        => !isset($request['nama_program_promo'])?"":$request['nama_program_promo'],
                         "Pengadilan_terdekat"   => !isset($request['Pengadilan_terdekat'])?"":$request['Pengadilan_terdekat'],
@@ -1752,10 +1756,14 @@ class ApiLasController extends Controller
                                 "Provisi_kredit"            => $request['Provisi_kredit'],
                                 "Biaya_administrasi"        => $request['Biaya_administrasi'],
                                 "Penalty"                   => $request['Penalty'],
-                                "Perusahaan_asuransi"       => $premi['NamaPerusahaanAsuransi'],
+								  "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+                                "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
+                                "Premi_beban_bri"           => $request['Premi_beban_bri'],
+                                "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+                              /*   "Perusahaan_asuransi"       => $premi['NamaPerusahaanAsuransi'],
                                 "Premi_asuransi_jiwa"       => $premi['PremiStandart'],
                                 "Premi_beban_bri"           => $premi['PremiBRI'],
-                                "Premi_beban_debitur"       => $premi['PremiDebitur'],
+                                "Premi_beban_debitur"       => $premi['PremiDebitur'], */
                                 "Flag_promo"                => $request['promo'],
                                 "Fid_promo"                 => $request['nama_program_promo'],
                                 "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
@@ -1881,11 +1889,11 @@ class ApiLasController extends Controller
                                         'grade'       => $hitung['items'][0]->grade,
                                         'cutoff'      => $hitung['items'][0]->cutoff,
                                         'definisi'    => $hitung['items'][0]->definisi,
-                                        'premi'       => $premi['PremiStandart'],
+/*                                         'premi'       => $premi['PremiStandart'],
                                         'premi_bri'   => $premi['PremiBRI'],
                                         'premi_debitur'   => $premi['PremiDebitur'],
                                         'nama_perusahaan' => $premi['NamaPerusahaanAsuransi']
-                                    ]
+ */                                    ]
                                 ]
                             ];
                             \Log::info("----- analisa update table eforms dan briguna sukses -----");
