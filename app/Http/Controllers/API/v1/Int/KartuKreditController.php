@@ -484,6 +484,10 @@ class KartuKreditController extends Controller{
     			$eform = EForm::where('id',$eformid)->first();
     			$refNumber = $eform['ref_number'];
     			$nik =  $eform['nik'];
+    			\Log::info('================');
+    			\Log::info($refNumber);
+    			\Log::info($nik);
+    			\Log::info('================');
     			$createQrcode = $this->createQrcode($refNumber,$nik);
     			return "Email telah tervirifikasi";
     		}else{
