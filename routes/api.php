@@ -75,7 +75,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
 		Route::get( 'offices', 'OfficeController@index' );
-		Route::post('SelectCabang', 'SelectCabangController@mitraeksternal');
+		Route::post('SelectCabang', 'SelectCabangController@eksternal');
 
 		Route::group(['prefix' => 'dropdown'], function () {
 			Route::get('properties', 'DropdownController@properties');
