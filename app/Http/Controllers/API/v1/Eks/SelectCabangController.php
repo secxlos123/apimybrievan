@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\eks;
+namespace App\Http\Controllers\API\v1\Eks;
 
 
 use Illuminate\Http\Request;
@@ -23,20 +23,7 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-		function aasort (&$array, $key) {
-			$sorter=array();
-			$ret=array();
-			reset($array);
-			foreach ($array as $ii => $va) {
-				$sorter[$ii]=$va[$key];
-			}
-			asort($sorter);
-			foreach ($sorter as $ii => $va) {
-				$ret[$ii]=$array[$ii];
-			}
-			$array=$ret;
-		return $array;
-		}
+	
 	
 	public function eksternal( Request $request )
 	{
