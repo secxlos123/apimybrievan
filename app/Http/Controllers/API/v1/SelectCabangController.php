@@ -278,6 +278,4 @@ class SelectCabangController extends Controller
 		}
 	}
 
-
-
 }
