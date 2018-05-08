@@ -23,6 +23,17 @@ class SelectCabangController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	 public function eksternal( Request $request ) {
+	        \Log::info($request->all());
+				
+			$limit = $request->input( 'limit' ) ?: 10;
+			$mitra = Mitra4::filter( $request )->paginate($limit);
+			//$mitra = $mitra->toArray();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+	}
 		function aasort (&$array, $key) {
 			$sorter=array();
 			$ret=array();
@@ -145,18 +156,7 @@ class SelectCabangController extends Controller
 	}
 
 
-	public function eksternal( Request $request )
-	{
-	        \Log::info($request->all());
-				
-			$limit = $request->input( 'limit' ) ?: 10;
-			$mitra = Mitra4::filter( $request )->paginate($limit);
-			//$mitra = $mitra->toArray();
-        return response()->success([
-            'contents' => $mitra,
-            'message' => 'Sukses'
-        ]);
-	}
+	
   
 	public function index( Request $request )
 	{
