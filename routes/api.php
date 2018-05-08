@@ -20,7 +20,7 @@ Route::post( 'urgent-function', 'RemovableController@run' );
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		/* BRIGUNA */
 
-		Route::post('eks/SelectCabang', 'SelectCabangController@mitraeksternal');
+		Route::post('SelectCabang', 'SelectCabangController@mitraeksternal');
 		Route::post('hapusbriguna', 'EFormController@hapuseform');
 		Route::post('get_token', 'EFormController@get_token');
 		Route::get('int/monitoring', 'EFormController@monitoring');
