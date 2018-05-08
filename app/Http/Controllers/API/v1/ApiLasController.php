@@ -1889,11 +1889,11 @@ class ApiLasController extends Controller
                                         'grade'       => $hitung['items'][0]->grade,
                                         'cutoff'      => $hitung['items'][0]->cutoff,
                                         'definisi'    => $hitung['items'][0]->definisi,
-                                        'premi'       => $premi['PremiStandart'],
+/*                                         'premi'       => $premi['PremiStandart'],
                                         'premi_bri'   => $premi['PremiBRI'],
                                         'premi_debitur'   => $premi['PremiDebitur'],
                                         'nama_perusahaan' => $premi['NamaPerusahaanAsuransi']
-                                    ]
+ */                                    ]
                                 ]
                             ];
                             \Log::info("----- analisa update table eforms dan briguna sukses -----");
