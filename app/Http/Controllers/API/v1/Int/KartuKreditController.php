@@ -367,7 +367,7 @@ class KartuKreditController extends Controller{
     	return $code;
     }
 
-    public function sendSMS(Request $req){
+    public function sendSMS(KreditRequest $req){
     	$pn = $req['handphone'];
     	$eformid = $req['eform_id'];
 		$kk = KartuKredit::where('eform_id',$eformid)->first();
@@ -379,6 +379,7 @@ class KartuKreditController extends Controller{
     	$updateCode = KartuKredit::where('appregno',$apregno)->update([
     		'verification_code'=>$code
     	]);
+    	$updateCode->save();
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
@@ -443,6 +444,7 @@ class KartuKreditController extends Controller{
     function verify($eform_id){
     	$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'verified']);
+		$updateStatus->save();
 		return true;
     }
 
@@ -679,6 +681,7 @@ class KartuKreditController extends Controller{
 		$rangeLimit =  $dataKK->range_limit;
 		$losScore = $dataKK->los_score;
 		$anStatus = $dataKK->analyzed_status;
+
 
 		$newData = [
 			'range_limit'=>$rangeLimit,
