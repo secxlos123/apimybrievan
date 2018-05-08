@@ -123,7 +123,12 @@ class KreditRequest extends BaseRequest{
     					'handphone' => 'required',
     					'eform_id' =>'required'
     				]);
-    			} 
+    			}else if($this->segment(5) == 'toemail'){
+    				return([
+    					'email'=> 'required',
+    					'eform_id'=>'required'
+    				]);
+    			}
     			
     			break;
 
