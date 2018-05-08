@@ -407,11 +407,10 @@ class KartuKreditController extends Controller{
     	$email = $req['email'];
     	$eformid = $req['eform_id'];
 
-    	// $message = $req['message'];
     	$kk = KartuKredit::where('eform_id',$eformid)->first();
     	$apregno = $kk['appregno'];
 
-    	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
+    	// $dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
     	// $routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
     	// $routes = 'api.dev.net/api/v1/int/kk/verifyemail';
@@ -422,9 +421,13 @@ class KartuKreditController extends Controller{
       		$routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
       	}
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,$routes);
+    	->sendEmailVerification($kk,$apregno,$routes);
     	\Log::info('======== data kredit =========');
-   		\Log::info($dataKredit);
+   		\Log::info($kk);
+   		// $header = ['access_token'=> $this->tokenLos];
+    	// $host = '10.107.11.111:9975/api/updateData';
+    	// $client = new Client();
+    	
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
@@ -596,7 +599,6 @@ class KartuKreditController extends Controller{
 		}else{
 			$anStatus = 'rejected';
 		}
-
 
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
