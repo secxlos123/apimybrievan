@@ -38,7 +38,7 @@ class SelectCabangController extends Controller
 		return $array;
 		}
 	
-	public function mitraeksternal( Request $request )
+	public function eksternal( Request $request )
 	{
 	        \Log::info($request->all());
 				
