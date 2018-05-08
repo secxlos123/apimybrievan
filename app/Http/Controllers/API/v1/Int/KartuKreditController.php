@@ -485,7 +485,7 @@ class KartuKreditController extends Controller{
     			\Log::info($nik);
     			\Log::info('================');
     			$createQrcode = $this->createQrcode($refNumber,$nik);
-    			$em = KreditEmailGenerator();
+    			$em = new KreditEmailGenerator();
     			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
 
