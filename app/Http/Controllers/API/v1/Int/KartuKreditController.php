@@ -332,10 +332,6 @@ class KartuKreditController extends Controller{
 
     }
 
-    function sendFinishVerificationEmail(){
-    	
-    }
-
     function getApregnoFromKKDetails($eform_id){
     	$kk = KartuKredit::where('eform_id',$eform_id)->first();
    		$apRegno = $kk['appregno'];
@@ -489,7 +485,12 @@ class KartuKreditController extends Controller{
     			\Log::info($nik);
     			\Log::info('================');
     			$createQrcode = $this->createQrcode($refNumber,$nik);
-    			return "Email telah tervirifikasi";
+    			$em = KreditEmailGenerator();
+    			$kk = KartuKredit::where('eform_id',$eformid)->first();
+    			$apregno = $kk['appregno'];
+
+    			$generateEmailWithQrcode = $em->sendFinishVerificationEmail($kk,$apregno,$kk['qrcode']);
+    			return "Email berhasil terverifikasi";
     		}else{
     			return response()->json([
     				'responseCode'=>'01',
