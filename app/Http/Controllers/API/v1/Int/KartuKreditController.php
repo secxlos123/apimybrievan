@@ -680,7 +680,6 @@ class KartuKreditController extends Controller{
 		$losScore = $dataKK->los_score;
 		$anStatus = $dataKK->analyzed_status;
 
-
 		$newData = [
 			'range_limit'=>$rangeLimit,
 			'is_analyzed'=> 'true',
