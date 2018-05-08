@@ -118,7 +118,13 @@ class KreditRequest extends BaseRequest{
 						'range_limit'=>'required',
 						'eform_id'=>'required'
     				]);
-    			}
+    			}else if($this->segment(5) == 'tosms'){
+    				return([
+    					'appregno' => 'required',
+    					'handphone' => 'required',
+    					'eform_id' =>'required'
+    				]);
+    			} 
     			
     			break;
 
