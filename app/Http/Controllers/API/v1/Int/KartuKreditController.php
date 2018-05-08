@@ -379,7 +379,7 @@ class KartuKreditController extends Controller{
     	$updateCode = KartuKredit::where('appregno',$apregno)->update([
     		'verification_code'=>$code
     	]);
-    	$updateCode->save();
+
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
