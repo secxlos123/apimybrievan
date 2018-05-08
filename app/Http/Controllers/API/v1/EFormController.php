@@ -49,7 +49,18 @@ class EFormController extends Controller
         $this->userservices = $userservices;
         $this->userNotification = $userNotification;
     }
-
+	public function eksternalmitra( Request $request )
+	{
+	        \Log::info($request->all());
+				
+			$limit = $request->input( 'limit' ) ?: 10;
+			$mitra = Mitra4::filter( $request )->paginate($limit);
+			//$mitra = $mitra->toArray();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+	}
     public function ListBranch($data)
     {
       $client = new Client();
