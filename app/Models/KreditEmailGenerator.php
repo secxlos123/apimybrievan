@@ -10,7 +10,7 @@ use GuzzleHttp\Client;
 class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
-      
+
       //sementara panggil eform liat nik
       $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
       $eformid = $selectEformid['eform_id'];
@@ -210,7 +210,7 @@ class KreditEmailGenerator extends Model{
 
 	}
 
-   public function sendFinishVerificationEmail($data,$apregno,$qrcode){
+   public function convertToFinishVerificationEmailFormat($data,$apregno,$qrcode){
 
       $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
       $eformid = $selectEformid['eform_id'];

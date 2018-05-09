@@ -489,7 +489,18 @@ class KartuKreditController extends Controller{
     			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
 
-    			$generateEmailWithQrcode = $em->sendFinishVerificationEmail($kk,$apregno,$kk['qrcode']);
+    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno,$kk['qrcode']);
+    			$host = '10.107.11.111:9975/notif/toemail';
+		    	$header = ['access_token'=> $this->tokenLos];
+		    	$client = new Client();
+
+		    	try{
+		    		$res = $client->request('POST',$host, ['headers' =>  $header,
+		    				'form_params' => ['email' => $email,'subject'=>'Email Verifikasi Pengajuan Kartu Kredit BRI','message'=>$message]
+		    			]);
+		    	}catch (RequestException $e){
+		    		return  $e->getMessage();
+		    	}
     			return "Email berhasil terverifikasi";
     		}else{
     			return response()->json([
