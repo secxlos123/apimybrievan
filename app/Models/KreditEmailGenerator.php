@@ -374,15 +374,6 @@ class KreditEmailGenerator extends Model{
                <table class="textbutton" align="center" border="0" cellspacing="0" cellpadding="0">
                   <tbody>
                      <tr>
-                        <td>
-                           <p>
-                              <b>Kami telah mengirimkan kode verifikasi ke nomor HP anda,
-                              <br> silakan masukkan kode verifikasi tersebut pada form dibawah
-                              </b>
-                           </p>
-                        </td>
-                     </tr>
-                     <tr>
                         <td height="20px"></td>
                      </tr>
                      <tr>
