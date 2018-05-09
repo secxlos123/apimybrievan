@@ -36,7 +36,8 @@ class OtsPhoto extends Model implements AuditableContract
 		if (!empty($filename)) {
 			$image = 'uploads/collateral/other/' . $this->ots_other_id . '/' . $filename;
 			if (File::exists(public_path($image))) {
-				$path = $image;
+				// $path = $image;
+				$path = 'files/collateral/other/' . $this->ots_other_id . '/' . $filename;
 			}
 		}
 

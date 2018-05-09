@@ -66,12 +66,12 @@ class SentSMSNotifController extends Controller
 		\Log::info('==========sent sms==============');
 //		\Log::info($request);
 		$host = env('APP_URL');
-			if($host == 'http://api.dev.net/'){		
+			 if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='https://apimybridev.bri.co.id/'){
 				$divisi = 'SIT';
 				$produk = 'Sms Dev';
 			}else{
 				$divisi = 'KRK';
-				$produk = 'Kredit';
+				$produk = 'Kredit Konsumer';
 			}
 
 		//$data = $request->all();
@@ -79,7 +79,7 @@ class SentSMSNotifController extends Controller
 		 $client = new Client();
 		 $url = '';
 		$host = env('APP_URL');
-	  if($host == 'http://api.dev.net/'){
+	  if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='https://apimybridev.bri.co.id/'){
 		$url = 'http://10.35.65.61:9997/';
 		}else{
 		$url = 'http://172.21.56.34:9994/';  

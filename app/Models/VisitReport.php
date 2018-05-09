@@ -406,7 +406,8 @@ class VisitReport extends Model implements AuditableContract
         if( ! empty( $filename ) ) {
             $image = 'uploads/' . $eformData->nik . '/' . $filename;
             if( \File::exists( public_path( $image ) ) ) {
-                $path = $image;
+                // $path = $image;
+                $path = 'files/' . $eformData->nik . '/' . $filename;
             }
         }
 

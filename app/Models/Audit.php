@@ -87,7 +87,7 @@ class Audit extends Model implements AuditContract
             })
             ->where(function ($auditrail) use (&$request, &$query){
                 $eform = 'app\\models\\eform';
-                $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah'];
+                $data_action = ['pengajuan kredit', 'tambah leads', 'pengajuan kredit via ao', 'eform tambah leads via ao', 'disposisi kredit', 'verifikasi data nasabah', 'approval kredit'];
                 $appointment = 'app\\models\\appointment';
                 $propertyItem = 'app\\models\\propertyitem';
                 $property = 'app\\models\\property';

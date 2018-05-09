@@ -40,7 +40,7 @@ class PropertyType extends Model implements AuditableContract
         'floors'    => 'required|numeric|between:0,4',
         'carport'   => 'required|numeric|between:0,4',
         'photos'    => 'required|array',
-        'photos.*'  => 'required|image|max:1024',
+        'photos.*'  => 'required|image|max:5024',
         'property_id'   => 'required|exists:properties,id',
         'surface_area'  => 'required|numeric',
         'certificate'   => 'required',

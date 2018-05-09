@@ -10,6 +10,7 @@ use App\Events\EForm\Approved;
 use App\Events\EForm\RejectedEform;
 use App\Events\EForm\VerifyEForm;
 use App\Models\EForm;
+use App\Models\EFormMonitoring;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
 use App\Models\KPR;
@@ -38,6 +39,7 @@ use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use App\Http\Controllers\API\v1\Int\PrescreeningController;
+use App\Models\Mitra4;
 
 class EFormController extends Controller
 {
@@ -48,12 +50,23 @@ class EFormController extends Controller
         $this->userservices = $userservices;
         $this->userNotification = $userNotification;
     }
-
+	public function eksternalmitra( Request $request )
+	{
+	        \Log::info($request->all());
+				
+			$limit = $request->input( 'limit' ) ?: 10;
+			$mitra = Mitra4::filter( $request )->paginate($limit);
+			//$mitra = $mitra->toArray();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+	}
     public function ListBranch($data)
     {
       $client = new Client();
       $host = env('APP_URL');
-      if($host == 'http://api.dev.net/'){
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
         $url = 'http://10.35.65.208:81/bribranch/branch/';
        }else{
         $url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
@@ -102,6 +115,21 @@ class EFormController extends Controller
             $newForm = EForm::findOrFail($request->input('slug'));
         }else{
             $newForm = EForm::filter( $request )->paginate( $limit );
+        }
+        return response()->success( [
+            'message' => 'Sukses',
+            'contents' => $newForm
+        ], 200 );
+    }
+
+	    public function monitoring( Request $request )
+    {
+
+	$limit = $request->input( 'limit' ) ?: 10;
+        if ($request->has('slug')) {
+            $newForm = EFormMonitoring::findOrFail($request->input('slug'));
+        }else{
+            $newForm = EFormMonitoring::filter( $request )->paginate( $limit );
         }
         return response()->success( [
             'message' => 'Sukses',
@@ -265,7 +293,14 @@ class EFormController extends Controller
           $eform[0]['customer']['schedule'] = [];
           $eform[0]['customer']['is_approved'] = $eform[0]['is_approved'];
 
-          $eform[0]['Url'] = env('APP_URL').'/uploads/';
+          // keperluan tot
+          $host = env('APP_URL');
+          if($host == 'http://103.63.96.167/api/'){     
+              $eform[0]['Url'] = 'http://103.63.96.167/api/uploads/';
+          }else{
+              $eform[0]['Url'] = env('APP_URL').'/uploads/';
+          }
+          
 
           $eform[0]['nominal'] = $eform[0]['request_amount'];
           $eform[0]['costumer_name'] = $customer[0]['first_name'].' '.$customer[0]['last_name'];
@@ -338,6 +373,28 @@ class EFormController extends Controller
         ] );
     }
 
+    public function uploadKKImage($image,$nik,$type,$time){
+      $path = public_path('uploads/'.$nik.'/');
+      $filename = null;
+      if ($image) {
+          if (!$image->getClientOriginalExtension()) {
+              if ($image->getMimeType() == '.pdf') {
+                  $extension = 'pdf';
+              }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                  $extension = 'jpg';
+              }else{
+                  $extension = 'png';
+              }
+          }else{
+              $extension = $image->getClientOriginalExtension();
+          }
+          $filename = $time. '-'.$type.'.' . $extension;
+          $image->move( $path, $filename );
+      }
+      return $filename;
+
+    }
+
     public function uploadimage($image,$id,$atribute)
     {
         $path = public_path( 'uploads/' . $id . '/' );
@@ -393,7 +450,10 @@ class EFormController extends Controller
 
     public function store( EFormRequest $request )
     {
+      \Log::info('step 0');
         if ($request->product_type != 'kartu_kredit'){
+          
+          
             $nik = $request->nik;
             $check = CustomerDetail::where('nik', $nik)->get();
             $data = Eform::where('nik', $nik)->get();
@@ -444,9 +504,11 @@ class EFormController extends Controller
 
             if ($request->product_type == 'kartu_kredit'){
                 \Log::info("========================KARTU_KREDIT========================");
+                
                 //cek nik di customer detail, kalau gak ada di create
                 $nik = $request->nik;
                 $checkNik = CustomerDetail::where('nik',$nik)->get();
+                \Log::info('Step 1');
                 if(count($checkNik) == 0){
                     return response()->json([
                         'responseCode' => '01',
@@ -454,18 +516,20 @@ class EFormController extends Controller
                     ]);
                 } else {
                     //nama gambar
-                    $id = date('YmdHis');
-
+                    $time = date('YmdHis');
+                    $nik = $request->nik;
                     //cek debitur atau nasabah. ambil gambar
-                    if ($request->jenis_nasabah == 'debitur'){
+                    try {
+                      if ($request->jenis_nasabah == 'debitur'){
+                        
                         $npwp = $request->NPWP;
                         $ktp = $request->KTP;
                         $slipGaji = $request->SLIP_GAJI;
 
-
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
-                        $ktp = $this->uploadimage($ktp,$id,'KTP');
-                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
+                        // uploadKKImage($image,$nik,$type,$time)
+                        $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
+                        $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
+                        $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
@@ -477,13 +541,11 @@ class EFormController extends Controller
                         $nameTag = $request->NAME_TAG;
                         $limitKartu = $request->KARTU_BANK_LAIN;
 
-
-                        $npwp = $this->uploadimage($npwp,$id,'NPWP');
-                        $ktp = $this->uploadimage($ktp,$id,'KTP');
-
-                        $slipGaji = $this->uploadimage($slipGaji,$id,'SLIP_GAJI');
-                        $nameTag = $this->uploadimage($nameTag,$id,'NAME_TAG');
-                        $kartuBankLain = $this->uploadimage($limitKartu,$id,"KARTU_BANK_LAIN");
+                        $npwp = $this->uploadKKImage($npwp,$nik,'NPWP',$time);
+                        $ktp = $this->uploadKKImage($ktp,$nik,'KTP',$time);
+                        $slipGaji = $this->uploadKKImage($slipGaji,$nik,'SLIP_GAJI',$time);
+                        $nameTag = $this->uploadKKImage($nameTag,$nik,'NAME_TAG',$time);
+                        $kartuBankLain = $this->uploadKKImage($limitKartu,$nik,"KARTU_BANK_LAIN",$time);
 
                         $baseRequest['NPWP'] = $npwp;
                         $baseRequest['KTP'] = $ktp;
@@ -492,8 +554,8 @@ class EFormController extends Controller
                         $baseRequest['KARTU_BANK_LAIN'] = $kartuBankLain;
                     }
 
-                    $baseRequest['id_foto'] = $id;
-
+                    // $baseRequest['id_foto'] = $id;
+                    \Log::info('Step 2');
                     //create eform
                     $kk = new KartuKredit();
                     //insert ke table eform
@@ -506,8 +568,16 @@ class EFormController extends Controller
                     \Log::info("========crate kk details=============");
                     \Log::info($eformCreate);
 
+                    \Log::info('Step 3');
+                    //lengkapi data kredit di eform
+                    $rangeLimit = $kkDetailsCreate['range_limit'];
+                    $eform = EForm::where('id',$eformId)->update([
+                        'kk_details'=>'{"range_limit":"'.$rangeLimit.'","is_analyzed":"false"}'
+                    ]);
+
 
                     //cek dedup
+                    \Log::info('Step 4');
                     $nik = $baseRequest['nik'];
                     $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
 
@@ -520,12 +590,13 @@ class EFormController extends Controller
                             'form_params' => ['nik' => $nik]
                         ]);
                     } catch (RequestException $e){
+                        DB::rollback();
                         return response()->error([
                             'responseCode'=>'01',
                             'responseMessage'=> $e->getMessage()
                         ],400);
                     }
-
+                    \Log::info('Step 5');
                     $body = $res->getBody();
                     $obj = json_decode($body);
                     $responseCode = $obj->responseCode;
@@ -533,8 +604,10 @@ class EFormController extends Controller
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
                         $updateEform = EForm::where('id',$eformId)->update([
-                            'prescreening_status'=>3
+                            'prescreening_status'=>3,
+                            'IsFinish'=>'true',
                         ]);
+
 
                         return response()->json([
                             'responseCode' => '02',
@@ -544,23 +617,25 @@ class EFormController extends Controller
 
                     //berhasil lewat dedup
 
-                    DB::commit();
-
-                    return response()->json([
-                        'responseMessage' => 'Nasabah sukses melewati proses dedup, silahkan kirim data ke los.',
-                        //balikin eform buat eform list di android
-                        'eform_id' => $eformId
-
-                    ]);
-
-                    //send eform ke pefindo
-                    // $pefindoController = new PrescreeningController();
-                    // $getPefindo = $pefindoController->getPefindo()
-
                     //cek jumlah kk
                     //pefindo dalam development. sabar ya :)
                     //update eform
 
+                    DB::commit();
+
+                    return response()->json([
+                        'responseMessage' => 'Nasabah sukses melewati proses dedup.',
+                        //balikin eform buat eform list di android
+                        'eform_id' => $eformId
+
+                    ]);
+                      
+                    } catch (Exception $e) {
+                        return response()->error([
+                          'responseMessage'=> $e
+                        ]);
+                    }
+                    
                 }
 
             } else if ( $request->product_type == 'briguna' ) {
@@ -1106,7 +1181,40 @@ class EFormController extends Controller
     {
         DB::beginTransaction();
         $eform = EForm::findOrFail($request->eform_id);
-        if($eform->product_type=='briguna'){
+        if ($eform->product_type == 'kartu_kredit'){
+          // $delete = EForm::where('id',$eform)->delete();
+          try{
+                $customer = DB::table('customer_details')
+                         ->select('users.*','customer_details.*')
+                         ->join('users', 'users.id', '=', 'customer_details.user_id')
+                         ->where('customer_details.user_id', $eform->user_id)
+                         ->get();
+
+                \Log::info($customer);
+
+                $customer = $customer->toArray();
+                $customer = json_decode(json_encode($customer), True);
+
+
+                $kk = KartuKredit::
+                         where('eform_id', $request->eform_id)
+                         ->get();
+
+                $kk = $kk->toArray();
+                $kk = json_decode(json_encode($kk), True);
+                
+                User::destroy($eform->user_id);
+                DB::commit();
+                return response()->success( [
+                    'message' => 'Hapus User Berhasil',
+                ], 200 );
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'User Tidak Dapat Dihapus',
+                    ], 422 );
+            }
+        }else if($eform->product_type=='briguna'){
             try{
 
                 $customer = DB::table('customer_details')
@@ -1114,10 +1222,17 @@ class EFormController extends Controller
                          ->join('users', 'users.id', '=', 'customer_details.user_id')
                          ->where('customer_details.user_id', $eform->user_id)
                          ->get();
-
+			
                 $customer = $customer->toArray();
                 $customer = json_decode(json_encode($customer), True);
 
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'User tidak ditemukan',
+                    ], 422 );
+            }
+			try{
 
                 $briguna = DB::table('briguna')
                          ->select('year','request_amount')
@@ -1126,7 +1241,15 @@ class EFormController extends Controller
 
                 $briguna = $briguna->toArray();
                 $briguna = json_decode(json_encode($briguna), True);
-                $message = ['no_hp'=>$customer[0]['mobile_phone'],
+
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'Data pengajuan tidak ditemukan',
+                    ], 422 );
+            }
+			try{			
+				$message = ['no_hp'=>$customer[0]['mobile_phone'],
                             'plafond'=>$briguna[0]['request_amount'],
                             'year'=>$briguna[0]['year'],
                             'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
@@ -1136,7 +1259,13 @@ class EFormController extends Controller
                 $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
                                 \Log::info($testing);
 
-
+            } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->error( [
+                        'message' => 'Gagal Mengirimkan SMS',
+                    ], 422 );
+            }
+			try{
                     User::destroy($eform->user_id);
                   DB::commit();
                 return response()->success( [

@@ -29,10 +29,13 @@ class KartuKredit extends Model
     	'pendidikan','pekerjaan','tiering_gaji',
     	'agama','jenis_nasabah','pilihan_kartu',
     	'penghasilan_perbulan','jumlah_penerbit_kartu',
-    	'memiliki_kk_bank_lain','limit_tertinggi','nama_ibu_kandung',
+    	'memiliki_kk_bank_lain','range_limit','nama_ibu_kandung',
         'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
-        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir'
+        'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir',
+        'los_score','analyzed_status','qrcode'
     ];
+
+    protected $appends = ['jenis_kartu','alamat_lengkap'];
 
     protected $hidden = [
         'id','updated_at'
@@ -40,11 +43,55 @@ class KartuKredit extends Model
 
     public $timestamps = false;
 
+     public function eform(){
+        return $this->belongsTo('App\Models\EForm', 'eform_id');
+    }
+
+    public function getAlamatLengkapAttribute($value){
+        $ef = EForm::where('id',$this->eform_id)->first();
+        $alamat = $ef['address'];
+        return $alamat;
+    }
+
+    public function getQrcodeAttribute($filename){
+        $nik =  $this->nik;
+        $path =  'img/noimage.jpg';
+        if( ! empty( $filename ) ) {
+            $image = 'uploads/' . $nik . '/' . $filename;
+            if( File::exists( public_path( $image ) ) ) {
+                $path = $image;
+            }
+        }
+
+        return url( $path );
+    }
+
+    public function getJenisKartuAttribute($value){
+        $kode = $this->pilihan_kartu;
+        switch ($kode) {
+            case '102':
+                return 'Easy Card';
+                break;
+            case '302':
+                return 'Platinum';
+                break;
+            case '203':
+                return 'World Class';
+                break;
+            case '502':
+                return 'Touch';
+                break;
+            default :
+                return 'Tidak Terdeteksi';
+                break;
+        }
+    }
+
     function globalImageCheck( $filename ){
         $path =  'img/noimage.jpg';
-        $id = substr ($filename,0,14);
+        $nik =  $this->nik;
         if( ! empty( $filename ) ) {
-            $image = 'uploads/' . $id . '/' . $filename;
+            $image = 'uploads/' . $nik . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
                 $path = $image;
             }
@@ -82,8 +129,6 @@ class KartuKredit extends Model
             $personalNIK = $req['PersonalNIK'];
             $personalTempatLahir = $req['PersonalTempatLahir'];
             $personalTanggalLahir = $req['PersonalTanggalLahir'];
-            $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
-
             $personalAlamatDomisili = $req['PersonalAlamatDomisili'];
 
             $personalJenisKelamin = $req['PersonalJenisKelamin'];
@@ -144,9 +189,10 @@ class KartuKredit extends Model
                 $financePendapatanLainPerbulan = $req['FinancePendapatanLainPerbulan'];
                 $financeJumlahTanggungan = $req['FinanceJumlahTanggungan'];
 
+                $personalKota = $req['PersonalKota'];
+
             }else{
                 $cardType = $req['CardType'];
-
                 $jobBidangUsaha = '0';
                 $jobKategoriPekerjaan = '0';
                 $jobStatusPekerjaan = '0';
@@ -232,6 +278,8 @@ class KartuKredit extends Model
             $informasiLos['JobLurah'] = $jobLurah;
             $informasiLos['JobRt'] = $jobRt;
             $informasiLos['JobRw'] = $jobRw;
+
+            $informasiLos['PersonalKota'] = $personalKota;
             
            
            
@@ -271,6 +319,8 @@ class KartuKredit extends Model
         $ef['product_type'] = $req['product_type'];
         $ef['response_status'] = 'unverified'; 
 
+        $ef['ao_name'] = $req['ao_name'];
+
         $ef = $this->overwriteEmptyRecord($ef);
         $eform = EForm::create($ef);
         \Log::info($eform);
@@ -291,7 +341,7 @@ class KartuKredit extends Model
         if ($req['jenis_nasabah'] == 'debitur'){
             $data['image_npwp'] = $req['NPWP'];
             $data['image_ktp'] = $req['KTP'];
-            $data['image_slip_gaji'] = 'SLIP_GAJI';
+            $data['image_slip_gaji'] = $req['SLIP_GAJI'];
             $data['image_nametag'] = '-';
             $data['image_kartu_bank_lain'] = '-';
         }else{
@@ -311,7 +361,7 @@ class KartuKredit extends Model
         $data['penghasilan_perbulan'] = $req['penghasilan_diatas_10_juta'];
         $data['jumlah_penerbit_kartu'] = $req['jumlah_penerbit_kartu'];
         
-        $data['limit_tertinggi'] = $req['range_kartu'];
+        $data['range_limit'] = $req['range_kartu'];
         $data['jenis_nasabah'] = $req['jenis_nasabah'];
         $data['hp'] = $req['hp'];
         $data['email'] = $req['email'];
@@ -329,11 +379,12 @@ class KartuKredit extends Model
         $data['eform_id'] = $req['eform_id'];
         $data['pn'] = $req['ao_id'];
         $data['tanggal_lahir'] = $req['ttl'];
+        $data['nik'] = $nik; 
 
 
         $kkDetails = KartuKredit::create($data);
         
-        $kkDetails['range_kartu'] = $kkDetails['limit_tertinggi'];
+        $kkDetails['range_kartu'] = $kkDetails['range_limit'];
         \Log::info('=======kk details=========');
         \Log::info($kkDetails);
         return $kkDetails;

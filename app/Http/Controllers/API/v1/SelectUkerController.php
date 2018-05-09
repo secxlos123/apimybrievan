@@ -78,7 +78,8 @@ class SelectUkerController extends Controller
 	public function ListBranch($data, $token)
     {
 		 $host = env('APP_URL');
-	  if($host == 'http://api.dev.net/'){
+		 
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host=='https://apimybridev.bri.co.id/'){
 		$urls = 'http://10.35.65.208:81/';
 	}else{
 		$urls = 'http://api.briconnect.bri.co.id/';  

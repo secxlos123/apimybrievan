@@ -14,6 +14,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\User;
 use App\Models\EForm;
 use Asmx;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use App\Http\Requests\API\v1\KreditRequest;
 
@@ -21,22 +22,18 @@ use App\Models\KreditEmailGenerator;
 
 class KartuKreditController extends Controller{
 
-
-
 	public $hostLos = '10.107.11.111:9975';
 	public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-	public function ajukanKredit(Request $req){
-		//cek users
-		$nik = $request->PersonalNIK;
-		if ($this->checkUser($nik)){
-			//cek dedup
-			
-		}
-		//cek pefindo
-	}
+	public function contohemail(){
+      // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/tempQrcode/qrcode.png');
+
+		$data = EForm::where('product_type','kartu_kredit')->with('kartukredit')->get();
+		return response()->json($data);
+    }
+
 
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
@@ -291,8 +288,7 @@ class KartuKreditController extends Controller{
     	$eform_id = $request['eform_id'];
     	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
 
-
-
+    	
     	$kk = new KartuKredit();
     	$informasiLos = $kk->convertToAddDataLosFormat($request,'update');
 
@@ -310,6 +306,15 @@ class KartuKreditController extends Controller{
 		//update resoinse status jadi pending
 		$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'pending']);
+
+		$alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2']
+    	.' '.
+    	$request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
+
+    	//update data di eform
+    	$update = EForm::where('id',$eform_id)->update([
+    		'address'=>$alamatDom
+    	]);
 
 		$body = $res->getBody();
 		$obj = json_decode($body);
@@ -354,10 +359,11 @@ class KartuKreditController extends Controller{
     }
 
     function generateSmsCode(){
-    	return '123456';
+    	$code =mt_rand(102030, 999999);
+    	return $code;
     }
 
-    public function sendSMS(Request $req){
+    public function sendSMS(KreditRequest $req){
     	$pn = $req['handphone'];
     	$eformid = $req['eform_id'];
 		$kk = KartuKredit::where('eform_id',$eformid)->first();
@@ -369,6 +375,7 @@ class KartuKreditController extends Controller{
     	$updateCode = KartuKredit::where('appregno',$apregno)->update([
     		'verification_code'=>$code
     	]);
+
 
     	$host = '10.107.11.111:9975/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
@@ -396,16 +403,27 @@ class KartuKreditController extends Controller{
     	$email = $req['email'];
     	$eformid = $req['eform_id'];
 
-    	// $message = $req['message'];
     	$kk = KartuKredit::where('eform_id',$eformid)->first();
     	$apregno = $kk['appregno'];
 
-    	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
+    	// $dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
+    	// $routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
+    	// $routes = 'api.dev.net/api/v1/int/kk/verifyemail';
+    	$appEnv = env('KREDIT_EMAIL_GENERATOR_POSITION','prod');
+     	if ($appEnv == 'dev'){
+         	$routes = 'apimybridev.bri.co.id/api/v1/int/kk/verifyemail';
+      	}else{
+      		$routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
+      	}
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,'apimybri.bri.co.id/api/v1/int/kk/verifyemail');
+    	->sendEmailVerification($kk,$apregno,$routes);
     	\Log::info('======== data kredit =========');
-   		\Log::info($dataKredit);
+   		\Log::info($kk);
+   		// $header = ['access_token'=> $this->tokenLos];
+    	// $host = '10.107.11.111:9975/api/updateData';
+    	// $client = new Client();
+    	
     	$host = '10.107.11.111:9975/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
@@ -431,6 +449,7 @@ class KartuKreditController extends Controller{
     function verify($eform_id){
     	$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'verified']);
+
 		return true;
     }
 
@@ -458,8 +477,34 @@ class KartuKreditController extends Controller{
     		if ($codeVerif == $correctCode){
     			//update ke eform
     			$updateEform = $this->verify($eformid);
+    			$eform = EForm::where('id',$eformid)->first();
+    			$refNumber = $eform['ref_number'];
+    			$nik =  $eform['nik'];
+    			\Log::info('================');
+    			\Log::info($refNumber);
+    			\Log::info($nik);
+    			\Log::info('================');
+    			$qrcode = $this->createQrcode($refNumber,$nik);
+    			KartuKredit::where('eform_id',$eformid)->update([
+    				'qrcode'=>$qrcode
+    			]);
+    			$em = new KreditEmailGenerator();
+    			$kk = KartuKredit::where('eform_id',$eformid)->first();
+    			$apregno = $kk['appregno'];
+    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno,$kk['qrcode']);
+    			$host = '10.107.11.111:9975/notif/toemail';
+		    	$header = ['access_token'=> $this->tokenLos];
+		    	$client = new Client();
+		    	$email = $kk['email'];
 
-    			return "Email telah tervirifikasi";
+		    	try{
+		    		$res = $client->request('POST',$host, ['headers' =>  $header,
+		    				'form_params' => ['email' => $email,'subject'=>'Laporan Verifikasi Email Pengajuan Kartu Kredit BRI','message'=>$message]
+		    			]);
+		    	}catch (RequestException $e){
+		    		return  $e->getMessage();
+		    	}
+    			return "Email berhasil terverifikasi";
     		}else{
     			return response()->json([
     				'responseCode'=>'01',
@@ -467,9 +512,13 @@ class KartuKreditController extends Controller{
     			]);
     		}
     	}
+    }
 
+    function createQrcode($refnumber,$nik){
+    	$filename = $refnumber.'-qrcode.png';
+    	QrCode::format('png')->size(250)->generate($refnumber.$nik, public_path('uploads/'.$nik.'/'.$filename));
 
-    	
+    	return $filename;
     }
 
     public function analisaKK(Request $req){
@@ -556,16 +605,43 @@ class KartuKreditController extends Controller{
 		return $data;
 	}
 
-	public function finishAnalisa(Request $req){
+	public function finishAnalisa(KreditRequest $req){
 		$apregno = $req->apRegno;
+		$eformId= $req->eform_id;
 		$catRekAo = $req->catatanRekomendasiAO;
 		$rekLimitKartu = $req->rekomendasiLimitKartu;
+		$rangeLimit =  $req->range_limit;
+		$losScore = $req->los_score;
+		$losResult = $this->losScoreResult($losScore);
+
+		if ($losResult == 'proceed'){
+			$anStatus = 'analyzed';
+		}else{
+			$anStatus = 'rejected';
+		}
+
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'is_analyzed'=>true,
 			'catatan_rekomendasi_ao'=>$catRekAo,
-			'rekomendasi_limit_kartu'=>$rekLimitKartu
+			'rekomendasi_limit_kartu'=>$rekLimitKartu,
+			'pilihan_kartu'=>$req->cardType,
+			'range_limit'=>$rangeLimit,
+			'los_score' =>$losScore,
+			'analyzed_status'=>$anStatus
 		]);
+
+		 //lengkapi data kredit di eform
+		$newData = [
+			'range_limit'=>$rangeLimit,
+			'is_analyzed'=> 'true',
+			'los_score' =>$losScore,
+			'analyzed_status'=>$anStatus
+		];
+		$jsonData = json_encode($newData);
+        $eform = EForm::where('id',$eformId)->update([
+            'kk_details'=>$jsonData
+        ]);
 
 		return response()->json([
 			'responseCode'=>'00',
@@ -575,12 +651,20 @@ class KartuKreditController extends Controller{
 
 	}
 
+	function losScoreResult($score){
+		if ($score >= '550'){
+			return 'proceed';
+		}else{
+			return 'end';
+		}
+	}
+
 	public function putusanPinca(KreditRequest $req){
 		
 		$apregno = $req->apRegno;
 		$msg = $req->msg;
 		$putusan = $req->putusan;
-
+		$limit = $req->limit;
 
 		$kk = new KartuKredit();
 		$req = $req->all();
@@ -588,6 +672,9 @@ class KartuKreditController extends Controller{
 		if ($putusan == 'approved'){
 			$host = $this->hostLos.'/api/approval';
 			$data = $kk->createApprovedRequirements($req);
+			$updateLimit = KartuKredit::where('appregno',$apregno)->update([
+			'rekomendasi_limit_kartu'=>$limit
+		]);
 
 		}else{
 			$host = $this->hostLos.'/api/reject';
@@ -610,12 +697,35 @@ class KartuKreditController extends Controller{
 			]);	
 		}
 
-		
+		$eformId= $req['eform_id'];
 		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
+		//update isfinish eform
+		$updateEform = EForm::where('id',$eformId)->update([
+			'IsFinish'=>'true'
+		]);
+		//tampilin ke eform
+		$dataKK = KartuKredit::where('appregno',$apregno)->first();
+		$rangeLimit =  $dataKK['range_limit'];
+		$losScore = $dataKK['los_score'];
+		$anStatus = $dataKK['analyzed_status'];
+
+
+		$newData = [
+			'range_limit'=>$rangeLimit,
+			'is_analyzed'=> 'true',
+			'los_score' =>$losScore,
+			'analyzed_status'=>$anStatus,
+			'approval'=>$putusan
+		];
+
+		$jsonData = json_encode($newData);
+        $eform = EForm::where('id',$eformId)->update([
+            'kk_details'=>$jsonData
+        ]);
 
 		$eformId = $req['eform_id'];
 		$updateEform = EForm::where('id',$eformId)->update([

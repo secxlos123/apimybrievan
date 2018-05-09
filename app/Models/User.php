@@ -429,32 +429,33 @@ class User extends Authenticatable implements AuditableContract, UserResolver
                 ->where('user_id', $id)->get();
         foreach ($query as $key => $value) {
         $userdeveloper = [
-            'id'            => $developer->id,
-            'user_id'       => $developer->user_id,
-            'birth_date'    => $developer->birth_date,
-            'join_date'     => $developer->join_date,
+            'id'                 => $developer->id,
+            'user_id'            => $developer->user_id,
+            'birth_date'         => $developer->birth_date,
+            'join_date'          => $developer->join_date,
             'admin_developer_id' => $developer->admin_developer_id,
+            'bound_project'      => $developer->bound_project,
            ];
         $developerdata = [
-            'company_name'  => $value->company_name,
-            'address'       => $value->address,
-            'phone_number'  => $value->mobile_phone,
-            'city_name'     => $value->city_name, ];
+            'company_name'       => $value->company_name,
+            'address'            => $value->address,
+            'phone_number'       => $value->mobile_phone,
+            'city_name'          => $value->city_name, ];
         return [
-            'id'            => $user->id,
-            'email'         => $user->email,
-            'permisions'    => $user->roles->first()->permissions,
-            'last_login'    => $user->last_login,
-            'name'          => $user->fullname,
-            'first_name'    => $user->first_name,
-            'last_name'     => $user->last_name,
-            'image'         => $user->image,
-            'phone'         => $user->phone,
-            'mobile_phone'  => $user->mobile_phone,
-            'gender'        => $user->gender,
-            'is_actived'    => $user->is_actived,
-            'userdeveloper' => $userdeveloper,
-            'developer'     => $developerdata
+            'id'                 => $user->id,
+            'email'              => $user->email,
+            'permisions'         => $user->roles->first()->permissions,
+            'last_login'         => $user->last_login,
+            'name'               => $user->fullname,
+            'first_name'         => $user->first_name,
+            'last_name'          => $user->last_name,
+            'image'              => $user->image,
+            'phone'              => $user->phone,
+            'mobile_phone'       => $user->mobile_phone,
+            'gender'             => $user->gender,
+            'is_actived'         => $user->is_actived,
+            'userdeveloper'      => $userdeveloper,
+            'developer'          => $developerdata
 
 
         ];
@@ -689,7 +690,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
             else
             {
                 $return['success'] = false;
-                $return['message'] = 'Update Gagal Anda Menggunakan Password Lama.';
+                $return['message'] = 'Ubah Password Gagal, Password Baru harus berbeda dari 4 password sebelumnya.';
             }
 
         }

@@ -23,6 +23,20 @@ class CreateRequest extends FormRequest
     }
 
     /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return array_merge(parent::rules(), [
+            'mobile_phone.required' => 'Kolom No Handphone harus diisi!',
+            'email.unique' => 'Email sudah pernah digunakan!'
+
+        ]);
+    }
+
+    /**
      * Get the validator instance for the request.
      *
      * @return \Illuminate\Contracts\Validation\Validator

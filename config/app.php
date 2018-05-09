@@ -173,6 +173,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         LaravelFCM\FCMServiceProvider::class,
         ZanySoft\Zip\ZipServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -191,7 +192,10 @@ return [
         App\Providers\AsmxLasServiceProvider::class,
         App\Providers\DbwsRestServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
-        App\Providers\RestwsSmServiceProvider::class
+        App\Providers\RestwsSmServiceProvider::class,
+
+        // QRCODE
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
 
     ],
 
@@ -260,6 +264,10 @@ return [
         'FCMGroup'     => LaravelFCM\Facades\FCMGroup::class, // Optional
         'Zip'          => ZanySoft\Zip\ZipFacade::class,
         'RestwsSm'     => App\Classes\Client\Facades\RestwsSm::class,
+        'Image'        => Intervention\Image\Facades\Image::class,
+
+        // qrcode
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
 
     ],
 

@@ -22,7 +22,9 @@
         "tymon/jwt-auth": "0.5.*",
         "yajra/laravel-datatables-oracle": "7.*",
         "zanysoft/laravel-zip": "^1.0",
-        "artisaninweb/laravel-soap": "0.3.*"
+        "artisaninweb/laravel-soap": "0.3.*",
+        "simplesoftwareio/simple-qrcode": "~2"
+
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -10,6 +10,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post('/branch/list_uker_kanca', 'branchController@get_uker_kanca');
   Route::post('/marketing_summary', 'DashboardController@marketing_summary');
   Route::post('/marketing_summary_v2', 'DashboardController@marketing_summary_v2');
+  Route::post('/marketing_summary_amount', 'DashboardController@marketing_summary_amount');
   // route reporting Crm
   Route::post( 'report_marketings', 'reportController@report_marketings')->name('crm.report_marketings');
   Route::post( 'report_activities', 'reportController@report_activities')->name('crm.report_activities');
@@ -74,6 +75,11 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   // Route Activity by customer
   Route::post('/activity/by_customer', 'marketingActivityController@activity_by_customer');
 
+  // Route store Activity Phone Duration
+  Route::post('/activity/store_phoneDuration', 'marketingActivityController@store_phoneDuration');
+  // Route list Activity Phone Duration by customer
+  Route::post('/activity/phoneDuration_byCustomer', 'marketingActivityController@phoneDuration_byCustomer');
+
   // Route reschedule Activity
   Route::post('/activity/reschedule', 'marketingActivityController@reSchedule')->name('crm.reschedule');
 
@@ -119,5 +125,5 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
 
   //sales kit
   Route::get( '/sales_kit', 'DashboardController@sales_kit');
-  //Route::get( '/view_report', 'viewController@index');
+  // Route::get( '/view_report', 'viewController@index');
 });

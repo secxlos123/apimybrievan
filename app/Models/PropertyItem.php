@@ -41,10 +41,10 @@ class PropertyItem extends Model implements AuditableContract
         'address' => 'required',
         'status'  => 'required|in:new,second',
         'price'   => 'required|numeric',
-        'first_unit'   => 'required|numeric',
-        'last_unit'   => 'required|numeric',
-        'unit_size'   => 'required|numeric',
-        'photos.*'=> 'image|max:1024',
+        //'first_unit'   => 'required|numeric',
+        //'last_unit'   => 'required|numeric',
+        //'unit_size'   => 'required|numeric',
+        'photos.*'=> 'image|max:5024',
     ];
 
     /**
@@ -99,7 +99,7 @@ class PropertyItem extends Model implements AuditableContract
         
         if ( ! $request->has('dropdown') ) $query->with('photos');
 
-        return $query
+        $data = $query
             ->with('propertyType')
             ->where(function ($item) use (&$request) {
                 if ($request->has('without_independent')){
@@ -178,11 +178,11 @@ class PropertyItem extends Model implements AuditableContract
                 (select properties.developer_id from properties where properties.id = 
                 (select property_types.property_id from property_types where property_types.id = property_type_id
                 )))) limit 1 ) as prop_status,
-                (select properties.is_approved from properties where developer_id =(select developers.user_id from developers where developers.id = (select developers.id from developers where developers.id = 
-                (select properties.developer_id from properties where properties.id = 
-                (select property_types.property_id from property_types where property_types.id = property_type_id
-                )))) limit 1 ) as is_approved, property_items.available_status")
+                (select properties.is_approved from properties where properties.developer_id = (select developers.id from developers where developers.id = (select properties.developer_id from properties where properties.id = (select property_types.property_id from property_types where property_types.id = property_type_id ))) limit 1 ) as is_approved, property_items.available_status")
             ->orderBy($sort[0], $sort[1]);
+            // \Log::info("=================query property unit=====================");
+            // \Log::info($query->toSql());
+            return $data;
     }
 
     /**

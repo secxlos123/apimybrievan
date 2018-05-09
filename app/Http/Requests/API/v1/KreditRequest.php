@@ -43,39 +43,6 @@ class KreditRequest extends BaseRequest{
 
     				'ao_id'=>'required',
     				'branch_id'=>'required',
-
-    	// 			'PersonalAlamatDomisili' => 'required',
-    				
-    				
-    	// 			'PersonalJenisKelamin'=>'required',
-    	// 			'PersonalStatusTempatTinggal'=>'required',
-    	// 			'PersonalKewarganegaraan'=>'required', 
-					// 'PersonalLamaMenempatiRumahMM'=>'required',
-					// 'PersonalLamaMenempatiRumahYY'=>'required',
-					// 'PersonalPendidikanTerakhir'=>'required',
-					// 'PersonalKodePos'=>'required',
-					
-					// 'PersonalNoTlpRumah'=>'required',
-					
-					// 'JobBidangUsaha'=>'required',
-					// 'JobKategoriPekerjaan'=>'required',
-					// 'JobStatusPekerjaan'=>'required',
-					// 'JobTotalPekerja'=>'required',
-					// 'JobNamaPerusahaan'=>'required',
-					// 'JobPangkat'=>'required',
-					// 'JobLamaKerjaYY'=>'required',
-					// 'JobLamaKerjaMM'=>'required',
-					// 'JobAlamatKantor'=>'required',
-					// 'JobKodePos'=>'required',
-					// 'FinanceGajiPerbulan'=>'required',
-					// 'FinanceGajiPertahun'=>'required',
-					// 'FinancePendapatanLainPerbulan'=>'required',
-					// 'FinanceJumlahTanggungan'=>'required',
-					// 'EmergencyNama'=>'required',
-					// 'EmergencyHubunganKeluarga'=>'required',
-					// 'EmergencyAlamat'=>'required',
-					// 'EmergencyKota'=>'required',
-					// 'EmergencyNoTlp'=>'required',
     				
     				];
     			}else if($this->segment(5) == 'update-data-los'){ // verifikasi
@@ -124,11 +91,13 @@ class KreditRequest extends BaseRequest{
 						'EmergencyNoTlp'=>'required',
 						'subBidangUsaha'=>'required',
 						'eform_id'=>'required',
+						'PersonalKota'=>'required',
 	    				// 'apregno'=>'required',
     				];
     			}else if($this->segment(5) == 'putusan-pinca'){
     				return([
     					'msg'=>'',
+    					'limit'=>'',
     					'apRegno'=>'required',
     					'putusan'=>'required|in:approved,rejected',
     					'by' => 'required_if:putusan,approved',
@@ -138,6 +107,26 @@ class KreditRequest extends BaseRequest{
 						'wvCode'=>'required_if:putusan,approved',
 						'apBillCycle'=>'required_if:putusan,approved',
 						'rjCode'=>'required_if:putusan,rejected',
+    				]);
+    			}else if($this->segment(5) == 'finish-analisa'){
+    				return([
+    					'apRegno'=>'required',
+    					'los_score'=>'required',
+    					'catatanRekomendasiAO'=>'',
+						'rekomendasiLimitKartu'=>'required',
+						'cardType'=>'required',
+						'range_limit'=>'required',
+						'eform_id'=>'required'
+    				]);
+    			}else if($this->segment(5) == 'tosms'){
+    				return([
+    					'handphone' => 'required',
+    					'eform_id' =>'required'
+    				]);
+    			}else if($this->segment(5) == 'toemail'){
+    				return([
+    					'email'=> 'required',
+    					'eform_id'=>'required'
     				]);
     			}
     			

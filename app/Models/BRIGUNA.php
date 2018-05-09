@@ -211,7 +211,7 @@ class BRIGUNA extends Model
                 'requestMethod' => 'insertSkpp',
                 'requestData'   => json_encode([
                     'branch'    => $eform->branch_id,
-                    'appname'   => 'MBR',
+                    'appname'   => 'MyBRI',
                     'jenis'     => 'BG',
                     'expdate'   => '2099-12-31 00:00:00',
                     'expdate_pimpinan' => '2099-12-31 00:00:00',

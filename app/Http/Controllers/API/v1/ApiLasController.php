@@ -40,9 +40,9 @@ class ApiLasController extends Controller
         
         switch ($method) {
             case 'insertDataDebtPerorangan':
-                // if (!empty($data)) {
                     $data = $respons;
-                    /*$data['kodepos']            = '';
+                /*if (!empty($data)) {
+                    $data['kodepos']            = '';
                     $data['kelurahan']          = '';
                     $data['kecamatan']          = '';
                     $data['kabupaten']          = '';
@@ -98,7 +98,7 @@ class ApiLasController extends Controller
                             }
                         }
                     }*/
-
+                    
                     if ($request['transaksi_normal_harian'] == '1') {
                         $gaji = "G1";
                     } else if ($request['transaksi_normal_harian'] == '2') {
@@ -114,17 +114,8 @@ class ApiLasController extends Controller
                     $data['gaji'] = $gaji;
                     $insert = $this->insertAllAnalisa($data);
                     return $insert;
-                // } 
-                // $error[0] = 'Uknown request data';
-                // return [
-                //     'code' => 05, 
-                //     'descriptions' => 'Uknown request data',
-                //     'contents' => [
-                //         'data' => $error
-                //     ]
-                // ];
-                // print_r($data);exit();
-                // $insert = $ApiLas->insertDataDebtPerorangan($data);
+                /*}
+                $insert = $ApiLas->insertDataDebtPerorangan($data);*/
                 break;
 
             case 'insertPrescreeningBriguna':
@@ -319,6 +310,75 @@ class ApiLasController extends Controller
                 ];
                 break;
 
+            case 'LAS_DETAIL_PROGRAM_BRIGUNA' :
+                if (!empty($data)) {
+                    try {
+                        $params["FID_PROGRAM"]= $data['FID_PROGRAM'];
+                        $params["FID_APLIKASI"]= $data['FID_APLIKASI'];
+                        $params["LOAN_TYPE"]= $data['LOAN_TYPE'];
+                        $params["PLAFON"]= $data['PLAFON']; 
+                        $params["TANGGAL_LAHIR"]= $data['TANGGAL_LAHIR'];// format yyyyMMdd
+                        $params["JANGKA_WAKTU"]= $data['JANGKA_WAKTU']; 
+                        $params["BUNGA_PINJAMAN"]= $data['BUNGA_PINJAMAN'];
+                        $url = config('restapi.asmx_ajko');
+                        $client = new \SoapClient($url);
+                        $resultclient = $client->LAS_DETAIL_PROGRAM_BRIGUNA($params);
+                        $datadetail = $resultclient->LAS_DETAIL_PROGRAM_BRIGUNAResult;
+                        $result = (array) $datadetail;
+                        return $result;
+                    } catch (Exception $e) {
+                        return [
+                            'Response_code' => 04, 
+                            'Response_message' => 'Gagal Koneksi Jaringan'
+                        ];
+                    }
+                }
+
+                return [
+                    'Response_code' => 05, 
+                    'Response_message' => 'Uknown request data'
+                ];
+                break;
+
+            case 'LAS_LIST_PROGRAM_BRIGUNA' :
+                try {                    
+                    $url = config('restapi.asmx_ajko');
+                    $client = new \SoapClient($url);
+                    $resultclient = $client->LAS_LIST_PROGRAM_BRIGUNA();
+                    if($resultclient->LAS_LIST_PROGRAM_BRIGUNAResult){
+                        $datadetail = $resultclient->LAS_LIST_PROGRAM_BRIGUNAResult;
+                        $data_xml = '<?xml version="1.0" encoding="utf-8"?><body>'.$datadetail->DT1->any.'</body>';
+                        
+                        $document = new \DOMDocument();
+                        $document->loadXml($data_xml);
+                        $listProgram = $document->getElementsByTagName('ListProgram');
+                        $arr_program = array();
+                        foreach ($listProgram as $program) {
+                            $xmlId = $program->getElementsByTagName('ID');
+                            $xmlNamaProgram = $program->getElementsByTagName('NAMA_PROGRAM');
+                            $arr_program['ListProgram'][] = array('id' => $xmlId->item(0)->nodeValue, 'nama_program' => $xmlNamaProgram->item(0)->nodeValue);
+                        }
+                        // print_r($arr_program);
+                        // exit();
+                        // $xml = new \SimpleXMLElement($subject);
+                        // $data = json_decode(json_encode($xml),TRUE);
+                        // $xml  = simplexml_load_string($subject,"SimpleXMLElement",LIBXML_NOCDATA);
+                        // $data = json_decode(json_encode($xml),TRUE);
+                        // $result = (array) $datadetail;
+                        return $arr_program;
+                    }
+                    return [
+                        'Response_code' => 04, 
+                        'Response_message' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
+                    ];
+                } catch (Exception $e) {
+                    return [
+                        'Response_code' => 05, 
+                        'Response_message' => 'Gagal Koneksi Jaringan'
+                    ];
+                }
+                break;
+
             case 'inquiryPremiAJKO':
                 if (!empty($data)) {
                     $params = [
@@ -363,8 +423,7 @@ class ApiLasController extends Controller
                                 'data' => $error
                             ]
                         ];
-                    }
-                    catch(SoapFault $f){
+                    } catch(SoapFault $f) {
                         $error[0] = 'Gagal Koneksi Jaringan';
                         return [
                             'code' => 04, 
@@ -1224,7 +1283,7 @@ class ApiLasController extends Controller
 
                     if(isset($datadetail->statusCode) && $datadetail->statusCode == '01') {
                         // putusan pencairan ya atau tolak
-                        if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6') {
+                        if ($data['flag_putusan'] == '2' || $data['flag_putusan'] == '6' || $data['flag_putusan'] == '5') {
                             $eform_request['pinca_name']  = $data['pinca_name'];
                             $eform_request['pinca_position'] = $data['pinca_position'];
                             if ($data['is_send'] == '1') {
@@ -1233,12 +1292,34 @@ class ApiLasController extends Controller
                             } elseif ($data['is_send'] == '3' || $data['is_send'] == '4') {
                                 $eform_request['status_eform'] = "Rejected";
                                 $eform_request['response_status'] = "Ditolak Briguna";
+                            // kembali ke ao
+                            } elseif ($data['flag_putusan'] == '5') {
+                                $eform_request['is_approved']  = false;
+                                $eform_request['status_eform'] = "";
+                                $eform_request['response_status'] = "";
                             }
-                            $data_briguna = [
-                                'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
-                                'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
-                                'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus']
-                            ];
+
+                            if (isset($data['catatan_adk'])) {
+                                $data_briguna = [
+                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                    'tgl_pencairan'=> !isset($data['tgl_pencairan'])?"":$data['tgl_pencairan'],
+                                    'catatan_adk' => !isset($data['catatan_adk'])?"":$data['catatan_adk']
+                                ];
+                            } elseif (!isset($data['catatan_adk']) && $data['flag_putusan'] == '5') {
+                                $data_briguna = [
+                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                    'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
+                                    'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus'],
+                                    'catatan_adk' => null,
+                                    'tgl_pencairan' => null
+                                ];
+                            } else {
+                                $data_briguna = [
+                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                                    'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
+                                    'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus']
+                                ];
+                            }
                         // pencairan brinets
                         } elseif ($data['flag_putusan'] == '7') {
                             if ($data['is_send'] == '6') {
@@ -1251,12 +1332,6 @@ class ApiLasController extends Controller
                                 'tgl_pencairan' => date('Y-m-d H:i:s')
                             ];
                         } else {
-                            // kembali ke ao
-                            if($data['flag_putusan'] == '5') {
-                                $eform_request['is_approved']  = false;
-                                $eform_request['status_eform'] = "";
-                                $eform_request['response_status'] = "";
-                            }
                             $data_briguna = [
                                 'is_send'   => !isset($data['is_send'])?null:$data['is_send']
                             ];
@@ -1476,6 +1551,18 @@ class ApiLasController extends Controller
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
+            // Get Premi Asuransi AJKO
+            $param_premi = [
+                'FID_PROGRAM'  => !isset($request['FID_PROGRAM'])?0:$request['FID_PROGRAM'],
+                'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
+                'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?0:$request['Kode_fasilitas'],
+                'PLAFON'       => !isset($request['Plafond_usulan'])?0:$request['Plafond_usulan'],
+                'TANGGAL_LAHIR'=> !isset($request['tgl_lahir2'])?'19700512':$request['tgl_lahir2'],// format date 19701231
+                'JANGKA_WAKTU' => !isset($request['Jangka_waktu'])?0:$request['Jangka_waktu'],
+                'BUNGA_PINJAMAN'=> !isset($request['Suku_bunga'])?0:$request['Suku_bunga']
+            ];
+            $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
+            // print_r($premi);exit();
             // insert prescreening
             $content_prescreening = [
                 "Fid_aplikasi"           => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
@@ -1563,10 +1650,14 @@ class ApiLasController extends Controller
                         "Provisi_kredit"        => !isset($request['Provisi_kredit'])?"":$request['Provisi_kredit'],
                         "Biaya_administrasi"    => !isset($request['Biaya_administrasi'])?"":$request['Biaya_administrasi'],
                         "Penalty"               => !isset($request['Penalty'])?"":$request['Penalty'],
-                        "Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
+						"Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
                         "Premi_asuransi_jiwa"   => !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'],
                         "Premi_beban_bri"       => !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'],
                         "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],
+                       /*  "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$premi['NamaPerusahaanAsuransi'],
+                        "Premi_asuransi_jiwa"   => !isset($premi['PremiStandart'])?"":$premi['PremiStandart'],
+                        "Premi_beban_bri"       => !isset($premi['PremiBRI'])?"":$premi['PremiBRI'],
+                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'], */
                         "Flag_promo"       => !isset($request['promo'])?"":$request['promo'],
                         "Fid_promo"        => !isset($request['nama_program_promo'])?"":$request['nama_program_promo'],
                         "Pengadilan_terdekat"   => !isset($request['Pengadilan_terdekat'])?"":$request['Pengadilan_terdekat'],
@@ -1665,10 +1756,14 @@ class ApiLasController extends Controller
                                 "Provisi_kredit"            => $request['Provisi_kredit'],
                                 "Biaya_administrasi"        => $request['Biaya_administrasi'],
                                 "Penalty"                   => $request['Penalty'],
-                                "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+								  "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
                                 "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
                                 "Premi_beban_bri"           => $request['Premi_beban_bri'],
                                 "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+                              /*   "Perusahaan_asuransi"       => $premi['NamaPerusahaanAsuransi'],
+                                "Premi_asuransi_jiwa"       => $premi['PremiStandart'],
+                                "Premi_beban_bri"           => $premi['PremiBRI'],
+                                "Premi_beban_debitur"       => $premi['PremiDebitur'], */
                                 "Flag_promo"                => $request['promo'],
                                 "Fid_promo"                 => $request['nama_program_promo'],
                                 "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
@@ -1741,7 +1836,9 @@ class ApiLasController extends Controller
                                 "jenis_rekening"            => !isset($request['jenis_rekening'])?"":$request['jenis_rekening'],
                                 "nama_bank_lain"            => !isset($request['nama_bank_lain'])?"":$request['nama_bank_lain'],
                                 "nama_bank_lain_name"       => !isset($request['nama_bank_lain_name'])?"":$request['nama_bank_lain_name'],
-                                "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name']
+                                "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name'],
+                                "ket_agama"   => !isset($request['ket_agama'])?"":$request['ket_agama'],
+                                "catatan_analisa" => !isset($request['catatan_analisa'])?"":$request['catatan_analisa']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform['is_approved']  = true;
@@ -1791,8 +1888,12 @@ class ApiLasController extends Controller
                                         'score'       => $hitung['items'][0]->score,
                                         'grade'       => $hitung['items'][0]->grade,
                                         'cutoff'      => $hitung['items'][0]->cutoff,
-                                        'definisi'    => $hitung['items'][0]->definisi
-                                    ]
+                                        'definisi'    => $hitung['items'][0]->definisi,
+/*                                         'premi'       => $premi['PremiStandart'],
+                                        'premi_bri'   => $premi['PremiBRI'],
+                                        'premi_debitur'   => $premi['PremiDebitur'],
+                                        'nama_perusahaan' => $premi['NamaPerusahaanAsuransi']
+ */                                    ]
                                 ]
                             ];
                             \Log::info("----- analisa update table eforms dan briguna sukses -----");
@@ -1898,7 +1999,7 @@ class ApiLasController extends Controller
                 $briguna->update($response);
                 $message = [
                     'message' => 'Sukses update briguna',
-                    'contents' => $briguna
+                    'contents' => $briguna->get()
                 ];
 
                 return response()->success($message, 200);
@@ -1959,7 +2060,7 @@ class ApiLasController extends Controller
                 $briguna->update($data_briguna);
                 $message = [
                     'message' => 'Sukses update eforms atau briguna',
-                    'contents' => $briguna
+                    'contents' => $briguna->get()
                 ];
                 return response()->success($message, 200);
             } catch (Exception $e) {
@@ -2032,23 +2133,14 @@ class ApiLasController extends Controller
                 $result = $this->return_conten($datadetail);
                 return $result;
             }
-            $error[0] = 'Hasil Inquiry Kosong / Anda belum memiliki user LAS';
             return [
                 'code' => 04, 
-                'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS',
-                'contents' => [
-                    'data' => $error
-                ]
+                'descriptions' => 'Hasil Inquiry Kosong / Anda belum memiliki user LAS'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
-                'code' => 04, 
-                'descriptions' => 'Gagal Koneksi Jaringan',
-                'contents' => [
-                    'data' => $error
-                ]
+                'code' => 05, 
+                'descriptions' => 'Gagal Koneksi Jaringan'
             ];
         }        
     }
@@ -2068,7 +2160,6 @@ class ApiLasController extends Controller
             ];
             $save = \DB::table('json_ws_log')->insert($data_log);
             \Log::info('berhasil save kirimPemutus json_ws_log'.$save);
-
             $client = $this->client();
             $resultclient = $client->kirimPemutus($parameter);
             if($resultclient->kirimPemutusResult){
@@ -2076,23 +2167,14 @@ class ApiLasController extends Controller
                 $dataResult = (array) $datadetail;
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2124,23 +2206,14 @@ class ApiLasController extends Controller
                     return $dataResult;
                 }
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2158,29 +2231,19 @@ class ApiLasController extends Controller
             \Log::info('berhasil save insertDataKreditBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertDataKreditBriguna($parameter);
-
             if($resultclient->insertDataKreditBrigunaResult){
                 $datadetail = json_decode($resultclient->insertDataKreditBrigunaResult);
                 $dataResult = (array) $datadetail;
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2197,7 +2260,6 @@ class ApiLasController extends Controller
             $save = \DB::table('json_ws_log')->insert($data_log);
             \Log::info('berhasil save insertPrescoringBriguna json_ws_log'.$save);
             $client = $this->client();
-
             if ($jenis_pinjaman == '2') {
                 $resultclient = $client->insertPrescoringBrigunaUmum($parameter);
                 if($resultclient->insertPrescoringBrigunaUmumResult){
@@ -2213,23 +2275,14 @@ class ApiLasController extends Controller
                     return $dataResult;
                 }
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2247,29 +2300,19 @@ class ApiLasController extends Controller
             \Log::info('berhasil save insertPrescreeningBriguna json_ws_log'.$save);
             $client = $this->client();
             $resultclient = $client->insertPrescreeningBriguna($parameter);
-
-            if($resultclient->insertPrescreeningBrigunaResult){
+            if($resultclient->insertPrescreeningBrigunaResult) {
                 $datadetail = json_decode($resultclient->insertPrescreeningBrigunaResult);
                 $dataResult = (array) $datadetail;
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
@@ -2287,8 +2330,7 @@ class ApiLasController extends Controller
             $save = \DB::table('json_ws_log')->insert($data_log);
             $client = $this->client();
             $resultclient = $client->insertDataDebtPerorangan($parameter);
-
-            if($resultclient->insertDataDebtPeroranganResult){
+            if($resultclient->insertDataDebtPeroranganResult) {
                 $datadetail = json_decode($resultclient->insertDataDebtPeroranganResult);
                 $dataResult = (array) $datadetail;
                 if ($dataResult['statusCode'] == '01') {
@@ -2304,28 +2346,19 @@ class ApiLasController extends Controller
                 }
                 return $dataResult;
             }
-            $error[0] = 'Gagal Koneksi DB';
             return [
                 'statusCode' => 04, 
-                'statusDesc' => 'Gagal Koneksi DB',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi DB'
             ];
-        }
-        catch(SoapFault $f){
-            $error[0] = 'Gagal Koneksi Jaringan';
+        } catch(SoapFault $f) {
             return [
                 'statusCode' => 05, 
-                'statusDesc' => 'Gagal Koneksi Jaringan',
-                'items' => [
-                    'data' => $error
-                ]
+                'statusDesc' => 'Gagal Koneksi Jaringan'
             ];
         }
     }
 
-    function datafoto($request, $id_foto, $exist_field){
+    function datafoto($request, $id_foto, $exist_field) {
         $path  = public_path( 'uploads/' . $id_foto );
         $image = substr($request, -4);
         if ($image == '.jpg' || $image == '.pdf' || $image == 'jpeg' || $image == '.png' || $image == '.gif') {
@@ -2385,5 +2418,35 @@ class ApiLasController extends Controller
             $image->move( $path, $filename );
         }
         return $filename;
+    }
+
+    function LAS_DETAIL_PROGRAM_BRIGUNA($data) {
+        if (!empty($data)) {
+            try {
+                $params["FID_PROGRAM"]= $data['FID_PROGRAM'];
+                $params["FID_APLIKASI"]= $data['FID_APLIKASI'];
+                $params["LOAN_TYPE"]= $data['LOAN_TYPE'];
+                $params["PLAFON"]= $data['PLAFON']; 
+                $params["TANGGAL_LAHIR"]= $data['TANGGAL_LAHIR'];// format yyyyMMdd
+                $params["JANGKA_WAKTU"]= $data['JANGKA_WAKTU']; 
+                $params["BUNGA_PINJAMAN"]= $data['BUNGA_PINJAMAN'];
+                $url = config('restapi.asmx_ajko');
+                $client = new \SoapClient($url);
+                $resultclient = $client->LAS_DETAIL_PROGRAM_BRIGUNA($params);
+                $datadetail = $resultclient->LAS_DETAIL_PROGRAM_BRIGUNAResult;
+                $result = (array) $datadetail;
+                return $result;
+            } catch (Exception $e) {
+                return [
+                    'Response_code' => 04, 
+                    'Response_message' => 'Gagal Koneksi Jaringan'
+                ];
+            }
+        }
+
+        return [
+            'Response_code' => 05, 
+            'Response_message' => 'Uknown request data'
+        ];
     }
 }

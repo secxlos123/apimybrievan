@@ -14,6 +14,7 @@ use App\Models\Crm\ActionActivity;
 use App\Models\Crm\rescheduleActivity;
 use App\Models\Crm\MarketingActivityFollowup;
 use App\Models\Crm\Referral;
+use App\Models\Crm\PhoneDuration;
 
 class marketingActivityController extends Controller
 {
@@ -272,6 +273,73 @@ class marketingActivityController extends Controller
     }
 
     /**
+    * Store a newly created resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function store_phoneDuration(Request $request)
+    {
+      $data['pn'] = $request->header('pn');
+      if ($request->has('cif')) {
+        $data['cif'] = $request['cif'];
+      } else {
+        $data['nik'] = $request['nik'];
+      }
+      $data['phone_number'] = $request['phone_number'];
+      $data['duration'] = $request['duration'];
+
+      $save = PhoneDuration::create($data);
+
+      if ($save) {
+          return response()->success([
+              'message' => 'Data Activity Phone duration berhasil ditambah.',
+              'contents' => collect($save)->merge($request->all()),
+          ], 201);
+      }
+
+      return response()->error([
+          'message' => 'Data Activity Phone duration Tidak Dapat Ditambah.',
+      ], 500);
+    }
+
+    /**
+    * Store a newly created resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function phoneDuration_byCustomer(Request $request)
+    {
+      $pn = $request->header('pn');
+      $branch = $request->header('branch');
+      $auth = $request->header('Authorization');
+      $pemasar = $this->pemasar($pn,$branch,$auth);
+      if ($pemasar != null) {
+        $pemasar_name = array_column($pemasar, 'SNAME','PERNR' );
+      } else {
+        $pemasar_name = [];
+      }
+
+      $listPhoneActivity = PhoneDuration::getListDurationByCustomer($request)->get();
+      $data = [];
+
+      foreach ($listPhoneActivity as $key => $value) {
+        $data []= [
+          'pn' => $value->pn,
+          'officer' =>array_key_exists($value->pn, $pemasar_name) ? $pemasar_name[$value->pn]:'',
+          'nik' => $value->nik,
+          'cif' => $value->cif,
+          'phone_number' => $value->phone_number,
+          'duration' => $value->duration
+        ];
+      }
+      return response()->success( [
+          'message' => 'Sukses get list Phone Activity by Customer',
+          'contents' => $data
+        ]);
+    }
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -365,8 +433,8 @@ class marketingActivityController extends Controller
           $destinationPath = public_path('uploads/crm/lkn');
           $image->move($destinationPath, $name);
           $followUp['img_lkn'] = $name;
+          $request['img_filename'] = $name;
         }
-
         $save = MarketingActivityFollowup::create($followUp);
 
 
@@ -377,7 +445,7 @@ class marketingActivityController extends Controller
         if ($marketing->ref_id != null) {
           $referral = Referral::where('ref_id', $marketing->ref_id);
           $referral_update['status'] = $request['fu_result'];
-          if($request['fu_result']=='Done') {
+          if($request['fu_result']=='Done' || $request['fu_result']=='done') {
             $referral_update['point'] = '2';
           }
           $referral->update($referral_update);
@@ -386,7 +454,7 @@ class marketingActivityController extends Controller
         if ($save) {
             return response()->success([
                 'message' => 'Data Tindakan berhasil ditambah.',
-                'contents' => collect($save)->merge($request->all()),
+                'contents' => collect($save),
             ], 201);
         }
 
