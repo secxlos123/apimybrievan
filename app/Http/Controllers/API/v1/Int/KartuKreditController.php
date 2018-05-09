@@ -701,10 +701,10 @@ class KartuKreditController extends Controller{
 		]);
 		//tampilin ke eform
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
-		$eformId= $req->eform_id;
-		$rangeLimit =  $dataKK->range_limit;
-		$losScore = $dataKK->los_score;
-		$anStatus = $dataKK->analyzed_status;
+		$eformId= $req['eform_id'];
+		$rangeLimit =  $dataKK['range_limit'];
+		$losScore = $dataKK['los_score'];
+		$anStatus = $dataKK['analyzed_status'];
 
 
 		$newData = [
