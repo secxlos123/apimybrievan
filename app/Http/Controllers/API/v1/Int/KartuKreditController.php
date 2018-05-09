@@ -493,6 +493,7 @@ class KartuKreditController extends Controller{
     			$host = '10.107.11.111:9975/notif/toemail';
 		    	$header = ['access_token'=> $this->tokenLos];
 		    	$client = new Client();
+		    	$email = $kk['email'];
 
 		    	try{
 		    		$res = $client->request('POST',$host, ['headers' =>  $header,
