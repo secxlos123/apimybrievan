@@ -410,7 +410,7 @@ class KartuKreditController extends Controller{
     	$emailGenerator = new KreditEmailGenerator();
     	// $routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
     	// $routes = 'api.dev.net/api/v1/int/kk/verifyemail';
-    	$appEnv = env('KREDIT_EMAIL_GENERATOR_POSITION','dev');
+    	$appEnv = env('KREDIT_EMAIL_GENERATOR_POSITION','prod');
      	if ($appEnv == 'dev'){
          	$routes = 'apimybridev.bri.co.id/api/v1/int/kk/verifyemail';
       	}else{
@@ -693,15 +693,18 @@ class KartuKreditController extends Controller{
 			]);	
 		}
 
-		
+		$eformId= $req['eform_id'];
 		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
+		//update isfinish eform
+		$updateEform = EForm::where('id',$eformId)->update([
+			'IsFinish'=>'true'
+		]);
 		//tampilin ke eform
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
-		$eformId= $req['eform_id'];
 		$rangeLimit =  $dataKK['range_limit'];
 		$losScore = $dataKK['los_score'];
 		$anStatus = $dataKK['analyzed_status'];
