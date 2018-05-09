@@ -484,11 +484,13 @@ class KartuKreditController extends Controller{
     			\Log::info($refNumber);
     			\Log::info($nik);
     			\Log::info('================');
-    			$createQrcode = $this->createQrcode($refNumber,$nik);
+    			$qrcode = $this->createQrcode($refNumber,$nik);
+    			KartuKredit::where('eform_id',$eformid)->update([
+    				'qrcode'=>$qrcode
+    			]);
     			$em = new KreditEmailGenerator();
     			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
-
     			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno,$kk['qrcode']);
     			$host = '10.107.11.111:9975/notif/toemail';
 		    	$header = ['access_token'=> $this->tokenLos];
@@ -497,7 +499,7 @@ class KartuKreditController extends Controller{
 
 		    	try{
 		    		$res = $client->request('POST',$host, ['headers' =>  $header,
-		    				'form_params' => ['email' => $email,'subject'=>'Email Verifikasi Pengajuan Kartu Kredit BRI','message'=>$message]
+		    				'form_params' => ['email' => $email,'subject'=>'Laporan Verifikasi Email Pengajuan Kartu Kredit BRI','message'=>$message]
 		    			]);
 		    	}catch (RequestException $e){
 		    		return  $e->getMessage();
@@ -515,7 +517,8 @@ class KartuKreditController extends Controller{
     function createQrcode($refnumber,$nik){
     	$filename = $refnumber.'-qrcode.png';
     	QrCode::format('png')->size(250)->generate($refnumber.$nik, public_path('uploads/'.$nik.'/'.$filename));
-    	return true;
+
+    	return $filename;
     }
 
     public function analisaKK(Request $req){
