@@ -604,8 +604,10 @@ class EFormController extends Controller
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
                         $updateEform = EForm::where('id',$eformId)->update([
-                            'prescreening_status'=>3
+                            'prescreening_status'=>3,
+                            'IsFinish'=>'true',
                         ]);
+
 
                         return response()->json([
                             'responseCode' => '02',
