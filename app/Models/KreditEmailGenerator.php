@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 class KreditEmailGenerator extends Model{
 
 	public function sendEmailVerification($data,$apregno,$host){
+
       //sementara panggil eform liat nik
       $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
       $eformid = $selectEformid['eform_id'];
@@ -209,7 +210,7 @@ class KreditEmailGenerator extends Model{
 
 	}
 
-   public function sendFinishVerificationEmail($data,$apregno,$qrcode){
+   public function convertToFinishVerificationEmailFormat($data,$apregno,$qrcode){
 
       $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
       $eformid = $selectEformid['eform_id'];
@@ -372,15 +373,6 @@ class KreditEmailGenerator extends Model{
             <td align="center" bgcolor="#fafafa">
                <table class="textbutton" align="center" border="0" cellspacing="0" cellpadding="0">
                   <tbody>
-                     <tr>
-                        <td>
-                           <p>
-                              <b>Kami telah mengirimkan kode verifikasi ke nomor HP anda,
-                              <br> silakan masukkan kode verifikasi tersebut pada form dibawah
-                              </b>
-                           </p>
-                        </td>
-                     </tr>
                      <tr>
                         <td height="20px"></td>
                      </tr>
