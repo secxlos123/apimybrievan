@@ -39,6 +39,7 @@ use App\Models\Crm\apiPdmToken;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use App\Http\Controllers\API\v1\Int\PrescreeningController;
+use App\Models\Mitra4;
 
 class EFormController extends Controller
 {
@@ -49,12 +50,23 @@ class EFormController extends Controller
         $this->userservices = $userservices;
         $this->userNotification = $userNotification;
     }
-
+	public function eksternalmitra( Request $request )
+	{
+	        \Log::info($request->all());
+				
+			$limit = $request->input( 'limit' ) ?: 10;
+			$mitra = Mitra4::filter( $request )->paginate($limit);
+			//$mitra = $mitra->toArray();
+        return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+	}
     public function ListBranch($data)
     {
       $client = new Client();
       $host = env('APP_URL');
-      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host='http://apimybridev.bri.co.id/'){
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
         $url = 'http://10.35.65.208:81/bribranch/branch/';
        }else{
         $url = 'http://api.briconnect.bri.co.id/bribranch/branch/';
@@ -335,12 +347,7 @@ class EFormController extends Controller
     {
         $recontest = (empty(request()->header('recontest')) ? false : true);
         $eform = EForm::findOrFail($eform_id);
-        if($eform['product_type'] == 'kartu_kredit'){
-          $eform = EForm::with('kartukredit')->get();
-          return response()->success([
-            'contents'=>$eform
-          ]);
-        }else if ( $eform['product_type'] == 'briguna' ) {
+        if ( $eform['product_type'] == 'briguna' ) {
             $another_array = [];
             $another_array['id'] = $eform_id;
             $another_array['user_id'] = $eform['user_id'];
@@ -369,22 +376,22 @@ class EFormController extends Controller
     public function uploadKKImage($image,$nik,$type,$time){
       $path = public_path('uploads/'.$nik.'/');
       $filename = null;
-        if ($image) {
-            if (!$image->getClientOriginalExtension()) {
-                if ($image->getMimeType() == '.pdf') {
-                    $extension = 'pdf';
-                }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
-                    $extension = 'jpg';
-                }else{
-                    $extension = 'png';
-                }
-            }else{
-                $extension = $image->getClientOriginalExtension();
-            }
-            $filename = $time. '-'.$type.'.' . $extension;
-            $image->move( $path, $filename );
-        }
-        return $filename;
+      if ($image) {
+          if (!$image->getClientOriginalExtension()) {
+              if ($image->getMimeType() == '.pdf') {
+                  $extension = 'pdf';
+              }elseif($image->getMimeType() == '.jpg'||$image->getMimeType() == '.jpeg'){
+                  $extension = 'jpg';
+              }else{
+                  $extension = 'png';
+              }
+          }else{
+              $extension = $image->getClientOriginalExtension();
+          }
+          $filename = $time. '-'.$type.'.' . $extension;
+          $image->move( $path, $filename );
+      }
+      return $filename;
 
     }
 
@@ -597,8 +604,10 @@ class EFormController extends Controller
                     if ($responseCode == 0 || $responseCode == 00){
                         //langsung merah. update eform.
                         $updateEform = EForm::where('id',$eformId)->update([
-                            'prescreening_status'=>3
+                            'prescreening_status'=>3,
+                            'IsFinish'=>'true',
                         ]);
+
 
                         return response()->json([
                             'responseCode' => '02',

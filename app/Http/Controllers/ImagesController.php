@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Image;
+use Response;
 
 class ImagesController extends Controller
 {
@@ -87,10 +88,13 @@ class ImagesController extends Controller
     {
         $cekpdf = substr($file, -3);
         if($cekpdf == 'pdf'){
+            \Log::info("========MASUK KESINI GAK (PDF)================");
             $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-            if($secure == NULL ){
+            \Log::info($secure);
+            if($secure == 1 ){
                 $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-                    return response()->download(public_path('uploads/'.$folder.'/'.$file), null, [], null);
+                    // return response()->download(public_path('uploads/'.$folder.'/'.$file), null, [], null);
+                    return Response::download(public_path('uploads/'.$folder.'/'.$file), null, [], null);
                 }else{
                     return response()->error([
                 'message' => "you can't access this site !",
