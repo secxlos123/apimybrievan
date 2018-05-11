@@ -621,131 +621,14 @@ class EFormMonitoring extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if( $request->has( 'status' ) ) {
-                if( $request->status == 'Submit' ) {
-                    $eform->whereIsApproved( true );
-
-                } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2' || $request->status == 'Disbursed') {
-                    $eform->where('status_eform', $request->status);
-
-                } else if( $request->status=='MenungguPutusan' ){
-					$eform->where('status_eform', 'Menunggu Putusan');
-				}else if( $request->status == 'Initiate' ) {
-                    $eform->has( 'visit_report' )->whereIsApproved( false );
-
-                } else if( $request->status == 'Dispose' ) {
-                    $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-
-                } else if( $request->status == 'Rekomend' ) {
-                    $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-
-                }
+            if( $request->has('product') ) {
+                $eform->where('eforms.product_type', $request->product);
             }
         } );
 
-        if ($request->has('search')) {
-            $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-                ->where( function( $eform ) use( $request, &$user ) {
-                    $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-                        // ->orWhere('users.id', '=', $request->input('search'))
-                        ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
-                } );
-
-        } else {
-            if ($request->has('customer_name')){
-                $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-                    ->where( function( $eform ) use( $request, &$user ) {
-                        $eform->orWhere(\DB::raw("LOWER(concat(users.first_name,' ', users.last_name))"), "like", "%".strtolower($request->input('customer_name'))."%");
-                    } );
-            }
-
-            if ($request->has('ref_number')) {
-                $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                    $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
-                } );
-            }
-        }
-
-
-        if ($request->has('prescreening')) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                $prescreening = $request->input('prescreening');
-                if (strtolower($prescreening) != 'all') {
-                    $eform->Where('eforms.prescreening_status', $prescreening);
-                }
-            } );
-        }
-
-        if ($request->has('name')) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                $name = $request->input('name');
-                if (strtolower($name) != 'all') {
-                    $eform->Where('eforms.ao_id', substr('000'.$request->input('name'), -8));
-                }
-            } );
-        }
-
-        if ($request->has('start_date') || $request->has('end_date')) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                $start_date = date('Y-m-d',strtotime($request->input('start_date')));
-                $end_date = $request->has('end_date') ? date('Y-m-d',strtotime($request->input('end_date'))) : date('Y-m-d');
-
-                $eform->where('eforms.created_at', '>=', $start_date . ' 00:00:00')
-                ->where('eforms.created_at', '<=', $end_date . ' 23:59:59');
-            } );
-        }
-
-        if ( !$request->has('is_screening') ) {
-            $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-                if ( $user['role'] == 'ao' ) {
-                    $eform = $eform->where('eforms.ao_id', substr('000'.$user['pn'], -8));
-
-                }
-
-                if ($request->has('branch_id')) {
-                    $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
-                }
-            } );
-
-            if ( $user['role'] != 'ao' || $request->has('customer_name')) {
-                if ( $request->has('customer_name') ) {
-                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
-
-                } else {
-                    $eform = $eform->select([
-                            'eforms.*'
-                            , \DB::Raw(" case when status_eform in ('Rejected') then 4 when status_eform in ('Approval2', 'Approval1', 'approved') then 3 when ao_id is not null then 2 else 1 end as new_order ")
-                        ]);
-                    if ( $sort[0] != "action" ) {
-                        $eform = $eform->orderBy('new_order', 'asc');
-                    }
-
-                }
-
-            }
-        }
-
-        if ( $request->has('is_screening') ) {
-            if ( $request->input('is_screening') != 'All' ) {
-                $eform = $eform->where('eforms.is_screening', $request->input('is_screening'));
-
-            }
-            if ( $user['role'] != 'ao' || $request->has('search')) {
-                if ( $request->has('search') ) {
-                    $eform = $eform->select( ['eforms.*', 'users.first_name', 'users.last_name'] );
-
-                }
-            }
-            $eform = $eform->where('response_status', 'approve');
-        }
-
-        if ( $request->has('product') ) {
-            if ( $request->input('product') != 'All' ) {
-                $eform = $eform->where('eforms.product_type', $request->input('product'));
-
-            }
-        }
+        // if ($request->has('branch_id')) {
+        //     $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
+        // }
 
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
             $sort[0] = 'created_at';
