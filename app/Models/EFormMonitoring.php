@@ -622,11 +622,11 @@ class EFormMonitoring extends Model implements AuditableContract
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if( $request->has('product') ) {
-                $eform->where('product_type', $request->product);
+                $eform->where('eforms.product_type', $request->product);
             }
         } );
 
-        // dd($eform);
+        dd($eform);
 
         // if ($request->has('branch_id')) {
         //     $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
