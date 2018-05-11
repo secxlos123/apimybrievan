@@ -630,6 +630,8 @@ class EFormMonitoring extends Model implements AuditableContract
             }
         } );
 
+        dd($eform);
+
         // if ($request->has('branch_id')) {
         //     $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
         // }
