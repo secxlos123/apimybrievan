@@ -620,10 +620,6 @@ class EFormMonitoring extends Model implements AuditableContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
-        if ( $request->has('product') ) {
-            $eform = $eform->where('eforms.product_type', $request->input('product'));
-        }
-
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
             if( $request->has('product') ) {
                 $eform->where('product_type', $request->product);
