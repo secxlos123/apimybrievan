@@ -621,8 +621,17 @@ class EFormMonitoring extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if( $request->has('product') ) {
-                $eform->where('eforms.product_type', $request->product);
+            if( $request->has('product_type') ) {
+                $eform->where('eforms.product_type', $request->product_type);
+            }
+//            if( $request->has('dev_id') ) {
+//                $eform->where('eforms.developer_id', $request->developer_id);
+//            }
+//            if( $request->has('kanwil_id') ) {
+//                $eform->where('eforms.kanwil_id', $request->kanwil_id);
+//            }
+            if( $request->has('branch_id') ) {
+                $eform->where('eforms.branch_id', $request->branch_id);
             }
         } );
         
