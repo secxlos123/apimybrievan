@@ -626,8 +626,10 @@ class EFormMonitoring extends Model implements AuditableContract
 //            }
 //        } );
         
-        if($request->has('product'))
+        if($request->has('product')){
             $result = EForm::where('product_type',$request->product)->get();
+        }
+        else $result = null;
 
         // if ($request->has('branch_id')) {
         //     $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
@@ -638,9 +640,11 @@ class EFormMonitoring extends Model implements AuditableContract
         }
 
 //        $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
-        $eform = $result->orderBy('eforms.'.$sort[0], $sort[1]);
+//        $eform = $result->orderBy('eforms.'.$sort[0], $sort[1]);
+//        
+//        return $eform;
         
-        return $eform;
+        return $result;
     }
 
     /**
