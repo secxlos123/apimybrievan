@@ -1305,14 +1305,14 @@ class ApiLasController extends Controller
                                     'tgl_pencairan'=> !isset($data['tgl_pencairan'])?"":$data['tgl_pencairan'],
                                     'catatan_adk' => !isset($data['catatan_adk'])?"":$data['catatan_adk']
                                 ];
-                            } elseif (!isset($data['catatan_adk']) && $data['flag_putusan'] == '5') {
-                                $data_briguna = [
-                                    'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
-                                    'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
-                                    'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus'],
-                                    'catatan_adk' => null,
-                                    'tgl_pencairan' => null
-                                ];
+                            // } elseif (!isset($data['catatan_adk']) && $data['flag_putusan'] == '5') {
+                            //     $data_briguna = [
+                            //         'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
+                            //         'tgl_putusan'=> !isset($data['tgl_putusan'])?"":$data['tgl_putusan'],
+                            //         'catatan_pemutus' => !isset($data['catatan_pemutus'])?"":$data['catatan_pemutus'],
+                            //         'catatan_adk' => null,
+                            //         'tgl_pencairan' => null
+                            //     ];
                             } else {
                                 $data_briguna = [
                                     'is_send'    => !isset($data['is_send'])?null:$data['is_send'],
@@ -1552,8 +1552,8 @@ class ApiLasController extends Controller
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // Get Premi Asuransi AJKO
-            $param_premi = [
-                'FID_PROGRAM'  => !isset($request['FID_PROGRAM'])?0:$request['FID_PROGRAM'],
+            /*$param_premi = [
+                'FID_PROGRAM'  => !isset($request['Nama_perusahaan_asuransi'])?0:$request['Nama_perusahaan_asuransi'],
                 'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
                 'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?0:$request['Kode_fasilitas'],
                 'PLAFON'       => !isset($request['Plafond_usulan'])?0:$request['Plafond_usulan'],
@@ -1561,7 +1561,7 @@ class ApiLasController extends Controller
                 'JANGKA_WAKTU' => !isset($request['Jangka_waktu'])?0:$request['Jangka_waktu'],
                 'BUNGA_PINJAMAN'=> !isset($request['Suku_bunga'])?0:$request['Suku_bunga']
             ];
-            $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
+            $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);*/
             // print_r($premi);exit();
             // insert prescreening
             $content_prescreening = [
@@ -1654,10 +1654,10 @@ class ApiLasController extends Controller
                         "Premi_asuransi_jiwa"   => !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'],
                         "Premi_beban_bri"       => !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'],
                         "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],
-                       /*  "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$premi['NamaPerusahaanAsuransi'],
+                       /*"Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$premi['NamaPerusahaanAsuransi'],
                         "Premi_asuransi_jiwa"   => !isset($premi['PremiStandart'])?"":$premi['PremiStandart'],
                         "Premi_beban_bri"       => !isset($premi['PremiBRI'])?"":$premi['PremiBRI'],
-                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'], */
+                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'],*/
                         "Flag_promo"       => !isset($request['promo'])?"":$request['promo'],
                         "Fid_promo"        => !isset($request['nama_program_promo'])?"":$request['nama_program_promo'],
                         "Pengadilan_terdekat"   => !isset($request['Pengadilan_terdekat'])?"":$request['Pengadilan_terdekat'],
@@ -1756,14 +1756,14 @@ class ApiLasController extends Controller
                                 "Provisi_kredit"            => $request['Provisi_kredit'],
                                 "Biaya_administrasi"        => $request['Biaya_administrasi'],
                                 "Penalty"                   => $request['Penalty'],
-								  "Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+								"Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
                                 "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
                                 "Premi_beban_bri"           => $request['Premi_beban_bri'],
                                 "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
-                              /*   "Perusahaan_asuransi"       => $premi['NamaPerusahaanAsuransi'],
+                                /*"Perusahaan_asuransi"       => $premi['NamaPerusahaanAsuransi'],
                                 "Premi_asuransi_jiwa"       => $premi['PremiStandart'],
                                 "Premi_beban_bri"           => $premi['PremiBRI'],
-                                "Premi_beban_debitur"       => $premi['PremiDebitur'], */
+                                "Premi_beban_debitur"       => $premi['PremiDebitur'],*/ 
                                 "Flag_promo"                => $request['promo'],
                                 "Fid_promo"                 => $request['nama_program_promo'],
                                 "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
@@ -1838,7 +1838,9 @@ class ApiLasController extends Controller
                                 "nama_bank_lain_name"       => !isset($request['nama_bank_lain_name'])?"":$request['nama_bank_lain_name'],
                                 "Sektor_ekonomi_sid_name"   => !isset($request['Sektor_ekonomi_sid_name'])?"":$request['Sektor_ekonomi_sid_name'],
                                 "ket_agama"   => !isset($request['ket_agama'])?"":$request['ket_agama'],
-                                "catatan_analisa" => !isset($request['catatan_analisa'])?"":$request['catatan_analisa']
+                                "catatan_analisa" => !isset($request['catatan_analisa'])?"":$request['catatan_analisa'],
+                                "nama_program_promo_ket"   => !isset($request['nama_program_promo_ket'])?"":$request['nama_program_promo_ket'],
+                                "nama_perusahaan_asuransi_ket" => !isset($request['nama_perusahaan_asuransi_ket'])?"":$request['nama_perusahaan_asuransi_ket']
                             ];
                             $eform_id = $request['eform_id'];
                             $param_eform['is_approved']  = true;
