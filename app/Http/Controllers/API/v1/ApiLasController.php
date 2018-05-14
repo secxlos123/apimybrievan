@@ -1552,8 +1552,9 @@ class ApiLasController extends Controller
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // Get Premi Asuransi AJKO
-            $kode_fasilitas = substr(1, strlen($request['Kode_fasilitas']));
+            $kode_fasilitas = substr($request['Kode_fasilitas'], 1);
             \Log::info($kode_fasilitas);
+            \Log::info('tesssssssssssssssss');
             $param_premi = [
                 'FID_PROGRAM'  => !isset($request['Nama_perusahaan_asuransi'])?0:$request['Nama_perusahaan_asuransi'],
                 'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
