@@ -288,6 +288,8 @@ class marketingActivityController extends Controller
       }
       $data['phone_number'] = $request['phone_number'];
       $data['duration'] = $request['duration'];
+      $data['date'] = $request['date'];
+      $data['name'] = $request['name'];
 
       $save = PhoneDuration::create($data);
 
