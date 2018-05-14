@@ -1556,7 +1556,7 @@ class ApiLasController extends Controller
             $param_premi = [
                 'FID_PROGRAM'  => !isset($request['Nama_perusahaan_asuransi'])?0:$request['Nama_perusahaan_asuransi'],
                 'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
-                'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?0:$request['Kode_fasilitas'],
+                'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?"":$kode_fasilitas,
                 'PLAFON'       => !isset($request['Plafond_usulan'])?0:$request['Plafond_usulan'],
                 'TANGGAL_LAHIR'=> !isset($request['tgl_lahir2'])?'19700512':$request['tgl_lahir2'],// format date 19701231
                 'JANGKA_WAKTU' => !isset($request['Jangka_waktu'])?0:$request['Jangka_waktu'],
