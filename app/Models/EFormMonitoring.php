@@ -621,10 +621,28 @@ class EFormMonitoring extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if( $request->has('product') ) {
-                $eform->where('eforms.product_type', $request->product);
+            if( $request->has('product_type') ) {
+                $eform->where('eforms.product_type', $request->product_type);
+            }
+//            if( $request->has('dev_id') ) {
+//                $eform->where('eforms.developer_id', $request->developer_id);
+//            }
+//            if( $request->has('kanwil_id') ) {
+//                $eform->where('eforms.kanwil_id', $request->kanwil_id);
+//            }
+            if( $request->has('branch_id') ) {
+                $eform->where('eforms.branch_id', $request->branch_id);
             }
         } );
+        
+//        if($request->has('product')){
+//            if($request->product=='kpr')
+//                $result = EForm::where('product_type','kpr')->get();
+//            else if($request->product=='briguna')
+//                $result = EForm::where('product_type','briguna')->get();
+//            else $result = null;
+//        }
+//        else $result = null;
 
         // if ($request->has('branch_id')) {
         //     $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
@@ -635,8 +653,11 @@ class EFormMonitoring extends Model implements AuditableContract
         }
 
         $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
-
+//        $eform = $result->orderBy('eforms.'.$sort[0], $sort[1]);
+//        
         return $eform;
+        
+//        return $result;
     }
 
     /**

@@ -122,10 +122,10 @@ class EFormController extends Controller
         ], 200 );
     }
 
-	    public function monitoring( Request $request )
+    public function monitoring( Request $request )
     {
-
-	       $limit = $request->input( 'limit' ) ?: 10;
+        $limit = $request->input( 'limit' ) ?: 10;
+        
         if ($request->has('slug')) {
             $newForm = EFormMonitoring::findOrFail($request->input('slug'));
         }else{

@@ -19,7 +19,6 @@ class KartuKredit extends Model
 	//1. nasabah = nasabah yang tidak memiliki pinjaman
 	//2. debitur = nasabah yang memili pinjamna
 	//======================================
-	//pilihan kartu -> kartu yang user ajukan. diisi "world access","easy card", "platinum","touch"
 
     protected $table = 'kartu_kredit_details';
 

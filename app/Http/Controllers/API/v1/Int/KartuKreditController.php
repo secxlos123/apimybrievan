@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
 use App\Models\CustomerDetail;
 use GuzzleHttp\Client;
