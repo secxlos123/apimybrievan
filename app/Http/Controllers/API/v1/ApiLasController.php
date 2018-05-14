@@ -1564,7 +1564,11 @@ class ApiLasController extends Controller
             $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
             $kode_program = substr( '00000000' . $request['Nama_perusahaan_asuransi'], -6 );
             $nama_perusahaan = $kode_program.''.$premi['NamaPerusahaanAsuransi'];
+            \Log::info($premi);
+            \Log::info($kode_program);
+            \Log::info($nama_perusahaan);
             // print_r($premi);exit();
+
             // insert prescreening
             $content_prescreening = [
                 "Fid_aplikasi"           => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
