@@ -1552,7 +1552,7 @@ class ApiLasController extends Controller
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
             // Get Premi Asuransi AJKO
-            $kode_fasilitas = substr($request['Kode_fasilitas'], 1);
+            /*$kode_fasilitas = substr($request['Kode_fasilitas'], 1);
             \Log::info($kode_fasilitas);
             \Log::info('tesssssssssssssssss');
             $param_premi = [
@@ -1569,7 +1569,7 @@ class ApiLasController extends Controller
             $nama_perusahaan = $kode_program.''.$premi['NamaPerusahaanAsuransi'];
             \Log::info($premi);
             \Log::info($kode_program);
-            \Log::info($nama_perusahaan);
+            \Log::info($nama_perusahaan);*/
             // print_r($premi);exit();
 
             // insert prescreening
@@ -1659,14 +1659,14 @@ class ApiLasController extends Controller
                         "Provisi_kredit"        => !isset($request['Provisi_kredit'])?"":$request['Provisi_kredit'],
                         "Biaya_administrasi"    => !isset($request['Biaya_administrasi'])?"":$request['Biaya_administrasi'],
                         "Penalty"               => !isset($request['Penalty'])?"":$request['Penalty'],
-						/*"Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
+						"Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
                         "Premi_asuransi_jiwa"   => !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'],
                         "Premi_beban_bri"       => !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'],
-                        "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],*/
-                       "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$nama_perusahaan,
+                        "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],
+                       /*"Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$nama_perusahaan,
                         "Premi_asuransi_jiwa"   => !isset($premi['PremiStandart'])?"":$premi['PremiStandart'],
                         "Premi_beban_bri"       => !isset($premi['PremiBRI'])?"":$premi['PremiBRI'],
-                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'],
+                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'],*/
                         "Flag_promo"       => !isset($request['promo'])?"":$request['promo'],
                         "Fid_promo"        => !isset($request['nama_program_promo'])?"":$request['nama_program_promo'],
                         "Pengadilan_terdekat"   => !isset($request['Pengadilan_terdekat'])?"":$request['Pengadilan_terdekat'],
@@ -1765,14 +1765,14 @@ class ApiLasController extends Controller
                                 "Provisi_kredit"            => $request['Provisi_kredit'],
                                 "Biaya_administrasi"        => $request['Biaya_administrasi'],
                                 "Penalty"                   => $request['Penalty'],
-								/*"Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
+								"Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
                                 "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
                                 "Premi_beban_bri"           => $request['Premi_beban_bri'],
-                                "Premi_beban_debitur"       => $request['Premi_beban_debitur'],*/
-                                "Perusahaan_asuransi"       => $nama_perusahaan,
+                                "Premi_beban_debitur"       => $request['Premi_beban_debitur'],
+                                /*"Perusahaan_asuransi"       => $nama_perusahaan,
                                 "Premi_asuransi_jiwa"       => $premi['PremiStandart'],
                                 "Premi_beban_bri"           => $premi['PremiBRI'],
-                                "Premi_beban_debitur"       => $premi['PremiDebitur'], 
+                                "Premi_beban_debitur"       => $premi['PremiDebitur'],*/ 
                                 "Flag_promo"                => $request['promo'],
                                 "Fid_promo"                 => $request['nama_program_promo'],
                                 "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
