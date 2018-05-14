@@ -626,7 +626,7 @@ class EFormMonitoring extends Model implements AuditableContract
 //            }
 //        } );
         
-        if(request->has('product'))
+        if($request->has('product'))
             $result = EForm::where('product_type',$request->product)->get();
 
         // if ($request->has('branch_id')) {
