@@ -620,11 +620,14 @@ class EFormMonitoring extends Model implements AuditableContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
-            if( $request->has('product') ) {
-                $eform->where('eforms.product_type', $request->product);
-            }
-        } );
+//        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+//            if( $request->has('product') ) {
+//                $eform->where('eforms.product_type', $request->product);
+//            }
+//        } );
+        
+        if(request->has('product'))
+            $result = EForm::where('product_type',$request->product)->get();
 
         // if ($request->has('branch_id')) {
         //     $eform = $eform->where(\DB::Raw("TRIM(LEADING '0' FROM eforms.branch_id)"), (string) intval($request->input('branch_id')));
@@ -634,8 +637,9 @@ class EFormMonitoring extends Model implements AuditableContract
             $sort[0] = 'created_at';
         }
 
-        $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
-
+//        $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
+        $eform = $result->orderBy('eforms.'.$sort[0], $sort[1]);
+        
         return $eform;
     }
 
