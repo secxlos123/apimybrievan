@@ -700,12 +700,11 @@ class EFormController extends Controller
 								$branchcis ='';
 								if(strlen($BRANCH_CODE)=='5'){
 									$branchcis = $BRANCH_CODE;
-									$k = strlen($BRANCH_CODE);
+									//$k = strlen($BRANCH_CODE);
 									$branchut2 = '';
 									$p = '';
-									for($l=0;$l<$k;$l++){
-										if(substr($BRANCH_CODE,0,$l+1)!='0'){
-											$branchut2 = 'lempar';
+									for($l=0;$l<5;$l++){
+										if(substr($BRANCH_CODE,$l,1)!='0'){
 											$p = $l;
 											goto tangkep;
 										}
