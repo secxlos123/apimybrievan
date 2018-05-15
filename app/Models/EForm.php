@@ -210,7 +210,7 @@ class EForm extends Model implements AuditableContract
         if ( $value >= 250 && $value <= 529 ) {
             return 'Merah';
 
-        } elseif ( ( $value >= 677 && $value <= 900 ) || $value == 999 ) {
+        } elseif ( ( $value >= 677 && $value <= 900 ) ) {
             return 'Hijau';
 
         } else {

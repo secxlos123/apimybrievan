@@ -1853,7 +1853,8 @@ class ApiLasController extends Controller
                             ];
 
                             if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
-                                $param_briguna["Perusahaan_asuransi"] = $premi['NamaPerusahaanAsuransi'];
+                                $param_briguna["Perusahaan_asuransi"] = $request['Nama_perusahaan_asuransi'];
+                                $param_briguna["nama_perusahaan_asuransi"] = $premi['NamaPerusahaanAsuransi'];
                                 $param_briguna["Premi_asuransi_jiwa"] = $premi['PremiStandart'];
                                 $param_briguna["Premi_beban_bri"]     = $premi['PremiBRI'];
                                 $param_briguna["Premi_beban_debitur"] = $premi['PremiDebitur'];
