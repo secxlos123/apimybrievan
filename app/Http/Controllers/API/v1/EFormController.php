@@ -16,6 +16,7 @@ use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
 use App\Models\KartuKredit;
+use App\Models\KartuKreditHistory;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -450,7 +451,6 @@ class EFormController extends Controller
 
     public function store( EFormRequest $request )
     {
-      \Log::info('step 0');
         if ($request->product_type != 'kartu_kredit'){
           
           
@@ -508,7 +508,6 @@ class EFormController extends Controller
                 //cek nik di customer detail, kalau gak ada di create
                 $nik = $request->nik;
                 $checkNik = CustomerDetail::where('nik',$nik)->get();
-                \Log::info('Step 1');
                 if(count($checkNik) == 0){
                     return response()->json([
                         'responseCode' => '01',
@@ -555,7 +554,6 @@ class EFormController extends Controller
                     }
 
                     // $baseRequest['id_foto'] = $id;
-                    \Log::info('Step 2');
                     //create eform
                     $kk = new KartuKredit();
                     //insert ke table eform
@@ -568,7 +566,6 @@ class EFormController extends Controller
                     \Log::info("========crate kk details=============");
                     \Log::info($eformCreate);
 
-                    \Log::info('Step 3');
                     //lengkapi data kredit di eform
                     $rangeLimit = $kkDetailsCreate['range_limit'];
                     $eform = EForm::where('id',$eformId)->update([
@@ -577,7 +574,6 @@ class EFormController extends Controller
 
 
                     //cek dedup
-                    \Log::info('Step 4');
                     $nik = $baseRequest['nik'];
                     $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
 
@@ -596,7 +592,6 @@ class EFormController extends Controller
                             'responseMessage'=> $e->getMessage()
                         ],400);
                     }
-                    \Log::info('Step 5');
                     $body = $res->getBody();
                     $obj = json_decode($body);
                     $responseCode = $obj->responseCode;
@@ -670,7 +665,7 @@ class EFormController extends Controller
             /* BRIGUNA */
                 if($validasi_eform=='true'){
                     $baseRequest['IsFinish'] = 'false';
-                    $data_new['branch']=$request->input('branch_id');
+/*                     $data_new['branch']=$request->input('branch_id');
                         $listExisting = $this->ListBranch($data_new);
 /*                    if ( count(apiPdmToken::all()) > 0 ) {
                         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
@@ -687,14 +682,50 @@ class EFormController extends Controller
                         $token = $apiPdmToken['access_token'];
                         $listExisting = $this->ListBranch($data_new, $token);
                       } */
-                    if ( $listExisting['success'] == '00' ) {
+                   /* if ( $listExisting['success'] == '00' ) {
                         foreach ($listExisting['data'] as $branch) {
                             if ( $branch['branch'] == $request->input('branch_id') ) {
                                 $baseRequest['branch'] = $branch['mbdesc'];
 
                             }
                         }
-                    }
+                    } */
+					
+					$BRANCH_CODE = $request->input('branch_id');
+								$branchcis ='';
+								if(strlen($BRANCH_CODE)=='5'){
+									$branchcis = $BRANCH_CODE;
+									//$k = strlen($BRANCH_CODE);
+									$branchut2 = '';
+									$p = '';
+									for($l=0;$l<5;$l++){
+										if(substr($BRANCH_CODE,$l,1)!='0'){
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis = substr($BRANCH_CODE,$p,5);
+									/* for($i=0;$i<5;$i++){
+										$cek = substr($BRANCH_CODE,$i,1);
+										if($cek!=0){
+											$branchcis = substr($BRANCH_CODE,$i,4);
+											$i = 5;
+										}
+									} */
+								}else{								
+										$branchcis = $BRANCH_CODE;	
+								}
+								\Log::info($branchcis);
+								
+					 $branchiscus = DB::table('uker_tables')
+                             ->select(DB::raw('uker_tables.unit_kerja'))
+                             ->where('uker_tables.kode_uker', $branchcis)
+                             ->get();
+                $branchiscus = $branchiscus->toArray();
+                $branchiscus = json_decode(json_encode($branchiscus), True);
+				if(isset($branchiscus[0]['unit_kerja'])){
+					$baseRequest['branch'] = $branchiscus[0]['unit_kerja'];
+				}
                     $NPWP_nasabah = $request->NPWP_nasabah;
                     $KK = $request->KK;
                     $SLIP_GAJI = $request->SLIP_GAJI;
