@@ -37,7 +37,7 @@ class KartuKredit extends Model
     protected $appends = ['jenis_kartu','alamat_lengkap'];
 
     protected $hidden = [
-        'id','updated_at'
+        'id'
     ];
 
     public $timestamps = false;
@@ -409,6 +409,96 @@ class KartuKredit extends Model
         $data['rjCode'] = $req['rjCode'];
 
         return $data;
+    }
+
+    public function convertDateTimeToBahasa($eformid){
+        $kk = KartuKredit::where('eform_id',$eformid)->first();
+        $updatedAt = $kk['updated_at'];
+        $month = strftime("%b",strtotime($updatedAt));
+        $day = strftime("%A",strtotime($updatedAt));
+        $dayDate = strftime("%d",strtotime($updatedAt));
+        $year = strftime("%Y",strtotime($updatedAt));
+
+        $day = $this->changeDayIntoBahasa($day);
+        $month = $this->changeMonthToBahasa($month);
+        $newDate = $day.', '.$dayDate.' '.$month.' '.$year;
+
+        return $newDate;
+    }
+
+
+    function changeDayIntoBahasa($day){
+        $day = strtolower($day);
+        switch ($day) {
+            case 'monday':
+                return 'Senin';
+                break;
+            case 'tuesday':
+                return 'Selasa';
+                break;
+            case 'wednesday':
+                return 'Rabu';
+                break;
+            case 'thursday':
+                return 'Kamis';
+                break;
+            case 'friday':
+                return 'Jum\'at';
+                break;
+            case 'saturday':
+                return 'Sabtu';
+                break;
+            case 'sunday':
+                return 'Minggu';
+                break;
+            default:
+                break;
+        }
+    }
+
+    function changeMonthToBahasa($month){
+        $bl = strtolower($month);
+        switch ($bl) {
+            case 'jan':
+                return 'Januari';
+                break;
+            case 'feb':
+                return 'Februari';
+                break;
+            case 'mar':
+                return 'Maret';
+                break;
+            case 'apr':
+                return 'April';
+                break;
+            case 'may':
+                return 'May';
+                break;
+            case 'jun':
+                return 'Juni';
+                break;
+            case 'jul':
+                return 'Juli';
+                break;
+            case 'aug':
+                return 'Agustus';
+                break;
+            case 'sep':
+                return 'September';
+                break;
+            case 'oct':
+                return 'Oktober';
+                break;
+            case 'nov':
+                return 'November';
+                break;
+            case 'dec':
+                return 'Desember';
+                break;
+            default:
+                # code...
+                break;
+        }
     }
 
 }
