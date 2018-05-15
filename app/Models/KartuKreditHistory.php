@@ -25,4 +25,12 @@ class KartuKreditHistory extends Model
     		return 'Putusan Reject';
     	}
     }
+
+    public function initialCopyToKreditHistory($apregno,$pn,$kanwil,$kodeProses){
+
+    }
+
+    public function updateKreditHistoryKodeProsesTo($kodeProses){
+
+    }
 }

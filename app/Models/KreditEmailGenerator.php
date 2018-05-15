@@ -229,7 +229,9 @@ class KreditEmailGenerator extends Model{
          $data['status_pernikahan'] = 'Belum Menikah';
       }
 
-      $data['tanggal'] = ERR;
+      $kk = new KartuKredit();
+      $eformid =$data['eform_id'];
+      $data['tanggal'] = $kk->convertDateTimeToBahasa($eformid);
 
       return '<!DOCTYPE html>
 <html>
