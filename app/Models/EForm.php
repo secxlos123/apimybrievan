@@ -1855,7 +1855,7 @@ class EForm extends Model implements AuditableContract
         return [
             'no_ref'            => $this->ref_number,
             'nasabah'           => $this->customer['personal']['name'],
-            'nominal'           => $this->nominal,
+            'nominal'           => $this->request_amount,
             'product_type'      => $this->product_type,
             'tanggal_pengajuan' => date('d-M-Y', strtotime($this->created_at)),
             'no_telepon'        => empty($this->mobile_phone) ? null : $this->mobile_phone,
