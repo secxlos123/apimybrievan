@@ -18,6 +18,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\API\v1\KreditRequest;
 
 use App\Models\KreditEmailGenerator;
+use App\Models\KartuKreditHistory;
 
 class KartuKreditController extends Controller{
 
@@ -264,6 +265,9 @@ class KartuKreditController extends Controller{
 		$appregno = $data->apRegno;
 
 		$this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
+		$data['apregno'] = $appregno;
+		$data['kodeProses'] = '1';
+		// $data['kanwil'] = 
 
 		return response()->json($obj);
     }
@@ -485,9 +489,9 @@ class KartuKreditController extends Controller{
     				'qrcode'=>$qrcode
     			]);
     			$em = new KreditEmailGenerator();
-    			$kk = KartuKredit::where('eform_id',$eformid)->first();
+    			$kk = KartuKredit::where('eform_id',$eformId)->first();
     			$apregno = $kk['appregno'];
-    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno,$kk['qrcode']);
+    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno);
     			$host = '10.107.11.111:9975/notif/toemail';
 		    	$header = ['access_token'=> $this->tokenLos];
 		    	$client = new Client();
@@ -500,7 +504,7 @@ class KartuKreditController extends Controller{
 		    	}catch (RequestException $e){
 		    		return  $e->getMessage();
 		    	}
-    			return "Email berhasil terverifikasi";
+    			return "Email berhasil diverifikasi";
     		}else{
     			return response()->json([
     				'responseCode'=>'01',
