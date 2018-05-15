@@ -1568,7 +1568,7 @@ class ApiLasController extends Controller
                 $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
                 if ($premi['Response_code'] == '01') {
                     return [
-                        'code' => $premi['Response_code'], 
+                        'code' => '02', 
                         'descriptions' => $premi['Response_message']
                     ];
                 }
