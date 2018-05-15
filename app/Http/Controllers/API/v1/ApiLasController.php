@@ -1551,26 +1551,30 @@ class ApiLasController extends Controller
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
-            // Get Premi Asuransi AJKO
-            $kode_fasilitas = substr($request['Kode_fasilitas'], 1);
-            // \Log::info('tesssssssssssssssss');
-            // \Log::info($kode_fasilitas);
-            $param_premi = [
-                'FID_PROGRAM'  => !isset($request['Nama_perusahaan_asuransi'])?0:$request['Nama_perusahaan_asuransi'],
-                'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
-                'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?"":$kode_fasilitas,
-                'PLAFON'       => !isset($request['Plafond_usulan'])?0:$request['Plafond_usulan'],
-                'TANGGAL_LAHIR'=> !isset($request['tgl_lahir2'])?'19700512':$request['tgl_lahir2'],// format date 19701231
-                'JANGKA_WAKTU' => !isset($request['Jangka_waktu'])?0:$request['Jangka_waktu'],
-                'BUNGA_PINJAMAN'=> !isset($request['Suku_bunga'])?0:$request['Suku_bunga']
-            ];
-            $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
-            $kode_program = substr( '00000000' . $request['Nama_perusahaan_asuransi'], -6 );
-            $nama_perusahaan = $kode_program.''.$premi['NamaPerusahaanAsuransi'];
-            // \Log::info($premi);
-            // \Log::info($kode_program);
-            // \Log::info($nama_perusahaan);
-            // print_r($premi);exit();
+            $host = env('APP_URL');
+            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                // Get Premi Asuransi AJKO
+                $kode_fasilitas = substr($request['Kode_fasilitas'], 1);
+                // \Log::info($kode_fasilitas);
+                $param_premi = [
+                    'FID_PROGRAM'  => !isset($request['Nama_perusahaan_asuransi'])?0:$request['Nama_perusahaan_asuransi'],
+                    'FID_APLIKASI' => !isset($insertDebitur['items'][0]->ID_APLIKASI)?"":$insertDebitur['items'][0]->ID_APLIKASI,
+                    'LOAN_TYPE'    => !isset($request['Kode_fasilitas'])?"":$kode_fasilitas,
+                    'PLAFON'       => !isset($request['Plafond_usulan'])?0:$request['Plafond_usulan'],
+                    'TANGGAL_LAHIR'=> !isset($request['tgl_lahir2'])?'19700512':$request['tgl_lahir2'],// format date 19701231
+                    'JANGKA_WAKTU' => !isset($request['Jangka_waktu'])?0:$request['Jangka_waktu'],
+                    'BUNGA_PINJAMAN'=> !isset($request['Suku_bunga'])?0:$request['Suku_bunga']
+                ];
+                $premi = $this->LAS_DETAIL_PROGRAM_BRIGUNA($param_premi);
+                if ($premi['Response_code'] == '01') {
+                    return [
+                        'code' => $premi['Response_code'], 
+                        'descriptions' => $premi['Response_message']
+                    ];
+                }
+                $kode_program = substr( '00000000' . $request['Nama_perusahaan_asuransi'], -6 );
+                $nama_perusahaan = $kode_program.''.$premi['NamaPerusahaanAsuransi'];
+            }
 
             // insert prescreening
             $content_prescreening = [
@@ -1659,14 +1663,6 @@ class ApiLasController extends Controller
                         "Provisi_kredit"        => !isset($request['Provisi_kredit'])?"":$request['Provisi_kredit'],
                         "Biaya_administrasi"    => !isset($request['Biaya_administrasi'])?"":$request['Biaya_administrasi'],
                         "Penalty"               => !isset($request['Penalty'])?"":$request['Penalty'],
-						/*"Perusahaan_asuransi"   => !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'],
-                        "Premi_asuransi_jiwa"   => !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'],
-                        "Premi_beban_bri"       => !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'],
-                        "Premi_beban_debitur"   => !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'],*/
-                       "Perusahaan_asuransi"   => !isset($premi['NamaPerusahaanAsuransi'])?"":$nama_perusahaan,
-                        "Premi_asuransi_jiwa"   => !isset($premi['PremiStandart'])?"":$premi['PremiStandart'],
-                        "Premi_beban_bri"       => !isset($premi['PremiBRI'])?"":$premi['PremiBRI'],
-                        "Premi_beban_debitur"   => !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'],
                         "Flag_promo"       => !isset($request['promo'])?"":$request['promo'],
                         "Fid_promo"        => !isset($request['nama_program_promo'])?"":$request['nama_program_promo'],
                         "Pengadilan_terdekat"   => !isset($request['Pengadilan_terdekat'])?"":$request['Pengadilan_terdekat'],
@@ -1710,6 +1706,19 @@ class ApiLasController extends Controller
                         "Bank_asal_takeover" => "", // hardcode las
                         "Data2"             => "" // kosongin aja
                     ];
+
+                    if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                        $content_insertKreditBriguna["Perusahaan_asuransi"] = !isset($premi['NamaPerusahaanAsuransi'])?"":$nama_perusahaan;
+                        $content_insertKreditBriguna["Premi_asuransi_jiwa"] = !isset($premi['PremiStandart'])?"":$premi['PremiStandart'];
+                        $content_insertKreditBriguna["Premi_beban_bri"]     = !isset($premi['PremiBRI'])?"":$premi['PremiBRI'];
+                        $content_insertKreditBriguna["Premi_beban_debitur"] = !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'];
+                    } else {
+                        $content_insertKreditBriguna["Perusahaan_asuransi"] = !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'];
+                        $content_insertKreditBriguna["Premi_asuransi_jiwa"] = !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'];
+                        $content_insertKreditBriguna["Premi_beban_bri"]     = !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'];
+                        $content_insertKreditBriguna["Premi_beban_debitur"] = !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'];
+                    }
+
                     $insertKredit = $this->insertDataKreditBriguna($content_insertKreditBriguna);
                     \Log::info("-------- masuk insert kredit ---------");
                     \Log::info($insertKredit);
@@ -1765,14 +1774,6 @@ class ApiLasController extends Controller
                                 "Provisi_kredit"            => $request['Provisi_kredit'],
                                 "Biaya_administrasi"        => $request['Biaya_administrasi'],
                                 "Penalty"                   => $request['Penalty'],
-								/*"Perusahaan_asuransi"       => $request['Nama_perusahaan_asuransi'],
-                                "Premi_asuransi_jiwa"       => $request['Premi_asuransi_jiwa'],
-                                "Premi_beban_bri"           => $request['Premi_beban_bri'],
-                                "Premi_beban_debitur"       => $request['Premi_beban_debitur'],*/
-                                "Perusahaan_asuransi"       => $nama_perusahaan,
-                                "Premi_asuransi_jiwa"       => $premi['PremiStandart'],
-                                "Premi_beban_bri"           => $premi['PremiBRI'],
-                                "Premi_beban_debitur"       => $premi['PremiDebitur'],
                                 "Flag_promo"                => $request['promo'],
                                 "Fid_promo"                 => $request['nama_program_promo'],
                                 "Pengadilan_terdekat"       => $request['Pengadilan_terdekat'],
@@ -1806,7 +1807,6 @@ class ApiLasController extends Controller
                                 "year"                      => $request['Jangka_waktu'],
                                 "angsuran_usulan"           => $request['Angsuran_usulan'],
                                 "maksimum_plafond"          => $request['Maksimum_plafond'],
-                                // baru
                                 "no_npwp"                   => $request['no_npwp'],
                                 "no_dan_tanggal_sk_awal"    => $request['no_dan_tanggal_sk_awal'],
                                 "no_dan_tanggal_sk_akhir"   => $request['no_dan_tanggal_sk_akhir'],
@@ -1851,6 +1851,18 @@ class ApiLasController extends Controller
                                 "nama_program_promo_ket"   => !isset($request['nama_program_promo_ket'])?"":$request['nama_program_promo_ket'],
                                 "nama_perusahaan_asuransi_ket" => !isset($request['nama_perusahaan_asuransi_ket'])?"":$request['nama_perusahaan_asuransi_ket']
                             ];
+
+                            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                                $param_briguna["Perusahaan_asuransi"] = $nama_perusahaan;
+                                $param_briguna["Premi_asuransi_jiwa"] = $premi['PremiStandart'];
+                                $param_briguna["Premi_beban_bri"]     = $premi['PremiBRI'];
+                                $param_briguna["Premi_beban_debitur"] = $premi['PremiDebitur'];
+                            } else {
+                                $param_briguna["Perusahaan_asuransi"] = $request['Nama_perusahaan_asuransi'];
+                                $param_briguna["Premi_asuransi_jiwa"] = $request['Premi_asuransi_jiwa'];
+                                $param_briguna["Premi_beban_bri"]     = $request['Premi_beban_bri'];
+                                $param_briguna["Premi_beban_debitur"] = $request['Premi_beban_debitur'];
+                            }
                             $eform_id = $request['eform_id'];
                             $param_eform['is_approved']  = true;
                             $param_eform['branch_id']    = $request['kantor_cabang_id'];
@@ -1889,24 +1901,41 @@ class ApiLasController extends Controller
                             $eform->update($param_eform);
                             $detail->update($param_detail);
                             $briguna->update($param_briguna);
-                            $result = [
-                                'code'         => $kirim['statusCode'], 
-                                'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
-                                'contents'     => [
-                                    'data' => [
-                                        'id_aplikasi' => $insertDebitur['items'][0]->ID_APLIKASI,
-                                        'cif_las'     => $insertDebitur['items'][0]->CIF_LAS,
-                                        'score'       => $hitung['items'][0]->score,
-                                        'grade'       => $hitung['items'][0]->grade,
-                                        'cutoff'      => $hitung['items'][0]->cutoff,
-                                        'definisi'    => $hitung['items'][0]->definisi,
-                                        'premi'       => $premi['PremiStandart'],
-                                        'premi_bri'   => $premi['PremiBRI'],
-                                        'premi_debitur'   => $premi['PremiDebitur'],
-                                        'nama_perusahaan' => $premi['NamaPerusahaanAsuransi']
-                                     ]
-                                ]
-                            ];
+                            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                                $result = [
+                                    'code'         => $kirim['statusCode'], 
+                                    'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
+                                    'contents'     => [
+                                        'data' => [
+                                            'id_aplikasi' => $insertDebitur['items'][0]->ID_APLIKASI,
+                                            'cif_las'     => $insertDebitur['items'][0]->CIF_LAS,
+                                            'score'       => $hitung['items'][0]->score,
+                                            'grade'       => $hitung['items'][0]->grade,
+                                            'cutoff'      => $hitung['items'][0]->cutoff,
+                                            'definisi'    => $hitung['items'][0]->definisi,
+                                            'premi'       => $premi['PremiStandart'],
+                                            'premi_bri'   => $premi['PremiBRI'],
+                                            'premi_debitur'   => $premi['PremiDebitur'],
+                                            'nama_perusahaan' => $premi['NamaPerusahaanAsuransi']
+                                         ]
+                                    ]
+                                ];
+                            } else {
+                                $result = [
+                                    'code'         => $kirim['statusCode'], 
+                                    'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
+                                    'contents'     => [
+                                        'data' => [
+                                            'id_aplikasi' => $insertDebitur['items'][0]->ID_APLIKASI,
+                                            'cif_las'     => $insertDebitur['items'][0]->CIF_LAS,
+                                            'score'       => $hitung['items'][0]->score,
+                                            'grade'       => $hitung['items'][0]->grade,
+                                            'cutoff'      => $hitung['items'][0]->cutoff,
+                                            'definisi'    => $hitung['items'][0]->definisi
+                                         ]
+                                    ]
+                                ];
+                            }
                             \Log::info("----- analisa update table eforms dan briguna sukses -----");
                             return $result;
                         } else {
