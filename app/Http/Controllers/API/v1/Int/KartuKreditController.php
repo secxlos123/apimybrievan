@@ -489,7 +489,7 @@ class KartuKreditController extends Controller{
     				'qrcode'=>$qrcode
     			]);
     			$em = new KreditEmailGenerator();
-    			$kk = KartuKredit::where('eform_id',$eformId)->first();
+    			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
     			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno);
     			$host = '10.107.11.111:9975/notif/toemail';
