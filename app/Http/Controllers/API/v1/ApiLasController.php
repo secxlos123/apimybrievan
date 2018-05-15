@@ -1853,7 +1853,7 @@ class ApiLasController extends Controller
                             ];
 
                             if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
-                                $param_briguna["Perusahaan_asuransi"] = $nama_perusahaan;
+                                $param_briguna["Perusahaan_asuransi"] = $premi['NamaPerusahaanAsuransi'];
                                 $param_briguna["Premi_asuransi_jiwa"] = $premi['PremiStandart'];
                                 $param_briguna["Premi_beban_bri"]     = $premi['PremiBRI'];
                                 $param_briguna["Premi_beban_debitur"] = $premi['PremiDebitur'];
@@ -2222,6 +2222,7 @@ class ApiLasController extends Controller
     function hitungCRSBriguna($params, $jenis_pinjaman = null) {
         try {
             $parameter['id_Aplikasi'] = $params;
+            \Log::info($parameter);
             // save json_ws_log
             $data_log = [
                 'json_data' => $parameter['id_Aplikasi'],
