@@ -29,8 +29,12 @@ class KartuKreditController extends Controller{
 	public function contohemail(){
       // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/tempQrcode/qrcode.png');
 
-		$data = EForm::where('product_type','kartu_kredit')->with('kartukredit')->get();
-		return response()->json($data);
+		// $data = EForm::where('product_type','kartu_kredit')->with('kartukredit')->get();
+		// return response()->json($data);
+
+		$kk = new KartuKredit();
+		$date = $kk->convertDateTimeToBahasa('');
+		return $date;
     }
 
 
