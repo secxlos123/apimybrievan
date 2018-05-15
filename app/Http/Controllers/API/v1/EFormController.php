@@ -670,7 +670,7 @@ class EFormController extends Controller
             /* BRIGUNA */
                 if($validasi_eform=='true'){
                     $baseRequest['IsFinish'] = 'false';
-                    $data_new['branch']=$request->input('branch_id');
+/*                     $data_new['branch']=$request->input('branch_id');
                         $listExisting = $this->ListBranch($data_new);
 /*                    if ( count(apiPdmToken::all()) > 0 ) {
                         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
@@ -687,14 +687,51 @@ class EFormController extends Controller
                         $token = $apiPdmToken['access_token'];
                         $listExisting = $this->ListBranch($data_new, $token);
                       } */
-                    if ( $listExisting['success'] == '00' ) {
+                   /* if ( $listExisting['success'] == '00' ) {
                         foreach ($listExisting['data'] as $branch) {
                             if ( $branch['branch'] == $request->input('branch_id') ) {
                                 $baseRequest['branch'] = $branch['mbdesc'];
 
                             }
                         }
-                    }
+                    } */
+					
+					$BRANCH_CODE = $request->input('branch_id');
+								$branchcis ='';
+								if(strlen($BRANCH_CODE)=='5'){
+									$branchcis = $BRANCH_CODE;
+									$k = strlen($BRANCH_CODE);
+									$branchut2 = '';
+									$p = '';
+									for($l=$k;$l<5;$l++){
+										if(substr($BRANCH_CODE,0,$l+1)!='0'){
+											$branchut2 = 'lempar';
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis = substr($BRANCH_CODE,$p,5);
+									/* for($i=0;$i<5;$i++){
+										$cek = substr($BRANCH_CODE,$i,1);
+										if($cek!=0){
+											$branchcis = substr($BRANCH_CODE,$i,4);
+											$i = 5;
+										}
+									} */
+								}else{								
+										$branchcis = $BRANCH_CODE;	
+								}
+								\Log::info($branchcis);
+								
+					 $branchiscus = DB::table('uker_tables')
+                             ->select(DB::raw('uker_tables.unit_kerja'))
+                             ->where('uker_tables.kode_uker', $branchcis)
+                             ->get();
+                $branchiscus = $branchiscus->toArray();
+                $branchiscus = json_decode(json_encode($branchiscus), True);
+				if(isset($branchiscus[0]['unit_kerja'])){
+					$baseRequest['branch'] = $branchiscus[0]['unit_kerja'];
+				}
                     $NPWP_nasabah = $request->NPWP_nasabah;
                     $KK = $request->KK;
                     $SLIP_GAJI = $request->SLIP_GAJI;
