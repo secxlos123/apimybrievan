@@ -6,6 +6,7 @@ Route::get('/contoh',function(){
 
 
 
+
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
 	Route::get('contohemail','KartuKreditController@contohemail');

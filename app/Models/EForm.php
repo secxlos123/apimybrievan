@@ -210,7 +210,7 @@ class EForm extends Model implements AuditableContract
         if ( $value >= 250 && $value <= 529 ) {
             return 'Merah';
 
-        } elseif ( ( $value >= 677 && $value <= 900 ) || $value == 999 ) {
+        } elseif ( ( $value >= 677 && $value <= 900 ) ) {
             return 'Hijau';
 
         } else {
@@ -1850,12 +1850,17 @@ class EForm extends Model implements AuditableContract
     {
         // Set language to Bahasa
         Carbon::setLocale('id');
-
+		$nominal = 0;
+		if($this->product_type == 'kpr'){
+			$nominal = $this->nominal;
+		}else{
+			$nominal = $this->briguna->request_amount;
+		}
         // return custom collection
         return [
             'no_ref'            => $this->ref_number,
             'nasabah'           => $this->customer['personal']['name'],
-            'nominal'           => $this->nominal,
+            'nominal'           => $nominal,
             'product_type'      => $this->product_type,
             'tanggal_pengajuan' => date('d-M-Y', strtotime($this->created_at)),
             'no_telepon'        => empty($this->mobile_phone) ? null : $this->mobile_phone,
