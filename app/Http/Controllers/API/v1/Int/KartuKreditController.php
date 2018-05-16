@@ -759,6 +759,9 @@ class KartuKreditController extends Controller{
 	}
 
     public function listReject(){
+        \Log::info('=========== host ===========');
+        \Log::info($this->hostLos);
+        \Log::info('=========== host ===========');
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{
