@@ -762,6 +762,10 @@ class KartuKreditController extends Controller{
         \Log::info('=========== host ===========');
         \Log::info($this->hostLos);
         \Log::info('=========== host ===========');
+
+        \Log::info('=========== token ===========');
+        \Log::info($this->tokenLos);
+        \Log::info('=========== token ===========');
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{
