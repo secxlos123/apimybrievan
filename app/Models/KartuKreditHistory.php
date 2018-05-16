@@ -8,7 +8,7 @@ class KartuKreditHistory extends Model
 {
     protected $table = 'kartu_kredit_history';
 
-    protected $fillable = ['apregno','kodeproses','kanwil','pn'];
+    protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca'];
 
     protected $appends = ['deskripsi_proses'];
 
