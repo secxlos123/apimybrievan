@@ -42,8 +42,6 @@ class KartuKreditController extends Controller{
     }
 
     
-
-
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
         if(count($check) == 0){
