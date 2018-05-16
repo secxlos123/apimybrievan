@@ -577,7 +577,7 @@ class EFormController extends Controller
                     $nik = $baseRequest['nik'];
                     $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
 
-                    $host = env('LOS_HOST','10.107.11.111:9975');
+                    $host = env('LOS_HOST','10.107.11.111:9975').'/api/nik';
                     $header = ['access_token'=> $tokenLos];
                     $client = new Client();
 
