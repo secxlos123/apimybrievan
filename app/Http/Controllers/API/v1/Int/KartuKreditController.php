@@ -26,12 +26,15 @@ class KartuKreditController extends Controller{
     public $tokenLos = '';
 	
 	// public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+
+//     LOS_HOST =172.18.65.52:7334
+// LOS_TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjEwMTI5Nzg3LWMxNzctNDY5Mi1iZTBjLWM4MTI2MTc2MTc1MSIsImlhdCI6MTUyNjM3NTgyNywiZXhwIjoxNjEyNjg5NDI3fQ.zg1Oat5knSu4TgZ8PrB0rJ5jMfKQccpabFkjPiQ7m4g
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
     function __construct(){
         $this->hostLos = env('LOS_HOST','10.107.11.111:9975');
-        $this->tokenLos = env('LOS_TOKEN',' ');
+        $this->tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
     }
 
 	public function contohemail(){
@@ -39,8 +42,6 @@ class KartuKreditController extends Controller{
     }
 
     
-
-
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
         if(count($check) == 0){
@@ -756,6 +757,13 @@ class KartuKreditController extends Controller{
 	}
 
     public function listReject(){
+        \Log::info('=========== host ===========');
+        \Log::info($this->hostLos);
+        \Log::info('=========== host ===========');
+
+        \Log::info('=========== token ===========');
+        \Log::info($this->tokenLos);
+        \Log::info('=========== token ===========');
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{

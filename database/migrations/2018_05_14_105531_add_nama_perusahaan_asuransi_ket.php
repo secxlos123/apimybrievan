@@ -14,6 +14,7 @@ class AddNamaPerusahaanAsuransiKet extends Migration
     public function up()
     {
         Schema::table('briguna', function (Blueprint $table) {
+            $table->string('nama_perusahaan_asuransi')->nullable();
             $table->string('nama_program_promo_ket')->nullable();
             $table->string('nama_perusahaan_asuransi_ket')->nullable();
 
@@ -28,7 +29,7 @@ class AddNamaPerusahaanAsuransiKet extends Migration
     public function down()
     {
         Schema::table('briguna', function (Blueprint $table) {
-            $table->dropColumn(['nama_program_promo_ket', 'nama_perusahaan_asuransi_ket']);
+            $table->dropColumn(['nama_perusahaan_asuransi','nama_program_promo_ket', 'nama_perusahaan_asuransi_ket']);
         });
     }
 }

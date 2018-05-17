@@ -333,7 +333,9 @@ class marketingActivityController extends Controller
           'nik' => $value->nik,
           'cif' => $value->cif,
           'phone_number' => $value->phone_number,
-          'duration' => $value->duration
+          'duration' => $value->duration,
+          'date' => $value->date,
+          'name' => $value->name
         ];
       }
       return response()->success( [
