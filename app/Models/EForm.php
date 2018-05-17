@@ -1907,11 +1907,43 @@ class EForm extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
         $data = EForm::select();
 
+		$BRANCH_CODE = intval($user['branch_id']);
+								$branchcis ='';
+								if(strlen($BRANCH_CODE)=='5'){
+									$branchcis = $BRANCH_CODE;
+									$p = '';
+									for($l=0;$l<5;$l++){
+										if(substr($BRANCH_CODE,$l,1)!='0'){
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis = substr($BRANCH_CODE,$p,5);
+									/* for($i=0;$i<5;$i++){
+										$cek = substr($BRANCH_CODE,$i,1);
+										if($cek!=0){
+											$branchcis = substr($BRANCH_CODE,$i,4);
+											$i = 5;
+										}
+									} */
+								}else{										
+										$o = strlen($BRANCH_CODE);
+										$branchut = '';
+										for($y=$o;$y<5;$y++){
+											if($y==$o){
+												$branchut = '0'.$BRANCH_CODE;
+											}else{
+												$branchut = '0'.$branchut;
+											}
+										} 
+										$branchcis = $branchut;	
+								}
+								}
         if (count($user)>0) {
             if ($user['role'] == 'ao') {
                 $data->where('ao_id',$user['pn']);
             }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
-                $data->where('branch_id',intval($user['branch_id']));
+                $data->where('branch_id',$branchcis)->orWhere('branch_id',$BRANCH_CODE);
             }
         }
 
