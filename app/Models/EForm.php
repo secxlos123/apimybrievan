@@ -1853,8 +1853,10 @@ class EForm extends Model implements AuditableContract
 		$nominal = 0;
 		if($this->product_type == 'kpr'){
 			$nominal = $this->nominal;
-		}else{
+		}elseif($this->product_type=='briguna'){
 			$nominal = $this->briguna->request_amount;
+		}else{
+			$nominal = '0';
 		}
         // return custom collection
         return [
