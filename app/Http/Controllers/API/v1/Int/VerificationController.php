@@ -413,35 +413,35 @@ class VerificationController extends Controller
      */
     public function getCIF( $authorization, $nik, $pn )
     {
-        // $data = RestwsHc::setBody([
-        //         'request' => json_encode([
-        //             'requestMethod' => 'get_customer_profile_nik',
-        //             'requestData' => [
-        //                 'app_id' => 'mybriapi'
-        //                 , 'nik'     => $nik
-        //             ],
-        //         ])
-        //     ])->post( 'form_params' );
-
         try {
             
-            $client = new Client();
+            // $client = new Client();
             
-            $host = config('restapi.restwshc');
+            // $host = config('restapi.restwshc');
 
-            \Log::info("=====HOST GET CIF :");
-            \Log::info($host);
+            // \Log::info("=====HOST GET CIF :");
+            // \Log::info($host);
 
-                $res = $client->request('POST', $host.'get_customer_profile_nik', [
-                       'form_params' => [
-                            'requestData' => [
-                                 'app_id' => 'mybriapi'
-                                ,'nik'     => $nik
-                                ],
-                            ]
-                    ]);
+            //     $res = $client->request('POST', $host.'get_customer_profile_nik', [
+            //            'form_params' => [
+            //                 'requestData' => [
+            //                      'app_id' => 'mybriapi'
+            //                     ,'nik'     => $nik
+            //                     ],
+            //                 ]
+            //         ]);
 
-            $data = json_decode($res->getBody()->getContents(), true);
+            // $data = json_decode($res->getBody()->getContents(), true);
+
+            $data = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_customer_profile_nik',
+                    'requestData' => [
+                        'app_id' => 'mybriapi'
+                        , 'nik'     => $nik
+                    ],
+                ])
+            ])->post( 'form_params' );
 
             $keys = [
             'cif_number' => 'cifno'
