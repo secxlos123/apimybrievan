@@ -18,19 +18,30 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\API\v1\KreditRequest;
 
 use App\Models\KreditEmailGenerator;
+use App\Models\KartuKreditHistory;
 
 class KartuKreditController extends Controller{
+	
+    public $hostLos = '';
+    public $tokenLos = '';
+	
+	// public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
 
-	public $hostLos = '10.107.11.111:9975';
-	public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+//     LOS_HOST =172.18.65.52:7334
+// LOS_TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjEwMTI5Nzg3LWMxNzctNDY5Mi1iZTBjLWM4MTI2MTc2MTc1MSIsImlhdCI6MTUyNjM3NTgyNywiZXhwIjoxNjEyNjg5NDI3fQ.zg1Oat5knSu4TgZ8PrB0rJ5jMfKQccpabFkjPiQ7m4g
 	
 	public $hostPefindo = '10.35.65.167:6969';
+
+    function __construct(){
+        $this->hostLos = env('LOS_HOST','10.107.11.111:9975');
+        $this->tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
+    }
 
 	public function contohemail(){
     
     }
 
-
+    
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
         if(count($check) == 0){
@@ -231,7 +242,7 @@ class KartuKreditController extends Controller{
 
 		$TOKEN_LOS = $this->tokenLos;
 
-		$host = '10.107.11.111:9975';
+		$host = $this->hostLos;
 
 		$validatedData = $this->validate($req,[
             'PersonalName' => 'required',
@@ -264,6 +275,9 @@ class KartuKreditController extends Controller{
 		$appregno = $data->apRegno;
 
 		$this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
+		$data['apregno'] = $appregno;
+		$data['kodeProses'] = '1';
+		// $data['kanwil'] = 
 
 		return response()->json($obj);
     }
@@ -277,7 +291,7 @@ class KartuKreditController extends Controller{
     public function updateDataLos(KreditRequest $req){
     	//saat verifikasi
     	$header = ['access_token'=> $this->tokenLos];
-    	$host = '10.107.11.111:9975/api/updateData';
+    	$host = $this->hostLos.'/api/updateData';
     	$client = new Client();
     	
     	$request = $req->all();
@@ -335,7 +349,7 @@ class KartuKreditController extends Controller{
     }
 
     public function cekDataNasabah($apRegno){
-    	$host = '10.107.11.111:9975/api/dataNasabah';
+    	$host = $this->hostLos.'/api/dataNasabah';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
@@ -373,7 +387,7 @@ class KartuKreditController extends Controller{
     	]);
 
 
-    	$host = '10.107.11.111:9975/notif/tosms';
+    	$host = $this->hostLos.'/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
@@ -420,7 +434,7 @@ class KartuKreditController extends Controller{
     	// $host = '10.107.11.111:9975/api/updateData';
     	// $client = new Client();
     	
-    	$host = '10.107.11.111:9975/notif/toemail';
+    	$host = $this->hostLos.'/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
@@ -487,8 +501,8 @@ class KartuKreditController extends Controller{
     			$em = new KreditEmailGenerator();
     			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
-    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno,$kk['qrcode']);
-    			$host = '10.107.11.111:9975/notif/toemail';
+    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno);
+    			$host = $this->hostLos.'/notif/toemail';
 		    	$header = ['access_token'=> $this->tokenLos];
 		    	$client = new Client();
 		    	$email = $kk['email'];
@@ -500,7 +514,7 @@ class KartuKreditController extends Controller{
 		    	}catch (RequestException $e){
 		    		return  $e->getMessage();
 		    	}
-    			return "Email berhasil terverifikasi";
+    			return "Email berhasil diverifikasi";
     		}else{
     			return response()->json([
     				'responseCode'=>'01',
@@ -577,7 +591,7 @@ class KartuKreditController extends Controller{
     function getScoring($apRegno){
     	$TOKEN_LOS = $this->tokenLos;
 		$client = new Client();
-		$host = '10.107.11.111:9975';
+		$host = $this->hostLos;
 
 		try{
 			$res = $client
@@ -743,6 +757,13 @@ class KartuKreditController extends Controller{
 	}
 
     public function listReject(){
+        \Log::info('=========== host ===========');
+        \Log::info($this->hostLos);
+        \Log::info('=========== host ===========');
+
+        \Log::info('=========== token ===========');
+        \Log::info($this->tokenLos);
+        \Log::info('=========== token ===========');
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,7 +8,7 @@ class KartuKreditHistory extends Model
 {
     protected $table = 'kartu_kredit_history';
 
-    protected $fillable = ['apregno','kodeproses','kanwil','pn'];
+    protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca'];
 
     protected $appends = ['deskripsi_proses'];
 
@@ -24,10 +24,6 @@ class KartuKreditHistory extends Model
     	}else if($val == '8.1'){
     		return 'Putusan Reject';
     	}
-    }
-
-    public function initialCopyToKreditHistory($apregno,$pn,$kanwil,$kodeProses){
-
     }
 
     public function updateKreditHistoryKodeProsesTo($kodeProses){
