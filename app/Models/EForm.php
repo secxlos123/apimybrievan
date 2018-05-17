@@ -1938,12 +1938,12 @@ class EForm extends Model implements AuditableContract
 										} 
 										$branchcis = $branchut;	
 								}
-								}
         if (count($user)>0) {
             if ($user['role'] == 'ao') {
                 $data->where('ao_id',$user['pn']);
             }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
-                $data->where('branch_id',$branchcis)->orWhere('branch_id',$BRANCH_CODE);
+                $data->whereRaw('(eforms."branch_ids"='.$branchcis.' OR eforms."branch_ids"='.$BRANCH_CODE.')');
+				//$data->where('branch_id',$branchcis)->orWhere('branch_id',$BRANCH_CODE);
             }
         }
 
