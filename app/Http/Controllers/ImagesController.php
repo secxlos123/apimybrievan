@@ -214,9 +214,14 @@ class ImagesController extends Controller
     public function ResendActivations(Request $request, $email)
     {
         $user = User::whereEmail( $email )->first();
-        // dd($user->id);
+        if(count($user) <= 0){
+            return response()->error( [
+                'message' => 'Email Tersebut tidak ditemukan!',
+                'contents' => null
+            ], 404 );    
+        }
         $activation = Activation::where('user_id', '=', $user->id)->first();
-        //dd($activation);
+        Activation::complete($user, $activation->code);
         event( new CustomerRegister( $user, $activation->code ) );
 
         return response()->success( [
@@ -235,12 +240,24 @@ class ImagesController extends Controller
     {
         $role_id = \Sentinel::findRoleBySlug('developer-sales')->id;
         $user = User::whereEmail( $email )->first();
-        $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
+        if(count($user) <= 0){
+            return response()->error( [
+                'message' => 'Email Tersebut tidak ditemukan!',
+                'contents' => null
+            ], 404 );    
+        }
+        // $password = $this->randomPassword(8,"lower_case,upper_case,numbers");
+        $password = '123Mybri';
+        \Log::info("EMAIL BERHASIL TERKIRIM");
+        // \Log::info("P: ".$password);
         $user->update(['password' => bcrypt($password)]);
         event(new CustomerRegistered($user, $password,$role_id));
         return response()->success( [
             'message' => 'Resend Pass Sukses',
-            'contents' => $user
+            'contents' => [
+                'data' => $user,
+                // 'password' => $password
+            ]
         ], 201 );
     }
 
