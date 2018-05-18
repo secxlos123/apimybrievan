@@ -19,7 +19,13 @@ class DbwsController extends Controller
                 $image = array();
                 foreach ($files as $file) {
                     if ( !empty($file) ) {
-                        $image[]['name'] = \Storage::disk('public')->url($request->nik.'/'.$file->getFilename());
+                        // \Log::info("================MAMAT STYLE=================");
+                        //  \Log::info(\Storage::disk('public')->url($request->nik.'/'.$file->getFilename()));                        
+                        //$image[]['name'] = \Storage::disk('public')->url($request->nik.'/'.$file->getFilename());
+
+                        // \Log::info("================RANGGA STYLE=================");
+                         // \Log::info(url('uploads/'.$request->nik.'/'.$file->getFilename()));
+                         $image[]['name'] = url('uploads/'.$request->nik.'/'.$file->getFilename());
                     }
                 }
                 return response()->json([

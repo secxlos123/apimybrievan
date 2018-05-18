@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\v1\EFormRequest;
 use App\Models\KartuKredit;
 use App\Models\CustomerDetail;
 use GuzzleHttp\Client;
@@ -19,22 +18,30 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\API\v1\KreditRequest;
 
 use App\Models\KreditEmailGenerator;
+use App\Models\KartuKreditHistory;
 
 class KartuKreditController extends Controller{
+	
+    public $hostLos = '';
+    public $tokenLos = '';
+	
+	// public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
 
-	public $hostLos = '10.107.11.111:9975';
-	public $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+//     LOS_HOST =172.18.65.52:7334
+// LOS_TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjEwMTI5Nzg3LWMxNzctNDY5Mi1iZTBjLWM4MTI2MTc2MTc1MSIsImlhdCI6MTUyNjM3NTgyNywiZXhwIjoxNjEyNjg5NDI3fQ.zg1Oat5knSu4TgZ8PrB0rJ5jMfKQccpabFkjPiQ7m4g
 	
 	public $hostPefindo = '10.35.65.167:6969';
 
-	public function contohemail(){
-      // QrCode::format('png')->size(200)->generate('Make me into a QrCode!', public_path().'/tempQrcode/qrcode.png');
-
-		$data = EForm::where('product_type','kartu_kredit')->with('kartukredit')->get();
-		return response()->json($data);
+    function __construct(){
+        $this->hostLos = env('LOS_HOST','10.107.11.111:9975');
+        $this->tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
     }
 
+	public function contohemail(){
+    
+    }
 
+    
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
         if(count($check) == 0){
@@ -235,7 +242,7 @@ class KartuKreditController extends Controller{
 
 		$TOKEN_LOS = $this->tokenLos;
 
-		$host = '10.107.11.111:9975';
+		$host = $this->hostLos;
 
 		$validatedData = $this->validate($req,[
             'PersonalName' => 'required',
@@ -268,6 +275,9 @@ class KartuKreditController extends Controller{
 		$appregno = $data->apRegno;
 
 		$this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
+		$data['apregno'] = $appregno;
+		$data['kodeProses'] = '1';
+		// $data['kanwil'] = 
 
 		return response()->json($obj);
     }
@@ -281,7 +291,7 @@ class KartuKreditController extends Controller{
     public function updateDataLos(KreditRequest $req){
     	//saat verifikasi
     	$header = ['access_token'=> $this->tokenLos];
-    	$host = '10.107.11.111:9975/api/updateData';
+    	$host = $this->hostLos.'/api/updateData';
     	$client = new Client();
     	
     	$request = $req->all();
@@ -332,10 +342,6 @@ class KartuKreditController extends Controller{
 
     }
 
-    function sendFinishVerificationEmail(){
-    	
-    }
-
     function getApregnoFromKKDetails($eform_id){
     	$kk = KartuKredit::where('eform_id',$eform_id)->first();
    		$apRegno = $kk['appregno'];
@@ -343,7 +349,7 @@ class KartuKreditController extends Controller{
     }
 
     public function cekDataNasabah($apRegno){
-    	$host = '10.107.11.111:9975/api/dataNasabah';
+    	$host = $this->hostLos.'/api/dataNasabah';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
@@ -379,9 +385,9 @@ class KartuKreditController extends Controller{
     	$updateCode = KartuKredit::where('appregno',$apregno)->update([
     		'verification_code'=>$code
     	]);
-    	$updateCode->save();
 
-    	$host = '10.107.11.111:9975/notif/tosms';
+
+    	$host = $this->hostLos.'/notif/tosms';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
@@ -407,19 +413,28 @@ class KartuKreditController extends Controller{
     	$email = $req['email'];
     	$eformid = $req['eform_id'];
 
-    	// $message = $req['message'];
     	$kk = KartuKredit::where('eform_id',$eformid)->first();
     	$apregno = $kk['appregno'];
 
-    	$dataKredit = KartuKredit::where('appregno',$apregno)->first();
+    	// $dataKredit = KartuKredit::where('appregno',$apregno)->first();
     	$emailGenerator = new KreditEmailGenerator();
     	// $routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
-    	$routes = 'api.dev.net/api/v1/int/kk/verifyemail';
+    	// $routes = 'api.dev.net/api/v1/int/kk/verifyemail';
+    	$appEnv = env('KREDIT_EMAIL_GENERATOR_POSITION','prod');
+     	if ($appEnv == 'dev'){
+         	$routes = 'apimybridev.bri.co.id/api/v1/int/kk/verifyemail';
+      	}else{
+      		$routes = 'apimybri.bri.co.id/api/v1/int/kk/verifyemail';
+      	}
     	$message = $emailGenerator
-    	->sendEmailVerification($dataKredit,$apregno,$routes);
+    	->sendEmailVerification($kk,$apregno,$routes);
     	\Log::info('======== data kredit =========');
-   		\Log::info($dataKredit);
-    	$host = '10.107.11.111:9975/notif/toemail';
+   		\Log::info($kk);
+   		// $header = ['access_token'=> $this->tokenLos];
+    	// $host = '10.107.11.111:9975/api/updateData';
+    	// $client = new Client();
+    	
+    	$host = $this->hostLos.'/notif/toemail';
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 
@@ -444,7 +459,7 @@ class KartuKreditController extends Controller{
     function verify($eform_id){
     	$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'verified']);
-		$updateStatus->save();
+
 		return true;
     }
 
@@ -475,8 +490,31 @@ class KartuKreditController extends Controller{
     			$eform = EForm::where('id',$eformid)->first();
     			$refNumber = $eform['ref_number'];
     			$nik =  $eform['nik'];
-    			$createQrcode = $this->createQrcode($refNumber,$nik);
-    			return "Email telah tervirifikasi";
+    			\Log::info('================');
+    			\Log::info($refNumber);
+    			\Log::info($nik);
+    			\Log::info('================');
+    			$qrcode = $this->createQrcode($refNumber,$nik);
+    			KartuKredit::where('eform_id',$eformid)->update([
+    				'qrcode'=>$qrcode
+    			]);
+    			$em = new KreditEmailGenerator();
+    			$kk = KartuKredit::where('eform_id',$eformid)->first();
+    			$apregno = $kk['appregno'];
+    			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno);
+    			$host = $this->hostLos.'/notif/toemail';
+		    	$header = ['access_token'=> $this->tokenLos];
+		    	$client = new Client();
+		    	$email = $kk['email'];
+
+		    	try{
+		    		$res = $client->request('POST',$host, ['headers' =>  $header,
+		    				'form_params' => ['email' => $email,'subject'=>'Laporan Verifikasi Email Pengajuan Kartu Kredit BRI','message'=>$message]
+		    			]);
+		    	}catch (RequestException $e){
+		    		return  $e->getMessage();
+		    	}
+    			return "Email berhasil diverifikasi";
     		}else{
     			return response()->json([
     				'responseCode'=>'01',
@@ -489,7 +527,8 @@ class KartuKreditController extends Controller{
     function createQrcode($refnumber,$nik){
     	$filename = $refnumber.'-qrcode.png';
     	QrCode::format('png')->size(250)->generate($refnumber.$nik, public_path('uploads/'.$nik.'/'.$filename));
-    	return true;
+
+    	return $filename;
     }
 
     public function analisaKK(Request $req){
@@ -552,7 +591,7 @@ class KartuKreditController extends Controller{
     function getScoring($apRegno){
     	$TOKEN_LOS = $this->tokenLos;
 		$client = new Client();
-		$host = '10.107.11.111:9975';
+		$host = $this->hostLos;
 
 		try{
 			$res = $client
@@ -590,7 +629,6 @@ class KartuKreditController extends Controller{
 		}else{
 			$anStatus = 'rejected';
 		}
-
 
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
@@ -669,18 +707,21 @@ class KartuKreditController extends Controller{
 			]);	
 		}
 
-		
+		$eformId= $req['eform_id'];
 		//kirim ke db mybri
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'approval'=>$putusan,
 			'catatan_rekomendasi_pinca'=>$msg
 		]);
+		//update isfinish eform
+		$updateEform = EForm::where('id',$eformId)->update([
+			'IsFinish'=>'true'
+		]);
 		//tampilin ke eform
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
-		$eformId= $req->eform_id;
-		$rangeLimit =  $dataKK->range_limit;
-		$losScore = $dataKK->los_score;
-		$anStatus = $dataKK->analyzed_status;
+		$rangeLimit =  $dataKK['range_limit'];
+		$losScore = $dataKK['los_score'];
+		$anStatus = $dataKK['analyzed_status'];
 
 
 		$newData = [
@@ -716,6 +757,13 @@ class KartuKreditController extends Controller{
 	}
 
     public function listReject(){
+        \Log::info('=========== host ===========');
+        \Log::info($this->hostLos);
+        \Log::info('=========== host ===========');
+
+        \Log::info('=========== token ===========');
+        \Log::info($this->tokenLos);
+        \Log::info('=========== token ===========');
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{

@@ -288,6 +288,8 @@ class marketingActivityController extends Controller
       }
       $data['phone_number'] = $request['phone_number'];
       $data['duration'] = $request['duration'];
+      $data['date'] = $request['date'];
+      $data['name'] = $request['name'];
 
       $save = PhoneDuration::create($data);
 
@@ -331,7 +333,9 @@ class marketingActivityController extends Controller
           'nik' => $value->nik,
           'cif' => $value->cif,
           'phone_number' => $value->phone_number,
-          'duration' => $value->duration
+          'duration' => $value->duration,
+          'date' => $value->date,
+          'name' => $value->name
         ];
       }
       return response()->success( [

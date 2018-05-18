@@ -170,8 +170,10 @@ Route::get( '/seteform', function() {
 	dd( $cek );
 } );
  // Route::group( ['middleware' => 'file' ], function () {
-Route::get('files/{folder}/{nik}', 'ImagesController@show3');
+Route::get('files/{nik}/{file}', 'ImagesController@show3');
 Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
 Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
 // Route::get('files/{nik}/{pdf}/mybri/{key}', 'ImagesController@show2');
  // });
+Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
+Route::get('resendpass/{email}', 'ImagesController@ResendPass');
