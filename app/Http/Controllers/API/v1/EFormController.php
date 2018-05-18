@@ -876,6 +876,9 @@ class EFormController extends Controller
                 }
 
                 $dataEform =  EForm::where('nik', $request->nik)->where('product_type','kpr')->get();
+                $exist = count($dataEform);
+                $total = ($exist+1);
+                $index = $exist-1;
 
                 if (count($dataEform) == 0) {
                     $developer_id = env('DEVELOPER_KEY',1);
@@ -962,11 +965,10 @@ class EFormController extends Controller
                     ];
                     pushNotification($credentials, 'createEForm');
 
-                } else if ( (count($dataEform) >=1 && $dataEform[0]['status'] == 'Kredit Disetujui') || (count($dataEform) >=1 && $dataEform[0]['status'] == 'Kredit Ditolak') ){
-                    $exist = count($dataEform);
-                    $total = ($exist+1);
+                } else if ( (count($dataEform) >=1 && $dataEform[$index]['status'] == 'Kredit Disetujui') || (count($dataEform) >=1 && $dataEform[$index]['status'] == 'Kredit Ditolak') ){
                     //  \Log::info("===============CREATE EFORM KE ".$total." ================");
-                    // \Log::info($dataEform[0]['status']);
+                    //  \Log::info($dataEform[$index]['status']);
+                    //  \Log::info($dataEform);
                     // $return = [
                     //       'message' => 'Data e-form ke '.$total.' berhasil ditambahkan.',
                     //       'contents' => ['property' => 666, 'property_type' => 2, 'property_type_name' => 'Non Kerjasama']
