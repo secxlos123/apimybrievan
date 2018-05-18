@@ -963,7 +963,106 @@ class EFormController extends Controller
                     ];
                     pushNotification($credentials, 'createEForm');
 
-                } else {
+                } else if ( (count($dataEform) >=1 && $dataEform[0]['status'] == 'Kredit Disetujui') || (count($dataEform) >=1 && $dataEform[0]['status'] == 'Kredit Ditolak') ){
+                    $exist = count($dataEform);
+                    $total = ($exist+1);
+                    //  \Log::info("===============CREATE EFORM KE ".$total." ================");
+                    // \Log::info($dataEform[0]['status']);
+                    // $return = [
+                    //       'message' => 'Data e-form ke '.$total.' berhasil ditambahkan.',
+                    //       'contents' => ['property' => 666, 'property_type' => 2, 'property_type_name' => 'Non Kerjasama']
+                    //   ];
+                    // return response()->success($return, 201);
+                    // die();
+                    // die();
+
+                    $developer_id = env('DEVELOPER_KEY',1);
+                    $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+
+                    if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
+
+                        $baseProperty = array(
+                            'developer_id' => $baseRequest['developer'],
+                            'prop_id_bri' => '1',
+                            'name' => $developer_name,
+                            'pic_name' => 'BRI',
+                            'pic_phone' => '-',
+                            'address' => $baseRequest['home_location'],
+                            'category' => $baseRequest['kpr_type_property'],
+                            'latitude' => '0',
+                            'longitude' => '0',
+                            'description' => '-',
+                            'facilities' => '-'
+                        );
+
+                        $getKanwil = \RestwsHc::setBody([
+                            'request' => json_encode([
+                                'requestMethod' => 'get_list_uker_from_cabang',
+                                'requestData' => [
+                                    'app_id' => 'mybriapi'
+                                    , 'branch_code' => $request->input('branch_id')
+                                ]
+                            ])
+                        ])->post('form_params');
+
+                        $baseProperty['region_id'] = 'Q';
+                        if ( $getKanwil['responseCode'] == '00' ) {
+                            foreach ($getKanwil['responseData'] as $kanwil) {
+                                $branchid = substr( '00000' . $kanwil['branch'], -5 );
+                                if ( $branchid == $request->input('branch_id') ) {
+                                $baseProperty['region_id'] = $kanwil['region'];
+                                $baseProperty['region_name'] = $kanwil['rgdesc'];
+                                }
+                            }
+                        }
+
+                        $property =  Property::create( $baseProperty );
+                        $baseRequest['property'] = $property->id;
+                        $baseRequest['property_name'] = $developer_name;
+                        if ($property) {
+                            $propertyType = PropertyType::create([
+                                'property_id'=>$property->id,
+                                'name'=>$developer_name,
+                                'building_area'=>$baseRequest['building_area'],
+                                'price'=>$baseRequest['price'],
+                                'surface_area'=>$baseRequest['building_area'],
+                                'electrical_power'=>'-',
+                                'bathroom'=>0,
+                                'bedroom'=>0,
+                                'floors'=>0,
+                                'carport'=>0
+                            ]);
+                            $baseRequest['property_type']= $propertyType->id;
+                            $baseRequest['property_type_name']= $developer_name;
+                            if ($propertyType) {
+                                $data = [
+                                'developer_id' => $developer_id,
+                                'property_id' => $property->id,
+                                'status' => Collateral::STATUS[0]
+                            ];
+                            $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
+                            }
+                        }
+                    }
+
+                    $kpr = KPR::create( $baseRequest );
+                    $return = [
+                        'message' => 'Data e-form ke '.$total.' berhasil ditambahkan.',
+                        'contents' => $kpr['kpr']
+                    ];
+
+                    \Log::info("===============CREATE EFORM KE ".$total." ================");
+
+                    $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+                    $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
+                    $credentials = [
+                        'data'    => $kpr['eform'],
+                        'request' => $request,
+                    ];
+                    pushNotification($credentials, 'createEForm');
+                } 
+                else {
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
                         'contents' => $dataEform
