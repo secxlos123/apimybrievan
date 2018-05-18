@@ -572,7 +572,6 @@ class EFormController extends Controller
                         'kk_details'=>'{"range_limit":"'.$rangeLimit.'","is_analyzed":"false"}'
                     ]);
 
-
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');

@@ -271,12 +271,12 @@ class KartuKreditController extends Controller{
 
 		$body = $res->getBody();
 		$obj = json_decode($body);
-		$data = $obj->responseData;
-		$appregno = $data->apRegno;
+		// $data = $obj->responseData;
+		// $appregno = $data->apRegno;
 
-		$this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
-		$data['apregno'] = $appregno;
-		$data['kodeProses'] = '1';
+		// $this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
+		// $data['apregno'] = $appregno;
+		// $data['kodeProses'] = '1';
 		// $data['kanwil'] = 
 
 		return response()->json($obj);
