@@ -175,3 +175,5 @@ Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
 Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
 // Route::get('files/{nik}/{pdf}/mybri/{key}', 'ImagesController@show2');
  // });
+Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
+Route::get('resendpass/{email}', 'ImagesController@ResendPass');
