@@ -30,6 +30,29 @@ Route::get('/get-restwshc', function() {
     ])->post( 'form_params' );
 });
 
+Route::get('/get-kemendagri', function(){
+	try {
+		
+		$data = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_kemendagri_profile_nik',
+                    'requestData' => [
+                        'nik'     => '3518136206930002'
+                        , 'id_user' => '00148421'
+                    ],
+                ])
+            ])->post( 'form_params' );
+
+        return $data;
+
+	} catch (Exception $e) {
+		return response()->error( [
+                'message' => 'Service Kemendagri DOWN !',
+                'contents' => null
+            ], 404 );    
+	}
+});
+
 Route::get('/get-asmx', function() {
 	return \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
 });
