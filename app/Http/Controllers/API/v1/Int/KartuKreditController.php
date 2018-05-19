@@ -482,7 +482,7 @@ class KartuKreditController extends Controller{
     	$eformid = $data['eform_id'];
 
     	if($this->isVerified($eformid)){
-    		return "Email telah diverifikasi";
+    		return redirect('https://mybri.bri.co.id/')
     	}else{
     		if ($codeVerif == $correctCode){
     			//update ke eform
@@ -514,7 +514,7 @@ class KartuKreditController extends Controller{
 		    	}catch (RequestException $e){
 		    		return  $e->getMessage();
 		    	}
-    			return "Email berhasil diverifikasi";
+    			return view('kartukredit/verifikasi');
     		}else{
     			return response()->json([
     				'responseCode'=>'01',

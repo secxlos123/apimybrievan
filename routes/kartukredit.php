@@ -1,7 +1,7 @@
 <?php
 
 Route::get('/contoh',function(){
-    	return view('example');
+    	return view('kartukredit/verifikasi');
     });
 
 
