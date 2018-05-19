@@ -13,7 +13,7 @@
 		       <img class="center-block img-responsive" width="250" src="{{asset('img/logo-mybri.png')}}"/></div> </a>
 		       <div class="row">
 			       	<center>
-			       	 <h2> Pengajuan klartu kredit anda berhasil diverifikasi </h2>
+			       	 <h2> Pengajuan kartu kredit anda berhasil diverifikasi </h2>
 			       	 <h4 class="subtitle">Bukti hasil verifikasi akan dikirimkan ke emil anda</h4>
 			       </center>
 		       </div>
