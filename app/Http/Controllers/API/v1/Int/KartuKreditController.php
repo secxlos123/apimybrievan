@@ -482,7 +482,7 @@ class KartuKreditController extends Controller{
     	$eformid = $data['eform_id'];
 
     	if($this->isVerified($eformid)){
-    		return "Email telah diverifikasi";
+    		return redirect('https://mybri.bri.co.id/');
     	}else{
     		if ($codeVerif == $correctCode){
     			//update ke eform
@@ -501,6 +501,9 @@ class KartuKreditController extends Controller{
     			$em = new KreditEmailGenerator();
     			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
+                $updateTanggalVerifikasi = KartuKredit::where('eform_id',$eformid)->update([
+                    'tanggal_verifikasi'=>date("Y-m-d")
+                ]);
     			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno);
     			$host = $this->hostLos.'/notif/toemail';
 		    	$header = ['access_token'=> $this->tokenLos];
@@ -514,12 +517,10 @@ class KartuKreditController extends Controller{
 		    	}catch (RequestException $e){
 		    		return  $e->getMessage();
 		    	}
-    			return "Email berhasil diverifikasi";
+                return view('kartukredit/verifikasi', ['message' => '<h5> Pengajuan kartu kredit anda berhasil diverifikasi </h5><h4 class="subtitle">Bukti hasil verifikasi akan dikirimkan ke email anda</h4>']);
+    			// return view('kartukredit/verifikasi');
     		}else{
-    			return response()->json([
-    				'responseCode'=>'01',
-    				'responseMessage'=>'Kode Salah'
-    			]);
+    			return view('kartukredit/verifikasi', ['message' => '<h5 class = "wrong">Kode verifikasi yang anda masukkan salah</h5>']);
     		}
     	}
     }

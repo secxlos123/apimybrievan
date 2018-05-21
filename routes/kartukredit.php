@@ -1,10 +1,8 @@
 <?php
 
 Route::get('/contoh',function(){
-    	return view('example');
-    });
-
-
+		return date("Y-m-d");
+});
 
 
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
