@@ -270,6 +270,8 @@ if (! function_exists('break_pefindo')) {
             $couple = $pefindoDetail->couple[ $request['select_couple_pefindo'] ];
             $dataCouple = get_pefindo_service( $eform, 'data', true, $couple->PefindoId );
             $pdf .= ',' . get_pefindo_service( $eform, 'pdf', true, $couple->PefindoId );
+            \Log::info("=======PDF PEFINDO=====");
+            \Log::info($pdf);
             $pefindo = get_pefindo_color( $dataCouple['score'], true, $pefindo, $request['select_couple_pefindo'], $dataCouple['reasonslist'] );
             $lastDataCouple = get_pefindo_color( $dataCouple['score'], true, $pefindo, $request['select_couple_pefindo'], $dataCouple['reasonslist'], true );
             $pefindoScoreDetail['couple'] = [
