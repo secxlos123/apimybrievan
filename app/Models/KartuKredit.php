@@ -31,7 +31,7 @@ class KartuKredit extends Model
     	'memiliki_kk_bank_lain','range_limit','nama_ibu_kandung',
         'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
         'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir',
-        'los_score','analyzed_status','qrcode'
+        'los_score','analyzed_status','qrcode','tanggal_verifikasi'
     ];
 
     protected $appends = ['jenis_kartu','alamat_lengkap'];
@@ -411,13 +411,17 @@ class KartuKredit extends Model
         return $data;
     }
 
-    public function convertDateTimeToBahasa($eformid){
-        $kk = KartuKredit::where('eform_id',$eformid)->first();
-        $updatedAt = $kk['updated_at'];
-        $month = strftime("%b",strtotime($updatedAt));
-        $day = strftime("%A",strtotime($updatedAt));
-        $dayDate = strftime("%d",strtotime($updatedAt));
-        $year = strftime("%Y",strtotime($updatedAt));
+    public function getTanggalVerifikasiAttribute($val){
+        if($val){
+          $this->convertDateTimeToBahasa($val);
+        }
+    }
+
+    public function convertDateTimeToBahasa($date){
+        $month = strftime("%b",strtotime($date));
+        $day = strftime("%A",strtotime($date));
+        $dayDate = strftime("%d",strtotime($date));
+        $year = strftime("%Y",strtotime($date));
 
         $day = $this->changeDayIntoBahasa($day);
         $month = $this->changeMonthToBahasa($month);
