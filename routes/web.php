@@ -38,7 +38,7 @@ Route::get('/get-kemendagri', function(){
                     'requestMethod' => 'get_kemendagri_profile_nik',
                     'requestData' => [
                         'nik'     => '3518136206930002'
-                        , 'id_user' => '00148421'
+                        , 'id_user' => '00147678'
                     ],
                 ])
             ])->post( 'form_params' );
