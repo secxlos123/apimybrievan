@@ -1,10 +1,8 @@
 <?php
 
 Route::get('/contoh',function(){
-    	return view('kartukredit/verifikasi');
-    });
-
-
+		return redirect('https://mybri.bri.co.id/');
+});
 
 
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
