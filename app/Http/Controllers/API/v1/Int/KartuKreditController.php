@@ -501,6 +501,9 @@ class KartuKreditController extends Controller{
     			$em = new KreditEmailGenerator();
     			$kk = KartuKredit::where('eform_id',$eformid)->first();
     			$apregno = $kk['appregno'];
+                $updateTanggalVerifikasi = KartuKredit::where('eform_id',$eformid)->update([
+                    'tanggal_verifikasi'=>date("Y-m-d")
+                ]);
     			$message = $em->convertToFinishVerificationEmailFormat($kk,$apregno);
     			$host = $this->hostLos.'/notif/toemail';
 		    	$header = ['access_token'=> $this->tokenLos];

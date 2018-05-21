@@ -351,7 +351,7 @@ class KreditEmailGenerator extends Model{
          <tr>
              
              <td align="right" >
-                 <p align="right" style="margin-right:18px;">'.'10 januari 2018'.'</p>
+                 <p align="right" style="margin-right:18px;">'.$data['tanggal_verifikasi'].'</p>
                 <img src="'.$data['qrcode'].'" width="150" height="150" alt="qrcode"  hspace="8" style="margin-top:-9px;"/>
                 <p align="right" style="margin-right:18px;margin-top:2px">'.$data['nama'].'</p>
              </td>

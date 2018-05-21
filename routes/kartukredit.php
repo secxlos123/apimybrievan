@@ -1,7 +1,7 @@
 <?php
 
 Route::get('/contoh',function(){
-		return redirect('https://mybri.bri.co.id/');
+		return date("Y-m-d");
 });
 
 
