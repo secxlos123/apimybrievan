@@ -196,12 +196,8 @@ Route::get( '/seteform', function() {
  // Route::group( ['middleware' => 'file' ], function () {
 Route::get('files/{nik}/{file}', 'ImagesController@show3');
 Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
-<<<<<<< HEAD
- // });
-=======
 Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
 // Route::get('files/{nik}/{pdf}/mybri/{key}', 'ImagesController@show2');
  // });
 Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
 Route::get('resendpass/{email}', 'ImagesController@ResendPass');
->>>>>>> 4be28b5c7948a29c1d4bfbe027dfa4b39d731a03
