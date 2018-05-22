@@ -149,7 +149,7 @@ class ImagesController extends Controller
         \Log::info($request->header('Authorization'));
         \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
         \Log::info($secure);
-        
+
         // dd($storagePath);
         if($secure != 1 ){
         // $storagePath = public_path('uploads/'.$folder.'/'.$file);

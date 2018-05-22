@@ -1,5 +1,6 @@
 <?php
-Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' => 'API\v1\Int\Crm'], function(){
+Route::group(['prefix'=>'v1/int/crm', /*'middleware' => 'api.auth',*/ 'namespace' => 'API\v1\Int\Crm'], function(){
+
   // route dashboard
   Route::get( '/', 'DashboardController@index', [
 
@@ -26,7 +27,7 @@ Route::group(['prefix'=>'v1/int/crm', 'middleware' => 'api.auth', 'namespace' =>
   Route::post( 'account/leads_detail', 'AccountController@detail')->name('crm.account_detail');
   Route::post( 'account/existing_fo', 'AccountController@existingFo')->name('crm.existing_fo');
   Route::post( 'account/test', 'AccountController@getBranchKanwil');
-  Route::get( 'account/get_referral', 'AccountController@get_referral');
+  Route:: get( 'account/get_referral', 'AccountController@get_referral');
   Route::get( 'account/get_referral_by_officer', 'AccountController@get_referral_by_officer');
   Route::post( 'account/get_referral_by_branch', 'AccountController@get_referral_by_branch');
   Route::post( 'account/store_referral', 'AccountController@store_referral');
