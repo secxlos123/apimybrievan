@@ -1363,7 +1363,8 @@ class ApiLasController extends Controller
 									 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran','branch_name')
 									 ->where('briguna.eform_id', $data['eform_id'])
 									 ->get();
-									
+							
+							try{
 							$briguna = $briguna->toArray();
 							$briguna = json_decode(json_encode($briguna), True);
 							$message = ['no_hp'=>$customer[0]['mobile_phone'],
@@ -1377,6 +1378,8 @@ class ApiLasController extends Controller
 							\Log::info($message);
 							$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
 							\Log::info($testing);
+							}catch(\Exception $e){
+							}
 						}
 
                         return $result;
@@ -1402,7 +1405,7 @@ class ApiLasController extends Controller
 								 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran','branch_name')
 								 ->where('briguna.eform_id', $data['eform_id'])
 								 ->get();
-						
+						try{
 						$briguna = $briguna->toArray();
 						$briguna = json_decode(json_encode($briguna), True);
 						$message = ['no_hp'=>$customer[0]['mobile_phone'],
@@ -1416,6 +1419,9 @@ class ApiLasController extends Controller
 						\Log::info($message);
 						$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
 						\Log::info($testing);
+						}catch(\Exception $e){
+							
+						}
 					}
 
                     return $result;
