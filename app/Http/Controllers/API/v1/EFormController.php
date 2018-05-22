@@ -1394,8 +1394,8 @@ class EFormController extends Controller
                             'kode_message'=>'5'];
                 \Log::info("-------------------sms notifikasi-----------------");
                 \Log::info($message);
-                $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
-                                \Log::info($testing);
+                //$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+                 //               \Log::info($testing);
             } catch (\Exception $e) {
 				$smsmasuk = '0';
 			}		
