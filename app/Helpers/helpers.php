@@ -40,7 +40,7 @@ if (! function_exists('get_pefindo_service')) {
      * Hit pefindo service
      *
      * @return \Illuminate\Http\Response
-     */$dataIndividu = get_pefindo_service( $eform, 'data', true, $individu->PefindoId );
+     */
     function get_pefindo_service( $eform, $position = 'search', $couple = false, $pefindoId = null )
     {
         $customer = $eform->customer;
