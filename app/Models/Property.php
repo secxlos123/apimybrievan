@@ -411,6 +411,14 @@ class Property extends Model implements AuditableContract
                  + sin( radians( cast( {$lat}  as double precision ) ) )
             * sin( radians( cast( latitude as double precision ) ) ) ) ) as numeric), 2)";
 
+        // $distance = "round( CAST( ( {$type}
+        //     * acos( sin( radians( cast( {$lat} as double precision ) ) )
+        //     * sin( radians( cast( latitude as double precision ) ) )
+        //     * cos( radians( cast( longitude as double precision ) )
+        //          - radians( cast( {$lng} as double precision ) ) )
+        //          + cos( radians( cast( {$lat}  as double precision ) ) )
+        //     * cos( radians( cast( latitude as double precision ) ) ) ) ) as numeric), 2)";
+
         $query = $query
             ->selectRaw("{$distance} as distance")
             ->groupBy( "properties.id" )
