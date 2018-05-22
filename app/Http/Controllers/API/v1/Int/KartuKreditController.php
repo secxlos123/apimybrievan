@@ -274,18 +274,13 @@ class KartuKreditController extends Controller{
 		// $data = $obj->responseData;
 		// $appregno = $data->apRegno;
 
-		// $this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
+		$addAppregno = KartuKredit::where('eform_id',$eform_id)
+        ->update(['appregno'=>$appregno]);
 		// $data['apregno'] = $appregno;
 		// $data['kodeProses'] = '1';
 		// $data['kanwil'] = 
 
 		return response()->json($obj);
-    }
-
-    function updateAppRegnoKreditDetails($appregno,$eform_id){
-    	$addAppregno = KartuKredit::where('eform_id',$eform_id)
-    	->update(['appregno'=>$appregno]);
-
     }
 
     public function updateDataLos(KreditRequest $req){
