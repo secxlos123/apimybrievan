@@ -64,7 +64,7 @@ class Controller extends BaseController
       $client = new Client();
       $url = env('APP_URL');
       // Keperluan TOT
-      if($url == 'http://api.dev.net/' || $url == 'http://103.63.96.167/api/'){
+	if($url == 'http://api.dev.net/' || $url == 'http://103.63.96.167/api/' || $url == 'http://apimybridev.bri.co.id/'){	
         $host = config('restapi.apipdmdev');
         $client_id = config('restapi.pdm_client_id_dev');
         $client_secret = config('restapi.pdm_client_secret_dev');
@@ -105,11 +105,19 @@ class Controller extends BaseController
     public function gen_token_briguna()
     {
       $client = new Client();
-	    $host = (env('APP_URL') == 'http://api.dev.net/')? 'http://10.35.65.208:81/':config('restapi.apipdm');
-		  $client_id = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_id_dev'):config('restapi.pdm_client_id');
-		  $client_secret = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.pdm_client_secret_dev'):config('restapi.pdm_client_secret');
-
-      $requestBriconnect = $client->request('POST', $host.'/oauth/token',
+	  $host = env('APP_URL');
+	  
+        \Log::info($host);
+      if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+		  $url = 'http://10.35.65.208:81/';
+		  $client_id = config('restapi.pdm_client_id_dev');
+		  $client_secret = config('restapi.pdm_client_secret_dev');
+	  }else{
+		  $url = config('restapi.apipdm');
+		  $client_id = config('restapi.pdm_client_id');
+		  $client_secret = config('restapi.pdm_client_secret');
+	  };
+      $requestBriconnect = $client->request('POST', $url.'/oauth/token',
         [
           'form_params' =>
           [

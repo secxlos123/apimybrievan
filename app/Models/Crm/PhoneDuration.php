@@ -14,7 +14,9 @@ class PhoneDuration extends Model
       'nik',
       'cif',
       'phone_number',
-      'duration'
+      'duration',
+      'date',
+      'name'
     ];
 
     public function scopeGetListDurationByCustomer($query, Request $request)

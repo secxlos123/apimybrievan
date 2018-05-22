@@ -31,6 +31,29 @@ Route::get('/get-restwshc', function() {
     ])->post( 'form_params' );
 });
 
+Route::get('/get-kemendagri', function(){
+	try {
+		
+		$data = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_kemendagri_profile_nik',
+                    'requestData' => [
+                        'nik'     => '3518136206930002'
+                        , 'id_user' => '00147678'
+                    ],
+                ])
+            ])->post( 'form_params' );
+
+        return $data;
+
+	} catch (Exception $e) {
+		return response()->error( [
+                'message' => 'Service Kemendagri DOWN !',
+                'contents' => null
+            ], 404 );    
+	}
+});
+
 Route::get('/get-asmx', function() {
 	return \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
 });
@@ -171,6 +194,14 @@ Route::get( '/seteform', function() {
 	dd( $cek );
 } );
  // Route::group( ['middleware' => 'file' ], function () {
-Route::get('files/{folder}/{nik}', 'ImagesController@show3');
+Route::get('files/{nik}/{file}', 'ImagesController@show3');
 Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
+<<<<<<< HEAD
  // });
+=======
+Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
+// Route::get('files/{nik}/{pdf}/mybri/{key}', 'ImagesController@show2');
+ // });
+Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
+Route::get('resendpass/{email}', 'ImagesController@ResendPass');
+>>>>>>> 4be28b5c7948a29c1d4bfbe027dfa4b39d731a03

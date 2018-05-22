@@ -210,7 +210,7 @@ class EForm extends Model implements AuditableContract
         if ( $value >= 250 && $value <= 529 ) {
             return 'Merah';
 
-        } elseif ( ( $value >= 677 && $value <= 900 ) || $value == 999 ) {
+        } elseif ( ( $value >= 677 && $value <= 900 ) ) {
             return 'Hijau';
 
         } else {
@@ -845,6 +845,10 @@ class EForm extends Model implements AuditableContract
     public function kpr()
     {
         return $this->hasOne( KPR::class, 'eform_id' );
+    }
+
+    public function kartukredit(){
+        return $this->hasOne(KartuKredit::class, 'eform_id');
     }
 
     /**
@@ -1846,12 +1850,19 @@ class EForm extends Model implements AuditableContract
     {
         // Set language to Bahasa
         Carbon::setLocale('id');
-
+		$nominal = 0;
+		if($this->product_type == 'kpr'){
+			$nominal = $this->nominal;
+		}elseif($this->product_type=='briguna'){
+			$nominal = $this->briguna->request_amount;
+		}else{
+			$nominal = '0';
+		}
         // return custom collection
         return [
             'no_ref'            => $this->ref_number,
             'nasabah'           => $this->customer['personal']['name'],
-            'nominal'           => $this->nominal,
+            'nominal'           => $nominal,
             'product_type'      => $this->product_type,
             'tanggal_pengajuan' => date('d-M-Y', strtotime($this->created_at)),
             'no_telepon'        => empty($this->mobile_phone) ? null : $this->mobile_phone,
@@ -1898,11 +1909,43 @@ class EForm extends Model implements AuditableContract
         $user = \RestwsHc::getUser();
         $data = EForm::select();
 
+		$BRANCH_CODE = intval($user['branch_id']);
+								$branchcis ='';
+								if(strlen($BRANCH_CODE)=='5'){
+									$branchcis = $BRANCH_CODE;
+									$p = '';
+									for($l=0;$l<5;$l++){
+										if(substr($BRANCH_CODE,$l,1)!='0'){
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis = substr($BRANCH_CODE,$p,5);
+									/* for($i=0;$i<5;$i++){
+										$cek = substr($BRANCH_CODE,$i,1);
+										if($cek!=0){
+											$branchcis = substr($BRANCH_CODE,$i,4);
+											$i = 5;
+										}
+									} */
+								}else{										
+										$o = strlen($BRANCH_CODE);
+										$branchut = '';
+										for($y=$o;$y<5;$y++){
+											if($y==$o){
+												$branchut = '0'.$BRANCH_CODE;
+											}else{
+												$branchut = '0'.$branchut;
+											}
+										} 
+										$branchcis = $branchut;	
+								}
         if (count($user)>0) {
             if ($user['role'] == 'ao') {
                 $data->where('ao_id',$user['pn']);
             }elseif ($user['role'] == 'mp' || $user['role'] == 'amp' || $user['role'] == 'pinca') {
-                $data->where('branch_id',intval($user['branch_id']));
+                $data->whereRaw('(eforms."branch_id"='."'".$branchcis."'".' OR eforms."branch_id"='."'".$BRANCH_CODE."'".')');
+				//$data->where('branch_id',$branchcis)->orWhere('branch_id',$BRANCH_CODE);
             }
         }
 

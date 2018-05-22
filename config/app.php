@@ -193,6 +193,12 @@ return [
         App\Providers\DbwsRestServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
         App\Providers\RestwsSmServiceProvider::class,
+<<<<<<< HEAD
+=======
+
+        // QRCODE
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
+>>>>>>> 4be28b5c7948a29c1d4bfbe027dfa4b39d731a03
 
     ],
 
@@ -261,6 +267,9 @@ return [
         'Zip'          => ZanySoft\Zip\ZipFacade::class,
         'RestwsSm'     => App\Classes\Client\Facades\RestwsSm::class,
         'Image'        => Intervention\Image\Facades\Image::class,
+
+        // qrcode
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
 
     ],
 
