@@ -1,5 +1,5 @@
 <?php
-//tes
+
 namespace App\Http\Controllers\API\v1\Int\Crm;
 
 use Illuminate\Http\Request;
@@ -24,10 +24,10 @@ class AccountController extends Controller
     public function index(Request $request)
     {
       $sendRequest = array(
-        "id_user" => $request()->header( 'pn' ),//request()->header( 'pn' ),tes
-        "kode_branch" =>$request()->header( 'branch' ),//request()->header( 'branch' ), // 5 digit uker, tes
+        "id_user" => request()->header( 'pn' ),
+        "kode_branch" => request()->header( 'branch' ), // 5 digit uker
         "type_request" => "list",//$request->input('type_request'), // list or search
-        "type_usulan" => $request->input('type_usulan'),//$request->input('type_usulan'), // kpr or kkb, tes
+        "type_usulan" => $request->input('type_usulan'), // kpr or kkb
         "limit" => "10000",//$request->input('limit'),
         "page" => "1",//$request->input('page'),
         "order_by" => "nama",//$request->input('order_by'), // nama or amount
@@ -42,8 +42,8 @@ class AccountController extends Controller
           'request' => json_encode( [
               'requestMethod' => 'get_customer_leads',
               'requestData' => $sendRequest
-          ])
-      ])->post('form_params');
+          ] )
+      ] )->post( 'form_params' );
       // dd($leads);
       if ($leads['responseCode'] == 00) {
         return response()->success( [

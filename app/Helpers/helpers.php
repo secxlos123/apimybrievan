@@ -252,6 +252,7 @@ if (! function_exists('break_pefindo')) {
     {
         $pefindoDetail = json_decode($eform['pefindo_detail']);
         $pefindoScoreDetail = [];
+     if($pefindoDetail->individual)   
         if ( isset($request['select_individual_pefindo']) ) {
             $individu = $pefindoDetail->individual[ $request['select_individual_pefindo'] ];
             $dataIndividu = get_pefindo_service( $eform, 'data', false, $individu->PefindoId );
@@ -267,7 +268,6 @@ if (! function_exists('break_pefindo')) {
         }
 
         if ( isset($request['select_couple_pefindo']) ) {
-            $pdf = '';
             $couple = $pefindoDetail->couple[ $request['select_couple_pefindo'] ];
             $dataCouple = get_pefindo_service( $eform, 'data', true, $couple->PefindoId );
             $pdf .= ',' . get_pefindo_service( $eform, 'pdf', true, $couple->PefindoId );
