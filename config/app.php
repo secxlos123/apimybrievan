@@ -194,9 +194,6 @@ return [
         OwenIt\Auditing\AuditingServiceProvider::class,
         App\Providers\RestwsSmServiceProvider::class,
 
-        // QRCODE
-        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
-
     ],
 
     /*
@@ -245,7 +242,6 @@ return [
         'URL'          => Illuminate\Support\Facades\URL::class,
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
-
         /*
         * Package Class Alias...
         */

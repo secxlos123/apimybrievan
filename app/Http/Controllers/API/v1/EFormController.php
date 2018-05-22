@@ -828,18 +828,24 @@ class EFormController extends Controller
                                  ->join('users', 'users.id', '=', 'customer_details.user_id')
                                  ->where('customer_details.nik', $request->nik)
                                  ->get();
-
+						try{
                         $customer = $customer->toArray();
                         $customer = json_decode(json_encode($customer), True);
                         $message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];
                         \Log::info("-------------------sms notifikasi-----------------");
                         \Log::info($message);
-                        $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
-                                        \Log::info($testing);
+                        //$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+                         //               \Log::info($testing);
                         $return = [
                             'message' => 'Data e-form briguna berhasil ditambahkan.',
                             'contents' => $kpr
                         ];
+						}catch(Exception $e){
+							$return = [
+                            'message' => 'Data e-form briguna berhasil ditambahkan. Sms notifikasi gagal terkirim.',
+                            'contents' => $kpr
+							];
+						}
 
                 } else {
                         $dataEform =  EForm::where('nik', $request->nik)->get();
@@ -1379,6 +1385,7 @@ class EFormController extends Controller
                         'message' => 'Data pengajuan tidak ditemukan',
                     ], 422 );
             }
+			$smsmasuk = '1';
 			try{			
 				$message = ['no_hp'=>$customer[0]['mobile_phone'],
                             'plafond'=>$briguna[0]['request_amount'],
@@ -1387,27 +1394,30 @@ class EFormController extends Controller
                             'kode_message'=>'5'];
                 \Log::info("-------------------sms notifikasi-----------------");
                 \Log::info($message);
-                $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
-                                \Log::info($testing);
-
+                //$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+                 //               \Log::info($testing);
             } catch (\Exception $e) {
-                    DB::rollback();
-                    return response()->error( [
-                        'message' => 'Gagal Mengirimkan SMS',
-                    ], 422 );
-            }
+				$smsmasuk = '0';
+			}		
 			try{
                     User::destroy($eform->user_id);
                   DB::commit();
-                return response()->success( [
-                    'message' => 'Hapus User Berhasil',
-                ], 200 );
+				  if($smsmasuk=='1'){
+					return response()->success( [
+						'message' => 'Hapus User Berhasil',
+					], 200 );
+				  }else{
+					return response()->success( [
+						'message' => 'Hapus User Berhasil. Sms gagal terkirim.',
+					], 200 );
+				  }
             } catch (\Exception $e) {
                     DB::rollback();
                     return response()->error( [
                         'message' => 'User Tidak Dapat Dihapus',
                     ], 422 );
             }
+			
         }else{
             if ($eform->kpr->is_sent == false || $eform->status_eform == 'Rejected' ) {
               User::destroy($eform->user_id);

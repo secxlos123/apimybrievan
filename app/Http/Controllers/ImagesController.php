@@ -135,6 +135,18 @@ class ImagesController extends Controller
         $server = $request->server();
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
+<<<<<<< HEAD
+        \Log::info("====client : ".$header);
+        \Log::info("====ENV-IP : ".$ip);
+        \Log::info("====================SERVER==================");
+        \Log::info($server);
+        \Log::info("====================REQUEST==================");
+        \Log::info($request->header('Authorization'));
+        \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
+        \Log::info($secure);
+
+        // dd($storagePath);
+=======
 
         if($secure != 1 ){
             $storagePath = public_path('uploads/'.$folder.'/'.$id.'/'.$file);
@@ -160,6 +172,7 @@ class ImagesController extends Controller
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
     
+>>>>>>> 4be28b5c7948a29c1d4bfbe027dfa4b39d731a03
         if($secure != 1 ){
             $storagePath = public_path('uploads/'.$folder.'/'.$other.'/'.$id.'/'.$file);
             return Image::make($storagePath)->response();
