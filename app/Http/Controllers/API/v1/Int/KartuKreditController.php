@@ -297,6 +297,7 @@ class KartuKreditController extends Controller{
     	$request = $req->all();
     	$eform_id = $request['eform_id'];
     	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
+        \Log::info('appnumber ='.$request['appNumber']);
 
     	
     	$kk = new KartuKredit();
@@ -313,7 +314,7 @@ class KartuKreditController extends Controller{
 		}catch (RequestException $e){
 			return  $e->getMessage();
 		}
-		//update resoinse status jadi pending
+		//update response status jadi pending
 		$updateStatus = EForm::where('id',$eform_id)
 		->update(['response_status'=>'pending']);
 
@@ -334,10 +335,6 @@ class KartuKreditController extends Controller{
 		//get user  from eform
 		$eformData = EForm::where('id',$eform_id)->first();
 		$apregno = $request['appNumber'];
-
-		//update eform response status
-		// $updateStatus = EForm::where('id',$eform_id)
-		// ->update(['response_status'=>'verified']);
 		return response()->json($obj);
 
     }
