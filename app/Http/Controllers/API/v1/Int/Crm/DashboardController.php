@@ -149,7 +149,7 @@ class DashboardController extends Controller
           ],
         ])
       ])->post('form_params');
-	if(isset($list_ao['responseData'])||!empty($list_ao['responseData']){
+
       $ao = $list_ao['responseData'];
       $fo = $list_fo['responseData'];
 
@@ -162,9 +162,6 @@ class DashboardController extends Controller
       return response()->success([
         'contents' => $result
       ]);
-	}else{
-		$result = [];
-	}
     }
 
     public function kinerja_pemasar(Request $request)
