@@ -276,7 +276,7 @@ class KartuKreditController extends Controller{
         if($rc != 99){
             $appregno = $data->apRegno;
 
-            $addAppregno = KartuKredit::where('eform_id',$eform_id)
+            $addAppregno = KartuKredit::where('eform_id',$req->eform_id)
             ->update(['appregno'=>$appregno]);
             // $data['apregno'] = $appregno;
             // $data['kodeProses'] = '1';
