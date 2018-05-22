@@ -193,12 +193,6 @@ return [
         App\Providers\DbwsRestServiceProvider::class,
         OwenIt\Auditing\AuditingServiceProvider::class,
         App\Providers\RestwsSmServiceProvider::class,
-<<<<<<< HEAD
-=======
-
-        // QRCODE
-        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
->>>>>>> 4be28b5c7948a29c1d4bfbe027dfa4b39d731a03
 
     ],
 
