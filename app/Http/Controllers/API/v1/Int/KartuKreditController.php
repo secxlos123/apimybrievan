@@ -314,28 +314,30 @@ class KartuKreditController extends Controller{
 		}catch (RequestException $e){
 			return  $e->getMessage();
 		}
-		//update response status jadi pending
-		$updateStatus = EForm::where('id',$eform_id)
-		->update(['response_status'=>'pending']);
+        
+        $body = $res->getBody();
+        $obj = json_decode($body);
+        $rc = $obj->responseCode;
+        //if gak rollback
+        if ($rc != 99){
+            //update response status jadi pending
+            $updateStatus = EForm::where('id',$eform_id)
+            ->update(['response_status'=>'pending']);
 
-		$alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2']
-    	.' '.
-    	$request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
+            $alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2']
+            .' '.
+            $request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
 
-    	//update data di eform
-    	$update = EForm::where('id',$eform_id)->update([
-    		'address'=>$alamatDom
-    	]);
+            //update data di eform
+            $update = EForm::where('id',$eform_id)->update([
+                'address'=>$alamatDom
+            ]);
 
-		$body = $res->getBody();
-		$obj = json_decode($body);
-		// $data = $obj->responseData;
-
-		//update data user
-		//get user  from eform
-		$eformData = EForm::where('id',$eform_id)->first();
-		$apregno = $request['appNumber'];
-		return response()->json($obj);
+            return response()->json($obj);
+        }else{
+            return response()->json($obj);
+        }
+		
 
     }
 
