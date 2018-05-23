@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\Customer\CustomerRegister;
 use App\Events\Customer\CustomerRegistered;
+use GuzzleHttp\Exception\RequestException;
+use App\Events\Customer\CustomerRegister;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 use App\Models\User;
 use Activation;
 use Response;
@@ -135,18 +137,6 @@ class ImagesController extends Controller
         $server = $request->server();
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
-<<<<<<< HEAD
-        \Log::info("====client : ".$header);
-        \Log::info("====ENV-IP : ".$ip);
-        \Log::info("====================SERVER==================");
-        \Log::info($server);
-        \Log::info("====================REQUEST==================");
-        \Log::info($request->header('Authorization'));
-        \Log::info("====================HTTP_UPGRADE_INSECURE_REQUESTS==================");
-        \Log::info($secure);
-
-        // dd($storagePath);
-=======
 
         if($secure != 1 ){
             $storagePath = public_path('uploads/'.$folder.'/'.$id.'/'.$file);
@@ -172,7 +162,6 @@ class ImagesController extends Controller
         $ip = env('ACCESS_CLAS_IP', '127.0.0.1');
         $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
     
->>>>>>> 4be28b5c7948a29c1d4bfbe027dfa4b39d731a03
         if($secure != 1 ){
             $storagePath = public_path('uploads/'.$folder.'/'.$other.'/'.$id.'/'.$file);
             return Image::make($storagePath)->response();
@@ -304,5 +293,41 @@ class ImagesController extends Controller
             }
 
         return $pass; // return the generated password
+    }
+
+    /**
+     * Check Service Email Restwshc
+     * @param email
+     */
+    public function testEmailService($email){
+        try {
+            $client = new Client();
+            $host = config('restapi.restwshc');
+            \Log::info($host.'send_emailv2');    
+            $res = $client->request('POST', $host.'send_emailv2', [
+                    'form_params' => [
+                        "headers" => [
+                            "Content-type" => "application/x-www-form-urlencoded"
+                        ]
+                        , "app_id"  => "mybriapi"
+                        , "subject" => "Test Service Email Restwshc"
+                        , "content" => "TEST SERVICE EMAIL RESTWSHC SUCCESS"
+                        , "to" => $email
+                    ],
+                ]);
+
+            $data = json_decode($res->getBody()->getContents(), true);
+            \Log::info("===SUCCESS SEND MAIL FROM SERVICE RESTWSHC===");
+            return $data;
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND MAIL FROM SERVICE RESTWSHC===");
+            return response()->error( [
+                'message' => 'Error Service Mail Restwshc',
+                'contents' => [
+                    'data' => $e->getMessage(),
+                    ]
+            ], 201 );
+        }
     }
 }

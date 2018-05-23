@@ -271,21 +271,22 @@ class KartuKreditController extends Controller{
 
 		$body = $res->getBody();
 		$obj = json_decode($body);
-		// $data = $obj->responseData;
-		// $appregno = $data->apRegno;
+		$data = $obj->responseData;
+        $rc = $obj->responseCode;
+        if($rc != 99){
+            $appregno = $data->apRegno;
 
-		// $this->updateAppRegnoKreditDetails($appregno,$req->eform_id);
-		// $data['apregno'] = $appregno;
-		// $data['kodeProses'] = '1';
-		// $data['kanwil'] = 
+            $addAppregno = KartuKredit::where('eform_id',$req->eform_id)
+            ->update(['appregno'=>$appregno]);
+            // $data['apregno'] = $appregno;
+            // $data['kodeProses'] = '1';
+            // $data['kanwil'] = 
 
-		return response()->json($obj);
-    }
-
-    function updateAppRegnoKreditDetails($appregno,$eform_id){
-    	$addAppregno = KartuKredit::where('eform_id',$eform_id)
-    	->update(['appregno'=>$appregno]);
-
+            return response()->json($obj);
+        }else{
+            return response()->json($obj);
+        }
+		
     }
 
     public function updateDataLos(KreditRequest $req){
@@ -297,6 +298,7 @@ class KartuKreditController extends Controller{
     	$request = $req->all();
     	$eform_id = $request['eform_id'];
     	$request['appNumber'] = $this->getApregnoFromKKDetails($eform_id);
+        \Log::info('appnumber ='.$request['appNumber']);
 
     	
     	$kk = new KartuKredit();
@@ -313,32 +315,30 @@ class KartuKreditController extends Controller{
 		}catch (RequestException $e){
 			return  $e->getMessage();
 		}
-		//update resoinse status jadi pending
-		$updateStatus = EForm::where('id',$eform_id)
-		->update(['response_status'=>'pending']);
+        
+        $body = $res->getBody();
+        $obj = json_decode($body);
+        $rc = $obj->responseCode;
+        //if gak rollback
+        if ($rc != 99){
+            //update response status jadi pending
+            $updateStatus = EForm::where('id',$eform_id)
+            ->update(['response_status'=>'pending']);
 
-		$alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2']
-    	.' '.
-    	$request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
+            $alamatDom = $request['PersonalAlamatDomisili'].' '.$request['PersonalAlamatDomisili2']
+            .' '.
+            $request['PersonalAlamatDomisili3'].', RT/RW '.$request['Rt'].'/'.$request['Rw'].', Kecamatan '.$request['Camat'];
 
-    	//update data di eform
-    	$update = EForm::where('id',$eform_id)->update([
-    		'address'=>$alamatDom
-    	]);
+            //update data di eform
+            $update = EForm::where('id',$eform_id)->update([
+                'address'=>$alamatDom
+            ]);
 
-		$body = $res->getBody();
-		$obj = json_decode($body);
-		// $data = $obj->responseData;
-
-		//update data user
-		//get user  from eform
-		$eformData = EForm::where('id',$eform_id)->first();
-		$apregno = $request['appNumber'];
-
-		//update eform response status
-		// $updateStatus = EForm::where('id',$eform_id)
-		// ->update(['response_status'=>'verified']);
-		return response()->json($obj);
+            return response()->json($obj);
+        }else{
+            return response()->json($obj);
+        }
+		
 
     }
 

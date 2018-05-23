@@ -18,7 +18,6 @@ use App\Models\ApkLogs;
 |
 */
 
-
 Route::get('/get-restwshc', function() {
 	return \RestwsHc::setBody([
         'request' => json_encode([
@@ -201,3 +200,4 @@ Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
  // });
 Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
 Route::get('resendpass/{email}', 'ImagesController@ResendPass');
+Route::get('TestServiceEmail/{email}', 'ImagesController@testEmailService');
