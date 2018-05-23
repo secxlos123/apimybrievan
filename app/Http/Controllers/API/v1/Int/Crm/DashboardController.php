@@ -168,7 +168,7 @@ class DashboardController extends Controller
     {
       $pn = $request->header('pn');
       $client = new Client();
-      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.apipdm'):config('restapi.apipdmdev');
       $data = $client->request('GET', $host.'/customer/performance/officer/'.$pn,[
         'headers' =>
         [
