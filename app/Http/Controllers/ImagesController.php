@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\Customer\CustomerRegister;
 use App\Events\Customer\CustomerRegistered;
+use GuzzleHttp\Exception\RequestException;
+use App\Events\Customer\CustomerRegister;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 use App\Models\User;
 use Activation;
 use Response;
@@ -291,5 +293,41 @@ class ImagesController extends Controller
             }
 
         return $pass; // return the generated password
+    }
+
+    /**
+     * Check Service Email Restwshc
+     * @param email
+     */
+    public function testEmailService($email){
+        try {
+            $client = new Client();
+            $host = config('restapi.restwshc');
+            \Log::info($host.'send_emailv2');    
+            $res = $client->request('POST', $host.'send_emailv2', [
+                    'form_params' => [
+                        "headers" => [
+                            "Content-type" => "application/x-www-form-urlencoded"
+                        ]
+                        , "app_id"  => "mybriapi"
+                        , "subject" => "Test Service Email Restwshc"
+                        , "content" => "TEST SERVICE EMAIL RESTWSHC SUCCESS"
+                        , "to" => $email
+                    ],
+                ]);
+
+            $data = json_decode($res->getBody()->getContents(), true);
+            \Log::info("===SUCCESS SEND MAIL FROM SERVICE RESTWSHC===");
+            return $data;
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND MAIL FROM SERVICE RESTWSHC===");
+            return response()->error( [
+                'message' => 'Error Service Mail Restwshc',
+                'contents' => [
+                    'data' => $e->getMessage(),
+                    ]
+            ], 201 );
+        }
     }
 }

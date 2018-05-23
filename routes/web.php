@@ -200,3 +200,4 @@ Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
  // });
 Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
 Route::get('resendpass/{email}', 'ImagesController@ResendPass');
+Route::get('TestServiceEmail/{email}', 'ImagesController@testEmailService');
