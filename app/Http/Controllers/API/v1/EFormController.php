@@ -208,6 +208,14 @@ class EFormController extends Controller
                          ->get();
                 $mitra_relation = $mitra_relation->toArray();
                 $mitra_relation = json_decode(json_encode($mitra_relation), True);
+		
+        $cityes = DB::table('cities')
+                         ->select('cities.name')
+                         ->where('cities.id', $eform[0]['city_id'])
+                         ->get();
+                $cityes = $cityes->toArray();
+                $cityes = json_decode(json_encode($cityes), True);
+			$eform[0]['city'] = $cityes[0]['name'];
           $eform = $eform->toArray();
           $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
           //----------personal------------------------
