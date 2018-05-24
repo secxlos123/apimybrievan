@@ -1151,6 +1151,8 @@ if (! function_exists('pushNotification')) {
      */
     function pushNotification($credentials, $type)
     {
+        \Log::info("===HELPERS PUSH NOTIF===");
+        \Log::info(env('PUSH_NOTIFICATION_TOPICS'));
         if(env('PUSH_NOTIFICATION', false)){
             if($type == 'disposition'){
                 disposition($credentials);
@@ -1588,38 +1590,49 @@ if (! function_exists('pushNotification')) {
     }
 
     function disposition($credentials){
-        $data      = $credentials['eform'];
-        $aoId      = $credentials['ao_id'];
-        $message   = getMessage("eform_disposition");
+        \Log::info("===PUSH NOTIF DIPOSISI===");
+        try {
+            $data      = $credentials['eform'];
+            $aoId      = $credentials['ao_id'];
+            $message   = getMessage("eform_disposition");
 
-        $userNotif = new UserNotification;
-        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['body'])
-                            ->setSound('default');
+            $userNotif = new UserNotification;
+            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+            $notificationBuilder->setBody($message['body'])
+                                ->setSound('default');
         // Get data from notifications table
-        $notificationData = $userNotif->where('slug', $data->id)
-                                      ->where('type_module', 'eform')
-                                      ->orderBy('created_at', 'desc')->first();
+            $notificationData = $userNotif->where('slug', $data->id)
+                                          ->where('type_module', 'eform')
+                                          ->orderBy('created_at', 'desc')->first();
 
-        $dataBuilder = new PayloadDataBuilder();
-        $dataBuilder->addData([
-            'id'         => $notificationData['id'],
-            'slug'       => $data->ref_number,
-            'type'       => 'eform'
-        ]);
+            $dataBuilder = new PayloadDataBuilder();
+            $dataBuilder->addData([
+                'id'         => $notificationData['id'],
+                'slug'       => $data->ref_number,
+                'type'       => 'eform'
+            ]);
 
-        $notification = $notificationBuilder->build();
-        $payload         = $dataBuilder->build();
-        $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+            $topic_env = (String) env('PUSH_NOTIFICATION_TOPICS');
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
-        $topicResponse->isSuccess();
-        $topicResponse->shouldRetry();
-        $topicResponse->error();
+            $notification = $notificationBuilder->build();
+            $payload         = $dataBuilder->build();
+            $topic = new Topics();
+            // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+
+            $topic->topic($topic_env)->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+            \Log::info("===PUSH_NOTIFICATION Disposisi Success===");   
+        } catch (Exception $e) {
+            \Log::info("===PUSH_NOTIFICATION Disposisi FAILED===");
+        }
     }
 
     function createEForm($credentials){
+        \Log::info("===PUSH NOTIF PENGAJUAN KREDIT===");
         $dataUser = $credentials;
         $user     = $dataUser['request']->user();
         $message  = getMessage("eform_create");
@@ -1746,6 +1759,7 @@ if (! function_exists('pushNotification')) {
     }
 
     function approveEForm($credentials){
+        \Log::info("===PUSH NOTIF APPROVE EFORM===");
         $data = $credentials;
         if (!empty($data['clas'])) {
             approveEFormToCustomer($credentials, true);
