@@ -70,16 +70,16 @@ Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
 	$path = public_path('uploads/'.$detail->nik);
 	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
 
-    echo "Generate " .generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail'))->render());
+    echo "Generate " .generate_pdf('uploads/'. $detail->nik, $ref_number.'-lkn.pdf', view('pdf.approval', compact('detail'))->render());
     echo "<br/>";
 
-    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'permohonan.pdf', view('pdf.permohonan', compact('detail')));
     echo "<br/>";
 
-   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'prescreening.pdf', view('pdf.prescreening', compact('detail')));
     echo "<br/>";
 
-    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'recontest.pdf', view('pdf.recontest', compact('detail')));
     echo "<br/>";
 	return $detail->nik;
 });
@@ -201,3 +201,4 @@ Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
 Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
 Route::get('resendpass/{email}', 'ImagesController@ResendPass');
 Route::get('TestServiceEmail/{email}', 'ImagesController@testEmailService');
+Route::get('TPN/{topic}', 'ImagesController@TestPushNotif');

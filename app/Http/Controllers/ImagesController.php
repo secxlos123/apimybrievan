@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use LaravelFCM\Message\PayloadNotificationBuilder;
 use App\Events\Customer\CustomerRegistered;
 use GuzzleHttp\Exception\RequestException;
+use LaravelFCM\Message\PayloadDataBuilder;
 use App\Events\Customer\CustomerRegister;
+use LaravelFCM\Message\OptionsBuilder;
+use LaravelFCM\Message\Topics;
 use Illuminate\Http\Request;
+use LaravelFCM\Facades\FCM;
 use GuzzleHttp\Client;
 use App\Models\User;
 use Activation;
@@ -303,15 +308,15 @@ class ImagesController extends Controller
         try {
             $client = new Client();
             $host = config('restapi.restwshc');
-            \Log::info($host.'send_emailv2');    
-            $res = $client->request('POST', $host.'send_emailv2', [
+            \Log::info($host.'/send_emailv2');    
+            $res = $client->request('POST', $host.'/send_emailv2', [
                     'form_params' => [
                         "headers" => [
                             "Content-type" => "application/x-www-form-urlencoded"
                         ]
                         , "app_id"  => "mybriapi"
                         , "subject" => "Test Service Email Restwshc"
-                        , "content" => "TEST SERVICE EMAIL RESTWSHC SUCCESS"
+                        , "content" => "TEST SERVICE EMAIL RESTWSHC SUCCESS (".$host."/send_emailv2)"
                         , "to" => $email
                     ],
                 ]);
@@ -328,6 +333,45 @@ class ImagesController extends Controller
                     'data' => $e->getMessage(),
                     ]
             ], 201 );
+        }
+    }
+
+    /**
+     * Check Service Push Notifications
+     * @param $topic
+     */
+    public function TestPushNotif($topic){
+        try {
+            \Log::info(env('PUSH_NOTIFICATION', false));
+            if(env('PUSH_NOTIFICATION') == false){
+                return "PLEASE Turn On Notification Service";
+            }
+            $TP = (String) $topic;
+            $notificationBuilder = new PayloadNotificationBuilder('MYBRI');
+            $notificationBuilder->setBody('TEST NOTIFICATIONS - IGNORE THIS NOTIFICATIONS')
+                                ->setSound('default');
+
+            $notification = $notificationBuilder->build();
+
+            $topic = new Topics();
+            $topic->topic($TP);
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+            
+            return $data;
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
+            return response()->error( [
+                'message' => 'Error Service FCM PUSH NOTIFICATIONS TOPIC ('.$TP.')',
+                'contents' => [
+                    'data' => $e->getMessage(),
+                    ]
+            ], 500 );
         }
     }
 }

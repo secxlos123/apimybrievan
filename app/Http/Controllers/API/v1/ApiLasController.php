@@ -1360,7 +1360,7 @@ class ApiLasController extends Controller
 							$customer = $customer->toArray();
 							$customer = json_decode(json_encode($customer), True);
 							$briguna = \DB::table('briguna')
-									 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran','branch_name')
+									 ->select('year','Plafond_usulan','maksimum_plafond','Maksimum_angsuran','branch_name')
 									 ->where('briguna.eform_id', $data['eform_id'])
 									 ->get();
 							
@@ -1368,7 +1368,7 @@ class ApiLasController extends Controller
 							$briguna = $briguna->toArray();
 							$briguna = json_decode(json_encode($briguna), True);
 							$message = ['no_hp'=>$customer[0]['mobile_phone'],
-										'plafond'=>$briguna[0]['request_amount'],
+										'plafond'=>$briguna[0]['Plafond_usulan'],
 										'angsuran'=>$briguna[0]['Maksimum_angsuran'],
 										'unit_kerja'=>$briguna[0]['branch_name'],
 										'year'=>$briguna[0]['year'],
@@ -1402,14 +1402,14 @@ class ApiLasController extends Controller
 						$customer = $customer->toArray();
 						$customer = json_decode(json_encode($customer), True);
 						$briguna = \DB::table('briguna')
-								 ->select('year','request_amount','maksimum_plafond','Maksimum_angsuran','branch_name')
+								 ->select('year','Plafon_usulan','maksimum_plafond','Maksimum_angsuran','branch_name')
 								 ->where('briguna.eform_id', $data['eform_id'])
 								 ->get();
 						try{
 						$briguna = $briguna->toArray();
 						$briguna = json_decode(json_encode($briguna), True);
 						$message = ['no_hp'=>$customer[0]['mobile_phone'],
-    								'plafond'=>$briguna[0]['request_amount'],
+    								'plafond'=>$briguna[0]['Plafon_usulan'],
     								'angsuran'=>$briguna[0]['Maksimum_angsuran'],
     								'unit_kerja'=>$briguna[0]['branch_name'],
     								'year'=>$briguna[0]['year'],
