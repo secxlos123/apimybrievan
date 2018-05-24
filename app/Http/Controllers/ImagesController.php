@@ -362,7 +362,12 @@ class ImagesController extends Controller
             $topicResponse->shouldRetry();
             $topicResponse->error();
             
-            return $data;
+            return response()->success( [
+                'message' => 'Success Service FCM PUSH NOTIFICATIONS TOPIC ('.$TP.')',
+                'contents' => [
+                    'data' => 'TEST PUSH NOTIFICATIONS',
+                    ]
+            ], 200 );
             
         } catch (RequestException $e) {
             \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
