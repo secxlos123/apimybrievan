@@ -38,7 +38,7 @@ class CustomerController extends Controller
     {
       $nik = $request['nik'];
       $client = new Client();
-      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.apipdm'):config('restapi.apipdmdev');
       $customer_nik = $client->request('GET', $host.'/customer/profile/nik/'.$nik,[
         'headers' =>
         [
@@ -118,7 +118,7 @@ class CustomerController extends Controller
     public function customer_officer(Request $request)
     {
       $client = new Client();
-      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.apipdmdev'):config('restapi.apipdm');
       $pn = ($request->has('pn'))? $request['pn'] :$request->header('pn');
       $request_customer_officer = $client->request('GET', $host.'/customer/officer/'.$pn,[
         'headers' =>

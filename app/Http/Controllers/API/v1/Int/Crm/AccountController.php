@@ -110,7 +110,7 @@ class AccountController extends Controller
 
       try {
           $client = new Client();
-          $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+          $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.apipdm'):config('restapi.apipdmdev');
           $requestListExisting = $client->request('GET', $host.'/customer/saving/'.$data['branch'].'/'.$data['pn'],
           [
             'headers' =>
@@ -145,7 +145,7 @@ class AccountController extends Controller
 
     public function getExistingByFo($data, $token)
     {
-      $host = (env('APP_URL') == 'http://api.dev.net/')? config('restapi.apipdmdev'):config('restapi.apipdm');
+      $host = (env('APP_URL') == 'http://apimybri.bri.co.id')? config('restapi.apipdm'):config('restapi.apipdmdev');
       $client = new Client();
       $requestListExisting = $client->request('GET', $host.'/customer/saving/'.$data['branch'].'/'.$data['pn'],
         [

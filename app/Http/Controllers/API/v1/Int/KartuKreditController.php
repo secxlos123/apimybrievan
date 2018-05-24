@@ -334,6 +334,15 @@ class KartuKreditController extends Controller{
                 'address'=>$alamatDom
             ]);
 
+            //update email ke users
+            //1.get user id from kkdetails
+            $kd = KartuKredit::where('eform_id',$eform_id)->first();
+            $userId = $kd['user_id'];
+            //2. update email
+            $updateUser = User::where('id',$userId)->update([
+                'email'=> $request['PersonalEmail']
+            ]);
+
             return response()->json($obj);
         }else{
             return response()->json($obj);
