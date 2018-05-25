@@ -9,6 +9,7 @@ use App\Models\EForm;
 use App\Models\CustomerDetail;
 use App\Http\Requests\API\v1\EFormRequest;
 use File;
+use App\Models\kartuKreditHistory;
 
 
 
@@ -42,7 +43,7 @@ class KartuKredit extends Model
 
     public $timestamps = false;
 
-     public function eform(){
+    public function eform(){
         return $this->belongsTo('App\Models\EForm', 'eform_id');
     }
 

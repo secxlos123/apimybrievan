@@ -128,7 +128,13 @@ class KreditRequest extends BaseRequest{
     					'email'=> 'required',
     					'eform_id'=>'required'
     				]);
-    			}
+    			}else if($this->segment(5) == 'input-kredit-history'){
+                    return([
+                        'pn' => 'required',
+                        'eform_id'=> 'required',
+                        'branch_id'=> 'required'
+                    ]);
+                }
     			
     			break;
 

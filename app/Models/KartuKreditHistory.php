@@ -27,10 +27,17 @@ class KartuKreditHistory extends Model
     	}
     }
 
-    public function createHistory($apregno,$branchId){
+    public function createHistory($pn,$apregno,$branchId){
+        $kanwil = $this->getKanwilByBranchId($branchId);
         $data['apregno'] = $apregno;
         $data['kodeproses'] = '1';
-        // $data['kanwil'] = 
+        $data['kanwil'] = $kanwil;
+        $data['kanca'] = $branchId;
+        $data['pn'] = $pn;
+
+        $createHistory = $this->create($data);
+        return $createHistory;
+
     }
 
     public function updateKreditHistoryKodeProsesTo($kodeProses){
@@ -38,15 +45,11 @@ class KartuKreditHistory extends Model
     }
     //ambil kanwil / region dari result list uker kanca.
     //CUMA BISA DI PROD
-    public function getUkerByBranchId($branch){
+    public function getKanwilByBranchId($branch){
             $requestPost =[
                 'app_id' => 'mybriapi',
                 'branch_code' => $branch
             ];
-
-            // if ( $request->has('device_id') ) {
-            //     $requestPost['device_id'] = $request->device_id;
-            // }
 
             $list_uker_kanca = RestwsHc::setBody([
                         'request' => json_encode([
@@ -56,9 +59,8 @@ class KartuKreditHistory extends Model
                 ])
                 ->post( 'form_params' );
 
-            return response()->success( [
-                    'message' => 'Sukses',
-                    'contents' => $list_uker_kanca
-            ], 200 );
+            $res = $list_uker_kanca->responseData[0];
+            $kanwil = $res->region;
+            return $kanwil;
     }
 }
