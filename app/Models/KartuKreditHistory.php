@@ -46,21 +46,21 @@ class KartuKreditHistory extends Model
     //ambil kanwil / region dari result list uker kanca.
     //CUMA BISA DI PROD
     public function getKanwilByBranchId($branch){
-            $requestPost =[
-                'app_id' => 'mybriapi',
-                'branch_code' => $branch
-            ];
+        $requestPost =[
+            'app_id' => 'mybriapi',
+            'branch_code' => $branch
+        ];
 
-            $list_uker_kanca = RestwsHc::setBody([
-                        'request' => json_encode([
-                                'requestMethod' => 'get_list_uker_from_cabang',
-                                'requestData' => $requestPost
-                        ])
-                ])
-                ->post( 'form_params' );
+        $list_uker_kanca = RestwsHc::setBody([
+                    'request' => json_encode([
+                            'requestMethod' => 'get_list_uker_from_cabang',
+                            'requestData' => $requestPost
+                    ])
+            ])
+            ->post( 'form_params' );
 
-            $res = $list_uker_kanca->responseData[0];
-            $kanwil = $res->region;
-            return $kanwil;
+        $res = $list_uker_kanca->responseData[0];
+        $kanwil = $res->region;
+        return $kanwil;
     }
 }
