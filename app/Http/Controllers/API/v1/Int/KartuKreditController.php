@@ -55,8 +55,9 @@ class KartuKreditController extends Controller{
 
             $res = $list_uker_kanca['responseData'];
             $res = $res[0];
+            $kanwil = $res['region'];
 
-            return response()->json($res);
+            return $kanwil;
     }
 
     
