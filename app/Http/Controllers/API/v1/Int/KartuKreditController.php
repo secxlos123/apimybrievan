@@ -819,7 +819,7 @@ class KartuKreditController extends Controller{
     public function createKreditHistory(KreditRequest $req){
         $kkh = new KartuKreditHistory();
         $pn = $req->pn;
-        $eformId = $req->apregno;
+        $apregno = $req->apregno;
         $branchId = $req->branch_id;
         $hist = $kkh->createHistory($pn,$apregno,$branchId);
 
