@@ -819,9 +819,7 @@ class KartuKreditController extends Controller{
     public function createKreditHistory(KreditRequest $req){
         $kkh = new KartuKreditHistory();
         $pn = $req->pn;
-        $eformId = $req->eform_id;
-        $apregno = KartuKredit::where('eform_id',$eformId)->first();
-        $apregno = $apregno['appregno'];
+        $eformId = $req->apregno;
         $branchId = $req->branch_id;
         $hist = $kkh->createHistory($pn,$apregno,$branchId);
 
