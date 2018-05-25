@@ -802,7 +802,7 @@ class KartuKreditController extends Controller{
 			$obj = json_decode($body);
             $con = $obj->responseData;
             $con = $con[0];
-            $con  = $con['RJ_CODE'];
+            $con  = $con->RJ_CODE;
             \Log::info('CON =');
             \Log::info($con);
 
