@@ -804,7 +804,7 @@ class KartuKreditController extends Controller{
             // $con = $resp[0];
             // $con  = $con['RJ_CODE'];
             \Log::info('CON =');
-            \Log::info($con);
+            \Log::info($con[0]);
 
 			if ($obj->responseCode == 0){
 				$data = $obj->responseData;
