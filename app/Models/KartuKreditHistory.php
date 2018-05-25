@@ -62,7 +62,7 @@ class KartuKreditHistory extends Model
         $res = $list_uker_kanca['responseData'];
         $res = $res[0];
 
-        $kanwil = $res->region;
+        $kanwil = $res['region'];
         return $kanwil;
     }
 }
