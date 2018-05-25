@@ -13,7 +13,7 @@ class KartuKreditHistory extends Model
 
     protected $appends = ['deskripsi_proses'];
 
-    public function getDescriptionProsesAttribute($val){
+    public function getDeskripsiProsesAttribute($val){
     	if($val == '1'){
     		return 'Ajukan';
     	}else if($val == '3.1'){
