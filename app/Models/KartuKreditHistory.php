@@ -7,7 +7,7 @@ use RestwsHc;
 
 class KartuKreditHistory extends Model
 {
-    protected $table = 'kartu_kredit_history';
+    protected $table = 'kartu_kredit_histories';
 
     protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca'];
 
