@@ -53,7 +53,10 @@ class KartuKreditController extends Controller{
                 ])
                 ->post( 'form_params' );
 
-            return response()->json($list_uker_kanca);
+            $res = json_decode($list_uker_kanca);
+            $respon = $res->responseData;
+
+            return response()->json($respon);
     }
 
     

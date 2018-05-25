@@ -58,7 +58,7 @@ class KartuKreditHistory extends Model
                     ])
             ])
             ->post( 'form_params' );
-
+        
         $res = $list_uker_kanca->responseData[0];
         $kanwil = $res->region;
         return $kanwil;
