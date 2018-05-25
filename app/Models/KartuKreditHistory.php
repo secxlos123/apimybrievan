@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use RestwsHc;
 
 class KartuKreditHistory extends Model
 {
@@ -26,7 +27,38 @@ class KartuKreditHistory extends Model
     	}
     }
 
+    public function createHistory($apregno,$branchId){
+        $data['apregno'] = $apregno;
+        $data['kodeproses'] = '1';
+        // $data['kanwil'] = 
+    }
+
     public function updateKreditHistoryKodeProsesTo($kodeProses){
 
+    }
+    //ambil kanwil / region dari result list uker kanca.
+    //CUMA BISA DI PROD
+    public function getUkerByBranchId($branch){
+            $requestPost =[
+                'app_id' => 'mybriapi',
+                'branch_code' => $branch
+            ];
+
+            // if ( $request->has('device_id') ) {
+            //     $requestPost['device_id'] = $request->device_id;
+            // }
+
+            $list_uker_kanca = RestwsHc::setBody([
+                        'request' => json_encode([
+                                'requestMethod' => 'get_list_uker_from_cabang',
+                                'requestData' => $requestPost
+                        ])
+                ])
+                ->post( 'form_params' );
+
+            return response()->success( [
+                    'message' => 'Sukses',
+                    'contents' => $list_uker_kanca
+            ], 200 );
     }
 }

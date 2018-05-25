@@ -12,13 +12,15 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Models\User;
 use App\Models\EForm;
-use Asmx;
+
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use App\Http\Requests\API\v1\KreditRequest;
 
 use App\Models\KreditEmailGenerator;
 use App\Models\KartuKreditHistory;
+
+use RestwsHc;
 
 class KartuKreditController extends Controller{
 	
@@ -37,8 +39,24 @@ class KartuKreditController extends Controller{
         $this->tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
     }
 
-	public function contohemail(){
-    
+	public function contohemail(Request $req){
+         $requestPost =[
+                'app_id' => 'mybriapi',
+                'branch_code' => $req['branch_code']
+            ];
+            
+            $list_uker_kanca = RestwsHc::setBody([
+                        'request' => json_encode([
+                                'requestMethod' => 'get_list_uker_from_cabang',
+                                'requestData' => $requestPost
+                        ])
+                ])
+                ->post( 'form_params' );
+
+            return response()->success( [
+                    'message' => 'Sukses',
+                    'contents' => $list_uker_kanca
+            ], 200 );
     }
 
     
@@ -767,13 +785,6 @@ class KartuKreditController extends Controller{
 	}
 
     public function listReject(){
-        \Log::info('=========== host ===========');
-        \Log::info($this->hostLos);
-        \Log::info('=========== host ===========');
-
-        \Log::info('=========== token ===========');
-        \Log::info($this->tokenLos);
-        \Log::info('=========== token ===========');
     	$header = ['access_token'=> $this->tokenLos];
     	$client = new Client();
 			 try{
@@ -789,6 +800,9 @@ class KartuKreditController extends Controller{
 
             $body = $res->getBody();
 			$obj = json_decode($body);
+            $resp = $obj->responseData;
+            $con = $resp[0]['RJ_CODE'];
+            \Log::info('CON ='.$con);
 
 			if ($obj->responseCode == 0){
 				$data = $obj->responseData;
