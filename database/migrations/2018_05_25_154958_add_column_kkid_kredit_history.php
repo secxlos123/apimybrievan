@@ -14,7 +14,7 @@ class AddColumnKkidKreditHistory extends Migration
     public function up()
     {
         Schema::table('kartu_kredit_histories', function (Blueprint $table) {
-            $table->string('kkid');
+            $table->string('kkid')->nullable();
         });
     }
 
