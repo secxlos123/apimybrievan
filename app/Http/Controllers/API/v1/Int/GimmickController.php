@@ -282,7 +282,7 @@ class GimmickController extends Controller
             }
 
             $detail = EForm::with( 'visit_report.mutation.bankstatement' )->findOrFail( $eform_id );
-            generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail')));
+            generate_pdf('uploads/'. $detail->nik, $detail->ref_number.'-lkn.pdf', view('pdf.approval', compact('detail')));
 
             DB::commit();
             return response()->success( [
@@ -333,7 +333,7 @@ class GimmickController extends Controller
             if ($verify['contents']) {
                 if ($status == 'approve') {
                     $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
-                    generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+                    generate_pdf('uploads/'. $detail->nik, $detail->ref_number.'-permohonan.pdf', view('pdf.permohonan', compact('detail')));
                 }
 
                 event( new VerifyEForm( $verify['contents'] ) );
