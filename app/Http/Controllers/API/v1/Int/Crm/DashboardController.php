@@ -300,18 +300,23 @@ class DashboardController extends Controller
       }
 
       $data = Marketing::getMarketingSummary($request)->whereIn('marketings.pn',$list_pn)->get();
+      //print_r($data);die();
+
       $total = [];
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
           $value->target
         ;
       }
+      //print_r($total);die();
+
       $status = [];
       foreach ($data as $key => $value) {
         $status[$value->pn][$value->status][]=[
           $value->target
         ];
       }
+      //print_r($status);die();
 
       $data_summary = [];
       $ext_nul = [
@@ -322,10 +327,11 @@ class DashboardController extends Controller
       ];
       $activity = [];
       $lkn = [];
+
       foreach ($data as $key => $value) {
-        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
-        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
-        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)?(MarketingActivityFollowup::where('activity_id',$latest_act[$value->pn][$value->id]['id'])->first()!=null)?1:0:0;
+        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;//print_r($activity);die();
+        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();//print_r($lates_act);die();
+        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)?(MarketingActivityFollowup::where('activity_id',$latest_act[$value->pn][$value->id]['id'])->first()!=null)?1:0:0;//print_r($lkn);die();
         $data_summary[$value->pn]=[
           'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
           'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
@@ -336,7 +342,12 @@ class DashboardController extends Controller
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?count($status[$value->pn]['Batal']):0
         ];
       }
+      //print_r($activity);die();
+      //print_r($lates_act);
+      //print_r($lkn);die();
+
       $marketing_summary = [];
+
       foreach ($data_summary as $key => $value) {
         $marketing_summary[]=$value;
       }
