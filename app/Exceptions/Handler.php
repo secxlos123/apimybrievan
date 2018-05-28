@@ -57,13 +57,6 @@ class Handler extends ExceptionHandler
                     {
                         $message->subject(ENV("APPLICATION_POSITION", "development") . " API myBRI Error Exception");
                         $message->from("error@mybri.bri.co.id", "Error Exception");
-                        $message->to("rachmat.ramadhan@wgs.co.id");
-                    }
-                );
-                Mail::send( "mails.ErrorException", array( "exception" => $exception ), function( $message )
-                    {
-                        $message->subject(ENV("APPLICATION_POSITION", "development") . " API myBRI Error Exception");
-                        $message->from("error@mybri.bri.co.id", "Error Exception");
                         $message->to("rangga.darmajati@wgs.co.id");
                     }
                 );

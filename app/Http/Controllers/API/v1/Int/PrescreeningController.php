@@ -199,7 +199,7 @@ class PrescreeningController extends Controller
 
         if ( !$waiting ) {
             $detail = $eform;
-            generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+            generate_pdf('uploads/'. $detail->nik, $detail->ref_number.'-prescreening.pdf', view('pdf.prescreening', compact('detail')));
         }
 
         // auto approve for VIP

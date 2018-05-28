@@ -385,7 +385,7 @@ class ScoringController extends Controller
 
         pushNotification($credentials, 'prescreening');
 
-        generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+        generate_pdf('uploads/'. $detail->nik, $detail->ref_number.'-prescreening.pdf', view('pdf.prescreening', compact('detail')));
         DB::commit();
 
         set_action_date($eform->id, 'eform-prescreening');

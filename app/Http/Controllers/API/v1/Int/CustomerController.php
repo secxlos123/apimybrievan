@@ -248,7 +248,7 @@ class CustomerController extends Controller
 
             pushNotification($credentials, "approve KPR");
             $detail = EForm::with( 'customer', 'kpr' )->where('id', $verify['contents']->id)->first();
-            generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+            generate_pdf('uploads/'. $detail->nik, $detail->ref_number.'-permohonan.pdf', view('pdf.permohonan', compact('detail')));
             event( new VerifyEForm( $verify['contents'] ) );
 
             $message = 'Data nasabah telah di verifikasi';
