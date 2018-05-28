@@ -620,7 +620,8 @@ class EFormMonitoring extends Model implements AuditableContract
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $user = \RestwsHc::getUser();
         
-        $eform = $query->where( function( $eform ) use( $request, &$user )->with('kpr') {
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+
             if( $request->has('product_type') &&  $request->product_type!='-') {
                 $eform->where('eforms.product_type', $request->product_type);
             }
@@ -628,15 +629,17 @@ class EFormMonitoring extends Model implements AuditableContract
             if( $request->has('branch_id')  &&  $request->branch_id!='-') {
                 $eform->where('eforms.branch_id', $request->branch_id);
             }
-            
-            if($request->product_type=='kpr'){
-                if($request->has('dev_id') &&  $request->dev_id!='-' ) {
-                    $eform->where('kpr.developer_id', $request->dev_id);
-                } else if( $request->has('source') &&  $request->source!='-' ){
-                    $eform->where('kpr.developer_id', $request->source);
-                }
+        });
+
+        $eform->with('kpr');
+
+        if($request->product_type=='kpr'){
+            if($request->has('dev_id') &&  $request->dev_id!='-' ) {
+                $eform->where('kpr.developer_id', $request->dev_id);
+            } else if( $request->has('source') &&  $request->source!='-' ){
+                $eform->where('kpr.developer_id', $request->source);
             }
-        } );
+        }
         
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
             $sort[0] = 'created_at';
