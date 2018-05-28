@@ -107,6 +107,55 @@ class Audit extends Model implements AuditContract
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
+    public function scopeGetListsBriguna($query, Request $request)
+    {
+        $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
+        // return 
+        $results = $query->from('pengajuan_kredit_briguna')
+            ->where(function ($briguna) use ($request) {
+                if ($request->has('created_at')){
+                    $briguna->where(\DB::raw('DATE(created_at)'), $request->input('created_at'));
+                }
+            })
+            ->where(function ($briguna) use ($request) {
+                if($request->has('username')){
+                    $briguna->where(\DB::raw('LOWER(username)'), 'like', '%'.strtolower($request->input('username')).'%');
+                }
+            })
+            ->where(function ($briguna) use ($request) {
+                if($request->has('status_name')){
+                    $briguna->where(\DB::raw('LOWER(status_putusan)'), 'like', '%'.strtolower($request->input('status_name')).'%');
+                }
+            })
+            ->where(function ($briguna) use (&$request, &$query){
+                if ($request->has('ref_number')){
+                    $briguna->where(\DB::raw('LOWER(ref_number)'), 'like', '%'.strtolower($request->input('ref_number')).'%');
+                }
+            })
+            ->where(function ($briguna) use (&$request, &$query){
+                if ($request->has('branch_name')){
+                    $briguna->where(\DB::raw('LOWER(branch)'), 'like', '%'.strtolower($request->input('branch_name')).'%');
+                }
+            })
+            ->where(function ($briguna) use (&$request, &$query){
+                if ($request->has('branch_id')){
+                    $briguna->where(\DB::raw('LOWER(branch_id)'), 'like', '%'.strtolower($request->input('branch_id')).'%');
+                }
+            })
+            ->where(function ($briguna) use (&$request, &$query){
+                $briguna->whereNotNull('username');
+            })
+            ->orderBy('created_at', 'desc');
+        return $results;
+    }
+
+    /**
+     * Scope a query to get lists of roles.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeGetListsAppointment($query, Request $request)
     {
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['id', 'asc'];
