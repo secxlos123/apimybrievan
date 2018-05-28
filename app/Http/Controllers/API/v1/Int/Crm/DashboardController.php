@@ -283,11 +283,14 @@ class DashboardController extends Controller
     public function marketing_summary(Request $request)
     {
       $pn = $request->header('pn');
-      if ($request->has('branch')) {
+
+      if ($request->has('branch')) 
+      {
         $branch = $request['branch'];
       } else {
         $branch = $request->header('branch');
       }
+
       $auth = $request->header('Authorization');
       $pemasar = $this->pemasar_branch($pn,$branch);
 
@@ -300,38 +303,49 @@ class DashboardController extends Controller
       }
 
       $data = Marketing::getMarketingSummary($request)->whereIn('marketings.pn',$list_pn)->get();
-      //print_r($data);die();
+      //return $data;
 
       $total = [];
+
       foreach ($data as $key => $value) {
         $total[$value->pn][]=
           $value->target
         ;
       }
-      //print_r($total);die();
+      //return $total;
 
       $status = [];
-      foreach ($data as $key => $value) {
+
+      foreach ($data as $key => $value) 
+      {
         $status[$value->pn][$value->status][]=[
           $value->target
         ];
       }
-      //print_r($status);die();
+      //return $status
 
       $data_summary = [];
       $ext_nul = [
-        1=>'0',
-        2=>'00',
-        3=>'000',
-        4=>'0000'
-      ];
+                    1=>'0',
+                    2=>'00',
+                    3=>'000',
+                    4=>'0000'
+                 ];
+
       $activity = [];
       $lkn = [];
 
-      foreach ($data as $key => $value) {
-        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;//print_r($activity);die();
-        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();//print_r($lates_act);die();
-        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)?(MarketingActivityFollowup::where('activity_id',$latest_act[$value->pn][$value->id]['id'])->first()!=null)?1:0:0;//print_r($lkn);die();
+      foreach ($data as $key => $value) 
+      {
+        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
+        //return $activity;
+
+        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
+        //return $activity;
+
+        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)?(MarketingActivityFollowup::where('activity_id',$latest_act[$value->pn][$value->id]['id'])->first()!=null)?1:0:0;
+        //return $lkn;
+
         $data_summary[$value->pn]=[
           'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
           'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
@@ -342,27 +356,30 @@ class DashboardController extends Controller
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?count($status[$value->pn]['Batal']):0
         ];
       }
-      //print_r($activity);die();
-      //print_r($lates_act);
-      //print_r($lkn);die();
+      //return $activity;
+      //return $activity;
+      //return $lkn;
+
 
       $marketing_summary = [];
 
-      foreach ($data_summary as $key => $value) {
+      foreach ($data_summary as $key => $value) 
+      {
         $marketing_summary[]=$value;
       }
 
-      if (!empty($marketing_summary)) {
+      if (!empty($marketing_summary)) 
+      {
           return response()->success([
-              'message' => 'Sukses get Marketing Summary.',
-              'contents' => $marketing_summary,
-          ], 200);
+                                        'message' => 'Sukses get Marketing Summary.',
+                                        'contents' => $marketing_summary,
+                                     ], 200);
       }
 
       return response()->error([
-          'message' => 'Marketing Summary tidak ditemukan.',
-          'contents' => $marketing_summary,
-      ], 200);
+                                  'message' => 'Marketing Summary tidak ditemukan.',
+                                  'contents' => $marketing_summary,
+                               ], 200);
     }
 
     public function marketing_summary_amount(Request $request)
