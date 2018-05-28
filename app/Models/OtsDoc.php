@@ -49,7 +49,8 @@ class OtsDoc extends Model implements AuditableContract
         if( ! empty( $filename ) ) {
             $image = 'uploads/collateral/' . $this->collateral_id . '/' . $filename;
             if( File::exists( public_path( $image ) ) ) {
-                $path = $image;
+                // $path = $image;
+                $path = 'files/collateral/' . $this->collateral_id . '/' . $filename;
             }
         }
 

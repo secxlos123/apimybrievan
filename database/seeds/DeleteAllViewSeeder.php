@@ -11,7 +11,7 @@ class DeleteAllViewSeeder extends Seeder
      */
     public function run()
     {
-    	\DB::unprepared(" DROP VIEW IF EXISTS customer_view_table ");
+        \DB::unprepared(" DROP VIEW IF EXISTS customer_view_table ");
         \DB::unprepared(" DROP VIEW IF EXISTS agen_developers_view_table ");
         \DB::unprepared(" DROP VIEW IF EXISTS auditrail_admin_developer ");
         \DB::unprepared(" DROP VIEW IF EXISTS auditrail_appointment ");
@@ -25,5 +25,6 @@ class DeleteAllViewSeeder extends Seeder
         \DB::unprepared(" DROP VIEW IF EXISTS auditrail_property ");
         \DB::unprepared(" DROP VIEW IF EXISTS auditrail_profile_edit ");
         \DB::unprepared(" DROP VIEW IF EXISTS auditrail_new_admin_dev ");
+        \DB::unprepared(" DROP VIEW IF EXISTS pengajuan_kredit_briguna ");
     }
 }
