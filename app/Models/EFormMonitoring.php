@@ -631,7 +631,7 @@ class EFormMonitoring extends Model implements AuditableContract
             }
         });
 
-        $eform->with('kpr');
+        $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
         if($request->product_type=='kpr'){
             if($request->has('dev_id') &&  $request->dev_id!='-' ) {
