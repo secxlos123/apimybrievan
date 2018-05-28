@@ -19,7 +19,12 @@ class AuditrailController extends Controller
     {
         $limit = $request->input('limit') ?: 10;
         $auditrail = Audit::getLists($request)->paginate($limit);
+        return response()->success(['contents' => $auditrail]);
+    }
 
+    public function briguna(Request $request) {
+        $limit = $request->input('limit') ?: 10;
+        $auditrail = Audit::getListsBriguna($request)->paginate($limit);
         return response()->success(['contents' => $auditrail]);
     }
 
@@ -236,6 +241,53 @@ class AuditrailController extends Controller
             'message' => 'Sukses',
             'contents' => $getBranch
         ], 200 );
+    }
+
+    /**
+     * This function for list-status status tab pengajuan kredit briguna
+     * @param Illuminate\Http\Request
+     */
+    public function statusPengajuanKredit(Request $request)
+    {
+        $limit = $request->input('limit') ?: 2;
+        $page  = $request->input('page') ;
+
+        $getCountStatus = \DB::table('status')
+            ->selectRaw("status_name")
+            ->where(function($status) use ($request){
+                if($request->has('search')){
+                    $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                    $status->where(\DB::raw('lower(status_name)'), 'ilike', $lowerSearch);
+                }
+            })->get();
+
+        $count = count($getCountStatus);
+        if ( $page == 0 ) {
+            $pages = 0;
+        } else if ( $page >= 1 ) {
+            $pages = 0;
+            $limit = $count;
+        }
+
+        $getStatus = \DB::table('status')
+            ->selectRaw("id, status_name")
+            ->where(function($auditrail) use ($request){
+                if($request->has('search')){
+                    $lowerSearch = '%'.strtolower($request->input('search')).'%';
+                    $auditrail->where(\DB::raw('lower(status_name)'), 'ilike', $lowerSearch);
+                }
+            })->limit($limit)
+            ->offset($pages)
+            ->get();
+
+        $ReqPage = $request->input('page') +1 ;
+        $url = 'list-mnpengajuan_briguna';
+        $data_list = $this->dataList($getStatus, $ReqPage, $limit, $count, $url);
+
+        return response()->success([
+            'message' => 'Sukses',
+            'contents'=> $data_list
+        ], 200);
     }
 
     /**
