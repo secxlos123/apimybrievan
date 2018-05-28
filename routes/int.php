@@ -138,6 +138,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		 * This Route For Auditrail
 		 */
 		Route::get('auditrail/pengajuan_kredit', 'AuditrailController@index');
+		Route::get('auditrail/pengajuan_kredit_briguna', 'AuditrailController@briguna');
 		Route::get('auditrail/appointment', 'AuditrailController@auditAppointment');
 		Route::get('auditrail/admindev', 'AuditrailController@auditAdmindev');
 		Route::get('auditrail/agendev', 'AuditrailController@auditAgendev');
@@ -149,6 +150,7 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function ()
 		Route::get('auditrail/activity_detail/{user_id}', 'AuditrailController@auditUserActitiyDetail');
 		Route::get('auditrail/customers/{nik}', 'AuditrailController@show');
 		Route::get('auditrail/getnik', 'AuditrailController@getNik');
+		Route::get('auditrail/list-mnpengajuan_briguna', 'AuditrailController@statusPengajuanKredit')->name('list-mnpengajuan_briguna');
 		Route::get('auditrail/list-mnpengajuan', 'AuditrailController@modulNamePengajuanKredit')->name('list-mnpengajuan');
 		Route::get('auditrail/list-mnadmindev', 'AuditrailController@modulNameAdminDev')->name('list-mnadmindev');
 		Route::get('auditrail/list-mnappointment','AuditrailController@modulNameAppointment')->name('list-mnappointment');
