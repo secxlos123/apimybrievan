@@ -16,6 +16,7 @@ use App\Models\CustomerDetail;
 use App\Models\KPR;
 use App\Models\BRIGUNA;
 use App\Models\KartuKredit;
+use App\Models\KartuKreditHistory;
 use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
@@ -122,10 +123,10 @@ class EFormController extends Controller
         ], 200 );
     }
 
-	    public function monitoring( Request $request )
+    public function monitoring( Request $request )
     {
-
-	$limit = $request->input( 'limit' ) ?: 10;
+        $limit = $request->input( 'limit' ) ?: 10;
+        
         if ($request->has('slug')) {
             $newForm = EFormMonitoring::findOrFail($request->input('slug'));
         }else{
@@ -207,10 +208,18 @@ class EFormController extends Controller
                          ->get();
                 $mitra_relation = $mitra_relation->toArray();
                 $mitra_relation = json_decode(json_encode($mitra_relation), True);
+		
           $eform = $eform->toArray();
+        $cityes = DB::table('cities')
+                         ->select('cities.name')
+                         ->where('cities.id', $customer[0]['city_id'])
+                         ->get();
+                $cityes = $cityes->toArray();
+                $cityes = json_decode(json_encode($cityes), True);
           $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
           //----------personal------------------------
           $eform[0]['customer']['personal'] = $customer[0];
+		$eform[0]['customer']['personal']['city'] = $cityes[0]['name'];
           $eform[0]['mitra'] = $mitra_relation[0];
           //-----------work---------------------------
           $work = [
@@ -450,7 +459,6 @@ class EFormController extends Controller
 
     public function store( EFormRequest $request )
     {
-      \Log::info('step 0');
         if ($request->product_type != 'kartu_kredit'){
           
           
@@ -508,7 +516,6 @@ class EFormController extends Controller
                 //cek nik di customer detail, kalau gak ada di create
                 $nik = $request->nik;
                 $checkNik = CustomerDetail::where('nik',$nik)->get();
-                \Log::info('Step 1');
                 if(count($checkNik) == 0){
                     return response()->json([
                         'responseCode' => '01',
@@ -555,7 +562,6 @@ class EFormController extends Controller
                     }
 
                     // $baseRequest['id_foto'] = $id;
-                    \Log::info('Step 2');
                     //create eform
                     $kk = new KartuKredit();
                     //insert ke table eform
@@ -568,20 +574,17 @@ class EFormController extends Controller
                     \Log::info("========crate kk details=============");
                     \Log::info($eformCreate);
 
-                    \Log::info('Step 3');
                     //lengkapi data kredit di eform
                     $rangeLimit = $kkDetailsCreate['range_limit'];
                     $eform = EForm::where('id',$eformId)->update([
                         'kk_details'=>'{"range_limit":"'.$rangeLimit.'","is_analyzed":"false"}'
                     ]);
 
-
                     //cek dedup
-                    \Log::info('Step 4');
                     $nik = $baseRequest['nik'];
-                    $tokenLos = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo';
+                    $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
 
-                    $host = '10.107.11.111:9975/api/nik';
+                    $host = env('LOS_HOST','10.107.11.111:9975').'/api/nik';
                     $header = ['access_token'=> $tokenLos];
                     $client = new Client();
 
@@ -596,7 +599,6 @@ class EFormController extends Controller
                             'responseMessage'=> $e->getMessage()
                         ],400);
                     }
-                    \Log::info('Step 5');
                     $body = $res->getBody();
                     $obj = json_decode($body);
                     $responseCode = $obj->responseCode;
@@ -670,7 +672,7 @@ class EFormController extends Controller
             /* BRIGUNA */
                 if($validasi_eform=='true'){
                     $baseRequest['IsFinish'] = 'false';
-                    $data_new['branch']=$request->input('branch_id');
+/*                     $data_new['branch']=$request->input('branch_id');
                         $listExisting = $this->ListBranch($data_new);
 /*                    if ( count(apiPdmToken::all()) > 0 ) {
                         $apiPdmToken = apiPdmToken::latest('id')->first()->toArray();
@@ -687,14 +689,50 @@ class EFormController extends Controller
                         $token = $apiPdmToken['access_token'];
                         $listExisting = $this->ListBranch($data_new, $token);
                       } */
-                    if ( $listExisting['success'] == '00' ) {
+                   /* if ( $listExisting['success'] == '00' ) {
                         foreach ($listExisting['data'] as $branch) {
                             if ( $branch['branch'] == $request->input('branch_id') ) {
                                 $baseRequest['branch'] = $branch['mbdesc'];
 
                             }
                         }
-                    }
+                    } */
+					
+					$BRANCH_CODE = $request->input('branch_id');
+								$branchcis ='';
+								if(strlen($BRANCH_CODE)=='5'){
+									$branchcis = $BRANCH_CODE;
+									//$k = strlen($BRANCH_CODE);
+									$branchut2 = '';
+									$p = '';
+									for($l=0;$l<5;$l++){
+										if(substr($BRANCH_CODE,$l,1)!='0'){
+											$p = $l;
+											goto tangkep;
+										}
+									}
+									tangkep : $branchcis = substr($BRANCH_CODE,$p,5);
+									/* for($i=0;$i<5;$i++){
+										$cek = substr($BRANCH_CODE,$i,1);
+										if($cek!=0){
+											$branchcis = substr($BRANCH_CODE,$i,4);
+											$i = 5;
+										}
+									} */
+								}else{								
+										$branchcis = $BRANCH_CODE;	
+								}
+								\Log::info($branchcis);
+								
+					 $branchiscus = DB::table('uker_tables')
+                             ->select(DB::raw('uker_tables.unit_kerja'))
+                             ->where('uker_tables.kode_uker', $branchcis)
+                             ->get();
+                $branchiscus = $branchiscus->toArray();
+                $branchiscus = json_decode(json_encode($branchiscus), True);
+				if(isset($branchiscus[0]['unit_kerja'])){
+					$baseRequest['branch'] = $branchiscus[0]['unit_kerja'];
+				}
                     $NPWP_nasabah = $request->NPWP_nasabah;
                     $KK = $request->KK;
                     $SLIP_GAJI = $request->SLIP_GAJI;
@@ -798,18 +836,24 @@ class EFormController extends Controller
                                  ->join('users', 'users.id', '=', 'customer_details.user_id')
                                  ->where('customer_details.nik', $request->nik)
                                  ->get();
-
+						try{
                         $customer = $customer->toArray();
                         $customer = json_decode(json_encode($customer), True);
                         $message = ['no_hp'=>$customer[0]['mobile_phone'],'no_reff'=>$kpr->ref_number,'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],'kode_message'=>'1'];
                         \Log::info("-------------------sms notifikasi-----------------");
                         \Log::info($message);
-                        $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
-                                        \Log::info($testing);
+                        //$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+                         //               \Log::info($testing);
                         $return = [
                             'message' => 'Data e-form briguna berhasil ditambahkan.',
                             'contents' => $kpr
                         ];
+						}catch(Exception $e){
+							$return = [
+                            'message' => 'Data e-form briguna berhasil ditambahkan. Sms notifikasi gagal terkirim.',
+                            'contents' => $kpr
+							];
+						}
 
                 } else {
                         $dataEform =  EForm::where('nik', $request->nik)->get();
@@ -846,6 +890,9 @@ class EFormController extends Controller
                 }
 
                 $dataEform =  EForm::where('nik', $request->nik)->where('product_type','kpr')->get();
+                $exist = count($dataEform);
+                $total = ($exist+1);
+                $index = $exist-1;
 
                 if (count($dataEform) == 0) {
                     $developer_id = env('DEVELOPER_KEY',1);
@@ -932,7 +979,105 @@ class EFormController extends Controller
                     ];
                     pushNotification($credentials, 'createEForm');
 
-                } else {
+                } else if ( (count($dataEform) >=1 && $dataEform[$index]['status'] == 'Kredit Disetujui') || (count($dataEform) >=1 && $dataEform[$index]['status'] == 'Kredit Ditolak') ){
+                    //  \Log::info("===============CREATE EFORM KE ".$total." ================");
+                    //  \Log::info($dataEform[$index]['status']);
+                    //  \Log::info($dataEform);
+                    // $return = [
+                    //       'message' => 'Data e-form ke '.$total.' berhasil ditambahkan.',
+                    //       'contents' => ['property' => 666, 'property_type' => 2, 'property_type_name' => 'Non Kerjasama']
+                    //   ];
+                    // return response()->success($return, 201);
+                    // die();
+                    // die();
+
+                    $developer_id = env('DEVELOPER_KEY',1);
+                    $developer_name = env('DEVELOPER_NAME','Non Kerja Sama');
+
+                    if ($baseRequest['developer'] == $developer_id && $baseRequest['developer_name'] == $developer_name)  {
+
+                        $baseProperty = array(
+                            'developer_id' => $baseRequest['developer'],
+                            'prop_id_bri' => '1',
+                            'name' => $developer_name,
+                            'pic_name' => 'BRI',
+                            'pic_phone' => '-',
+                            'address' => $baseRequest['home_location'],
+                            'category' => $baseRequest['kpr_type_property'],
+                            'latitude' => '0',
+                            'longitude' => '0',
+                            'description' => '-',
+                            'facilities' => '-'
+                        );
+
+                        $getKanwil = \RestwsHc::setBody([
+                            'request' => json_encode([
+                                'requestMethod' => 'get_list_uker_from_cabang',
+                                'requestData' => [
+                                    'app_id' => 'mybriapi'
+                                    , 'branch_code' => $request->input('branch_id')
+                                ]
+                            ])
+                        ])->post('form_params');
+
+                        $baseProperty['region_id'] = 'Q';
+                        if ( $getKanwil['responseCode'] == '00' ) {
+                            foreach ($getKanwil['responseData'] as $kanwil) {
+                                $branchid = substr( '00000' . $kanwil['branch'], -5 );
+                                if ( $branchid == $request->input('branch_id') ) {
+                                $baseProperty['region_id'] = $kanwil['region'];
+                                $baseProperty['region_name'] = $kanwil['rgdesc'];
+                                }
+                            }
+                        }
+
+                        $property =  Property::create( $baseProperty );
+                        $baseRequest['property'] = $property->id;
+                        $baseRequest['property_name'] = $developer_name;
+                        if ($property) {
+                            $propertyType = PropertyType::create([
+                                'property_id'=>$property->id,
+                                'name'=>$developer_name,
+                                'building_area'=>$baseRequest['building_area'],
+                                'price'=>$baseRequest['price'],
+                                'surface_area'=>$baseRequest['building_area'],
+                                'electrical_power'=>'-',
+                                'bathroom'=>0,
+                                'bedroom'=>0,
+                                'floors'=>0,
+                                'carport'=>0
+                            ]);
+                            $baseRequest['property_type']= $propertyType->id;
+                            $baseRequest['property_type_name']= $developer_name;
+                            if ($propertyType) {
+                                $data = [
+                                'developer_id' => $developer_id,
+                                'property_id' => $property->id,
+                                'status' => Collateral::STATUS[0]
+                            ];
+                            $collateral = Collateral::updateOrCreate(['property_id' => $property->id],$data);
+                            }
+                        }
+                    }
+
+                    $kpr = KPR::create( $baseRequest );
+                    $return = [
+                        'message' => 'Data e-form ke '.$total.' berhasil ditambahkan.',
+                        'contents' => $kpr['kpr']
+                    ];
+
+                    \Log::info("===============CREATE EFORM KE ".$total." ================");
+
+                    $userId = CustomerDetail::where('nik', $baseRequest['nik'])->first();
+                    $usersModel = User::FindOrFail($userId['user_id']);     /*send notification*/
+
+                    $credentials = [
+                        'data'    => $kpr['eform'],
+                        'request' => $request,
+                    ];
+                    pushNotification($credentials, 'createEForm');
+                } 
+                else {
                     return response()->error( [
                         'message' => 'User sedang dalam pengajuan',
                         'contents' => $dataEform
@@ -1248,6 +1393,7 @@ class EFormController extends Controller
                         'message' => 'Data pengajuan tidak ditemukan',
                     ], 422 );
             }
+			$smsmasuk = '1';
 			try{			
 				$message = ['no_hp'=>$customer[0]['mobile_phone'],
                             'plafond'=>$briguna[0]['request_amount'],
@@ -1256,27 +1402,30 @@ class EFormController extends Controller
                             'kode_message'=>'5'];
                 \Log::info("-------------------sms notifikasi-----------------");
                 \Log::info($message);
-                $testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
-                                \Log::info($testing);
-
+                //$testing = app('App\Http\Controllers\API\v1\SentSMSNotifController')->sentsms($message);
+                 //               \Log::info($testing);
             } catch (\Exception $e) {
-                    DB::rollback();
-                    return response()->error( [
-                        'message' => 'Gagal Mengirimkan SMS',
-                    ], 422 );
-            }
+				$smsmasuk = '0';
+			}		
 			try{
                     User::destroy($eform->user_id);
                   DB::commit();
-                return response()->success( [
-                    'message' => 'Hapus User Berhasil',
-                ], 200 );
+				  if($smsmasuk=='1'){
+					return response()->success( [
+						'message' => 'Hapus User Berhasil',
+					], 200 );
+				  }else{
+					return response()->success( [
+						'message' => 'Hapus User Berhasil. Sms gagal terkirim.',
+					], 200 );
+				  }
             } catch (\Exception $e) {
                     DB::rollback();
                     return response()->error( [
                         'message' => 'User Tidak Dapat Dihapus',
                     ], 422 );
             }
+			
         }else{
             if ($eform->kpr->is_sent == false || $eform->status_eform == 'Rejected' ) {
               User::destroy($eform->user_id);

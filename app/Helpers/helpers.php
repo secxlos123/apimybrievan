@@ -252,6 +252,40 @@ if (! function_exists('break_pefindo')) {
     {
         $pefindoDetail = json_decode($eform['pefindo_detail']);
         $pefindoScoreDetail = [];
+        $countIndividu = count($pefindoDetail->individual);
+        $countCouple = count($pefindoDetail->couple);
+     if($countIndividu == 0 && $countCouple > 0 ){
+        \Log::info("===MASUK KONDISI 0 - 1 ===");
+        if ( isset($request['select_couple_pefindo']) ) {
+            $couple = $pefindoDetail->couple[ $request['select_couple_pefindo'] ];
+            $dataCouple = get_pefindo_service( $eform, 'data', true, $couple->PefindoId );
+            $pdf = get_pefindo_service( $eform, 'pdf', true, $couple->PefindoId );
+            $pefindo = get_pefindo_color( $dataCouple['score'], false, array(), $request['select_couple_pefindo'], $dataCouple['reasonslist'] );
+            $lastDataCouple = $pefindo;
+            $pefindoScoreDetail['couple'] = [
+                (String) $request['select_couple_pefindo'] => [
+                    'score' => ($lastDataCouple['score']) ? $lastDataCouple['score'] : 0
+                    , 'color' => ($lastDataCouple['color']) ? $lastDataCouple['color'] : 0
+                ]
+            ];
+        }
+
+       // if ( isset($request['select_individual_pefindo']) ) {
+       //     $individu = $pefindoDetail->individual[ $request['select_individual_pefindo'] ];
+       //     $dataIndividu = get_pefindo_service( $eform, 'data', false, $individu->PefindoId );
+       //     $pdf .= ',' . get_pefindo_service( $eform, 'pdf', false, $individu->PefindoId );
+       //     $pefindo = get_pefindo_color( $dataIndividu['score'], false, $pefindo, $request['select_individual_pefindo'], $dataIndividu['reasonslist'] );
+       //     $lastDataIndividu = get_pefindo_color( $dataIndividu['score'], false, $pefindo, $request['select_individual_pefindo'], $dataIndividu['reasonslist'], true );;
+       //     $pefindoScoreDetail['individual'] = [
+       //         (String) $request['select_individual_pefindo'] => [
+       //             'score' => ($lastDataIndividu['score']) ? $lastDataIndividu['score'] : 0
+       //             , 'color' => ($lastDataIndividu['color']) ? $lastDataIndividu['color'] : 0
+       //         ]
+       //     ];
+       // }
+
+     }else{
+
         if ( isset($request['select_individual_pefindo']) ) {
             $individu = $pefindoDetail->individual[ $request['select_individual_pefindo'] ];
             $dataIndividu = get_pefindo_service( $eform, 'data', false, $individu->PefindoId );
@@ -279,7 +313,7 @@ if (! function_exists('break_pefindo')) {
                 ]
             ];
         }
-
+    }
 
         $risk = array();
         if ( isset( $pefindo['risk'] ) ) {
@@ -1117,6 +1151,8 @@ if (! function_exists('pushNotification')) {
      */
     function pushNotification($credentials, $type)
     {
+        \Log::info("===HELPERS PUSH NOTIF===");
+        \Log::info(env('PUSH_NOTIFICATION_TOPICS'));
         if(env('PUSH_NOTIFICATION', false)){
             if($type == 'disposition'){
                 disposition($credentials);
@@ -1554,38 +1590,49 @@ if (! function_exists('pushNotification')) {
     }
 
     function disposition($credentials){
-        $data      = $credentials['eform'];
-        $aoId      = $credentials['ao_id'];
-        $message   = getMessage("eform_disposition");
+        \Log::info("===PUSH NOTIF DIPOSISI===");
+        try {
+            $data      = $credentials['eform'];
+            $aoId      = $credentials['ao_id'];
+            $message   = getMessage("eform_disposition");
 
-        $userNotif = new UserNotification;
-        $notificationBuilder = new PayloadNotificationBuilder($message['title']);
-        $notificationBuilder->setBody($message['body'])
-                            ->setSound('default');
+            $userNotif = new UserNotification;
+            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+            $notificationBuilder->setBody($message['body'])
+                                ->setSound('default');
         // Get data from notifications table
-        $notificationData = $userNotif->where('slug', $data->id)
-                                      ->where('type_module', 'eform')
-                                      ->orderBy('created_at', 'desc')->first();
+            $notificationData = $userNotif->where('slug', $data->id)
+                                          ->where('type_module', 'eform')
+                                          ->orderBy('created_at', 'desc')->first();
 
-        $dataBuilder = new PayloadDataBuilder();
-        $dataBuilder->addData([
-            'id'         => $notificationData['id'],
-            'slug'       => $data->ref_number,
-            'type'       => 'eform'
-        ]);
+            $dataBuilder = new PayloadDataBuilder();
+            $dataBuilder->addData([
+                'id'         => $notificationData['id'],
+                'slug'       => $data->ref_number,
+                'type'       => 'eform'
+            ]);
 
-        $notification = $notificationBuilder->build();
-        $payload         = $dataBuilder->build();
-        $topic = new Topics();
-        $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+            $topic_env = (String) env('PUSH_NOTIFICATION_TOPICS');
 
-        $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
-        $topicResponse->isSuccess();
-        $topicResponse->shouldRetry();
-        $topicResponse->error();
+            $notification = $notificationBuilder->build();
+            $payload         = $dataBuilder->build();
+            $topic = new Topics();
+            // $topic->topic(env('PUSH_NOTIFICATION_TOPICS', 'testing'))->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+
+            $topic->topic($topic_env)->andTopic('branch_'.$data->branch_id)->andTopic('ao_'.$aoId);
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, $payload);
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+            \Log::info("===PUSH_NOTIFICATION Disposisi Success===");   
+        } catch (Exception $e) {
+            \Log::info("===PUSH_NOTIFICATION Disposisi FAILED===");
+        }
     }
 
     function createEForm($credentials){
+        \Log::info("===PUSH NOTIF PENGAJUAN KREDIT===");
         $dataUser = $credentials;
         $user     = $dataUser['request']->user();
         $message  = getMessage("eform_create");
@@ -1712,6 +1759,7 @@ if (! function_exists('pushNotification')) {
     }
 
     function approveEForm($credentials){
+        \Log::info("===PUSH NOTIF APPROVE EFORM===");
         $data = $credentials;
         if (!empty($data['clas'])) {
             approveEFormToCustomer($credentials, true);

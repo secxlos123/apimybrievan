@@ -72,6 +72,7 @@ class BRITransport extends Transport
                     ],
                 ]
             );
+            \Log::info("HOST_MAIL : ".$this->url."/send_emailv2");
             $this->getMessageLog( $res );
             $sent = $this->sendPerformed( $message );
         }

@@ -69,7 +69,7 @@ class KreditRequest extends BaseRequest{
 						'PersonalNamaGadisKandung'=>'required',
 						'PersonalNoHP'=>'required',
 						'PersonalNoTlpRumah'=>'required',
-						'PersonalEmail'=>'required',
+						'PersonalEmail'=>'required|unique:users,email',
 						'JobBidangUsaha'=>'required',
 						'JobKategoriPekerjaan'=>'required',
 						'JobStatusPekerjaan'=>'required',
@@ -128,7 +128,13 @@ class KreditRequest extends BaseRequest{
     					'email'=> 'required',
     					'eform_id'=>'required'
     				]);
-    			}
+    			}else if($this->segment(5) == 'input-kredit-history'){
+                    return([
+                        'pn' => 'required',
+                        'apregno'=> 'required',
+                        'branch_id'=> 'required',
+                    ]);
+                }
     			
     			break;
 

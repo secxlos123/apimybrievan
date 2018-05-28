@@ -30,6 +30,29 @@ Route::get('/get-restwshc', function() {
     ])->post( 'form_params' );
 });
 
+Route::get('/get-kemendagri', function(){
+	try {
+		
+		$data = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_kemendagri_profile_nik',
+                    'requestData' => [
+                        'nik'     => '3518136206930002'
+                        , 'id_user' => '00147678'
+                    ],
+                ])
+            ])->post( 'form_params' );
+
+        return $data;
+
+	} catch (Exception $e) {
+		return response()->error( [
+                'message' => 'Service Kemendagri DOWN !',
+                'contents' => null
+            ], 404 );    
+	}
+});
+
 Route::get('/get-asmx', function() {
 	return \Asmx::setEndpoint( 'GetBidangPekerjaan' )->post();
 });
@@ -47,16 +70,16 @@ Route::get('/generate_pdf/{ref_number}', function ($ref_number) {
 	$path = public_path('uploads/'.$detail->nik);
 	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
 
-    echo "Generate " .generate_pdf('uploads/'. $detail->nik, 'lkn.pdf', view('pdf.approval', compact('detail'))->render());
+    echo "Generate " .generate_pdf('uploads/'. $detail->nik, $ref_number.'-lkn.pdf', view('pdf.approval', compact('detail'))->render());
     echo "<br/>";
 
-    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'permohonan.pdf', view('pdf.permohonan', compact('detail')));
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-permohonan.pdf', view('pdf.permohonan', compact('detail')));
     echo "<br/>";
 
-   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'prescreening.pdf', view('pdf.prescreening', compact('detail')));
+   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-prescreening.pdf', view('pdf.prescreening', compact('detail')));
     echo "<br/>";
 
-    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'recontest.pdf', view('pdf.recontest', compact('detail')));
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-recontest.pdf', view('pdf.recontest', compact('detail')));
     echo "<br/>";
 	return $detail->nik;
 });
@@ -68,7 +91,7 @@ Route::get('/collateral_pdf/{ref_number}', function ($ref_number) {
 	$eform = $detail;
 	$path = public_path('uploads/'.$detail->nik);
 	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
-    echo "Generate " . generate_pdf('uploads/'. $detail->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
     echo "<br/>";
 	return $detail->nik;
 });
@@ -170,8 +193,64 @@ Route::get( '/seteform', function() {
 	dd( $cek );
 } );
  // Route::group( ['middleware' => 'file' ], function () {
-Route::get('files/{folder}/{nik}', 'ImagesController@show3');
+Route::get('files/{nik}/{file}', 'ImagesController@show3');
 Route::get('files/{type}/{id}/{image}', 'ImagesController@show4');
 Route::get('files/{type}/{other}/{id}/{image}', 'ImagesController@show5');
 // Route::get('files/{nik}/{pdf}/mybri/{key}', 'ImagesController@show2');
  // });
+Route::get('resend_activations/{email}', 'ImagesController@ResendActivations');
+Route::get('resendpass/{email}', 'ImagesController@ResendPass');
+Route::get('TestServiceEmail/{email}', 'ImagesController@testEmailService');
+Route::get('TPN/{topic}', 'ImagesController@TestPushNotif');
+
+// Generate Pdf LKN
+Route::get('/generate_pdf_lkn/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr', 'recontest' )
+		->where('ref_number', $ref_number)->first();
+	$path = public_path('uploads/'.$detail->nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
+
+    echo "Generate " .generate_pdf('uploads/'. $detail->nik, $ref_number.'-lkn.pdf', view('pdf.approval', compact('detail'))->render());
+    echo "<br/>";
+	return $detail->nik;
+});
+
+// Generate PDF EFORM
+Route::get('/generate_pdf_eform/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr', 'recontest' )
+		->where('ref_number', $ref_number)->first();
+	$path = public_path('uploads/'.$detail->nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
+
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-permohonan.pdf', view('pdf.permohonan', compact('detail')));
+    echo "<br/>";
+	return $detail->nik;
+});
+
+// Generate PDF PRESCREENING
+Route::get('/generate_pdf_prescreening/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr', 'recontest' )
+		->where('ref_number', $ref_number)->first();
+	$path = public_path('uploads/'.$detail->nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
+
+   	echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-prescreening.pdf', view('pdf.prescreening', compact('detail')));
+    echo "<br/>";
+
+	return $detail->nik;
+});
+
+// Generate PDF REKONTES
+Route::get('/generate_pdf_rekontes/{ref_number}', function ($ref_number) {
+	$detail = \App\Models\EForm::with( 'visit_report.mutation.bankstatement', 'customer', 'kpr', 'recontest' )
+		->where('ref_number', $ref_number)->first();
+	$path = public_path('uploads/'.$detail->nik);
+	File::isDirectory($path) or File::makeDirectory($path, 0777, true, true);
+
+    echo "Generate " . generate_pdf('uploads/'. $detail->nik, $ref_number.'-recontest.pdf', view('pdf.recontest', compact('detail')));
+    echo "<br/>";
+	return $detail->nik;
+});
+
+Route::get('files/{file}', 'ImagesController@show');
+Route::post('files/{file}', 'ImagesController@show');

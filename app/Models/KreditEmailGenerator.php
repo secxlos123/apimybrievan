@@ -210,7 +210,7 @@ class KreditEmailGenerator extends Model{
 
 	}
 
-   public function convertToFinishVerificationEmailFormat($data,$apregno,$qrcode){
+   public function convertToFinishVerificationEmailFormat($data,$apregno){
 
       $selectEformid = KartuKredit::select('eform_id')->where('eform_id',$data['eform_id'])->first();
       $eformid = $selectEformid['eform_id'];
@@ -229,6 +229,10 @@ class KreditEmailGenerator extends Model{
          $data['status_pernikahan'] = 'Belum Menikah';
       }
 
+      $kk = new KartuKredit();
+      $eformid =$data['eform_id'];
+      // $data['tanggal'] = $kk->convertDateTimeToBahasa($eformid);
+
       return '<!DOCTYPE html>
 <html>
    <head>
@@ -241,14 +245,14 @@ class KreditEmailGenerator extends Model{
          </tr>
          <tr>
             <td align="center">
-               <table align="center" class="table-inner" width="500px" border="0" cellspacing="0" cellpadding="0">
+               <table align="center" class="table-inner" width="500px" border="00" cellspacing="0" cellpadding="0">
                   <tr>
                      <td align="center">
                         <img align="center" width="200px" src="https://mybri.stagingapps.net/assets/images/logo/Logo-Website.png">
                      </td>
                   </tr>
                   <tr>
-                     <td height="20px"></td>
+                     <td height="20px"></td>1
                   </tr>
                   <tr>
                      <td align="center">Verifikasi Permohonan Kartu Kredit BRI</td>
@@ -264,11 +268,11 @@ class KreditEmailGenerator extends Model{
                   </tr>
                   <tr>
                      <td align="center">
-                        <span>Hai,'.$data['nama'].'</span>
-                        <br>
-                        Berikut data permohonan kartu kredit anda:
-                        <br>
-                        <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
+                        <table align="left" width="550" border="0" cellspacing="8" cellpadding="0">
+                            <tr style="background:#17528F;color:white;">
+                              <td align="center"  height="22" colspan="2">DATA NASABAH</td>
+                              
+                           </tr>
                            <tr>
                               <td>No. Ref Aplikasi : </td>
                               <td>'.$data['appregno'].'</td>
@@ -291,7 +295,7 @@ class KreditEmailGenerator extends Model{
                            </tr>
                            <tr>
                               <td>No. Handphone : </td>
-                              <td>0'.$data['hp'].'</td>
+                              <td>'.$data['hp'].'</td>
                            </tr>
                            <tr>
                               <td>Nama Gadis Ibu Kandung : </td>
@@ -315,15 +319,16 @@ class KreditEmailGenerator extends Model{
                               <td>Status Pernikahan : </td>
                               <td>'.$data['status_pernikahan'].'</td>
                            </tr>
-                           <tr>
-                              <td align="center">DATA KEUANGAN</td>
+                           <tr style="background:#17528F;color:white;">
+                              <td align="center"  height="22" colspan="2">DATA KEUANGAN</td>
+                              
                            </tr>
                            <tr>
                               <td>Tiering Pendapatan : </td>
                               <td>Rp. '.$data['tiering_gaji'].'</td>
                            </tr>
-                           <tr>
-                              <td align="center">DATA PENGAJUAN</td>
+                            <tr style="background:#17528F;color:white;">
+                             <td align="center"  height="22" colspan="2">DATA PENGAJUAN</td>
                            </tr>
                            <tr>
                               <td>Jenis Kartu Kredit : </td>
@@ -337,57 +342,24 @@ class KreditEmailGenerator extends Model{
                            </tr>
                         </table>
                         <br>
-                        <table align="left" width="550" border="1" cellspacing="0" cellpadding="0">
-                           <tr>
-                              <td>
-                                 <ol>
-                                    <li>
-                                       Dengan ini Saya/ Kami mengajukan Kartu Kredit BRI dan mengizinkan pihak Bank BRI untuk menggunakan data tersebut diatas untuk kepentingan permohonan kredit.
-                                    </li>
-                                    <li>
-                                       Saya/ Kami menyatakan bahwa semua informasi yang diberikan dalam formulir aplikasi ini adalah sesuai keadaan yang sebenarnya.
-                                    </li>
-                                    <li>
-                                       Saya / Kami memberikan kuasa kepada Bank BRI / pihak yang ditunjuk oleh Bank BRI untuk memeriksa atau mencari informasi lebih jauh dari sumber layak manapun, dan akan memberikan informasi terbaru apabila terdapat perubahan data sehubungan dengan permohonan ini.
-                                    </li>
-                                    <li>
-                                       Bank BRI mempunyai hak untuk menolak untuk menerima permohonan saya/ kami tanpa memberitahukan alasannya.
-                                    </li>
-                                    <li>
-                                       Sehubungan dengan disetujuinya verifikasi permohonan kredit ini, saya/ kami menyatakan akan mentaati segala persyaratan ketentuan yang berlaku di Bank BRI.
-                                    </li>
-                                 </ol>
-                              </td>
-                           </tr>
-                        </table>
-                        <br>
-                     </td>
-                  </tr>
-               </table>
             </td>
          </tr>
          <tr>
-            <td height="20px"></td>
+            <td height="8px"></td>
          </tr>
+       
+         <tr>
+             
+             <td align="right" >
+                 <p align="right" style="margin-right:18px;">'.$data['tanggal_verifikasi'].'</p>
+                <img src="'.$data['qrcode'].'" width="150" height="150" alt="qrcode"  hspace="8" style="margin-top:-9px;"/>
+                <p align="right" style="margin-right:18px;margin-top:2px">'.$data['nama'].'</p>
+             </td>
+         </tr>
+        
          <tr>
             <td align="center" bgcolor="#fafafa">
-               <table class="textbutton" align="center" border="0" cellspacing="0" cellpadding="0">
-                  <tbody>
-                     <tr>
-                        <td height="20px"></td>
-                     </tr>
-                     <tr>
-                        <td>
-                           <img src="'.$data['qrcode'].'" width="150" height="150" alt="qrcode" />
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-            </td>
-         </tr>
-         <tr>
-            <td align="center" bgcolor="#fafafa">
-               <img align="center" width="500" src="https://mybri.stagingapps.net/assets/images/logo/footer.png">
+               <img align="center" width="100%" src="https://mybri.stagingapps.net/assets/images/logo/footer.png">
             </td>
          </tr>
       </table>

@@ -9,6 +9,7 @@ use App\Models\EForm;
 use App\Models\CustomerDetail;
 use App\Http\Requests\API\v1\EFormRequest;
 use File;
+use App\Models\kartuKreditHistory;
 
 
 
@@ -19,7 +20,6 @@ class KartuKredit extends Model
 	//1. nasabah = nasabah yang tidak memiliki pinjaman
 	//2. debitur = nasabah yang memili pinjamna
 	//======================================
-	//pilihan kartu -> kartu yang user ajukan. diisi "world access","easy card", "platinum","touch"
 
     protected $table = 'kartu_kredit_details';
 
@@ -32,18 +32,18 @@ class KartuKredit extends Model
     	'memiliki_kk_bank_lain','range_limit','nama_ibu_kandung',
         'status_pernikahan','image_npwp','image_ktp','image_slip_gaji',
         'image_nametag','image_kartu_bank_lain','pn','tanggal_lahir',
-        'los_score','analyzed_status','qrcode'
+        'los_score','analyzed_status','qrcode','tanggal_verifikasi'
     ];
 
     protected $appends = ['jenis_kartu','alamat_lengkap'];
 
     protected $hidden = [
-        'id','updated_at'
+        'id'
     ];
 
     public $timestamps = false;
 
-     public function eform(){
+    public function eform(){
         return $this->belongsTo('App\Models\EForm', 'eform_id');
     }
 
@@ -410,6 +410,100 @@ class KartuKredit extends Model
         $data['rjCode'] = $req['rjCode'];
 
         return $data;
+    }
+
+    public function getTanggalVerifikasiAttribute($val){
+        if($val){
+          $this->convertDateTimeToBahasa($val);
+        }
+    }
+
+    public function convertDateTimeToBahasa($date){
+        $month = strftime("%b",strtotime($date));
+        $day = strftime("%A",strtotime($date));
+        $dayDate = strftime("%d",strtotime($date));
+        $year = strftime("%Y",strtotime($date));
+
+        $day = $this->changeDayIntoBahasa($day);
+        $month = $this->changeMonthToBahasa($month);
+        $newDate = $day.', '.$dayDate.' '.$month.' '.$year;
+
+        return $newDate;
+    }
+
+
+    function changeDayIntoBahasa($day){
+        $day = strtolower($day);
+        switch ($day) {
+            case 'monday':
+                return 'Senin';
+                break;
+            case 'tuesday':
+                return 'Selasa';
+                break;
+            case 'wednesday':
+                return 'Rabu';
+                break;
+            case 'thursday':
+                return 'Kamis';
+                break;
+            case 'friday':
+                return 'Jum\'at';
+                break;
+            case 'saturday':
+                return 'Sabtu';
+                break;
+            case 'sunday':
+                return 'Minggu';
+                break;
+            default:
+                break;
+        }
+    }
+
+    function changeMonthToBahasa($month){
+        $bl = strtolower($month);
+        switch ($bl) {
+            case 'jan':
+                return 'Januari';
+                break;
+            case 'feb':
+                return 'Februari';
+                break;
+            case 'mar':
+                return 'Maret';
+                break;
+            case 'apr':
+                return 'April';
+                break;
+            case 'may':
+                return 'May';
+                break;
+            case 'jun':
+                return 'Juni';
+                break;
+            case 'jul':
+                return 'Juli';
+                break;
+            case 'aug':
+                return 'Agustus';
+                break;
+            case 'sep':
+                return 'September';
+                break;
+            case 'oct':
+                return 'Oktober';
+                break;
+            case 'nov':
+                return 'November';
+                break;
+            case 'dec':
+                return 'Desember';
+                break;
+            default:
+                # code...
+                break;
+        }
     }
 
 }

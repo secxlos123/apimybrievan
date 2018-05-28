@@ -1,10 +1,9 @@
 <?php
 
-Route::get('/contoh',function(){
-    	return view('example');
-    });
-
-
+Route::group(['namespace'=> 'API\v1\Int'], function() {
+	
+	Route::post('contoh','KartuKreditController@contohemail');
+});
 
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 
@@ -41,6 +40,15 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 		Route::post('/update-data-los', 'KartuKreditController@updateDataLos');
 		Route::post('/analisa', 'KartuKreditController@analisaKK');
 		Route::post('/finish-analisa','KartuKreditController@finishAnalisa');
+		
+		Route::post('/input-kredit-history','KartuKreditController@createKreditHistory');
+	
+
+	//kartu kredit history
+	//1. tampilin data kanpus sesuai tanggal (created at)
+	//2. tampilin data kanwil sesuai tanggal
+	//3. tampilin data kanca sesuai tanggal
+		
     });
 });
 
