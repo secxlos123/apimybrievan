@@ -13,7 +13,10 @@ class KartuKreditHistory extends Model
 
     protected $appends = ['deskripsi_proses'];
 
+   
+
     public function getDeskripsiProsesAttribute($val){
+        $val = $this->kodeproses;
     	if($val == '1'){
     		return 'Ajukan';
     	}else if($val == '3.1'){
@@ -40,11 +43,14 @@ class KartuKreditHistory extends Model
 
     }
 
-    public function updateKreditHistoryKodeProsesTo($kodeProses){
+    public function updateKodeProses($kode,$apregno){
+        $update = $this->where('apregno',$apregno)->update([
+            'kodeproses'=>$kode
+        ]);
 
     }
+
     //ambil kanwil / region dari result list uker kanca.
-    //CUMA BISA DI PROD
     public function getKanwilByBranchId($branch){
         $requestPost =[
             'app_id' => 'mybriapi',
