@@ -66,8 +66,7 @@ class KartuKreditController extends Controller{
     public function contohdua(Request $req){
         // $startDate = Carbon::parse($req->str)->startOfDay();
         // $endDate = Carbon::parse($req->end)->endOfDay();
-        // $region = $req->kanwil;
-        // $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$region)->get();
+        // $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 
         // $ajukanLength =  $data->where('kodeproses','1')->count();
         // $verifikasiLength = $data->where('kodeproses','3.1')->count();
