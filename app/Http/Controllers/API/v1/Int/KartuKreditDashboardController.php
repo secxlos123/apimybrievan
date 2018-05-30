@@ -14,11 +14,14 @@ class KartuKreditDashboardController extends Controller{
 	    //select seluruh data cabang berdasarkan tanggal
 	    $startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
-        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate]);
+        $datas = $data->get();
+        $ajukanLength =  $data->where('kodeproses',1)->get();
 	    return response()->json([
 	    	'responseCode'=>'00',
 	    	'responseMessage'=>'sukses',
-	    	'length'=>count($data),
+	    	'totalLength'=>count($datas),
+	    	'ajukanLength'=>$ajukanLength,
 	    	'contents'=>$data
 	    ]);
 	}
