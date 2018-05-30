@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\v1\Int;
 
 use App\Http\Controllers\Controller;
 use App\Models\KartuKreditHistory;
+use Illuminate\Http\Request;
 use App\Http\Requests\API\v1\KreditRequest;
 use DB;
 use Carbon\Carbon;
