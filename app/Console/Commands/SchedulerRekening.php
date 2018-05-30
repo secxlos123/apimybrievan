@@ -108,7 +108,8 @@ class SchedulerRekening extends Command
                                     'eform_id'   => $value->eform_id,
                                     'is_send'    => 6,
                                     'no_rekening'=> $result['contents']['data'][0]->NO_REKENING,
-                                    'cif'        => $result['contents']['data'][0]->CIF
+                                    'cif'        => $result['contents']['data'][0]->CIF,
+                                    'keterangan' => $result['contents']['data'][0]->MESSAGE
                                 ];
 
                                 $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
@@ -124,6 +125,27 @@ class SchedulerRekening extends Command
                                 \Log::info('Sukses Update Rekening ALL dan simpan json_ws_log');
                                 $message = [
                                     'message'  => 'Sukses update no_rekening briguna dari brinets',
+                                    'contents' => 'sukses'
+                                ];
+                            } else {
+                                $update_data = [
+                                    'eform_id'   => $value->eform_id,
+                                    'keterangan' => $result['descriptions']
+                                ];
+
+                                $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
+                                $briguna->update($update_data);
+
+                                // save json_ws_log
+                                $data_log = [
+                                    'json_data' => 'scheduler update description error sukses',
+                                    'function_name' => 'updateDescriptionError',
+                                    'created_at'=> date('Y-m-d H:i:s')
+                                ];
+                                $save = \DB::table('json_ws_log')->insert($data_log);
+                                \Log::info('Sukses Update description error dan simpan json_ws_log');
+                                $message = [
+                                    'message'  => 'Sukses update description error briguna dari brinets',
                                     'contents' => 'sukses'
                                 ];
                             }
