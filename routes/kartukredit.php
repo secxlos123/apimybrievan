@@ -50,10 +50,10 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 		//2. tampilin data kanwil sesuai tanggal
 		//3. tampilin data kanca sesuai tanggal
 
-		Route::post('dashboard-kkd', 'KartuKreditDashboardController@index');
-		Route::post('dashboard-kkd-kanca', 'KartuKreditDashboardController@indexKanca');
+		Route::post('/dashboard-kkd', 'KartuKreditDashboardController@index');
+		Route::post('/dashboard-kkd-kanca', 'KartuKreditDashboardController@indexKanca');
 
-		Route::post('dashboard-kkd-kanwil', 'KartuKreditDashboardController@indexKanwil');
+		Route::post('/dashboard-kkd-kanwil', 'KartuKreditDashboardController@indexKanwil');
 		
     });
 });
