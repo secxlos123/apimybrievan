@@ -63,7 +63,7 @@ class KartuKreditDashboardController extends Controller{
 	public function indexKanca(Request $req){
 		$startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
-        $kanca = $req->branchId;
+        $kanca =  '00'.$req->branchId;
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanca',$kanca)->get();
         $ajukanLength =  $data->where('kodeproses',1)->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
