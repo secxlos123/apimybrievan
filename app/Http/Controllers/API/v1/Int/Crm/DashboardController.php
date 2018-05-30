@@ -432,8 +432,8 @@ class DashboardController extends Controller
           'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
           'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
           'Total'=>array_sum($total[$value->pn]),
-          'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?array_sum($status[$value->pn]['Prospek']):0,
-          'On Progress'=>array_sum(array_values($lkn[$value->pn])),
+          'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?array_sum($status[$value->pn]['Prospek']):0,//+array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,
+          'On Progress'=>(array_key_exists('On Progress',$status[$value->pn]))?(array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//array_sum(array_values($lkn[$value->pn])),
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?array_sum($status[$value->pn]['Batal']):0
         ];
@@ -446,13 +446,13 @@ class DashboardController extends Controller
       if (!empty($marketing_summary)) {
           return response()->success([
               'message' => 'Sukses get Marketing Summary.',
-              'contents' => $marketing_summary,
+              'contents' => $marketing_summary
           ], 200);
       }
 
       return response()->error([
           'message' => 'Marketing Summary tidak ditemukan.',
-          'contents' => $marketing_summary,
+          'contents' => $marketing_summary
       ], 200);
     }
 
