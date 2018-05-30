@@ -21,6 +21,9 @@ use App\Models\KreditEmailGenerator;
 use App\Models\KartuKreditHistory;
 
 use RestwsHc;
+use DB;
+
+use Carbon\Carbon;
 
 class KartuKreditController extends Controller{
 	
@@ -39,27 +42,40 @@ class KartuKreditController extends Controller{
         $this->tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
     }
 
-	public function contohemail(Request $req){
-         $requestPost =[
-                'app_id' => 'mybriapi',
-                'branch_code' => $req['branch_code']
-            ];
+	public function contoh(Request $req){
+        try{
+            DB::beginTransaction();
+            $data['apregno'] = $req->apregno;
+            $data['kodeproses'] = '1';
+            $data['kanwil'] = $req->kanwil;
+            $data['kanca'] = $req->branchId;
+            $data['pn'] = $req->pn;
             
-            $list_uker_kanca = RestwsHc::setBody([
-                        'request' => json_encode([
-                                'requestMethod' => 'get_list_uker_from_cabang',
-                                'requestData' => $requestPost
-                        ])
-                ])
-                ->post( 'form_params' );
+            $createHistory = KartuKreditHistory::create($data);
+        }catch(RequestException $e){
+            DB::rollback();
 
-            $res = $list_uker_kanca['responseData'];
-            $res = $res[0];
-            $kanwil = $res['region'];
+        }
+        DB::commit();
+        // $kanwil = $this->getKanwilByBranchId($branchId);
+        
+        return $createHistory;
 
-            return $kanwil;
     }
 
+    public function contohdua(Request $req){
+        // $startDate = $req->str;
+        // $endDate = $req->end;
+        $startDate = Carbon::parse($req->str)->startOfDay();
+        $endDate = Carbon::parse($req->end)->endOfDay();
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        return response()->json([
+            'count'=>count($data),
+            'datas'=>$data
+        ]);
+
+    }
     
 	function checkUser($nik){
         $check = CustomerDetail::where('nik', $nik)->get();
@@ -361,6 +377,10 @@ class KartuKreditController extends Controller{
             $updateUser = User::where('id',$userId)->update([
                 'email'=> $request['PersonalEmail']
             ]);
+
+            //update histories buat dashboard
+            $kkh = new KartuKreditHistory();
+            $updhis = $kkh->updateKodeProses('3.1',$request['appNumber']);
 
             return response()->json($obj);
         }else{
@@ -682,6 +702,10 @@ class KartuKreditController extends Controller{
             'kk_details'=>$jsonData
         ]);
 
+        //update kode proses histories dashboard
+        $kkh = new KartuKreditHistory();
+        $updhis = $kkh->updateKodeProses('6.1',$apregno);
+
 		return response()->json([
 			'responseCode'=>'00',
 			'responseMessage'=>'analisa berhasil',
@@ -714,10 +738,17 @@ class KartuKreditController extends Controller{
 			$updateLimit = KartuKredit::where('appregno',$apregno)->update([
 			'rekomendasi_limit_kartu'=>$limit
 		]);
+            //update kode proses histories dashboard
+            $kkh = new KartuKreditHistory();
+            $updhis = $kkh->updateKodeProses('7.1',$apregno);
 
 		}else{
 			$host = $this->hostLos.'/api/reject';
 			$data = $kk->createRejectedRequirements($req);
+            //update kode proses histories dashboard
+            $kkh = new KartuKreditHistory();
+            $updhis = $kkh->updateKodeProses('8.1',$apregno);
+
 		}
 		
 		//kirim ke los.

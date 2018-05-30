@@ -631,13 +631,16 @@ class EFormMonitoring extends Model implements AuditableContract
             }
         });
 
-        $eform->with('kpr');
+        $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
         if($request->product_type=='kpr'){
             if($request->has('dev_id') &&  $request->dev_id!='-' ) {
                 $eform->where('kpr.developer_id', $request->dev_id);
             } else if( $request->has('source') &&  $request->source!='-' ){
-                $eform->where('kpr.developer_id', $request->source);
+                if($request->source=='nondev')
+                    $eform->where('kpr.developer_id is NULL');
+                else if($request->source=='rumah.com')
+                    $eform->where('kpr.developer_id', 2706);
             }
         }
         
