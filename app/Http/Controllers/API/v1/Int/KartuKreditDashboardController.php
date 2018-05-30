@@ -13,8 +13,8 @@ class KartuKreditDashboardController extends Controller{
 
 	public function index(KreditRequest $req){
 	    //select seluruh data cabang berdasarkan tanggal
-	    $startDate = Carbon::parse($req->str)->startOfDay();
-        $endDate = Carbon::parse($req->end)->endOfDay();
+	    $startDate = Carbon::parse($req->startDate)->startOfDay();
+        $endDate = Carbon::parse($req->endDate)->endOfDay();
 
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 
@@ -37,8 +37,8 @@ class KartuKreditDashboardController extends Controller{
 	}
 
 	public function indexKanwil(Request $req){
-		$startDate = Carbon::parse($req->str)->startOfDay();
-        $endDate = Carbon::parse($req->end)->endOfDay();
+		$startDate = Carbon::parse($req->startDate)->startOfDay();
+        $endDate = Carbon::parse($req->endDate)->endOfDay();
         $region = $req->kanwil;
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 
@@ -61,8 +61,8 @@ class KartuKreditDashboardController extends Controller{
 	}
 
 	public function indexKanca(Request $req){
-		$startDate = Carbon::parse($req->str)->startOfDay();
-        $endDate = Carbon::parse($req->end)->endOfDay();
+		$startDate = Carbon::parse($req->startDate)->startOfDay();
+        $endDate = Carbon::parse($req->endDate)->endOfDay();
         $kanca = $req->branchId;
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanca',$kanca)->get();
         $ajukanLength =  $data->where('kodeproses',1)->count();
