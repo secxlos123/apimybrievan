@@ -443,7 +443,7 @@ class DashboardController extends Controller
 
           'Prospek'=>(array_key_exists('Prospek',$status[$value->pn])||array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['Prospek'])+array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//:9,//array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,
 
-          'On Progress'=>(array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):1,//array_sum(array_values($lkn[$value->pn])),
+          'On Progress'=>(array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//array_sum(array_values($lkn[$value->pn])),
 
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
 
