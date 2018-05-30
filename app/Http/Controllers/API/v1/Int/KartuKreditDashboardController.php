@@ -21,7 +21,7 @@ class KartuKreditDashboardController extends Controller{
 	    	'responseCode'=>'00',
 	    	'responseMessage'=>'sukses',
 	    	'totalLength'=>count($datas),
-	    	'ajukanLength'=>$ajukanLength,
+	    	'ajukanLength'=>count($ajukanLength),
 	    	'contents'=>$data
 	    ]);
 	}
