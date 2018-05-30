@@ -94,6 +94,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('api_las/download_image', 'ApiLasController@download');
 		Route::post('api_las/foto_lainnya', 'ApiLasController@update_foto_lainnya');
 
+		Route::post('api_las/dropdown', 'DropdownLasController@list_dropdown');
+
 		Route::resource( 'customer', 'Int\CustomerController', [
 			'except' => [ 'edit', 'create', 'destroy' ]
 		] );
