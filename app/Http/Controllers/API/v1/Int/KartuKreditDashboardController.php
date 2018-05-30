@@ -12,8 +12,8 @@ class KartuKreditDashboardController extends Controller{
 
 	public function index(KreditRequest $req){
 	    //select seluruh data cabang berdasarkan tanggal
-	    $startDate = Carbon::parse($req->str)->startOfDay();
-        $endDate = Carbon::parse($req->end)->endOfDay();
+	    $startDate = Carbon::parse($req->startDate)->startOfDay();
+        $endDate = Carbon::parse($req->endDate)->endOfDay();
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 	    return response()->json([
 	    	'responseCode'=>'00',
