@@ -2,7 +2,8 @@
 
 Route::group(['namespace'=> 'API\v1\Int'], function() {
 	
-	Route::post('contoh','KartuKreditController@contohemail');
+	Route::post('contoh','KartuKreditController@contoh');
+	Route::post('contohdua','KartuKreditController@contohdua');
 });
 
 Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
@@ -42,12 +43,14 @@ Route::group(['prefix' => 'v1/int/kk','namespace'=> 'API\v1\Int'], function() {
 		Route::post('/finish-analisa','KartuKreditController@finishAnalisa');
 		
 		Route::post('/input-kredit-history','KartuKreditController@createKreditHistory');
-	
 
-	//kartu kredit history
-	//1. tampilin data kanpus sesuai tanggal (created at)
-	//2. tampilin data kanwil sesuai tanggal
-	//3. tampilin data kanca sesuai tanggal
+
+		//kartu kredit history/dashboard
+		//1. tampilin data kanpus sesuai tanggal (created at)
+		//2. tampilin data kanwil sesuai tanggal
+		//3. tampilin data kanca sesuai tanggal
+
+		Route::post('dashboard-kkd', 'KartuKreditDashboardController@index');
 		
     });
 });

@@ -134,6 +134,11 @@ class KreditRequest extends BaseRequest{
                         'apregno'=> 'required',
                         'branch_id'=> 'required',
                     ]);
+                }else if($this->segment(5) == 'dashboard-kkd'){
+                    return([
+                        'startDate'=>'required',
+                        'endDate'=>'required'
+                    ]);
                 }
     			
     			break;
