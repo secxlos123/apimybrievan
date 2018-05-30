@@ -128,7 +128,24 @@ class CustomerController extends Controller
         $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
         if (count($customerDetail) > 0) {
-            $customer = Customer::findOrFail( $customerDetail->user_id );
+            try{
+			$eform = DB::table('eforms')
+					 ->select('IsFinish')
+					 ->where('eforms.user_id', $customerDetail->user_id)
+					 ->get();
+			$eform = $eform->toArray();
+			$eform = json_decode(json_encode($eform), True);
+			if($eform[0]['IsFinish']=='true'){
+				$message = 'Sukses';
+				$customer = Customer::findOrFail( $customerDetail->user_id );
+			}else{
+				$message = 'User dalam pengajuan';
+				$customer = Customer::findOrFail( $customerDetail->user_id );		
+			}
+			}catch(/Exception $e){
+				$message = 'Sukses';
+				$customer = Customer::findOrFail( $customerDetail->user_id );
+			}
         } else {
             $customer = Customer::findOrFail( $id );
         }
