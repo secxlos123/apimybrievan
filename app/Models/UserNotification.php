@@ -236,7 +236,8 @@ class UserNotification extends Model
 			'pinca' => $branch_id
 			, 'ao' => $pn
 			, 'customer' => $user_id
-			, 'staff' => null
+			// , 'staff' => null
+			, 'staff' => $pn
 			, 'collateral-appraisal' => $branch_id
 			, 'collateral' => $branch_id
 			, 'developer' => $user_id
