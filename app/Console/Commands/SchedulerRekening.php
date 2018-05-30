@@ -109,7 +109,7 @@ class SchedulerRekening extends Command
                                     'is_send'    => 6,
                                     'no_rekening'=> $result['contents']['data'][0]->NO_REKENING,
                                     'cif'        => $result['contents']['data'][0]->CIF,
-                                    'keterangan' => $result['descriptions']
+                                    'keterangan' => $result['contents']['data'][0]->MESSAGE
                                 ];
 
                                 $briguna = BRIGUNA::where("eform_id", "=", $value->eform_id);
