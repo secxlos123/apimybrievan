@@ -13,6 +13,8 @@ class KartuKreditHistory extends Model
 
     protected $appends = ['deskripsi_proses'];
 
+    protected $hidden = ['id','updated_at'];
+
    
 
     public function getDeskripsiProsesAttribute($val){

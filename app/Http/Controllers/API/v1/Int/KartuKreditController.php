@@ -23,6 +23,8 @@ use App\Models\KartuKreditHistory;
 use RestwsHc;
 use DB;
 
+use Carbon\Carbon;
+
 class KartuKreditController extends Controller{
 	
     public $hostLos = '';
@@ -49,8 +51,6 @@ class KartuKreditController extends Controller{
             $data['kanca'] = $req->branchId;
             $data['pn'] = $req->pn;
             
-
-
             $createHistory = KartuKreditHistory::create($data);
         }catch(RequestException $e){
             DB::rollback();
@@ -64,10 +64,17 @@ class KartuKreditController extends Controller{
     }
 
     public function contohdua(Request $req){
-        $startDate = $req->str;
-        $endDate = $req->end;
-        $data = KartuKreditHistory::whereNotBetween('created_at', [$startDate, $endDate])->get();
-        return $data;
+        // $startDate = $req->str;
+        // $endDate = $req->end;
+        $startDate = Carbon::parse($req->str)->startOfDay();
+        $endDate = Carbon::parse($req->end)->endOfDay();
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        return response()->json([
+            'count'=>count($data),
+            'datas'=>$data
+        ]);
+
     }
     
 	function checkUser($nik){
