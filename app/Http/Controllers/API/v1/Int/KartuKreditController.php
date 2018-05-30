@@ -64,26 +64,27 @@ class KartuKreditController extends Controller{
     }
 
     public function contohdua(Request $req){
-        // $startDate = Carbon::parse($req->str)->startOfDay();
-        // $endDate = Carbon::parse($req->end)->endOfDay();
-        // $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+        $startDate = Carbon::parse($req->str)->startOfDay();
+        $endDate = Carbon::parse($req->end)->endOfDay();
 
-        // $ajukanLength =  $data->where('kodeproses','1')->count();
-        // $verifikasiLength = $data->where('kodeproses','3.1')->count();
-        // $analisaLength = $data->where('kodeproses','6.1')->count();
-        // $approvedLength = $data->where('kodeproses','7.1')->count();
-        // $rejectedLength =  $data->where('kodeproses','8.1')->count();
-        // return response()->json([
-        //     'responseCode'=>'00',
-        //     'responseMessage'=>'sukses',
-        //     'totalLength'=>$data->count(),
-        //     'ajukanLength'=>$ajukanLength,
-        //     'verifikasiLength'=>$verifikasiLength,
-        //     'analisaLength' =>$analisaLength,
-        //     'approvedLength' => $approvedLength,
-        //     'rejectedLength' => $rejectedLength,
-        //     'contents'=>$data
-        // ]);
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        $ajukanLength =  $data->where('kodeproses','1')->count();
+        $verifikasiLength = $data->where('kodeproses','3.1')->count();
+        $analisaLength = $data->where('kodeproses','6.1')->count();
+        $approvedLength = $data->where('kodeproses','7.1')->count();
+        $rejectedLength =  $data->where('kodeproses','8.1')->count();
+        return response()->json([
+            'responseCode'=>'00',
+            'responseMessage'=>'sukses',
+            'totalLength'=>$data->count(),
+            'ajukanLength'=>$ajukanLength,
+            'verifikasiLength'=>$verifikasiLength,
+            'analisaLength' =>$analisaLength,
+            'approvedLength' => $approvedLength,
+            'rejectedLength' => $rejectedLength,
+            'contents'=>$data
+        ]);
 
     }
     
