@@ -210,16 +210,18 @@ class EFormController extends Controller
                 $mitra_relation = json_decode(json_encode($mitra_relation), True);
 		
           $eform = $eform->toArray();
-        $cityes = DB::table('cities')
-                         ->select('cities.name')
-                         ->where('cities.id', $customer[0]['city_id'])
-                         ->get();
-                $cityes = $cityes->toArray();
-                $cityes = json_decode(json_encode($cityes), True);
-          $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
-          //----------personal------------------------
           $eform[0]['customer']['personal'] = $customer[0];
-		$eform[0]['customer']['personal']['city'] = $cityes[0]['name'];
+			if($customer[0]['city_id']=='0' ||  $customer[0]['city_id']=='' ||  $customer[0]['city_id']==null){
+			$cityes = DB::table('cities')
+							 ->select('cities.name')
+							 ->where('cities.id', $customer[0]['city_id'])
+							 ->get();
+					$cityes = $cityes->toArray();
+					$cityes = json_decode(json_encode($cityes), True);
+				$eform[0]['customer']['personal']['city'] = $cityes[0]['name'];
+			}
+          //----------personal------------------------
+          $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
           $eform[0]['mitra'] = $mitra_relation[0];
           //-----------work---------------------------
           $work = [
