@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1\Int;
 
+use App\Http\Controllers\Controller;
 use App\Models\KartuKreditHistory;
 use App\Http\Requests\API\v1\KreditRequest;
 use DB;
