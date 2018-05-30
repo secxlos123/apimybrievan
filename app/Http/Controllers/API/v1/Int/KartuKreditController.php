@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API\v1\Int;
 
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
 use App\Models\KartuKredit;
 use App\Models\CustomerDetail;
