@@ -25,12 +25,12 @@ class KartuKreditDashboardController extends Controller{
         $listKanwil = $this->getListKanwil();
 
         foreach ($listKanwil as $val) {
-        	$newData = $data->where('kanwil',$val->region_id);
+        	$newData = $data->where('kanwil',$val['region_id']);
 
         	$pushData = [
-        		'region_id'=>$newData['region_id'],
-         		'region_name'=>$content['region_name'],
-         		'branch_id'=>$content['branch_id'],
+        		'region_id'=>$val['region_id'],
+         		'region_name'=>$val['region_name'],
+         		'branch_id'=>$val['branch_id'],
          		'data' => $newData
         	];
         	array_push($contents, $pushData);
