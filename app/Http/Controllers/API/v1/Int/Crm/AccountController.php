@@ -354,6 +354,17 @@ class AccountController extends Controller
       $data['phone'] = $request['phone'];
       $data['address'] = $request['address'];
       $data['product_type'] = $request['product_type'];
+
+      //switch 
+      //    case(1):$data['contact_time']="pagi";
+      //    case(2):$data['contact_time']="siang";
+      //    case(3):$data['contact_time']="sore";
+      //    case(4):$data['contact_time']="malam";
+
+      //switch 
+      //    case(0):$data['intention']="sendiri";
+      //    case(1):$data['intention']="keluarga/other";
+
       $data['contact_time'] = $request['contact_time'];
       $data['intention'] = $request['intention'];
       // $data['officer_ref'] = $request['officer_ref'];
