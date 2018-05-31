@@ -19,6 +19,7 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
+use Illuminate\Support\Facades\Log;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -622,7 +623,7 @@ class EFormMonitoring extends Model implements AuditableContract
         
         // $eform = $query->where( function( $eform ) );
 
-        Log::info($query);
+        \Log::info($query);
 
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
 
@@ -635,7 +636,7 @@ class EFormMonitoring extends Model implements AuditableContract
             }
         });
 
-        Log::info($eform);
+        \Log::info($eform);
 
         $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
@@ -669,8 +670,8 @@ class EFormMonitoring extends Model implements AuditableContract
             $eform->where('eforms.branch_id', $request->branch_id);
         }
         
-        Log::info($eform);
-        
+        \Log::info($eform);
+
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
             $sort[0] = 'created_at';
         }
