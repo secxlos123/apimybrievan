@@ -638,7 +638,7 @@ class EFormMonitoring extends Model implements AuditableContract
                 $eform->where('kpr.developer_id', $request->dev_id);
             } else if( $request->has('source') &&  $request->source!='-' ){
                 if($request->source=='nondev')
-                    $eform->where('kpr.developer_id is NULL');
+                    $eform->whereNull('kpr.developer_id');
                 else if($request->source=='rumah.com')
                     $eform->where('kpr.developer_id', 2706);
             }
