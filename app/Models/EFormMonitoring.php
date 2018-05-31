@@ -639,17 +639,17 @@ class EFormMonitoring extends Model implements AuditableContract
         $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
         if($request->product_type=='kpr'){
-            \Log::info(------- FILTERING KPR RESULT -------);
+            \Log::info("------- FILTERING KPR RESULT -------");
             if( $request->has('source') &&  $request->source!='-' && $request->source=='nondev' || $request->dev_id=='nondev'){
-                \Log::info(------- FILTERING NONDEV RESULT -------);
+                \Log::info("------- FILTERING NONDEV RESULT -------");
                 $eform->whereNull('kpr.developer_id');
             }
             else if( $request->has('source') &&  $request->source!='-' && $request->source=='rumah.com' || $request->dev_id=='rumah.com'){
-                \Log::info(------- FILTERING rumah.com RESULT -------);
+                \Log::info("------- FILTERING rumah.com RESULT -------");
                 $eform->where('kpr.developer_id', 2706);
             }
             else if( $request->has('source') &&  $request->source!='-' && $request->source=='dev' &&  $request->dev_id!='-'){
-                \Log::info(------- FILTERING DEV RESULT -------);
+                \Log::info("------- FILTERING DEV RESULT -------");
                 $eform->where('kpr.developer_id', $request->dev_id);
             }
 
