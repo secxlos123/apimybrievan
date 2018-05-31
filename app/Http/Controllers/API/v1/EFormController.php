@@ -212,6 +212,8 @@ class EFormController extends Controller
           $eform = $eform->toArray();
           $eform[0]['customer']['personal'] = $customer[0];
 			if($customer[0]['city_id']=='0' ||  $customer[0]['city_id']=='' ||  $customer[0]['city_id']==null){
+				$eform[0]['customer']['personal']['city']='';
+			}else{
 			$cityes = DB::table('cities')
 							 ->select('cities.name')
 							 ->where('cities.id', $customer[0]['city_id'])
