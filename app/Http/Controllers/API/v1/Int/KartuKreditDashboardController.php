@@ -23,9 +23,22 @@ class KartuKreditDashboardController extends Controller{
         $contents = [];
 
         $listKanwil = $this->getListKanwil();
-
+        // str_replace("11223344", "", "REGISTER 11223344 here");
         foreach ($listKanwil as $val) {
         	$newData = $data->where('kanwil',$val['region_id']);
+            $kanwilName = $newData['region_name'];
+            $kanwilName = trim($kanwilName);
+            $kanwilName = var_dump($kanwilName);
+            if (strpos($kanwilName, 'KANWIL') !== false) {
+                str_replace('KANWIL', '', $kanwilName);
+            }else if($newData['region_name']=='DKI'){
+                $newData['region_name'] = 'Jakarta 1';
+            }else if($newData['region_name']=='DKI2'){
+                $newData['region_name'] = 'Jakarta 2';
+            }else if($newData['region_name']=='KANWIL JAKARTA 3'){
+                $newData['region_name'] = 'Jakarta 3';
+            }
+
         	$ajukanLength =  $newData->where('kodeproses','1')->count();
 	        $verifikasiLength = $newData->where('kodeproses','3.1')->count();
 	        $analisaLength = $newData->where('kodeproses','6.1')->count();
