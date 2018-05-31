@@ -616,6 +616,10 @@ class EFormController extends Controller
                               $listKredit =  $getPefindo['contents']['contracts']['contractlist'];
                             }
                         }
+                    }else{
+                      return response()->json([
+                        'contents'=>$getPefindo
+                      ]);
                     }
                     \Log::info('=========== pefindo ==============');
                     \Log::info($listKredit);
