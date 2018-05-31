@@ -622,22 +622,22 @@ class EFormMonitoring extends Model implements AuditableContract
         
         // $eform = $query->where( function( $eform ) );
 
-        // $eform = $query->where( function( $eform ) use( $request, &$user ) {
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
 
-        //     // if( $request->has('product_type') &&  $request->product_type!='-') {
-        //     //     $eform->where('eforms.product_type', $request->product_type);
-        //     // }
+            if( $request->has('product_type') &&  $request->product_type!='-') {
+                $eform->where('eforms.product_type', $request->product_type);
+            }
             
-        //     // if( $request->has('branch_id')  &&  $request->branch_id!='-') {
-        //     //     $eform->where('eforms.branch_id', $request->branch_id);
-        //     // }
-        // });
+            if( $request->has('branch_id')  &&  $request->branch_id!='-') {
+                $eform->where('eforms.branch_id', $request->branch_id);
+            }
+        });
 
-        $eform = $query->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
+        $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
-        if( $request->has('product_type') &&  $request->product_type!='-') {
-            $eform->where('eforms.product_type', $request->product_type);
-        }
+        // if( $request->has('product_type') &&  $request->product_type!='-') {
+        //     $eform->where('eforms.product_type', $request->product_type);
+        // }
 
         if($request->product_type=='kpr'){
             if($request->source=='nondev' || $request->dev_id=='nondev'){
