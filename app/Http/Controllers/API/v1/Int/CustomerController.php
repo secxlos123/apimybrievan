@@ -142,7 +142,7 @@ class CustomerController extends Controller
 				$message = 'User dalam pengajuan';
 				$customer = Customer::findOrFail( $customerDetail->user_id );		
 			}
-			}catch(/Exception $e){
+			}catch(Exception $e){
 				$message = 'Sukses';
 				$customer = Customer::findOrFail( $customerDetail->user_id );
 			}
