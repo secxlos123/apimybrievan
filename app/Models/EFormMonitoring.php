@@ -622,16 +622,20 @@ class EFormMonitoring extends Model implements AuditableContract
         
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
 
-            if( $request->has('product_type') &&  $request->product_type!='-') {
-                $eform->where('eforms.product_type', $request->product_type);
-            }
+            // if( $request->has('product_type') &&  $request->product_type!='-') {
+            //     $eform->where('eforms.product_type', $request->product_type);
+            // }
             
-            if( $request->has('branch_id')  &&  $request->branch_id!='-') {
-                $eform->where('eforms.branch_id', $request->branch_id);
-            }
+            // if( $request->has('branch_id')  &&  $request->branch_id!='-') {
+            //     $eform->where('eforms.branch_id', $request->branch_id);
+            // }
         });
 
         $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
+
+        if( $request->has('product_type') &&  $request->product_type!='-') {
+            $eform->where('eforms.product_type', $request->product_type);
+        }
 
         if($request->product_type=='kpr'){
             if($request->has('dev_id') &&  $request->dev_id!='-' ) {
@@ -642,6 +646,10 @@ class EFormMonitoring extends Model implements AuditableContract
                 else if($request->source=='rumah.com')
                     $eform->where('kpr.developer_id', 2706);
             }
+        }
+        
+        if( $request->has('branch_id')  &&  $request->branch_id!='-') {
+            $eform->where('eforms.branch_id', $request->branch_id);
         }
         
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
