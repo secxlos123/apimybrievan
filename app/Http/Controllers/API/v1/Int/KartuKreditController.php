@@ -60,6 +60,7 @@ class KartuKreditController extends Controller{
         // // $kanwil = $this->getKanwilByBranchId($branchId);
         
         // return $createHistory;
+        
 
     }
 
@@ -68,7 +69,7 @@ class KartuKreditController extends Controller{
         $endDate = Carbon::parse($req->end)->endOfDay();
 
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
-
+        
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
         $analisaLength = $data->where('kodeproses','6.1')->count();
@@ -864,7 +865,8 @@ class KartuKreditController extends Controller{
         $pn = $req->pn;
         $apregno = $req->apregno;
         $branchId = $req->branch_id;
-        $hist = $kkh->createHistory($pn,$apregno,$branchId);
+        $ao_name = $req->ao_name;
+        $hist = $kkh->createHistory($pn,$apregno,$branchId,$ao_name);
 
         return response()->json([
             'responseCode' => '00',
