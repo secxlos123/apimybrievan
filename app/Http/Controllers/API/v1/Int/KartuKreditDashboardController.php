@@ -20,20 +20,32 @@ class KartuKreditDashboardController extends Controller{
 
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 
+        $contents = [];
+
         $listKanwil = $this->getListKanwil();
 
-        $func = function($val){
-        	$perRegion = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$val['region_id'])->get();
-        	return [
-        		'region_id'=>$content['region_id'],
-        		'region_name'=>$content['region_name'],
-        		'branch_id'=>$content['branch_id'],
-        		'data' => $perRegion
+        foreach ($listKanwil as $val) {
+        	$newData = $data->where('kanwil',$val['region_id']);
 
+        	$pushData = [
+        		'region_id'=>$newData['region_id'],
+         		'region_name'=>$content['region_name'],
+         		'branch_id'=>$content['branch_id'],
+         		'data' => $newData
         	];
+        	array_push($contents, $pushData);
         };
 
-        $dataList = array_map($func, $listKanwil);
+        // $func = function($val){
+        // 	$perRegion = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$val['region_id'])->get();
+        // 	return [
+        // 		'region_id'=>$content['region_id'],
+        // 		'region_name'=>$content['region_name'],
+        // 		'branch_id'=>$content['branch_id'],
+        // 		'data' => $perRegion
+
+        // 	];
+        // };
 
        	// foreach ($listKanwil as $kanwil) {
        	// 	// array_push($listKanwilArray, $kanwil['region_id']);
@@ -58,7 +70,7 @@ class KartuKreditDashboardController extends Controller{
             'analisaLength' =>$analisaLength,
             'approvedLength' => $approvedLength,
             'rejectedLength' => $rejectedLength,
-            'contents'=>$dataList
+            'contents'=>$contents
         ]);
 	}
 
