@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\API\v1\KreditRequest;
 use DB;
 use Carbon\Carbon;
+use RestwsHc;
 
 class KartuKreditDashboardController extends Controller{
 
