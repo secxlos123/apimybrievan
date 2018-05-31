@@ -622,22 +622,26 @@ class EFormMonitoring extends Model implements AuditableContract
         
         // $eform = $query->where( function( $eform ) );
 
-        // $eform = $query->where( function( $eform ) use( $request, &$user ) {
+        Log::info($query);
 
-        //     // if( $request->has('product_type') &&  $request->product_type!='-') {
-        //     //     $eform->where('eforms.product_type', $request->product_type);
-        //     // }
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+
+            if( $request->has('product_type') &&  $request->product_type!='-') {
+                $eform->where('eforms.product_type', $request->product_type);
+            }
             
-        //     // if( $request->has('branch_id')  &&  $request->branch_id!='-') {
-        //     //     $eform->where('eforms.branch_id', $request->branch_id);
-        //     // }
-        // });
+            if( $request->has('branch_id')  &&  $request->branch_id!='-') {
+                $eform->where('eforms.branch_id', $request->branch_id);
+            }
+        });
 
-        $eform = $query->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
+        Log::info($eform);
 
-        if( $request->has('product_type') &&  $request->product_type!='-') {
-            $eform->where('eforms.product_type', $request->product_type);
-        }
+        $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
+
+        // if( $request->has('product_type') &&  $request->product_type!='-') {
+        //     $eform->where('eforms.product_type', $request->product_type);
+        // }
 
         if($request->product_type=='kpr'){
             if($request->source=='nondev' || $request->dev_id=='nondev'){
@@ -664,6 +668,8 @@ class EFormMonitoring extends Model implements AuditableContract
         if( $request->has('branch_id') && $request->branch_id!=''  &&  $request->branch_id!='-') {
             $eform->where('eforms.branch_id', $request->branch_id);
         }
+        
+        Log::info($eform);
         
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
             $sort[0] = 'created_at';
