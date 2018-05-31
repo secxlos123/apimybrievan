@@ -518,8 +518,13 @@ class User extends Authenticatable implements AuditableContract, UserResolver
             ->where( function( $user ) use( $request ) {
 
                 if( $request->has( 'eform' )) {
-                    if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
-
+					if($request->has( 'product_type' )){
+						if($request->input('product_type')!='briguna'){
+							if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
+						}
+					}else{
+						if ($request->input('eform') == 'false') $user->whereRaw( 'e.id is null');
+					}
                 }
                 if ($request->has('name')) {
                     $user->whereRaw(
