@@ -354,6 +354,8 @@ class AccountController extends Controller
       $data['phone'] = $request['phone'];
       $data['address'] = $request['address'];
       $data['product_type'] = $request['product_type'];
+      $data['contact_time'] = $request['contact_time'];
+      $data['intention'] = $request['intention'];
       // $data['officer_ref'] = $request['officer_ref'];
       $data['status'] = $request['status'];
       $data['created_by'] = $pn;
