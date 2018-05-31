@@ -19,6 +19,7 @@ use Sentinel;
 use Asmx;
 use RestwsHc;
 use DB;
+use Illuminate\Support\Facades\Log;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -622,31 +623,33 @@ class EFormMonitoring extends Model implements AuditableContract
         
         // $eform = $query->where( function( $eform ) );
 
-        // $eform = $query->where( function( $eform ) use( $request, &$user ) {
+        \Log::info("------- FILTERING EFORMS RESULT -------");
 
-        //     // if( $request->has('product_type') &&  $request->product_type!='-') {
-        //     //     $eform->where('eforms.product_type', $request->product_type);
-        //     // }
+        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+
+            if( $request->has('product_type') &&  $request->product_type!='-') {
+                $eform->where('eforms.product_type', $request->product_type);
+            }
             
-        //     // if( $request->has('branch_id')  &&  $request->branch_id!='-') {
-        //     //     $eform->where('eforms.branch_id', $request->branch_id);
-        //     // }
-        // });
+            if( $request->has('branch_id')  &&  $request->branch_id!='-') {
+                $eform->where('eforms.branch_id', $request->branch_id);
+            }
+        });
 
-        $eform = $query->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
-
-        if( $request->has('product_type') &&  $request->product_type!='-') {
-            $eform->where('eforms.product_type', $request->product_type);
-        }
+        $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
         if($request->product_type=='kpr'){
-            if($request->source=='nondev' || $request->dev_id=='nondev'){
+            \Log::info("------- FILTERING KPR RESULT -------");
+            if( $request->has('source') &&  $request->source!='-' && $request->source=='nondev' || $request->dev_id=='nondev'){
+                \Log::info("------- FILTERING NONDEV RESULT -------");
                 $eform->whereNull('kpr.developer_id');
             }
-            else if($request->source=='rumah.com' || $request->dev_id=='rumah.com'){
+            else if( $request->has('source') &&  $request->source!='-' && $request->source=='rumah.com' || $request->dev_id=='rumah.com'){
+                \Log::info("------- FILTERING rumah.com RESULT -------");
                 $eform->where('kpr.developer_id', 2706);
             }
-            else if($request->source=='dev'){
+            else if( $request->has('source') &&  $request->source!='-' && $request->source=='dev' &&  $request->dev_id!='-'){
+                \Log::info("------- FILTERING DEV RESULT -------");
                 $eform->where('kpr.developer_id', $request->dev_id);
             }
 
@@ -665,6 +668,8 @@ class EFormMonitoring extends Model implements AuditableContract
             $eform->where('eforms.branch_id', $request->branch_id);
         }
         
+        \Log::info($eform);
+
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
             $sort[0] = 'created_at';
         }
