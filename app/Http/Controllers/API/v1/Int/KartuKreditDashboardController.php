@@ -23,7 +23,7 @@ class KartuKreditDashboardController extends Controller{
         $listKanwil = $this->getListKanwil();
 
         $dataList = array_map(function($content){
-        	$perRegion = $data->where('kanwil',$content['region_id']);
+        	$perRegion = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$content['region_id'])->get();
         	return [
         		'region_id'=>$content['region_id'],
         		'region_name'=>$content['region_name'],
