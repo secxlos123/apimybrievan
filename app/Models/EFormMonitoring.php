@@ -638,20 +638,24 @@ class EFormMonitoring extends Model implements AuditableContract
 
         $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
-        if($request->product_type=='kpr'){
+        if($request->product_type=='kpr' && $request->has('source') &&  $request->source!='-'){
             \Log::info("------- FILTERING KPR RESULT -------");
-            if( $request->has('source') &&  $request->source!='-' && $request->source=='nondev' || $request->dev_id=='nondev'){
+            if($request->source=='nondev' || $request->dev_id=='nondev'){
                 \Log::info("------- FILTERING NONDEV RESULT -------");
+                \Log::info($request->source.' '.$request->dev_id);
                 $eform->whereNull('kpr.developer_id');
             }
-            else if( $request->has('source') &&  $request->source!='-' && $request->source=='rumah.com' || $request->dev_id=='rumah.com'){
+            else if($request->source=='rumah.com' || $request->dev_id=='rumah.com'){
                 \Log::info("------- FILTERING rumah.com RESULT -------");
+                \Log::info($request->source.' '.$request->dev_id);
                 $eform->where('kpr.developer_id', 2706);
             }
-            else if( $request->has('source') &&  $request->source!='-' && $request->source=='dev' &&  $request->dev_id!='-'){
+            else if($request->source=='dev' &&  $request->dev_id!='-'){
                 \Log::info("------- FILTERING DEV RESULT -------");
+                \Log::info($request->source.' '.$request->dev_id);
                 $eform->where('kpr.developer_id', $request->dev_id);
             }
+        }
 
             // if( $request->has('source') &&  $request->source!='-' ){
             //     if($request->source=='nondev')
@@ -662,7 +666,6 @@ class EFormMonitoring extends Model implements AuditableContract
             // else if($request->has('dev_id') &&  $request->dev_id!='-') {
             //     $eform->where('kpr.developer_id', $request->dev_id);
             // }
-        }
 
         if( $request->has('branch_id') && $request->branch_id!=''  &&  $request->branch_id!='-') {
             $eform->where('eforms.branch_id', $request->branch_id);
