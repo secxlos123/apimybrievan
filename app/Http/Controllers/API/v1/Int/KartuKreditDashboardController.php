@@ -13,10 +13,33 @@ class KartuKreditDashboardController extends Controller{
 
 	public function index(KreditRequest $req){
 	    //select seluruh data cabang berdasarkan tanggal
+	    //response berdasarkan kanwil
 	    $startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
 
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        $listKanwil = $this->getListKanwil();
+
+        $dataList = array_map(function($content){
+        	$perRegion = $data->where('kanwil',$content['region_id']);
+        	return [
+        		'region_id'=>$content['region_id'],
+        		'region_name'=>$content['region_name'],
+        		'branch_id'=>$content['branch_id'],
+        		'data' => $perRegion
+
+        	];
+        }, $listKanwil);
+
+       	// foreach ($listKanwil as $kanwil) {
+       	// 	// array_push($listKanwilArray, $kanwil['region_id']);
+       	// 	$data = [
+       	// 	  'region_id' => $kanwil[ 'region' ],
+        //       'region_name' => $kanwil[ 'rgdesc' ],
+        //       'branch_id' => $kanwil['branch']
+        //   	]
+       	// }
 
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
@@ -32,15 +55,42 @@ class KartuKreditDashboardController extends Controller{
             'analisaLength' =>$analisaLength,
             'approvedLength' => $approvedLength,
             'rejectedLength' => $rejectedLength,
-            'contents'=>$data
+            'contents'=>$dataList
         ]);
+	}
+
+	function getListKanwil(){
+		$sendRequest['app_id'] = 'mybriapi';
+    	$list_kanwil = RestwsHc::setBody([
+            'request' => json_encode([
+                'requestMethod' => 'get_list_kanwil',
+                'requestData' => $sendRequest,
+            ])
+        ])
+        ->post( 'form_params' );
+
+        if ($list_kanwil['responseCode'] == '00' ) {
+	         $list_kanwil = array_map( function( $content ) {
+	          return [
+	              'region_id' => $content[ 'region' ],
+	              'region_name' => $content[ 'rgdesc' ],
+	              'branch_id' => $content[ 'branch' ]
+	          ];
+	      }, $list_kanwil['responseData']);
+	         return $list_kanwil;
+    	 }else{
+    	 	return response()->error([
+    	 		'responseCode'=>'01',
+    	 		'responseMessage'=>'terjadi kesalahan. gagal mendapatkan list kanwil'
+    	 	],422);
+    	 }
 	}
 
 	public function indexKanwil(Request $req){
 		$startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
         $region = $req->kanwil;
-        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$region)->get();
 
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
