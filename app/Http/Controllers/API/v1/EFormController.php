@@ -588,7 +588,7 @@ class EFormController extends Controller
                     // kk > 2
                     $nik = $baseRequest['nik'];
                     $nama = $baseRequest['nama'];
-                    $tglLahir = $baseRequest['tanggal_lahir'];
+                    $tglLahir = $baseRequest['ttl'];
                     $reason = 'cek jumlah penerbit kartu kredit nasabah';
                     try{
                       $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
@@ -609,6 +609,7 @@ class EFormController extends Controller
                         ],400);
                     }
 
+                    //tes pefindo
                     if($getPefindo["code"] == "200"){
                       if ( isset( $getPefindo['contents']['contracts'] ) ) {
                             if ( isset( $getPefindo['contents']['contracts']['contractlist'] ) ) {
@@ -618,6 +619,9 @@ class EFormController extends Controller
                     }
                     \Log::info('=========== pefindo ==============');
                     \Log::info($listKredit);
+                    return response()->json([
+                      'contents'=>$listKredit
+                    ]);
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
