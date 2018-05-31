@@ -26,16 +26,16 @@ class KartuKreditDashboardController extends Controller{
 
         foreach ($listKanwil as $val) {
         	$newData = $data->where('kanwil',$val['region_id']);
-        	$ajukanLength =  $data->where('kodeproses','1')->count();
-	        $verifikasiLength = $data->where('kodeproses','3.1')->count();
-	        $analisaLength = $data->where('kodeproses','6.1')->count();
-	        $approvedLength = $data->where('kodeproses','7.1')->count();
-	        $rejectedLength =  $data->where('kodeproses','8.1')->count();
+        	$ajukanLength =  $newData->where('kodeproses','1')->count();
+	        $verifikasiLength = $newData->where('kodeproses','3.1')->count();
+	        $analisaLength = $newData->where('kodeproses','6.1')->count();
+	        $approvedLength = $newData->where('kodeproses','7.1')->count();
+	        $rejectedLength =  $newData->where('kodeproses','8.1')->count();
         	$pushData = [
         		'region_id'=>$val['region_id'],
          		'region_name'=>$val['region_name'],
          		'branch_id'=>$val['branch_id'],
-         		'totalLength'=>$data->count(),
+         		'totalLength' => $newData->count(),
           		'ajukanLength'=>$ajukanLength,
 	            'verifikasiLength'=>$verifikasiLength,
 	            'analisaLength' =>$analisaLength,
@@ -45,9 +45,40 @@ class KartuKreditDashboardController extends Controller{
         	array_push($contents, $pushData);
         };
 
+        // $func = function($val){
+        // 	$perRegion = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$val['region_id'])->get();
+        // 	return [
+        // 		'region_id'=>$content['region_id'],
+        // 		'region_name'=>$content['region_name'],
+        // 		'branch_id'=>$content['branch_id'],
+        // 		'data' => $perRegion
+
+        // 	];
+        // };
+
+       	// foreach ($listKanwil as $kanwil) {
+       	// 	// array_push($listKanwilArray, $kanwil['region_id']);
+       	// 	$data = [
+       	// 	  'region_id' => $kanwil[ 'region' ],
+        //       'region_name' => $kanwil[ 'rgdesc' ],
+        //       'branch_id' => $kanwil['branch']
+        //   	]
+       	// }
+
+        $ajukanLength =  $data->where('kodeproses','1')->count();
+        $verifikasiLength = $data->where('kodeproses','3.1')->count();
+        $analisaLength = $data->where('kodeproses','6.1')->count();
+        $approvedLength = $data->where('kodeproses','7.1')->count();
+        $rejectedLength =  $data->where('kodeproses','8.1')->count();
         return response()->json([
             'responseCode'=>'00',
             'responseMessage'=>'sukses',
+            'totalLength'=>$data->count(),
+            'ajukanLength'=>$ajukanLength,
+            'verifikasiLength'=>$verifikasiLength,
+            'analisaLength' =>$analisaLength,
+            'approvedLength' => $approvedLength,
+            'rejectedLength' => $rejectedLength,
             'contents'=>$contents
         ]);
 	}
