@@ -20,22 +20,20 @@ class KartuKreditDashboardController extends Controller{
 
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 
-        $listMap['kanwil'] = $this->getListKanwil();
-        $listMap['sd'] = $startDate;
-        $listMap['ed'] = $endDate;
-        $listMap['query'] = $data;
+        $listKanwil = $this->getListKanwil();
 
-        $dataList = array_map(function($content){
-        	$perRegion = $content['query'];
-        	$perRegion = $perRegion->where('kanwil',$content['region_id']);
+        $func = function($val){
+        	$perRegion = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$val['region_id'])->get();
         	return [
-        		'region_id'=>$content['kanwil']['region_id'],
-        		'region_name'=>$content['kanwil']['region_name'],
-        		'branch_id'=>$content['kanwil']['branch_id'],
+        		'region_id'=>$content['region_id'],
+        		'region_name'=>$content['region_name'],
+        		'branch_id'=>$content['branch_id'],
         		'data' => $perRegion
 
         	];
-        }, $listMap);
+        };
+
+        $dataList = array_map($func, $listKanwil);
 
        	// foreach ($listKanwil as $kanwil) {
        	// 	// array_push($listKanwilArray, $kanwil['region_id']);
