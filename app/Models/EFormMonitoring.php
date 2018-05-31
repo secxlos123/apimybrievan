@@ -622,6 +622,8 @@ class EFormMonitoring extends Model implements AuditableContract
         
         // $eform = $query->where( function( $eform ) );
 
+        Log::info($query);
+
         $eform = $query->where( function( $eform ) use( $request, &$user ) {
 
             if( $request->has('product_type') &&  $request->product_type!='-') {
@@ -632,6 +634,8 @@ class EFormMonitoring extends Model implements AuditableContract
                 $eform->where('eforms.branch_id', $request->branch_id);
             }
         });
+
+        Log::info($eform);
 
         $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
@@ -664,6 +668,8 @@ class EFormMonitoring extends Model implements AuditableContract
         if( $request->has('branch_id') && $request->branch_id!=''  &&  $request->branch_id!='-') {
             $eform->where('eforms.branch_id', $request->branch_id);
         }
+        
+        Log::info($eform);
         
         if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
             $sort[0] = 'created_at';
