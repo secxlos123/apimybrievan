@@ -45,26 +45,6 @@ class KartuKreditDashboardController extends Controller{
         	array_push($contents, $pushData);
         };
 
-        // $func = function($val){
-        // 	$perRegion = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$val['region_id'])->get();
-        // 	return [
-        // 		'region_id'=>$content['region_id'],
-        // 		'region_name'=>$content['region_name'],
-        // 		'branch_id'=>$content['branch_id'],
-        // 		'data' => $perRegion
-
-        // 	];
-        // };
-
-       	// foreach ($listKanwil as $kanwil) {
-       	// 	// array_push($listKanwilArray, $kanwil['region_id']);
-       	// 	$data = [
-       	// 	  'region_id' => $kanwil[ 'region' ],
-        //       'region_name' => $kanwil[ 'rgdesc' ],
-        //       'branch_id' => $kanwil['branch']
-        //   	]
-       	// }
-
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
         $analisaLength = $data->where('kodeproses','6.1')->count();
