@@ -377,10 +377,10 @@ class AccountController extends Controller
       switch ($data['intention'])
       {
           case("0"):
-            $data['intention']="sendiri";
+            $data['intention']="Sendiri";
             break;
           case("1"):
-            $data['intention']="keluarga/Lainnya";
+            $data['intention']="Keluarga/Lainnya";
             break;
       }
 
