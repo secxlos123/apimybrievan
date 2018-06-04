@@ -34,6 +34,7 @@ class PrescreeningController extends Controller
      */
     public function show( Request $request )
     {
+        \Log::info("=====KESINI Prescreening SHOW=====");
         $user_login = \RestwsHc::getUser();
 
         $data = EForm::findOrFail($request->eform);
@@ -82,6 +83,7 @@ class PrescreeningController extends Controller
      */
     public function store( Request $request )
     {
+        \Log::info("=====KESINI Prescreening STORE=====");
         $eform = EForm::findOrFail( $request->input('eform') );
 
         foreach ( array( 'sicd', 'dhn' ) as $key) {
@@ -140,6 +142,7 @@ class PrescreeningController extends Controller
 
         if ( $request->has('select_individual_pefindo') || $request->has('select_couple_pefindo') ) {
             if ( ENV('DELAY_PRESCREENING', false) ) {
+                \Log::info("============DELAY Prescreening=======");
                 $waiting = true;
                 $message = 'Prescreening sudah pernah di lakukan';
 
@@ -150,6 +153,7 @@ class PrescreeningController extends Controller
                 }
 
             } else {
+                \Log::info("===break_pefindo function===");
                 $returnData = break_pefindo( $eform, $request );
 
             }
@@ -194,12 +198,21 @@ class PrescreeningController extends Controller
             set_action_date($eform->id, 'eform-prescreening-update');
 
         }
-
+        \Log::info("========update data===============");
+        \Log::info($updateData);
+     
         $eform->update( $updateData );
 
         if ( !$waiting ) {
             $detail = $eform;
+            \Log::info("=============gagal or NOt PDF===============");
+            \Log::info($detail->customer->personal['name']);
+            try {
             generate_pdf('uploads/'. $detail->nik, $detail->ref_number.'-prescreening.pdf', view('pdf.prescreening', compact('detail')));
+                
+            } catch (Exception $e) {
+                $message ="Gagal Proses dan Generate Pdf prescreening E-Form ";
+            }
         }
 
         // auto approve for VIP
@@ -325,6 +338,8 @@ class PrescreeningController extends Controller
         $personal = $eform->customer->personal;
 
         $pefindo = get_pefindo_service( $eform, 'search', false, null );
+        \Log::info("===PRFINDO COUNT===".count($pefindo));
+        
         $pefindoCouple = array();
 
         try {
