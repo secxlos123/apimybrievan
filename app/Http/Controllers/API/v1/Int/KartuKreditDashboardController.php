@@ -23,22 +23,9 @@ class KartuKreditDashboardController extends Controller{
         $contents = [];
 
         $listKanwil = $this->getListKanwil();
-        // str_replace("11223344", "", "REGISTER 11223344 here");
+
         foreach ($listKanwil as $val) {
         	$newData = $data->where('kanwil',$val['region_id']);
-            $kanwilName = $newData['region_name'];
-            $kanwilName = trim($kanwilName);
-            $kanwilName = var_dump($kanwilName);
-            if (strpos($kanwilName, 'KANWIL') !== false) {
-                str_replace('KANWIL', '', $kanwilName);
-            }else if($newData['region_name']=='DKI'){
-                $newData['region_name'] = 'Jakarta 1';
-            }else if($newData['region_name']=='DKI2'){
-                $newData['region_name'] = 'Jakarta 2';
-            }else if($newData['region_name']=='KANWIL JAKARTA 3'){
-                $newData['region_name'] = 'Jakarta 3';
-            }
-
         	$ajukanLength =  $newData->where('kodeproses','1')->count();
 	        $verifikasiLength = $newData->where('kodeproses','3.1')->count();
 	        $analisaLength = $newData->where('kodeproses','6.1')->count();
@@ -46,7 +33,7 @@ class KartuKreditDashboardController extends Controller{
 	        $rejectedLength =  $newData->where('kodeproses','8.1')->count();
         	$pushData = [
         		'region_id'=>$val['region_id'],
-         		'region_name'=>$val['region_name'],
+         		// 'region_name'=>$val['region_name'], // erors
          		'branch_id'=>$val['branch_id'],
          		'totalLength' => $newData->count(),
           		'ajukanLength'=>$ajukanLength,
@@ -123,6 +110,7 @@ class KartuKreditDashboardController extends Controller{
             'analisaLength' =>$analisaLength,
             'approvedLength' => $approvedLength,
             'rejectedLength' => $rejectedLength,
+            //balikin list perkanca
             'contents'=>$data
         ]);
 	}
