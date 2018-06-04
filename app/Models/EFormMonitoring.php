@@ -624,34 +624,55 @@ class EFormMonitoring extends Model implements AuditableContract
         // $eform = $query->where( function( $eform ) );
 
         \Log::info("------- FILTERING EFORMS RESULT -------");
+        \Log::info(print_r($request->source,true).' '.print_r($request->dev_id,true));
 
-        $eform = $query->where( function( $eform ) use( $request, &$user ) {
+        $eform = $query->from('eforms')->join('kpr', 'kpr.eform_id', '=', 'eforms.id')
+            ->where( function( $eform ) use( $request ) {
+                if( $request->has('product_type') &&  $request->product_type!='-') {
+                    \Log::info("------- FILTERING PRODUCT TYPE RESULT -------");
+                    $eform->where('eforms.product_type', $request->product_type);
+                }
 
-            if( $request->has('product_type') &&  $request->product_type!='-') {
-                $eform->where('eforms.product_type', $request->product_type);
-            }
-            
-            if( $request->has('branch_id')  &&  $request->branch_id!='-') {
-                $eform->where('eforms.branch_id', $request->branch_id);
-            }
-        });
+                if( $request->product_type=='kpr' && $request->has('source') &&  $request->source!='-') {
+                    \Log::info("------- FILTERING SOURCE RESULT -------");
+                    if($request->source=='nondev' || $request->dev_id=='nondev'){
+                        \Log::info("------- FILTERING NONDEV RESULT -------");
+                        $eform->whereNull('kpr.developer_id');
+                    }
+                    else if($request->source=='rumah.com' || $request->dev_id=='rumah.com'){
+                        \Log::info("------- FILTERING rumah.com RESULT -------");
+                        $eform->where('kpr.developer_id', 2706);
+                    }
+                    else if($request->source=='dev' &&  $request->dev_id!='-'){
+                        \Log::info("------- FILTERING DEV RESULT -------");
+                        $eform->where('kpr.developer_id', $request->dev_id);
+                    }
+                }
+                if( $request->has('branch_id') &&  $request->branch_id!='-') {
+                    $eform->where('eforms.branch_id', $request->branch_id);
+                }
+            })
+            ->orderBy('created_at', 'asc');
 
-        $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
+        // $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
-        if($request->product_type=='kpr'){
-            \Log::info("------- FILTERING KPR RESULT -------");
-            if( $request->has('source') &&  $request->source!='-' && $request->source=='nondev' || $request->dev_id=='nondev'){
-                \Log::info("------- FILTERING NONDEV RESULT -------");
-                $eform->whereNull('kpr.developer_id');
-            }
-            else if( $request->has('source') &&  $request->source!='-' && $request->source=='rumah.com' || $request->dev_id=='rumah.com'){
-                \Log::info("------- FILTERING rumah.com RESULT -------");
-                $eform->where('kpr.developer_id', 2706);
-            }
-            else if( $request->has('source') &&  $request->source!='-' && $request->source=='dev' &&  $request->dev_id!='-'){
-                \Log::info("------- FILTERING DEV RESULT -------");
-                $eform->where('kpr.developer_id', $request->dev_id);
-            }
+        // if($request->product_type=='kpr' && $request->has('source') &&  $request->source!='-'){
+        //     \Log::info("------- FILTERING KPR RESULT -------");
+        //     \Log::info(print_r($request->source,true).' '.print_r($request->dev_id,true));
+
+        //     if($request->source=='nondev' || $request->dev_id=='nondev'){
+        //         \Log::info("------- FILTERING NONDEV RESULT -------");
+        //         $eform->whereNull('kpr.developer_id');
+        //     }
+        //     else if($request->source=='rumah.com' || $request->dev_id=='rumah.com'){
+        //         \Log::info("------- FILTERING rumah.com RESULT -------");
+        //         $eform->where('kpr.developer_id', 2706);
+        //     }
+        //     else if($request->source=='dev' &&  $request->dev_id!='-'){
+        //         \Log::info("------- FILTERING DEV RESULT -------");
+        //         $eform->where('kpr.developer_id', $request->dev_id);
+        //     }
+        // }
 
             // if( $request->has('source') &&  $request->source!='-' ){
             //     if($request->source=='nondev')
@@ -662,19 +683,16 @@ class EFormMonitoring extends Model implements AuditableContract
             // else if($request->has('dev_id') &&  $request->dev_id!='-') {
             //     $eform->where('kpr.developer_id', $request->dev_id);
             // }
-        }
 
-        if( $request->has('branch_id') && $request->branch_id!=''  &&  $request->branch_id!='-') {
-            $eform->where('eforms.branch_id', $request->branch_id);
-        }
+        // if( $request->has('branch_id') && $request->branch_id!=''  &&  $request->branch_id!='-') {
+        //     $eform->where('eforms.branch_id', $request->branch_id);
+        // }
         
-        \Log::info($eform);
+        // if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
+        //     $sort[0] = 'created_at';
+        // }
 
-        if ( $sort[0] == "ref_number" || $sort[0] == "action" || $sort[0] == "aging" ) {
-            $sort[0] = 'created_at';
-        }
-
-        $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
+        // $eform = $eform->orderBy('eforms.'.$sort[0], $sort[1]);
 
         return $eform;
     }

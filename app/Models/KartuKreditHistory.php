@@ -9,7 +9,7 @@ class KartuKreditHistory extends Model
 {
     protected $table = 'kartu_kredit_histories';
 
-    protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca'];
+    protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca','ao_name'];
 
     protected $appends = ['deskripsi_proses'];
 
@@ -32,13 +32,14 @@ class KartuKreditHistory extends Model
     	}
     }
 
-    public function createHistory($pn,$apregno,$branchId){
+    public function createHistory($pn,$apregno,$branchId,$ao_name){
         $kanwil = $this->getKanwilByBranchId($branchId);
         $data['apregno'] = $apregno;
         $data['kodeproses'] = '1';
         $data['kanwil'] = $kanwil;
         $data['kanca'] = $branchId;
         $data['pn'] = $pn;
+        $data['ao_name'] = $ao_name;
 
         $createHistory = $this->create($data);
         return $createHistory;

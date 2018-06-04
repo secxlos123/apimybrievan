@@ -212,6 +212,8 @@ class EFormController extends Controller
           $eform = $eform->toArray();
           $eform[0]['customer']['personal'] = $customer[0];
 			if($customer[0]['city_id']=='0' ||  $customer[0]['city_id']=='' ||  $customer[0]['city_id']==null){
+				$eform[0]['customer']['personal']['city']='';
+			}else{
 			$cityes = DB::table('cities')
 							 ->select('cities.name')
 							 ->where('cities.id', $customer[0]['city_id'])
@@ -582,6 +584,48 @@ class EFormController extends Controller
                         'kk_details'=>'{"range_limit":"'.$rangeLimit.'","is_analyzed":"false"}'
                     ]);
 
+                    //cek pefindo. kalau gaji <=10jt gaboleh lebih punya
+                    // kk > 2
+                    $nik = $baseRequest['nik'];
+                    $nama = $baseRequest['nama'];
+                    $tglLahir = $baseRequest['ttl'];
+                    $reason = 'cek jumlah penerbit kartu kredit nasabah';
+                    try{
+                      $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
+                      ->setBody([
+                          'Request' => json_encode( array(
+                              'nomer_id_pefindo' => $nik
+                              , 'nama_pefindo' => $nama
+                              , 'tanggal_lahir_pefindo' => $tglLahir
+                              , 'alasan_pefindo' => $reason
+                          ) )
+                      ])
+                      ->post( 'form_params' );
+                    }catch (RequestException $e){
+                      DB::rollback();
+                        return response()->error([
+                            'responseCode'=>'01',
+                            'responseMessage'=> $e->getMessage()
+                        ],400);
+                    }
+
+                    //tes pefindo
+                    if($getPefindo["code"] == "200"){
+                      if ( isset( $getPefindo['contents']['contracts'] ) ) {
+                            if ( isset( $getPefindo['contents']['contracts']['contractlist'] ) ) {
+                              $listKredit =  $getPefindo['contents']['contracts']['contractlist'];
+                            }
+                        }
+                    }else{
+                      return response()->json([
+                        'contents'=>$getPefindo
+                      ]);
+                    }
+                    \Log::info('=========== pefindo ==============');
+                    \Log::info($listKredit);
+                    return response()->json([
+                      'contents'=>$listKredit
+                    ]);
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
