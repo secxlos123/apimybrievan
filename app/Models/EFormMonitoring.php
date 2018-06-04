@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\UserNotification;
 use App\Models\Developer;
+use App\Models\UserDevelopers;
 use App\Models\PropertyItem;
 use App\Models\Collateral;
 use App\Models\Appointment;
@@ -641,7 +642,9 @@ class EFormMonitoring extends Model implements AuditableContract
                     }
                     else if($request->source=='rumah.com' || $request->dev_id=='rumah.com'){
                         \Log::info("------- FILTERING rumah.com RESULT -------");
-                        $eform->where('kpr.developer_id', 2706);
+                        //$eform->where('kpr.developer_id', 2706);
+			$agen = UserDeveloper::select('user_id')->where('admin_developer_id',2706);
+			$eform->whereIn('sales_dev_id',$agen);
                     }
                     else if($request->source=='dev' &&  $request->dev_id!='-'){
                         \Log::info("------- FILTERING DEV RESULT -------");
