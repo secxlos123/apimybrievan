@@ -355,18 +355,36 @@ class AccountController extends Controller
       $data['address'] = $request['address'];
       $data['product_type'] = $request['product_type'];
 
-      //switch 
-      //    case(1):$data['contact_time']="pagi";
-      //    case(2):$data['contact_time']="siang";
-      //    case(3):$data['contact_time']="sore";
-      //    case(4):$data['contact_time']="malam";
+      $data['contact_time']=$request['contact_time'];
+      $data['intention']=$request['intention'];
+      
+      switch ($data['contact_time'])
+      {
+          case("1"):
+            $data['contact_time']="Pagi (08.00 - 11.00)";
+            break;
+          case("2"):
+            $data['contact_time']="Siang (12.00 - 15.00)";
+            break;
+          case("3"):
+            $data['contact_time']="Sore (15.00 - 18.00)";
+            break;
+          case("4"):
+            $data['contact_time']="Malam (18.00 - 21.00)";
+            break;
+      }
 
-      //switch 
-      //    case(0):$data['intention']="sendiri";
-      //    case(1):$data['intention']="keluarga/other";
+      switch ($data['intention'])
+      {
+          case("0"):
+            $data['intention']="sendiri";
+            break;
+          case("1"):
+            $data['intention']="keluarga/Lainnya";
+            break;
+      }
 
-      $data['contact_time'] = $request['contact_time'];
-      $data['intention'] = $request['intention'];
+      
       // $data['officer_ref'] = $request['officer_ref'];
       $data['status'] = $request['status'];
       $data['created_by'] = $pn;
