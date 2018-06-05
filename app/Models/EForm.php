@@ -1960,7 +1960,11 @@ class EForm extends Model implements AuditableContract
     }
 
     public function deleteOnClas($fid_aplikasi, $status){
-        if($status == 0){
+        $target = static::where(
+                DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                , $fid_aplikasi
+            )->first();
+        if($target){
 
             if ( ENV('APP_ENV') == 'local' ) {
                 $deleteOnClass = array (
@@ -1999,6 +2003,12 @@ class EForm extends Model implements AuditableContract
             }
             return $return;
 
+        }else{
+            $return = array(
+                        'status' => false
+                        , 'message' => null
+                    );
+            return $return;
         }
     }
 
