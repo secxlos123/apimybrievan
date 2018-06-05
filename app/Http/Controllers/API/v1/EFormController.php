@@ -586,46 +586,46 @@ class EFormController extends Controller
 
                     //cek pefindo. kalau gaji <=10jt gaboleh lebih punya
                     // kk > 2
-                    $nik = $baseRequest['nik'];
-                    $nama = $baseRequest['nama'];
-                    $tglLahir = $baseRequest['ttl'];
-                    $reason = 'cek jumlah penerbit kartu kredit nasabah';
-                    try{
-                      $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
-                      ->setBody([
-                          'Request' => json_encode( array(
-                              'nomer_id_pefindo' => $nik
-                              , 'nama_pefindo' => $nama
-                              , 'tanggal_lahir_pefindo' => $tglLahir
-                              , 'alasan_pefindo' => $reason
-                          ) )
-                      ])
-                      ->post( 'form_params' );
-                    }catch (RequestException $e){
-                      DB::rollback();
-                        return response()->error([
-                            'responseCode'=>'01',
-                            'responseMessage'=> $e->getMessage()
-                        ],400);
-                    }
+                   // $nik = $baseRequest['nik'];
+                   // $nama = $baseRequest['nama'];
+                   // $tglLahir = $baseRequest['ttl'];
+                   // $reason = 'cek jumlah penerbit kartu kredit nasabah';
+                   // try{
+                   //   $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
+                   //  ->setBody([
+                   //       'Request' => json_encode( array(
+                   //           'nomer_id_pefindo' => $nik
+                   //           , 'nama_pefindo' => $nama
+                   //           , 'tanggal_lahir_pefindo' => $tglLahir
+                   //           , 'alasan_pefindo' => $reason
+                   //       ) )
+                   //   ])
+                   //   ->post( 'form_params' );
+                   // }catch (RequestException $e){
+                   //   DB::rollback();
+                   //     return response()->error([
+                   //         'responseCode'=>'01',
+                   //         'responseMessage'=> $e->getMessage()
+                   //     ],400);
+                   // }
 
                     //tes pefindo
-                    if($getPefindo["code"] == "200"){
-                      if ( isset( $getPefindo['contents']['contracts'] ) ) {
-                            if ( isset( $getPefindo['contents']['contracts']['contractlist'] ) ) {
-                              $listKredit =  $getPefindo['contents']['contracts']['contractlist'];
-                            }
-                        }
-                    }else{
-                      return response()->json([
-                        'contents'=>$getPefindo
-                      ]);
-                    }
-                    \Log::info('=========== pefindo ==============');
-                    \Log::info($listKredit);
-                    return response()->json([
-                      'contents'=>$listKredit
-                    ]);
+                   // if($getPefindo["code"] == "200"){
+                   //   if ( isset( $getPefindo['contents']['contracts'] ) ) {
+                   //         if ( isset( $getPefindo['contents']['contracts']['contractlist'] ) ) {
+                   //           $listKredit =  $getPefindo['contents']['contracts']['contractlist'];
+                   //         }
+                   //     }
+                   // }else{
+                   //   return response()->json([
+                   //    'contents'=>$getPefindo
+                   //   ]);
+                   // }
+                   // \Log::info('=========== pefindo ==============');
+                   // \Log::info($listKredit);
+                    //return response()->json([
+                     // 'contents'=>$listKredit
+                   // ]);
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
@@ -1616,6 +1616,50 @@ class EFormController extends Controller
             'message' => $message,
             'contents' => $eform
         ], 201 );
+    }
+
+    /**
+     * Remove the specified resource from storage CLAS BRI.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @author rangga darmajati (rangga.darmajati@wgs.co.id)
+     */
+    public function deleteOnCLAS(Request $request){
+      DB::beginTransaction();
+      try {
+        if($request->has('fid_aplikasi') && $request->has('status')){
+            $fid_aplikasi = $request->input('fid_aplikasi');
+            $status = $request->input('status');
+            $deleteOnCLAS = Eform::deleteOnClas($fid_aplikasi, $status);
+            $message = 'Hapus Pengajuan di MYBRI dan CLAS Berhasil';
+            if($deleteOnCLAS['status']){
+              $eform = Eform::where('ref_number', $fid_aplikasi)->first();
+              User::destroy($eform->user_id);
+              DB::commit();
+              return response()->success( [
+                'message' => $message,
+                'contents' => null
+              ], 200 );
+            }else{
+              DB::rollback();
+              return response()->success( [
+                'message' => "Hapus Pengajuan gagal di lakukan!",
+                'contents' => null
+              ], 422 );
+            }
+        }
+      } catch (Exception $e) {
+        \Log::info("===ERROR DELETE ON CLAS SYSTEM===");
+        \Log::info($e->getMessage());
+          DB::rollback();
+              return response()->success( [
+                'message' => "Hapus Pengajuan gagal di lakukan!",
+                'contents' => null
+              ], 422 );
+      }
+    
+
     }
 
 }

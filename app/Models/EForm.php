@@ -1958,4 +1958,48 @@ class EForm extends Model implements AuditableContract
 
         return $data;
     }
+
+    public function deleteOnClas($fid_aplikasi, $status){
+        if($status == 0){
+
+            if ( ENV('APP_ENV') == 'local' ) {
+                $deleteOnClass = array (
+                'code' => '200',
+                'descriptions' => 'Success',
+                'contents' => $this->ref_number
+                );
+
+                $return = array(
+                    'status' => true
+                    , 'message' => isset($deleteOnClass[ 'contents' ]) ? $deleteOnClass[ 'contents' ] : ''
+                );
+
+            } else {
+                try {
+                    $deleteOnClass = Asmx::setEndpoint('UpdateStatusByAplikasi')
+                    ->setBody( [
+                        'Request' => json_encode( array(
+                            'fid_aplikasi' => $fid_aplikasi
+                            ,'status' => $status
+                        ) )
+                    ] )
+                    ->post( 'form_params' );
+
+                    $return = array(
+                        'status' => true
+                        , 'message' => isset($deleteOnClass[ 'contents' ]) ? $deleteOnClass[ 'contents' ] : ''
+                    );    
+                } catch (Exception $e) {
+                    $return = array(
+                        'status' => false
+                        , 'message' => null
+                    );
+                }
+                
+            }
+            return $return;
+
+        }
+    }
+
 }

@@ -109,6 +109,8 @@ class PrescreeningController extends Controller
         }
 
         set_action_date($eform->id, 'eform-prescreening');
+\Log::info("============CEK LOG PREESCREENING=======");
+\Log::info($eform->pefindo_detail);
 
         return response()->success( [
             'message' => 'Data Store Screening e-form',
@@ -199,6 +201,10 @@ class PrescreeningController extends Controller
 
         }
         \Log::info("========update data===============");
+\Log::info("============GENERATE PDF CEK BEDA OR SAMA=======");
+\Log::info($eform);
+
+
         \Log::info($updateData);
      
         $eform->update( $updateData );
