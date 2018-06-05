@@ -33,7 +33,7 @@ class KartuKreditDashboardController extends Controller{
 	        $rejectedLength =  $newData->where('kodeproses','8.1')->count();
         	$pushData = [
         		'region_id'=>$val['region_id'],
-         		// 'region_name'=>$val['region_name'], // erors
+         		'region_name'=>$verifikasiLength['region_name'], // erors
          		'branch_id'=>$val['branch_id'],
          		'totalLength' => $newData->count(),
           		'ajukanLength'=>$ajukanLength,
