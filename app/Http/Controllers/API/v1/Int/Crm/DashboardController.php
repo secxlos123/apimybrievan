@@ -35,27 +35,33 @@ class DashboardController extends Controller
       $data['product_type'] = ProductType::all();
       $data['activity_type'] = ActivityType::all();
       // $data['status'] = Status::all();
-      foreach (Status::all() as $status) {
-          $data['status'][]=[
-            'id'=> $status->id,
-            'status_name'=>$status->status_name
-          ];
+
+      foreach (Status::all() as $status) 
+      {
+        $data['status'][]=[
+                             'id'=> $status->id,
+                             'status_name'=>$status->status_name
+                          ];
       }
+
       $additional =[
-        'id'=>0,
-        'status_name'=>'All'
-      ];
-      if (isset($data['status'])) {
+                      'id'=>0,
+                      'status_name'=>'All'
+                   ];
+
+      if (isset($data['status'])) 
+      {
         array_push($data['status'],$additional);
       }
+
       // return $data['status'];
       $data['object_activity'] = ObjectActivity::all();
       $data['action_activity'] = ActionActivity::all();
 
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $data
-          ]);
+      return response()->success([
+                                    'message' => 'Sukses',
+                                    'contents' => $data
+                                 ]);
     }
 
     /**
@@ -131,37 +137,40 @@ class DashboardController extends Controller
     public function pemasar(Request $request)
     {
       $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->post('form_params');
+                                      'request' => json_encode([
+                                                                  'requestMethod' => 'get_list_tenaga_pemasar',
+                                                                  'requestData' => [
+                                                                                      'id_user' => $request->header('pn'),
+                                                                                      'kode_branch' => $request->header('branch')
+                                                                                   ],
+                                                               ])
+                                   ])->post('form_params');
 
       $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->post('form_params');
+                                      'request' => json_encode([
+                                                                  'requestMethod' => 'get_list_fo',
+                                                                  'requestData' => [
+                                                                                      'id_user' => $request->header('pn'),
+                                                                                      'kode_branch' => $request->header('branch')
+                                                                                   ],
+                                                               ])
+                                  ])->post('form_params');
 
       $ao = $list_ao['responseData'];
       $fo = $list_fo['responseData'];
 
-      if ($ao != null && $fo != null) {
+      if ($ao != null && $fo != null) 
+      {
         $result = array_merge_recursive($fo,$ao);
-      } else {
+      } 
+      else 
+      {
         $result = [];
       }
 
       return response()->success([
-        'contents' => $result
-      ]);
+                                    'contents' => $result
+                                 ]);
     }
 
     public function kinerja_pemasar(Request $request)
