@@ -69,7 +69,7 @@ class KreditRequest extends BaseRequest{
 						'PersonalNamaGadisKandung'=>'required',
 						'PersonalNoHP'=>'required',
 						'PersonalNoTlpRumah'=>'required',
-						'PersonalEmail'=>'required|unique:users,email',
+						'PersonalEmail'=>'required',
 						'JobBidangUsaha'=>'required',
 						'JobKategoriPekerjaan'=>'required',
 						'JobStatusPekerjaan'=>'required',
