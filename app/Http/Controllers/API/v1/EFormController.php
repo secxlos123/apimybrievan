@@ -1618,4 +1618,48 @@ class EFormController extends Controller
         ], 201 );
     }
 
+    /**
+     * Remove the specified resource from storage CLAS BRI.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @author rangga darmajati (rangga.darmajati@wgs.co.id)
+     */
+    public function deleteOnCLAS(Request $request){
+      DB::beginTransaction();
+      try {
+        if($request->has('fid_aplikasi') && $request->has('status')){
+            $fid_aplikasi = $request->input('fid_aplikasi');
+            $status = $request->input('status');
+            $deleteOnCLAS = Eform::deleteOnClas($fid_aplikasi, $status);
+            $message = 'Hapus Pengajuan di MYBRI dan CLAS Berhasil';
+            if($deleteOnCLAS['status']){
+              $eform = Eform::where('ref_number', $fid_aplikasi)->first();
+              User::destroy($eform->user_id);
+              DB::commit();
+              return response()->success( [
+                'message' => $message,
+                'contents' => null
+              ], 200 );
+            }else{
+              DB::rollback();
+              return response()->success( [
+                'message' => "Hapus Pengajuan gagal di lakukan!",
+                'contents' => null
+              ], 422 );
+            }
+        }
+      } catch (Exception $e) {
+        \Log::info("===ERROR DELETE ON CLAS SYSTEM===");
+        \Log::info($e->getMessage());
+          DB::rollback();
+              return response()->success( [
+                'message' => "Hapus Pengajuan gagal di lakukan!",
+                'contents' => null
+              ], 422 );
+      }
+    
+
+    }
+
 }

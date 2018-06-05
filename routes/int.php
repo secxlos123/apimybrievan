@@ -341,4 +341,9 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1' ], function () {
 	//this route for generatepdf
 	Route::get('genaratePDF', 'EFormController@eformGenerate');
 
+	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
+		//this route for delete Eform on MYBRI and CLAS
+		Route::post('eforms_delete', 'EFormController@deleteOnCLAS');
+	});
+
 });
