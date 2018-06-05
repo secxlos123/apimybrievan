@@ -133,9 +133,11 @@ class CustomerController extends Controller
 					 ->select('IsFinish')
 					 ->where('eforms.user_id', $customerDetail->user_id)
 					 ->get();
+            \Log::info("===========IS FINISH=====");         
+            \Log::info($eform);
 			$eform = $eform->toArray();
 			$eform = json_decode(json_encode($eform), True);
-			if($eform[0]['IsFinish']=='true'){
+			if(isset($eform[0]['IsFinish']) =='true' ){
 				$message = 'Sukses';
 				$customer = Customer::findOrFail( $customerDetail->user_id );
 			}else{

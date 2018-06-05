@@ -254,3 +254,5 @@ Route::get('/generate_pdf_rekontes/{ref_number}', function ($ref_number) {
 
 Route::get('files/{file}', 'ImagesController@show');
 Route::post('files/{file}', 'ImagesController@show');
+Route::get('clear/{company_name}', 'ImagesController@DeleteDeveloperDummy');
+Route::get('show/{company_name}', 'ImagesController@ShowDeveloperDummy');
