@@ -137,4 +137,8 @@ class KartuKreditDashboardController extends Controller{
 	    	'contents'=>$data
 	    ]);
 	}
+
+    public function testCommit(){
+
+    }
 }
