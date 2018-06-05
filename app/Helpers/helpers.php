@@ -151,6 +151,8 @@ if (! function_exists('get_pefindo_service')) {
                     ];
 
                 } else {
+                    \Log::info("===ENDPOINT PefindoReportData Or GetPdfReport : ".$endpoint);
+                    \Log::info("===Pefindo ID : ".$pefindoId);
                     $getPefindo = \Asmx::setEndpoint( $endpoint )
                         ->setBody([
                             'Request' => json_encode( array(
@@ -212,10 +214,11 @@ if (! function_exists('get_pefindo_service')) {
                                     );
 
                                     \File::delete( $basePath . '/report.pdf' );
-
+                                    \Log::info("====SUccess Extract Data Pefindo From Service====");
                                     return $filename;
 
                                 } catch (Exception $e) {
+                                    \Log::info("====Gagal Generate Pdf ====");
                                     return "Gagal generate PDF";
 
                                 }
