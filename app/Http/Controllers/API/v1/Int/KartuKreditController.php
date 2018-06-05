@@ -69,7 +69,7 @@ class KartuKreditController extends Controller{
         $endDate = Carbon::parse($req->end)->endOfDay();
 
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
-        
+            
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
         $analisaLength = $data->where('kodeproses','6.1')->count();
