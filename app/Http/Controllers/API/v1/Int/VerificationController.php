@@ -155,32 +155,32 @@ class VerificationController extends Controller
         
         try {
 
-            // $data = RestwsHc::setBody([
-            //     'request' => json_encode([
-            //         'requestMethod' => 'get_kemendagri_profile_nik',
-            //         'requestData' => [
-            //             'nik'     => $nik
-            //             , 'id_user' => $pn
-            //         ],
-            //     ])
-            // ])->post( 'form_params' );
+            $data = RestwsHc::setBody([
+                'request' => json_encode([
+                    'requestMethod' => 'get_kemendagri_profile_nik',
+                    'requestData' => [
+                        'nik'     => $nik
+                        , 'id_user' => $pn
+                    ],
+                ])
+            ])->post( 'form_params' );
 
-            $client = new Client();
-            $host = config('restapi.restwshc');
+            // $client = new Client();
+            // $host = config('restapi.restwshc');
             
-            \Log::info("=====HOST GET KEMENDAGRI :");
-            \Log::info($host);
+            // \Log::info("=====HOST GET KEMENDAGRI :");
+            // \Log::info($host);
             
-            $res = $client->request('POST', $host.'get_kemendagri_profile_nik', [
-                       'form_params' => [
-                            'requestData' => [
-                                'nik'     => $nik
-                               ,'id_user' => $pn
-                                ],
-                            ]
-                    ]);
+            // $res = $client->request('POST', $host.'get_kemendagri_profile_nik', [
+            //            'form_params' => [
+            //                 'requestData' => [
+            //                     'nik'     => $nik
+            //                    ,'id_user' => $pn
+            //                     ],
+            //                 ]
+            //         ]);
 
-            $data = json_decode($res->getBody()->getContents(), true);
+            // $data = json_decode($res->getBody()->getContents(), true);
 
             $keys = [
             'name' => 'namaLengkap'
