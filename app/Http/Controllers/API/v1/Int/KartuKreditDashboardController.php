@@ -26,14 +26,14 @@ class KartuKreditDashboardController extends Controller{
 
         foreach ($listKanwil as $val) {
         	$newData = $data->where('kanwil',$val['region_id']);
-        	$ajukanLength =  $newData->where('kodeproses','1')->count();
-	        $verifikasiLength = $newData->where('kodeproses','3.1')->count();
-	        $analisaLength = $newData->where('kodeproses','6.1')->count();
-	        $approvedLength = $newData->where('kodeproses','7.1')->count();
-	        $rejectedLength =  $newData->where('kodeproses','8.1')->count();
+        	$ajukanLength =  $data->where('kodeproses','1')->count();
+	        $verifikasiLength = $data->where('kodeproses','3.1')->count();
+	        $analisaLength = $data->where('kodeproses','6.1')->count();
+	        $approvedLength = $data->where('kodeproses','7.1')->count();
+	        $rejectedLength =  $data->where('kodeproses','8.1')->count();
         	$pushData = [
         		'region_id'=>$val['region_id'],
-         		// 'region_name'=>$val['region_name'], // erors
+         		'region_name'=>$val['region_name'], // erors
          		'branch_id'=>$val['branch_id'],
          		'totalLength' => $newData->count(),
           		'ajukanLength'=>$ajukanLength,
