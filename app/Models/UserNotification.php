@@ -322,10 +322,12 @@ class UserNotification extends Model
 			}
 		}
 
-		// if ( isset( $this->data['collateral_id'] ) ) {
-		// 	$collateralData = Collateral::find($this->data['collateral_id']);
-		// 	$collateralManager = strtoupper( $collateralData->manager_name );
-		// }
+		$user = \RestwsHc::getUser();
+
+		if ( isset( $this->data['collateral_id'] ) ) {
+			$collateralData = Collateral::find($this->data['collateral_id']);
+			$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
+		}
 
 		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
 		$externalurl = env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
