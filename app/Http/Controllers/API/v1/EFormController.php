@@ -1159,6 +1159,7 @@ class EFormController extends Controller
         try {
             DB::beginTransaction();
             $eform = EForm::findOrFail( $id );
+            $eform_notif = Eform::with('customer')->findOrFail( $id );
             if (!empty($eform->ao_id)) {
                 $message = 'Redisposisi';
             } else {
@@ -1191,7 +1192,7 @@ class EFormController extends Controller
 
             // Credentials for push notification helper
             $credentials = [
-                'eform' => $eform,
+                'eform' => $eform_notif,
                 'ao_id' => $ao_id,
             ];
 
