@@ -322,9 +322,11 @@ class UserNotification extends Model
 			}
 		}
 
+		// $user = \RestwsHc::getUser();
+
 		// if ( isset( $this->data['collateral_id'] ) ) {
 		// 	$collateralData = Collateral::find($this->data['collateral_id']);
-		// 	$collateralManager = strtoupper( $collateralData->manager_name );
+		// 	$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
 		// }
 
 		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
@@ -673,8 +675,8 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh ' . $collateralManager
-				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh ' . $collateralManager
+				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh collateral Manager' /*$collateralManager */
+				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh colllateral Manager '
 				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_rejecting'
 				);
 				break;
@@ -695,8 +697,8 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh ' . $collateralManager
-				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh ' . $collateralManager
+				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager */
+				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager*/
 					, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_approving'
 				);
 				break;

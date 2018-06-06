@@ -125,6 +125,8 @@ class CustomerController extends Controller
      */
     public function show( $type, $id )
     {
+		try{
+		
         $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
         if (count($customerDetail) > 0) {
@@ -133,6 +135,7 @@ class CustomerController extends Controller
 					 ->select('IsFinish')
 					 ->where('eforms.user_id', $customerDetail->user_id)
 					 ->get();
+			if(isset($eform)){
             \Log::info("===========IS FINISH=====");         
             \Log::info($eform);
 			$eform = $eform->toArray();
@@ -148,6 +151,7 @@ class CustomerController extends Controller
 				$message = 'Sukses';
 				$customer = Customer::findOrFail( $customerDetail->user_id );
 			}
+			}
         } else {
             $customer = Customer::findOrFail( $id );
         }
@@ -155,6 +159,9 @@ class CustomerController extends Controller
             'message' => 'Sukses',
             'contents' => $customer
         ], 200 );
+		}catch(Exception $e){
+
+		}
     }
 
     /**

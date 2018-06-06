@@ -1965,12 +1965,14 @@ class EForm extends Model implements AuditableContract
                 , $fid_aplikasi
             )->first();
         if($target){
-
+            \Log::info("===MASUK KONDISI TARGET===");
+            \Log::info($target);
             if ( ENV('APP_ENV') == 'local' ) {
+                \Log::info("===MASUK ENV LOCAL===");
                 $deleteOnClass = array (
                 'code' => '200',
                 'descriptions' => 'Success',
-                'contents' => $this->ref_number
+                'contents' => 'Pengajuan Berhasil dihapus!'
                 );
 
                 $return = array(
@@ -1979,6 +1981,7 @@ class EForm extends Model implements AuditableContract
                 );
 
             } else {
+                \Log::info("===MASUK ENV PRODUCTION===");
                 try {
                     $deleteOnClass = Asmx::setEndpoint('UpdateStatusByAplikasi')
                     ->setBody( [
@@ -2004,6 +2007,7 @@ class EForm extends Model implements AuditableContract
             return $return;
 
         }else{
+            \Log::info("====BELUM ADA FID_APLIKASI====");
             $return = array(
                         'status' => false
                         , 'message' => null

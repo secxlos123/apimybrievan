@@ -14,6 +14,7 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::post('getBranch', 'SelectUkerController@getBranch');
+	Route::post('createNew', 'Menu\MenuController@createNew');
 	Route::post('getMitra', 'SelectListMitraController@getMitra');
 	Route::get('getFasilitas', 'SelectListController@getFasilitas');
 	Route::get('getListView', 'Menu\MenuController@getView');
