@@ -125,7 +125,6 @@ class CustomerController extends Controller
      */
     public function show( $type, $id )
     {
-		try{
 		
         $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
