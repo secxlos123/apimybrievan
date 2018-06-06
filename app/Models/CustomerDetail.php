@@ -402,7 +402,10 @@ class CustomerDetail extends Model implements AuditableContract
                     return $query->where(
                         \DB::Raw("TRIM(LEADING '0' FROM branch_id)"), (string) intval( $branchId )
                     )
-                    ->where('status_eform', "Pencairan");
+                    ->where('status_eform', "Pencairan")
+                    ->orwhere('status_eform', "Approval1")
+                    ->orwhere('status_eform', "Disbursed")
+                    ->orwhere('status_eform', "Rejected");
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
