@@ -130,7 +130,7 @@ class CustomerController extends Controller
         $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
         if (count($customerDetail) > 0) {
-            try{
+	        try{
 			$eform = DB::table('eforms')
 					 ->select('IsFinish')
 					 ->where('eforms.user_id', $customerDetail->user_id)
@@ -140,28 +140,29 @@ class CustomerController extends Controller
             \Log::info($eform);
 			$eform = $eform->toArray();
 			$eform = json_decode(json_encode($eform), True);
-			if(isset($eform[0]['IsFinish']) =='true' ){
+				if(isset($eform[0]['IsFinish']) =='true' ){
+					$message = 'Sukses';
+					$customer = Customer::findOrFail( $customerDetail->user_id );
+				}else{
+					$message = 'User dalam pengajuan';
+					$customer = Customer::findOrFail( $customerDetail->user_id );		
+				}
+			}else{
 				$message = 'Sukses';
 				$customer = Customer::findOrFail( $customerDetail->user_id );
-			}else{
-				$message = 'User dalam pengajuan';
-				$customer = Customer::findOrFail( $customerDetail->user_id );		
 			}
 			}catch(Exception $e){
 				$message = 'Sukses';
 				$customer = Customer::findOrFail( $customerDetail->user_id );
 			}
-			}
         } else {
+			$message = 'Customer Tidak Ditemukan';
             $customer = Customer::findOrFail( $id );
         }
         return response()->success( [
-            'message' => 'Sukses',
+            'message' => $message,
             'contents' => $customer
         ], 200 );
-		}catch(Exception $e){
-
-		}
     }
 
     /**
