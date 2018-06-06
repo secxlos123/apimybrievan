@@ -413,7 +413,8 @@ class CustomerDetail extends Model implements AuditableContract
                     ->where('status_eform', "Pencairan")
                     ->orwhere('status_eform', "Approval1")
                     ->orwhere('status_eform', "Disbursed")
-                    ->orwhere('status_eform', "Rejected");
+                    ->orwhere('status_eform', "Rejected")
+                    ->orwhereRaw("(is_approved='f' and recommended='t'))
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
