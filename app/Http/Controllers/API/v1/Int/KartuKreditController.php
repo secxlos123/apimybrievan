@@ -43,36 +43,48 @@ class KartuKreditController extends Controller{
     }
 
 	public function contoh(Request $req){
-        try{
-            DB::beginTransaction();
-            $data['apregno'] = $req->apregno;
-            $data['kodeproses'] = '1';
-            $data['kanwil'] = $req->kanwil;
-            $data['kanca'] = $req->branchId;
-            $data['pn'] = $req->pn;
+        // try{
+        //     DB::beginTransaction();
+        //     $data['apregno'] = $req->apregno;
+        //     $data['kodeproses'] = '1';
+        //     $data['kanwil'] = $req->kanwil;
+        //     $data['kanca'] = $req->branchId;
+        //     $data['pn'] = $req->pn;
             
-            $createHistory = KartuKreditHistory::create($data);
-        }catch(RequestException $e){
-            DB::rollback();
+        //     $createHistory = KartuKreditHistory::create($data);
+        // }catch(RequestException $e){
+        //     DB::rollback();
 
-        }
-        DB::commit();
-        // $kanwil = $this->getKanwilByBranchId($branchId);
+        // }
+        // DB::commit();
+        // // $kanwil = $this->getKanwilByBranchId($branchId);
         
-        return $createHistory;
+        // return $createHistory;
+        
 
     }
 
     public function contohdua(Request $req){
-        // $startDate = $req->str;
-        // $endDate = $req->end;
         $startDate = Carbon::parse($req->str)->startOfDay();
         $endDate = Carbon::parse($req->end)->endOfDay();
-        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
 
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
+            
+        $ajukanLength =  $data->where('kodeproses','1')->count();
+        $verifikasiLength = $data->where('kodeproses','3.1')->count();
+        $analisaLength = $data->where('kodeproses','6.1')->count();
+        $approvedLength = $data->where('kodeproses','7.1')->count();
+        $rejectedLength =  $data->where('kodeproses','8.1')->count();
         return response()->json([
-            'count'=>count($data),
-            'datas'=>$data
+            'responseCode'=>'00',
+            'responseMessage'=>'sukses',
+            'totalLength'=>$data->count(),
+            'ajukanLength'=>$ajukanLength,
+            'verifikasiLength'=>$verifikasiLength,
+            'analisaLength' =>$analisaLength,
+            'approvedLength' => $approvedLength,
+            'rejectedLength' => $rejectedLength,
+            'contents'=>$data
         ]);
 
     }
@@ -853,7 +865,8 @@ class KartuKreditController extends Controller{
         $pn = $req->pn;
         $apregno = $req->apregno;
         $branchId = $req->branch_id;
-        $hist = $kkh->createHistory($pn,$apregno,$branchId);
+        $ao_name = $req->ao_name;
+        $hist = $kkh->createHistory($pn,$apregno,$branchId,$ao_name);
 
         return response()->json([
             'responseCode' => '00',

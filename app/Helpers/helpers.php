@@ -52,6 +52,8 @@ if (! function_exists('get_pefindo_service')) {
             $sendBirthDate = ($couple ? $customer->personal['couple_birth_date'] : $customer->personal['birth_date']);
 
             if (ENV('APP_ENV') == 'local') {
+                
+                \Log::info("===========Request Data Get Pefindo LOCAL============");
                 $getPefindo = [
                     "code" => "200"
                     , "descriptions" => "Success"
@@ -73,7 +75,12 @@ if (! function_exists('get_pefindo_service')) {
                     ]
                 ];
 
+                \Log::info("===========Data Get Pefindo LOCAL============");
+                \Log::info($getPefindo);
+                \Log::info("===================END=======================");
             } else {
+                
+                \Log::info("===========Request Data Get Pefindo ASMX============");
                 $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
                     ->setBody([
                         'Request' => json_encode( array(
@@ -84,9 +91,30 @@ if (! function_exists('get_pefindo_service')) {
                         ) )
                     ])
                     ->post( 'form_params' );
+
+                \Log::info("===========Data Get Pefindo ASMX============");
+                \Log::info($getPefindo);
+                \Log::info("=====================END====================");
             }
 
-            return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : null;
+            $dataPefindoNull = [
+                            [
+                                "Address" => null
+                                ,"DateOfBirth" => null
+                                ,"FullName" => null
+                                ,"KTP" => null
+                                ,"PefindoId" => null
+                            ]
+                           ,[
+                                "Address" => null
+                                ,"DateOfBirth" => null
+                                ,"FullName" => null
+                                ,"KTP" => null
+                                ,"PefindoId" => null
+                            ]
+            ];
+
+            return ( $getPefindo["code"] == "200" ) ? $getPefindo["contents"] : $dataPefindoNull;
 
         } else {
             $endpoint = ( $position == 'data' ) ? 'PefindoReportData' : 'GetPdfReport';
@@ -123,6 +151,8 @@ if (! function_exists('get_pefindo_service')) {
                     ];
 
                 } else {
+                    \Log::info("===ENDPOINT PefindoReportData Or GetPdfReport : ".$endpoint);
+                    \Log::info("===Pefindo ID : ".$pefindoId);
                     $getPefindo = \Asmx::setEndpoint( $endpoint )
                         ->setBody([
                             'Request' => json_encode( array(
@@ -184,10 +214,11 @@ if (! function_exists('get_pefindo_service')) {
                                     );
 
                                     \File::delete( $basePath . '/report.pdf' );
-
+                                    \Log::info("====SUccess Extract Data Pefindo From Service====");
                                     return $filename;
 
                                 } catch (Exception $e) {
+                                    \Log::info("====Gagal Generate Pdf ====");
                                     return "Gagal generate PDF";
 
                                 }
@@ -253,7 +284,9 @@ if (! function_exists('break_pefindo')) {
         $pefindoDetail = json_decode($eform['pefindo_detail']);
         $pefindoScoreDetail = [];
         $countIndividu = count($pefindoDetail->individual);
+        \Log::info("==count individual==: ".$countIndividu);
         $countCouple = count($pefindoDetail->couple);
+        \Log::info("==count couple==: ".$countCouple);
      if($countIndividu == 0 && $countCouple > 0 ){
         \Log::info("===MASUK KONDISI 0 - 1 ===");
         if ( isset($request['select_couple_pefindo']) ) {

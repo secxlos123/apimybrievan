@@ -9,34 +9,78 @@ use LaravelFCM\Message\PayloadDataBuilder;
 use App\Events\Customer\CustomerRegister;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\Topics;
+use App\Models\UserServices;
 use Illuminate\Http\Request;
+use App\Models\PropertyType;
+use App\Models\PropertyItem;
 use LaravelFCM\Facades\FCM;
+use App\Models\Developer;
+use App\Models\Property;
 use GuzzleHttp\Client;
 use App\Models\User;
 use Activation;
 use Response;
+use Session;
 use Image;
 
 class ImagesController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
+     * This function for delete developer dummy
+     * @author rangga darmajati (rangga.darmajati@wgs.co.id)
+     * @param  $dev_name
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function DeleteDeveloperDummy($dev_name)
     {
-        //
+        $lowerValue = '%'.strtolower($dev_name).'%';
+        $dev = Developer::where(\DB::raw('LOWER(company_name)'), 'like', $lowerValue)->first();
+        $dev_user_id = $dev->user_id;
+        $dev_id = $dev->id;
+        $user = User::where('id', $dev_user_id)->first();
+        $property = Property::where('developer_id', $dev_id)->get();
+        foreach ($property as $key => $value) {
+            $property_type = PropertyType::where('property_id', $value['id'])->get();
+            foreach ($property_type as $key1 => $value1 ) {
+                $property_item = PropertyItem::where('property_type_id', $value1['id'])->delete();
+            }
+
+            PropertyType::where('property_id', $value['id'])->delete();    
+        }
+
+        Property::where('developer_id', $dev_id)->delete();
+        Developer::where('id', $dev_id)->delete();
+        User::where('id', $dev_user_id)->delete();
+
+         return response()->success([
+                'message' => "Developer Dummy Berhasil dihapus!",
+                'contents' => ["user" => $user]
+           ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
+     * This function for show developer dummy
+     * @author rangga darmajati (rangga.darmajati@wgs.co.id)
+     * @param  $dev_name
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function ShowDeveloperDummy($dev_name)
     {
-        //
+        $lowerValue = '%'.strtolower($dev_name).'%';
+        $dev = Developer::where(\DB::raw('LOWER(company_name)'), 'like', $lowerValue)->first();
+        $dev_user_id = $dev->user_id;
+        $dev_id = $dev->id;
+        $user = User::where('id', $dev_user_id)->first();
+        $property = Property::where('developer_id', $dev_id)->get();
+
+        return response()->success([
+            'message' => "Developer Dummy Berhasil ditemukan!",
+            'contents' => [
+                 "user" => $user
+                ,"developer" => $dev
+                ,"Property" => $property
+            ]
+        ], 200);
     }
 
     /**
@@ -56,13 +100,45 @@ class ImagesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($file)
+    public function show(Request $request, $file)
     {
+        if($request->has('password_access')){
+            $date        = date('dmy');
+            $secret_code = "mybri";
+            $key         = $date.$secret_code;
+
+            $getUserInt  = UserServices::where('pn', $request->input('pn_access'))
+                           ->where('password', md5($request->input('password_access')))->first();
+            // $getUser     = User::where('email', $request->input('pn_access'))
+            //                ->where('password', bcrypt($request->input('password_access')))->first();
+            if($getUserInt){
+                return response()->download(public_path('uploads/'.$file), null, [], null);
+            }else{
+                $data = $file;
+                $error= "Invalid Credentials";
+                return view('security', compact('data', 'error'));
+            }
+
+            // if($request->input('password_access') == $key){
+            //     return response()->download(public_path('uploads/'.$file), null, [], null);
+            // }else{
+            //     $data = $file;
+            //     return view('security', compact('data'));    
+            // }
+        }
+
         $cekpdf = substr($file, -3);
         if($cekpdf == 'pdf'){
-            return response()->error([
-                'message' => "you can't access this site !",
-            ]);
+            
+            $secure = $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') ? $request->server('HTTP_UPGRADE_INSECURE_REQUESTS') : NULL;
+            if($secure != 1){
+                return response()->download(public_path('uploads/'.$file), null, [], null);
+            }else{
+
+                $data  = $file;
+                return view('security', compact('data'));
+                
+            }
         }else{
             $storagePath = public_path('uploads/'.$file);
             return Image::make($storagePath)->response();

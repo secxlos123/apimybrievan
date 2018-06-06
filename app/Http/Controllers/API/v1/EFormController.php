@@ -21,6 +21,7 @@ use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
 use App\Models\PropertyType;
+use App\Models\PropertyItem;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
@@ -210,16 +211,20 @@ class EFormController extends Controller
                 $mitra_relation = json_decode(json_encode($mitra_relation), True);
 		
           $eform = $eform->toArray();
-        $cityes = DB::table('cities')
-                         ->select('cities.name')
-                         ->where('cities.id', $customer[0]['city_id'])
-                         ->get();
-                $cityes = $cityes->toArray();
-                $cityes = json_decode(json_encode($cityes), True);
-          $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
-          //----------personal------------------------
           $eform[0]['customer']['personal'] = $customer[0];
-		$eform[0]['customer']['personal']['city'] = $cityes[0]['name'];
+			if($customer[0]['city_id']=='0' ||  $customer[0]['city_id']=='' ||  $customer[0]['city_id']==null){
+				$eform[0]['customer']['personal']['city']='';
+			}else{
+			$cityes = DB::table('cities')
+							 ->select('cities.name')
+							 ->where('cities.id', $customer[0]['city_id'])
+							 ->get();
+					$cityes = $cityes->toArray();
+					$cityes = json_decode(json_encode($cityes), True);
+				$eform[0]['customer']['personal']['city'] = $cityes[0]['name'];
+			}
+          //----------personal------------------------
+          $mitra_relation[0]['UNIT_KERJA'] = $eform[0]['branch'];
           $eform[0]['mitra'] = $mitra_relation[0];
           //-----------work---------------------------
           $work = [
@@ -580,6 +585,48 @@ class EFormController extends Controller
                         'kk_details'=>'{"range_limit":"'.$rangeLimit.'","is_analyzed":"false"}'
                     ]);
 
+                    //cek pefindo. kalau gaji <=10jt gaboleh lebih punya
+                    // kk > 2
+                   // $nik = $baseRequest['nik'];
+                   // $nama = $baseRequest['nama'];
+                   // $tglLahir = $baseRequest['ttl'];
+                   // $reason = 'cek jumlah penerbit kartu kredit nasabah';
+                   // try{
+                   //   $getPefindo = \Asmx::setEndpoint( 'SmartSearchIndividual' )
+                   //  ->setBody([
+                   //       'Request' => json_encode( array(
+                   //           'nomer_id_pefindo' => $nik
+                   //           , 'nama_pefindo' => $nama
+                   //           , 'tanggal_lahir_pefindo' => $tglLahir
+                   //           , 'alasan_pefindo' => $reason
+                   //       ) )
+                   //   ])
+                   //   ->post( 'form_params' );
+                   // }catch (RequestException $e){
+                   //   DB::rollback();
+                   //     return response()->error([
+                   //         'responseCode'=>'01',
+                   //         'responseMessage'=> $e->getMessage()
+                   //     ],400);
+                   // }
+
+                    //tes pefindo
+                   // if($getPefindo["code"] == "200"){
+                   //   if ( isset( $getPefindo['contents']['contracts'] ) ) {
+                   //         if ( isset( $getPefindo['contents']['contracts']['contractlist'] ) ) {
+                   //           $listKredit =  $getPefindo['contents']['contracts']['contractlist'];
+                   //         }
+                   //     }
+                   // }else{
+                   //   return response()->json([
+                   //    'contents'=>$getPefindo
+                   //   ]);
+                   // }
+                   // \Log::info('=========== pefindo ==============');
+                   // \Log::info($listKredit);
+                    //return response()->json([
+                     // 'contents'=>$listKredit
+                   // ]);
                     //cek dedup
                     $nik = $baseRequest['nik'];
                     $tokenLos = env('LOS_TOKEN','eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsb3NhcHAiLCJhY2Nlc3MiOlsidGVzIl0sImp0aSI6IjhjNDNlMDNkLTk5YzctNDJhMC1hZDExLTgxODUzNDExMWNjNCIsImlhdCI6MTUxODY2NDUzOCwiZXhwIjoxNjA0OTc4MTM4fQ.ocz_X3duzyRkjriNg0nXtpXDj9vfCX8qUiUwLl1c_Yo');
@@ -1113,6 +1160,7 @@ class EFormController extends Controller
         try {
             DB::beginTransaction();
             $eform = EForm::findOrFail( $id );
+            $eform_notif = Eform::with('customer')->findOrFail( $id );
             if (!empty($eform->ao_id)) {
                 $message = 'Redisposisi';
             } else {
@@ -1145,7 +1193,7 @@ class EFormController extends Controller
 
             // Credentials for push notification helper
             $credentials = [
-                'eform' => $eform,
+                'eform' => $eform_notif,
                 'ao_id' => $ao_id,
             ];
 
@@ -1570,6 +1618,81 @@ class EFormController extends Controller
             'message' => $message,
             'contents' => $eform
         ], 201 );
+    }
+
+    /**
+     * Remove the specified resource from storage CLAS BRI.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @author rangga darmajati (rangga.darmajati@wgs.co.id)
+     */
+    public function deleteOnCLAS(Request $request, Eform $eforms){
+      DB::beginTransaction();
+      try {
+        if($request->has('fid_aplikasi') && $request->has('status')){
+            $fid_aplikasi = $request->input('fid_aplikasi');
+            $status = $request->input('status');
+
+            // This Function for delete eform on Service BRI CLAS
+            $deleteOnCLAS = $eforms->deleteOnClas($fid_aplikasi, $status);
+            
+            $message = 'Hapus Pengajuan di MYBRI dan CLAS Berhasil';
+            if($deleteOnCLAS['status']){
+              \Log::info("===MASUK KONDISI DELETE CLAS TRUE===");
+              $eform = Eform::where('ref_number', $fid_aplikasi)->first();
+              $kpr   = KPR::where('eform_id', $eform->id)->first();
+              $dev_id = $kpr->developer_id;
+              $prop_id = $kpr->property_id;
+              \Log::info("==dev_id : ".$dev_id);
+              \Log::info("==prop_id : ".$prop_id);
+              $collateral = Collateral::where('developer_id', $dev_id)->where('property_id', $prop_id)->first();
+              
+              
+              if(!empty($collateral)){
+
+                  // This for delete COllateral on db MYBRI
+                  Collateral::where('developer_id', $dev_id)->where('property_id', $prop_id)->delete();
+                   
+              }
+
+              if($dev_id != 1){
+
+                // This for update property unit be available on db MYBRI
+                PropertyItem::setAvailibility($kpr->property_item, "available");
+
+              }
+
+              // This for delete data kpr customer on db MYBRI
+              KPR::where('eform_id', $eform->id)->delete();
+
+              // This for delete data Eform customer on db MYBRI
+              Eform::where('ref_number', $fid_aplikasi)->delete();
+
+              DB::commit();
+              return response()->success( [
+                'message' => $message,
+                'contents' => null
+              ], 200 );
+            }else{
+              DB::rollback();
+              return response()->success( [
+                'message' => "Hapus Pengajuan gagal di lakukan!",
+                'contents' => null
+              ], 422 );
+            }
+        }
+      } catch (Exception $e) {
+        \Log::info("===ERROR DELETE ON CLAS SYSTEM===");
+        \Log::info($e->getMessage());
+          DB::rollback();
+              return response()->success( [
+                'message' => "Hapus Pengajuan gagal di lakukan!",
+                'contents' => null
+              ], 422 );
+      }
+    
+
     }
 
 }

@@ -14,8 +14,10 @@
 Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1\Int' ], function () {
 
 	Route::post('getBranch', 'SelectUkerController@getBranch');
+	Route::post('createNew', 'Menu\MenuController@createNew');
 	Route::post('getMitra', 'SelectListMitraController@getMitra');
 	Route::get('getFasilitas', 'SelectListController@getFasilitas');
+	Route::get('getListView', 'Menu\MenuController@getView');
 	Route::get('getBank', 'SelectListController@getBank');
 	Route::get('dir_rpc_list', 'dirrpcController@getdir_rpc');
 	Route::post('mitraall', 'mitra\ScoringProsesController@getallmitra');
@@ -339,5 +341,10 @@ Route::group( [ 'prefix' => 'v1/int', 'namespace' => 'API\v1' ], function () {
 
 	//this route for generatepdf
 	Route::get('genaratePDF', 'EFormController@eformGenerate');
+
+	Route::group( [ 'middleware' => [ 'api.auth' ] ], function () {
+		//this route for delete Eform on MYBRI and CLAS
+		Route::post('eforms_delete', 'EFormController@deleteOnCLAS');
+	});
 
 });

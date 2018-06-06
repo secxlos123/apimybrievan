@@ -1958,4 +1958,62 @@ class EForm extends Model implements AuditableContract
 
         return $data;
     }
+
+    public function deleteOnClas($fid_aplikasi, $status){
+        $target = static::where(
+                DB::Raw("additional_parameters::json->>'fid_aplikasi'")
+                , $fid_aplikasi
+            )->first();
+        if($target){
+            \Log::info("===MASUK KONDISI TARGET===");
+            \Log::info($target);
+            if ( ENV('APP_ENV') == 'local' ) {
+                \Log::info("===MASUK ENV LOCAL===");
+                $deleteOnClass = array (
+                'code' => '200',
+                'descriptions' => 'Success',
+                'contents' => 'Pengajuan Berhasil dihapus!'
+                );
+
+                $return = array(
+                    'status' => true
+                    , 'message' => isset($deleteOnClass[ 'contents' ]) ? $deleteOnClass[ 'contents' ] : ''
+                );
+
+            } else {
+                \Log::info("===MASUK ENV PRODUCTION===");
+                try {
+                    $deleteOnClass = Asmx::setEndpoint('UpdateStatusByAplikasi')
+                    ->setBody( [
+                        'Request' => json_encode( array(
+                            'fid_aplikasi' => $fid_aplikasi
+                            ,'status' => $status
+                        ) )
+                    ] )
+                    ->post( 'form_params' );
+
+                    $return = array(
+                        'status' => true
+                        , 'message' => isset($deleteOnClass[ 'contents' ]) ? $deleteOnClass[ 'contents' ] : ''
+                    );    
+                } catch (Exception $e) {
+                    $return = array(
+                        'status' => false
+                        , 'message' => null
+                    );
+                }
+                
+            }
+            return $return;
+
+        }else{
+            \Log::info("====BELUM ADA FID_APLIKASI====");
+            $return = array(
+                        'status' => false
+                        , 'message' => null
+                    );
+            return $return;
+        }
+    }
+
 }

@@ -354,7 +354,39 @@ class AccountController extends Controller
       $data['phone'] = $request['phone'];
       $data['address'] = $request['address'];
       $data['product_type'] = $request['product_type'];
+
+      $data['contact_time']=$request['contact_time'];
+      $data['intention']=$request['intention'];
+      
+      switch ($data['contact_time'])
+      {
+          case("1"):
+            $data['contact_time']="Pagi (08.00 - 11.00)";
+            break;
+          case("2"):
+            $data['contact_time']="Siang (12.00 - 15.00)";
+            break;
+          case("3"):
+            $data['contact_time']="Sore (15.00 - 18.00)";
+            break;
+          case("4"):
+            $data['contact_time']="Malam (18.00 - 21.00)";
+            break;
+      }
+
+      switch ($data['intention'])
+      {
+          case("0"):
+            $data['intention']="Sendiri";
+            break;
+          case("1"):
+            $data['intention']="Keluarga/Lainnya";
+            break;
+      }
+
+      
       // $data['officer_ref'] = $request['officer_ref'];
+      $data['note']=$request['note'];
       $data['status'] = $request['status'];
       $data['created_by'] = $pn;
       $data['point'] = $request['point'];

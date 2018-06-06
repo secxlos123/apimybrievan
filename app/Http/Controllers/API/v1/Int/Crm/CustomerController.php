@@ -38,7 +38,7 @@ class CustomerController extends Controller
     {
       $nik = $request['nik'];
       $client = new Client();
-      $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.apipdm'):config('restapi.apipdmdev');
+      $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.apipdm'):config('restapi.apipdm');
       $customer_nik = $client->request('GET', $host.'/customer/profile/nik/'.$nik,[
         'headers' =>
         [

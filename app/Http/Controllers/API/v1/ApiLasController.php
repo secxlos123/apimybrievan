@@ -1369,9 +1369,9 @@ class ApiLasController extends Controller
 							$briguna = json_decode(json_encode($briguna), True);
 							$message = ['no_hp'=>$customer[0]['mobile_phone'],
 										'plafond'=>$briguna[0]['Plafond_usulan'],
-										'angsuran'=>$briguna[0]['Maksimum_angsuran'],
+										'angsuran'=>$briguna[0]['Angsuran_usulan'],
 										'unit_kerja'=>$briguna[0]['branch_name'],
-										'year'=>$briguna[0]['year'],
+										'year'=>$briguna[0]['Jangka_waktu'],
 										'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
 										'kode_message'=>$kode_sms];				
 							\Log::info("-------------------sms notifikasi-----------------");
@@ -1410,9 +1410,9 @@ class ApiLasController extends Controller
 						$briguna = json_decode(json_encode($briguna), True);
 						$message = ['no_hp'=>$customer[0]['mobile_phone'],
     								'plafond'=>$briguna[0]['Plafon_usulan'],
-    								'angsuran'=>$briguna[0]['Maksimum_angsuran'],
+    								'angsuran'=>$briguna[0]['Angsuran_usulan'],
     								'unit_kerja'=>$briguna[0]['branch_name'],
-    								'year'=>$briguna[0]['year'],
+    								'year'=>$briguna[0]['Jangka_waktu'],
     								'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
     								'kode_message'=>$kode_sms];				
     					\Log::info("-------------------sms notifikasi-----------------");

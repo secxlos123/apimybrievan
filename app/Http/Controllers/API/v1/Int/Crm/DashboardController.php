@@ -35,27 +35,33 @@ class DashboardController extends Controller
       $data['product_type'] = ProductType::all();
       $data['activity_type'] = ActivityType::all();
       // $data['status'] = Status::all();
-      foreach (Status::all() as $status) {
-          $data['status'][]=[
-            'id'=> $status->id,
-            'status_name'=>$status->status_name
-          ];
+
+      foreach (Status::all() as $status) 
+      {
+        $data['status'][]=[
+                             'id'=> $status->id,
+                             'status_name'=>$status->status_name
+                          ];
       }
+
       $additional =[
-        'id'=>0,
-        'status_name'=>'All'
-      ];
-      if (isset($data['status'])) {
+                      'id'=>0,
+                      'status_name'=>'All'
+                   ];
+
+      if (isset($data['status'])) 
+      {
         array_push($data['status'],$additional);
       }
+
       // return $data['status'];
       $data['object_activity'] = ObjectActivity::all();
       $data['action_activity'] = ActionActivity::all();
 
-        return response()->success( [
-            'message' => 'Sukses',
-            'contents' => $data
-          ]);
+      return response()->success([
+                                    'message' => 'Sukses',
+                                    'contents' => $data
+                                 ]);
     }
 
     /**
@@ -131,37 +137,40 @@ class DashboardController extends Controller
     public function pemasar(Request $request)
     {
       $list_ao = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_tenaga_pemasar',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->post('form_params');
+                                      'request' => json_encode([
+                                                                  'requestMethod' => 'get_list_tenaga_pemasar',
+                                                                  'requestData' => [
+                                                                                      'id_user' => $request->header('pn'),
+                                                                                      'kode_branch' => $request->header('branch')
+                                                                                   ],
+                                                               ])
+                                   ])->post('form_params');
 
       $list_fo = RestwsHc::setBody([
-        'request' => json_encode([
-          'requestMethod' => 'get_list_fo',
-          'requestData' => [
-            'id_user' => $request->header('pn'),
-            'kode_branch' => $request->header('branch')
-          ],
-        ])
-      ])->post('form_params');
+                                      'request' => json_encode([
+                                                                  'requestMethod' => 'get_list_fo',
+                                                                  'requestData' => [
+                                                                                      'id_user' => $request->header('pn'),
+                                                                                      'kode_branch' => $request->header('branch')
+                                                                                   ],
+                                                               ])
+                                  ])->post('form_params');
 
       $ao = $list_ao['responseData'];
       $fo = $list_fo['responseData'];
 
-      if ($ao != null && $fo != null) {
+      if ($ao != null && $fo != null) 
+      {
         $result = array_merge_recursive($fo,$ao);
-      } else {
+      } 
+      else 
+      {
         $result = [];
       }
 
       return response()->success([
-        'contents' => $result
-      ]);
+                                    'contents' => $result
+                                 ]);
     }
 
     public function kinerja_pemasar(Request $request)
@@ -424,7 +433,32 @@ class DashboardController extends Controller
       ];
       $activity = [];
       $lkn = [];
-      foreach ($data as $key => $value) {
+      foreach ($data as $key => $value) 
+      {
+        $status[$value->pn]['Prospek']=array_key_exists('Prospek',$status[$value->pn])?$status[$value->pn]['Prospek']:[];
+        $status[$value->pn]['On Progress']=array_key_exists('On Progress', $status[$value->pn])?$status[$value->pn]['On Progress']:[];
+        $status[$value->pn]['Done']=array_key_exists('Done',$status[$value->pn])?$status[$value->pn]['Done']:[];
+        $status[$value->pn]['Batal']=array_key_exists('Batal', $status[$value->pn])?$status[$value->pn]['Batal']:[];
+
+        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
+        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
+        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)? Marketing::find($value->id)->target:0;
+        $data_summary[$value->pn]=[
+          'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
+
+          'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
+
+          'Total'=>array_sum($total[$value->pn]),
+
+          'Prospek'=>(array_key_exists('Prospek',$status[$value->pn])||array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['Prospek'])+array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//:9,//array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,
+
+          'On Progress'=>(array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//array_sum(array_values($lkn[$value->pn])),
+
+          'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
+
+          'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?array_sum($status[$value->pn]['Batal']):0
+        ];
+        /* Backup 
         $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
         $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
         $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)? Marketing::find($value->id)->target:0;
@@ -436,7 +470,7 @@ class DashboardController extends Controller
           'On Progress'=>array_sum(array_values($lkn[$value->pn])),
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?array_sum($status[$value->pn]['Batal']):0
-        ];
+        ];*/
       }
       $marketing_summary = [];
       foreach ($data_summary as $key => $value) {
