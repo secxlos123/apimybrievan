@@ -22,48 +22,6 @@ class ApiLas extends Model
         $sort = $request->input('sort') ? explode('|', $request->input('sort')) : ['created_at', 'asc'];
         $search = $request->input('search');
         \Log::info($search);
-        // $eform = $query->where( function( $eform ) use( $request, &$user ) {
-        //     if( $request->has( 'status' ) ) {
-        //         if( $request->status == 'Submit' ) {
-        //             $eform->whereIsApproved( true );
-
-        //         } else if( $request->status == 'Initiate' ) {
-        //             $eform->has( 'visit_report' )->whereIsApproved( false );
-
-        //         } else if( $request->status == 'Dispose' ) {
-        //             $eform->whereNotNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-
-        //         } else if( $request->status == 'Rekomend' ) {
-        //             $eform->whereNull( 'ao_id' )->has( 'visit_report', '<', 1 )->whereIsApproved( false );
-
-        //         } elseif ($request->status == 'Rejected' || $request->status == 'Approval1' || $request->status == 'Approval2') {
-        //             $eform->where('status_eform', $request->status);
-
-        //         }
-        //     }
-        // });
-
-        // if ($request->has('search')) {
-        //     $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-        //         ->where( function( $eform ) use( $request, &$user ) {
-        //             $eform->orWhere('users.last_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-        //                 ->orWhere('users.first_name', 'ilike', '%'.strtolower($request->input('search')).'%')
-        //                 ->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('search').'%');
-        //         } );
-        // } else {
-        //     if ($request->has('customer_name')){
-        //         $eform = $eform->leftJoin('users', 'users.id', '=', 'eforms.user_id')
-        //             ->where( function( $eform ) use( $request, &$user ) {
-        //                 $eform->orWhere(\DB::raw("LOWER(concat(users.first_name,' ', users.last_name))"), "like", "%".strtolower($request->input('customer_name'))."%");
-        //             });
-        //     }
-
-        //     if ($request->has('ref_number')) {
-        //         $eform = $eform->where( function( $eform ) use( $request, &$user ) {
-        //             $eform->orWhere('eforms.ref_number', 'ilike', '%'.$request->input('ref_number').'%');
-        //         } );
-        //     }
-        // }
         $sortir = ['eforms.created_at', 'asc'];
         if ($sort[0] == "tgl_pengajuan" || $sort[0] == "action" || $sort[0] == "STATUS" || $sort[0] == "status_screening" || $sort[0] == "fid_tp_produk") {
             $sortir = ['eforms.created_at', $sort[1]];
@@ -109,12 +67,88 @@ class ApiLas extends Model
                  ->limit($request['limit'])
                  ->offset($request['start'])
                  ->get();
-        
         $eform = $eform->toArray();
-        // \Log::info($eform);
         $eform = json_decode(json_encode($eform), True);
         \Log::info("query select briguna berhasil");
         return $eform;
+    }
+
+    public function mitra() {
+        // $kode= '';
+        $mitra = \DB::table('mitra')
+            ->where( function( $mitra ) use( &$user ) {
+                $long = '106.86758';
+                $lat = '-6.232423';
+                $distance = '30';
+                /*$key = $request->input('key');
+                if( $request->has( 'key' ) ) {
+                    $BRANCH_CODE = $request->input('key');
+                    $branchcis ='';
+                    if(strlen($BRANCH_CODE)=='5'){
+                        $branchcis = $BRANCH_CODE;
+                        $k = strlen($BRANCH_CODE);
+                        $branchut2 = '';
+                        $p = '';
+                        for($l=$k;$l<5;$l++){
+                            if(substr($BRANCH_CODE,0,$l+1)!='0'){
+                                $branchut2 = 'lempar';
+                                $p = $l;
+                                goto tangkep;
+                            }
+                        }
+                        tangkep : $branchcis2 = substr($BRANCH_CODE,$p,5);
+                        for($i=0;$i<5;$i++){
+                            $cek = substr($BRANCH_CODE,$i,1);
+                            if($cek!=0){
+                                $branchcis = substr($BRANCH_CODE,$i,4);
+                                $i = 5;
+                            }
+                        }
+                    }else{
+                        $o = strlen($BRANCH_CODE);
+                        $branchut = '';
+                        for($y=$o;$y<5;$y++){
+                            if($y==$o){
+                                $branchut = '0'.$BRANCH_CODE;
+                            }else{
+                                $branchut = '0'.$branchut;
+                            }
+                        } 
+                        $branchcis = $branchut; 
+                        $branchcis2 = $BRANCH_CODE;
+                    }
+                    \Log::info($branchcis);
+                }*/
+                $mitra->whereRaw('mitra."BRANCH_CODE" IN (
+                    select distance_uker('."'".$lat."','".$long."','".$distance."'))
+                ");                         
+                //$mitra->Where('BRANCH_CODE', $key);
+            })
+        ->orderBy('NAMA_INSTANSI', 'ASC');
+        // if(!$request->has('internal')){
+        //     $kode = $request->input('kode');
+        //     $mitra->whereRaw('LOWER("NAMA_INSTANSI") LIKE ? ',["%".trim(strtolower($kode))."%"]);
+        // } 
+        //$mitra->where('LOWER(NAMA_INSTANSI)','like','%LOWER('.$kode.')%');
+        $mitra = $mitra->select([
+            \DB::Raw('b."UNIT_KERJA",mitra."idMitrakerja",mitra."NAMA_INSTANSI",
+                mitra."NPL",mitra.kode,mitra."BRANCH_CODE",mitra."Jumlah_pegawai",
+                mitra."JENIS_INSTANSI",mitra."Scoring",
+                mitra."KET_Scoring",mitra.jenis_bidang_usaha,mitra.alamat_instansi,
+                mitra.alamat_instansi3,mitra.telephone_instansi,mitra.rating_instansi,
+                mitra.lembaga_pemeringkat,mitra.tanggal_pemeringkat,mitra.go_public,
+                mitra.no_ijin_prinsip,mitra.date_updated,mitra.updated_by,mitra.acc_type,
+                mitra.alamat_instansi2'),
+            \DB::Raw("case when mitra.kode is not null then 2 else 1 end as new_order")
+        ]);
+        $mitra->leftJoin(DB::raw('(SELECT kode_uker, max(unit_kerja) "UNIT_KERJA" from uker_tables GROUP BY kode_uker) b'),'mitra.BRANCH_CODE','=',DB::raw("CASE WHEN LENGTH(kode_uker)=5 THEN b.kode_uker
+            WHEN LENGTH(kode_uker)=4 THEN '0'||b.kode_uker
+            WHEN LENGTH(kode_uker)=3 THEN '00'||b.kode_uker
+            WHEN LENGTH(kode_uker)=2 THEN '000'||b.kode_uker
+            WHEN LENGTH(kode_uker)=1 THEN '0000'||b.kode_uker END"));
+        \Log::info($mitra->toSql());
+
+        return $mitra;
     }
 
     public function eform_briguna($branch = null, $id_aplikasi = null) {

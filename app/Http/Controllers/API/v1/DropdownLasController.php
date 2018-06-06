@@ -5,7 +5,13 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\BRIGUNA;
+use App\Models\Mitra5;
+use App\Models\Jenispinjaman;
+use App\Models\Tujuanpenggunaan;
+use App\Models\Pendidikan_terakhir;
 use Artisaninweb\SoapWrapper\SoapWrapper;
+use DB;
+use Asmx;
 
 class DropdownLasController extends Controller
 {
@@ -21,52 +27,149 @@ class DropdownLasController extends Controller
     }
 
     public function list_dropdown (Request $request) {
-    	try {
+        try {
             $response = $request->all();
-	        $list_bank  = $this->inquiryBank();
-	        $list_gelar = $this->inquiryGelar();
+            /*$list_bank  = $this->inquiryBank();
+            if ($list_bank['code'] == '01') {
+                $data_value['data1']['ListBank'] = $list_bank['contents']['data'];
+            } else {
+                $data_value['data1']['ListBank'] = [];
+            }
+
+            $list_gelar = $this->inquiryGelar();
+            if ($list_gelar['code'] == '01') {
+                $data_value['data2']['ListGelar'] = $list_gelar['contents']['data'];
+            } else {
+                $data_value['data2']['ListGelar'] = [];
+            }
+
             $list_jabatan = $this->inquiryJabatan();
+            if ($list_jabatan['code'] == '01') {
+                $data_value['data3']['ListJabatan'] = $list_jabatan['contents']['data'];
+            } else {
+                $data_value['data3']['ListJabatan'] = [];
+            }
+
             $list_loan_type = $this->inquiryLoantype();
+            if ($list_loan_type['code'] == '01') {
+                $data_value['data4']['ListLoanType'] = $list_loan_type['contents']['data'];
+            } else {
+                $data_value['data4']['ListLoanType'] = [];
+            }
+
             $list_pekerjaan = $this->inquiryPekerjaan();
+            if ($list_pekerjaan['code'] == '01') {
+                $data_value['data5']['ListPekerjaan'] = $list_pekerjaan['contents']['data'];
+            } else {
+                $data_value['data5']['ListPekerjaan'] = [];
+            }
+
             $list_hub_bank  = $this->inquiryHubunganBank();
+            if ($list_hub_bank['code'] == '01') {
+                $data_value['data6']['ListHubBank'] = $list_hub_bank['contents']['data'];
+            } else {
+                $data_value['data6']['ListHubBank'] = [];
+            }
+
             $list_sifat_kredit = $this->inquirySifatKredit();
+            if ($list_sifat_kredit['code'] == '01') {
+                $data_value['data7']['ListSifatKredit'] = $list_sifat_kredit['contents']['data'];
+            } else {
+                $data_value['data7']['ListSifatKredit'] = [];
+            }
+
             $list_bidang_usaha = $this->inquiryBidangUsaha();
+            if ($list_bidang_usaha['code'] == '01') {
+                $data_value['data8']['ListBidangUsaha'] = $list_bidang_usaha['contents']['data'];
+            } else {
+                $data_value['data8']['ListBidangUsaha'] = [];
+            }
+
             $list_promo_briguna = $this->inquiryPromoBriguna();
+            if ($list_promo_briguna['code'] == '01') {
+                $data_value['data9']['ListPromoBriguna'] = $list_promo_briguna['contents']['data'];
+            } else {
+                $data_value['data9']['ListPromoBriguna'] = [];
+            }
+
             $list_jenis_pekerjaan = $this->inquiryJenisPekerjaan();
+            if ($list_jenis_pekerjaan['code'] == '01') {
+                $data_value['data10']['ListJenisPekerjaan'] = $list_jenis_pekerjaan['contents']['data'];
+            } else {
+                $data_value['data10']['ListJenisPekerjaan'] = [];
+            }
+
             $list_sifat_kredit_lbu = $this->inquirySifatKreditLBU();
+            if ($list_sifat_kredit_lbu['code'] == '01') {
+                $data_value['data11']['ListSifatKreditLBU'] = $list_sifat_kredit_lbu['contents']['data'];
+            } else {
+                $data_value['data11']['ListSifatKreditLBU'] = [];
+            }
+            
             $list_jenis_kredit_lbu = $this->inquiryJenisKreditLBU();
+            if ($list_jenis_kredit_lbu['code'] == '01') {
+                $data_value['data12']['ListJenisKreditLBU'] = $list_jenis_kredit_lbu['contents']['data'];
+            } else {
+                $data_value['data12']['ListJenisKreditLBU'] = [];
+            }
+
             $list_jenis_penggunaan = $this->inquiryJenisPenggunaan();
+            if ($list_jenis_penggunaan['code'] == '01') {
+                $data_value['data13']['ListJenisPenggunaan'] = $list_jenis_penggunaan['contents']['data'];
+            } else {
+                $data_value['data13']['ListJenisPenggunaan'] = [];
+            }
+
             $list_tujuan_penggunaan = $this->inquiryTujuanPenggunaan();
+            if ($list_tujuan_penggunaan['code'] == '01') {
+                $data_value['data14']['ListTujuanPenggunaanLAS'] = $list_tujuan_penggunaan['contents']['data'];
+            } else {
+                $data_value['data14']['ListTujuanPenggunaanLAS'] = [];
+            }
+
             $list_sektor_ekonomi_lbu = $this->inquirySektorEkonomiLBU();
+            if ($list_sektor_ekonomi_lbu['code'] == '01') {
+                $data_value['data15']['ListSektorEkonomiLBU'] = $list_sektor_ekonomi_lbu['contents']['data'];
+            } else {
+                $data_value['data15']['ListSektorEkonomiLBU'] = [];
+            }
+
             $list_jenis_penggunaan_lbu = $this->inquiryJenisPenggunaanLBU();
-	        
-	        // Route::post('list_dropdown_las', 'DropdownLasController@list_dropdown');
-	        $data_dropdown = [
-                'code'         => 01,
-                'descriptions' => 'Berhasil',
-                'contents' => [
-                    'data' => [
-                    	'ListBank'  => $list_bank['contents']['data'],
-                    	'ListGelar' => $list_gelar['contents']['data'],
-                        'ListJabatan' => $list_jabatan['contents']['data'],
-                    	'ListLoanType' => $list_loan_type['contents']['data'],
-                    	'ListHubBank'  => $list_hub_bank['contents']['data'],
-                    	'ListPekerjaan'  => $list_pekerjaan['contents']['data'],
-                        'ListSifatKredit' => $list_sifat_kredit['contents']['data'],
-                        'ListBidangUsaha' => $list_bidang_usaha['contents']['data'],
-                        'ListPromoBriguna' => $list_promo_briguna['contents']['data'],
-                        'ListJenisPekerjaan' => $list_jenis_pekerjaan['contents']['data'],
-                    	'ListSifatKreditLBU' => $list_sifat_kredit_lbu['contents']['data'],
-                    	'ListJenisKreditLBU' => $list_jenis_kredit_lbu['contents']['data'],
-                    	'ListJenisPenggunaan' => $list_jenis_penggunaan['contents']['data'],
-                    	'ListTujuanPenggunaan' => $list_tujuan_penggunaan['contents']['data'],
-                    	'ListSektorEkonomiLBU' => $list_sektor_ekonomi_lbu['contents']['data'],
-                    	'ListJenisPenggunaanLBU' => $list_jenis_penggunaan_lbu['contents']['data'],
-                    ]
-                ]
-            ];
-            return $data_dropdown;
+            if ($list_jenis_penggunaan_lbu['code'] == '01') {
+                $data_value['data16']['ListJenisPenggunaanLBU'] = $list_jenis_penggunaan_lbu['contents']['data'];
+            } else {
+                $data_value['data16']['ListJenisPenggunaanLBU'] = [];
+            }*/
+
+            // $mitra = new ApiLas();
+            // $data_mitra = $mitra->mitra();
+            $limit = $request->input( 'limit' ) ?: 10;
+            $mitra = Mitra5::filter( $request )->paginate($limit);
+            return response()->success([
+            'contents' => $mitra,
+            'message' => 'Sukses'
+        ]);
+            // print_r($mitra);exit();
+
+
+            
+            // $jenis_pinjaman = $this->select();
+            // $data_value['data17'] = $jenis_pinjaman;
+
+            // $kodepos = $this->inquiryKodePos();
+            // if ($kodepos['code'] == '200') {
+            //     $data_value['data18']['ListKodePos'] = $kodepos['contents']['data'];
+            // } else {
+            //     $data_value['data18']['ListKodePos'] = [];
+            // }
+            
+            // $data_dropdown = [
+            //     'code'         => 01,
+            //     'descriptions' => 'Berhasil',
+            //     'contents' => [$data_value]
+            // ];
             // print_r($data_dropdown);exit();
+            // return $data_dropdown;
 	        // return [
 	        //     'code' => 04, 
 	        //     'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
@@ -77,6 +180,63 @@ class DropdownLasController extends Controller
 	            'descriptions' => 'Gagal Koneksi Jaringan'
 	        ];
 	    }
+    }
+
+    function select() {
+        try {
+            $jpinjaman = DB::table('jenis_pinjaman')->select('*')->get();
+            $dpinjaman = $jpinjaman->toArray();
+            if (!empty($dpinjaman)) {
+                $data_pinjaman = $dpinjaman;
+            } else {
+                $data_pinjaman = [];
+            }
+
+            $tpenggunaan = DB::table('tujuan_penggunaan')->select('*')->get();
+            $dpenggunaan = $tpenggunaan->toArray();
+            if (!empty($dpenggunaan)) {
+                $data_penggunaan = $dpenggunaan;
+            } else {
+                $data_penggunaan = [];
+            }
+
+            $pendidikan_terakhir = DB::table('pendidikan_terakhir')->select('*')->get();
+            $dpendidikan = $pendidikan_terakhir->toArray();
+            if (!empty($dpendidikan)) {
+                $data_pendidikan = $dpendidikan;
+            } else {
+                $data_pendidikan = [];
+            }
+
+            return [
+                'ListJenisPinjaman'   => $data_pinjaman,
+                'ListTujuanPenggunaan' => $data_penggunaan,
+                'ListPendidikanTerakhir' => $data_pendidikan
+            ];
+        } catch (Exception $e) {
+            return [
+                'code' => 05, 
+                'descriptions' => 'Gagal Koneksi Jaringan'
+            ];
+        }
+    }
+
+    function inquiryKodePos() {
+        try {
+            $data_pos = Asmx::setEndpoint('GetDataKodePosBriguna')
+            ->setQuery([
+                'search' => '1',
+                'limit'  => '12000',
+                'page'   => '',
+                'sort'   => ''
+            ])->post();
+            return $data_pos;
+        } catch (Exception $e) {
+            return [
+                'code' => 05, 
+                'descriptions' => 'Gagal Koneksi Jaringan'
+            ];
+        }
     }
 
     function inquirySifatKredit() {
@@ -522,25 +682,6 @@ class DropdownLasController extends Controller
                 'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
             ];
         } catch(SoapFault $f) {
-            return [
-                'code' => 05, 
-                'descriptions' => 'Gagal Koneksi Jaringan'
-            ];
-        }
-    }
-
-    function inquiryKodePos($data) {
-        try {
-            $data_pos = Asmx::setEndpoint('GetDataKodePosBriguna')
-                    ->setQuery([
-                        'search' => $data['search'],
-                        'limit'  => $data['limit'],
-                        'page'   => $data['page'],
-                        'sort'   => $data['sort']
-                    ])
-                    ->post();
-            return $data_pos;
-        } catch (Exception $e) {
             return [
                 'code' => 05, 
                 'descriptions' => 'Gagal Koneksi Jaringan'
