@@ -21,6 +21,7 @@ use App\Models\EformBriguna;
 use App\Models\Mitra;
 use App\Models\Property;
 use App\Models\PropertyType;
+use App\Models\PropertyItem;
 use App\Models\Collateral;
 use App\Models\User;
 use App\Models\UserServices;
@@ -1159,6 +1160,7 @@ class EFormController extends Controller
         try {
             DB::beginTransaction();
             $eform = EForm::findOrFail( $id );
+            $eform_notif = Eform::with('customer')->findOrFail( $id );
             if (!empty($eform->ao_id)) {
                 $message = 'Redisposisi';
             } else {
@@ -1191,7 +1193,7 @@ class EFormController extends Controller
 
             // Credentials for push notification helper
             $credentials = [
-                'eform' => $eform,
+                'eform' => $eform_notif,
                 'ao_id' => $ao_id,
             ];
 
@@ -1625,17 +1627,48 @@ class EFormController extends Controller
      * @return \Illuminate\Http\Response
      * @author rangga darmajati (rangga.darmajati@wgs.co.id)
      */
-    public function deleteOnCLAS(Request $request){
+    public function deleteOnCLAS(Request $request, Eform $eforms){
       DB::beginTransaction();
       try {
         if($request->has('fid_aplikasi') && $request->has('status')){
             $fid_aplikasi = $request->input('fid_aplikasi');
             $status = $request->input('status');
-            $deleteOnCLAS = Eform::deleteOnClas($fid_aplikasi, $status);
+
+            // This Function for delete eform on Service BRI CLAS
+            $deleteOnCLAS = $eforms->deleteOnClas($fid_aplikasi, $status);
+            
             $message = 'Hapus Pengajuan di MYBRI dan CLAS Berhasil';
             if($deleteOnCLAS['status']){
+              \Log::info("===MASUK KONDISI DELETE CLAS TRUE===");
               $eform = Eform::where('ref_number', $fid_aplikasi)->first();
-              User::destroy($eform->user_id);
+              $kpr   = KPR::where('eform_id', $eform->id)->first();
+              $dev_id = $kpr->developer_id;
+              $prop_id = $kpr->property_id;
+              \Log::info("==dev_id : ".$dev_id);
+              \Log::info("==prop_id : ".$prop_id);
+              $collateral = Collateral::where('developer_id', $dev_id)->where('property_id', $prop_id)->first();
+              
+              
+              if(!empty($collateral)){
+
+                  // This for delete COllateral on db MYBRI
+                  Collateral::where('developer_id', $dev_id)->where('property_id', $prop_id)->delete();
+                   
+              }
+
+              if($dev_id != 1){
+
+                // This for update property unit be available on db MYBRI
+                PropertyItem::setAvailibility($kpr->property_item, "available");
+
+              }
+
+              // This for delete data kpr customer on db MYBRI
+              KPR::where('eform_id', $eform->id)->delete();
+
+              // This for delete data Eform customer on db MYBRI
+              Eform::where('ref_number', $fid_aplikasi)->delete();
+
               DB::commit();
               return response()->success( [
                 'message' => $message,
