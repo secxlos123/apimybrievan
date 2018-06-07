@@ -67,7 +67,7 @@ class KartuKreditController extends Controller{
     public function contohdua(Request $req){
          $requestPost =[
                 'app_id' => 'mybriapi',
-                'region' => $request['region']
+                'region' => $req['region']
             ];
 
             $list_kanca_kanwil = RestwsHc::setBody([
