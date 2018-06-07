@@ -139,11 +139,10 @@ class KartuKreditDashboardController extends Controller{
                     'branch_name'=>$kanca['mbdesc'],
                     // 'totalLength' => $newData->count(),
                     'ajukanLength'=>$ajukanLength,
-                    'konten' =>$newData,
-                    // 'verifikasiLength'=>$verifikasiLength,
-                    // 'analisaLength' =>$analisaLength,
-                    // 'approvedLength' => $approvedLength,
-                    // 'rejectedLength' => $rejectedLength,
+                    'verifikasiLength'=>$verifikasiLength,
+                    'analisaLength' =>$analisaLength,
+                    'approvedLength' => $approvedLength,
+                    'rejectedLength' => $rejectedLength,
             ];
             array_push($contents, $pushData);
         }
