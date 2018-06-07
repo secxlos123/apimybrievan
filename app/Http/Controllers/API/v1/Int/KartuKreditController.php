@@ -78,7 +78,7 @@ class KartuKreditController extends Controller{
                 ])
                 ->post( 'form_params' );
 
-            return list_kanca_kanwil;
+            return $list_kanca_kanwil;
     }
     
 	function checkUser($nik){
