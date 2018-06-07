@@ -124,8 +124,9 @@ class KartuKreditDashboardController extends Controller{
         $listKanca = $this->getListKancaFromKanwil($region);
         foreach ($listKanca as $kanca) {
             // echo $kanca['mainbr'];
-            $newData = $data->where('kanca',$kanca['mainbr']);
-            // $ajukanLength =  $newData->where('kodeproses','1')->count();
+            $newKanca = '00'.$kanca['mainbr'];
+            $newData = $data->where('kanca',$newKanca);
+            $ajukanLength =  $newData->where('kodeproses','1')->count();
             // $verifikasiLength = $newData->where('kodeproses','3.1')->count();
             // $analisaLength = $newData->where('kodeproses','6.1')->count();
             // $approvedLength = $newData->where('kodeproses','7.1')->count();
@@ -134,7 +135,7 @@ class KartuKreditDashboardController extends Controller{
                     'branch_id'=>$kanca['mainbr'],
                     'branch_name'=>$kanca['mbdesc'],
                     // 'totalLength' => $newData->count(),
-                    // 'ajukanLength'=>$ajukanLength,
+                    'ajukanLength'=>$ajukanLength,
                     // 'verifikasiLength'=>$verifikasiLength,
                     // 'analisaLength' =>$analisaLength,
                     // 'approvedLength' => $approvedLength,
