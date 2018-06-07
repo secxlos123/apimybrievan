@@ -143,7 +143,7 @@ class KartuKreditDashboardController extends Controller{
             array_push($contents, $pushData);
         }
         foreach ($contents as $val) {
-            print($val['mainbr']);
+            print($val['branch_id']);
             echo "\n";
         }
         
