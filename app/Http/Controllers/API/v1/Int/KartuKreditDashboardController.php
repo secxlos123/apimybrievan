@@ -118,6 +118,7 @@ class KartuKreditDashboardController extends Controller{
         $endDate = Carbon::parse($req->endDate)->endOfDay();
         $region = $req->kanwil;
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$region)->get();
+        \Log::info($data);
         
         $contents = [];
 
