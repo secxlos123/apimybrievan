@@ -43,23 +43,23 @@ class KartuKreditController extends Controller{
     }
 
 	public function contoh(Request $req){
-        // try{
-        //     DB::beginTransaction();
-        //     $data['apregno'] = $req->apregno;
-        //     $data['kodeproses'] = '1';
-        //     $data['kanwil'] = $req->kanwil;
-        //     $data['kanca'] = $req->branchId;
-        //     $data['pn'] = $req->pn;
+        try{
+            DB::beginTransaction();
+            $data['apregno'] = $req->apregno;
+            $data['kodeproses'] = '1';
+            $data['kanwil'] = $req->kanwil;
+            $data['kanca'] = $req->branchId;
+            $data['pn'] = $req->pn;
             
-        //     $createHistory = KartuKreditHistory::create($data);
-        // }catch(RequestException $e){
-        //     DB::rollback();
+            $createHistory = KartuKreditHistory::create($data);
+        }catch(RequestException $e){
+            DB::rollback();
 
-        // }
-        // DB::commit();
-        // // $kanwil = $this->getKanwilByBranchId($branchId);
+        }
+        DB::commit();
+        // $kanwil = $this->getKanwilByBranchId($branchId);
         
-        // return $createHistory;
+        return $createHistory;
         
 
     }
@@ -68,8 +68,21 @@ class KartuKreditController extends Controller{
         $startDate = Carbon::parse($req->str)->startOfDay();
         $endDate = Carbon::parse($req->end)->endOfDay();
 
-        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->get();
-            
+        
+
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$req->kanwil);
+
+        $contents = [];
+
+
+            // $kanca = $val['kanca'][$key]; //233
+            // $val = $data->where('kanca',$kanca)->get();
+            // // $apregno = $val->apregno;
+            // $pushData = [
+            //     "{$kanca}"=> $val
+            // ];
+            // array_push($contents, $pushData);
+                    
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
         $analisaLength = $data->where('kodeproses','6.1')->count();
@@ -84,7 +97,7 @@ class KartuKreditController extends Controller{
             'analisaLength' =>$analisaLength,
             'approvedLength' => $approvedLength,
             'rejectedLength' => $rejectedLength,
-            'contents'=>$data
+            'contents'=>$contents
         ]);
 
     }
@@ -748,8 +761,8 @@ class KartuKreditController extends Controller{
 			$host = $this->hostLos.'/api/approval';
 			$data = $kk->createApprovedRequirements($req);
 			$updateLimit = KartuKredit::where('appregno',$apregno)->update([
-			'rekomendasi_limit_kartu'=>$limit
-		]);
+			     'rekomendasi_limit_kartu'=>$limit
+		      ]);
             //update kode proses histories dashboard
             $kkh = new KartuKreditHistory();
             $updhis = $kkh->updateKodeProses('7.1',$apregno);
