@@ -127,26 +127,27 @@ class KartuKreditDashboardController extends Controller{
             $newKanca = '00'.$kanca['mainbr'];
             \Log::info($newKanca);
             $newData = $data->where('kanca',$newKanca);
+            \Log::info($newData);
             $ajukanLength =  $newData->where('kodeproses','1')->count();
             // $verifikasiLength = $newData->where('kodeproses','3.1')->count();
             // $analisaLength = $newData->where('kodeproses','6.1')->count();
             // $approvedLength = $newData->where('kodeproses','7.1')->count();
             // $rejectedLength =  $newData->where('kodeproses','8.1')->count();
-            $pushData = [
-                    'branch_id'=>$kanca['mainbr'],
-                    'branch_name'=>$kanca['mbdesc'],
-                    // 'totalLength' => $newData->count(),
-                    'ajukanLength'=>$ajukanLength,
-                    'konten' =>$newData,
-                    // 'verifikasiLength'=>$verifikasiLength,
-                    // 'analisaLength' =>$analisaLength,
-                    // 'approvedLength' => $approvedLength,
-                    // 'rejectedLength' => $rejectedLength,
-            ];
-            array_push($contents, $pushData);
+            // $pushData = [
+            //         'branch_id'=>$kanca['mainbr'],
+            //         'branch_name'=>$kanca['mbdesc'],
+            //         // 'totalLength' => $newData->count(),
+            //         'ajukanLength'=>$ajukanLength,
+            //         'konten' =>$newData,
+            //         // 'verifikasiLength'=>$verifikasiLength,
+            //         // 'analisaLength' =>$analisaLength,
+            //         // 'approvedLength' => $approvedLength,
+            //         // 'rejectedLength' => $rejectedLength,
+            // ];
+            // array_push($contents, $pushData);
         }
 
-        return response()->json($contents);
+        // return response()->json($contents);
         
 
         // $ajukanLength =  $data->where('kodeproses','1')->count();
