@@ -123,25 +123,27 @@ class KartuKreditDashboardController extends Controller{
 
         $listKanca = $this->getListKancaFromKanwil($region);
         foreach ($listKanca as $kanca) {
-            echo $kanca['mainbr'];
-            // $newData = $data->where('kanca',$kanca['mainbr']);
+            // echo $kanca['mainbr'];
+            $newData = $data->where('kanca',$kanca['mainbr']);
             // $ajukanLength =  $newData->where('kodeproses','1')->count();
             // $verifikasiLength = $newData->where('kodeproses','3.1')->count();
             // $analisaLength = $newData->where('kodeproses','6.1')->count();
             // $approvedLength = $newData->where('kodeproses','7.1')->count();
             // $rejectedLength =  $newData->where('kodeproses','8.1')->count();
-            // $pushData = [
-            //         'branch_id'=>$kanca['mainbr'],
-            //         'branch_name'=>$kanca['mbdesc'],
-            //         'totalLength' => $newData->count(),
-            //         'ajukanLength'=>$ajukanLength,
-            //         'verifikasiLength'=>$verifikasiLength,
-            //         'analisaLength' =>$analisaLength,
-            //         'approvedLength' => $approvedLength,
-            //         'rejectedLength' => $rejectedLength,
-            // ];
-            // array_push($contents, $pushData);
+            $pushData = [
+                    'branch_id'=>$kanca['mainbr'],
+                    'branch_name'=>$kanca['mbdesc'],
+                    // 'totalLength' => $newData->count(),
+                    // 'ajukanLength'=>$ajukanLength,
+                    // 'verifikasiLength'=>$verifikasiLength,
+                    // 'analisaLength' =>$analisaLength,
+                    // 'approvedLength' => $approvedLength,
+                    // 'rejectedLength' => $rejectedLength,
+            ];
+            array_push($contents, $pushData);
         }
+        echo $contents;
+        echo "\n";
 
         // $ajukanLength =  $data->where('kodeproses','1')->count();
         // $verifikasiLength = $data->where('kodeproses','3.1')->count();
