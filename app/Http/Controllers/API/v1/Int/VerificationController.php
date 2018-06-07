@@ -91,6 +91,8 @@ class VerificationController extends Controller
                     'kelurahan_office' => $customer->detail->kelurahan_office,
                     'kecamatan_office' => $customer->detail->kecamatan_office,
                     'kabupaten_office' => $customer->detail->kabupaten_office,
+                    'identity_selfie' => $customer->detail->identity_selfie,
+                    'couple_identity_selfie' => $customer->detail->couple_identity_selfie,
                     'source_income' => $customer->financial ? ($customer->financial['source_income'] ? $customer->financial['source_income'] : 'single') : 'single'
                 ]
                 , 'kpr' => $eform->kpr
