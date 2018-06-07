@@ -322,12 +322,44 @@ class UserNotification extends Model
 			}
 		}
 
-		// $user = \RestwsHc::getUser();
+		$user = \RestwsHc::getUser();
+		\Log::info("=====LIST NOTIF WEB====");
+		\Log::info(isset($this->data['collateral_id']) ? $this->data['collateral_id'] : null);
+		if ( isset( $this->data['collateral_id'] ) ) {
+			
+			\Log::info('===MASUK KONDISI ISSET COLL_ID===');
+			$collateralData = Collateral::find($this->data['collateral_id']);
+			if(!$collateralData){
+				\Log::info('===MASUK KONDISI DLT LIST NOTIF WEB===');
+				$notifiable_id = $this->data['user_id'];
+				$collateral_id = $this->data['collateral_id'];
+				$type_module   = $this->data['type_module'];
+				\Log::info("==NOTIFIABLE_ID :".$notifiable_id);
+				\Log::info("==COLLATERAL_ID :".$collateral_id);
+				$deleteNotif = UserNotification::where('notifiable_id', $notifiable_id)
+								->where('type_module', $type_module)
+								// ->where('slug', $collateral_id)
+								->delete();
 
-		// if ( isset( $this->data['collateral_id'] ) ) {
-		// 	$collateralData = Collateral::find($this->data['collateral_id']);
-		// 	$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
-		// }
+				if($deleteNotif){
+
+					\Log::info($deleteNotif);
+					\Log::info("====SUCCESS===");
+
+				}else{
+
+					\Log::info($deleteNotif);
+					\Log::info("====FAILED===");
+
+				}
+
+			}else{
+				
+				\Log::info('===MASUK KONDISI COLMAN ADA===');
+				$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
+			}
+			
+		}
 
 		$approval_data_changes_id = $approvalDataChange ? $approvalDataChange->id : 0;
 		$externalurl = env('MAIN_APP_URL', 'http://mybri.bri.co.id/');
