@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\BRIGUNA;
-use App\Models\Mitra5;
+use App\Models\Mitra4;
 use App\Models\Jenispinjaman;
 use App\Models\Tujuanpenggunaan;
 use App\Models\Pendidikan_terakhir;
@@ -29,7 +29,7 @@ class DropdownLasController extends Controller
     public function list_dropdown (Request $request) {
         try {
             $response = $request->all();
-            /*$list_bank  = $this->inquiryBank();
+            $list_bank  = $this->inquiryBank();
             if ($list_bank['code'] == '01') {
                 $data_value['data1']['ListBank'] = $list_bank['contents']['data'];
             } else {
@@ -139,37 +139,28 @@ class DropdownLasController extends Controller
                 $data_value['data16']['ListJenisPenggunaanLBU'] = $list_jenis_penggunaan_lbu['contents']['data'];
             } else {
                 $data_value['data16']['ListJenisPenggunaanLBU'] = [];
-            }*/
+            }
+            
+            // Get Mitra
+            $limit = $request->input('limit') ?: 15000;
+            $mitra = Mitra4::filter($request)->paginate($limit);
+            $data_value['data17'] = $mitra;
+            // Get KodePos
+            $kodepos = $this->inquiryKodePos();
+            if ($kodepos['code'] == '200') {
+                $data_value['data18']['ListKodePos'] = $kodepos['contents']['data'];
+            } else {
+                $data_value['data18']['ListKodePos'] = [];
+            }
+            $jenis_pinjaman = $this->select();
+            $data_value['data19']['ListJenisPinjaman'] = $jenis_pinjaman['JenisPinjaman'];
+            $data_value['data20']['ListTujuanPenggunaan'] = $jenis_pinjaman['TujuanPenggunaan'];
 
-            // $mitra = new ApiLas();
-            // $data_mitra = $mitra->mitra();
-            $limit = $request->input( 'limit' ) ?: 10;
-            $mitra = Mitra5::filter( $request )->paginate($limit);
             return response()->success([
-            'contents' => $mitra,
-            'message' => 'Sukses'
-        ]);
+                'contents' => $data_value,
+                'message' => 'Sukses'
+            ]);
             // print_r($mitra);exit();
-
-
-            
-            // $jenis_pinjaman = $this->select();
-            // $data_value['data17'] = $jenis_pinjaman;
-
-            // $kodepos = $this->inquiryKodePos();
-            // if ($kodepos['code'] == '200') {
-            //     $data_value['data18']['ListKodePos'] = $kodepos['contents']['data'];
-            // } else {
-            //     $data_value['data18']['ListKodePos'] = [];
-            // }
-            
-            // $data_dropdown = [
-            //     'code'         => 01,
-            //     'descriptions' => 'Berhasil',
-            //     'contents' => [$data_value]
-            // ];
-            // print_r($data_dropdown);exit();
-            // return $data_dropdown;
 	        // return [
 	        //     'code' => 04, 
 	        //     'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
@@ -209,9 +200,9 @@ class DropdownLasController extends Controller
             }
 
             return [
-                'ListJenisPinjaman'   => $data_pinjaman,
-                'ListTujuanPenggunaan' => $data_penggunaan,
-                'ListPendidikanTerakhir' => $data_pendidikan
+                'JenisPinjaman' => $data_pinjaman,
+                'TujuanPenggunaan' => $data_penggunaan,
+                'PendidikanTerakhir' => $data_pendidikan
             ];
         } catch (Exception $e) {
             return [
