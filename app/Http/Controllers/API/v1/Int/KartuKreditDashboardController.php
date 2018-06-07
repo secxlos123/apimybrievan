@@ -125,6 +125,7 @@ class KartuKreditDashboardController extends Controller{
         foreach ($listKanca as $kanca) {
             // echo $kanca['mainbr'];
             $newKanca = '00'.$kanca['mainbr'];
+            \Log::info($newKanca);
             $newData = $data->where('kanca',$newKanca);
             $ajukanLength =  $newData->where('kodeproses','1')->count();
             // $verifikasiLength = $newData->where('kodeproses','3.1')->count();
