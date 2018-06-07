@@ -130,44 +130,41 @@ class KartuKreditDashboardController extends Controller{
             $newData = $data->where('kanca',$newKanca);
             \Log::info($newData);
             $ajukanLength =  $newData->where('kodeproses','1')->count();
-            // $verifikasiLength = $newData->where('kodeproses','3.1')->count();
-            // $analisaLength = $newData->where('kodeproses','6.1')->count();
-            // $approvedLength = $newData->where('kodeproses','7.1')->count();
-            // $rejectedLength =  $newData->where('kodeproses','8.1')->count();
-            // $pushData = [
-            //         'branch_id'=>$kanca['mainbr'],
-            //         'branch_name'=>$kanca['mbdesc'],
-            //         // 'totalLength' => $newData->count(),
-            //         'ajukanLength'=>$ajukanLength,
-            //         'konten' =>$newData,
-            //         // 'verifikasiLength'=>$verifikasiLength,
-            //         // 'analisaLength' =>$analisaLength,
-            //         // 'approvedLength' => $approvedLength,
-            //         // 'rejectedLength' => $rejectedLength,
-            // ];
-            // array_push($contents, $pushData);
+            $verifikasiLength = $newData->where('kodeproses','3.1')->count();
+            $analisaLength = $newData->where('kodeproses','6.1')->count();
+            $approvedLength = $newData->where('kodeproses','7.1')->count();
+            $rejectedLength =  $newData->where('kodeproses','8.1')->count();
+            $pushData = [
+                    'branch_id'=>$kanca['mainbr'],
+                    'branch_name'=>$kanca['mbdesc'],
+                    // 'totalLength' => $newData->count(),
+                    'ajukanLength'=>$ajukanLength,
+                    'konten' =>$newData,
+                    // 'verifikasiLength'=>$verifikasiLength,
+                    // 'analisaLength' =>$analisaLength,
+                    // 'approvedLength' => $approvedLength,
+                    // 'rejectedLength' => $rejectedLength,
+            ];
+            array_push($contents, $pushData);
         }
-
-        // return response()->json($contents);
         
-
-        // $ajukanLength =  $data->where('kodeproses','1')->count();
-        // $verifikasiLength = $data->where('kodeproses','3.1')->count();
-        // $analisaLength = $data->where('kodeproses','6.1')->count();
-        // $approvedLength = $data->where('kodeproses','7.1')->count();
-        // $rejectedLength =  $data->where('kodeproses','8.1')->count();
-        // return response()->json([
-        //     'responseCode'=>'00',
-        //     'responseMessage'=>'sukses',
-        //     'totalLength'=>$data->count(),
-        //     'ajukanLength'=>$ajukanLength,
-        //     'verifikasiLength'=>$verifikasiLength,
-        //     'analisaLength' =>$analisaLength,
-        //     'approvedLength' => $approvedLength,
-        //     'rejectedLength' => $rejectedLength,
-        //     //balikin list perkanca
-        //     'contents'=>$pushData
-        // ]);
+        $ajukanLength =  $data->where('kodeproses','1')->count();
+        $verifikasiLength = $data->where('kodeproses','3.1')->count();
+        $analisaLength = $data->where('kodeproses','6.1')->count();
+        $approvedLength = $data->where('kodeproses','7.1')->count();
+        $rejectedLength =  $data->where('kodeproses','8.1')->count();
+        return response()->json([
+            'responseCode'=>'00',
+            'responseMessage'=>'sukses',
+            'totalLength'=>$data->count(),
+            'ajukanLength'=>$ajukanLength,
+            'verifikasiLength'=>$verifikasiLength,
+            'analisaLength' =>$analisaLength,
+            'approvedLength' => $approvedLength,
+            'rejectedLength' => $rejectedLength,
+            //balikin list perkanca
+            'contents'=>$contents
+        ]);
 	}
 
 	public function indexKanca(Request $req){
