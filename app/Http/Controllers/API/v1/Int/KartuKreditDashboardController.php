@@ -123,7 +123,7 @@ class KartuKreditDashboardController extends Controller{
 
         $listKanca = $this->getListKancaFromKanwil($region);
         foreach ($listKanca as $kanca) {
-            echo "{$kanca}";
+            echo $kanca['mainbr'];
             // $newData = $data->where('kanca',$kanca['mainbr']);
             // $ajukanLength =  $newData->where('kodeproses','1')->count();
             // $verifikasiLength = $newData->where('kodeproses','3.1')->count();
