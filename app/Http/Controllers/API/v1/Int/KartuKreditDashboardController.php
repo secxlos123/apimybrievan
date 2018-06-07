@@ -130,7 +130,7 @@ class KartuKreditDashboardController extends Controller{
             $approvedLength = $newData->where('kodeproses','7.1')->count();
             $rejectedLength =  $newData->where('kodeproses','8.1')->count();
             $pushData = [
-                "{$kanca['mainbr']}" => [
+                    'branch_id'=>$kanca['mainbr'],
                     'branch_name'=>$kanca['mbdesc'],
                     'totalLength' => $newData->count(),
                     'ajukanLength'=>$ajukanLength,
@@ -138,7 +138,6 @@ class KartuKreditDashboardController extends Controller{
                     'analisaLength' =>$analisaLength,
                     'approvedLength' => $approvedLength,
                     'rejectedLength' => $rejectedLength,
-                ]
             ];
             array_push($contents, $pushData);
         }
