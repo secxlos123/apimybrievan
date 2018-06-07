@@ -143,7 +143,7 @@ class KartuKreditDashboardController extends Controller{
             array_push($contents, $pushData);
         }
 
-        return result()->json($contents);
+        return response()->json($contents);
         
 
         // $ajukanLength =  $data->where('kodeproses','1')->count();
