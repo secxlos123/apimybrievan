@@ -65,40 +65,20 @@ class KartuKreditController extends Controller{
     }
 
     public function contohdua(Request $req){
-        $startDate = Carbon::parse($req->str)->startOfDay();
-        $endDate = Carbon::parse($req->end)->endOfDay();
+         $requestPost =[
+                'app_id' => 'mybriapi',
+                'branch_code' => $req->kanwilCode
+            ];
 
-        
+            $list_uker_kanca = RestwsHc::setBody([
+                        'request' => json_encode([
+                                'requestMethod' => 'get_list_uker_from_cabang',
+                                'requestData' => $requestPost
+                        ])
+                ])
+                ->post( 'form_params' );
 
-        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$req->kanwil);
-
-        $contents = [];
-
-
-            // $kanca = $val['kanca'][$key]; //233
-            // $val = $data->where('kanca',$kanca)->get();
-            // // $apregno = $val->apregno;
-            // $pushData = [
-            //     "{$kanca}"=> $val
-            // ];
-            // array_push($contents, $pushData);
-                    
-        $ajukanLength =  $data->where('kodeproses','1')->count();
-        $verifikasiLength = $data->where('kodeproses','3.1')->count();
-        $analisaLength = $data->where('kodeproses','6.1')->count();
-        $approvedLength = $data->where('kodeproses','7.1')->count();
-        $rejectedLength =  $data->where('kodeproses','8.1')->count();
-        return response()->json([
-            'responseCode'=>'00',
-            'responseMessage'=>'sukses',
-            'totalLength'=>$data->count(),
-            'ajukanLength'=>$ajukanLength,
-            'verifikasiLength'=>$verifikasiLength,
-            'analisaLength' =>$analisaLength,
-            'approvedLength' => $approvedLength,
-            'rejectedLength' => $rejectedLength,
-            'contents'=>$contents
-        ]);
+            return $list_uker_kanca;
 
     }
     
