@@ -33,7 +33,7 @@ class KartuKreditDashboardController extends Controller{
 	        $rejectedLength =  $newData->where('kodeproses','8.1')->count();
         	$pushData = [
         		'region_id'=>$val['region_id'],
-         		'region_name'=>$verifikasiLength['region_name'], // erors
+         		'region_name'=>$val['region_name'],
          		'branch_id'=>$val['branch_id'],
          		'totalLength' => $newData->count(),
           		'ajukanLength'=>$ajukanLength,
@@ -90,12 +90,63 @@ class KartuKreditDashboardController extends Controller{
     	 }
 	}
 
+    function getListKancaFromKanwil($branchCode){
+
+        $requestPost =[
+                'app_id' => 'mybriapi',
+                'region' => $branchCode
+            ];
+
+        $list_kanca_kanwil = RestwsHc::setBody([
+                        'request' => json_encode([
+                                'requestMethod' => 'get_list_kanca_from_kanwil',
+                                'requestData' => $requestPost
+                        ])
+                ])
+                ->post( 'form_params' );
+
+            $content = $list_kanca_kanwil;
+
+            if($content['responseCode'] == '00'){
+               return $content['responseData'];
+            }
+    }
+
 	public function indexKanwil(Request $req){
+        //response per kanca
 		$startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
         $region = $req->kanwil;
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanwil',$region)->get();
+        \Log::info($data);
+        
+        $contents = [];
 
+        $listKanca = $this->getListKancaFromKanwil($region);
+        foreach ($listKanca as $kanca) {
+            // echo $kanca['mainbr'];
+            $newKanca = '00'.$kanca['mainbr'];
+            \Log::info($newKanca);
+            $newData = $data->where('kanca',$newKanca);
+            \Log::info($newData);
+            $ajukanLength =  $newData->where('kodeproses','1')->count();
+            $verifikasiLength = $newData->where('kodeproses','3.1')->count();
+            $analisaLength = $newData->where('kodeproses','6.1')->count();
+            $approvedLength = $newData->where('kodeproses','7.1')->count();
+            $rejectedLength =  $newData->where('kodeproses','8.1')->count();
+            $pushData = [
+                    'branch_id'=>$kanca['mainbr'],
+                    'branch_name'=>$kanca['mbdesc'],
+                    // 'totalLength' => $newData->count(),
+                    'ajukanLength'=>$ajukanLength,
+                    'verifikasiLength'=>$verifikasiLength,
+                    'analisaLength' =>$analisaLength,
+                    'approvedLength' => $approvedLength,
+                    'rejectedLength' => $rejectedLength,
+            ];
+            array_push($contents, $pushData);
+        }
+        
         $ajukanLength =  $data->where('kodeproses','1')->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
         $analisaLength = $data->where('kodeproses','6.1')->count();
@@ -111,7 +162,7 @@ class KartuKreditDashboardController extends Controller{
             'approvedLength' => $approvedLength,
             'rejectedLength' => $rejectedLength,
             //balikin list perkanca
-            'contents'=>$data
+            'contents'=>$contents
         ]);
 	}
 

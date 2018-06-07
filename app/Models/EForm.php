@@ -140,7 +140,8 @@ class EForm extends Model implements AuditableContract
      */
     public function getStatusAttribute()
     {
-        if ( (!$this->is_approved && $this->recommended) || ($this->status_eform == 'Rejected') ) {
+      /* before----------------  
+		if ( (!$this->is_approved && $this->recommended) || ($this->status_eform == 'Rejected') ) {
             return 'Kredit Ditolak';
 
         } elseif ( $this->status_eform == 'Approval1' ) {
@@ -148,15 +149,17 @@ class EForm extends Model implements AuditableContract
 
         } elseif ( $this->status_eform == 'Approval2' ) {
             return 'Rekontes Kredit';
-
         } elseif ( $this->status_eform == 'Disbursed' ) {
             return 'Disbursed Briguna';
+        } elseif ( $this->status_eform == 'Pencairan' ) {
+            return 'Pencairan';
+
+ */
+        if ( $this->status_eform == 'Approval2' ) {
+            return 'Rekontes Kredit';
 
         } elseif ( $this->status_eform == 'Menunggu Putusan' ) {
             return 'Menunggu Putusan';
-
-        } elseif ( $this->status_eform == 'Pencairan' ) {
-            return 'Pencairan';
 
         } elseif( $this->is_approved ) {
             if ( $this->visit_report ) {
@@ -172,6 +175,9 @@ class EForm extends Model implements AuditableContract
 
         } elseif( $this->ao_id != null || $this->ao_id != '' ) {
             return 'Disposisi Pengajuan';
+
+        }elseif ( $this->IsFinish == 'false' ) {
+            return 'Belum Diputus';
 
         }
 

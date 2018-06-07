@@ -236,6 +236,7 @@ class Customer extends User
         return [
             'image' => $this->image,
             'identity' => $this->detail ? $this->detail->identity : '',
+            'identity_selfie' => $this->detail ? $this->detail->identity_selfie : '',
             'npwp' => $this->detail ? $this->detail->npwp : '',
             'family_card' => $this->detail ? $this->detail->family_card : '',
             'marrital_certificate' => $this->detail ? $this->detail->marrital_certificate : '',
@@ -470,7 +471,7 @@ class Customer extends User
      */
     public function update( array $attributes = [], array $options = [] )
     {
-        $keys = array('npwp', 'identity', 'couple_identity', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
+        $keys = array('npwp','identity_selfie', 'identity', 'couple_identity', 'couple_identity_selfie', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate');
 
         $separate_array_keys = array_flip( $this->fillable );
         $user_data = array_intersect_key( $attributes, $separate_array_keys );

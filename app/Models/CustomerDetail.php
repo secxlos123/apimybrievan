@@ -35,7 +35,7 @@ class CustomerDetail extends Model implements AuditableContract
      * @var array
      */
     protected $fillable = [
-        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'npwp', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number','current_address', 'kewarganegaraan','pendidikan_terakhir_name','address_domisili','mobile_phone_couple', 'source_income' , 'zip_code','kelurahan','kecamatan','kabupaten','zip_code_current','kelurahan_current','kecamatan_current','kabupaten_current','zip_code_office','kelurahan_office','kecamatan_office','kabupaten_office'
+        'user_id', 'city_id', 'nik', 'birth_place_id', 'birth_date', 'address', 'citizenship_id', 'status', 'address_status', 'mother_name', 'emergency_contact', 'emergency_relation', 'identity', 'identity_selfie', 'npwp', 'salary_slip', 'bank_statement', 'family_card', 'marrital_certificate', 'diforce_certificate', 'job_type_id', 'job_id', 'company_name', 'job_field_id', 'position', 'work_duration', 'office_address', 'salary', 'other_salary', 'loan_installment', 'dependent_amount', 'couple_nik', 'couple_name', 'couple_birth_place_id', 'couple_birth_date', 'couple_identity', 'couple_identity_selfie', 'couple_salary', 'couple_other_salary', 'couple_loan_installment', 'emergency_name', 'is_verified','work_duration_month','citizenship_name' , 'job_type_name' , 'job_field_name' , 'job_name' , 'position_name','cif_number','current_address', 'kewarganegaraan','pendidikan_terakhir_name','address_domisili','mobile_phone_couple', 'source_income' , 'zip_code','kelurahan','kecamatan','kabupaten','zip_code_current','kelurahan_current','kecamatan_current','kabupaten_current','zip_code_office','kelurahan_office','kecamatan_office','kabupaten_office'
     ];
 
     /**
@@ -108,6 +108,10 @@ class CustomerDetail extends Model implements AuditableContract
         return $this->globalImageCheck( $value );
     }
 
+    public function getIdentitySelfieAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
     /**
      * Get user Couple Identity image url.
      *
@@ -118,6 +122,10 @@ class CustomerDetail extends Model implements AuditableContract
         return $this->globalImageCheck( $value );
     }
 
+    public function getCoupleIdentitySelfieAttribute( $value )
+    {
+        return $this->globalImageCheck( $value );
+    }
     /**
      * Get user Legal Document image url.
      *
@@ -402,7 +410,11 @@ class CustomerDetail extends Model implements AuditableContract
                     return $query->where(
                         \DB::Raw("TRIM(LEADING '0' FROM branch_id)"), (string) intval( $branchId )
                     )
-                    ->where('status_eform', "Pencairan");
+                    ->where('status_eform', "Pencairan")
+                    ->orwhere('status_eform', "Approval1")
+                    ->orwhere('status_eform', "Disbursed")
+                    ->orwhere('status_eform', "Rejected")
+                    ->orwhereRaw("(is_approved='f' and recommended='t')");
                 })
                 ->where('nik', 'like', '%'.$nik.'%')
                 ->when($city, function($query) use ($city){
@@ -459,6 +471,11 @@ class CustomerDetail extends Model implements AuditableContract
         $this->globalSetImageAttribute( $image, 'identity' );
     }
 
+    public function setIdentitySelfieAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'identity_selfie' );
+    }
+
     /**
      * Set customer identity image.
      *
@@ -467,6 +484,12 @@ class CustomerDetail extends Model implements AuditableContract
     public function setCoupleIdentityAttribute( $image )
     {
         $this->globalSetImageAttribute( $image, 'couple_identity' );
+    }
+
+
+    public function setCoupleIdentitySelfieAttribute( $image )
+    {
+        $this->globalSetImageAttribute( $image, 'couple_identity_selfie' );
     }
 
     /**
