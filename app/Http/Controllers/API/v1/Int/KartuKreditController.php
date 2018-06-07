@@ -81,7 +81,7 @@ class KartuKreditController extends Controller{
             $content = $list_kanca_kanwil;
 
             if($content['responseCode'] == '00'){
-               return $content['responseData'];
+               return $content['responseData'][0]['mainbr'];
             }
     }
     
