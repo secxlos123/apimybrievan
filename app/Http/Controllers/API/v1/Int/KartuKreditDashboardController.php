@@ -91,20 +91,7 @@ class KartuKreditDashboardController extends Controller{
 	}
 
     function getListKancaFromKanwil($branchCode){
-        $requestPost =[
-                'app_id' => 'mybriapi',
-                'branch_code' => $kanwilCode
-            ];
-
-            $list_uker_kanca = RestwsHc::setBody([
-                        'request' => json_encode([
-                                'requestMethod' => 'get_list_uker_from_cabang',
-                                'requestData' => $requestPost
-                        ])
-                ])
-                ->post( 'form_params' );
-
-            return $list_uker_kanca;
+        
     }
 
 	public function indexKanwil(Request $req){

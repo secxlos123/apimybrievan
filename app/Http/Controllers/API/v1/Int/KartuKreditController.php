@@ -67,19 +67,18 @@ class KartuKreditController extends Controller{
     public function contohdua(Request $req){
          $requestPost =[
                 'app_id' => 'mybriapi',
-                'branch_code' => $req->kanwilCode
+                'region' => $request['region']
             ];
 
-            $list_uker_kanca = RestwsHc::setBody([
+            $list_kanca_kanwil = RestwsHc::setBody([
                         'request' => json_encode([
-                                'requestMethod' => 'get_list_uker_from_cabang',
+                                'requestMethod' => 'get_list_kanca_from_kanwil',
                                 'requestData' => $requestPost
                         ])
                 ])
                 ->post( 'form_params' );
 
-            return $list_uker_kanca;
-
+            return list_kanca_kanwil;
     }
     
 	function checkUser($nik){
