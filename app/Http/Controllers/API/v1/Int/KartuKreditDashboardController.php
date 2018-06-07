@@ -33,7 +33,7 @@ class KartuKreditDashboardController extends Controller{
 	        $rejectedLength =  $newData->where('kodeproses','8.1')->count();
         	$pushData = [
         		'region_id'=>$val['region_id'],
-         		'region_name'=>$verifikasiLength['region_name'], // erors
+         		'region_name'=>$val['region_name'],
          		'branch_id'=>$val['branch_id'],
          		'totalLength' => $newData->count(),
           		'ajukanLength'=>$ajukanLength,
@@ -90,7 +90,12 @@ class KartuKreditDashboardController extends Controller{
     	 }
 	}
 
+    function getListKancaFromKanwil(){
+        
+    }
+
 	public function indexKanwil(Request $req){
+        //response per kanca
 		$startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
         $region = $req->kanwil;
