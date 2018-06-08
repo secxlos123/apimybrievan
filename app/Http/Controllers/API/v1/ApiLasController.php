@@ -1360,7 +1360,7 @@ class ApiLasController extends Controller
 							$customer = $customer->toArray();
 							$customer = json_decode(json_encode($customer), True);
 							$briguna = \DB::table('briguna')
-									 ->select('year','Plafond_usulan','maksimum_plafond','Maksimum_angsuran','branch_name')
+									 ->select('year','Plafond_usulan','maksimum_plafond','Maksimum_angsuran','branch_name','angsuran_usulan','Jangka_waktu')
 									 ->where('briguna.eform_id', $data['eform_id'])
 									 ->get();
 							
@@ -1369,7 +1369,7 @@ class ApiLasController extends Controller
 							$briguna = json_decode(json_encode($briguna), True);
 							$message = ['no_hp'=>$customer[0]['mobile_phone'],
 										'plafond'=>$briguna[0]['Plafond_usulan'],
-										'angsuran'=>$briguna[0]['Angsuran_usulan'],
+										'angsuran'=>$briguna[0]['angsuran_usulan'],
 										'unit_kerja'=>$briguna[0]['branch_name'],
 										'year'=>$briguna[0]['Jangka_waktu'],
 										'nama_cust'=>$customer[0]['first_name'].' '.$customer[0]['last_name'],
@@ -1402,7 +1402,7 @@ class ApiLasController extends Controller
 						$customer = $customer->toArray();
 						$customer = json_decode(json_encode($customer), True);
 						$briguna = \DB::table('briguna')
-								 ->select('year','Plafon_usulan','maksimum_plafond','Maksimum_angsuran','branch_name')
+								 ->select('year','Plafond_usulan','maksimum_plafond','Maksimum_angsuran','branch_name','angsuran_usulan','Jangka_waktu')
 								 ->where('briguna.eform_id', $data['eform_id'])
 								 ->get();
 						try{
@@ -1427,34 +1427,22 @@ class ApiLasController extends Controller
                     return $result;
                     \Log::info($result);
                 }
-                $error[0] = 'Gagal Koneksi DB / Hasil Inquiry Kosong';
+
                 return [
                     'code' => 04, 
-                    'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong',
-                    'contents' => [
-                        'data' => $error
-                    ]
+                    'descriptions' => 'Gagal Koneksi DB / Hasil Inquiry Kosong'
                 ];
-            }
-            catch(SoapFault $f){
-                $error[0] = 'Gagal Koneksi Jaringan';
+            } catch(SoapFault $f) {
                 return [
                     'code' => 05, 
-                    'descriptions' => 'Gagal Koneksi Jaringan',
-                    'contents' => [
-                        'data' => $error
-                    ]
+                    'descriptions' => 'Gagal Koneksi Jaringan'
                 ];
             }
         }        
 
-        $error[0] = 'Uknown request data';
         return [
             'code' => 05, 
-            'descriptions' => 'Uknown request data',
-            'contents' => [
-                'data' => $error
-            ]
+            'descriptions' => 'Uknown request data'
         ];
     }
 
