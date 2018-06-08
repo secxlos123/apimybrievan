@@ -331,32 +331,33 @@ class UserNotification extends Model
 			$collateralData = Collateral::find($this->data['collateral_id']);
 			if(!$collateralData){
 				\Log::info('===MASUK KONDISI DLT LIST NOTIF WEB===');
-				$notifiable_id = $this->data['user_id'];
-				$collateral_id = $this->data['collateral_id'];
-				$type_module   = $this->data['type_module'];
-				// \Log::info("==NOTIFIABLE_ID :".$notifiable_id);
-				// \Log::info("==COLLATERAL_ID :".$collateral_id);
-				$deleteNotif = UserNotification::where('notifiable_id', $notifiable_id)
-								->where('type_module', $type_module)
-								// ->where('slug', $collateral_id)
-								->delete();
+				// $notifiable_id = $this->data['user_id'];
+				// $collateral_id = $this->data['collateral_id'];
+				// $type_module   = $this->data['type_module'];
+				// // \Log::info("==NOTIFIABLE_ID :".$notifiable_id);
+				// // \Log::info("==COLLATERAL_ID :".$collateral_id);
+				// $deleteNotif = UserNotification::where('notifiable_id', $notifiable_id)
+				// 				->where('type_module', $type_module)
+				// 				// ->where('slug', $collateral_id)
+				// 				->delete();
 
-				if($deleteNotif){
+				// if($deleteNotif){
 
-					\Log::info($deleteNotif);
-					\Log::info("====SUCCESS===");
+				// 	\Log::info($deleteNotif);
+				// 	\Log::info("====SUCCESS===");
 
-				}else{
+				// }else{
 
-					\Log::info($deleteNotif);
-					\Log::info("====FAILED===");
+				// 	\Log::info($deleteNotif);
+				// 	\Log::info("====FAILED===");
 
-				}
+				// }
+				$collateralManager = "Collateral Manager";
 
 			}else{
 				
 				\Log::info('===MASUK KONDISI COLMAN ADA===');
-				$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
+			$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
 			}
 			
 		}
