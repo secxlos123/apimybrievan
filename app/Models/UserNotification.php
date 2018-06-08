@@ -329,8 +329,8 @@ class UserNotification extends Model
 			
 			\Log::info('===MASUK KONDISI ISSET COLL_ID===');
 			$collateralData = Collateral::find($this->data['collateral_id']);
-			if(!$collateralData){
-				\Log::info('===MASUK KONDISI DLT LIST NOTIF WEB===');
+			// if(!$collateralData){
+				// \Log::info('===MASUK KONDISI DLT LIST NOTIF WEB===');
 				// $notifiable_id = $this->data['user_id'];
 				// $collateral_id = $this->data['collateral_id'];
 				// $type_module   = $this->data['type_module'];
@@ -352,12 +352,12 @@ class UserNotification extends Model
 				// 	\Log::info("====FAILED===");
 
 				// }
-				$collateralManager = "Collateral Manager";
+				// $collateralManager = "Collateral Manager";
 
-			}else{
+			// }else{
 				
-				\Log::info('===MASUK KONDISI COLMAN ADA===');
-			$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
+				// \Log::info('===MASUK KONDISI COLMAN ADA===');
+			$collateralManager = strtoupper( $collateralData ? $collateralData->manager_name : 'Collateral Manager' );
 			}
 			
 		}
