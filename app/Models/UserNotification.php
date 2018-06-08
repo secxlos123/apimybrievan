@@ -322,12 +322,12 @@ class UserNotification extends Model
 			}
 		}
 
-		$user = \RestwsHc::getUser();
+		// $user = \RestwsHc::getUser();
 		// \Log::info("=====LIST NOTIF WEB====");
-		\Log::info(isset($this->data['collateral_id']) ? $this->data['collateral_id'] : null);
+		// \Log::info(isset($this->data['collateral_id']) ? $this->data['collateral_id'] : null);
 		if ( isset( $this->data['collateral_id'] ) ) {
 			
-			\Log::info('===MASUK KONDISI ISSET COLL_ID NOTIF===');
+			// \Log::info('===MASUK KONDISI ISSET COLL_ID NOTIF===');
 			$collateralData = Collateral::find($this->data['collateral_id']);
 			// if(!$collateralData){
 			// 	\Log::info('===MASUK KONDISI DLT LIST NOTIF WEB===');
@@ -359,7 +359,7 @@ class UserNotification extends Model
 			// 	$collateralManager = strtoupper( $collateralData->manager_name ? $collateralData->manager_name : $user['name'] );
 			// }
 
-			$collateralManager = strtoupper( $collateralData ? $collateralData->manager_name : $user['name'] );
+			$collateralManager = strtoupper( $collateralData ? $collateralData->manager_name : "Collateral Manager" );
 			
 		}
 
