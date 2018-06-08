@@ -323,7 +323,7 @@ class UserNotification extends Model
 		}
 
 		$user = \RestwsHc::getUser();
-		\Log::info("=====LIST NOTIF WEB====");
+		// \Log::info("=====LIST NOTIF WEB====");
 		\Log::info(isset($this->data['collateral_id']) ? $this->data['collateral_id'] : null);
 		if ( isset( $this->data['collateral_id'] ) ) {
 			
@@ -334,8 +334,8 @@ class UserNotification extends Model
 				$notifiable_id = $this->data['user_id'];
 				$collateral_id = $this->data['collateral_id'];
 				$type_module   = $this->data['type_module'];
-				\Log::info("==NOTIFIABLE_ID :".$notifiable_id);
-				\Log::info("==COLLATERAL_ID :".$collateral_id);
+				// \Log::info("==NOTIFIABLE_ID :".$notifiable_id);
+				// \Log::info("==COLLATERAL_ID :".$collateral_id);
 				$deleteNotif = UserNotification::where('notifiable_id', $notifiable_id)
 								->where('type_module', $type_module)
 								// ->where('slug', $collateral_id)
