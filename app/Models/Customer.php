@@ -153,6 +153,7 @@ class Customer extends User
             'couple_birth_place_id' => $this->detail ? $this->detail->couple_birth_place_id : '',
             'couple_birth_place' => $this->couple_birth_place,
             'couple_identity' => $this->detail ? $this->detail->couple_identity : '',
+            'couple_identity_selfie' => $this->detail ? $this->detail->couple_identity_selfie : '',
             'status_id' => $this->detail ? $this->detail->status_id : '',
             'cif_number'=> $this->detail ? $this->detail->cif_number : '',
             'pendidikan_terakhir' => $this->detail ? $this->detail->pendidikan_terakhir : '',
