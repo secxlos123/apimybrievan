@@ -950,6 +950,7 @@ if (! function_exists('autoApproveForVIP')) {
 if (! function_exists('getMessage')) {
     function getMessage($type, $credentials = null)
     {
+        $user = \RestwsHc::getUser();
         switch ($type) {
             case 'eform_create':
                 $message = [
@@ -972,13 +973,13 @@ if (! function_exists('getMessage')) {
             case 'eform_approve_ao':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui.',
+                    'body' => 'Pengajuan : '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah direkomendasi Pinca untuk di proses lebih lanjut oleh CLF',
                 ];
                 break;
             case 'eform_reject':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan anda telah di Tolak',
+                    'body' => 'Pengajuan : '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' tidak direkomendasi Pinca untuk di proses lebih lanjut oleh CLF',
                 ];
                 break;
             case 'eform_reject_clas':
@@ -1000,15 +1001,19 @@ if (! function_exists('getMessage')) {
                 ];
                 break;
             case 'eform_lkn':
-                $message = [
-                    'title'=> 'EForm Notification',
-                    'body' => 'Data LKN berhasil dikirim',
-                ];
+                // $message = [
+                //     'title'=> 'EForm Notification',
+                //     'body' => 'Data LKN berhasil dikirim',
+                // ];
+                    $message = [
+                        'title' => 'EForm Notification',
+                        'body'  => 'LKn RM '.$user['name'].' atas Pengajuan '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah dikirim dan menunggu persetujuan Anda.'
+                    ];
                 break;
             case 'eform_prescreening':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Hasil Prescreening : '.$credentials->ref_number,
+                    'body' => 'Prescreening Calon Debitur a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah selesai.'/* Hasil Prescreening : '.$credentials->ref_number*/,
                 ];
                 break;
             case 'eform_pencairan_customer':
@@ -1026,8 +1031,8 @@ if (! function_exists('getMessage')) {
             case 'eform_disposition':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Disposisi Pengajuan',
-                ];
+                    'body' => 'Disposisi Pengajuan '.$credentials['eform']->product_type.'a.n'.$credentials['eform']->customer->first_name.' '.$credentials['eform']->customer->last_name.' '.$credentials['eform']->ref_number.'. Segera TL!!',
+                ]; 
                 break;
             case 'eform_recontest':
                 $message = [
@@ -1048,22 +1053,44 @@ if (! function_exists('getMessage')) {
                 ];
                 break;
             case 'collateral_penilaian':
-                $message = [
-                    'title'=> 'Collateral Notification',
-                    'body' => 'Form Penilaian Agunan',
-                ];
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penilaian Agunan debitur a.n '.$credentials['customer_name'].' '.$credentials['ref_number'].' telah dilakukan oleh '.$credentials['user_login'].', saat ini menunggu persetujuan Anda.',
+                    ];
+                }else{
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Form Penilaian Agunan',
+                        
+                    ];
+                }
                 break;
             case 'collateral_approve':
-                $message = [
-                    'title'=> 'Collateral Notification',
-                    'body' => 'Approval Collateral',
-                ];
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penilaian Agunan debitur a.n '.$credentials['customer_name'].' '.$credentials['ref_number'].' telah disetujui oleh'.$credentials['user_login'],
+                    ];
+                }else{
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Approval Collateral',
+                    ]; 
+                }
                 break;
             case 'collateral_ots':
-                $message = [
-                    'title'=> 'Collateral Notification',
-                    'body' => 'OTS Collateral',
-                ];
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penilaian agunan Debitur a.n '.$credentials['customer_name'].' sedang dilakukan oleh '.$credentials['user_login'],
+                    ];                    
+                }else{
+                    $message = [
+                        'title' => 'collateral Notification',
+                        'body'  => 'OTS Collateral',
+                    ];
+                }
                 break;
             case 'collateral_reject':
                 $message = [
@@ -1074,19 +1101,29 @@ if (! function_exists('getMessage')) {
             case 'collateral_reject_penilaian':
                 $message = [
                     'title'=> 'Collateral Notification',
-                    'body' => 'Penilaian Agunan Ditolak',
+                    // 'body' => 'Penilaian Agunan Ditolak',
+                    'body' => 'Collateral appraisal a.n '.$user['name'].' menolak permintaan penilaian, harap lakukan penugasan ke staff collateral lainnya',
                 ];
                 break;
             case 'collateral_disposition':
-                $message = [
-                    'title'=> 'Collateral Notification',
-                    'body' => 'Penugasan Staff Collateral',
-                ];
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penugasan Penilaian Agunan debitur a.n '.$credentials['customer_name'].' '.$credentials['ref_number'].' Segera TL!!',
+                    ];
+                }else{
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penugasan Staff Collateral',
+                    ];
+                }
+                    
                 break;
             case 'collateral_checklist':
                 $message = [
                     'title'=> 'Collateral Notification',
-                    'body' => 'Collateral Checklist',
+                    // 'body' => 'Collateral Checklist',
+                    'body' => 'Collateral appraisal a.n'.$user_login['name'].' telah berhasil menambahkan dokumen Collateral Checklist.',
                 ];
                 break;
             case 'collateral_property':
@@ -1511,7 +1548,7 @@ if (! function_exists('pushNotification')) {
         $branch_id = substr('0'.$userLogin['branch_id'], -3);
 
         if (!empty($data['recontest'])) {
-            $message   = getMessage("eform_lkn_recontest");
+            $message   = getMessage("eform_lkn_recontest", $credentials['data']);
             $userModel = $data['user'];
             $userNotif = new UserNotification;
 
@@ -1553,7 +1590,7 @@ if (! function_exists('pushNotification')) {
         $userLogin = $data['credentials'];
         $branch_id = substr('0'.$userLogin['branch_id'], -3);
 
-        $message   = getMessage("eform_lkn");
+        $message   = getMessage("eform_lkn", $credentials['data']);
         $userModel = $data['user'];
         $userNotif = new UserNotification;
 
@@ -1592,7 +1629,7 @@ if (! function_exists('pushNotification')) {
         $userLogin = $data['credentials'];
         $branch_id = $userLogin['branch_id'];
 
-        $message   = getMessage("eform_lkn");
+        $message   = getMessage("eform_lkn", $credentials['data']);
         $userModel = $data['user'];
         $userNotif = new UserNotification;
 
@@ -1627,7 +1664,7 @@ if (! function_exists('pushNotification')) {
         try {
             $data      = $credentials['eform'];
             $aoId      = $credentials['ao_id'];
-            $message   = getMessage("eform_disposition");
+            $message   = getMessage("eform_disposition", $credentials);
 
             $userNotif = new UserNotification;
             $notificationBuilder = new PayloadNotificationBuilder($message['title']);
@@ -1947,7 +1984,7 @@ if (! function_exists('pushNotification')) {
         $userModel = $data['user'];
         $userNotif = new UserNotification;
 
-        $message   = getMessage("eform_reject");
+        $message   = getMessage("eform_reject", $credentials['data']);
         if (empty($clas))
         {
             $userModel->notify(new RejectEFormCustomer($data['data']));

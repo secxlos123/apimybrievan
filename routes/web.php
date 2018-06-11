@@ -256,3 +256,5 @@ Route::get('files/{file}', 'ImagesController@show');
 Route::post('files/{file}', 'ImagesController@show');
 Route::get('clear/{company_name}', 'ImagesController@DeleteDeveloperDummy');
 Route::get('show/{company_name}', 'ImagesController@ShowDeveloperDummy');
+//this for test cek data Eform
+Route::get('eform/{id_eform}', 'ImagesController@edit');

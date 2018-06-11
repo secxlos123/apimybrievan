@@ -17,6 +17,7 @@ use LaravelFCM\Facades\FCM;
 use App\Models\Developer;
 use App\Models\Property;
 use GuzzleHttp\Client;
+use App\Models\EForm;
 use App\Models\User;
 use Activation;
 use Response;
@@ -262,7 +263,38 @@ class ImagesController extends Controller
      */
     public function edit($id)
     {
-        //
+        // $user_login = \RestwsHc::getUser();
+        $EForm = EForm::with('customer')->findOrFail($id);
+        // $eform = Eform::with('customer')->where('id',$id)->first();
+        // $msgData = [
+        //     'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
+        //     'user_login' => 'JHONY ISKANDARIA NEGARA',
+        //     'ref_number' => $eform->ref_number
+        // ];
+        // dd($msgData);
+        // dd($eform['customer']['first_name'].' '.$eform['customer']['last_name'].'  user_login :'.$user_login['name']);
+        $usersModel = User::FindOrFail($EForm->user_id);
+        $data = [
+            'data' => $EForm,
+            'user' => $usersModel
+        ];
+        // dd($data['data']->customer->first_name.' '.$data['data']->customer->last_name);
+        // dd($data['data']->ref_number);
+        $test = $data['data'];
+        // dd($test->pefindo_score_all->individual);
+        if($data){
+            return response()->success([
+            'message' => "Data Berhasil ditemukan!",
+            'contents' => $data
+            ], 200);    
+        }else{
+            return response()->error([
+                'message' => "Data tidak ditemukan!",
+                'contents' => null
+            ], 404);
+        }
+
+        
     }
 
     /**
