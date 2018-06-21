@@ -444,11 +444,17 @@ class CustomerDetail extends Model implements AuditableContract
 
     public function getDetailDebiturAttribute()
     {
+		if($this->eform['product_type']=='briguna'){
         return [
             "customer" => $this->eform['customer'],
-            "kpr"  => $this->eform['kpr'],
 			"briguna"=> $this->eform['briguna']
         ];
+		}else{
+		 return [
+            "customer" => $this->eform['customer'],
+            "kpr"  => $this->eform['kpr']
+        ];
+		}
     }
 
 
