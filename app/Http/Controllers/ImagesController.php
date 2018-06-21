@@ -275,10 +275,15 @@ class ImagesController extends Controller
         // dd($msgData);
         // dd($eform['customer']['first_name'].' '.$eform['customer']['last_name'].'  user_login :'.$user_login['name']);
         $usersModel = User::FindOrFail($EForm->user_id);
+        $user_login = [
+            'branch_id' => '012',
+            'pn' => '00066777'
+        ];
         $data = [
             'eform' => $EForm,
             'data'  => $Eform,
-            'user' => $usersModel
+            'user' => $usersModel,
+            'credentials' => $user_login
         ];
         //dd($data['data']->customer->first_name.' '.$data['data']->customer->last_name);
         // dd($data['data']->ref_number);
