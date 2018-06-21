@@ -446,7 +446,8 @@ class CustomerDetail extends Model implements AuditableContract
     {
         return [
             "customer" => $this->eform['customer'],
-            "kpr"  => $this->eform['kpr']
+            "kpr"  => $this->eform['kpr'],
+			"briguna"=> $this->eform['briguna']
         ];
     }
 
