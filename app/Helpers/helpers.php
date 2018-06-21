@@ -979,7 +979,7 @@ if (! function_exists('getMessage')) {
             case 'eform_reject':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Pengajuan : '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' tidak direkomendasi Pinca untuk di proses lebih lanjut oleh CLF',
+                    'body' => 'Pengajuan : '.$credentials['product_type'].' a.n '.$credentials['customer']['personal']['name'].' '.$credentials['ref_number'].' tidak direkomendasi Pinca untuk di proses lebih lanjut oleh CLF',
                 ];
                 break;
             case 'eform_reject_clas':
@@ -1031,8 +1031,9 @@ if (! function_exists('getMessage')) {
             case 'eform_disposition':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Disposisi Pengajuan '.$credentials['eform']->product_type.'a.n'.$credentials['eform']->customer->first_name.' '.$credentials['eform']->customer->last_name.' '.$credentials['eform']->ref_number.'. Segera TL!!',
+                    'body' => 'Disposisi Pengajuan '.$credentials['eform']['product_type'].' a.n '.$credentials['eform']['customer']['personal']['name'].', No. Ref: '.$credentials['eform']['ref_number'].'. Segera TL!',
                 ]; 
+                // \log::info('Disposisi Pengajuan '.$credentials['eform']['product_type'].' a.n '.$credentials['eform']['customer']['personal']['name'].', No. Ref: '.$credentials['eform']['ref_number'].'. Segera TL!')
                 break;
             case 'eform_recontest':
                 $message = [
@@ -1222,6 +1223,7 @@ if (! function_exists('pushNotification')) {
     function pushNotification($credentials, $type)
     {
         \Log::info("===HELPERS PUSH NOTIF===");
+        \Log::info("===PUSH NOTIF TYPE :".$type);
         \Log::info(env('PUSH_NOTIFICATION_TOPICS'));
         if(env('PUSH_NOTIFICATION', false)){
             if($type == 'disposition'){
@@ -1546,7 +1548,7 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials;
         $userLogin = $data['credentials'];
         $branch_id = substr('0'.$userLogin['branch_id'], -3);
-
+        \Log::info("===MASUK NOTIF LKN TO PINCA=====");
         if (!empty($data['recontest'])) {
             $message   = getMessage("eform_lkn_recontest", $credentials['data']);
             $userModel = $data['user'];
@@ -1589,7 +1591,7 @@ if (! function_exists('pushNotification')) {
         $data      = $credentials;
         $userLogin = $data['credentials'];
         $branch_id = substr('0'.$userLogin['branch_id'], -3);
-
+        \Log::info("===MASUK NOTIF LKN 2 TO PINCA=====");
         $message   = getMessage("eform_lkn", $credentials['data']);
         $userModel = $data['user'];
         $userNotif = new UserNotification;

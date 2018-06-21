@@ -261,10 +261,11 @@ class ImagesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, $type_notif)
     {
         // $user_login = \RestwsHc::getUser();
         $EForm = EForm::with('customer')->findOrFail($id);
+        $Eform = EForm::findOrFail($id);
         // $eform = Eform::with('customer')->where('id',$id)->first();
         // $msgData = [
         //     'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
@@ -275,26 +276,83 @@ class ImagesController extends Controller
         // dd($eform['customer']['first_name'].' '.$eform['customer']['last_name'].'  user_login :'.$user_login['name']);
         $usersModel = User::FindOrFail($EForm->user_id);
         $data = [
-            'data' => $EForm,
+            'eform' => $EForm,
+            'data'  => $Eform,
             'user' => $usersModel
         ];
-        // dd($data['data']->customer->first_name.' '.$data['data']->customer->last_name);
+        //dd($data['data']->customer->first_name.' '.$data['data']->customer->last_name);
         // dd($data['data']->ref_number);
-        $test = $data['data'];
+        // $test = $data['data'];
         // dd($test->pefindo_score_all->individual);
-        if($data){
-            return response()->success([
-            'message' => "Data Berhasil ditemukan!",
-            'contents' => $data
-            ], 200);    
-        }else{
-            return response()->error([
-                'message' => "Data tidak ditemukan!",
-                'contents' => null
-            ], 404);
-        }
+        // $result = $this->getMessage('eform_pencairan', $data);
+        \Log::info('============'.$type_notif.'===============');
+        pushNotification($data, $type_notif);
+        $result = $this->TesData($data, 'disposition');
+        // dd($result);
+        return response()->success([
+            'message' => 'Berhasil',
+            'contents' => $result
+            ], 200);
+        // if($data){
+        //     return response()->success([
+        //     'message' => "Data Berhasil ditemukan!",
+        //     'contents' => $data
+        //     ], 200);    
+        // }else{
+        //     return response()->error([
+        //         'message' => "Data tidak ditemukan!",
+        //         'contents' => null
+        //     ], 404);
+        // }
 
         
+    }
+
+    public function TesData($credentials, $type){
+       if($type == 'disposition'){
+        //\Log::info("===MASUK PUSH_NOTIFICATION DISPOSISI===");
+           $message = $this->disposition($credentials);
+       }elseif($type == 'pencairan'){
+           $message = $this->pencairanEForm($credentials);
+       }
+       return $message;
+    }
+
+    public function disposition($credentials){
+        // dd($credentials);
+       // \Log::info("===MASUK PROSES PUSH_NOTIFICATION DISPOSISI===");
+        $message = $this->getMessage('eform_disposition', $credentials);
+        return $message;   
+    }
+
+    public function getMessage($type, $credentials = NULL){
+        switch ($type) {
+            case 'eform_pencairan':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials['eform']->ref_number.' telah dicairkan.',
+                ];
+                break;
+            case 'eform_disposition':
+         //   \Log::info("===MASUK DISPOSISI Message===");
+            // \Log::info($credentials->product_type);
+                // dd($credentials['eform']->customer->first_name);
+                $name = $credentials['eform']->customer->first_name.' '.$credentials['eform']->customer->last_name;
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Disposisi Pengajuan '.$credentials['eform']->product_type.' a.n '.$name.' '.$credentials['eform']->ref_number.'. Segera TL!!',
+                ]; 
+                // dd($message);
+                break;
+            
+            default:
+                $message = [
+                    'title'=> NULL,
+                    'body' => NULL
+                ]; 
+                break;
+        }
+        return $message;
     }
 
     /**
