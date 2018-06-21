@@ -52,7 +52,7 @@ class MenuController extends Controller
 		$dirup = str_replace('\menu','',$dir);
 		$directory = $dirup.'\\Et\\'.$request->view;
 		exec('mkdir '.$directory);
-		exec('cp '.$dirup.'\\CopyController.php'.' '.$directory.'\\'.$request->view.'Controller.php';
+		exec('cp '.$dirup.'\\CopyController.php'.' '.$directory.'\\'.$request->view.'Controller.php');
 		 return response()->success( [
             'message' => 'Sukses',
         ]);
