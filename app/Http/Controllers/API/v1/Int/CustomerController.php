@@ -128,7 +128,7 @@ class CustomerController extends Controller
 		
         $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
 
-        if (count($customerDetail) > 0) {
+        if (count($customerDetail) >= 0) {
 	        try{
 			$eform = DB::table('eforms')
 					 ->select('IsFinish')
