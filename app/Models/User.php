@@ -515,6 +515,13 @@ class User extends Authenticatable implements AuditableContract, UserResolver
             })
             ->leftJoin( 'eforms as e', 'last_eform.eform_id', '=', 'e.id' )
             ->leftJoin( 'visit_reports as v', 'e.id', '=', 'v.eform_id' )
+			 ->whereRaw(
+                        "(case when e.product_type='briguna' then ".
+                        'e."IsFinish"='."'false' and ".
+                        '(e."status_eform" = '." 'Menunggu Putusan' or ".' e."status_eform" '." ISNULL or ".' e."status_eform"='."'') ".
+                        'else e."IsFinish"=e."IsFinish" and e."status_eform"=e."status_eform"
+                        end)'
+                      )
             ->where( function( $user ) use( $request ) {
 
                 if( $request->has( 'eform' )) {
