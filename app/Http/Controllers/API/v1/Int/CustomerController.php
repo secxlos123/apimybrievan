@@ -126,7 +126,7 @@ class CustomerController extends Controller
     public function show( $type, $id )
     {
 		
-        $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
+        $customerDetail = CustomerDetail::where( 'user_id', '=', $id )->first();
 
         if (count($customerDetail) >= 0) {
 	        try{
