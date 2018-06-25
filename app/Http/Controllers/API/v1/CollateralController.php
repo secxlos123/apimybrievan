@@ -308,7 +308,7 @@ class CollateralController extends Controller
                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$aksiCollateral)
                                                  ->orderBy('created_at', 'desc')->first();
                   $id = $notificationData['id'];
-                  $message = getMessage('collateral_penilaian');
+                  $message = getMessage('collateral_penilaian',  $msgData);
                   $credentials = [
                      'headerNotif' => $message['title'],
                      'bodyNotif' => $message['body'],

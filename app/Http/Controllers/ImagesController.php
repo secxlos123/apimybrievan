@@ -277,13 +277,14 @@ class ImagesController extends Controller
         $usersModel = User::FindOrFail($EForm->user_id);
         $user_login = [
             'branch_id' => '012',
-            'pn' => '00066777'
+            'pn' => '00066777',
         ];
         $data = [
             'eform' => $EForm,
             'data'  => $Eform,
             'user' => $usersModel,
-            'credentials' => $user_login
+            'credentials' => $user_login,
+            'ao_id' => '00066777'
         ];
         //dd($data['data']->customer->first_name.' '.$data['data']->customer->last_name);
         // dd($data['data']->ref_number);
@@ -291,9 +292,9 @@ class ImagesController extends Controller
         // dd($test->pefindo_score_all->individual);
         // $result = $this->getMessage('eform_pencairan', $data);
         \Log::info('============'.$type_notif.'===============');
-        pushNotification($data, $type_notif);
-        $result = $this->TesData($data, 'disposition');
+        // $result = $this->TesData($data, 'disposition');
         // dd($result);
+        $result = $this->NewpushNotification($data, $type_notif);
         return response()->success([
             'message' => 'Berhasil',
             'contents' => $result
@@ -323,12 +324,12 @@ class ImagesController extends Controller
        return $message;
     }
 
-    public function disposition($credentials){
-        // dd($credentials);
-       // \Log::info("===MASUK PROSES PUSH_NOTIFICATION DISPOSISI===");
-        $message = $this->getMessage('eform_disposition', $credentials);
-        return $message;   
-    }
+    // public function disposition($credentials){
+    //     // dd($credentials);
+    //    // \Log::info("===MASUK PROSES PUSH_NOTIFICATION DISPOSISI===");
+    //     $message = $this->getMessage('eform_disposition', $credentials);
+    //     return $message;   
+    // }
 
     public function getMessage($type, $credentials = NULL){
         switch ($type) {
@@ -358,6 +359,361 @@ class ImagesController extends Controller
                 break;
         }
         return $message;
+    }
+
+    public function NewpushNotification($credentials, $type)
+    {
+        \Log::info("===HELPERS PUSH NOTIF===");
+        \Log::info("===PUSH NOTIF TYPE :".$type);
+        \Log::info(env('PUSH_NOTIFICATION_TOPICS'));
+        if(env('PUSH_NOTIFICATION', false)){
+            if($type == 'disposition'){
+                $this->disposition($credentials);
+            }else if($type == 'createEForm'){
+                $this->createEForm($credentials);
+            }else if($type == 'approveEForm'){
+                $this->approveEForm($credentials);
+            }else if($type == 'rejectEForm'){
+                $this->rejectEForm($credentials);
+            }else if($type == 'lknEForm'){
+                $this->lknEForm($credentials);
+            }else if($type == 'createSchedule'){
+                // createSchedule($credentials);
+            }else if($type == 'updateSchedule'){
+                $this->updateSchedule($credentials);
+            }else if($type == 'verifyCustomer'){
+                $this->verifyCustomer($credentials);
+            }else if($type == 'recontestEForm'){
+                $this->recontestEForm($credentials);
+            }else if($type == 'prescreening'){
+                $this->prescreeningEForm($credentials);
+            }else if($type == 'pencairanEForm'){
+                $this->pencairanEForm($credentials);
+            }else if ($type =='general'){
+                $this->collateralNotification($credentials);
+            }
+        }
+    }
+
+    public function getMessagePush($type, $credentials = null)
+    {
+        $user = [
+            'name' => 'zain saparudin',
+            'pn'   => '00066777'
+        ];
+        switch ($type) {
+            case 'eform_create':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan KPR Baru',
+                ];
+                break;
+            case 'eform_approve':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah di Setujui',
+                ];
+                break;
+            case 'eform_approve_clas':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Setujui CLS.',
+                ];
+                break;
+            case 'eform_approve_ao':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah direkomendasi Pinca untuk di proses lebih lanjut oleh CLF',
+                ];
+                break;
+            case 'eform_reject':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials['product_type'].' a.n '.$credentials['customer']['personal']['name'].' '.$credentials['ref_number'].' tidak direkomendasi Pinca untuk di proses lebih lanjut oleh CLF',
+                ];
+                break;
+            case 'eform_reject_clas':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak CLS.',
+                ];
+                break;
+            case 'eform_reject_ao':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Tolak.',
+                ];
+                break;
+            case 'eform_lkn_recontest':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Data LKN Recontest berhasil dikirim',
+                ];
+                break;
+            case 'eform_lkn':
+                // $message = [
+                //     'title'=> 'EForm Notification',
+                //     'body' => 'Data LKN berhasil dikirim',
+                // ];
+                    $message = [
+                        'title' => 'EForm Notification',
+                        'body'  => 'LKn RM '.$user['name'].' atas Pengajuan '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah dikirim dan menunggu persetujuan Anda.'
+                    ];
+                break;
+            case 'eform_prescreening':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Prescreening Calon Debitur a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah selesai.'/* Hasil Prescreening : '.$credentials->ref_number*/,
+                ];
+                break;
+            case 'eform_pencairan_customer':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan anda telah dicairkan.',
+                ];
+                break;
+            case 'eform_pencairan':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah dicairkan.',
+                ];
+                break;
+            case 'eform_disposition':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Disposisi Pengajuan '.$credentials['eform']['product_type'].' a.n '.$credentials['eform']['customer']['personal']['name'].', No. Ref: '.$credentials['eform']['ref_number'].'. Segera TL!',
+                ]; 
+                // \log::info('Disposisi Pengajuan '.$credentials['eform']['product_type'].' a.n '.$credentials['eform']['customer']['personal']['name'].', No. Ref: '.$credentials['eform']['ref_number'].'. Segera TL!')
+                break;
+            case 'eform_recontest':
+                $message = [
+                    'title'=> 'EForm Notification',
+                    'body' => 'Pengajuan : '.$credentials->ref_number.' telah di Rekontest',
+                ];
+                break;
+            case 'schedule_create':
+                $message = [
+                    'title'=> 'Schedule Notification',
+                    'body' => 'Anda memiliki jadwal baru',
+                ];
+                break;
+            case 'schedule_update':
+                $message = [
+                    'title'=> 'Schedule Notification',
+                    'body' => 'Jadwal anda telah di update, Silahkan cek jadwal anda',
+                ];
+                break;
+            case 'collateral_penilaian':
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penilaian Agunan debitur a.n '.$credentials['customer_name'].' '.$credentials['ref_number'].' telah dilakukan oleh '.$credentials['user_login'].', saat ini menunggu persetujuan Anda.',
+                    ];
+                }else{
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Form Penilaian Agunan',
+                        
+                    ];
+                }
+                break;
+            case 'collateral_approve':
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penilaian Agunan debitur a.n '.$credentials['customer_name'].' '.$credentials['ref_number'].' telah disetujui oleh'.$credentials['user_login'],
+                    ];
+                }else{
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Approval Collateral',
+                    ]; 
+                }
+                break;
+            case 'collateral_ots':
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penilaian agunan Debitur a.n '.$credentials['customer_name'].' sedang dilakukan oleh '.$credentials['user_login'],
+                    ];                    
+                }else{
+                    $message = [
+                        'title' => 'collateral Notification',
+                        'body'  => 'OTS Collateral',
+                    ];
+                }
+                break;
+            case 'collateral_reject':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Reject Collateral',
+                ];
+                break;
+            case 'collateral_reject_penilaian':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    // 'body' => 'Penilaian Agunan Ditolak',
+                    'body' => 'Collateral appraisal a.n '.$user['name'].' menolak permintaan penilaian, harap lakukan penugasan ke staff collateral lainnya',
+                ];
+                break;
+            case 'collateral_disposition':
+                if($credentials != NULL){
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penugasan Penilaian Agunan debitur a.n '.$credentials['customer_name'].' '.$credentials['ref_number'].' Segera TL!!',
+                    ];
+                }else{
+                    $message = [
+                        'title'=> 'Collateral Notification',
+                        'body' => 'Penugasan Staff Collateral',
+                    ];
+                }
+                    
+                break;
+            case 'collateral_checklist':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    // 'body' => 'Collateral Checklist',
+                    'body' => 'Collateral appraisal a.n'.$user_login['name'].' telah berhasil menambahkan dokumen Collateral Checklist.',
+                ];
+                break;
+            case 'collateral_property':
+                $message = [
+                    'title'=> 'Collateral Notification',
+                    'body' => 'Collateral Property Baru',
+                ];
+                break;
+            case 'verify':
+                $message = [
+                    'title'=> 'Verify Notification',
+                    'body' => 'Silahkan Verifikasi Data Anda',
+                ];
+                break;
+            default:
+                $message = [
+                    'title'=> "undefined",
+                    'body' => 'Type undefined',
+                ];
+                break;
+        }
+
+        return $message;
+    }
+
+    public function disposition($credentials){
+        $message = $this->getMessagePush('eform_disposition', $credentials);
+
+        try {
+            \Log::info(env('PUSH_NOTIFICATION', false));
+            if(env('PUSH_NOTIFICATION') == false){
+                return "PLEASE Turn On Notification Service";
+            }
+            $topic = env('PUSH_NOTIFICATION_TOPICS');
+            $TP = (String) $topic;
+            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+            $notificationBuilder->setBody($message['body'])
+                                ->setSound('default');
+
+            $notification = $notificationBuilder->build();
+
+            $topic = new Topics();
+            $topic->topic($TP)->andTopic('branch_012')->andTopic('ao_00066777');
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+
+            \Log::info("===SUCCESS disposition SEND PUSH_NOTIFICATION===");
+            $return = "SUCCESS disposition SEND PUSH_NOTIFICATION";
+            return $return
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
+            $return = "FAILED disposition SEND PUSH_NOTIFICATION";
+            return $return;
+        }
+
+    }
+
+    public function lknEForm($credentials){
+        $message = $this->getMessagePush('eform_lkn', $credentials['data']);
+
+        try {
+            \Log::info(env('PUSH_NOTIFICATION', false));
+            if(env('PUSH_NOTIFICATION') == false){
+                return "PLEASE Turn On Notification Service";
+            }
+            $topic = env('PUSH_NOTIFICATION_TOPICS');
+            $TP = (String) $topic;
+            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+            $notificationBuilder->setBody($message['body'])
+                                ->setSound('default');
+
+            $notification = $notificationBuilder->build();
+
+            $topic = new Topics();
+            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca');
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+
+            \Log::info("===SUCCESS LKN Eform SEND PUSH_NOTIFICATION===");
+            $return = "SUCCESS LKN Eform SEND PUSH_NOTIFICATION";
+            return $return
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
+            $return = "FAILED LKN Eform SEND PUSH_NOTIFICATION";
+            return $return;
+        }
+
+    }
+
+    public function collateralNotification($credentials){
+        $msgData = [
+            'customer_name' => $credentials['eform']['customer']['personal']['name'],
+            'user_login' => 'Jain saparudin',
+            'ref_number' => $credentials['eform']['ref_number']
+        ];
+
+        $message = $this->getMessagePush('collateral_penilaian', $msgData);
+
+        try {
+            \Log::info(env('PUSH_NOTIFICATION', false));
+            if(env('PUSH_NOTIFICATION') == false){
+                return "PLEASE Turn On Notification Service";
+            }
+            $topic = env('PUSH_NOTIFICATION_TOPICS');
+            $TP = (String) $topic;
+            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+            $notificationBuilder->setBody($message['body'])
+                                ->setSound('default');
+
+            $notification = $notificationBuilder->build();
+
+            $topic = new Topics();
+            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca');
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+
+            \Log::info("===SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION===");
+            $return = "SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION";
+            return $return
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
+            $return = "FAILED Collateral Penilaian SEND PUSH_NOTIFICATION";
+            return $return;
+        }
     }
 
     /**
