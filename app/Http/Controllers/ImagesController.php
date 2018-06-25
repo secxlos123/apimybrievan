@@ -654,7 +654,7 @@ class ImagesController extends Controller
             $notification = $notificationBuilder->build();
 
             $topic = new Topics();
-            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca');
+            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca')->orTopic('mp');
 
             $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
 
@@ -697,7 +697,7 @@ class ImagesController extends Controller
             $notification = $notificationBuilder->build();
 
             $topic = new Topics();
-            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca');
+            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca')->orTopic('mp');
 
             $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
 
