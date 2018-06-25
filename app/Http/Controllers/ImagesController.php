@@ -261,7 +261,7 @@ class ImagesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, $type_notif)
+    public function edit($id, $type_notif, $message_type = NULL)
     {
         // $user_login = \RestwsHc::getUser();
         $EForm = EForm::with('customer')->findOrFail($id);
@@ -294,7 +294,7 @@ class ImagesController extends Controller
         \Log::info('============'.$type_notif.'===============');
         // $result = $this->TesData($data, 'disposition');
         // dd($result);
-        $result = $this->NewpushNotification($data, $type_notif);
+        $result = $this->NewpushNotification($data, $type_notif, $message_type);
         return response()->success([
             'message' => 'Berhasil',
             'contents' => $result
@@ -361,7 +361,7 @@ class ImagesController extends Controller
         return $message;
     }
 
-    public function NewpushNotification($credentials, $type)
+    public function NewpushNotification($credentials, $type, $message_type)
     {
         \Log::info("===HELPERS PUSH NOTIF===");
         \Log::info("===PUSH NOTIF TYPE :".$type);
@@ -372,7 +372,7 @@ class ImagesController extends Controller
             }else if($type == 'createEForm'){
               return  $this->createEForm($credentials);
             }else if($type == 'approveEForm'){
-              return  $this->approveEForm($credentials);
+              return  $this->approveEForm($credentials, $message_type);
             }else if($type == 'rejectEForm'){
               return  $this->rejectEForm($credentials);
             }else if($type == 'lknEForm'){
@@ -716,8 +716,22 @@ class ImagesController extends Controller
         }
     }
 
-    public function approveEForm($credentials){
-        $message = $this->getMessagePush('eform_approve_ao', $credentials['data']);
+    public function approveEForm($credentials, $message_type){
+        // eform_approve, eform_approve_clas, eform_reject_clas, eform_reject, eform_reject_ao, eform_prescreening, eform_recontest
+        if($message_type == "eform_approve_ao"){
+
+            $message = $this->getMessagePush('eform_approve_ao', $credentials['data']);
+        }else if($message_type == "eform_approve_clas"){
+            $message = $this->getMessagePush('eform_approve_clas', $credentials['data']);
+        }else if( $message_type == "eform_reject" ){
+            $message = $this->getMessagePush('eform_reject', $credentials['data']);
+        }else if($message_type == "eform_reject_ao"){
+            $message = $this->getMessagePush('eform_reject_ao', $credentials['data']);
+        }else if($message_type == "eform_prescreening"){
+            $message = $this->getMessagePush('eform_prescreening', $credentials['data']);
+        }else if($message_type == "eform_recontest"){
+            $message = $this->getMessagePush('eform_recontest', $credentials['data']);
+        }
         try {
             \Log::info(env('PUSH_NOTIFICATION', false));
             if(env('PUSH_NOTIFICATION') == false){
