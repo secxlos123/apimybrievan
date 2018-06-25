@@ -368,29 +368,29 @@ class ImagesController extends Controller
         \Log::info(env('PUSH_NOTIFICATION_TOPICS'));
         if(env('PUSH_NOTIFICATION', false)){
             if($type == 'disposition'){
-                $this->disposition($credentials);
+              return $this->disposition($credentials);
             }else if($type == 'createEForm'){
-                $this->createEForm($credentials);
+              return  $this->createEForm($credentials);
             }else if($type == 'approveEForm'){
-                $this->approveEForm($credentials);
+              return  $this->approveEForm($credentials);
             }else if($type == 'rejectEForm'){
-                $this->rejectEForm($credentials);
+              return  $this->rejectEForm($credentials);
             }else if($type == 'lknEForm'){
-                $this->lknEForm($credentials);
+              return  $this->lknEForm($credentials);
             }else if($type == 'createSchedule'){
                 // createSchedule($credentials);
             }else if($type == 'updateSchedule'){
-                $this->updateSchedule($credentials);
+              return  $this->updateSchedule($credentials);
             }else if($type == 'verifyCustomer'){
-                $this->verifyCustomer($credentials);
+               return $this->verifyCustomer($credentials);
             }else if($type == 'recontestEForm'){
-                $this->recontestEForm($credentials);
+               return $this->recontestEForm($credentials);
             }else if($type == 'prescreening'){
-                $this->prescreeningEForm($credentials);
+               return $this->prescreeningEForm($credentials);
             }else if($type == 'pencairanEForm'){
-                $this->pencairanEForm($credentials);
+               return $this->pencairanEForm($credentials);
             }else if ($type =='general'){
-                $this->collateralNotification($credentials);
+               return $this->collateralNotification($credentials);
             }
         }
     }
@@ -683,6 +683,41 @@ class ImagesController extends Controller
 
         $message = $this->getMessagePush('collateral_penilaian', $msgData);
 
+        try {
+            \Log::info(env('PUSH_NOTIFICATION', false));
+            if(env('PUSH_NOTIFICATION') == false){
+                return "PLEASE Turn On Notification Service";
+            }
+            $topic = env('PUSH_NOTIFICATION_TOPICS');
+            $TP = (String) $topic;
+            $notificationBuilder = new PayloadNotificationBuilder($message['title']);
+            $notificationBuilder->setBody($message['body'])
+                                ->setSound('default');
+
+            $notification = $notificationBuilder->build();
+
+            $topic = new Topics();
+            $topic->topic($TP)->andTopic('branch_012')->andTopic('pinca');
+
+            $topicResponse = FCM::sendToTopic($topic, null, $notification, null);
+
+            $topicResponse->isSuccess();
+            $topicResponse->shouldRetry();
+            $topicResponse->error();
+
+            \Log::info("===SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION===");
+            $return = "SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION";
+            return $return;
+            
+        } catch (RequestException $e) {
+            \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
+            $return = "FAILED Collateral Penilaian SEND PUSH_NOTIFICATION";
+            return $return;
+        }
+    }
+
+    public function approveEForm($credentials){
+        $message = $this->getMessagePush('eform_approve_ao', $credentials['data']);
         try {
             \Log::info(env('PUSH_NOTIFICATION', false));
             if(env('PUSH_NOTIFICATION') == false){
