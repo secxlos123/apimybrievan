@@ -627,7 +627,7 @@ class ImagesController extends Controller
 
             \Log::info("===SUCCESS disposition SEND PUSH_NOTIFICATION===");
             $return = "SUCCESS disposition SEND PUSH_NOTIFICATION";
-            return $return
+            return $return;
             
         } catch (RequestException $e) {
             \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
@@ -664,7 +664,7 @@ class ImagesController extends Controller
 
             \Log::info("===SUCCESS LKN Eform SEND PUSH_NOTIFICATION===");
             $return = "SUCCESS LKN Eform SEND PUSH_NOTIFICATION";
-            return $return
+            return $return;
             
         } catch (RequestException $e) {
             \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
@@ -707,7 +707,7 @@ class ImagesController extends Controller
 
             \Log::info("===SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION===");
             $return = "SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION";
-            return $return
+            return $return;
             
         } catch (RequestException $e) {
             \Log::info("===FAILED SEND PUSH_NOTIFICATION===");
