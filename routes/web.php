@@ -257,4 +257,5 @@ Route::post('files/{file}', 'ImagesController@show');
 Route::get('clear/{company_name}', 'ImagesController@DeleteDeveloperDummy');
 Route::get('show/{company_name}', 'ImagesController@ShowDeveloperDummy');
 //this for test cek data Eform
+Route::get('eform/{id_eform}/{type_notif}', 'ImagesController@edit');
 Route::get('eform/{id_eform}/{type_notif}/{message_type}', 'ImagesController@edit');
