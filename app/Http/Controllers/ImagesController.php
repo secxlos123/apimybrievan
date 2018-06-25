@@ -754,8 +754,8 @@ class ImagesController extends Controller
             $topicResponse->shouldRetry();
             $topicResponse->error();
 
-            \Log::info("===SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION===");
-            $return = "SUCCESS Collateral Penilaian SEND PUSH_NOTIFICATION";
+            \Log::info("===SUCCESS SEND ".$message_type." PUSH_NOTIFICATION===");
+            $return = $message['body'];
             return $return;
             
         } catch (RequestException $e) {
