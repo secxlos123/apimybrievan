@@ -564,7 +564,7 @@ class CollateralController extends Controller
       $this->collateral->where( 'status', Collateral::STATUS[0] )
         ->findOrFail( $collateralId )
           ->update( $baseRequest );
-      if(env('TEST_NOTIF', false))
+      if(env('PUSH_NOTIFICATION', false))
        {
         \Log::info('=======notif disposisi ke staff colleteral atau ao ======');
         $dataInput = $this->request->all();
