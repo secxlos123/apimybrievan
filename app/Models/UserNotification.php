@@ -639,6 +639,8 @@ class UserNotification extends Model
 				// Disposisi collateral
 				// dari col-man
 				// ke staff-col
+			\Log::info("==CLASS: App\Notifications\CollateralDisposition");
+			\Log::info("==BASEWORDING: ".$baseWording);
 				$append = array( 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!' );
 				break;
 
@@ -646,6 +648,8 @@ class UserNotification extends Model
 				// Disposisi collateral
 				// dari col-man
 				// ke ao
+			\Log::info("==CLASS: App\Notifications\CollateraAODisposition");
+			\Log::info("==BASEWORDING: ".$baseWording);
 				$append = array(
 					'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!'
 					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
