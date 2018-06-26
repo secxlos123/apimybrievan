@@ -111,6 +111,7 @@ class CollateralController extends Controller
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         if ($user['role']!= 'superadmin') {
+          \Log::info("masuk sini meren". (int) $this->request->header('pn'));
         $data->where('staff_id',(int) $this->request->header('pn'));
         }
       }
@@ -285,10 +286,18 @@ class CollateralController extends Controller
                   $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
                   if($getDataEform){
                     $eform_id = $getDataEform->eform_id;
-                    $eform = Eform::where('id',$eform_id)->first();
+                    $eform = Eform::with('customer')->where('id',$eform_id)->first();
                     $user_id = $eform->user_id;
+                    $user_login = \RestwsHc::getUser();
+                    $msgData = [
+                      'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
+                      'user_login' => $user_login['name'],
+                      'ref_number' => $eform->ref_number
+                    ];
+                    $message = getMessage('collateral_penilaian', $msgData);
                   }else{
                     $user_id = $collateral->developer_id;
+                    $message = getMessage('collateral_penilaian');
                   }
                   $usersModel = User::where('id',$user_id)->first();
                   $dataUser  = UserServices::where('pn',$manager_id)->first();
@@ -299,7 +308,7 @@ class CollateralController extends Controller
                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$aksiCollateral)
                                                  ->orderBy('created_at', 'desc')->first();
                   $id = $notificationData['id'];
-                  $message = getMessage('collateral_penilaian');
+                  $message = getMessage('collateral_penilaian',  $msgData);
                   $credentials = [
                      'headerNotif' => $message['title'],
                      'bodyNotif' => $message['body'],
@@ -499,7 +508,22 @@ class CollateralController extends Controller
             }
             if($user_id !='kosong' && $pushNotif == true)
             {
-              $message = getMessage($status);
+              if($status == 'collateral_approve'){
+                if($request->has('eform_id')){
+                  $user_login = \RestwsHc::getUser();
+                  $eform   = Eform::with('customer')->where('id', $request->input('eform_id'))->first();
+                  $msgData = [
+                    'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
+                    'ref_number'    => $eform->ref_number,
+                    'user_login'    => $user_login['name']
+                  ];
+                  $message = getMessage($status, $msgData);
+                }else{
+                  $message = getMessage($status);  
+                }
+              }else{
+                $message = getMessage($status);
+              }
               $id = $notificationData['id'];
               $credentials = [
                   'headerNotif' => 'Collateral Notification',
@@ -553,11 +577,18 @@ class CollateralController extends Controller
         if($getDataEform)
         {
           $eform_id = $getDataEform->eform_id;
-          $eform = Eform::where('id',$eform_id)->first();
+          $eform = Eform::with('customer')->where('id',$eform_id)->first();
           $user_id = $eform->user_id;
+          $user_login = \RestwsHc::getUser();
+          $msgData = [
+            'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
+            'ref_number' => $eform->ref_number
+          ];
+          $message = getMessage('collateral_disposition', $msgData);
         }else
         {
           $user_id= $developer_id;
+          $message = getMessage('collateral_disposition');
         }
 
         $usersModel = User::where('id',$user_id)->first();
@@ -576,7 +607,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
-        $message = getMessage('collateral_disposition');
+        // $message = getMessage('collateral_disposition');
         $credentials = [
             'slug' => $collateralId,
             'id' => $id,
@@ -702,18 +733,25 @@ class CollateralController extends Controller
      public function sendNotifOTS($collateral_id,$typeKpr){
         $dataCollateral = Collateral::find($collateral_id);
         $id_manager_collateral = $dataCollateral->manager_id;
+        $user_login = \RestwsHc::getUser();
         //*
         //insert data from notifications table
         $type = 'collateral_ots';
         $getDataEform  = DB::table('collateral_view_table')->where('collaterals_id', $collateral_id)->first();
         if($getDataEform){
           $eform_id = $getDataEform->eform_id;
-          $eform = Eform::where('id',$eform_id)->first();
+          $eform = Eform::with('customer')->where('id',$eform_id)->first();
           $user_id = $eform->user_id;
+          $msgData = [
+            'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
+            'user_login' => $user_login['name']
+          ];
+          $message = getMessage('collateral_ots', $msgData);
         }
         else
         {
           $user_id =$dataCollateral->developer_id;
+          $message = getMessage('collateral_ots');
         }
         $usersModel = User::where('id',$user_id)->first();
         $dataUser  = UserServices::where('pn',$id_manager_collateral)->first();
@@ -724,7 +762,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
-        $message = getMessage('collateral_ots');
+        // $message = getMessage('collateral_ots');
         //*/
         $credentials = [
             'headerNotif' => $message['title'],
