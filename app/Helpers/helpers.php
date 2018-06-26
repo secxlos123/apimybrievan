@@ -1124,7 +1124,7 @@ if (! function_exists('getMessage')) {
                 $message = [
                     'title'=> 'Collateral Notification',
                     // 'body' => 'Collateral Checklist',
-                    'body' => 'Collateral appraisal a.n'.$user_login['name'].' telah berhasil menambahkan dokumen Collateral Checklist.',
+                    'body' => 'Collateral appraisal a.n'.$user['name'].' telah berhasil menambahkan dokumen Collateral Checklist.',
                 ];
                 break;
             case 'collateral_property':
