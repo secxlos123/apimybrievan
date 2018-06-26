@@ -133,6 +133,18 @@ class EFormController extends Controller
         }else{
             $newForm = EFormMonitoring::filter( $request )->paginate( $limit );
         }
+
+        foreach ($newForm as $forms) {
+            if($forms['sales_dev_id']!=null){
+                $sales = DB::table('sales')
+                ->select('sales.first_name', 'sales.last_name')
+                ->where('sales.id', $forms['sales_dev_id'])
+                ->get();
+
+                $forms['sales_name'] = $sales[0]['first_name'].' '.$sales[0]['last_name'];
+            }
+        }
+
         return response()->success( [
             'message' => 'Sukses',
             'contents' => $newForm
