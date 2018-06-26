@@ -1007,7 +1007,7 @@ if (! function_exists('getMessage')) {
                 // ];
                     $message = [
                         'title' => 'EForm Notification',
-                        'body'  => 'LKn RM '.$user['name'].' atas Pengajuan '.$credentials->product_type.' a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah dikirim dan menunggu persetujuan Anda.'
+                        'body'  => 'LKn RM '.$user['name'].' atas Pengajuan '.$credentials['product_type'].' a.n '.$credentials['customer']['personal']['name'].' '.$credentials['ref_number'].' telah dikirim dan menunggu persetujuan Anda.'
                     ];
                 break;
             case 'eform_prescreening':
