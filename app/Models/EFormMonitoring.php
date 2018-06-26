@@ -627,7 +627,7 @@ class EFormMonitoring extends Model implements AuditableContract
         \Log::info("------- FILTERING EFORMS RESULT -------");
         \Log::info(print_r($request->source,true).' '.print_r($request->dev_id,true));
 
-        $eform = $query->from('eforms')->join('kpr', 'kpr.eform_id', '=', 'eforms.id')->join(;'users', 'users.id', '=', 'eforms.sales_dev_id')
+        $eform = $query->from('eforms')->join('kpr', 'kpr.eform_id', '=', 'eforms.id')
             ->where( function( $eform ) use( $request ) {
                 if( $request->has('product_type') &&  $request->product_type!='-') {
                     \Log::info("------- FILTERING PRODUCT TYPE RESULT -------");
@@ -655,7 +655,24 @@ class EFormMonitoring extends Model implements AuditableContract
                     $eform->where('eforms.branch_id', $request->branch_id);
                 }
             })
-            ->orderBy('created_at', 'asc');
+            ->orderBy('eforms.created_at', 'asc');
+
+        for($i=0; $i<count($eform); $i++)
+        {
+            if($form['sales_dev_id']!=null){
+                $sales = DB::table('sales')
+                ->select('sales.first_name', 'sales.last_name')
+                ->where('sales.id', $form['sales_dev_id']);
+                ->get();
+
+                $eform['sales_name'] = $sales[0]['first_name'].' '.$sales[0]['last_name'];
+            }
+        }
+
+        DB::table('sales')
+                ->select('sales.first_name', 'sales.last_name')
+                ->where('uker_tables.kode_uker', $kode_uker)
+                ->get();
 
         // $eform->join('kpr', 'kpr.eform_id', '=', 'eforms.id');
 
