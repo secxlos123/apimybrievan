@@ -151,7 +151,7 @@ class NotificationController extends Controller
 
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, null, true);
         }
-
+        \Log::info("===Unread Count: ".$data);
         return response()->success([
             'message' => 'Sukses',
             'contents' => [

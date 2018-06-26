@@ -219,6 +219,7 @@ class UserNotification extends Model
 		if ( !empty($count) ) {
 			if( !empty($query) ) {
 				\Log::info("===Masuk Query ada!===");
+				\Log::info("===count notif: ".$query->where('notifications.is_read', false)->count());
 				return $query->where('notifications.is_read', false)->count();
 			}
 			\Log::info("===Masuk Query tidak ada!===");
