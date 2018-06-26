@@ -30,112 +30,112 @@ class DropdownLasController extends Controller
         try {
             $response = $request->all();
             $list_bank  = $this->inquiryBank();
-            if ($list_bank['code'] == '02') {
+            if ($list_bank['code'] == '01') {
                 $data_value['data1']['ListBank'] = $list_bank['contents']['data'];
             } else {
                 $data_value['data1']['ListBank'] = [];
             }
 
             $list_gelar = $this->inquiryGelar();
-            if ($list_gelar['code'] == '02') {
+            if ($list_gelar['code'] == '01') {
                 $data_value['data2']['ListGelar'] = $list_gelar['contents']['data'];
             } else {
                 $data_value['data2']['ListGelar'] = [];
             }
 
             $list_jabatan = $this->inquiryJabatan();
-            if ($list_jabatan['code'] == '02') {
+            if ($list_jabatan['code'] == '01') {
                 $data_value['data3']['ListJabatan'] = $list_jabatan['contents']['data'];
             } else {
                 $data_value['data3']['ListJabatan'] = [];
             }
 
             $list_loan_type = $this->inquiryLoantype();
-            if ($list_loan_type['code'] == '02') {
+            if ($list_loan_type['code'] == '01') {
                 $data_value['data4']['ListLoanType'] = $list_loan_type['contents']['data'];
             } else {
                 $data_value['data4']['ListLoanType'] = [];
             }
 
             $list_pekerjaan = $this->inquiryPekerjaan();
-            if ($list_pekerjaan['code'] == '02') {
+            if ($list_pekerjaan['code'] == '01') {
                 $data_value['data5']['ListPekerjaan'] = $list_pekerjaan['contents']['data'];
             } else {
                 $data_value['data5']['ListPekerjaan'] = [];
             }
 
             $list_hub_bank  = $this->inquiryHubunganBank();
-            if ($list_hub_bank['code'] == '02') {
+            if ($list_hub_bank['code'] == '01') {
                 $data_value['data6']['ListHubBank'] = $list_hub_bank['contents']['data'];
             } else {
                 $data_value['data6']['ListHubBank'] = [];
             }
 
             $list_sifat_kredit = $this->inquirySifatKredit();
-            if ($list_sifat_kredit['code'] == '02') {
+            if ($list_sifat_kredit['code'] == '01') {
                 $data_value['data7']['ListSifatKredit'] = $list_sifat_kredit['contents']['data'];
             } else {
                 $data_value['data7']['ListSifatKredit'] = [];
             }
 
             $list_bidang_usaha = $this->inquiryBidangUsaha();
-            if ($list_bidang_usaha['code'] == '02') {
+            if ($list_bidang_usaha['code'] == '01') {
                 $data_value['data8']['ListBidangUsaha'] = $list_bidang_usaha['contents']['data'];
             } else {
                 $data_value['data8']['ListBidangUsaha'] = [];
             }
 
             $list_promo_briguna = $this->inquiryPromoBriguna();
-            if ($list_promo_briguna['code'] == '02') {
+            if ($list_promo_briguna['code'] == '01') {
                 $data_value['data9']['ListPromoBriguna'] = $list_promo_briguna['contents']['data'];
             } else {
                 $data_value['data9']['ListPromoBriguna'] = [];
             }
 
             $list_jenis_pekerjaan = $this->inquiryJenisPekerjaan();
-            if ($list_jenis_pekerjaan['code'] == '02') {
+            if ($list_jenis_pekerjaan['code'] == '01') {
                 $data_value['data10']['ListJenisPekerjaan'] = $list_jenis_pekerjaan['contents']['data'];
             } else {
                 $data_value['data10']['ListJenisPekerjaan'] = [];
             }
 
             $list_sifat_kredit_lbu = $this->inquirySifatKreditLBU();
-            if ($list_sifat_kredit_lbu['code'] == '02') {
+            if ($list_sifat_kredit_lbu['code'] == '01') {
                 $data_value['data11']['ListSifatKreditLBU'] = $list_sifat_kredit_lbu['contents']['data'];
             } else {
                 $data_value['data11']['ListSifatKreditLBU'] = [];
             }
             
             $list_jenis_kredit_lbu = $this->inquiryJenisKreditLBU();
-            if ($list_jenis_kredit_lbu['code'] == '02') {
+            if ($list_jenis_kredit_lbu['code'] == '01') {
                 $data_value['data12']['ListJenisKreditLBU'] = $list_jenis_kredit_lbu['contents']['data'];
             } else {
                 $data_value['data12']['ListJenisKreditLBU'] = [];
             }
 
             $list_jenis_penggunaan = $this->inquiryJenisPenggunaan();
-            if ($list_jenis_penggunaan['code'] == '02') {
+            if ($list_jenis_penggunaan['code'] == '01') {
                 $data_value['data13']['ListJenisPenggunaan'] = $list_jenis_penggunaan['contents']['data'];
             } else {
                 $data_value['data13']['ListJenisPenggunaan'] = [];
             }
 
             $list_tujuan_penggunaan = $this->inquiryTujuanPenggunaan();
-            if ($list_tujuan_penggunaan['code'] == '02') {
+            if ($list_tujuan_penggunaan['code'] == '01') {
                 $data_value['data14']['ListTujuanPenggunaanLAS'] = $list_tujuan_penggunaan['contents']['data'];
             } else {
                 $data_value['data14']['ListTujuanPenggunaanLAS'] = [];
             }
 
             $list_sektor_ekonomi_lbu = $this->inquirySektorEkonomiLBU();
-            if ($list_sektor_ekonomi_lbu['code'] == '02') {
+            if ($list_sektor_ekonomi_lbu['code'] == '01') {
                 $data_value['data15']['ListSektorEkonomiLBU'] = $list_sektor_ekonomi_lbu['contents']['data'];
             } else {
                 $data_value['data15']['ListSektorEkonomiLBU'] = [];
             }
 
             $list_jenis_penggunaan_lbu = $this->inquiryJenisPenggunaanLBU();
-            if ($list_jenis_penggunaan_lbu['code'] == '02') {
+            if ($list_jenis_penggunaan_lbu['code'] == '01') {
                 $data_value['data16']['ListJenisPenggunaanLBU'] = $list_jenis_penggunaan_lbu['contents']['data'];
             } else {
                 $data_value['data16']['ListJenisPenggunaanLBU'] = [];
