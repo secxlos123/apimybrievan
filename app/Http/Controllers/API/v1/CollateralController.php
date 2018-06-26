@@ -513,8 +513,8 @@ class CollateralController extends Controller
                   $user_login = \RestwsHc::getUser();
                   $eform   = Eform::with('customer')->where('id', $request->input('eform_id'))->first();
                   $msgData = [
-                    'customer_name' => $efrom['customer']['first_name'].' '.$eform['customer']['last_name'],
-                    'ref_number'    => $efrom->ref_number,
+                    'customer_name' => $eform['customer']['first_name'].' '.$eform['customer']['last_name'],
+                    'ref_number'    => $eform->ref_number,
                     'user_login'    => $user_login['name']
                   ];
                   $message = getMessage($status, $msgData);
