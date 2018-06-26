@@ -651,8 +651,9 @@ class UserNotification extends Model
 			\Log::info("==CLASS: App\Notifications\CollateraAODisposition");
 			\Log::info("==BASEWORDING: ".$baseWording);
 				$append = array(
-					'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!'
-					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
+					// 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!'
+					'message' => 'Penugasan Penilaian Agunan a.n ' . $debitur . '. Segera tindak lanjut!!'
+					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->data['slug'] . '&type=' . $typeModuleCollateral
 				);
 				break;
 
