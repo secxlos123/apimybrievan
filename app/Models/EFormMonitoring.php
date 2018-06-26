@@ -627,7 +627,7 @@ class EFormMonitoring extends Model implements AuditableContract
         \Log::info("------- FILTERING EFORMS RESULT -------");
         \Log::info(print_r($request->source,true).' '.print_r($request->dev_id,true));
 
-        $eform = $query->from('eforms')->join('kpr', 'kpr.eform_id', '=', 'eforms.id')
+        $eform = $query->from('eforms')->join('kpr', 'kpr.eform_id', '=', 'eforms.id')->join(;'users', 'users.id', '=', 'eforms.sales_dev_id')
             ->where( function( $eform ) use( $request ) {
                 if( $request->has('product_type') &&  $request->product_type!='-') {
                     \Log::info("------- FILTERING PRODUCT TYPE RESULT -------");
