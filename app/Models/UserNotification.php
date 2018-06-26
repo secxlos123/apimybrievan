@@ -221,8 +221,8 @@ class UserNotification extends Model
 				\Log::info("===Masuk Query ada!===");
 				// \Log::info("===count notif: ".$query->whereNull('notifications.read_at')->count());
 				// return $query->where('notifications.is_read', false)->count();
-				$query_data = \DB::select("select count(id) as unread from notifications where is_read is NULL")->get();
-				\Log::info($query_data);
+				$query_data = \DB::table('notifications')->whereNull('is_read')->get();
+				\Log::info(count($query_data));
 				return $query_data;
 			}
 			\Log::info("===Masuk Query tidak ada!===");
