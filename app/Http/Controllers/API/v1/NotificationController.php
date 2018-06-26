@@ -85,7 +85,7 @@ class NotificationController extends Controller
             $branchID = substr( $branch_id, -3 );
             $pn = "000" . $pn;
             // $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
-            $data = $this->userNotification->getUnreads($branchID, $role, $pn, n$userid);
+            $data = $this->userNotification->getUnreads($branchID, $role, $pn, $user_id);
         }
         \Log::info("=====LIST NOTIF MOBILE======");
         // \Log::info($data);
