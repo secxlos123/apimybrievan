@@ -219,7 +219,8 @@ class UserNotification extends Model
 		if ( !empty($count) ) {
 			if( !empty($query) ) {
 				\Log::info("===Masuk Query ada!===");
-				\Log::info("===count notif: ".count($query->where('notifications.is_read', false)->get()));
+				\Log::info("===count notif: ".count($query->where('notifications.read_at', false)->get()));
+				\Log::info("===query get: ".$query->whereNull('notifications.read_at')->get());
 				// return $query->where('notifications.is_read', false)->count();
 				$query_data = \DB::table('notifications')->where('branch_id', $branch_id)->whereNull('read_at')->get();
 				\Log::info(count($query_data));
