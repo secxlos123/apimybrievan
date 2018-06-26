@@ -144,6 +144,11 @@ class NotificationController extends Controller
             $branchID = substr($user['branch_id'], -3);
             $pn       = "000".$user['pn'];
 
+            \Log::info("===Role: ".$role);
+            \Log::info("===Branch_id: ".$branchID);
+            \Log::info("===PN: ".$pn);
+
+
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, null, true);
         }
 
