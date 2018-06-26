@@ -223,7 +223,7 @@ class UserNotification extends Model
 				// return $query->where('notifications.is_read', false)->count();
 				$query_data = \DB::table('notifications')->whereNull('is_read')->get();
 				\Log::info(count($query_data));
-				return $query_data;
+				return count($query_data);
 			}
 			\Log::info("===Masuk Query tidak ada!===");
 			return 0;
