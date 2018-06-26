@@ -147,7 +147,7 @@ class DropdownLasController extends Controller
             $data_value['data17'] = $mitra;
             // Get KodePos
             $kodepos = $this->inquiryKodePos();
-            if ($kodepos['code'] == '201') {
+            if ($kodepos['code'] == '200') {
                 $data_value['data18']['ListKodePos'] = $kodepos['contents']['data'];
             } else {
                 $data_value['data18']['ListKodePos'] = [];
