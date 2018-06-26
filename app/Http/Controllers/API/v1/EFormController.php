@@ -1125,8 +1125,9 @@ class EFormController extends Controller
                     pushNotification($credentials, 'createEForm');
                 } 
                 else {
+                  // \Log::info('User sedang dalam pengajuan, dikantor cabang '.$dataEform[$index]['branch'].', nama AO '.$dataEform[$index]['ao_name']);
                     return response()->error( [
-                        'message' => 'User sedang dalam pengajuan',
+                        'message' => 'User sedang dalam pengajuan, dikantor cabang '.$dataEform[$index]['branch'].', nama AO '.$dataEform[$index]['ao_name'].',',
                         'contents' => $dataEform
                     ], 422 );
 
@@ -1653,6 +1654,9 @@ class EFormController extends Controller
 
                   // This for delete COllateral on db MYBRI
                   Collateral::where('developer_id', $dev_id)->where('property_id', $prop_id)->delete();
+
+                  // This delete Notif Collateral
+                  UserNotification::where('slug', $collateral->id)->where('type_module', 'collateral')->delete();
                    
               }
 

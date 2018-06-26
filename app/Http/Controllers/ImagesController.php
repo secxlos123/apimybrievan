@@ -463,7 +463,7 @@ class ImagesController extends Controller
             case 'eform_prescreening':
                 $message = [
                     'title'=> 'EForm Notification',
-                    'body' => 'Prescreening Calon Debitur a.n '.$credentials['customer']['personal']['name'].' '.$credentials->ref_number.' telah selesai.'/* Hasil Prescreening : '.$credentials->ref_number*/,
+                    'body' => 'Prescreening Calon Debitur a.n '.$credentials['customer']['personal']['name'].' ('.$credentials->ref_number.') telah selesai.'/* Hasil Prescreening : '.$credentials->ref_number*/,
                 ];
                 break;
             case 'eform_pencairan_customer':
