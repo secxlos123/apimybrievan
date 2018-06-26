@@ -433,12 +433,11 @@ class DashboardController extends Controller
       ];
       $activity = [];
       $lkn = [];
-      foreach ($data as $key => $value) 
-      {
-        $status[$value->pn]['Prospek']=array_key_exists('Prospek',$status[$value->pn])?$status[$value->pn]['Prospek']:[];
+      foreach ($data as $key => $value) {
+	$status[$value->pn]['Prospek']=array_key_exists('Prospek',$status[$value->pn])?$status[$value->pn]['Prospek']:[];
         $status[$value->pn]['On Progress']=array_key_exists('On Progress', $status[$value->pn])?$status[$value->pn]['On Progress']:[];
-        $status[$value->pn]['Done']=array_key_exists('Done',$status[$value->pn])?$status[$value->pn]['Done']:[];
-        $status[$value->pn]['Batal']=array_key_exists('Batal', $status[$value->pn])?$status[$value->pn]['Batal']:[];
+	$status[$value->pn]['Done']=array_key_exists('Done',$status[$value->pn])?$status[$value->pn]['Done']:[];
+	$status[$value->pn]['Batal']=array_key_exists('Batal', $status[$value->pn])?$status[$value->pn]['Batal']:[];
 
         $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
         $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
@@ -452,25 +451,13 @@ class DashboardController extends Controller
 
           'Prospek'=>(array_key_exists('Prospek',$status[$value->pn])||array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['Prospek'])+array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//:9,//array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,
 
+
           'On Progress'=>(array_key_exists('On Progress',$status[$value->pn])||array_key_exists('Done',$status[$value->pn])||array_key_exists('Batal',$status[$value->pn]))?(array_sum($status[$value->pn]['On Progress'])+array_sum($status[$value->pn]['Done'])+array_sum($status[$value->pn]['Batal'])):0,//array_sum(array_values($lkn[$value->pn])),
 
           'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
 
           'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?array_sum($status[$value->pn]['Batal']):0
         ];
-        /* Backup 
-        $activity[$value->pn][$value->id] = (MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->first()!=null)?1:0;
-        $latest_act[$value->pn][$value->id] = MarketingActivity::where('marketing_id', $value->id)->where('desc','!=', 'first')->orderBy('created_at','asc')->first();
-        $lkn[$value->pn][$value->id] = ($activity[$value->pn][$value->id]==1)? Marketing::find($value->id)->target:0;
-        $data_summary[$value->pn]=[
-          'Pemasar'=>$ext_nul[8-strlen($value->pn)].$value->pn,
-          'Nama'=>array_key_exists($ext_nul[8-strlen($value->pn)].$value->pn, $pemasar_name) ? $pemasar_name[$ext_nul[8-strlen($value->pn)].$value->pn]:'',
-          'Total'=>array_sum($total[$value->pn]),
-          'Prospek'=>(array_key_exists('Prospek',$status[$value->pn]))?array_sum($status[$value->pn]['Prospek']):0,
-          'On Progress'=>array_sum(array_values($lkn[$value->pn])),
-          'Done'=>(array_key_exists('Done',$status[$value->pn]))?array_sum($status[$value->pn]['Done']):0,
-          'Batal'=>(array_key_exists('Batal',$status[$value->pn]))?array_sum($status[$value->pn]['Batal']):0
-        ];*/
       }
       $marketing_summary = [];
       foreach ($data_summary as $key => $value) {
@@ -480,13 +467,13 @@ class DashboardController extends Controller
       if (!empty($marketing_summary)) {
           return response()->success([
               'message' => 'Sukses get Marketing Summary.',
-              'contents' => $marketing_summary,
+              'contents' => $marketing_summary
           ], 200);
       }
 
       return response()->error([
           'message' => 'Marketing Summary tidak ditemukan.',
-          'contents' => $marketing_summary,
+          'contents' => $marketing_summary
       ], 200);
     }
 
