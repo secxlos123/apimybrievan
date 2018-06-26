@@ -136,12 +136,12 @@ class EFormController extends Controller
 
         foreach ($newForm as $forms) {
             if($forms['sales_dev_id']!=null){
-                $sales = DB::table('sales')
-                ->select('sales.first_name', 'sales.last_name')
-                ->where('sales.id', $forms['sales_dev_id'])
+                $sales = DB::table('users')
+                ->select('users.first_name', 'users.last_name')
+                ->where('users.id', $forms['sales_dev_id'])
                 ->get();
 
-                $forms['sales_name'] = $sales[0]['first_name'].' '.$sales[0]['last_name'];
+                $forms['sales_name'] = $sales[0]->first_name.' '.$sales[0]->last_name;
             }
         }
 
