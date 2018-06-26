@@ -144,7 +144,7 @@ class DropdownLasController extends Controller
             // Get Mitra
             $limit = $request->input('limit') ?: 15000;
             $mitra = Mitra4::filter($request)->paginate($limit);
-            $data_value['data17']['ListMitra'] = [];
+            $data_value['data17'] = $mitra;
             // Get KodePos
             $kodepos = $this->inquiryKodePos();
             if ($kodepos['code'] == '201') {
