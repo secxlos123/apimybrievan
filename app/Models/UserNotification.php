@@ -676,7 +676,7 @@ class UserNotification extends Model
 				// Submit OTS
 				// dari staff-col / AO
 				// ke col-man
-				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Unkwon' ;
+				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Staff Collateral' ;
 				$append = array(
 					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralStaf . ', saat ini menunggu persetujauan Anda.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
@@ -709,7 +709,7 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh collateral Manager' /*$collateralManager */
+				 	'message' => 'Penilaian agunan debitur a.n ' . $this->data['user_name'] . ' telah ditolak oleh collateral Manager' /*$collateralManager */
 				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh colllateral Manager '
 				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_rejecting'
 				);
@@ -731,7 +731,7 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager */
+				 	'message' => 'Penilaian agunan debitur a.n ' . $this->data['user_name'] . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager */
 				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager*/
 					, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_approving'
 				);
