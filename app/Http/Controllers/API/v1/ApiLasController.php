@@ -1545,8 +1545,8 @@ class ApiLasController extends Controller
         \Log::info("-------- masuk insert debitur ---------");
         \Log::info($insertDebitur);
         if ($insertDebitur['statusCode'] == '01') {
-            $host = env('APP_URL');
-            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+            /*$host = env('APP_URL');
+            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){*/
                 // Get Premi Asuransi AJKO
                 $kode_fasilitas = substr($request['Kode_fasilitas'], 1);
                 // \Log::info($kode_fasilitas);
@@ -1568,7 +1568,7 @@ class ApiLasController extends Controller
                 }
                 $kode_program = substr( '00000000' . $request['Nama_perusahaan_asuransi'], -6 );
                 $nama_perusahaan = $kode_program.''.$premi['NamaPerusahaanAsuransi'];
-            }
+            // }
 
             // insert prescreening
             $content_prescreening = [
@@ -1701,17 +1701,17 @@ class ApiLasController extends Controller
                         "Data2"             => "" // kosongin aja
                     ];
 
-                    if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                    // if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
                         $content_insertKreditBriguna["Perusahaan_asuransi"] = !isset($premi['NamaPerusahaanAsuransi'])?"":$nama_perusahaan;
                         $content_insertKreditBriguna["Premi_asuransi_jiwa"] = !isset($premi['PremiStandart'])?"":$premi['PremiStandart'];
                         $content_insertKreditBriguna["Premi_beban_bri"]     = !isset($premi['PremiBRI'])?"":$premi['PremiBRI'];
                         $content_insertKreditBriguna["Premi_beban_debitur"] = !isset($premi['PremiDebitur'])?"":$premi['PremiDebitur'];
-                    } else {
+                    /*} else {
                         $content_insertKreditBriguna["Perusahaan_asuransi"] = !isset($request['Nama_perusahaan_asuransi'])?"":$request['Nama_perusahaan_asuransi'];
                         $content_insertKreditBriguna["Premi_asuransi_jiwa"] = !isset($request['Premi_asuransi_jiwa'])?"":$request['Premi_asuransi_jiwa'];
                         $content_insertKreditBriguna["Premi_beban_bri"]     = !isset($request['Premi_beban_bri'])?"":$request['Premi_beban_bri'];
                         $content_insertKreditBriguna["Premi_beban_debitur"] = !isset($request['Premi_beban_debitur'])?"":$request['Premi_beban_debitur'];
-                    }
+                    }*/
 
                     $insertKredit = $this->insertDataKreditBriguna($content_insertKreditBriguna);
                     \Log::info("-------- masuk insert kredit ---------");
@@ -1846,18 +1846,18 @@ class ApiLasController extends Controller
                                 "nama_perusahaan_asuransi_ket" => !isset($request['nama_perusahaan_asuransi_ket'])?"":$request['nama_perusahaan_asuransi_ket']
                             ];
 
-                            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                            // if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
                                 $param_briguna["Perusahaan_asuransi"] = $request['Nama_perusahaan_asuransi'];
                                 $param_briguna["nama_perusahaan_asuransi"] = $premi['NamaPerusahaanAsuransi'];
                                 $param_briguna["Premi_asuransi_jiwa"] = $premi['PremiStandart'];
                                 $param_briguna["Premi_beban_bri"]     = $premi['PremiBRI'];
                                 $param_briguna["Premi_beban_debitur"] = $premi['PremiDebitur'];
-                            } else {
+                            /*} else {
                                 $param_briguna["Perusahaan_asuransi"] = $request['Nama_perusahaan_asuransi'];
                                 $param_briguna["Premi_asuransi_jiwa"] = $request['Premi_asuransi_jiwa'];
                                 $param_briguna["Premi_beban_bri"]     = $request['Premi_beban_bri'];
                                 $param_briguna["Premi_beban_debitur"] = $request['Premi_beban_debitur'];
-                            }
+                            }*/
                             $eform_id = $request['eform_id'];
                             $param_eform['is_approved']  = true;
                             $param_eform['branch_id']    = $request['kantor_cabang_id'];
@@ -1896,7 +1896,7 @@ class ApiLasController extends Controller
                             $eform->update($param_eform);
                             $detail->update($param_detail);
                             $briguna->update($param_briguna);
-                            if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
+                            // if($host == 'http://api.dev.net/' || $host == 'http://103.63.96.167/api/' || $host == 'http://apimybridev.bri.co.id/'){
                                 $result = [
                                     'code'         => $kirim['statusCode'], 
                                     'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
@@ -1915,7 +1915,7 @@ class ApiLasController extends Controller
                                          ]
                                     ]
                                 ];
-                            } else {
+                            /*} else {
                                 $result = [
                                     'code'         => $kirim['statusCode'], 
                                     'descriptions' => $kirim['statusDesc'].' '.$kirim['nama'],
@@ -1930,7 +1930,7 @@ class ApiLasController extends Controller
                                          ]
                                     ]
                                 ];
-                            }
+                            }*/
                             \Log::info("----- analisa update table eforms dan briguna sukses -----");
                             return $result;
                         } else {
