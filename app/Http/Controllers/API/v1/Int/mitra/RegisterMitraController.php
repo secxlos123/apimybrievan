@@ -17,6 +17,9 @@ use App\Models\Mitra\mitra5;
 use App\Models\Mitra\MitraDetail;
 use App\Models\Mitra\MitraPemutus; */
 use DB;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
+use URL;
 
 class RegisterMitraController extends Controller
 {
@@ -71,6 +74,17 @@ class RegisterMitraController extends Controller
         $baseRequest = $request->all();
 		if($baseRequest['lo_mitra']=='mitra'){
 			$mitra = mitra0::create( $baseRequest );
+			  $client = new Client();
+			  $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.api_asmx_las_prod'):config('restapi.api_asmx_las_dev');
+			  $customer_nik = $client->request('GET', $host.'/customer/profile/nik/'.$nik,[
+				'headers' =>
+				[
+				  'Authorization' => 'Bearer '.$this->get_token()
+				  // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
+				]
+			  ]);
+			  $body = json_decode($customer_nik->getBody()->getContents(), true);
+
 		}elseif($baseRequest['lo_mitra']=='mitra_detail_dasar'){
 			$mitra = mitra1::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_detail_data'){

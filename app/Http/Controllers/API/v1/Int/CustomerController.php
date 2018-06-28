@@ -183,9 +183,9 @@ class CustomerController extends Controller
     {
        $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
         if (count($customerDetail) >= 0) {
-			$data = $this->getdatabynik($id);
+			$data = $this->getdatabyuserid($id);
 	    } else {
-			$data = $this->getdatabyuserid($user_id);
+			$data = $this->getdatabynik($user_id);
         }
         return response()->success( [
             'message' => $data['message'],
