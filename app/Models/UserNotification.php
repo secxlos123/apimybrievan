@@ -218,12 +218,18 @@ class UserNotification extends Model
 
 		if ( !empty($count) ) {
 			if( !empty($query) ) {
-				return $query->where('notifications.is_read', false)->count();
+				\Log::info("===Masuk Query ada!===");
+				// \Log::info("===count notif: ".count($query->where('notifications.read_at', false)->get()));
+				\Log::info("===query get: ".$query->whereNull('notifications.read_at')->get());
+				// return $query->where('notifications.is_read', false)->count();
+				$query_data = \DB::table('notifications')->where('branch_id', $branch_id)->whereNull('read_at')->get();
+				\Log::info(count($query_data));
+				return count($query_data);
 			}
-
+			\Log::info("===Masuk Query tidak ada!===");
 			return 0;
 		}
-
+		\Log::info("===Masuk $count tidak ada===");
 		return $query->paginate($limit);
 	}
 
@@ -639,6 +645,8 @@ class UserNotification extends Model
 				// Disposisi collateral
 				// dari col-man
 				// ke staff-col
+			\Log::info("==CLASS: App\Notifications\CollateralDisposition");
+			\Log::info("==BASEWORDING: ".$baseWording);
 				$append = array( 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!' );
 				break;
 
@@ -646,9 +654,13 @@ class UserNotification extends Model
 				// Disposisi collateral
 				// dari col-man
 				// ke ao
+			// \Log::info("==CLASS: App\Notifications\CollateraAODisposition");
+			// \Log::info("==BASEWORDING: ".$baseWording."| Debitur: ".$this->data['user_name']);
+			// \Log::info("==URL: ".$internalurl . 'staff-collateral?slug=' . $this->data['slug'] . '&type=' . $typeModuleCollateral);
 				$append = array(
-					'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!'
-					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
+					// 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!'
+					'message' => 'Penugasan Penilaian Agunan Debitur a.n ' . $this->data['user_name'] . '. Segera tindak lanjut!!'
+					, 'url' => $internalurl . 'staff-collateral?slug=' . $this->data['slug'] . '&type=' . $typeModuleCollateral
 				);
 				break;
 
@@ -676,7 +688,7 @@ class UserNotification extends Model
 				// Submit OTS
 				// dari staff-col / AO
 				// ke col-man
-				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Unkwon' ;
+				$collateralStaf = $collateralAppraisal ? $collateralAppraisal : 'Staff Collateral' ;
 				$append = array(
 					'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah dilakukan oleh ' . $collateralStaf . ', saat ini menunggu persetujauan Anda.'
 					, 'url' => $internalurl . 'collateral?slug=' . $this->slug . '&type=' . $typeModuleCollateral
@@ -709,7 +721,7 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh collateral Manager' /*$collateralManager */
+				 	'message' => 'Penilaian agunan debitur a.n ' . $this->data['user_name'] . ' telah ditolak oleh collateral Manager' /*$collateralManager */
 				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah ditolak oleh colllateral Manager '
 				 	, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_rejecting'
 				);
@@ -731,7 +743,7 @@ class UserNotification extends Model
 				// dari col-man
 				// ke staff-col / AO
 				$append = array(
-				 	'message' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager */
+				 	'message' => 'Penilaian agunan debitur a.n ' . $this->data['user_name'] . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager */
 				 	, 'message_external' => 'Penilaian agunan debitur a.n ' . $debitur . ' telah disetujui oleh Collateral Manager ' /*. $collateralManager*/
 					, 'url' => $internalurl . 'staff-collateral?slug=' . $slugAO . '&type=collateral_manager_approving'
 				);

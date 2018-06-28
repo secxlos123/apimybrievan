@@ -87,7 +87,7 @@ class NotificationController extends Controller
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
         }
         \Log::info("=====LIST NOTIF MOBILE======");
-        \Log::info($data);
+        // \Log::info($data);
         if ( $data ) {
             foreach ($data as $key => $value) {
                 $data[$key]['message'] = [
@@ -144,9 +144,14 @@ class NotificationController extends Controller
             $branchID = substr($user['branch_id'], -3);
             $pn       = "000".$user['pn'];
 
+            \Log::info("===Role: ".$role);
+            \Log::info("===Branch_id: ".$branchID);
+            \Log::info("===PN: ".$pn);
+
+
             $data = $this->userNotification->getUnreadsMobile($branchID, $role, $pn, null, null, true);
         }
-
+        \Log::info("===Unread Count: ".$data);
         return response()->success([
             'message' => 'Sukses',
             'contents' => [

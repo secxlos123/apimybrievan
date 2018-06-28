@@ -40,6 +40,9 @@ return [
     */
     'apipdm' => 'http://api.briconnect.bri.co.id',
      'apipdmdev' => 'http://10.35.65.208:81',
+	 
+    'api_asmx_las_prod'      => env('CLIENT_ASMX_LAS', 'http://172.18.44.137:2003/service.asmx?wsdl'),
+    'api_asmx_las_dev'      => env('CLIENT_ASMX_LAS', 'http://10.35.65.165:1104/service.asmx?wsdl'),
 
     'pdm_client_id' => '3f60d2edcd0399e6ea25290fe4022e0af91e5016',
     'pdm_client_secret' => 'ef3d569a4a609c636e114ff9056b8c324e0f2e7a',
