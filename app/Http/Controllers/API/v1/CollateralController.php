@@ -93,6 +93,7 @@ class CollateralController extends Controller
           $property->where(\DB::raw('LOWER(name)'),'ilike','%'.$request->input('search').'%');
         });
       if ($this->request->has('slug')) {
+          $data = $this->collateral->withAll()->where('developer_id','=',$developer_id);
           $data->where('id',$this->request->input('slug'));
       }
       $data->orderBy('created_at', 'desc');
