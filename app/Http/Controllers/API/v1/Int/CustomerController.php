@@ -123,7 +123,7 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-	function getdatabynik($nik,$user_id){
+	function getdatabynik($user_id){
 	        try{
 			$eform = DB::table('eforms')
 					 ->select('IsFinish')
