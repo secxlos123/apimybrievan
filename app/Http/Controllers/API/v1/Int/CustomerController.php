@@ -188,8 +188,8 @@ class CustomerController extends Controller
 			$data = $this->getdatabyuserid($customerDetail->user_id);
         }
         return response()->success( [
-            'message' => $message,
-            'contents' => $customer
+            'message' => $data['message'],
+            'contents' => $data['customer']
         ], 200 );
     }
 
