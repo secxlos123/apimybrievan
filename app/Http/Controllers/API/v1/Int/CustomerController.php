@@ -123,11 +123,11 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-	function getdatabynik($nik){
+	function getdatabynik($nik,$user_id){
 	        try{
 			$eform = DB::table('eforms')
 					 ->select('IsFinish')
-					 ->where('eforms.nik', $nik)
+					 ->where('eforms.user_id', $user_id)
 					 ->get();
 			if(isset($eform)){
             \Log::info("===========IS FINISH=====");         
@@ -136,18 +136,18 @@ class CustomerController extends Controller
 			$eform = json_decode(json_encode($eform), True);
 				if(isset($eform[0]['IsFinish']) =='true' ){
 					$message = 'Sukses';
-					$customer = Customer::findOrFail( $nik );
+					$customer = Customer::findOrFail( $user_id );
 				}else{
 					$message = 'User dalam pengajuan';
-					$customer = Customer::findOrFail( $nik );		
+					$customer = Customer::findOrFail( $user_id );		
 				}
 			}else{
 				$message = 'Sukses';
-				$customer = Customer::findOrFail( $nik );
+				$customer = Customer::findOrFail( $user_id );
 			}
 			}catch(Exception $e){
 				$message = 'Sukses';
-				$customer = Customer::findOrFail( $nik );
+				$customer = Customer::findOrFail( $user_id );
 			}		
 			return ['message'=>$message,'customer'=>$customer];
 	}
@@ -183,9 +183,9 @@ class CustomerController extends Controller
     {
        $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
         if (count($customerDetail) >= 0) {
-			$data = $this->getdatabyuserid($id);
+			$data = $this->getdatabynik($customerDetail->user_id);
 	    } else {
-			$data = $this->getdatabynik($user_id);
+			$data = $this->getdatabyuserid($customerDetail->user_id);
         }
         return response()->success( [
             'message' => $data['message'],

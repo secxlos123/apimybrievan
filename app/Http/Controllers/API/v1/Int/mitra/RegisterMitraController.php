@@ -28,6 +28,11 @@ class RegisterMitraController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	 
+    function client() {
+		$host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.api_asmx_las_prod'):config('restapi.api_asmx_las_dev');
+        return new \SoapClient($host);
+    }
     public function index( Request $request )
     {
         \Log::info($request->all());
@@ -74,17 +79,6 @@ class RegisterMitraController extends Controller
         $baseRequest = $request->all();
 		if($baseRequest['lo_mitra']=='mitra'){
 			$mitra = mitra0::create( $baseRequest );
-			  $client = new Client();
-			  $host = (env('APP_URL') == 'http://apimybri.bri.co.id/')? config('restapi.api_asmx_las_prod'):config('restapi.api_asmx_las_dev');
-			  $customer_nik = $client->request('GET', $host.'/customer/profile/nik/'.$nik,[
-				'headers' =>
-				[
-				  'Authorization' => 'Bearer '.$this->get_token()
-				  // 'Authorization' => 'Bearer 8288bdbcd66d6ac6dd0cfb21677edab663e2bb83'
-				]
-			  ]);
-			  $body = json_decode($customer_nik->getBody()->getContents(), true);
-
 		}elseif($baseRequest['lo_mitra']=='mitra_detail_dasar'){
 			$mitra = mitra1::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_detail_data'){
@@ -103,6 +97,9 @@ class RegisterMitraController extends Controller
 			$mitra = mitra4::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_pemutus'){
 			$mitra = mitra5::create( $baseRequest );
+		}elseif($baseRequest['lo_mitra']=='mitra_las'){
+			$client = $this->client();
+            $resultclient = $client->kirimPemutus($baseRequest);
 		}
 /* 		$mitraheader = MitraHeader::create( $baseRequest['mitra']['header'] );
         $mitradetail = MitraDetail::create( $baseRequest['mitra']['detail'] );
