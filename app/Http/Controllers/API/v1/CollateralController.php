@@ -110,6 +110,7 @@ class CollateralController extends Controller
       $region = \RestwsHc::getRegion(intval($user['branch_id']));
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
+      
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         if ($user['role']!= 'superadmin') {
           \Log::info("masuk sini meren". (int) $this->request->header('pn'));
@@ -121,7 +122,7 @@ class CollateralController extends Controller
           $data->where('region_id',$region['region_id']);
       }
       if ($this->request->has('slug')) {
-          $data->where('id',$this->request->input('slug'));
+          $data->where('collaterals_id',$this->request->input('slug'));
       }
       
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
