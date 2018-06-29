@@ -2122,6 +2122,11 @@ if (! function_exists('pushNotification')) {
             'type'     => 'collateral',
             'dev_id'   => $dev_id
         ]);
+        \Log::info("=== THIS DATA TO SEND FCM PUSH NOTIF COLLATERAL ===");
+        \Log::info("=== ID : ".$id);
+        \Log::info("=== SLUG : ".$slug);
+        \Log::info("=== Type : collateral");
+        \Log::info("=== Dev Id : ".$dev_id);
 
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();
