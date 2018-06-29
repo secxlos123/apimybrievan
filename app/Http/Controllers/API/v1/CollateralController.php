@@ -309,6 +309,7 @@ class CollateralController extends Controller
                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$aksiCollateral)
                                                  ->orderBy('created_at', 'desc')->first();
                   $id = $notificationData['id'];
+                  $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
                   $message = getMessage('collateral_penilaian',  $msgData);
                   $credentials = [
                      'headerNotif' => $message['title'],
@@ -318,6 +319,7 @@ class CollateralController extends Controller
                      'slug' => $collateral_id,
                      'user_id' => $manager_id,
                      'receiver' => 'manager_collateral',
+                     'dev_id' => $dev_id
                   ];
                   pushNotification($credentials,'general');
               }
@@ -693,6 +695,7 @@ class CollateralController extends Controller
                     $notificationData = $userNotif->where('slug', $collateralId)
                                                     ->orderBy('created_at', 'desc')->first();
                     $id = $notificationData['id'];
+                    $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
                     $message = getMessage('collateral_checklist');
                      $credentials = [
                       'headerNotif' => $message['title'],
@@ -702,6 +705,7 @@ class CollateralController extends Controller
                       'slug' => $collateralId,
                       'user_id' => $manager_id,
                       'receiver' => 'manager_collateral',
+                      'dev_id' => $dev_id
                       ];
                      pushNotification($credentials,'general');
                 }
@@ -767,6 +771,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
+        $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
         // $message = getMessage('collateral_ots');
         //*/
         $credentials = [
@@ -777,6 +782,7 @@ class CollateralController extends Controller
             'slug' => $collateral_id,
             'user_id' => $id_manager_collateral,
             'receiver' => 'manager_collateral',
+            'dev_id' => $dev_id
         ];
         if(!empty($id_manager_collateral))
         {
