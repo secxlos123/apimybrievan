@@ -519,7 +519,7 @@ class User extends Authenticatable implements AuditableContract, UserResolver
                          "(case when e.product_type='briguna' then ".
                          'e."IsFinish"='."'false' and ".
                          '(e."status_eform" = '." 'Menunggu Putusan' or ".' e."status_eform" '." ISNULL or ".' e."status_eform"='."'') ".
-                         'else e."id"=e."id"
+                         'else customer_details."id"=customer_details."id"
                          end)'
                        )
             ->where( function( $user ) use( $request ) {
