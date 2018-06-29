@@ -608,6 +608,8 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
+        \Log::info("======= PUSH NOTIF COLLATERAL GET DATA NOTIF =======");
+        \Log::info($notificationData);
         // $message = getMessage('collateral_disposition');
         $credentials = [
             'slug' => $collateralId,
