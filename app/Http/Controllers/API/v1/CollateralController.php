@@ -535,7 +535,7 @@ class CollateralController extends Controller
                   'slug' => $collateralId,
                   'user_id' => $user_id,
                   'receiver' => $receiver,
-                  // 'dev_id' => $dev_id
+                  'dev_id' => $dev_id
                 ];
               pushNotification($credentials,'general');
             }
