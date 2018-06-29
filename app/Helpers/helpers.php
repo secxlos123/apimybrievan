@@ -2109,7 +2109,7 @@ if (! function_exists('pushNotification')) {
        $type= $credentials['type'];
        $slug = $credentials['slug'];
        $receiver = $credentials['receiver'];
-       $dev_id = $credentials['dev_id'];
+       $dev_id = $credentials['dev_id'] ? $credentials['dev_id'] : null;
 
         $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
         $notificationBuilder->setBody($bodyNotif)

@@ -526,6 +526,7 @@ class CollateralController extends Controller
                 $message = getMessage($status);
               }
               $id = $notificationData['id'];
+              $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
               $credentials = [
                   'headerNotif' => 'Collateral Notification',
                   'bodyNotif' => $message['body'],
@@ -534,6 +535,7 @@ class CollateralController extends Controller
                   'slug' => $collateralId,
                   'user_id' => $user_id,
                   'receiver' => $receiver,
+                  // 'dev_id' => $dev_id
                 ];
               pushNotification($credentials,'general');
             }
