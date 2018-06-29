@@ -113,13 +113,12 @@ class CollateralController extends Controller
       
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         if ($user['role']!= 'superadmin') {
-          \Log::info("masuk sini meren". (int) $this->request->header('pn'));
-        $data->where('staff_id',(int) $this->request->header('pn'));
+            $data->where('staff_id',(int) $this->request->header('pn'));
         }
       }
       else
       {
-          $data->where('region_id',$region['region_id']);
+        $data->where('region_id',$region['region_id']);
       }
       if ($this->request->has('slug')) {
           $data->where('collaterals_id',$this->request->input('slug'));

@@ -181,15 +181,49 @@ class CustomerController extends Controller
 	}
     public function show( $type, $id )
     {
+<<<<<<< HEAD
        $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
         if (count($customerDetail)>0) {
 			$data = $this->getdatabynik($customerDetail->user_id);
 	    } else {
 			$data = $this->getdatabyuserid($id);
+=======
+      $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
+
+        if (count($customerDetail) > 0) {
+            try{
+            $eform = DB::table('eforms')
+                     ->select('IsFinish')
+                     ->where('eforms.user_id', $customerDetail->user_id)
+                     ->get();
+            if(isset($eform)){
+            \Log::info("===========IS FINISH=====");         
+            \Log::info($eform);
+            $eform = $eform->toArray();
+            $eform = json_decode(json_encode($eform), True);
+                if(isset($eform[0]['IsFinish']) =='true' ){
+                    $message = 'Sukses';
+                    $customer = Customer::findOrFail( $customerDetail->user_id );
+                }else{
+                    $message = 'User dalam pengajuan';
+                    $customer = Customer::findOrFail( $customerDetail->user_id );       
+                }
+            }else{
+                $message = 'Sukses';
+                $customer = Customer::findOrFail( $customerDetail->user_id );
+            }
+            }catch(Exception $e){
+                $message = 'Sukses';
+                $customer = Customer::findOrFail( $customerDetail->user_id );
+            }
+        } else {
+            $message = 'Customer Tidak Ditemukan';
+            $customer = Customer::findOrFail( $id );
+>>>>>>> cb4a91197a347ba3a7930745163ebe42d81cddc5
         }
         return response()->success( [
-            'message' => $data['message'],
-            'contents' => $data['customer']
+            'message' => $message,
+            'contents' => $customer
         ], 200 );
     }
 
