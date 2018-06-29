@@ -2109,6 +2109,7 @@ if (! function_exists('pushNotification')) {
        $type= $credentials['type'];
        $slug = $credentials['slug'];
        $receiver = $credentials['receiver'];
+       $dev_id = $credentials['dev_id'];
 
         $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
         $notificationBuilder->setBody($bodyNotif)
@@ -2119,6 +2120,7 @@ if (! function_exists('pushNotification')) {
             'id'       => $id,
             'slug'     => $slug,
             'type'     => 'collateral',
+            'dev_id'   => $dev_id
         ]);
 
         $notification = $notificationBuilder->build();
