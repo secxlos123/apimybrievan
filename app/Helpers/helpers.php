@@ -1833,14 +1833,25 @@ if (! function_exists('pushNotification')) {
     function approveEForm($credentials){
         \Log::info("===PUSH NOTIF APPROVE EFORM===");
         $data = $credentials;
-        if (!empty($data['clas'])) {
-            approveEFormToCustomer($credentials, true);
-            approveEFormToAO($credentials, true);
-            approveEFormToPinca($credentials, true);
-        }else {
-            approveEFormToCustomer($credentials);
-            approveEFormToAO($credentials);
+        if(!empty($data['clas'])){
+            if($data['clas'] == true){
+                approveEFormToCustomer($credentials, true);
+                approveEFormToAO($credentials, true);
+                approveEFormToPinca($credentials, true);    
+            }
+        }else{
+                approveEFormToCustomer($credentials);
+                approveEFormToAO($credentials);    
         }
+        
+        // if (!empty($data['clas'])) {
+        //     approveEFormToCustomer($credentials, true);
+        //     approveEFormToAO($credentials, true);
+        //     approveEFormToPinca($credentials, true);
+        // }else {
+        //     approveEFormToCustomer($credentials);
+        //     approveEFormToAO($credentials);
+        // }
     }
 
     function approveEFormToCustomer($credentials, $clas = null)
