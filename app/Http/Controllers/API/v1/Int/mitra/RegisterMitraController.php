@@ -98,8 +98,13 @@ class RegisterMitraController extends Controller
 		}elseif($baseRequest['lo_mitra']=='mitra_pemutus'){
 			$mitra = mitra5::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_las'){
+			  $golongan = DB::table('jenis_mitra_kerjasama')
+                ->select('jenis_mitra_kerjasama."KODE_LAS"')
+                ->where('jenis_mitra_kerjasama."KODE"', $baseRequest['jenis_instansi'])
+                ->get();
+                $baseRequest['jenis_instansi'] = $golongan[0]->KODE.' '.$golongan[0]->KODE;
 			$client = $this->client();
-            $resultclient = $client->kirimPemutus($baseRequest);
+            $mitra = $client->insertUpdateInstansiBRI($baseRequest);
 		}
 /* 		$mitraheader = MitraHeader::create( $baseRequest['mitra']['header'] );
         $mitradetail = MitraDetail::create( $baseRequest['mitra']['detail'] );
