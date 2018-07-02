@@ -879,9 +879,17 @@ class EForm extends Model implements AuditableContract
         if ($target) {
             if ( $status != 'Pencairan' ) {
                 $returnStatus = "EForm berhasil di " . ( $status == 'Approval1' ? 'Setujui' : "Tolak" ) . ".";
+                if( $status == 'Approval2' ){
+                    $status_eform = "Approval2";
+                } else if( $status == 'Rejected' ){
+                    $status_eform = "Rejected";
+                } else{
+                    $status_eform = $status;
+                }
                 $target->update([
                     'is_approved' => ( $status == 'Approval1' ? true : false )
-                    , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
+                    ,'status_eform' => $status_eform
+                    // , 'status_eform' => ( $status == 'Approval2' ? 'Rejected' : $status )
                 ]);
 
                 // Recontest
