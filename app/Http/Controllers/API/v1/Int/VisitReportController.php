@@ -61,12 +61,12 @@ class VisitReportController extends Controller
             // app('App\Http\Controllers\RuanganController')->autoDisposition();
 
             \Log::info('==== Auto Approve VIP ID 13 ====');
-            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+            // $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
 
             $kpr = KPR::select('developer_id','property_id')->where('eform_id',$eform_id)->first();
-            \Log::info('VIP KPR: '.$kpr);
-            $collateralId = Collateral::select('id')->where('developer_id', $developerId)->where('property_id', $propertyId)->first();
-            \Log::info('VIP Col ID'.$collateralId);          
+            \Log::info($kpr);
+            $collateralId = Collateral::select('id')->where('developer_id', $kpr->developer_id)->where('property_id', $kpr->property_id)->first();
+            \Log::info($collateralId);          
 
             $baseRequest['manager_id'] = $user_login['pn'];
             $baseRequest['manager_name'] = $user_login['name'];
