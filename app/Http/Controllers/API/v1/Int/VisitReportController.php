@@ -53,30 +53,6 @@ class VisitReportController extends Controller
 
         $eform = EForm::find($eform_id);
 
-        if ( $eform->is_clas_ready ) {
-            \Log::info('==== Auto Approve VIP CLAS READY ====');
-            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
-        }
-        if ( $request->input('use_reason') == 13 ) {
-            // app('App\Http\Controllers\RuanganController')->autoDisposition();
-
-            \Log::info('==== Auto Approve VIP ID 13 ====');
-            // $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
-
-            $kpr = DB::table('kpr')->select('developer_id','property_id')->where('eform_id',$eform_id)->first();
-            \Log::info($kpr);
-            $collateralId = DB::table('collateral')->select('id')->where('developer_id', $kpr->developer_id)->where('property_id', $kpr->property_id)->first();
-            \Log::info($collateralId);          
-
-            $baseRequest['manager_id'] = $user_login['pn'];
-            $baseRequest['manager_name'] = $user_login['name'];
-            $baseRequest['dispose_by'] = $user_login['pn'];
-
-            DB::table('collateral')->where( 'status', Collateral::STATUS[0] )
-                ->findOrFail( $collateralId )
-                  ->update( $baseRequest );
-        }
-
         $typeModule = getTypeModule(EForm::class);
         notificationIsRead($eform_id, $typeModule);
 
@@ -101,26 +77,29 @@ class VisitReportController extends Controller
 
         $message = 'Data LKN berhasil dikirim';
         // auto approve for VIP
-        // if ( $eform->is_clas_ready ) {
-        //     \Log::info('==== Auto Approve VIP ====');
-        //     $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
-        // }
-        // if ( $request->input('use_reason') == 13 ) {
-        //     // app('App\Http\Controllers\RuanganController')->autoDisposition();
+        if ( $eform->is_clas_ready ) {
+            \Log::info('==== Auto Approve VIP CLAS READY ====');
+            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+        }
+        if ( $request->input('use_reason') == 13 ) {
+            // app('App\Http\Controllers\RuanganController')->autoDisposition();
 
-        //     $kpr = KPR::select('developer_id','property_id')->where('eform_id',$eform_id)->first();
-        //     \Log::info('VIP KPR: '.$kpr);
-        //     $collateralId = Collateral::select('id')->where('developer_id', $developerId)->where('property_id', $propertyId)->first();
-        //     \Log::info('VIP Col ID'.$collateralId);
+            \Log::info('==== Auto Approve VIP ID 13 ====');
+            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
 
-        //     $baseRequest['manager_id'] = $user_login['pn'];
-        //     $baseRequest['manager_name'] = $user_login['name'];
-        //     $baseRequest['dispose_by'] = $user_login['pn'];
+            $kpr = DB::table('kpr')->select('developer_id','property_id')->where('eform_id',$eform_id)->first();
+            \Log::info($kpr);
+            $collateralId = DB::table('collateral')->select('id')->where('developer_id', $kpr->developer_id)->where('property_id', $kpr->property_id)->first();
+            \Log::info($collateralId);          
 
-        //     $this->collateral->where( 'status', Collateral::STATUS[0] )
-        //         ->findOrFail( $collateralId )
-        //           ->update( $baseRequest );
-        // }
+            $baseRequest['manager_id'] = $user_login['pn'];
+            $baseRequest['manager_name'] = $user_login['name'];
+            $baseRequest['dispose_by'] = $user_login['pn'];
+
+            DB::table('collateral')->where( 'status', Collateral::STATUS[0] )
+                ->findOrFail( $collateralId )
+                  ->update( $baseRequest );
+        }
 
         set_action_date($eform->id, 'eform-lkn');
 
