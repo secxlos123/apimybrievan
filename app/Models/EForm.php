@@ -155,7 +155,7 @@ class EForm extends Model implements AuditableContract
             return 'Pencairan';
 
  */
-        if ( (!$this->is_approved && $this->recommended) || ($this->status_eform == 'Rejected') ) {
+        if ( $this->status_eform == 'Rejected' ) {
             return 'Kredit Ditolak';
         } elseif ( $this->status_eform == 'Approval1' ) {
             return 'Kredit Disetujui';    
@@ -886,6 +886,7 @@ class EForm extends Model implements AuditableContract
                 } else{
                     $status_eform = $status;
                 }
+                \Log::info("===STATUS EFORM : ".$status_eform);
                 $target->update([
                     'is_approved' => ( $status == 'Approval1' ? true : false )
                     ,'status_eform' => $status_eform
