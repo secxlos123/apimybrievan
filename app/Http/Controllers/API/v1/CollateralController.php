@@ -549,6 +549,20 @@ class CollateralController extends Controller
       );
     }
 
+    public function autoDisposition()
+    {
+      $baseRequest = $this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff');
+
+      $user = \RestwsHc::getUser();
+      $baseRequest['manager_id'] = $user['pn'];
+      $baseRequest['manager_name'] = $user['name'];
+      $baseRequest['dispose_by'] = $user['pn'];
+
+      $this->collateral->where( 'status', Collateral::STATUS[0] )
+        ->findOrFail( $collateralId )
+          ->update( $baseRequest );
+    }
+
     /**
      * Disposition change staff name, staff id
      * @param  string $eks

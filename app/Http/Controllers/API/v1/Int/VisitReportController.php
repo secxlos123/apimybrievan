@@ -46,6 +46,8 @@ class VisitReportController extends Controller
             $data['mutations'] = array();
         }
 
+        dd($request);
+
         // Get User Login
         $user_login = \RestwsHc::getUser();
 
