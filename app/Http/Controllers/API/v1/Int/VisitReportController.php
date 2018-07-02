@@ -99,7 +99,7 @@ class VisitReportController extends Controller
             $baseRequest['staff_name'] = $user_login['name'];
 
             DB::table('collaterals')->where( 'status', Collateral::STATUS[0] )
-                ->findOrFail( $collateralId )
+                ->where('id', $collateralId )
                   ->update( $baseRequest );
         }
 
