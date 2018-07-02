@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\v1\VisitReportRequest;
 use App\Models\EForm;
 use App\Models\VisitReport;
+use App\Models\Collateral;
 use DB;
 use App\Notifications\LKNEFormCustomer;
 use App\Models\UserNotification;
@@ -80,7 +81,12 @@ class VisitReportController extends Controller
         }
         if ( $request->input('use_reason') == 13 ) {
             // app('App\Http\Controllers\RuanganController')->autoDisposition();
-            
+
+            $kpr = KPR::select('developer_id','property_id')->where('eform_id',$eform_id)->first();
+            \Log::info('VIP KPR: '.$kpr);
+            $collateralId = Collateral::select('id')->where('developer_id', $developerId)->where('property_id', $propertyId)->first();
+            \Log::info('VIP Col ID'.$collateralId);
+
             $baseRequest['manager_id'] = $user_login['pn'];
             $baseRequest['manager_name'] = $user_login['name'];
             $baseRequest['dispose_by'] = $user_login['pn'];
