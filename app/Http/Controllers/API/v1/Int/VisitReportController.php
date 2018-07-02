@@ -54,16 +54,19 @@ class VisitReportController extends Controller
         $eform = EForm::find($eform_id);
 
         if ( $eform->is_clas_ready ) {
-            \Log::info('==== Auto Approve VIP ====');
+            \Log::info('==== Auto Approve VIP CLAS READY ====');
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
         }
         if ( $request->input('use_reason') == 13 ) {
             // app('App\Http\Controllers\RuanganController')->autoDisposition();
 
+            \Log::info('==== Auto Approve VIP ID 13 ====');
+            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+
             $kpr = KPR::select('developer_id','property_id')->where('eform_id',$eform_id)->first();
             \Log::info('VIP KPR: '.$kpr);
             $collateralId = Collateral::select('id')->where('developer_id', $developerId)->where('property_id', $propertyId)->first();
-            \Log::info('VIP Col ID'.$collateralId);
+            \Log::info('VIP Col ID'.$collateralId);          
 
             $baseRequest['manager_id'] = $user_login['pn'];
             $baseRequest['manager_name'] = $user_login['name'];
