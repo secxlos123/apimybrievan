@@ -46,8 +46,6 @@ class VisitReportController extends Controller
             $data['mutations'] = array();
         }
 
-        dd($request);
-
         // Get User Login
         $user_login = \RestwsHc::getUser();
 
@@ -79,6 +77,9 @@ class VisitReportController extends Controller
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+        }
+        if ( $data['use_reason'] == 13 ) {
+            app('App\Http\Controllers\RuanganController')->autoDisposition();
         }
 
         set_action_date($eform->id, 'eform-lkn');
