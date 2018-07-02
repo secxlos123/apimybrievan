@@ -78,8 +78,16 @@ class VisitReportController extends Controller
         if ( $eform->is_clas_ready ) {
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
         }
-        if ( $data['use_reason'] == 13 ) {
-            app('App\Http\Controllers\RuanganController')->autoDisposition();
+        if ( $request->input('use_reason') == 13 ) {
+            // app('App\Http\Controllers\RuanganController')->autoDisposition();
+            
+            $baseRequest['manager_id'] = $user_login['pn'];
+            $baseRequest['manager_name'] = $user_login['name'];
+            $baseRequest['dispose_by'] = $user_login['pn'];
+
+            $this->collateral->where( 'status', Collateral::STATUS[0] )
+                ->findOrFail( $collateralId )
+                  ->update( $baseRequest );
         }
 
         set_action_date($eform->id, 'eform-lkn');
