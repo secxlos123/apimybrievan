@@ -100,7 +100,11 @@ class VisitReportController extends Controller
 
             DB::table('collaterals')->where( 'status', Collateral::STATUS[0] )
                 ->findOrFail( $collateralId )
-                  ->update( $baseRequest );
+                  ->update( ['manager_id' => $baseRequest['manager_id'],
+                             'manager_name' => $baseRequest['manager_name'],
+                             'dispose_by' => $baseRequest['dispose_by'],
+                             'staff_id' => $baseRequest['staff_id'],
+                             'staff_name' => $baseRequest['staff_name']] );
         }
 
         set_action_date($eform->id, 'eform-lkn');
