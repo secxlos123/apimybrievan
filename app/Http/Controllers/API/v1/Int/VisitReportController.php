@@ -63,16 +63,16 @@ class VisitReportController extends Controller
             \Log::info('==== Auto Approve VIP ID 13 ====');
             // $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
 
-            $kpr = KPR::select('developer_id','property_id')->where('eform_id',$eform_id)->first();
+            $kpr = DB::table('kpr')->select('developer_id','property_id')->where('eform_id',$eform_id)->first();
             \Log::info($kpr);
-            $collateralId = Collateral::select('id')->where('developer_id', $kpr->developer_id)->where('property_id', $kpr->property_id)->first();
+            $collateralId = DB::table('collateral')->select('id')->where('developer_id', $kpr->developer_id)->where('property_id', $kpr->property_id)->first();
             \Log::info($collateralId);          
 
             $baseRequest['manager_id'] = $user_login['pn'];
             $baseRequest['manager_name'] = $user_login['name'];
             $baseRequest['dispose_by'] = $user_login['pn'];
 
-            $this->collateral->where( 'status', Collateral::STATUS[0] )
+            DB::table('collateral')->where( 'status', Collateral::STATUS[0] )
                 ->findOrFail( $collateralId )
                   ->update( $baseRequest );
         }
