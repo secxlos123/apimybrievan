@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\VisitReportRequest;
+use App\Models\KPR;
 use App\Models\EForm;
 use App\Models\VisitReport;
 use App\Models\Collateral;
