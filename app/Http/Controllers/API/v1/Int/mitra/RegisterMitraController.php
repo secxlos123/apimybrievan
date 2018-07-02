@@ -99,7 +99,7 @@ class RegisterMitraController extends Controller
 			$mitra = mitra5::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_las'){
 			$client = $this->client();
-            $resultclient = $client->kirimPemutus($baseRequest);
+            $mitra = $client->insertUpdateInstansiBRI($baseRequest);
 		}
 /* 		$mitraheader = MitraHeader::create( $baseRequest['mitra']['header'] );
         $mitradetail = MitraDetail::create( $baseRequest['mitra']['detail'] );
