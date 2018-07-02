@@ -7,12 +7,12 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Models\User;
-use App\Models\Mitra\mitra0;
-use App\Models\Mitra\mitra1;
-use App\Models\Mitra\mitra2;
-use App\Models\Mitra\mitra3;
-use App\Models\Mitra\mitra4;
-use App\Models\Mitra\mitra5;
+use App\Models\Mitra\Mitra0;
+use App\Models\Mitra\Mitra1;
+use App\Models\Mitra\Mitra2;
+use App\Models\Mitra\Mitra3;
+use App\Models\Mitra\Mitra4;
+use App\Models\Mitra\Mitra5;
 /* use App\Models\Mitra\MitraHeader;
 use App\Models\Mitra\MitraDetail;
 use App\Models\Mitra\MitraPemutus; */
