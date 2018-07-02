@@ -110,18 +110,18 @@ class CollateralController extends Controller
       $region = \RestwsHc::getRegion(intval($user['branch_id']));
       $developer_id = env('DEVELOPER_KEY',1);
       $data = $this->collateral->GetLists($this->request)->where('developer_id','=',$developer_id);
+      
       if ($user['department'] != 'PJ. COLLATERAL MANAGER') {
         if ($user['role']!= 'superadmin') {
-          \Log::info("masuk sini meren". (int) $this->request->header('pn'));
-        $data->where('staff_id',(int) $this->request->header('pn'));
+            $data->where('staff_id',(int) $this->request->header('pn'));
         }
       }
       else
       {
-          $data->where('region_id',$region['region_id']);
+        $data->where('region_id',$region['region_id']);
       }
       if ($this->request->has('slug')) {
-          $data->where('id',$this->request->input('slug'));
+          $data->where('collaterals_id',$this->request->input('slug'));
       }
       
       return $this->makeResponse($data->paginate($this->request->has('limit') ? $this->request->limit : 10));
@@ -309,6 +309,7 @@ class CollateralController extends Controller
                   $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$aksiCollateral)
                                                  ->orderBy('created_at', 'desc')->first();
                   $id = $notificationData['id'];
+                  $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
                   $message = getMessage('collateral_penilaian',  $msgData);
                   $credentials = [
                      'headerNotif' => $message['title'],
@@ -318,6 +319,7 @@ class CollateralController extends Controller
                      'slug' => $collateral_id,
                      'user_id' => $manager_id,
                      'receiver' => 'manager_collateral',
+                     'dev_id' => $dev_id
                   ];
                   pushNotification($credentials,'general');
               }
@@ -526,6 +528,7 @@ class CollateralController extends Controller
                 $message = getMessage($status);
               }
               $id = $notificationData['id'];
+              $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
               $credentials = [
                   'headerNotif' => 'Collateral Notification',
                   'bodyNotif' => $message['body'],
@@ -534,6 +537,7 @@ class CollateralController extends Controller
                   'slug' => $collateralId,
                   'user_id' => $user_id,
                   'receiver' => $receiver,
+                  'dev_id' => $dev_id
                 ];
               pushNotification($credentials,'general');
             }
@@ -543,6 +547,20 @@ class CollateralController extends Controller
       return $this->makeResponse(
         $this->collateral->withAll()->findOrFail($collateralId)
       );
+    }
+
+    public function autoDisposition()
+    {
+      $baseRequest = $this->request->only('staff_id', 'staff_name', 'status', 'remark','is_staff');
+
+      $user = \RestwsHc::getUser();
+      $baseRequest['manager_id'] = $user['pn'];
+      $baseRequest['manager_name'] = $user['name'];
+      $baseRequest['dispose_by'] = $user['pn'];
+
+      $this->collateral->where( 'status', Collateral::STATUS[0] )
+        ->findOrFail( $collateralId )
+          ->update( $baseRequest );
     }
 
     /**
@@ -608,6 +626,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateralId)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
+        $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
         // $message = getMessage('collateral_disposition');
         $credentials = [
             'slug' => $collateralId,
@@ -617,6 +636,7 @@ class CollateralController extends Controller
             'bodyNotif' => $message['body'],
             'type' => 'collateral_disposition',
             'receiver' => $receiver,
+            'dev_id' => $dev_id,
         ];
         // Call the helper of push notification function
         pushNotification($credentials,'general');
@@ -689,6 +709,7 @@ class CollateralController extends Controller
                     $notificationData = $userNotif->where('slug', $collateralId)
                                                     ->orderBy('created_at', 'desc')->first();
                     $id = $notificationData['id'];
+                    $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
                     $message = getMessage('collateral_checklist');
                      $credentials = [
                       'headerNotif' => $message['title'],
@@ -698,6 +719,7 @@ class CollateralController extends Controller
                       'slug' => $collateralId,
                       'user_id' => $manager_id,
                       'receiver' => 'manager_collateral',
+                      'dev_id' => $dev_id
                       ];
                      pushNotification($credentials,'general');
                 }
@@ -763,6 +785,7 @@ class CollateralController extends Controller
         $notificationData = $userNotif->where('slug', $collateral_id)->where('type_module','collateral')
                                         ->orderBy('created_at', 'desc')->first();
         $id = $notificationData['id'];
+        $dev_id = $notificationData->data['developer_id'] ? $notificationData->data['developer_id'] : null ;
         // $message = getMessage('collateral_ots');
         //*/
         $credentials = [
@@ -773,6 +796,7 @@ class CollateralController extends Controller
             'slug' => $collateral_id,
             'user_id' => $id_manager_collateral,
             'receiver' => 'manager_collateral',
+            'dev_id' => $dev_id
         ];
         if(!empty($id_manager_collateral))
         {

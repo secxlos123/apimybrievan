@@ -1833,14 +1833,25 @@ if (! function_exists('pushNotification')) {
     function approveEForm($credentials){
         \Log::info("===PUSH NOTIF APPROVE EFORM===");
         $data = $credentials;
-        if (!empty($data['clas'])) {
-            approveEFormToCustomer($credentials, true);
-            approveEFormToAO($credentials, true);
-            approveEFormToPinca($credentials, true);
-        }else {
-            approveEFormToCustomer($credentials);
-            approveEFormToAO($credentials);
+        if(!empty($data['clas'])){
+            if($data['clas'] == true){
+                approveEFormToCustomer($credentials, true);
+                approveEFormToAO($credentials, true);
+                approveEFormToPinca($credentials, true);    
+            }
+        }else{
+                approveEFormToCustomer($credentials);
+                approveEFormToAO($credentials);    
         }
+        
+        // if (!empty($data['clas'])) {
+        //     approveEFormToCustomer($credentials, true);
+        //     approveEFormToAO($credentials, true);
+        //     approveEFormToPinca($credentials, true);
+        // }else {
+        //     approveEFormToCustomer($credentials);
+        //     approveEFormToAO($credentials);
+        // }
     }
 
     function approveEFormToCustomer($credentials, $clas = null)
@@ -2109,6 +2120,7 @@ if (! function_exists('pushNotification')) {
        $type= $credentials['type'];
        $slug = $credentials['slug'];
        $receiver = $credentials['receiver'];
+       $dev_id = $credentials['dev_id'] ? $credentials['dev_id'] : null;
 
         $notificationBuilder = new PayloadNotificationBuilder($headerNotif);
         $notificationBuilder->setBody($bodyNotif)
@@ -2119,7 +2131,13 @@ if (! function_exists('pushNotification')) {
             'id'       => $id,
             'slug'     => $slug,
             'type'     => 'collateral',
+            'dev_id'   => $dev_id
         ]);
+        // \Log::info("=== THIS DATA TO SEND FCM PUSH NOTIF COLLATERAL ===");
+        // \Log::info("=== ID : ".$id);
+        // \Log::info("=== SLUG : ".$slug);
+        // \Log::info("=== Type : collateral");
+        // \Log::info("=== Dev Id : ".$dev_id);
 
         $notification = $notificationBuilder->build();
         $data         = $dataBuilder->build();

@@ -155,7 +155,13 @@ class EForm extends Model implements AuditableContract
             return 'Pencairan';
 
  */
-        if ( $this->status_eform == 'Approval2' ) {
+        if ( (!$this->is_approved && $this->recommended) || ($this->status_eform == 'Rejected') ) {
+            return 'Kredit Ditolak';
+        } elseif ( $this->status_eform == 'Approval1' ) {
+            return 'Kredit Disetujui';    
+        } elseif ( $this->status_eform == 'Pencairan' ) {
+            return 'Pencairan';
+        } elseif ( $this->status_eform == 'Approval2' ) {
             return 'Rekontes Kredit';
 
         } elseif ( $this->status_eform == 'Menunggu Putusan' ) {

@@ -645,8 +645,8 @@ class UserNotification extends Model
 				// Disposisi collateral
 				// dari col-man
 				// ke staff-col
-			\Log::info("==CLASS: App\Notifications\CollateralDisposition");
-			\Log::info("==BASEWORDING: ".$baseWording);
+			// \Log::info("==CLASS: App\Notifications\CollateralDisposition");
+			// \Log::info("==BASEWORDING: ".$baseWording);
 				$append = array( 'message' => 'Disposisi Pengajuan ' . $baseWording . '. Segera tindak lanjut!!' );
 				break;
 
