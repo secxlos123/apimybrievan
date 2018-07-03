@@ -29,6 +29,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('select', 'SelectController@select');
 		Route::get('phpini', 'EFormController@php_ini');
 		Route::post('mitra_relation', 'EFormController@mitra_relation');
+		Route::post('dropdown_las_ext', 'DropdownLasExtController@dropdown_las_ext');
 		//Route::post('GimmickUnduh', 'GimmickController@gimmick_pdf');
 		Route::post('eforms_briguna', 'EFormController@show_briguna');
 		Route::get('Download_Rekomendasi', 'Download_RekomendasiController@Download');
