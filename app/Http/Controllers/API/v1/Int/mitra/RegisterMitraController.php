@@ -7,12 +7,12 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\GimmickRequest;
 use App\Models\User;
-use App\Models\Mitra\mitra0;
-use App\Models\Mitra\mitra1;
-use App\Models\Mitra\mitra2;
-use App\Models\Mitra\mitra3;
-use App\Models\Mitra\mitra4;
-use App\Models\Mitra\mitra5;
+use App\Models\Mitra\Mitra0;
+use App\Models\Mitra\Mitra1;
+use App\Models\Mitra\Mitra2;
+use App\Models\Mitra\Mitra3;
+use App\Models\Mitra\Mitra4;
+use App\Models\Mitra\Mitra5;
 /* use App\Models\Mitra\MitraHeader;
 use App\Models\Mitra\MitraDetail;
 use App\Models\Mitra\MitraPemutus; */
@@ -98,8 +98,13 @@ class RegisterMitraController extends Controller
 		}elseif($baseRequest['lo_mitra']=='mitra_pemutus'){
 			$mitra = mitra5::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_las'){
+			  $golongan = DB::table('jenis_mitra_kerjasama')
+                ->select('jenis_mitra_kerjasama."KODE_LAS"')
+                ->where('jenis_mitra_kerjasama."KODE"', $baseRequest['jenis_instansi'])
+                ->get();
+                $baseRequest['jenis_instansi'] = $golongan[0]->KODE.' '.$golongan[0]->KODE;
 			$client = $this->client();
-            $resultclient = $client->kirimPemutus($baseRequest);
+            $mitra = $client->insertUpdateInstansiBRI($baseRequest);
 		}
 /* 		$mitraheader = MitraHeader::create( $baseRequest['mitra']['header'] );
         $mitradetail = MitraDetail::create( $baseRequest['mitra']['detail'] );

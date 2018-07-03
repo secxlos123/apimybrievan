@@ -131,7 +131,7 @@ class CustomerController extends Controller
 					 ->get();
 			if(isset($eform)){
             \Log::info("===========IS FINISH=====");         
-            \Log::info($eform);
+           // \Log::info($eform);
 			$eform = $eform->toArray();
 			$eform = json_decode(json_encode($eform), True);
 				if(isset($eform[0]['IsFinish']) =='true' ){
@@ -159,7 +159,7 @@ class CustomerController extends Controller
 					 ->get();
 			if(isset($eform)){
             \Log::info("===========IS FINISH=====");         
-            \Log::info($eform);
+            //\Log::info($eform);
 			$eform = $eform->toArray();
 			$eform = json_decode(json_encode($eform), True);
 				if(isset($eform[0]['IsFinish']) =='true' ){
@@ -182,10 +182,10 @@ class CustomerController extends Controller
     public function show( $type, $id )
     {
        $customerDetail = CustomerDetail::where( 'nik', '=', $id )->first();
-        if (count($customerDetail) >= 0) {
+        if (count($customerDetail)>0) {
 			$data = $this->getdatabynik($customerDetail->user_id);
 	    } else {
-			$data = $this->getdatabyuserid($customerDetail->user_id);
+			$data = $this->getdatabyuserid($id);
         }
         return response()->success( [
             'message' => $data['message'],
@@ -203,7 +203,7 @@ class CustomerController extends Controller
     public function verify( CustomerRequest $request, $id )
     {
         \Log::info("=======Verify Customer========");
-        \Log::info($request->all());
+       // \Log::info($request->all());
         $customer = Customer::findOrFail( $id );
         $baseRequest = $request->only('developer','property','status_property','price', 'building_area', 'home_location', 'year', 'active_kpr', 'dp', 'request_amount', 'developer_name', 'property_name', 'kpr_type_property','property_type','property_type_name','property_item','property_item_name','product_type');
 

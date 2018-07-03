@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\API\v1\VisitReportRequest;
+use App\Models\KPR;
 use App\Models\EForm;
 use App\Models\VisitReport;
+use App\Models\Collateral;
 use DB;
 use App\Notifications\LKNEFormCustomer;
 use App\Models\UserNotification;
@@ -76,7 +78,34 @@ class VisitReportController extends Controller
         $message = 'Data LKN berhasil dikirim';
         // auto approve for VIP
         if ( $eform->is_clas_ready ) {
+            \Log::info('==== Auto Approve VIP CLAS READY ====');
             $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+        }
+        if ( $request->input('use_reason') == 13 ) {
+            // app('App\Http\Controllers\RuanganController')->autoDisposition();
+
+            \Log::info('==== Auto Approve VIP ID 13 ====');
+            $message .= ' dan ' . autoApproveForVIP( array(), $eform->id );
+
+            $kpr = DB::table('kpr')->select('developer_id','property_id')->where('eform_id',$eform_id)->first();
+            \Log::info($kpr);
+            $collateralId = DB::table('collaterals')->select('id')->where('developer_id', $kpr->developer_id)->where('property_id', $kpr->property_id)->first();
+            \Log::info($collateralId);          
+
+            $baseRequest['manager_id'] = $user_login['pn'];
+            $baseRequest['manager_name'] = $user_login['name'];
+            $baseRequest['dispose_by'] = $user_login['pn'];
+            $baseRequest['staff_id'] = $user_login['pn'];
+            $baseRequest['staff_name'] = $user_login['name'];
+
+            DB::table('collaterals')->where( 'status', Collateral::STATUS[0] )
+                ->where( 'id', $collateralId->id )
+                  ->update( ['manager_id' => $baseRequest['manager_id'],
+                             'manager_name' => $baseRequest['manager_name'],
+                             'dispose_by' => $baseRequest['dispose_by'],
+                             'staff_id' => $baseRequest['staff_id'],
+                             'staff_name' => $baseRequest['staff_name'],
+                             'status' => Collateral::STATUS[1]] );
         }
 
         set_action_date($eform->id, 'eform-lkn');
