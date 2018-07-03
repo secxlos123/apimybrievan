@@ -174,7 +174,7 @@ class KartuKredit extends Model
                 $jobRt = $req['JobRt'];
                 $jobRw = $req['JobRw'];
                 $jobKota = $req['JobKota'];
-                $jobNoTlp = $req['JobNoTlp']
+                $jobNoTlp = $req['JobNoTlp'];
 
                 $jobBidangUsaha = $req['JobBidangUsaha'];
                 $jobKategoriPekerjaan = $req['JobKategoriPekerjaan'];
