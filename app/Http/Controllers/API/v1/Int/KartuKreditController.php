@@ -680,7 +680,9 @@ class KartuKreditController extends Controller{
 		$rangeLimit =  $req->range_limit;
 		$losScore = $req->los_score;
 		$losResult = $this->losScoreResult($losScore);
-        
+        $client = new Client();
+        $host = $this->hostLos;
+        $token = $this->tokenLos;
 
 		if ($losResult == 'proceed'){
 			$anStatus = 'analyzed';
@@ -688,7 +690,19 @@ class KartuKreditController extends Controller{
 			$anStatus = 'rejected';
 		}
 
-       
+        try{
+            $res = $client->request('POST', $host.'/api/updateStatus',
+                ['headers' => ['access_token' => $token],
+                'form_params' => ['apRegno' => $apregno],
+            ]);
+        }
+        catch(RequestException $e){
+            return response()->json([
+                'responseCode' => '99',
+                'responseMessage' => $e->getMessage()
+            ]);
+        }
+
 		$dataKK = KartuKredit::where('appregno',$apregno)->first();
 		$updateKK = KartuKredit::where('appregno',$apregno)->update([
 			'is_analyzed'=>true,
