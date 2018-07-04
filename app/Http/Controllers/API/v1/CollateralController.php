@@ -269,9 +269,9 @@ class CollateralController extends Controller
         \Log::info("--> success store ots <--");
 
         $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
-        \Log.info($collateralView);
+        \Log::info($collateralView);
         $use_reason = DB::table('visit_reports')->select('use_reason')->where('eform_id',$collateralView->eform_id)->where('collateral_id',$collateralId)->first();
-        \Log.info($use_reason);
+        \Log::info($use_reason);
 
         if($use_reason->use_reason == 13){
           \Log::info("--> Auto Approve VIP <--");
