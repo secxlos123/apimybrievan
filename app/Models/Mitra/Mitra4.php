@@ -30,7 +30,7 @@ class Mitra4 extends Model
      */
 					
     protected $fillable = [  	
-					'payroll','no_rek_mitra1','no_cif_mitra','tipe_account1','tgl_pembayaran','tgl_gajian1','id_header'];
+					'payroll','no_rek_mitra1','no_cif_mitra','tipe_account1','tgl_pembayaran','tgl_gajian1', 'id_header'];
 	
     /**
      * The attributes that should be hidden for arrays.

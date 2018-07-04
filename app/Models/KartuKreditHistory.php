@@ -9,7 +9,7 @@ class KartuKreditHistory extends Model
 {
     protected $table = 'kartu_kredit_histories';
 
-    protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca','ao_name'];
+    protected $fillable = ['apregno','kodeproses','kanwil','pn','kanca','ao_name', 'nama_pinca', 'pn_pinca'];
 
     protected $appends = ['deskripsi_proses'];
 
@@ -51,6 +51,14 @@ class KartuKreditHistory extends Model
             'kodeproses'=>$kode
         ]);
 
+    }
+
+    public function updatePinca($nama_pinca, $pn_pinca, $apregno)
+    {
+        $updatePinca = $this->where('apregno', $apregno)->update([
+            'nama_pinca' => $nama_pinca,
+            'pn_pinca' => $pn_pinca
+        ]);
     }
 
     //ambil kanwil / region dari result list uker kanca.
