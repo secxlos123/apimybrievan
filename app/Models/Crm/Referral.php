@@ -3,6 +3,8 @@
 namespace App\Models\Crm;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+
 
 class Referral extends Model
 {
@@ -35,12 +37,12 @@ class Referral extends Model
       }
 
       return $query
-            ->orderBy('referrals.id', 'asc')
-            ->where( function($referral) use($request)
+            ->orderBy('referrals.id', 'asc');
+            /*->where( function($referral) use($request)
                      {
                         if ($request->header('role') != 'fo') 
                         {
-                            if ($request->has('start_date') && $request->has('end_date')) 
+                            /*if ($request->has('start_date') && $request->has('end_date')) 
                             {
                                 $from = date($request->input('start_date') . ' 00:00:00', time());
                                 $to = date($request->input('end_date') . ' 23:59:59', time());
@@ -56,7 +58,7 @@ class Referral extends Model
                                 else
                                 {
                                     $referral->where('branch_id', $request->input('branch'));
-                                }*/
+                                }
                             }
 
                             if($request->has('pn'))
@@ -64,7 +66,7 @@ class Referral extends Model
                                 $referral->where( 'referrals.officer_name', '=', $request->input( 'pn' ) );
                             }
 
-                            if($request->has('status'))
+                            if($request->has('pn'))
                             {
                                 $referral->where('referrals.status', $request->input('status'));
                             }
@@ -74,7 +76,7 @@ class Referral extends Model
                             $referral->where( 'referrals.officer_name', '=', $request->header( 'pn' ) );
                         }
                       }
-                    );
+                    );*/
 
     }
 
