@@ -77,10 +77,13 @@ class RegisterMitraController extends Controller
 		try{
         $baseRequest = $request->all();
 		if($baseRequest['lo_mitra']=='mitra'){
-			$client = $this->client();
-			
-			$branch_code['branch'] = json_decode(json_encode($mitra['BRANCH_CODE']) ,True);
-            $mitra = $client->inquiryInstansiBriguna($branch_code);
+			 $client = $this->client();
+            $branch_code['branch'] = json_decode(json_encode($baseRequest['BRANCH_CODE']) ,True);
+            $kode_instansi = $client->inquiryInstansiBriguna($branch_code);
+			$kode_instansi = json_decode($kode_instansi->inquiryInstansiBrigunaResult)->items;
+			$count_mitra = (int)count($kode_instansi) - 1;
+			$kode_instansi = $kode_instansi[$count_mitra]->kode_instansi;
+			$baseRequest['kode']=$kode_instansi;
 			$mitra = mitra0::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_detail_dasar'){
 			$mitra = mitra1::create( $baseRequest );
@@ -108,14 +111,21 @@ class RegisterMitraController extends Controller
 			$golongan = json_decode(json_encode($golongan) ,True);
                 $baseRequest['jenis_instansi'] = $golongan[0]['KODE_LAS'];
 			$client = $this->client();
-            $mitra = $client->InsertUpdateInstansiBRI($baseRequest);
+			$branch_code['branch'] = json_decode(json_encode($baseRequest['branchcode']) ,True);
+            $kode_instansi = $client->inquiryInstansiBriguna($branch_code);
+			$kode_instansi = json_decode($kode_instansi->inquiryInstansiBrigunaResult)->items;
+			$count_mitra = (int)count($kode_instansi) - 1;
+			$kode_instansi = $kode_instansi[$count_mitra]->kode_instansi;
+			$baseRequest['kode_instansi']=$kode_instansi;
+			$baseData['JSON'] = $baseRequest;
+            $mitra = $client->InsertUpdateInstansiBRI($baseData);
 		}
 /* 		$mitraheader = MitraHeader::create( $baseRequest['mitra']['header'] );
         $mitradetail = MitraDetail::create( $baseRequest['mitra']['detail'] );
         $mitrapemutus = MitraPemutus::create( $baseRequest['mitra']['pemutus'] ); */
 			$return = [
                     'message' => 'Data mitra berhasil Ditambahkan.',
-                    'contents' => 'Sukses'
+                    'contents' => $mitra
                 ];
 		} catch (Exception $e) {
             DB::rollback();
