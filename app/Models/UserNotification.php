@@ -211,28 +211,28 @@ class UserNotification extends Model
 		return $this->defineQuery( $pn, $user_id, $branch_id, $role );
 
 	}
-
+				  //getUnreadsMobile($branchID, $role, $pn, null, $limit, false);
 	public function getUnreadsMobile($branch_id, $role, $pn, $user_id, $limit, $count = null)
 	{
 		$query = $this->defineQuery( $pn, $user_id, $branch_id, $role );
 
 		if ( !empty($count) ) {
 			if( !empty($query) ) {
-				\Log::info("===Masuk Query ada!===");
+				// \Log::info("===Masuk Query ada!===");
 				// \Log::info("===count notif: ".count($query->where('notifications.read_at', false)->get()));
-				\Log::info("===query get: ".$query->whereNull('notifications.read_at')->get());
+				// \Log::info("===query get: ".$query->whereNull('notifications.read_at')->get());
 				// return $query->where('notifications.is_read', false)->count();
 				$query_data = \DB::table('notifications')->where('branch_id', $branch_id)->whereNull('read_at')->get();
-				\Log::info(count($query_data));
+				// \Log::info(count($query_data));
 				return count($query_data);
 			}
-			\Log::info("===Masuk Query tidak ada!===");
+			// \Log::info("===Masuk Query tidak ada!===");
 			return 0;
 		}
-		\Log::info("===Masuk $count tidak ada===");
+		// \Log::info("===Masuk $count tidak ada===");
 		return $query->paginate($limit);
 	}
-
+				  //defineQuery( $pn, $user_id, $branch_id, $role );
 	public function defineQuery( $pn, $user_id, $branch_id, $role )
 	{
 		$role  = ($role == 'mp') ? 'pinca' : $role;
