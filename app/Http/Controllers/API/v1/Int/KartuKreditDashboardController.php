@@ -170,7 +170,7 @@ class KartuKreditDashboardController extends Controller{
 		$startDate = Carbon::parse($req->startDate)->startOfDay();
         $endDate = Carbon::parse($req->endDate)->endOfDay();
         $kanca =  '00'.$req->branchId;
-        //$data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanca',$kanca)->get();
+        $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanca',$kanca)->get();
         $dataajukan = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])
                     ->where('kanca',$kanca)
                     ->where('kodeproses','1')->get();
