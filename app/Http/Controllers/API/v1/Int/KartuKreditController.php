@@ -689,11 +689,11 @@ class KartuKreditController extends Controller{
 		}else{
 			$anStatus = 'rejected';
 		}
-        
+
         try{
-            $res = $client->request('POST', $host.'api/updateStatus',
+            $res = $client->request('POST', $host.'/api/updateStatus',
                 ['headers' => ['access_token' => $token],
-                'form_params' => ['apRegno' = $apregno],
+                'form_params' => ['apRegno' => $apregno],
             ]);
         }
         catch(RequestException $e){
