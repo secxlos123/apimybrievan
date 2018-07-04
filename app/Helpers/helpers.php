@@ -2017,8 +2017,8 @@ if (! function_exists('pushNotification')) {
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
-            'slug' => $data['data']->id,
-            'type' => 'tracking',
+            'slug' => $data['data']->ref_number,
+            'type' => 'eform',
         ]);
 
         $notification = $notificationBuilder->build();
@@ -2056,8 +2056,8 @@ if (! function_exists('pushNotification')) {
             $dataBuilder = new PayloadDataBuilder();
             $dataBuilder->addData([
                 'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
-                'type' => 'tracking',
+                'slug' => $data['data']->ref_number,
+                'type' => 'eform',
             ]);
 
             $notification = $notificationBuilder->build();
@@ -2096,8 +2096,8 @@ if (! function_exists('pushNotification')) {
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
-            'slug' => $data['data']->id,
-            'type' => 'tracking',
+            'slug' => $data['data']->ref_number,
+            'type' => 'eform',
         ]);
 
         $notification = $notificationBuilder->build();

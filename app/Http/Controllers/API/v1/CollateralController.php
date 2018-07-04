@@ -493,7 +493,7 @@ class CollateralController extends Controller
                \DB::rollback();
                }
               $eform = $eformdata;
-              generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
+              generate_pdf('uploads/'. $eform->nik, $eform->ref_number.'-collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
           }
           else
           {

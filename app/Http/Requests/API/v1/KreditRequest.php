@@ -100,7 +100,7 @@ class KreditRequest extends BaseRequest{
     					'limit'=>'',
     					'apRegno'=>'required',
     					'putusan'=>'required|in:approved,rejected',
-    					'by' => 'required_if:putusan,approved',
+    					'by' => 'required',
 						'userId' =>'required',
 						'cpAprLimit'=>'required_if:putusan,approved',
 						'potCode'=>'required_if:putusan,approved',

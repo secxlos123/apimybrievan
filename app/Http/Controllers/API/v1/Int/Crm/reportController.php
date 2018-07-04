@@ -9,6 +9,8 @@ use App\Models\Crm\Marketing;
 use App\Models\Crm\MarketingActivity;
 use App\Models\Crm\MarketingActivityFollowup;
 use App\Models\Crm\MarketingNote;
+use App\Model\Crm\Referral;
+
 use DB;
 use RestwsHc;
 
@@ -105,7 +107,7 @@ class reportController extends Controller
     }
 
 
-   public function report_referrals(Request $request)
+public function report_referrals(Request $request)
     {
       if($request->has('region'))
       {
@@ -123,9 +125,9 @@ class reportController extends Controller
 
       $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
       
-      $data = Referral::getReports($request)->get();
+      $data = Marketing::getReports($request)->get();
       
-      $referrals = [];
+      $marketings = [];
       
       foreach ($data as $key => $value) 
       {
@@ -134,21 +136,16 @@ class reportController extends Controller
         
         $result = MarketingActivityFollowup::where('activity_id',$last_activity['id'])->orderBy('created_at', 'desc')->first();
         
-        $branch = $value->branch_id;
+        $branch = $value->branch;
         
-        $referrals[] = [
-                          "pn"=>$value->pn,
+        $marketings[] = [
                           "tgl_pembuatan" => date('Y-m-d',strtotime($value->created_at)),
                           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
                           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
-                          "uker"=> $value->branch_id,
-                          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )],
-                          "ref_id"=> $value->ref_id,
-                          "nama_ref"=> $value->name, 
-                          "product_type"=>$value->product_type,
-                          "owner"=>$value->creator_name,
-                          "officer"=>$value->officer_name,
-                          "status"=>$value->status,
+                          "uker"=> $value->branch,
+                          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )]
+                         
+        
                         ];
       
       }
@@ -160,8 +157,10 @@ class reportController extends Controller
                                  ], 200 );
 
     }
-    
 
+
+
+   
 
     public function list_kanwil(){
         try {
