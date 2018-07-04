@@ -17,8 +17,7 @@ use App\Models\Mitra\Mitra5;
 use App\Models\Mitra\MitraDetail;
 use App\Models\Mitra\MitraPemutus; */
 use DB;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
+use Artisaninweb\SoapWrapper\SoapWrapper;
 use URL;
 
 class RegisterMitraController extends Controller
@@ -99,10 +98,11 @@ class RegisterMitraController extends Controller
 			$mitra = mitra5::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_las'){
 			  $golongan = DB::table('jenis_mitra_kerjasama')
-                ->select('jenis_mitra_kerjasama."KODE_LAS"')
-                ->where('jenis_mitra_kerjasama."KODE"', $baseRequest['jenis_instansi'])
+                ->select('jenis_mitra_kerjasama.KODE_LAS')
+                ->where('jenis_mitra_kerjasama.KODE', $baseRequest['jenis_instansi'])
                 ->get();
-                $baseRequest['jenis_instansi'] = $golongan[0]->KODE.' '.$golongan[0]->KODE;
+			$golongan = json_decode(json_encode($golongan) ,True);
+                $baseRequest['jenis_instansi'] = $golongan[0]['KODE_LAS'];
 			$client = $this->client();
             $mitra = $client->insertUpdateInstansiBRI($baseRequest);
 		}
