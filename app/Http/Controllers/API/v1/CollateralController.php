@@ -270,26 +270,23 @@ class CollateralController extends Controller
 
         $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
         \Log::info($collateralView);
-        $use_reason = DB::table('visit_reports')->select('use_reason')->where('eform_id',$collateralView->eform_id)->where('collateral_id',$collateralId)->first();
+        $use_reason = DB::table('visit_reports')->select('use_reason')->where('eform_id',$collateralView->eform_id)->first();
         \Log::info($use_reason);
 
         if($use_reason->use_reason == 13){
-          \Log::info("--> Auto Approve VIP <--");
+          \Log::info("--> VIP Detected <--");
           $data = \RestwsHc::getUser();
 
-          $reqs = [
-              'eform_id' => $collateralView->eform_id
-              , 'remark' => 'VIP Auto-Approve'
-              , 'approved_by' => $data['pn']
-          ];
+          $eform_id = $collateralView->eform_id;
+          $remark = 'VIP Auto-Approve';
+          $pn = $data['pn'];
 
-          $this->changeStatus($reqs, $eks, 'approve', $collateralId);
+          $this->autoApprove($remark, $eform_id, $pn, $eks, 'approve', $collateralId);
         }
 
       } catch (Exception $e) {
         DB::rollback();
         \Log::info($e);
-
       }
 
       if ( $sendNotif ){
@@ -353,6 +350,89 @@ class CollateralController extends Controller
 
       return $this->makeResponse(
         $this->collateral->withAll()->find($collateralId)
+      );
+    }
+
+    public function autoApprove($remark, $eform_id, $pn, $eks, $action, $collateralId)
+    {
+      \Log::info("--> Auto Approve VIP <--");
+
+      \DB::beginTransaction();
+      $developer_id = env('DEVELOPER_KEY',1);
+      $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1], Collateral::STATUS[2], Collateral::STATUS[4]])->findOrFail($collateralId);
+      $property = Property::findOrFail($collateral->property_id);
+      $prevStatus = $collateral->status;
+      $handleReject = function($prevStatus) {
+        return $prevStatus === Collateral::STATUS[1] ? Collateral::STATUS[0] : Collateral::STATUS[4];
+      };
+      $collateral->status = $action === 'approve' ? Collateral::STATUS[3] : $handleReject($prevStatus);
+
+      $collateral->remark = $remark;
+      $collateral->approved_by = $pn;
+      $property->is_approved = true;
+      $collateral->save();
+      $property->save();
+
+      $eformdata = EForm::findOrFail($eform_id);
+      $hasapprove = $eformdata->is_approved;
+
+      if ($collateral->developer_id == $developer_id && $hasapprove) {
+        $sentclas =  EForm::approve( $eformdata->id, $eformdata );
+        if ($sentclas['status'])  \DB::commit();
+        else \DB::rollback();
+
+        $eform = $eformdata;
+        generate_pdf('uploads/'. $eform->nik, 'collateral.pdf', view('pdf.collateral', compact('eform','collateral')));
+      } else {
+        \DB::commit();
+      }
+
+      if(env('PUSH_NOTIFICATION', false)) {
+        \Log::info('=======notification web approve or reject collateral  ======');
+        $pn = $pn;
+        $collateral = Collateral::where('id',$collateralId)->first();
+        $developer_id =  $collateral->developer_id;
+        $user_id =  $developer_id;
+        $usersModel = User::find($user_id);
+        $dataUser  = UserServices::where('pn', $pn)->first();
+        $branch_id = $dataUser['branch_id'];
+        $pushNotif = true;
+
+        if($developer_id != 1)
+        {
+          // Notif Akan Dikirim ke Admin Developer
+          $bodyNotif = 'approval collateral';
+          $status = 'collateral_approve';
+          $type = 'collateral_manager_approving';
+          $receiver = 'staf_collateral';
+          $user_id = $collateral->staff_id;
+          //insert data from notifications table
+          $usersModel->notify(new CollateralManagerApprove($collateral,$branch_id));
+          $userNotif = new UserNotification;
+          // Get data from notifications table
+          $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
+            ->orderBy('created_at', 'desc')->first();
+        }
+
+        // Notif Akan Dikirim ke AO
+        $bodyNotif = 'approval collateral';
+        $status = 'collateral_approve';
+        $type = 'collateral_manager_approving';
+        $receiver = 'staf_collateral';
+        $user_id = $collateral->staff_id;
+        //insert data from notifications table
+        $usersModel->notify(new CollateralManagerApproveAO($collateral,$branch_id));
+        $userNotif = new UserNotification;
+        // Get data from notifications table
+        $notificationData = $userNotif->where('slug', $collateralId)->where('type_module',$type)
+                ->orderBy('created_at', 'desc')->first();
+      }
+      //end Web notif
+
+      \Log::info("--> Succesfully Auto Approve VIP <--");
+
+      return $this->makeResponse(
+        $this->collateral->withAll()->findOrFail($collateralId)
       );
     }
 
