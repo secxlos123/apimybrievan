@@ -132,18 +132,18 @@ public function report_referrals(Request $request)
       foreach ($data as $key => $value) 
       {
         
-        $last_activity = MarketingActivity::where('desc', '!=', 'first')->where('marketing_id',$value->id)->orderBy('created_at', 'desc')->first();
+       // $last_activity = MarketingActivity::where('desc', '!=', 'first')->where('marketing_id',$value->id)->orderBy('created_at', 'desc')->first();
         
-        $result = MarketingActivityFollowup::where('activity_id',$last_activity['id'])->orderBy('created_at', 'desc')->first();
+       // $result = MarketingActivityFollowup::where('activity_id',$last_activity['id'])->orderBy('created_at', 'desc')->first();
         
-        $branch = $value->branch;
+        $branch = $value->branch_id;
         
         $marketings[] = [
                           "tgl_pembuatan" => date('Y-m-d',strtotime($value->created_at)),
                           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
                           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
-                          "uker"=> $value->branch,
-                          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )]
+                          "uker"=> $branch,
+                          "fo_name"=> "1"//$pemasar[substr( '00000000' . $value->pn, -8 )]
                          
         
                         ];
