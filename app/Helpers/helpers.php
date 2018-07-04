@@ -1880,7 +1880,7 @@ if (! function_exists('pushNotification')) {
             $dataBuilder->addData([
                 'id'   => $notificationData['id'],
                 'slug' => $data['data']->id,
-                'type' => 'tracking',
+                'type' => 'eform',
             ]);
 
             $notification = $notificationBuilder->build();
@@ -1921,7 +1921,7 @@ if (! function_exists('pushNotification')) {
             $dataBuilder->addData([
                 'id'   => $notificationData['id'],
                 'slug' => $data['data']->id,
-                'type' => 'tracking',
+                'type' => 'eform',
             ]);
 
             $notification = $notificationBuilder->build();
@@ -1961,7 +1961,7 @@ if (! function_exists('pushNotification')) {
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
             'slug' => $data['data']->id,
-            'type' => 'tracking',
+            'type' => 'eform',
         ]);
 
         $notification = $notificationBuilder->build();
