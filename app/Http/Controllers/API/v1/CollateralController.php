@@ -266,8 +266,12 @@ class CollateralController extends Controller
         $sendNotif = true;
         DB::commit();
 
+        \Log::info("--> success store ots <--");
+
         $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+        \Log.info($collateralView);
         $use_reason = DB::table('visit_reports')->select('use_reason')->where('eform_id',$collateralView->eform_id)->where('collateral_id',$collateralId)->first();
+        \Log.info($use_reason);
 
         if($use_reason->use_reason == 13){
           \Log::info("--> Auto Approve VIP <--");
@@ -281,7 +285,6 @@ class CollateralController extends Controller
 
           $this->changeStatus($reqs, $eks, 'approve', $collateralId);
         }
-
 
       } catch (Exception $e) {
         DB::rollback();
