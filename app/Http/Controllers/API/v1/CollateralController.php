@@ -223,6 +223,8 @@ class CollateralController extends Controller
       try {
         DB::beginTransaction();
 
+        \Log::info("--> store ots <--");
+
         $developer_id = env('DEVELOPER_KEY',1);
         $collateral = $this->collateral->whereIn('status', [Collateral::STATUS[1],Collateral::STATUS[4]])->findOrFail($collateralId);
         OtsInArea::updateOrCreate(['collateral_id' => $collateral->id],['collateral_id' => $collateral->id]+$this->request->area);
@@ -263,6 +265,23 @@ class CollateralController extends Controller
         $collateral->save();
         $sendNotif = true;
         DB::commit();
+
+        $collateralView = DB::table('collateral_view_table')->where('collaterals_id', $collateralId)->first();
+        $use_reason = DB::table('visit_reports')->select('use_reason')->where('eform_id',$collateralView->eform_id)->where('collateral_id',$collateralId)->first();
+
+        if($use_reason->use_reason == 13){
+          \Log::info("--> Auto Approve VIP <--");
+          $data = \RestwsHc::getUser();
+
+          $reqs = [
+              'eform_id' => $collateralView->eform_id;
+              , 'remark' => 'VIP Auto-Approve'
+              , 'approved_by' => $data['pn']
+          ];
+
+          $this->changeStatus($reqs, $eks, 'approve', $collateralId);
+        }
+
 
       } catch (Exception $e) {
         DB::rollback();
@@ -356,6 +375,8 @@ class CollateralController extends Controller
      */
     public function changeStatus(ChangeStatusRequest $request, $eks, $action, $collateralId)
     {
+
+      \Log::info("--> change status <--");
 
       \DB::beginTransaction();
       $developer_id = env('DEVELOPER_KEY',1);
