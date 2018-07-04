@@ -171,6 +171,9 @@ class KartuKreditDashboardController extends Controller{
         $endDate = Carbon::parse($req->endDate)->endOfDay();
         $kanca =  '00'.$req->branchId;
         $data = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])->where('kanca',$kanca)->get();
+        $dataajukan = KartuKreditHistory::whereBetween('created_at', [$startDate, $endDate])
+                    ->where('kanca',$kanca)
+                    ->where('kodeproses','6.1')->get();
         $ajukanLength =  $data->where('kodeproses',1)->count();
         $verifikasiLength = $data->where('kodeproses','3.1')->count();
         $analisaLength = $data->where('kodeproses','6.1')->count();
@@ -185,7 +188,7 @@ class KartuKreditDashboardController extends Controller{
 	    	'analisaLength' =>$analisaLength,
 	    	'approvedLength' => $approvedLength,
 	    	'rejectedLength' => $rejectedLength,
-	    	'contents'=>$data
+	    	'contents'=>$dataajukan
 	    ]);
 	}
 }
