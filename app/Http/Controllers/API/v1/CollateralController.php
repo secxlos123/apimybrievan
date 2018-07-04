@@ -274,7 +274,7 @@ class CollateralController extends Controller
           $data = \RestwsHc::getUser();
 
           $reqs = [
-              'eform_id' => $collateralView->eform_id;
+              'eform_id' => $collateralView->eform_id
               , 'remark' => 'VIP Auto-Approve'
               , 'approved_by' => $data['pn']
           ];
