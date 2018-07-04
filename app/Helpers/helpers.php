@@ -1879,7 +1879,7 @@ if (! function_exists('pushNotification')) {
             $dataBuilder = new PayloadDataBuilder();
             $dataBuilder->addData([
                 'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
+                'slug' => $data['data']->ref_number,
                 'type' => 'eform',
             ]);
 
@@ -1920,7 +1920,7 @@ if (! function_exists('pushNotification')) {
             $dataBuilder = new PayloadDataBuilder();
             $dataBuilder->addData([
                 'id'   => $notificationData['id'],
-                'slug' => $data['data']->id,
+                'slug' => $data['data']->ref_number,
                 'type' => 'eform',
             ]);
 
@@ -1960,7 +1960,7 @@ if (! function_exists('pushNotification')) {
         $dataBuilder = new PayloadDataBuilder();
         $dataBuilder->addData([
             'id'   => $notificationData['id'],
-            'slug' => $data['data']->id,
+            'slug' => $data['data']->ref_number,
             'type' => 'eform',
         ]);
 
