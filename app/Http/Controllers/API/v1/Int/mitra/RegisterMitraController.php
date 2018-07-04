@@ -77,6 +77,10 @@ class RegisterMitraController extends Controller
 		try{
         $baseRequest = $request->all();
 		if($baseRequest['lo_mitra']=='mitra'){
+			$client = $this->client();
+			
+			$branch_code['branch'] = json_decode(json_encode($mitra['BRANCH_CODE']) ,True);
+            $mitra = $client->inquiryInstansiBriguna($branch_code);
 			$mitra = mitra0::create( $baseRequest );
 		}elseif($baseRequest['lo_mitra']=='mitra_detail_dasar'){
 			$mitra = mitra1::create( $baseRequest );
@@ -104,7 +108,7 @@ class RegisterMitraController extends Controller
 			$golongan = json_decode(json_encode($golongan) ,True);
                 $baseRequest['jenis_instansi'] = $golongan[0]['KODE_LAS'];
 			$client = $this->client();
-            $mitra = $client->insertUpdateInstansiBRI($baseRequest);
+            $mitra = $client->InsertUpdateInstansiBRI($baseRequest);
 		}
 /* 		$mitraheader = MitraHeader::create( $baseRequest['mitra']['header'] );
         $mitradetail = MitraDetail::create( $baseRequest['mitra']['detail'] );
