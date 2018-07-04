@@ -753,6 +753,9 @@ class KartuKreditController extends Controller{
 		$putusan = $req->putusan;
 		$limit = $req->limit;
 
+        $nama_pinca = $req->by;
+        $pn_pinca = $req->userId;
+
 		$kk = new KartuKredit();
 		$req = $req->all();
 		
@@ -765,6 +768,7 @@ class KartuKreditController extends Controller{
             //update kode proses histories dashboard
             $kkh = new KartuKreditHistory();
             $updhis = $kkh->updateKodeProses('7.1',$apregno);
+            $pincahis = $kkh->updatePinca($nama_pinca, $pn_pinca, $apregno);
 
 		}else{
 			$host = $this->hostLos.'/api/reject';
@@ -772,6 +776,7 @@ class KartuKreditController extends Controller{
             //update kode proses histories dashboard
             $kkh = new KartuKreditHistory();
             $updhis = $kkh->updateKodeProses('8.1',$apregno);
+            $pincahis = $kkh->updatePinca($nama_pinca, $pn_pinca, $apregno);
 
 		}
 		
