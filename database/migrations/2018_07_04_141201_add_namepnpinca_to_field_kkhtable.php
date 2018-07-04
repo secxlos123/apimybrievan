@@ -14,8 +14,8 @@ class AddNamepnpincaToFieldKkhtable extends Migration
     public function up()
     {
         Schema::table( 'kartu_kredit_histories', function ( Blueprint $table ) {
-            $table->text( 'nama_pinca' );
-            $table->text('pn_pinca');
+            $table->text( 'nama_pinca' )->nullable();
+            $table->text('pn_pinca')->nullable();
         });
     }
 
