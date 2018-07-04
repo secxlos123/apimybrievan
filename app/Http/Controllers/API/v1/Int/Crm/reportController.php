@@ -35,8 +35,9 @@ class reportController extends Controller
         $branch = $value->branch;
         $marketings[] =[
           "pn"=>$value->pn,
-          "bulan"=>date('M',strtotime($value->created_at)),
-          "tahun"=>date('Y',strtotime($value->created_at)),
+         // "bulan"=>date('M',strtotime($value->created_at)),
+          "tgl_pembuatan"=>date('Y-m-d',strtotime($value->created_at)),
+	  // "tanggal_pembuatan"=>('Y-M-D',strtotime($value->created_at)),
           "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
           "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
           "uker"=> $value->branch,
@@ -102,6 +103,65 @@ class reportController extends Controller
         'contents' => $activities
       ], 200 );
     }
+
+
+   public function report_referrals(Request $request)
+    {
+      if($request->has('region'))
+      {
+        $region = $request->input('region');
+        $list_kanca = $this->list_kanca_for_kanwil($region);
+        $request['list_branch'] =array_keys($list_kanca);
+        $pemasar = array_column($this->pemasar_kanwil($request->header('pn'), $region),"SNAME","PERNR");
+      }
+      else
+      {
+        $list_kanca = $this->list_all_kanca();
+        $region = $list_kanca[$request->header('branch')]['region_id'];
+        $pemasar = array_column($this->pemasar_kanwil($request->header('pn'), $region),"SNAME","PERNR");
+      }
+
+      $list_kanwil = array_column($this->list_kanwil(),'region_name', 'region_id');
+      
+      $data = Referral::getReports($request)->get();
+      
+      $referrals = [];
+      
+      foreach ($data as $key => $value) 
+      {
+        
+        $last_activity = MarketingActivity::where('desc', '!=', 'first')->where('marketing_id',$value->id)->orderBy('created_at', 'desc')->first();
+        
+        $result = MarketingActivityFollowup::where('activity_id',$last_activity['id'])->orderBy('created_at', 'desc')->first();
+        
+        $branch = $value->branch_id;
+        
+        $referrals[] = [
+                          "pn"=>$value->pn,
+                          "tgl_pembuatan" => date('Y-m-d',strtotime($value->created_at)),
+                          "wilayah"=> isset($list_kanwil[$region]) ? $list_kanwil[$region] : '',
+                          "cabang"=> array_key_exists($branch, $list_kanca)?$list_kanca[$branch]['mbdesc']:'',
+                          "uker"=> $value->branch_id,
+                          "fo_name"=> $pemasar[substr( '00000000' . $value->pn, -8 )],
+                          "ref_id"=> $value->ref_id,
+                          "nama_ref"=> $value->name, 
+                          "product_type"=>$value->product_type,
+                          "owner"=>$value->creator_name,
+                          "officer"=>$value->officer_name,
+                          "status"=>$value->status,
+                        ];
+      
+      }
+
+      return response()->success([
+                                    'message' => 'Sukses get list report marketings',
+                                    'contents' => $marketings
+      
+                                 ], 200 );
+
+    }
+    
+
 
     public function list_kanwil(){
         try {
