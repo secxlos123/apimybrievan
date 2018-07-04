@@ -31,7 +31,7 @@ class Mitra2 extends Model
 					
     protected $fillable = [  	
 					'deskripsi_mitra','hp_mitra','bendaharawan_mitra','telp_bendaharawan_mitra','hp_bendaharawan_mitra',
-					'email','jml_pegawai','thn_pegawai','tgl_pendirian','akta_pendirian','npwp_usaha','id_header','laporan_keuangan','legalitas_perusahaan'];
+					'email','jml_pegawai','thn_pegawai','tgl_pendirian','akta_pendirian','akta_perubahan','npwp_usaha','id_header','laporan_keuangan','legalitas_perusahaan' ];
 	
     /**
      * The attributes that should be hidden for arrays.

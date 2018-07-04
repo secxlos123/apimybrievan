@@ -82,7 +82,6 @@ class BRIGUNA extends Model
      */
     public static function create( $data ) {
         try {        
-            \Log::info($data);
             $data[ 'mitra_id' ] = $data[ 'idMitrakerja' ];
             $data[ 'IsFinish' ] = 'false';
     		$data[ 'tujuan_penggunaan_id' ] = $data[ 'tujuan_penggunaan' ];
@@ -113,7 +112,6 @@ class BRIGUNA extends Model
     	    }*/
 
             $eform = EForm::create( $data );
-            \Log::info($eform);
             // Start Code Insert to Dropbox
             $briguna = ( new static )->newQuery()->create( [ 'eform_id' => $eform->id ] + $data );
 
@@ -131,7 +129,6 @@ class BRIGUNA extends Model
             $kodepos_dom   = '';
             $kelurahan_dom = '';
 
-            \Log::info($briguna);
             if (!empty($customer_detail->address)) {
                 $address = explode('=', $customer_detail->address);
                 // print_r($address);
@@ -220,7 +217,6 @@ class BRIGUNA extends Model
                 ])
             ];
             $data_dropbox = $Dropbox->insertDropbox($postData);
-            \Log::info($data_dropbox);
             // dd($data_dropbox);
             $data_dropbox['eform_id'] = $eform->id;
             if (!empty($data_dropbox)) {
